@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PRIO.Data.Mappings;
 using Prio_BackEnd.Data.Mappings;
 using Prio_BackEnd.Models;
 
@@ -35,6 +36,9 @@ namespace Prio_BackEnd.Data
             modelBuilder.ApplyConfiguration(new WellMap());
             modelBuilder.ApplyConfiguration(new UnitMap());
             modelBuilder.ApplyConfiguration(new FileTypeMap());
+            modelBuilder.ApplyConfiguration(new FileTypeMap());
+            modelBuilder.ApplyConfiguration(new MeasurementMap());
+
 
         }
     }
