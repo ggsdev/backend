@@ -10,6 +10,8 @@
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime? UpdatedAt { get; set; } = null;
         public bool IsActive { get; set; } = true;
+
+        #region Relationships
         //public Role Role { get; set; }
         public Session? Session { get; set; } = null;
         public List<Cluster>? Clusters { get; set; }
@@ -19,5 +21,7 @@
         public List<Completion>? Completions { get; set; }
         public List<Well>? Wells { get; set; }
         public List<Unit>? Units { get; set; }
+
+        #endregion
     }
 }
