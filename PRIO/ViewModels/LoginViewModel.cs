@@ -10,5 +10,8 @@ namespace PRIO.ViewModels
 
         [Required(ErrorMessage = "Password is required")]
         public string Password { get; set; }
+
+        [Required(ErrorMessage = "Type of authentication is required")]
+        public bool IsLocalAuthentication { get; set; } // false para se autenticar com active directory
     }
 }

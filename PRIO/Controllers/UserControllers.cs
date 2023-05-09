@@ -109,7 +109,7 @@ namespace PRIO.Controllers
         }
         #endregion
 
-        #region Update PATCH
+        #region Update
         [HttpPatch("users/{id:Guid}")]
         public async Task<IActionResult> UpdatePartialAsync([FromRoute] Guid id, [FromBody] UpdateUserViewModel body, [FromServices] DataContext context)
         {
@@ -143,7 +143,6 @@ namespace PRIO.Controllers
         }
         #endregion
 
-
         #region Soft Delete
         [HttpDelete("users/{id:Guid}")]
         public async Task<IActionResult> DeleteAsync([FromRoute] Guid id, [FromServices] DataContext context)
@@ -161,33 +160,6 @@ namespace PRIO.Controllers
         }
         #endregion
 
-
-        //#region Restore Login
-        //[HttpPatch("restore/{userId:Guid}")]
-        //public async Task<IActionResult> RestoreUserAsync([FromRoute] Guid userId, [FromServices] DataContext context)
-        //{
-        //    var user = await context.Users.FirstAsync((x) => x.Id == userId);
-
-        //    if (user == null)
-        //        return NotFound();
-
-        //    try
-        //    {
-        //        user.IsActive = true;
-        //        user.DeletedAt = null;
-
-        //        context.Users.Update(user);
-        //        await context.SaveChangesAsync();
-
-        //        return Ok(new { message = "User successfully restored" });
-        //    }
-        //    catch
-        //    {
-        //        return StatusCode(500, new { message = "Internal Server Error" });
-        //    }
-        //}
-        //#endregion
-
         #region Login
         [HttpPost("login")]
         public async Task<IActionResult> Login(
@@ -202,15 +174,13 @@ namespace PRIO.Controllers
             if (user == null)
                 return StatusCode(401, new { message = "E-mail or password invalid" });
 
-            var passwordVerificationResult = BCrypt.Net.BCrypt.Verify(body.Password, user.Password);
+            var passwordMatch = BCrypt.Net.BCrypt.Verify(body.Password, user.Password);
 
-            if (passwordVerificationResult)
-            {
-                var token = tokenService.GenerateToken(user);
-                return Ok(new { token });
-            }
+            if (!passwordMatch)
+                return StatusCode(401, new { message = "E-mail or password invalid" });
 
-            return StatusCode(401, new { message = "E-mail or password invalid" });
+            var token = tokenService.GenerateToken(user);
+            return Ok(new { token });
         }
 
         #endregion
