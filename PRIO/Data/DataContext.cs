@@ -1,9 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PRIO.Data.Mappings;
-using Prio_BackEnd.Data.Mappings;
-using Prio_BackEnd.Models;
+using PRIO.Models;
 
-namespace Prio_BackEnd.Data
+namespace PRIO.Data
 {
     public class DataContext : DbContext
     {

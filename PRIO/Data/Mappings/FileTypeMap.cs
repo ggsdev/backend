@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
-using Prio_BackEnd.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using PRIO.Models;
 
-namespace Prio_BackEnd.Data.Mappings
+namespace PRIO.Data.Mappings
 {
     public class FileTypeMap : IEntityTypeConfiguration<FileType>
     {
@@ -17,7 +17,7 @@ namespace Prio_BackEnd.Data.Mappings
 
             builder.Property(x => x.Name)
                 .HasMaxLength(256);
-           
+
             builder.Property(x => x.Acronym)
                 .HasColumnType("varchar")
                 .HasMaxLength(60);

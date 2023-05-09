@@ -1,14 +1,13 @@
-using Prio_BackEnd.Models;
-using System.Reflection;
+using PRIO;
+using PRIO.Data;
+using PRIO.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+ConfigureServices(builder.Services);
 
 var app = builder.Build();
 
@@ -26,3 +25,19 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+ConfigureMiddlewares(app);
+
+void ConfigureServices(IServiceCollection services)
+{
+    services.AddEndpointsApiExplorer();
+    services.AddSwaggerGen();
+    services.AddControllers();
+    services.AddDbContext<DataContext>();
+    services.AddScoped<TokenService>();
+}
+static void ConfigureMiddlewares(IApplicationBuilder app)
+{
+    app.UseMiddleware<ErrorHandlingMiddleware>();
+    app.UseRouting();
+}

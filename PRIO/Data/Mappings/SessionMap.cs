@@ -1,10 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
-using Prio_BackEnd.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using PRIO.Models;
 
-namespace Prio_BackEnd.Data.Mappings
+namespace PRIO.Data.Mappings
 {
-    public class SessionMap: IEntityTypeConfiguration<Session>
+    public class SessionMap : IEntityTypeConfiguration<Session>
     {
 
         public void Configure(EntityTypeBuilder<Session> builder)
@@ -31,7 +31,7 @@ namespace Prio_BackEnd.Data.Mappings
 
             builder.HasOne(x => x.User)
                 .WithOne(u => u.Session)
-                .HasForeignKey<User>("UserId")
+                .HasForeignKey<Session>("UserId")
                 .OnDelete(DeleteBehavior.Cascade);
 
         }

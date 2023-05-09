@@ -1,10 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
-using Prio_BackEnd.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using PRIO.Models;
 
-namespace Prio_BackEnd.Data.Mappings
+namespace PRIO.Data.Mappings
 {
-    public class ClusterMap: IEntityTypeConfiguration<Cluster>
+    public class ClusterMap : IEntityTypeConfiguration<Cluster>
     {
         public void Configure(EntityTypeBuilder<Cluster> builder)
         {

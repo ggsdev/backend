@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Prio_BackEnd.Migrations
+namespace PRIO.Migrations
 {
     /// <inheritdoc />
     public partial class MeasurementMapping : Migration

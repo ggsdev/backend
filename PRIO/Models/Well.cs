@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualBasic;
-
-namespace Prio_BackEnd.Models
+﻿namespace PRIO.Models
 {
     public class Well
     {
@@ -37,9 +35,9 @@ namespace Prio_BackEnd.Models
         public string CoordY { get; set; }
         public string FieldCod { get; set; }
         public string CurrentSituation { get; set; }
-        public string Latitude { get; set; }    
+        public string Latitude { get; set; }
         public string Longitude { get; set; }
-        public bool IsActive  { get; set; }
+        public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 

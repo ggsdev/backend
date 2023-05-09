@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Prio_BackEnd.Models;
+using PRIO.Models;
 
-namespace Prio_BackEnd.Data.Mappings
+namespace PRIO.Data.Mappings
 {
-    public class UserMap: IEntityTypeConfiguration<User>
+    public class UserMap : IEntityTypeConfiguration<User>
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
