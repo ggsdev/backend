@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Prio_BackEnd.Models;
+using PRIO.Models;
 
-namespace Prio_BackEnd.Data.Mappings
+namespace PRIO.Data.Mappings
 {
-    public class InstallationMap: IEntityTypeConfiguration<Installation>
+    public class InstallationMap : IEntityTypeConfiguration<Installation>
     {
         public void Configure(EntityTypeBuilder<Installation> builder)
         {
@@ -32,7 +32,7 @@ namespace Prio_BackEnd.Data.Mappings
 
             builder.Property(x => x.Owner)
                .HasColumnType("VARCHAR")
-               .HasMaxLength(120);  
+               .HasMaxLength(120);
 
             builder.Property(x => x.Type)
                .HasColumnType("VARCHAR")
@@ -68,7 +68,7 @@ namespace Prio_BackEnd.Data.Mappings
 
             builder.Property(x => x.GasProcessing)
                 .HasColumnType("DECIMAL")
-                .HasPrecision(10,2);
+                .HasPrecision(10, 2);
 
             builder.Property(x => x.OilProcessing)
                 .HasColumnType("DECIMAL")

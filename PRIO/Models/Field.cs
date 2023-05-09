@@ -1,5 +1,5 @@
 ﻿
-namespace Prio_BackEnd.Models
+namespace PRIO.Models
 {
 
     public class Field

@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Prio_BackEnd.Data;
+using PRIO.Data;
 
 #nullable disable
 
-namespace Prio_BackEnd.Migrations
+namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
     [Migration("20230509151248_MeasurementMapping")]

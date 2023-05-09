@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Prio_BackEnd.Models;
+using PRIO.Models;
 namespace PRIO.Data.Mappings
 {
     public class MeasurementMap : IEntityTypeConfiguration<Measurement>
@@ -1732,7 +1732,6 @@ namespace PRIO.Data.Mappings
                 .IsRequired();
 
             #endregion
-
 
         }
     }
