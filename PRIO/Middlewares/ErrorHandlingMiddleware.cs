@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using PRIO.DTOS;
 
-namespace PRIO
+namespace PRIO.Middlewares
 {
     public class ErrorHandlingMiddleware
     {

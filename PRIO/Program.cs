@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PRIO;
 using PRIO.Data;
+using PRIO.Middlewares;
 using PRIO.Services;
 using System.Text;
 

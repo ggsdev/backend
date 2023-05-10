@@ -1,4 +1,4 @@
-﻿namespace PRIO
+﻿namespace PRIO.Middlewares
 {
     public class UnauthorizedMiddleware
     {
