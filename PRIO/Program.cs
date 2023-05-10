@@ -26,6 +26,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllers();
@@ -99,5 +100,6 @@ static void ConfigureMiddlewares(IApplicationBuilder app)
 {
     app.UseMiddleware<ErrorHandlingMiddleware>();
     app.UseMiddleware<UnauthorizedMiddleware>();
+
     app.UseRouting();
 }

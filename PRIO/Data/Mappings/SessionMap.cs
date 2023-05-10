@@ -22,9 +22,7 @@ namespace PRIO.Data.Mappings
                 .HasColumnType("NVARCHAR")
                 .HasMaxLength(255);
 
-            builder.Property(x => x.CreatedAt);
-
-            builder.Property(x => x.UpdatedAt);
+            builder.Property(x => x.ExpiresIn);
 
             builder.Property(x => x.IsActive)
                 .HasDefaultValue(true);

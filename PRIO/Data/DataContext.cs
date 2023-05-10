@@ -18,8 +18,6 @@ namespace PRIO.Data
         public DbSet<Measurement> Measurements { get; set; }
         public DbSet<FileType> FileTypes { get; set; }
 
-
-
         protected override void OnConfiguring(DbContextOptionsBuilder options)
             => options.UseSqlServer("Server=localhost;Database=PRIOANP;User ID=sa;Password=2480;Encrypt=false;");
 
