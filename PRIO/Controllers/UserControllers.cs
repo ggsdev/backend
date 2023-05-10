@@ -206,10 +206,15 @@ namespace PRIO.Controllers
         public async Task<IActionResult> Login(
         [FromBody] LoginViewModel body,
         [FromServices] DataContext context,
+        [FromServices] IHttpContextAccessor httpContextAccessor,
         [FromServices] TokenService tokenService)
         {
+            //string userAgent = Request.Headers["User-Agent"].ToString();
+            //Console.WriteLine(userAgent);
+
             var user = await context
                 .Users
+                .Include(u => u.Session)
                 .FirstOrDefaultAsync(x => x.Email == body.Email);
 
             if (user == null)
@@ -235,12 +240,53 @@ namespace PRIO.Controllers
 
             var token = tokenService.GenerateToken(user);
 
+            if (user.Session == null)
+            {
+                var session = new Session
+                {
+                    Token = token,
+                    User = user,
+                };
+
+                await context.Sessions.AddAsync(session);
+                await context.SaveChangesAsync();
+
+                return Ok(new LoginDTO
+                {
+                    Token = token,
+                });
+
+            }
+
+            if (user.Session.ExpiresIn < DateTime.Now)
+            {
+                var updatedSession = new Session
+                {
+                    Token = token,
+                    ExpiresIn = DateTime.UtcNow.AddDays(5).ToLocalTime(),
+                    User = user,
+                };
+
+                user.Session.Token = updatedSession.Token;
+                user.Session.ExpiresIn = updatedSession.ExpiresIn;
+                user.Session.User = user;
+
+                context.Sessions.Update(updatedSession);
+                await context.SaveChangesAsync();
+
+                return Ok(new LoginDTO
+                {
+                    Token = updatedSession.Token,
+                });
+
+            }
+
             return Ok(new LoginDTO
             {
-                Token = token,
+                Token = user.Session.Token,
             });
-        }
 
+        }
         #endregion
     }
 }
