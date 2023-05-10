@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using PRIO.DTOS;
 
 namespace PRIO
 {
@@ -22,9 +23,8 @@ namespace PRIO
                 Console.WriteLine(ex.Message);
                 context.Response.StatusCode = 500;
                 context.Response.ContentType = "application/json";
-                await context.Response.WriteAsync(JsonConvert.SerializeObject(new { message = "Internal Server Error" }));
+                await context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorResponse { Message = "Internal Server Error" }));
             }
         }
     }
-
 }
