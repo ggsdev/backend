@@ -12,6 +12,13 @@ namespace PRIO.Controllers
     [ApiController]
     public class UserControllers : ControllerBase
     {
+        private readonly UserServices _userServices;
+
+        public UserControllers(UserServices userService)
+        {
+            _userServices = userService;
+        }
+
         #region Get
         [HttpGet("users")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserDTO>))]
@@ -101,7 +108,7 @@ namespace PRIO.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> GetById([FromRoute] Guid id, [FromServices] DataContext context)
         {
-            var user = await context.Users.FirstOrDefaultAsync((x) => x.Id == id);
+            var user = await _userServices.GetUserByIdAsync(id);
 
             if (user == null)
             {
@@ -135,7 +142,7 @@ namespace PRIO.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> UpdatePartialAsync([FromRoute] Guid id, [FromBody] UpdateUserViewModel body, [FromServices] DataContext context)
         {
-            var user = await context.Users.FirstOrDefaultAsync((x) => x.Id == id);
+            var user = await _userServices.GetUserByIdAsync(id);
 
             if (user == null)
             {
@@ -178,7 +185,7 @@ namespace PRIO.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> DeleteAsync([FromRoute] Guid id, [FromServices] DataContext context)
         {
-            var user = await context.Users.FirstOrDefaultAsync((x) => x.Id == id);
+            var user = await _userServices.GetUserByIdAsync(id);
 
             if (user == null || !user.IsActive)
             {
