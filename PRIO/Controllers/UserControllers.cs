@@ -206,7 +206,6 @@ namespace PRIO.Controllers
         public async Task<IActionResult> Login(
         [FromBody] LoginViewModel body,
         [FromServices] DataContext context,
-        [FromServices] IHttpContextAccessor httpContextAccessor,
         [FromServices] TokenService tokenService)
         {
             //string userAgent = Request.Headers["User-Agent"].ToString();
@@ -288,5 +287,6 @@ namespace PRIO.Controllers
 
         }
         #endregion
+
     }
 }
