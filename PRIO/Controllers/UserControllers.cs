@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
@@ -13,6 +14,7 @@ namespace PRIO.Controllers
     {
         #region Get
         [HttpGet("users")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserDTO>))]
         public async Task<IActionResult> Get([FromServices] DataContext context)
         {
             var users = await context.Users.ToListAsync();
@@ -42,6 +44,9 @@ namespace PRIO.Controllers
 
         #region Create
         [HttpPost("users")]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserDTO))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> Post([FromBody] CreateUserViewModel body, [FromServices] DataContext context)
         {
             var userInDatabase = await context.Users.FirstOrDefaultAsync((x) => x.Email == body.Email);
@@ -79,19 +84,34 @@ namespace PRIO.Controllers
             }
             catch (DbUpdateException e)
             {
+                var errorResponse = new ErrorResponse
+                {
+                    Message = $"Error validating fields: {e.Message}"
+                };
+
                 Console.WriteLine(e);
-                return BadRequest();
+                return BadRequest(errorResponse);
             }
         }
         #endregion
 
         #region Get By Id
         [HttpGet("users/{id:Guid}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDTO))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> GetById([FromRoute] Guid id, [FromServices] DataContext context)
         {
             var user = await context.Users.FirstOrDefaultAsync((x) => x.Id == id);
-            if (user == null || !user.IsActive)
-                return NotFound();
+
+            if (user == null)
+            {
+                var errorResponse = new ErrorResponse
+                {
+                    Message = "User Not found."
+                };
+
+                return NotFound(errorResponse);
+            }
 
             var userDTO = new UserDTO
             {
@@ -111,12 +131,21 @@ namespace PRIO.Controllers
 
         #region Update
         [HttpPatch("users/{id:Guid}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> UpdatePartialAsync([FromRoute] Guid id, [FromBody] UpdateUserViewModel body, [FromServices] DataContext context)
         {
             var user = await context.Users.FirstOrDefaultAsync((x) => x.Id == id);
 
             if (user == null)
-                return NotFound();
+            {
+                var errorResponse = new ErrorResponse
+                {
+                    Message = "User Not found."
+                };
+
+                return NotFound(errorResponse);
+            }
 
             try
             {
@@ -145,12 +174,21 @@ namespace PRIO.Controllers
 
         #region Soft Delete
         [HttpDelete("users/{id:Guid}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> DeleteAsync([FromRoute] Guid id, [FromServices] DataContext context)
         {
             var user = await context.Users.FirstOrDefaultAsync((x) => x.Id == id);
 
             if (user == null || !user.IsActive)
-                return NotFound();
+            {
+                var userError = new ErrorResponse
+                {
+                    Message = "User Not found."
+                };
+
+                return NotFound(userError);
+            }
 
             user.IsActive = false;
             user.UpdatedAt = DateTime.Now;
@@ -162,6 +200,9 @@ namespace PRIO.Controllers
 
         #region Login
         [HttpPost("login")]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginDTO))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> Login(
         [FromBody] LoginViewModel body,
         [FromServices] DataContext context,
@@ -172,15 +213,32 @@ namespace PRIO.Controllers
                 .FirstOrDefaultAsync(x => x.Email == body.Email);
 
             if (user == null)
-                return StatusCode(401, new { message = "E-mail or password invalid" });
+            {
+                var errorResponse = new ErrorResponse
+                {
+                    Message = "E-mail or password invalid"
+                };
 
+                return Unauthorized(errorResponse);
+            }
             var passwordMatch = BCrypt.Net.BCrypt.Verify(body.Password, user.Password);
 
             if (!passwordMatch)
-                return StatusCode(401, new { message = "E-mail or password invalid" });
+            {
+                var errorResponse = new ErrorResponse
+                {
+                    Message = "E-mail or password invalid"
+                };
+
+                return Unauthorized(errorResponse);
+            }
 
             var token = tokenService.GenerateToken(user);
-            return Ok(new { token });
+
+            return Ok(new LoginDTO
+            {
+                Token = token,
+            });
         }
 
         #endregion
