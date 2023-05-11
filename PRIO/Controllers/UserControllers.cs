@@ -105,11 +105,11 @@ namespace PRIO.Controllers
         {
             var user = await _userServices.GetUserByIdAsync(id);
 
-            if (user == null)
+            if (user == null || !user.IsActive)
             {
                 var errorResponse = new ErrorResponse
                 {
-                    Message = "User Not found."
+                    Message = "User not found or inactive."
                 };
 
                 return NotFound(errorResponse);
@@ -152,7 +152,7 @@ namespace PRIO.Controllers
             {
                 var userError = new ErrorResponse
                 {
-                    Message = "User Not found."
+                    Message = "User not found or inactive."
                 };
 
                 return NotFound(userError);
@@ -189,6 +189,15 @@ namespace PRIO.Controllers
                 };
 
                 return Unauthorized(errorResponse);
+            }
+            if (!user.IsActive)
+            {
+                var errorResponse = new ErrorResponse
+                {
+                    Message = "User not found or inactive"
+                };
+
+                return NotFound(errorResponse);
             }
             var passwordMatch = BCrypt.Net.BCrypt.Verify(body.Password, user.Password);
 

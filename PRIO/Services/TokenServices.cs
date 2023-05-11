@@ -56,32 +56,24 @@ namespace PRIO.Services
                 };
 
                 await _context.Sessions.AddAsync(session);
-                await _context.SaveChangesAsync();
-
                 return token;
             }
 
             if (user.Session.ExpiresIn < DateTime.UtcNow.ToLocalTime() || user.Session.UserHttpAgent != userHttpAgent)
             {
-                var updatedSession = new Session
+                user.Session = new Session
                 {
                     Token = token,
                     ExpiresIn = DateTime.UtcNow.AddDays(5).ToLocalTime(),
-                    User = user,
                     UserHttpAgent = userHttpAgent
                 };
 
-                user.Session.Token = updatedSession.Token;
-                user.Session.ExpiresIn = updatedSession.ExpiresIn;
-                user.Session.User = user;
-                user.Session.UserHttpAgent = userHttpAgent;
+                _context.Sessions.Update(user.Session);
 
-                _context.Sessions.Update(updatedSession);
-                await _context.SaveChangesAsync();
-
-                return updatedSession.Token;
+                return user.Session.Token;
 
             }
+            await _context.SaveChangesAsync();
 
             return token;
         }
