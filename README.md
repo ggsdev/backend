@@ -2,7 +2,7 @@
 
 
 ** config the connection string
-```bash
+```
 git checkout develop
 dotnet build
 dotnet ef database update
