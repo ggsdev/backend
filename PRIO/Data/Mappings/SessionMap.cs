@@ -24,8 +24,7 @@ namespace PRIO.Data.Mappings
 
             builder.Property(x => x.ExpiresIn);
 
-            builder.Property(x => x.IsActive)
-                .HasDefaultValue(true);
+            builder.Property(x => x.IsActive);
 
             builder.HasOne(x => x.User)
                 .WithOne(u => u.Session)

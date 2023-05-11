@@ -37,8 +37,8 @@
         public string CurrentSituation { get; set; }
         public string Latitude { get; set; }
         public string Longitude { get; set; }
-        public bool IsActive { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public bool IsActive { get; set; } = true;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow.ToLocalTime();
         public DateTime UpdatedAt { get; set; }
 
         public User? User { get; set; }

@@ -1,4 +1,5 @@
-﻿namespace PRIO.Models
+﻿
+namespace PRIO.Models
 {
     public class Session
     {
@@ -7,5 +8,6 @@
         public bool IsActive { get; set; } = true; //sessão ativa
         public DateTime ExpiresIn { get; set; } = DateTime.UtcNow.AddDays(5).ToLocalTime();
         public User User { get; set; }
+        public string UserHttpAgent { get; set; } = string.Empty;
     }
 }

@@ -419,6 +419,10 @@
         public string COD_TAG_PONTO_MEDICAO_GAS_042 { get; set; }
         #endregion
 
+        public bool IsActive { get; set; } = true;
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow.ToLocalTime();
+        public DateTime? UpdatedAt { get; set; }
         public FileType FileType { get; set; }
     }
 }

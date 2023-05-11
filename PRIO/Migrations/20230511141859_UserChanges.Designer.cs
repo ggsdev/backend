@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.Data;
 
@@ -11,9 +12,11 @@ using PRIO.Data;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230511141859_UserChanges")]
+    partial class UserChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,7 +35,9 @@ namespace PRIO.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -66,7 +71,9 @@ namespace PRIO.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -160,7 +167,9 @@ namespace PRIO.Migrations
                         .HasColumnType("VARCHAR");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Location")
                         .IsRequired()
@@ -254,7 +263,9 @@ namespace PRIO.Migrations
                         .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -326,7 +337,9 @@ namespace PRIO.Migrations
                         .HasColumnType("DATE");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Latitude")
                         .IsRequired()
@@ -480,9 +493,6 @@ namespace PRIO.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("varchar");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DHA_APLICACAO_042")
                         .HasColumnType("datetime");
@@ -1075,9 +1085,6 @@ namespace PRIO.Migrations
                     b.Property<bool>("IND_VALIDO_042")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
                     b.Property<decimal>("MED_BRUTO_MOVIMENTADO_002")
                         .HasPrecision(6, 5)
                         .HasColumnType("decimal");
@@ -1216,8 +1223,7 @@ namespace PRIO.Migrations
                         .HasColumnType("decimal");
 
                     b.Property<decimal>("MED_PRSO_LIMITE_SPRR_ALRME_2_003")
-                        .HasPrecision(6, 3)
-                        .HasColumnType("decimal");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("MED_PRSO_LIMITE_SPRR_ALRME_3_003")
                         .HasPrecision(6, 3)
@@ -1957,9 +1963,6 @@ namespace PRIO.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("varchar");
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
 
                     b.HasIndex("FileTypeId");
@@ -1980,7 +1983,9 @@ namespace PRIO.Migrations
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -2011,7 +2016,9 @@ namespace PRIO.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Token")
                         .IsRequired()
@@ -2043,7 +2050,9 @@ namespace PRIO.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -2071,7 +2080,7 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 5, 11, 11, 44, 30, 242, DateTimeKind.Local).AddTicks(5850));
+                        .HasDefaultValue(new DateTime(2023, 5, 11, 11, 18, 58, 858, DateTimeKind.Local).AddTicks(9044));
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -2079,7 +2088,9 @@ namespace PRIO.Migrations
                         .HasColumnType("VARCHAR");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -2209,7 +2220,9 @@ namespace PRIO.Migrations
                         .HasColumnType("VARCHAR");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Latitude")
                         .IsRequired()

@@ -16,8 +16,7 @@ namespace PRIO.Data.Mappings
                 .ValueGeneratedOnAdd();
 
 
-            builder.Property(e => e.IsActive)
-                .HasDefaultValue(true);
+            builder.Property(e => e.IsActive);
 
             builder.Property(e => e.CreatedAt)
                 .HasColumnType("DATETIME");

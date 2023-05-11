@@ -525,7 +525,7 @@ namespace PRIO.Data.Mappings
            .HasColumnType("decimal")
            .HasPrecision(6, 3);
 
-            builder.Property(x => x.MED_PRSO_LMTE_INFRR_ALRME_2_003)
+            builder.Property(x => x.MED_PRSO_LIMITE_SPRR_ALRME_2_003)
            .HasColumnType("decimal")
            .HasPrecision(6, 3);
 
