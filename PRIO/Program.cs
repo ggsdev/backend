@@ -32,11 +32,9 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
 static void ConfigureServices(IServiceCollection services)
 {
     var key = Encoding.ASCII.GetBytes(Configuration.JwtKey);
-
     services.AddControllers(config =>
     {
         var policy = new AuthorizationPolicyBuilder()
@@ -79,7 +77,7 @@ static void ConfigureServices(IServiceCollection services)
             Scheme = "bearer",
             BearerFormat = "JWT",
             In = ParameterLocation.Header,
-            Description = "Enter your JWT token"
+            Description = Configuration.JwtKey
         });
 
         c.AddSecurityRequirement(new OpenApiSecurityRequirement

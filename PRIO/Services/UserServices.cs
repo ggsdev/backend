@@ -18,13 +18,6 @@ namespace PRIO.Services
         public async Task<User?> GetUserByIdAsync(Guid id)
         {
             return await _context.Users
-                .Include(x => x.Units)
-                .Include(x => x.Clusters)
-                .Include(x => x.Fields)
-                .Include(x => x.Installations)
-                .Include(x => x.Reservoirs)
-                .Include(x => x.Completions)
-                .Include(x => x.Wells)
                 .Include(x => x.Session)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
@@ -45,6 +38,7 @@ namespace PRIO.Services
                     Id = user.Id,
                     Name = user.Name,
                     Email = user.Email,
+                    Username = user.Username,
                     IsActive = user.IsActive,
                     CreatedAt = user.CreatedAt,
                     UpdatedAt = user.UpdatedAt,
