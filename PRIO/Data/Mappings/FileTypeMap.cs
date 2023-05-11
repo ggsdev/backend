@@ -28,9 +28,7 @@ namespace PRIO.Data.Mappings
             builder.Property(x => x.Structure)
                .HasColumnType("text");
 
-            builder.Property(x => x.IsActive)
-                .HasColumnType("bit")
-                .HasDefaultValue(true);
+            builder.Property(x => x.IsActive);
 
             builder.Property(x => x.CreatedAt);
             builder.Property(x => x.UpdatedAt);

@@ -45,10 +45,13 @@ static void ConfigureServices(IServiceCollection services)
         config.Filters.Add(new AuthorizeFilter(policy));
     });
 
+
     services.AddEndpointsApiExplorer();
     services.AddSwaggerGen();
     services.AddDbContext<DataContext>();
-    services.AddScoped<TokenService>();
+    services.AddScoped<TokenServices>();
+    services.AddScoped<UserServices>();
+
 
     services.AddAuthentication(x =>
     {

@@ -13,39 +13,23 @@ namespace PRIO.Controllers
     public class UserControllers : ControllerBase
     {
         private readonly UserServices _userServices;
+        private readonly TokenServices _tokenServices;
 
-        public UserControllers(UserServices userService)
+        public UserControllers(UserServices userService, TokenServices tokenService)
         {
             _userServices = userService;
+            _tokenServices = tokenService;
+
         }
 
         #region Get
         [HttpGet("users")]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserDTO>))]
-        public async Task<IActionResult> Get([FromServices] DataContext context)
+        public async Task<IActionResult> Get()
         {
-            var users = await context.Users.ToListAsync();
-            var userDTOs = new List<UserDTO>();
-
-            foreach (var user in users)
-            {
-                if (!user.IsActive)
-                    continue;
-
-                var userDTO = new UserDTO
-                {
-                    Id = user.Id,
-                    Name = user.Name,
-                    Email = user.Email,
-                    IsActive = user.IsActive,
-                    CreatedAt = user.CreatedAt,
-                    UpdatedAt = user.UpdatedAt,
-                };
-                userDTOs.Add(userDTO);
-            }
-
-            return Ok(userDTOs);
-
+            var userDTOS = await _userServices.RetrieveAllUsersAndMap();
+            return Ok(userDTOS);
         }
         #endregion
 
@@ -56,38 +40,15 @@ namespace PRIO.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> Post([FromBody] CreateUserViewModel body, [FromServices] DataContext context)
         {
-            var userInDatabase = await context.Users.FirstOrDefaultAsync((x) => x.Email == body.Email);
+            var userInDatabase = await context.Users.FirstOrDefaultAsync((x) => x.Email == body.Email || x.Username == body.Username);
 
             if (userInDatabase != null)
-                return StatusCode(409, new { message = "User with this e-mail already exists." });
+                return StatusCode(409, new { message = "User with this e-mail or username already exists." });
 
             try
             {
-                var user = new User
-                {
-                    Name = body.Name,
-                    Username = body.Username,
-                    Email = body.Email,
-                    Password = BCrypt.Net.BCrypt.HashPassword(body.Password),
-                    CreatedAt = DateTime.Now,
-
-                };
-
-                await context.AddAsync(user);
-                await context.SaveChangesAsync();
-
-                var userDTO = new UserDTO
-                {
-                    Id = user.Id,
-                    Name = user.Name,
-                    Username = user.Username,
-                    Email = user.Email,
-                    IsActive = user.IsActive,
-                    CreatedAt = user.CreatedAt,
-                };
-
-
-                return Created($"users/{user.Id}", userDTO);
+                var user = await _userServices.CreateUserAsync(body);
+                return Created($"users/{user.Id}", user);
             }
             catch (DbUpdateException e)
             {
@@ -106,7 +67,7 @@ namespace PRIO.Controllers
         [HttpGet("users/{id:Guid}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> GetById([FromRoute] Guid id, [FromServices] DataContext context)
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var user = await _userServices.GetUserByIdAsync(id);
 
@@ -166,7 +127,7 @@ namespace PRIO.Controllers
 
 
                 context.Users.Update(user);
-                user.UpdatedAt = DateTime.Now;
+                user.UpdatedAt = DateTime.UtcNow.ToLocalTime();
                 await context.SaveChangesAsync();
 
                 return Ok(user);
@@ -198,7 +159,7 @@ namespace PRIO.Controllers
             }
 
             user.IsActive = false;
-            user.UpdatedAt = DateTime.Now;
+            user.UpdatedAt = DateTime.UtcNow.ToLocalTime();
             await context.SaveChangesAsync();
 
             return NoContent();
@@ -212,11 +173,8 @@ namespace PRIO.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> Login(
         [FromBody] LoginViewModel body,
-        [FromServices] DataContext context,
-        [FromServices] TokenService tokenService)
+        [FromServices] DataContext context)
         {
-            //string userAgent = Request.Headers["User-Agent"].ToString();
-            //Console.WriteLine(userAgent);
 
             var user = await context
                 .Users
@@ -244,52 +202,12 @@ namespace PRIO.Controllers
                 return Unauthorized(errorResponse);
             }
 
-            var token = tokenService.GenerateToken(user);
-
-            if (user.Session == null)
-            {
-                var session = new Session
-                {
-                    Token = token,
-                    User = user,
-                };
-
-                await context.Sessions.AddAsync(session);
-                await context.SaveChangesAsync();
-
-                return Ok(new LoginDTO
-                {
-                    Token = token,
-                });
-
-            }
-
-            if (user.Session.ExpiresIn < DateTime.Now)
-            {
-                var updatedSession = new Session
-                {
-                    Token = token,
-                    ExpiresIn = DateTime.UtcNow.AddDays(5).ToLocalTime(),
-                    User = user,
-                };
-
-                user.Session.Token = updatedSession.Token;
-                user.Session.ExpiresIn = updatedSession.ExpiresIn;
-                user.Session.User = user;
-
-                context.Sessions.Update(updatedSession);
-                await context.SaveChangesAsync();
-
-                return Ok(new LoginDTO
-                {
-                    Token = updatedSession.Token,
-                });
-
-            }
+            var userHttpAgent = Request.Headers["User-Agent"].ToString();
+            var token = await _tokenServices.CreateSessionAndToken(user, userHttpAgent);
 
             return Ok(new LoginDTO
             {
-                Token = user.Session.Token,
+                Token = token,
             });
 
         }

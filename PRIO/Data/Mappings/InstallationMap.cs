@@ -89,8 +89,7 @@ namespace PRIO.Data.Mappings
             builder.Property(x => x.CreatedAt);
 
             builder.Property(x => x.UpdatedAt);
-            builder.Property(x => x.IsActive)
-                .HasDefaultValue(true);
+            builder.Property(x => x.IsActive);
 
             builder.HasOne(x => x.Field)
                 .WithMany(f => f.Installations)

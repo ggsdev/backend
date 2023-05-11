@@ -22,9 +22,9 @@
         public DateTime InclusionDate { get; set; }
         public int PsmQty { get; set; }
         public bool Situation { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow.ToLocalTime();
         public DateTime UpdatedAt { get; set; }
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
         public Field Field { get; set; }
         public User? User { get; set; }
         public List<Reservoir> Reservoirs { get; set; }

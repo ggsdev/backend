@@ -24,9 +24,7 @@ namespace PRIO.Data.Mappings
 
             builder.Property(x => x.UpdatedAt);
 
-            builder.Property(x => x.IsActive)
-                .HasDefaultValue(true);
-
+            builder.Property(x => x.IsActive);
 
             builder.HasOne(c => c.User).
                 WithMany(u => u.Clusters)
