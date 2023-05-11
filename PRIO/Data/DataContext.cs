@@ -6,8 +6,6 @@ namespace PRIO.Data
 {
     public class DataContext : DbContext
     {
-        public DataContext(DbContextOptions<DataContext> options) : base(options) { }
-
         public DbSet<User> Users { get; set; }
         public DbSet<Session> Sessions { get; set; }
         public DbSet<Cluster> Clusters { get; set; }
@@ -20,8 +18,11 @@ namespace PRIO.Data
         public DbSet<Measurement> Measurements { get; set; }
         public DbSet<FileType> FileTypes { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
-            => options.UseSqlServer("Server=localhost;Database=PRIOANP;User ID=sa;Password=2480;Encrypt=false;");
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            //var secrets = FetchingSecrets.FetchSecretsAsync().GetAwaiter().GetResult(); doppler implementation
+            optionsBuilder.UseSqlServer($"Server=localhost;Database=PRIOANP;User ID=garcia;Password=2480;Encrypt=false;");
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -35,10 +36,7 @@ namespace PRIO.Data
             modelBuilder.ApplyConfiguration(new WellMap());
             modelBuilder.ApplyConfiguration(new UnitMap());
             modelBuilder.ApplyConfiguration(new FileTypeMap());
-            modelBuilder.ApplyConfiguration(new FileTypeMap());
             modelBuilder.ApplyConfiguration(new MeasurementMap());
-
-
         }
     }
 }
