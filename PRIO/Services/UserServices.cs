@@ -19,7 +19,7 @@ namespace PRIO.Services
         {
             return await _context.Users
                 .Include(x => x.Session)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive);
         }
 
         public async Task<List<UserDTO>> RetrieveAllUsersAndMap()
@@ -33,16 +33,7 @@ namespace PRIO.Services
                 if (!user.IsActive)
                     continue;
 
-                var userDTO = new UserDTO
-                {
-                    Id = user.Id,
-                    Name = user.Name,
-                    Email = user.Email,
-                    Username = user.Username,
-                    IsActive = user.IsActive,
-                    CreatedAt = user.CreatedAt,
-                    UpdatedAt = user.UpdatedAt,
-                };
+                var userDTO = MapToDTO(user);
                 userDTOs.Add(userDTO);
             }
 
@@ -63,7 +54,14 @@ namespace PRIO.Services
             await _context.AddAsync(user);
             await _context.SaveChangesAsync();
 
-            var userDTO = new UserDTO
+            var userDTO = MapToDTO(user);
+            return userDTO;
+        }
+
+
+        public UserDTO MapToDTO(User user)
+        {
+            return new UserDTO
             {
                 Id = user.Id,
                 Name = user.Name,
@@ -72,9 +70,8 @@ namespace PRIO.Services
                 IsActive = user.IsActive,
                 CreatedAt = user.CreatedAt,
             };
-
-            return userDTO;
         }
+
     }
 }
 

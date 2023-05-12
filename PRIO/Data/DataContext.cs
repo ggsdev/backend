@@ -25,11 +25,11 @@ namespace PRIO.Data
         {
             var secrets = _cache.GetOrCreate("secrets", entry =>
             {
-                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
                 return FetchingSecrets.FetchSecretsAsync().GetAwaiter().GetResult();
             });
-
             optionsBuilder.UseSqlServer($"Server={secrets.DatabaseServer};Database={secrets.DatabaseName};User ID={secrets.DatabaseUser};Password={secrets.DatabasePassword};Encrypt=false;");
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
