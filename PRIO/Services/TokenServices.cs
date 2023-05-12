@@ -26,7 +26,8 @@ namespace PRIO.Services
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(
@@ -38,15 +39,14 @@ namespace PRIO.Services
             return tokenHandler.WriteToken(token);
         }
 
-
         public async Task<string> CreateSessionAndToken(User user, string userHttpAgent)
         {
-            if (user.Session != null && (user.Session.ExpiresIn > DateTime.UtcNow.ToLocalTime() && user.Session.UserHttpAgent == userHttpAgent))
+            if (user.Session is not null && (user.Session.ExpiresIn > DateTime.UtcNow.ToLocalTime() && user.Session.UserHttpAgent == userHttpAgent))
                 return user.Session.Token;
 
             var token = GenerateToken(user);
 
-            if (user.Session == null)
+            if (user.Session is null)
             {
                 var session = new Session
                 {
@@ -63,23 +63,17 @@ namespace PRIO.Services
 
             if (user.Session.ExpiresIn < DateTime.UtcNow.ToLocalTime() || user.Session.UserHttpAgent != userHttpAgent)
             {
-                var updatedSession = new Session
+                user.Session = new Session
                 {
                     Token = token,
                     ExpiresIn = DateTime.UtcNow.AddDays(5).ToLocalTime(),
-                    User = user,
                     UserHttpAgent = userHttpAgent
                 };
 
-                user.Session.Token = updatedSession.Token;
-                user.Session.ExpiresIn = updatedSession.ExpiresIn;
-                user.Session.User = user;
-                user.Session.UserHttpAgent = userHttpAgent;
-
-                _context.Sessions.Update(updatedSession);
+                _context.Sessions.Update(user.Session);
                 await _context.SaveChangesAsync();
 
-                return updatedSession.Token;
+                return user.Session.Token;
 
             }
 

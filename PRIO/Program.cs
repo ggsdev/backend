@@ -15,8 +15,6 @@ ConfigureServices(builder.Services);
 
 var app = builder.Build();
 
-ConfigureMiddlewares(app);
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -26,7 +24,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
-
+ConfigureMiddlewares(app);
 app.UseAuthorization();
 
 app.MapControllers();
@@ -43,13 +41,10 @@ static void ConfigureServices(IServiceCollection services)
         config.Filters.Add(new AuthorizeFilter(policy));
     });
 
-
     services.AddEndpointsApiExplorer();
-    services.AddSwaggerGen();
     services.AddDbContext<DataContext>();
     services.AddScoped<TokenServices>();
     services.AddScoped<UserServices>();
-
 
     services.AddAuthentication(x =>
     {
@@ -99,8 +94,7 @@ static void ConfigureServices(IServiceCollection services)
 
 static void ConfigureMiddlewares(IApplicationBuilder app)
 {
+    app.UseMiddleware<UnauthorizedCaptureMiddleware>();
     app.UseMiddleware<ErrorHandlingMiddleware>();
-    app.UseMiddleware<UnauthorizedMiddleware>();
-
     app.UseRouting();
 }

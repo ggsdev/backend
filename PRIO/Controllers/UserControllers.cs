@@ -57,7 +57,6 @@ namespace PRIO.Controllers
                     Message = $"Error validating fields: {e.Message}"
                 };
 
-                Console.WriteLine(e);
                 return BadRequest(errorResponse);
             }
         }
@@ -71,7 +70,7 @@ namespace PRIO.Controllers
         {
             var user = await _userServices.GetUserByIdAsync(id);
 
-            if (user == null)
+            if (user is null)
             {
                 var errorResponse = new ErrorResponse
                 {
@@ -81,18 +80,19 @@ namespace PRIO.Controllers
                 return NotFound(errorResponse);
             }
 
-            var userDTO = new UserDTO
+            var userLoggedId = HttpContext.Items?["Id"]?.ToString();
+
+            if (userLoggedId != user.Id.ToString())
             {
-                Id = user.Id,
-                Name = user.Name,
-                Username = user.Username,
-                Email = user.Email,
-                IsActive = user.IsActive,
-                CreatedAt = user.CreatedAt,
-                UpdatedAt = user.UpdatedAt,
-            };
+                var errorResponse = new ErrorResponse
+                {
+                    Message = "User don't have permission to do that."
+                };
 
+                return StatusCode(403, errorResponse);
+            }
 
+            var userDTO = _userServices.MapToDTO(user);
             return Ok(userDTO);
         }
         #endregion
@@ -105,11 +105,12 @@ namespace PRIO.Controllers
         {
             var user = await _userServices.GetUserByIdAsync(id);
 
-            if (user == null)
+
+            if (user == null || !user.IsActive)
             {
                 var errorResponse = new ErrorResponse
                 {
-                    Message = "User Not found."
+                    Message = "User not found or inactive."
                 };
 
                 return NotFound(errorResponse);
@@ -125,9 +126,9 @@ namespace PRIO.Controllers
 
                 if (body.Username != null) user.Username = body.Username;
 
+                user.UpdatedAt = DateTime.UtcNow.ToLocalTime();
 
                 context.Users.Update(user);
-                user.UpdatedAt = DateTime.UtcNow.ToLocalTime();
                 await context.SaveChangesAsync();
 
                 return Ok(user);
@@ -148,11 +149,11 @@ namespace PRIO.Controllers
         {
             var user = await _userServices.GetUserByIdAsync(id);
 
-            if (user == null || !user.IsActive)
+            if (user is null)
             {
                 var userError = new ErrorResponse
                 {
-                    Message = "User Not found."
+                    Message = "User not found or inactive."
                 };
 
                 return NotFound(userError);
@@ -175,13 +176,12 @@ namespace PRIO.Controllers
         [FromBody] LoginViewModel body,
         [FromServices] DataContext context)
         {
-
             var user = await context
                 .Users
                 .Include(u => u.Session)
-                .FirstOrDefaultAsync(x => x.Email == body.Email);
+                .FirstOrDefaultAsync(x => x.Email == body.Email && x.IsActive);
 
-            if (user == null)
+            if (user is null)
             {
                 var errorResponse = new ErrorResponse
                 {
@@ -190,8 +190,8 @@ namespace PRIO.Controllers
 
                 return Unauthorized(errorResponse);
             }
-            var passwordMatch = BCrypt.Net.BCrypt.Verify(body.Password, user.Password);
 
+            var passwordMatch = BCrypt.Net.BCrypt.Verify(body.Password, user.Password);
             if (!passwordMatch)
             {
                 var errorResponse = new ErrorResponse
@@ -209,7 +209,6 @@ namespace PRIO.Controllers
             {
                 Token = token,
             });
-
         }
         #endregion
 
