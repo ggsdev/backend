@@ -9,6 +9,7 @@ namespace PRIO.Data
     public class DataContext : DbContext
     {
         private static readonly MemoryCache _cache = new(new MemoryCacheOptions());
+
         public DbSet<User> Users { get; set; }
         public DbSet<Session> Sessions { get; set; }
         public DbSet<Cluster> Clusters { get; set; }

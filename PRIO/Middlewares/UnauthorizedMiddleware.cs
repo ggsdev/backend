@@ -16,16 +16,12 @@ namespace PRIO.Middlewares
         {
             var authenticateResult = await context.AuthenticateAsync();
 
-            if (authenticateResult.Succeeded)
+            if (authenticateResult.Succeeded && authenticateResult.Principal?.Identity is ClaimsIdentity claimsIdentity)
             {
-                var claimsIdentity = authenticateResult?.Principal?.Identity as ClaimsIdentity;
-                if (claimsIdentity is not null)
-                {
-                    var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                    context.Items["Id"] = userId;
-                }
-
+                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                context.Items["Id"] = userId;
             }
+
             await _next(context);
 
             if (context.Response.StatusCode == 401 && !context.Response.HasStarted)
@@ -33,21 +29,22 @@ namespace PRIO.Middlewares
                 authenticateResult = await context.AuthenticateAsync();
                 string? message;
 
-                if (authenticateResult.Failure is null)
+                switch (authenticateResult.Failure)
                 {
-                    message = "Token is missing";
-                }
-                else if (authenticateResult.Failure.GetType() == typeof(Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException))
-                {
-                    message = "Token has already expired";
-                }
-                else
-                {
-                    message = "Invalid JWT format for token";
+                    case null:
+                        message = "Token is missing";
+                        break;
+                    case Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException:
+                        message = "Token has already expired";
+                        break;
+                    default:
+                        message = "Invalid JWT format for token";
+                        break;
                 }
 
                 context.Response.ContentType = "application/json";
                 await context.Response.WriteAsync($"{{\"message\": \"{message}\"}}");
+
             }
         }
 

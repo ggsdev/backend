@@ -176,6 +176,9 @@ namespace PRIO.Controllers
         [FromBody] LoginViewModel body,
         [FromServices] DataContext context)
         {
+            var allFields = ProcessingData.ReadXml("C:\\Users\\gabri\\source\\repos\\PrioANP\\backend\\PRIO\\PRIO\\teste.xml");
+            ProcessingData.SaveFieldsToDatabase(allFields.FieldsList);
+
             var user = await context
                 .Users
                 .Include(u => u.Session)

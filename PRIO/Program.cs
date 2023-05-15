@@ -30,6 +30,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
 static void ConfigureServices(IServiceCollection services)
 {
     var key = Encoding.ASCII.GetBytes(Configuration.JwtKey);
