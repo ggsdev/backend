@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.Data;
 
@@ -11,9 +12,11 @@ using PRIO.Data;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230515195529_MeasurementColumnsNullable")]
+    partial class MeasurementColumnsNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -473,10 +476,10 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DHA_APLICACAO_042")
+                    b.Property<DateTime>("DHA_APLICACAO_042")
                         .HasColumnType("datetime");
 
-                    b.Property<DateTime?>("DHA_ATUALIZACAO_041")
+                    b.Property<DateTime>("DHA_ATUALIZACAO_041")
                         .HasColumnType("date");
 
                     b.Property<string>("DHA_CERTIFICADO_ANTERIOR_039")
@@ -490,17 +493,17 @@ namespace PRIO.Migrations
                     b.Property<int?>("DHA_COD_INSTALACAO_039")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("DHA_COLETA_001")
+                    b.Property<DateTime>("DHA_COLETA_001")
                         .HasColumnType("datetime");
 
                     b.Property<decimal?>("DHA_COLETA_002")
                         .HasPrecision(3, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<DateTime?>("DHA_COLETA_003")
+                    b.Property<DateTime>("DHA_COLETA_003")
                         .HasColumnType("datetime");
 
-                    b.Property<DateTime?>("DHA_DETECCAO_039")
+                    b.Property<DateTime>("DHA_DETECCAO_039")
                         .HasColumnType("datetime");
 
                     b.Property<string>("DHA_DSC_ACAO_039")
@@ -515,37 +518,37 @@ namespace PRIO.Migrations
                         .HasMaxLength(3000)
                         .HasColumnType("varchar");
 
-                    b.Property<DateTime?>("DHA_FALHA_BSW_039")
+                    b.Property<DateTime>("DHA_FALHA_BSW_039")
                         .HasColumnType("date");
 
-                    b.Property<DateTime?>("DHA_FALHA_CALIBRACAO_039")
+                    b.Property<DateTime>("DHA_FALHA_CALIBRACAO_039")
                         .HasColumnType("date");
 
-                    b.Property<DateTime?>("DHA_FIM_PERIODO_MEDICAO_001")
+                    b.Property<DateTime>("DHA_FIM_PERIODO_MEDICAO_001")
                         .HasColumnType("datetime");
 
-                    b.Property<DateTime?>("DHA_FIM_PERIODO_MEDICAO_002")
+                    b.Property<DateTime>("DHA_FIM_PERIODO_MEDICAO_002")
                         .HasColumnType("datetime");
 
-                    b.Property<DateTime?>("DHA_FIM_PERIODO_MEDICAO_003")
+                    b.Property<DateTime>("DHA_FIM_PERIODO_MEDICAO_003")
                         .HasColumnType("datetime");
 
-                    b.Property<DateTime?>("DHA_INICIO_PERIODO_MEDICAO_001")
+                    b.Property<DateTime>("DHA_INICIO_PERIODO_MEDICAO_001")
                         .HasColumnType("datetime");
 
-                    b.Property<DateTime?>("DHA_INICIO_PERIODO_MEDICAO_002")
+                    b.Property<DateTime>("DHA_INICIO_PERIODO_MEDICAO_002")
                         .HasColumnType("datetime");
 
-                    b.Property<DateTime?>("DHA_INICIO_PERIODO_MEDICAO_003")
+                    b.Property<DateTime>("DHA_INICIO_PERIODO_MEDICAO_003")
                         .HasColumnType("datetime");
 
-                    b.Property<DateTime?>("DHA_MEDICAO_039")
+                    b.Property<DateTime>("DHA_MEDICAO_039")
                         .HasColumnType("date");
 
-                    b.Property<DateTime?>("DHA_MEDICAO_040")
+                    b.Property<DateTime>("DHA_MEDICAO_040")
                         .HasColumnType("date");
 
-                    b.Property<DateTime?>("DHA_MEDICAO_045")
+                    b.Property<DateTime>("DHA_MEDICAO_045")
                         .HasColumnType("datetime");
 
                     b.Property<decimal?>("DHA_MED_DECLARADO_039")
@@ -575,7 +578,7 @@ namespace PRIO.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("varchar");
 
-                    b.Property<DateTime?>("DHA_OCORRENCIA_039")
+                    b.Property<DateTime>("DHA_OCORRENCIA_039")
                         .HasColumnType("datetime");
 
                     b.Property<decimal?>("DHA_PCT_BSW_039")
@@ -586,10 +589,10 @@ namespace PRIO.Migrations
                         .HasPrecision(3, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<DateTime?>("DHA_RETORNO_039")
+                    b.Property<DateTime>("DHA_RETORNO_039")
                         .HasColumnType("datetime");
 
-                    b.Property<DateTime?>("DHA_TESTE_042")
+                    b.Property<DateTime>("DHA_TESTE_042")
                         .HasColumnType("datetime");
 
                     b.Property<string>("DSC_ESTADO_INSNO_CASO_FALHA_001")
