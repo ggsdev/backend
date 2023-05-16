@@ -34,8 +34,7 @@ namespace PRIO.Data.Mappings
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(150);
 
-            builder.Property(x => x.CreatedAt)
-                .HasDefaultValue(DateTime.UtcNow.ToLocalTime());
+            builder.Property(x => x.CreatedAt);
 
             builder.Property(x => x.UpdatedAt);
             builder.Property(x => x.IsActive);
