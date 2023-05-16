@@ -1,8 +1,7 @@
 ﻿namespace PRIO.Models
 {
-    public class Installation
+    public class Installation : BaseModel
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public string CodInstallation { get; set; }
         public string Acronym { get; set; }
@@ -22,9 +21,6 @@
         public DateTime InclusionDate { get; set; }
         public int PsmQty { get; set; }
         public bool Situation { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow.ToLocalTime();
-        public DateTime UpdatedAt { get; set; }
-        public bool IsActive { get; set; } = true;
         public Field Field { get; set; }
         public User? User { get; set; }
         public List<Reservoir> Reservoirs { get; set; }
