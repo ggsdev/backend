@@ -29,7 +29,10 @@ namespace PRIO.Data
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
                 return FetchingSecrets.FetchSecretsAsync().GetAwaiter().GetResult();
             });
-            optionsBuilder.UseSqlServer($"Server={secrets.DatabaseServer};Database={secrets.DatabaseName};User ID={secrets.DatabaseUser};Password={secrets.DatabasePassword};Encrypt=false;");
+
+            //optionsBuilder.UseSqlServer($"Server={secrets.DatabaseServer};Database={secrets.DatabaseName};User ID={secrets.DatabaseUser};Password={secrets.DatabasePassword};Encrypt=false;");
+            optionsBuilder.UseSqlServer($"Server=localhost;Database=PRIOANP;User ID=garcia;Password=2480;Encrypt=false;");
+
 
         }
         public override int SaveChanges()

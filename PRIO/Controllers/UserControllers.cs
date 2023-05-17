@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS;
+using PRIO.Files._039;
 using PRIO.Models;
 using PRIO.Services;
 using PRIO.ViewModels;
@@ -19,7 +20,6 @@ namespace PRIO.Controllers
         {
             _userServices = userService;
             _tokenServices = tokenService;
-
         }
 
         #region Get
@@ -212,6 +212,37 @@ namespace PRIO.Controllers
             });
         }
         #endregion
+
+        [HttpPost("xml")]
+        [AllowAnonymous]
+        public ActionResult XMLTeste()
+        {
+
+
+            string pathXml;
+            string pathSchema;
+            string basePath = "C:\\Users\\gabri\\source\\repos\\PrioANP\\backend\\PRIO\\PRIO\\Files\\_039";
+            //string xmlPathABL = "C:\\Users\\gabri\\source\\repos\\PrioANP\\backend\\PRIO\\PRIO\\Files\\_039\\ABL\\039ABL.xml";
+            //string schemaAbl039 = "C:\\Users\\gabri\\source\\repos\\PrioANP\\backend\\PRIO\\PRIO\\Files\\_039\\ABL\\Schema.xsd";
+
+            //string xmlPathFrade = "C:\\Users\\gabri\\source\\repos\\PrioANP\\backend\\PRIO\\PRIO\\Files\\_039\\Frade\\039FRADE.xml";
+            //string schemaFrade039 = "C:\\Users\\gabri\\source\\repos\\PrioANP\\backend\\PRIO\\PRIO\\Files\\_039\\Frade\\Schema.xsd";
+
+            pathXml = basePath + "\\Bravo\\Mock.xml";
+            //pathSchema = basePath + "\\Schema.xsd";
+            pathSchema = "C:\\Users\\gabri\\source\\repos\\PrioANP\\backend\\PRIO\\PRIO\\Files\\_039\\Schema.xsd";
+            Functions.IsRightFormat(pathXml, pathSchema);
+
+
+            return Ok(new { Message = "Deu certo" });
+
+
+        }
+
+        public class ValidationDTO
+        {
+            public string? ValidationErrors { get; set; }
+        }
 
     }
 }
