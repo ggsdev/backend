@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<a039>
+  <LISTA_DADOS_BASICOS>
+    <DADOS_BASICOS COD_FALHA="FPSO BRAVO 02-2022" COD_TAG_PONTO_MEDICAO="FT-1198C-01" COD_INSTALACAO="10905">
+      <COD_TAG_EQUIPAMENTO>FE-1198C-01</COD_TAG_EQUIPAMENTO>
+      <COD_FALHA_SUPERIOR />
+      <DSC_TIPO_FALHA>1</DSC_TIPO_FALHA>
+      <IND_TIPO_NOTIFICACAO>I</IND_TIPO_NOTIFICACAO>
+      <DHA_OCORRENCIA>14/01/2022 23:59:00</DHA_OCORRENCIA>
+      <DHA_DETECCAO>17/01/2022 17:37:00</DHA_DETECCAO>
+      <DHA_RETORNO></DHA_RETORNO>
+      <NUM_PREVISAO_RETORNO_DIAS>2</NUM_PREVISAO_RETORNO_DIAS>
+      <DSC_FALHA>Durante os dias 14/01/2022 a 17/01/2022 foram observadas oscila��es no processo e foram  registrados BSW superiores a 1,00% na medi��o fiscal de �leo, devido a instabilidades durante a produ��o. No dia 14/01/2022 a produ��o bruta corrigida registrada no ponto fiscal FT-1198C-01 foi de GSVOL = 3485,09 m�, enquanto o volume l�quido corrigido foi de NSVOL = 3397,3 m� configurando um BSW de 2,52%. No dia 15/01/2022 a produ��o bruta corrigida registrada no ponto fiscal FT-1198C-01 foi de GSVOL = 2985,35m�, enquanto o volume l�quido corrigido foi de NSVOL = 2804,7 m� configurando um BSW de 6,05%. No dia 16/01/2022 a produ��o bruta corrigida registrada no ponto fiscal FT-1198C-01 foi de GSVOL = 3030,05 m�, enquanto o volume l�quido corrigido foi de NSVOL = 2778,64 m� configurando um BSW de 8,30%. No dia 17/01/2022 a produ��o bruta corrigida registrada no ponto fiscal FT-1198C-01 foi de GSVOL = 3338,63 m�, enquanto o volume l�quido corrigido foi de NSVOL = 3253,80 m� configurando um BSW de 2,5</DSC_FALHA>
+      <DSC_ACAO>Informar/Notificar a Ag�ncia que houve BSW acima de 1% na medi��o fiscal no fechamento da produ��o dos dias 14/01/2022 a 17/01/2022</DSC_ACAO>
+      <DSC_METODOLOGIA>Metodologia de acordo com a Resolu��o ANP N�18 de 27.03.2014 item 5.3.15</DSC_METODOLOGIA>
+      <NOM_RESPONSAVEL_RELATO>Gabriel Souza</NOM_RESPONSAVEL_RELATO>
+      <NUM_SERIE_EQUIPAMENTO>9022152</NUM_SERIE_EQUIPAMENTO>
+      <LISTA_BSW>
+        <BSW>
+          <DHA_FALHA_BSW>14/01/2022</DHA_FALHA_BSW>
+          <PCT_BSW>2,52</PCT_BSW>
+          <PCT_MAXIMO_BSW>2,52</PCT_MAXIMO_BSW>
+        </BSW>
+        <BSW>
+          <DHA_FALHA_BSW>15/01/2022</DHA_FALHA_BSW>
+          <PCT_BSW>6,05</PCT_BSW>
+          <PCT_MAXIMO_BSW>6,05</PCT_MAXIMO_BSW>
+        </BSW>
+        <BSW>
+          <DHA_FALHA_BSW>16/01/2022</DHA_FALHA_BSW>
+          <PCT_BSW>8,30</PCT_BSW>
+          <PCT_MAXIMO_BSW>8,30</PCT_MAXIMO_BSW>
+        </BSW>
+        <BSW>
+          <DHA_FALHA_BSW>17/01/2022</DHA_FALHA_BSW>
+          <PCT_BSW>2,54</PCT_BSW>
+          <PCT_MAXIMO_BSW>2,54</PCT_MAXIMO_BSW>
+        </BSW>
+      </LISTA_BSW>
+      <LISTA_VOLUME>
+        <VOLUME>
+          <DHA_MEDICAO>14/01/2022</DHA_MEDICAO>
+          <MED_DECLARADO>3446,22</MED_DECLARADO>
+          <MED_REGISTRADO>3397,30</MED_REGISTRADO>
+        </VOLUME>
+        <VOLUME>
+          <DHA_MEDICAO>15/01/2022</DHA_MEDICAO>
+          <MED_DECLARADO>2845,09</MED_DECLARADO>
+          <MED_REGISTRADO>2804,70</MED_REGISTRADO>
+        </VOLUME>
+        <VOLUME>
+          <DHA_MEDICAO>16/01/2022</DHA_MEDICAO>
+          <MED_DECLARADO>2818,65</MED_DECLARADO>
+          <MED_REGISTRADO>2778,64</MED_REGISTRADO>
+        </VOLUME>
+        <VOLUME>
+          <DHA_MEDICAO>17/01/2022</DHA_MEDICAO>
+          <MED_DECLARADO>3300,65</MED_DECLARADO>
+          <MED_REGISTRADO>3253,80</MED_REGISTRADO>
+        </VOLUME>
+      </LISTA_VOLUME>
+      <LISTA_CALIBRACAO />
+    </DADOS_BASICOS>
+  </LISTA_DADOS_BASICOS>
+</a039>

@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using PRIO.Data.Mappings;
+using PRIO.Data.Mappings.MeasurementMappping;
 using PRIO.Models;
-using PRIO.Utils;
 
 namespace PRIO.Data
 {
@@ -19,16 +19,23 @@ namespace PRIO.Data
         public DbSet<Completion> Completions { get; set; }
         public DbSet<Well> Wells { get; set; }
         public DbSet<Unit> Units { get; set; }
+
+        #region Measurement & Relations
         public DbSet<Measurement> Measurements { get; set; }
         public DbSet<FileType> FileTypes { get; set; }
+        public DbSet<Volume> Volume { get; set; }
+        public DbSet<Calibration> Calibrations { get; set; }
+        public DbSet<Bsw> Bsws { get; set; }
+        #endregion
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var secrets = _cache.GetOrCreate("secrets", entry =>
-            {
-                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
-                return FetchingSecrets.FetchSecretsAsync().GetAwaiter().GetResult();
-            });
+            //var secrets = _cache.GetOrCreate("secrets", entry =>
+            //{
+            //    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+            //    return FetchingSecrets.FetchSecretsAsync().GetAwaiter().GetResult();
+            //});
 
             //optionsBuilder.UseSqlServer($"Server={secrets.DatabaseServer};Database={secrets.DatabaseName};User ID={secrets.DatabaseUser};Password={secrets.DatabasePassword};Encrypt=false;");
             optionsBuilder.UseSqlServer($"Server=localhost;Database=PRIOANP;User ID=garcia;Password=2480;Encrypt=false;");
@@ -57,6 +64,7 @@ namespace PRIO.Data
                 if (entry.State == EntityState.Added)
                 {
                     entry.Entity.CreatedAt = DateTime.UtcNow;
+                    entry.Entity.IsActive = true;
                 }
 
                 entry.Entity.UpdatedAt = DateTime.UtcNow;
@@ -74,8 +82,15 @@ namespace PRIO.Data
             modelBuilder.ApplyConfiguration(new SessionMap());
             modelBuilder.ApplyConfiguration(new WellMap());
             modelBuilder.ApplyConfiguration(new UnitMap());
-            modelBuilder.ApplyConfiguration(new FileTypeMap());
+
+            #region Measurement & Relations
             modelBuilder.ApplyConfiguration(new MeasurementMap());
+            modelBuilder.ApplyConfiguration(new FileTypeMap());
+            modelBuilder.ApplyConfiguration(new VolumeMap());
+            modelBuilder.ApplyConfiguration(new CalibrationMap());
+            modelBuilder.ApplyConfiguration(new BswMap());
+
+            #endregion
         }
     }
 }

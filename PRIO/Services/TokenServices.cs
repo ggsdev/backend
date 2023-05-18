@@ -20,7 +20,7 @@ namespace PRIO.Services
         private static string GenerateToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(Configuration.JwtKey);
+            var key = Encoding.ASCII.GetBytes(ConfigurationKeys.JwtKey);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {

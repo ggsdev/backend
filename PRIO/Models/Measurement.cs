@@ -1,5 +1,40 @@
 ﻿namespace PRIO.Models
 {
+
+    public class Bsw : BaseModel
+    {
+        public DateTime? DHA_FALHA_BSW_039 { get; set; }
+
+        public decimal? DHA_PCT_BSW_039 { get; set; }
+
+        public decimal? DHA_PCT_MAXIMO_BSW_039 { get; set; }
+
+    }
+
+    public class Volume : BaseModel
+    {
+
+        public DateTime? DHA_MEDICAO_039 { get; set; }
+        public decimal? DHA_MED_DECLARADO_039 { get; set; }
+        public decimal? DHA_MED_REGISTRADO_039 { get; set; }
+
+
+    }
+
+    public class Calibration : BaseModel
+    {
+        public DateTime? DHA_FALHA_CALIBRACAO_039 { get; set; }
+
+        public decimal? DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039 { get; set; }
+
+        public decimal? DHA_NUM_FATOR_CALIBRACAO_ATUAL_039 { get; set; }
+
+        public string? DHA_CERTIFICADO_ATUAL_039 { get; set; }
+
+        public string? DHA_CERTIFICADO_ANTERIOR_039 { get; set; }
+
+
+    }
     public class Measurement : BaseModel
     {
 
@@ -245,7 +280,7 @@
         #region 003
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_003 { get; set; }
         public int? COD_INSTALACAO_003 { get; set; }
-        public short COD_TAG_PONTO_MEDICAO_003 { get; set; }
+        public short? COD_TAG_PONTO_MEDICAO_003 { get; set; }
         public string? NUM_SERIE_COMPUTADOR_VAZAO_003 { get; set; }
         public DateTime? DHA_COLETA_003 { get; set; }
         public decimal? MED_TEMPERATURA_1_003 { get; set; }
@@ -337,7 +372,7 @@
 
         public string? COD_FALHA_SUPERIOR_039 { get; set; }
 
-        public short DSC_TIPO_FALHA_039 { get; set; }
+        public short? DSC_TIPO_FALHA_039 { get; set; }
 
         public string? COD_FALHA_039 { get; set; }
 
@@ -349,7 +384,7 @@
 
         public DateTime? DHA_RETORNO_039 { get; set; }
 
-        public short DHA_NUM_PREVISAO_RETORNO_DIAS_039 { get; set; }
+        public short? DHA_NUM_PREVISAO_RETORNO_DIAS_039 { get; set; }
 
         public string? DHA_DSC_FALHA_039 { get; set; }
 
@@ -362,17 +397,12 @@
         public string? DHA_NUM_SERIE_EQUIPAMENTO_039 { get; set; }
 
         public int? DHA_COD_INSTALACAO_039 { get; set; }
-        public DateTime DHA_FALHA_BSW_039 { get; set; }
-        public decimal DHA_PCT_BSW_039 { get; set; }
-        public decimal DHA_PCT_MAXIMO_BSW_039 { get; set; }
-        public DateTime DHA_MEDICAO_039 { get; set; }
-        public decimal DHA_MED_DECLARADO_039 { get; set; }
-        public decimal DHA_MED_REGISTRADO_039 { get; set; }
-        public DateTime? DHA_FALHA_CALIBRACAO_039 { get; set; }
-        public decimal? DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039 { get; set; }
-        public decimal? DHA_NUM_FATOR_CALIBRACAO_ATUAL_039 { get; set; }
-        public string? DHA_CERTIFICADO_ANTERIOR_039 { get; set; }
-        public string? DHA_CERTIFICADO_ATUAL_039 { get; set; }
+
+        public List<Calibration>? LISTA_CALIBRACAO { get; set; }
+
+        public List<Bsw>? LISTA_BSW { get; set; }
+
+        public List<Volume>? LISTA_VOLUME { get; set; }
         #endregion
 
         #region 040

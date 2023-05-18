@@ -20,7 +20,7 @@ namespace PRIO.Middlewares
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex);
                 context.Response.StatusCode = 500;
                 context.Response.ContentType = "application/json";
                 await context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorResponse { Message = "Internal Server Error" }));
