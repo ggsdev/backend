@@ -32,7 +32,6 @@ ConfigureMiddlewares(app);
 app.UseAuthorization();
 
 app.MapControllers();
-
 app.Run();
 
 static void ConfigureServices(IServiceCollection services)
@@ -52,21 +51,26 @@ static void ConfigureServices(IServiceCollection services)
     {
         cfg.CreateMap<BSW, Bsw>()
         .ForMember(dest => dest.DHA_FALHA_BSW_039, opt => opt.MapFrom(src =>
-        string.IsNullOrEmpty(src.DHA_FALHA_BSW_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_FALHA_BSW_039, "dd/MM/yyyy", CultureInfo.GetCultureInfo("pt-BR"))));
+        string.IsNullOrEmpty(src.DHA_FALHA_BSW_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_FALHA_BSW_039, "dd/MM/yyyy", CultureInfo.InvariantCulture)));
 
-        cfg.CreateMap<VOLUME, Volume>()
-        .ForMember(dest => dest.DHA_MEDICAO_039, opt => opt.MapFrom(src =>
-            string.IsNullOrEmpty(src.DHA_MEDICAO_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_MEDICAO_039, "dd/MM/yyyy", CultureInfo.GetCultureInfo("pt-BR"))));
+        cfg.CreateMap<VOLUME, Volume>();
 
-        cfg.CreateMap<CALIBRACAO, Calibration>();
-        //.ForMember(dest => dest.DHA_FALHA_CALIBRACAO_039, opt => opt.MapFrom(src =>
-        //string.IsNullOrEmpty(src.DHA_FALHA_CALIBRACAO_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_FALHA_CALIBRACAO_039, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)));
+        cfg.CreateMap<CALIBRACAO, Calibration>()
+        .ForMember(dest => dest.DHA_FALHA_CALIBRACAO_039, opt => opt.MapFrom(src =>
+        string.IsNullOrEmpty(src.DHA_FALHA_CALIBRACAO_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_FALHA_CALIBRACAO_039, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)));
 
         cfg.CreateMap<DADOS_BASICOS, Measurement>()
         .ForMember(dest => dest.DHA_OCORRENCIA_039, opt => opt.MapFrom(src =>
-        string.IsNullOrEmpty(src.DHA_OCORRENCIA_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_OCORRENCIA_039, "dd/MM/yyyy HH:mm:ss", CultureInfo.GetCultureInfo("pt-BR"))))
+        string.IsNullOrEmpty(src.DHA_OCORRENCIA_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_OCORRENCIA_039, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)))
          .ForMember(dest => dest.DHA_DETECCAO_039, opt => opt.MapFrom(src =>
-        string.IsNullOrEmpty(src.DHA_DETECCAO_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_DETECCAO_039, "dd/MM/yyyy HH:mm:ss", CultureInfo.GetCultureInfo("pt-BR"))));
+        string.IsNullOrEmpty(src.DHA_DETECCAO_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_DETECCAO_039, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)))
+          .ForMember(dest => dest.DHA_RETORNO_039, opt => opt.MapFrom(src =>
+        string.IsNullOrEmpty(src.DHA_RETORNO_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_RETORNO_039, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)));
+
+        cfg.CreateMap<VOLUME, Volume>()
+        .ForMember(dest => dest.DHA_MEDICAO_039, opt => opt.MapFrom(src =>
+            string.IsNullOrEmpty(src.DHA_MEDICAO_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_MEDICAO_039, "dd/MM/yyyy", CultureInfo.InvariantCulture)));
+
 
     });
 
@@ -124,7 +128,6 @@ static void ConfigureServices(IServiceCollection services)
     });
     });
 }
-
 static void ConfigureMiddlewares(IApplicationBuilder app)
 {
     app.UseMiddleware<UnauthorizedCaptureMiddleware>();

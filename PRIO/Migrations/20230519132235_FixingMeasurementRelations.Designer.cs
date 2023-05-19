@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.Data;
 
@@ -11,9 +12,11 @@ using PRIO.Data;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230519132235_FixingMeasurementRelations")]
+    partial class FixingMeasurementRelations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,13 +37,13 @@ namespace PRIO.Migrations
                     b.Property<DateTime?>("DHA_FALHA_BSW_039")
                         .HasColumnType("date");
 
-                    b.Property<double?>("DHA_PCT_BSW_039")
+                    b.Property<decimal?>("DHA_PCT_BSW_039")
                         .HasPrecision(3, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
-                    b.Property<double?>("DHA_PCT_MAXIMO_BSW_039")
+                    b.Property<decimal?>("DHA_PCT_MAXIMO_BSW_039")
                         .HasPrecision(3, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -78,13 +81,13 @@ namespace PRIO.Migrations
                     b.Property<DateTime?>("DHA_FALHA_CALIBRACAO_039")
                         .HasColumnType("date");
 
-                    b.Property<double?>("DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039")
+                    b.Property<decimal?>("DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039")
                         .HasPrecision(5, 5)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
-                    b.Property<double?>("DHA_NUM_FATOR_CALIBRACAO_ATUAL_039")
+                    b.Property<decimal?>("DHA_NUM_FATOR_CALIBRACAO_ATUAL_039")
                         .HasPrecision(5, 5)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -574,13 +577,16 @@ namespace PRIO.Migrations
                         .HasColumnType("datetime");
 
                     b.Property<string>("DHA_DSC_ACAO_039")
-                        .HasColumnType("text");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
 
                     b.Property<string>("DHA_DSC_FALHA_039")
-                        .HasColumnType("text");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
 
                     b.Property<string>("DHA_DSC_METODOLOGIA_039")
-                        .HasColumnType("text");
+                        .HasMaxLength(3000)
+                        .HasColumnType("varchar");
 
                     b.Property<DateTime?>("DHA_FIM_PERIODO_MEDICAO_001")
                         .HasColumnType("datetime");
@@ -2085,13 +2091,13 @@ namespace PRIO.Migrations
                     b.Property<DateTime?>("DHA_MEDICAO_039")
                         .HasColumnType("date");
 
-                    b.Property<double?>("DHA_MED_DECLARADO_039")
-                        .HasPrecision(8, 6)
-                        .HasColumnType("float");
+                    b.Property<decimal?>("DHA_MED_DECLARADO_039")
+                        .HasPrecision(7, 6)
+                        .HasColumnType("decimal");
 
-                    b.Property<double?>("DHA_MED_REGISTRADO_039")
-                        .HasPrecision(8, 6)
-                        .HasColumnType("float");
+                    b.Property<decimal?>("DHA_MED_REGISTRADO_039")
+                        .HasPrecision(7, 6)
+                        .HasColumnType("decimal");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");

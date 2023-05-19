@@ -1,58 +1,39 @@
-﻿using System.Globalization;
-using System.Xml;
+﻿using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
 
 namespace PRIO.Files._039
 {
-
-    public class CustomDateTimeFormatProvider : IFormatProvider
+    public class Functions
     {
-        private readonly CultureInfo _culture;
+        private static List<string>? _result = new();
 
-        public CustomDateTimeFormatProvider()
+        public static List<string>? CheckFormat(string xmlFilePath, string xsdFilePath)
         {
-            _culture = (CultureInfo)CultureInfo.InvariantCulture.Clone();
-            _culture.DateTimeFormat.ShortTimePattern = "HH:mm";
-            _culture.DateTimeFormat.LongTimePattern = "HH:mm:ss";
+            _result = new();
+            var schema = new XmlSchemaSet();
+
+            schema.Add("", xsdFilePath);
+
+            XmlReader reader = XmlReader.Create(xmlFilePath);
+            XDocument doc = XDocument.Load(reader);
+            doc.Validate(schema, ValidationEventHandler);
+
+            reader.Close();
+
+            return _result;
         }
 
-        public object GetFormat(Type formatType)
+        private static void ValidationEventHandler(object sender, ValidationEventArgs e)
         {
-            return formatType == typeof(DateTimeFormatInfo) ? _culture.DateTimeFormat : null;
+
+            if (e.Severity == XmlSeverityType.Error)
+            {
+                _result.Add(e.Message);
+                Console.WriteLine(e.Message);
+            }
+
         }
     }
-}
-public class Functions
-{
-    private static List<string>? _result = new();
-
-    public static List<string>? CheckFormat(string xmlFilePath, string xsdFilePath)
-    {
-        _result = new();
-        var schema = new XmlSchemaSet();
-
-        schema.Add("", xsdFilePath);
-
-        XmlReader reader = XmlReader.Create(xmlFilePath);
-        XDocument doc = XDocument.Load(reader);
-        doc.Validate(schema, ValidationEventHandler);
-
-        reader.Close();
-
-        return _result;
-    }
-
-    private static void ValidationEventHandler(object sender, ValidationEventArgs e)
-    {
-
-        if (e.Severity == XmlSeverityType.Error)
-        {
-            _result.Add(e.Message);
-            Console.WriteLine(e.Message);
-        }
-
-    }
-
 }
 

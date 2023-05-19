@@ -19,17 +19,15 @@ namespace PRIO.Data.Mappings.MeasurementMappping
 
             builder.Property(x => x.DHA_FALHA_BSW_039)
                .HasColumnType("date")
-               .IsRequired();
-
+               ;
             builder.Property(x => x.DHA_PCT_BSW_039)
-                   .HasColumnType("decimal")
+                   .HasColumnType("float")
                    .HasPrecision(3, 2)
-                   .IsRequired();
+                   ;
+            builder.Property(x => x.DHA_PCT_MAXIMO_BSW_039).HasColumnType("float").HasPrecision(3, 2);
 
-            builder.Property(x => x.DHA_PCT_MAXIMO_BSW_039)
-                   .HasColumnType("decimal")
-                   .HasPrecision(3, 2)
-                   .IsRequired();
+            builder.HasOne(x => x.Measurement)
+            .WithMany(m => m.LISTA_BSW);
         }
     }
 }

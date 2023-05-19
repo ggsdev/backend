@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using PRIO.Data;
+using PRIO.DTOS;
 using PRIO.Files._039;
 using PRIO.Models;
 using System.Xml;
@@ -25,17 +26,21 @@ namespace PRIO.Controllers
 
         [HttpPost("xml")]
         [AllowAnonymous]
+        //receber como base64
         public async Task<ActionResult> XMLTeste([FromForm] IFormFile file, [FromForm] string json, [FromServices] DataContext context)
         {
             var jsonData = JsonConvert.DeserializeObject<JsonData>(json);
-
             var basePath = "C:\\Users\\gabri\\source\\repos\\PrioANP\\backend\\PRIO\\PRIO\\Files\\_039";
-            var pathSchema = basePath + "\\Schema.xsd";
+            var tempPath = Path.GetTempPath();
+            var pathSchema = Path.Combine(basePath, "Schema.xsd");
             var formattedDateTime = DateTime.Now.ToString("yyyyMMddHHmmss");
 
-            //if (body.JsonData.FileType == "039" && body.JsonData.UnitName == "bravo")
+            if (jsonData is not null && (jsonData.FileType == "039" && jsonData.UnitName == "bravo"))
+            {
+                // Continue with your logic here
+            }
 
-            var pathXml = basePath + $"\\Bravo\\039_03255266_{formattedDateTime}_eeeeeeeeeeeeeee(campo_opcional).xml";
+            var pathXml = Path.Combine(tempPath, $"039_03255266_{formattedDateTime}_eeeeeeeeeeeeeee(campo_opcional).xml");
 
             using var stream = System.IO.File.Create(pathXml);
 
@@ -62,16 +67,17 @@ namespace PRIO.Controllers
                 var measurement = _mapper.Map<Measurement>(dadosBasicos);
 
                 await context.Measurements.AddAsync(measurement);
-                //await context.SaveChangesAsync();
 
+                await context.SaveChangesAsync();
 
                 return Ok(measurement);
-
             }
 
-            return BadRequest();
+            return BadRequest(new ErrorResponseDTO
+            {
+                Message = "Error when saving measurement"
+            });
         }
-
     }
 }
 

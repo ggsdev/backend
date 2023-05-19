@@ -110,18 +110,15 @@ namespace PRIO.Data.Mappings.MeasurementMappping
                 .HasColumnType("smallint");
 
             builder.Property(x => x.DHA_DSC_FALHA_039)
-                .HasColumnType("varchar")
-                .HasMaxLength(1000)
+                .HasColumnType("text")
                 ;
 
             builder.Property(x => x.DHA_DSC_ACAO_039)
-                .HasColumnType("varchar")
-                .HasMaxLength(1000)
+                .HasColumnType("text")
                 ;
 
             builder.Property(x => x.DHA_DSC_METODOLOGIA_039)
-                .HasColumnType("varchar")
-                .HasMaxLength(3000)
+                .HasColumnType("text")
                 ;
 
             builder.Property(x => x.DHA_NOM_RESPONSAVEL_RELATO_039)

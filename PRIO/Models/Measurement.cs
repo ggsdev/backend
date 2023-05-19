@@ -1,39 +1,41 @@
-﻿namespace PRIO.Models
+﻿using System.Text.Json.Serialization;
+
+namespace PRIO.Models
 {
 
     public class Bsw : BaseModel
     {
         public DateTime? DHA_FALHA_BSW_039 { get; set; }
 
-        public decimal? DHA_PCT_BSW_039 { get; set; }
+        public double? DHA_PCT_BSW_039 { get; set; }
 
-        public decimal? DHA_PCT_MAXIMO_BSW_039 { get; set; }
-
+        public double? DHA_PCT_MAXIMO_BSW_039 { get; set; }
+        [JsonIgnore]
+        public Measurement Measurement { get; set; }
     }
 
     public class Volume : BaseModel
     {
-
         public DateTime? DHA_MEDICAO_039 { get; set; }
-        public decimal? DHA_MED_DECLARADO_039 { get; set; }
-        public decimal? DHA_MED_REGISTRADO_039 { get; set; }
-
-
+        public double? DHA_MED_DECLARADO_039 { get; set; }
+        public double? DHA_MED_REGISTRADO_039 { get; set; }
+        [JsonIgnore]
+        public Measurement Measurement { get; set; }
     }
 
     public class Calibration : BaseModel
     {
         public DateTime? DHA_FALHA_CALIBRACAO_039 { get; set; }
 
-        public decimal? DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039 { get; set; }
+        public double? DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039 { get; set; }
 
-        public decimal? DHA_NUM_FATOR_CALIBRACAO_ATUAL_039 { get; set; }
+        public double? DHA_NUM_FATOR_CALIBRACAO_ATUAL_039 { get; set; }
 
         public string? DHA_CERTIFICADO_ATUAL_039 { get; set; }
 
         public string? DHA_CERTIFICADO_ANTERIOR_039 { get; set; }
-
-
+        [JsonIgnore]
+        public Measurement Measurement { get; set; }
     }
     public class Measurement : BaseModel
     {
@@ -382,7 +384,7 @@
 
         public DateTime? DHA_DETECCAO_039 { get; set; }
 
-        public DateTime? DHA_RETORNO_039 { get; set; }
+        public DateTime? DHA_RETORNO_039 { get; set; } = null;
 
         public short? DHA_NUM_PREVISAO_RETORNO_DIAS_039 { get; set; }
 

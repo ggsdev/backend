@@ -32,7 +32,7 @@ namespace PRIO.Files._039
         [XmlElement("DHA_RETORNO")]
         public string? DHA_RETORNO_039 { get; set; }
         [XmlElement("NUM_PREVISAO_RETORNO_DIAS")]
-        public string DHA_NUM_PREVISAO_RETORNO_DIAS_039 { get; set; }
+        public string? DHA_NUM_PREVISAO_RETORNO_DIAS_039 { get; set; }
         [XmlElement("DSC_FALHA")]
         public string? DHA_DSC_FALHA_039 { get; set; }
         [XmlElement("DSC_ACAO")]

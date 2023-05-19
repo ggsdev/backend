@@ -18,29 +18,18 @@ namespace PRIO.Data.Mappings.MeasurementMappping
                 .ValueGeneratedOnAdd();
 
 
-            builder.Property(x => x.DHA_FALHA_CALIBRACAO_039)
-             .HasColumnType("date")
-             .IsRequired();
+            builder.Property(x => x.DHA_FALHA_CALIBRACAO_039).HasColumnType("date");
 
-            builder.Property(x => x.DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039)
-             .HasColumnType("decimal")
-             .HasPrecision(5, 5)
-             .IsRequired();
+            builder.Property(x => x.DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039).HasColumnType("float").HasPrecision(5, 5);
 
-            builder.Property(x => x.DHA_NUM_FATOR_CALIBRACAO_ATUAL_039)
-             .HasColumnType("decimal")
-             .HasPrecision(5, 5)
-             .IsRequired();
+            builder.Property(x => x.DHA_NUM_FATOR_CALIBRACAO_ATUAL_039).HasColumnType("float").HasPrecision(5, 5);
 
-            builder.Property(x => x.DHA_CERTIFICADO_ANTERIOR_039)
-                .HasColumnType("varchar")
-                .HasMaxLength(50)
-                .IsRequired();
+            builder.Property(x => x.DHA_CERTIFICADO_ANTERIOR_039).HasColumnType("varchar").HasMaxLength(50);
 
-            builder.Property(x => x.DHA_CERTIFICADO_ATUAL_039)
-                .HasColumnType("varchar")
-                .HasMaxLength(30)
-                .IsRequired();
+            builder.Property(x => x.DHA_CERTIFICADO_ATUAL_039).HasColumnType("varchar").HasMaxLength(30);
+
+            builder.HasOne(x => x.Measurement)
+            .WithMany(m => m.LISTA_CALIBRACAO);
         }
 
     }
