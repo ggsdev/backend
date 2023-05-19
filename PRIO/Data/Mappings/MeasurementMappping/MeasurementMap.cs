@@ -614,27 +614,27 @@ namespace PRIO.Data.Mappings.MeasurementMappping
             ;
 
             builder.Property(x => x.DHA_COLETA_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(3, 2)
             ;
 
             builder.Property(x => x.MED_TEMPERATURA_1_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(3, 3)
             ;
 
             builder.Property(x => x.MED_PRESSAO_ATMSA_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(3, 3)
             ;
 
             builder.Property(x => x.MED_PRESSAO_RFRNA_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(3, 3)
             ;
 
             builder.Property(x => x.MED_DENSIDADE_RELATIVA_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 8)
             ;
 
@@ -643,88 +643,88 @@ namespace PRIO.Data.Mappings.MeasurementMappping
             .HasMaxLength(50);
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_NITROGENIO_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 6);
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_CO2_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 6);
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_METANO_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 6);
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_ETANO_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 6);
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_PROPANO_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 6);
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_N_BUTANO_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 6);
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_I_BUTANO_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 6);
 
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_N_PENTANO_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 6);
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_I_PENTANO_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 6);
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_HEXANO_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 6);
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_HEPTANO_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 6);
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_OCTANO_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 6);
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_NONANO_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 6);
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_DECANO_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 6);
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_H2S_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 6);
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_AGUA_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 6);
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_HELIO_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 6);
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_OXIGENIO_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 6);
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_CO_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 6);
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_HIDROGENIO_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 6);
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_ARGONIO_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 6);
 
             builder.Property(x => x.DSC_VERSAO_SOFTWARE_002)
@@ -732,263 +732,264 @@ namespace PRIO.Data.Mappings.MeasurementMappping
             ;
 
             builder.Property(x => x.ICE_METER_FACTOR_1_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(5, 5)
             ;
 
             builder.Property(x => x.ICE_METER_FACTOR_2_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(5, 5);
 
             builder.Property(x => x.ICE_METER_FACTOR_3_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(5, 5);
 
             builder.Property(x => x.ICE_METER_FACTOR_4_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(5, 5);
 
             builder.Property(x => x.ICE_METER_FACTOR_5_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(5, 5);
 
             builder.Property(x => x.ICE_METER_FACTOR_6_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(5, 5);
 
             builder.Property(x => x.ICE_METER_FACTOR_7_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(5, 5);
 
             builder.Property(x => x.ICE_METER_FACTOR_8_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(5, 5);
 
             builder.Property(x => x.ICE_METER_FACTOR_9_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(5, 5);
 
             builder.Property(x => x.ICE_METER_FACTOR_10_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(5, 5);
 
             builder.Property(x => x.ICE_METER_FACTOR_11_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(5, 5);
 
             builder.Property(x => x.ICE_METER_FACTOR_12_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(5, 5);
 
             builder.Property(x => x.ICE_METER_FACTOR_13_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(5, 5);
 
             builder.Property(x => x.ICE_METER_FACTOR_14_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(5, 5);
 
             builder.Property(x => x.ICE_METER_FACTOR_15_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(5, 5);
 
             builder.Property(x => x.QTD_PULSOS_METER_FACTOR_1_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_METER_FACTOR_2_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_METER_FACTOR_3_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_METER_FACTOR_4_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_METER_FACTOR_5_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_METER_FACTOR_6_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_METER_FACTOR_7_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_METER_FACTOR_8_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_METER_FACTOR_9_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_METER_FACTOR_10_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_METER_FACTOR_11_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_METER_FACTOR_12_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_METER_FACTOR_13_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_METER_FACTOR_14_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_METER_FACTOR_15_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.ICE_K_FACTOR_1_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2)
             ;
 
             builder.Property(x => x.ICE_K_FACTOR_2_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.ICE_K_FACTOR_3_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.ICE_K_FACTOR_4_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.ICE_K_FACTOR_5_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.ICE_K_FACTOR_6_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.ICE_K_FACTOR_7_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.ICE_K_FACTOR_8_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.ICE_K_FACTOR_9_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.ICE_K_FACTOR_10_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.ICE_K_FACTOR_11_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
             builder.Property(x => x.ICE_K_FACTOR_12_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.ICE_K_FACTOR_13_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.ICE_K_FACTOR_14_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.ICE_K_FACTOR_15_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_K_FACTOR_1_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_K_FACTOR_2_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_K_FACTOR_3_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_K_FACTOR_4_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_K_FACTOR_5_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_K_FACTOR_6_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_K_FACTOR_7_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_K_FACTOR_8_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_K_FACTOR_9_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_K_FACTOR_10_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_K_FACTOR_11_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_K_FACTOR_12_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_K_FACTOR_13_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_K_FACTOR_14_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.QTD_PULSOS_K_FACTOR_15_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 2);
 
             builder.Property(x => x.ICE_CUTOFF_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 3)
             ;
 
             builder.Property(x => x.ICE_LIMITE_SPRR_ALARME_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 3)
             ;
 
             builder.Property(x => x.ICE_LIMITE_INFRR_ALARME_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 3)
             ;
 
             builder.Property(x => x.IND_HABILITACAO_ALARME_1_002)
-            .HasColumnType("bit")
+            .HasColumnType("varchar")
+            .HasMaxLength(1)
             ;
 
             builder.Property(x => x.NUM_SERIE_1_002)
@@ -997,22 +998,23 @@ namespace PRIO.Data.Mappings.MeasurementMappping
             ;
 
             builder.Property(x => x.MED_PRSO_LIMITE_SPRR_ALRME_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 3)
             ;
 
             builder.Property(x => x.MED_PRSO_LMTE_INFRR_ALRME_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 3)
             ;
 
 
             builder.Property(x => x.IND_HABILITACAO_ALARME_2_002)
-            .HasColumnType("bit")
+            .HasColumnType("varchar")
+            .HasMaxLength(1)
             ;
 
             builder.Property(x => x.MED_PRSO_ADOTADA_FALHA_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 3)
             ;
 
@@ -1032,21 +1034,22 @@ namespace PRIO.Data.Mappings.MeasurementMappping
             ;
 
             builder.Property(x => x.MED_TMPTA_SPRR_ALARME_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 3)
             ;
 
             builder.Property(x => x.MED_TMPTA_INFRR_ALRME_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 3)
             ;
 
             builder.Property(x => x.IND_HABILITACAO_ALARME_3_002)
-            .HasColumnType("bit")
+            .HasColumnType("varchar")
+            .HasMaxLength(1)
             ;
 
             builder.Property(x => x.MED_TMPTA_ADTTA_FALHA_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(3, 2)
             ;
 
@@ -1064,31 +1067,31 @@ namespace PRIO.Data.Mappings.MeasurementMappping
             ;
 
             builder.Property(x => x.ICE_DENSIDADE_RELATIVA_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(8, 8);
 
             builder.Property(x => x.MED_PRESSAO_ESTATICA_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 3)
             ;
 
             builder.Property(x => x.MED_TEMPERATURA_2_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(3, 2)
             ;
 
             builder.Property(x => x.PRZ_DURACAO_FLUXO_EFETIVO_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(4, 4)
             ;
 
             builder.Property(x => x.MED_BRUTO_MOVIMENTADO_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 5)
             ;
 
             builder.Property(x => x.MED_CORRIGIDO_MVMDO_002)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 5)
             ;
 

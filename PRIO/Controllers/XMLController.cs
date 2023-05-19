@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using PRIO.Data;
 using PRIO.DTOS;
-using PRIO.Files._001;
+using PRIO.Files._002;
 using PRIO.Files._039;
 using PRIO.Models;
 using System.Globalization;
@@ -218,6 +218,49 @@ namespace PRIO.Controllers
                 return Ok(measurement001DTO);
             }
             #endregion
+
+            #region 002
+            if (jsonData.FileType == "002")
+            {
+                var rootElement = documentXml.Root;
+
+                var dadosBasicosElement = rootElement?.Element("LISTA_DADOS_BASICOS")?.Element("DADOS_BASICOS");
+                var serializerDadosBasicos = new XmlSerializer(typeof(DADOS_BASICOS_002));
+                var dadosBasicos = (DADOS_BASICOS_002)serializerDadosBasicos.Deserialize(dadosBasicosElement.CreateReader());
+
+                var configuracaoCvElement = rootElement?.Element("LISTA_CONFIGURACAO_CV")?.Element("CONFIGURACAO_CV");
+                var serializerConfiguracaoCv = new XmlSerializer(typeof(CONFIGURACAO_CV_002));
+                var configuracaoCv = (CONFIGURACAO_CV_002)serializerConfiguracaoCv.Deserialize(configuracaoCvElement.CreateReader());
+
+
+                var measurement = new Measurement()
+                {
+                    #region atributos
+                    NUM_SERIE_ELEMENTO_PRIMARIO_002 = dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_002,
+                    COD_INSTALACAO_002 = dadosBasicos.COD_INSTALACAO_002,
+                    COD_TAG_PONTO_MEDICAO_002 = dadosBasicos.COD_TAG_PONTO_MEDICAO_002,
+                    #endregion
+
+                    #region configuracao cv
+                    NUM_SERIE_COMPUTADOR_VAZAO_002 = configuracaoCv.NUM_SERIE_COMPUTADOR_VAZAO_002,
+                    DHA_COLETA_002 = configuracaoCv.DHA_COLETA_002,
+
+
+                    #endregion
+
+                };
+
+
+
+                await context.Measurements.AddAsync(measurement);
+
+                await context.SaveChangesAsync();
+
+                var measurement002DTO = _mapper.Map<_001DTO>(measurement);
+                return Ok(measurement002DTO);
+            }
+            #endregion
+
 
             return BadRequest(new ErrorResponseDTO
             {
