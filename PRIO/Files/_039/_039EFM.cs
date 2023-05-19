@@ -7,11 +7,11 @@ namespace PRIO.Files._039
     {
         [XmlArray("LISTA_DADOS_BASICOS")]
         [XmlArrayItem("DADOS_BASICOS")]
-        public List<DADOS_BASICOS> LISTA_DADOS_BASICOS { get; set; }
+        public List<DADOS_BASICOS_039> LISTA_DADOS_BASICOS { get; set; }
     }
 
     [XmlRoot("DADOS_BASICOS")]
-    public class DADOS_BASICOS
+    public class DADOS_BASICOS_039
     {
         [XmlAttribute("COD_FALHA")]
         public string? COD_FALHA_039 { get; set; }

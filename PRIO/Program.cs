@@ -6,6 +6,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PRIO;
 using PRIO.Data;
+using PRIO.DTOS;
+using PRIO.Files._001;
 using PRIO.Files._039;
 using PRIO.Middlewares;
 using PRIO.Models;
@@ -46,9 +48,9 @@ static void ConfigureServices(IServiceCollection services)
         config.Filters.Add(new AuthorizeFilter(policy));
     });
 
-    #region Map 039
     var mapperConfig = new MapperConfiguration(cfg =>
     {
+        #region 039
         cfg.CreateMap<BSW, Bsw>()
         .ForMember(dest => dest.DHA_FALHA_BSW_039, opt => opt.MapFrom(src =>
         string.IsNullOrEmpty(src.DHA_FALHA_BSW_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_FALHA_BSW_039, "dd/MM/yyyy", CultureInfo.InvariantCulture)));
@@ -59,7 +61,7 @@ static void ConfigureServices(IServiceCollection services)
         .ForMember(dest => dest.DHA_FALHA_CALIBRACAO_039, opt => opt.MapFrom(src =>
         string.IsNullOrEmpty(src.DHA_FALHA_CALIBRACAO_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_FALHA_CALIBRACAO_039, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)));
 
-        cfg.CreateMap<DADOS_BASICOS, Measurement>()
+        cfg.CreateMap<DADOS_BASICOS_039, Measurement>()
         .ForMember(dest => dest.DHA_OCORRENCIA_039, opt => opt.MapFrom(src =>
         string.IsNullOrEmpty(src.DHA_OCORRENCIA_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_OCORRENCIA_039, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)))
          .ForMember(dest => dest.DHA_DETECCAO_039, opt => opt.MapFrom(src =>
@@ -71,12 +73,23 @@ static void ConfigureServices(IServiceCollection services)
         .ForMember(dest => dest.DHA_MEDICAO_039, opt => opt.MapFrom(src =>
             string.IsNullOrEmpty(src.DHA_MEDICAO_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_MEDICAO_039, "dd/MM/yyyy", CultureInfo.InvariantCulture)));
 
+        cfg.CreateMap<Measurement, _039DTO>();
+        #endregion
 
+
+        #region 001
+
+
+        cfg.CreateMap<_001PMO, Measurement>();
+
+        cfg.CreateMap<Measurement, _001DTO>();
+
+
+        #endregion
     });
 
     IMapper mapper = mapperConfig.CreateMapper();
     services.AddSingleton(mapper);
-    #endregion
 
     services.AddEndpointsApiExplorer();
     services.AddDbContext<DataContext>();

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.Data;
 
@@ -11,9 +12,11 @@ using PRIO.Data;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230519201052_Optional3")]
+    partial class Optional3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -704,29 +707,29 @@ namespace PRIO.Migrations
                     b.Property<Guid?>("FileTypeId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double?>("ICE_CORRECAO_BSW_001")
+                    b.Property<decimal?>("ICE_CORRECAO_BSW_001")
                         .HasPrecision(8, 8)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_CORRECAO_PRESSAO_LIQUIDO_001")
+                    b.Property<decimal?>("ICE_CORRECAO_PRESSAO_LIQUIDO_001")
                         .HasPrecision(8, 8)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_CRRCO_TEMPERATURA_LIQUIDO_001")
+                    b.Property<decimal?>("ICE_CRRCO_TEMPERATURA_LIQUIDO_001")
                         .HasPrecision(8, 8)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_CUTOFF_001")
+                    b.Property<decimal?>("ICE_CUTOFF_001")
                         .HasPrecision(6, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_CUTOFF_002")
                         .HasPrecision(6, 3)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_DENSIDADADE_RELATIVA_001")
+                    b.Property<decimal?>("ICE_DENSIDADADE_RELATIVA_001")
                         .HasPrecision(8, 8)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_DENSIDADE_RELATIVA_002")
                         .HasPrecision(8, 8)
@@ -736,129 +739,129 @@ namespace PRIO.Migrations
                         .HasPrecision(8, 8)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_K_FACTOR_10_001")
+                    b.Property<decimal?>("ICE_K_FACTOR_10_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_K_FACTOR_10_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_K_FACTOR_11_001")
+                    b.Property<decimal?>("ICE_K_FACTOR_11_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_K_FACTOR_11_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_K_FACTOR_12_001")
+                    b.Property<decimal?>("ICE_K_FACTOR_12_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_K_FACTOR_12_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_K_FACTOR_13_001")
+                    b.Property<decimal?>("ICE_K_FACTOR_13_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_K_FACTOR_13_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_K_FACTOR_14_001")
+                    b.Property<decimal?>("ICE_K_FACTOR_14_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_K_FACTOR_14_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_K_FACTOR_15_001")
+                    b.Property<decimal?>("ICE_K_FACTOR_15_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_K_FACTOR_15_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_K_FACTOR_1_001")
+                    b.Property<decimal?>("ICE_K_FACTOR_1_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_K_FACTOR_1_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_K_FACTOR_2_001")
+                    b.Property<decimal?>("ICE_K_FACTOR_2_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_K_FACTOR_2_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_K_FACTOR_3_001")
+                    b.Property<decimal?>("ICE_K_FACTOR_3_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_K_FACTOR_3_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_K_FACTOR_4_001")
+                    b.Property<decimal?>("ICE_K_FACTOR_4_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_K_FACTOR_4_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_K_FACTOR_5_001")
+                    b.Property<decimal?>("ICE_K_FACTOR_5_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_K_FACTOR_5_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_K_FACTOR_6_001")
+                    b.Property<decimal?>("ICE_K_FACTOR_6_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_K_FACTOR_6_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_K_FACTOR_7_001")
+                    b.Property<decimal?>("ICE_K_FACTOR_7_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_K_FACTOR_7_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_K_FACTOR_8_001")
+                    b.Property<decimal?>("ICE_K_FACTOR_8_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_K_FACTOR_8_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_K_FACTOR_9_001")
+                    b.Property<decimal?>("ICE_K_FACTOR_9_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_K_FACTOR_9_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_LIMITE_INFRR_ALARME_001")
+                    b.Property<decimal?>("ICE_LIMITE_INFRR_ALARME_001")
                         .HasPrecision(6, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_LIMITE_INFRR_ALARME_002")
                         .HasPrecision(6, 3)
@@ -871,129 +874,129 @@ namespace PRIO.Migrations
                     b.Property<bool?>("ICE_LIMITE_INFRR_ALARME_2_003")
                         .HasColumnType("bit");
 
-                    b.Property<double?>("ICE_LIMITE_SPRR_ALARME_001")
+                    b.Property<decimal?>("ICE_LIMITE_SPRR_ALARME_001")
                         .HasPrecision(6, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_LIMITE_SPRR_ALARME_002")
                         .HasPrecision(6, 3)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_METER_FACTOR_10_001")
+                    b.Property<decimal?>("ICE_METER_FACTOR_10_001")
                         .HasPrecision(5, 5)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_METER_FACTOR_10_002")
                         .HasPrecision(5, 5)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_METER_FACTOR_11_001")
+                    b.Property<decimal?>("ICE_METER_FACTOR_11_001")
                         .HasPrecision(5, 5)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_METER_FACTOR_11_002")
                         .HasPrecision(5, 5)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_METER_FACTOR_12_001")
+                    b.Property<decimal?>("ICE_METER_FACTOR_12_001")
                         .HasPrecision(5, 5)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_METER_FACTOR_12_002")
                         .HasPrecision(5, 5)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_METER_FACTOR_13_001")
+                    b.Property<decimal?>("ICE_METER_FACTOR_13_001")
                         .HasPrecision(5, 5)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_METER_FACTOR_13_002")
                         .HasPrecision(5, 5)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_METER_FACTOR_14_001")
+                    b.Property<decimal?>("ICE_METER_FACTOR_14_001")
                         .HasPrecision(5, 5)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_METER_FACTOR_14_002")
                         .HasPrecision(5, 5)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_METER_FACTOR_15_001")
+                    b.Property<decimal?>("ICE_METER_FACTOR_15_001")
                         .HasPrecision(5, 5)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_METER_FACTOR_15_002")
                         .HasPrecision(5, 5)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_METER_FACTOR_1_001")
+                    b.Property<decimal?>("ICE_METER_FACTOR_1_001")
                         .HasPrecision(5, 5)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_METER_FACTOR_1_002")
                         .HasPrecision(5, 5)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_METER_FACTOR_2_001")
+                    b.Property<decimal?>("ICE_METER_FACTOR_2_001")
                         .HasPrecision(5, 5)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_METER_FACTOR_2_002")
                         .HasPrecision(5, 5)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_METER_FACTOR_3_001")
+                    b.Property<decimal?>("ICE_METER_FACTOR_3_001")
                         .HasPrecision(5, 5)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_METER_FACTOR_3_002")
                         .HasPrecision(5, 5)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_METER_FACTOR_4_001")
+                    b.Property<decimal?>("ICE_METER_FACTOR_4_001")
                         .HasPrecision(5, 5)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_METER_FACTOR_4_002")
                         .HasPrecision(5, 5)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_METER_FACTOR_5_001")
+                    b.Property<decimal?>("ICE_METER_FACTOR_5_001")
                         .HasPrecision(5, 5)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_METER_FACTOR_5_002")
                         .HasPrecision(5, 5)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_METER_FACTOR_6_001")
+                    b.Property<decimal?>("ICE_METER_FACTOR_6_001")
                         .HasPrecision(5, 5)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_METER_FACTOR_6_002")
                         .HasPrecision(5, 5)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_METER_FACTOR_7_001")
+                    b.Property<decimal?>("ICE_METER_FACTOR_7_001")
                         .HasPrecision(5, 5)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_METER_FACTOR_7_002")
                         .HasPrecision(5, 5)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_METER_FACTOR_8_001")
+                    b.Property<decimal?>("ICE_METER_FACTOR_8_001")
                         .HasPrecision(5, 5)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_METER_FACTOR_8_002")
                         .HasPrecision(5, 5)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("ICE_METER_FACTOR_9_001")
+                    b.Property<decimal?>("ICE_METER_FACTOR_9_001")
                         .HasPrecision(5, 5)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("ICE_METER_FACTOR_9_002")
                         .HasPrecision(5, 5)
@@ -1115,9 +1118,9 @@ namespace PRIO.Migrations
                         .HasPrecision(6, 3)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("MED_DENSIDADE_RELATIVA_001")
+                    b.Property<decimal?>("MED_DENSIDADE_RELATIVA_001")
                         .HasPrecision(8, 8)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("MED_DENSIDADE_RELATIVA_002")
                         .HasPrecision(8, 8)
@@ -1151,9 +1154,9 @@ namespace PRIO.Migrations
                         .HasPrecision(8, 5)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("MED_PRESSAO_ATMSA_001")
+                    b.Property<decimal?>("MED_PRESSAO_ATMSA_001")
                         .HasPrecision(3, 3)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("MED_PRESSAO_ATMSA_002")
                         .HasPrecision(3, 3)
@@ -1163,9 +1166,9 @@ namespace PRIO.Migrations
                         .HasPrecision(3, 3)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("MED_PRESSAO_ESTATICA_001")
+                    b.Property<decimal?>("MED_PRESSAO_ESTATICA_001")
                         .HasPrecision(6, 6)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("MED_PRESSAO_ESTATICA_002")
                         .HasPrecision(6, 3)
@@ -1175,9 +1178,9 @@ namespace PRIO.Migrations
                         .HasPrecision(6, 3)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("MED_PRESSAO_RFRNA_001")
+                    b.Property<decimal?>("MED_PRESSAO_RFRNA_001")
                         .HasPrecision(3, 3)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("MED_PRESSAO_RFRNA_002")
                         .HasPrecision(3, 3)
@@ -1187,9 +1190,9 @@ namespace PRIO.Migrations
                         .HasPrecision(3, 3)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("MED_PRSO_ADOTADA_FALHA_001")
+                    b.Property<decimal?>("MED_PRSO_ADOTADA_FALHA_001")
                         .HasPrecision(6, 3)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("MED_PRSO_ADOTADA_FALHA_002")
                         .HasPrecision(6, 3)
@@ -1208,9 +1211,9 @@ namespace PRIO.Migrations
                         .HasPrecision(6, 3)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("MED_PRSO_LIMITE_SPRR_ALRME_001")
+                    b.Property<decimal?>("MED_PRSO_LIMITE_SPRR_ALRME_001")
                         .HasPrecision(6, 3)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("MED_PRSO_LIMITE_SPRR_ALRME_002")
                         .HasPrecision(6, 3)
@@ -1236,9 +1239,9 @@ namespace PRIO.Migrations
                         .HasPrecision(6, 3)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("MED_PRSO_LMTE_INFRR_ALRME_001")
+                    b.Property<decimal?>("MED_PRSO_LMTE_INFRR_ALRME_001")
                         .HasPrecision(6, 3)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("MED_PRSO_LMTE_INFRR_ALRME_002")
                         .HasPrecision(6, 3)
@@ -1264,9 +1267,9 @@ namespace PRIO.Migrations
                         .HasPrecision(6, 3)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("MED_TEMPERATURA_001")
+                    b.Property<decimal?>("MED_TEMPERATURA_001")
                         .HasPrecision(3, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("MED_TEMPERATURA_1_002")
                         .HasPrecision(3, 3)
@@ -1288,9 +1291,9 @@ namespace PRIO.Migrations
                         .HasPrecision(3, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("MED_TMPTA_ADTTA_FALHA_001")
+                    b.Property<decimal?>("MED_TMPTA_ADTTA_FALHA_001")
                         .HasPrecision(3, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("MED_TMPTA_ADTTA_FALHA_002")
                         .HasPrecision(3, 2)
@@ -1300,13 +1303,13 @@ namespace PRIO.Migrations
                         .HasPrecision(3, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("MED_TMPTA_FLUIDO_001")
+                    b.Property<decimal?>("MED_TMPTA_FLUIDO_001")
                         .HasPrecision(5, 5)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
-                    b.Property<double?>("MED_TMPTA_INFRR_ALRME_001")
+                    b.Property<decimal?>("MED_TMPTA_INFRR_ALRME_001")
                         .HasPrecision(3, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("MED_TMPTA_INFRR_ALRME_002")
                         .HasPrecision(6, 3)
@@ -1316,9 +1319,9 @@ namespace PRIO.Migrations
                         .HasPrecision(3, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("MED_TMPTA_SPRR_ALARME_001")
+                    b.Property<decimal?>("MED_TMPTA_SPRR_ALARME_001")
                         .HasPrecision(3, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("MED_TMPTA_SPRR_ALARME_002")
                         .HasPrecision(6, 3)
@@ -1344,25 +1347,25 @@ namespace PRIO.Migrations
                         .HasPrecision(8, 5)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("MED_VOLUME_BRTO_CRRGO_MVMDO_001")
+                    b.Property<decimal?>("MED_VOLUME_BRTO_CRRGO_MVMDO_001")
                         .HasPrecision(6, 5)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
-                    b.Property<double?>("MED_VOLUME_BRUTO_MVMDO_001")
+                    b.Property<decimal?>("MED_VOLUME_BRUTO_MVMDO_001")
                         .HasPrecision(6, 5)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
-                    b.Property<double?>("MED_VOLUME_LIQUIDO_MVMDO_001")
+                    b.Property<decimal?>("MED_VOLUME_LIQUIDO_MVMDO_001")
                         .HasPrecision(6, 5)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
-                    b.Property<double?>("MED_VOLUME_TTLZO_FIM_PRDO_001")
+                    b.Property<decimal?>("MED_VOLUME_TTLZO_FIM_PRDO_001")
                         .HasPrecision(10, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
-                    b.Property<double?>("MED_VOLUME_TTLZO_INCO_PRDO_001")
+                    b.Property<decimal?>("MED_VOLUME_TTLZO_INCO_PRDO_001")
                         .HasPrecision(10, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<string>("NOM_BOLETIM_ANALISE_040")
                         .HasMaxLength(120)
@@ -1476,13 +1479,13 @@ namespace PRIO.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("varchar");
 
-                    b.Property<double?>("PCT_ADOTADO_CASO_FALHA_1_001")
+                    b.Property<decimal?>("PCT_ADOTADO_CASO_FALHA_1_001")
                         .HasPrecision(3, 3)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
-                    b.Property<double?>("PCT_ADOTADO_CASO_FALHA_2_001")
+                    b.Property<decimal?>("PCT_ADOTADO_CASO_FALHA_2_001")
                         .HasPrecision(3, 3)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("PCT_BSW_040")
                         .HasPrecision(3, 2)
@@ -1660,21 +1663,21 @@ namespace PRIO.Migrations
                         .HasPrecision(6, 6)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("PCT_LIMITE_INFERIOR_1_001")
+                    b.Property<decimal?>("PCT_LIMITE_INFERIOR_1_001")
                         .HasPrecision(3, 3)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
-                    b.Property<double?>("PCT_LIMITE_INFERIOR_2_001")
+                    b.Property<decimal?>("PCT_LIMITE_INFERIOR_2_001")
                         .HasPrecision(3, 3)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
-                    b.Property<double?>("PCT_LIMITE_SUPERIOR_1_001")
+                    b.Property<decimal?>("PCT_LIMITE_SUPERIOR_1_001")
                         .HasPrecision(3, 3)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
-                    b.Property<double?>("PCT_LIMITE_SUPERIOR_2_001")
+                    b.Property<decimal?>("PCT_LIMITE_SUPERIOR_2_001")
                         .HasPrecision(3, 3)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("PCT_MAXIMO_BSW_040")
                         .HasColumnType("decimal(3,2)");
@@ -1691,241 +1694,241 @@ namespace PRIO.Migrations
                         .HasPrecision(4, 4)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_K_FACTOR_10_001")
+                    b.Property<decimal?>("QTD_PULSOS_K_FACTOR_10_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_K_FACTOR_10_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_K_FACTOR_11_001")
+                    b.Property<decimal?>("QTD_PULSOS_K_FACTOR_11_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_K_FACTOR_11_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_K_FACTOR_12_001")
+                    b.Property<decimal?>("QTD_PULSOS_K_FACTOR_12_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_K_FACTOR_12_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_K_FACTOR_13_001")
+                    b.Property<decimal?>("QTD_PULSOS_K_FACTOR_13_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_K_FACTOR_13_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_K_FACTOR_14_001")
+                    b.Property<decimal?>("QTD_PULSOS_K_FACTOR_14_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_K_FACTOR_14_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_K_FACTOR_15_001")
+                    b.Property<decimal?>("QTD_PULSOS_K_FACTOR_15_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_K_FACTOR_15_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_K_FACTOR_1_001")
+                    b.Property<decimal?>("QTD_PULSOS_K_FACTOR_1_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_K_FACTOR_1_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_K_FACTOR_2_001")
+                    b.Property<decimal?>("QTD_PULSOS_K_FACTOR_2_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_K_FACTOR_2_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_K_FACTOR_3_001")
+                    b.Property<decimal?>("QTD_PULSOS_K_FACTOR_3_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_K_FACTOR_3_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_K_FACTOR_4_001")
+                    b.Property<decimal?>("QTD_PULSOS_K_FACTOR_4_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_K_FACTOR_4_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_K_FACTOR_5_001")
+                    b.Property<decimal?>("QTD_PULSOS_K_FACTOR_5_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_K_FACTOR_5_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_K_FACTOR_6_001")
+                    b.Property<decimal?>("QTD_PULSOS_K_FACTOR_6_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_K_FACTOR_6_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_K_FACTOR_7_001")
+                    b.Property<decimal?>("QTD_PULSOS_K_FACTOR_7_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_K_FACTOR_7_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_K_FACTOR_8_001")
+                    b.Property<decimal?>("QTD_PULSOS_K_FACTOR_8_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_K_FACTOR_8_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_K_FACTOR_9_001")
+                    b.Property<decimal?>("QTD_PULSOS_K_FACTOR_9_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_K_FACTOR_9_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_METER_FACTOR_10_001")
+                    b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_10_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_10_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_METER_FACTOR_11_001")
+                    b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_11_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_11_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_METER_FACTOR_12_001")
+                    b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_12_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_12_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_METER_FACTOR_13_001")
+                    b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_13_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_13_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_METER_FACTOR_14_001")
+                    b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_14_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_14_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_METER_FACTOR_15_001")
+                    b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_15_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_15_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_METER_FACTOR_1_001")
+                    b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_1_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_1_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_METER_FACTOR_2_001")
+                    b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_2_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_2_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_METER_FACTOR_3_001")
+                    b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_3_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_3_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_METER_FACTOR_4_001")
+                    b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_4_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_4_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_METER_FACTOR_5_001")
+                    b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_5_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_5_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_METER_FACTOR_6_001")
+                    b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_6_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_6_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_METER_FACTOR_7_001")
+                    b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_7_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_7_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_METER_FACTOR_8_001")
+                    b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_8_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_8_002")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<double?>("QTD_PULSOS_METER_FACTOR_9_001")
+                    b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_9_001")
                         .HasPrecision(8, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("QTD_PULSOS_METER_FACTOR_9_002")
                         .HasPrecision(8, 2)

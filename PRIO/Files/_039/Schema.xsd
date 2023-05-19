@@ -25,7 +25,7 @@
                     <xs:element name="LISTA_BSW">
                       <xs:complexType>
                         <xs:sequence>
-                          <xs:element name="BSW">
+                          <xs:element minOccurs="0" maxOccurs="unbounded" name="BSW">
                             <xs:complexType>
                               <xs:sequence>
                                 <xs:element name="DHA_FALHA_BSW" />
@@ -40,7 +40,7 @@
                     <xs:element name="LISTA_VOLUME">
                       <xs:complexType>
                         <xs:sequence>
-                          <xs:element name="VOLUME">
+                          <xs:element minOccurs="0" maxOccurs="unbounded" name="VOLUME">
                             <xs:complexType>
                               <xs:sequence>
                                 <xs:element name="DHA_MEDICAO" />
@@ -55,7 +55,7 @@
                     <xs:element name="LISTA_CALIBRACAO">
                       <xs:complexType>
                         <xs:sequence>
-                          <xs:element name="CALIBRACAO">
+                          <xs:element minOccurs="0" maxOccurs="unbounded" name="CALIBRACAO">
                             <xs:complexType>
                               <xs:sequence>
                                 <xs:element name="DHA_FALHA_CALIBRACAO" />
@@ -70,9 +70,9 @@
                       </xs:complexType>
                     </xs:element>
                   </xs:sequence>
-                  <xs:attribute name="COD_FALHA" type="xs:string" use="required" />
-                  <xs:attribute name="COD_TAG_PONTO_MEDICAO" type="xs:string" use="required" />
-                  <xs:attribute name="COD_INSTALACAO" type="xs:string" use="required" />
+                  <xs:attribute name="COD_FALHA" use="required" />
+                  <xs:attribute name="COD_TAG_PONTO_MEDICAO" use="required" />
+                  <xs:attribute name="COD_INSTALACAO" use="required" />
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
