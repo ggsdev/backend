@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<a039>
+  <LISTA_DADOS_BASICOS>
+    <DADOS_BASICOS COD_FALHA="UN-ES NFSM 0019/22" COD_TAG_PONTO_MEDICAO="FIT1223018" COD_INSTALACAO="10305">
+      <COD_TAG_EQUIPAMENTO/>
+      <COD_FALHA_SUPERIOR/>
+      <DSC_TIPO_FALHA>1</DSC_TIPO_FALHA>
+      <IND_TIPO_NOTIFICACAO>I</IND_TIPO_NOTIFICACAO>
+      <DHA_OCORRENCIA>04/01/2022 00:00:00</DHA_OCORRENCIA>
+      <DHA_DETECCAO>05/01/2022 10:00:00</DHA_DETECCAO>
+      <DHA_RETORNO/>
+      <NUM_PREVISAO_RETORNO_DIAS>10</NUM_PREVISAO_RETORNO_DIAS>
+      <DSC_FALHA>Desenquadramento de petr&#243;leo devido a instabilidades na planta de processo.</DSC_FALHA>
+      <DSC_ACAO>Visando o enquadramento do &#243;leo produzido foi realizado ajustes na planta de processo.</DSC_ACAO>
+      <DSC_METODOLOGIA>BSW determinado por meio de an&#225;lise de laborat&#243;rio.
+
+04/01/21
+BSW = 1,21% 
+VBC = 2193,20 m&#179; 
+VL = 2166,66 m&#179;
+VD = 2166,66 m&#179;
+
+05/01/21
+BSW = 1,05% 
+VBC = 1054,40 m&#179; 
+VL = 1043,32 m&#179;
+VD = 1043,32 m&#179;</DSC_METODOLOGIA>
+      <NOM_RESPONSAVEL_RELATO>MARCIO SOUSA CARVALHO DA SILVA</NOM_RESPONSAVEL_RELATO>
+      <NUM_SERIE_EQUIPAMENTO/>
+      <LISTA_BSW>
+        <BSW>
+          <DHA_FALHA_BSW>04/01/2022</DHA_FALHA_BSW>
+          <PCT_BSW>1,21</PCT_BSW>
+          <PCT_MAXIMO_BSW>2,20</PCT_MAXIMO_BSW>
+        </BSW>
+        <BSW>
+          <DHA_FALHA_BSW>05/01/2022</DHA_FALHA_BSW>
+          <PCT_BSW>1,05</PCT_BSW>
+          <PCT_MAXIMO_BSW>1,40</PCT_MAXIMO_BSW>
+        </BSW>
+      </LISTA_BSW>
+       <LISTA_VOLUME>
+        <VOLUME>
+          <DHA_MEDICAO>04/01/2022</DHA_MEDICAO>
+          <MED_DECLARADO>2166,66</MED_DECLARADO>
+          <MED_REGISTRADO>2182,20</MED_REGISTRADO>
+        </VOLUME>
+        <VOLUME>
+          <DHA_MEDICAO>05/01/2022</DHA_MEDICAO>
+          <MED_DECLARADO>1043,32</MED_DECLARADO>
+          <MED_REGISTRADO>1048,80</MED_REGISTRADO>
+        </VOLUME>
+      </LISTA_VOLUME>
+       <LISTA_CALIBRACAO/>
+    </DADOS_BASICOS>
+  </LISTA_DADOS_BASICOS>
+</a039>

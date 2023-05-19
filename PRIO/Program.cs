@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -5,8 +6,11 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PRIO;
 using PRIO.Data;
+using PRIO.Files._039;
 using PRIO.Middlewares;
+using PRIO.Models;
 using PRIO.Services;
+using System.Globalization;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,12 +32,12 @@ ConfigureMiddlewares(app);
 app.UseAuthorization();
 
 app.MapControllers();
-
 app.Run();
 
 static void ConfigureServices(IServiceCollection services)
 {
-    var key = Encoding.ASCII.GetBytes(Configuration.JwtKey);
+
+    var key = Encoding.ASCII.GetBytes(ConfigurationKeys.JwtKey);
     services.AddControllers(config =>
     {
         var policy = new AuthorizationPolicyBuilder()
@@ -41,6 +45,38 @@ static void ConfigureServices(IServiceCollection services)
                         .Build();
         config.Filters.Add(new AuthorizeFilter(policy));
     });
+
+    #region Map 039
+    var mapperConfig = new MapperConfiguration(cfg =>
+    {
+        cfg.CreateMap<BSW, Bsw>()
+        .ForMember(dest => dest.DHA_FALHA_BSW_039, opt => opt.MapFrom(src =>
+        string.IsNullOrEmpty(src.DHA_FALHA_BSW_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_FALHA_BSW_039, "dd/MM/yyyy", CultureInfo.InvariantCulture)));
+
+        cfg.CreateMap<VOLUME, Volume>();
+
+        cfg.CreateMap<CALIBRACAO, Calibration>()
+        .ForMember(dest => dest.DHA_FALHA_CALIBRACAO_039, opt => opt.MapFrom(src =>
+        string.IsNullOrEmpty(src.DHA_FALHA_CALIBRACAO_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_FALHA_CALIBRACAO_039, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)));
+
+        cfg.CreateMap<DADOS_BASICOS, Measurement>()
+        .ForMember(dest => dest.DHA_OCORRENCIA_039, opt => opt.MapFrom(src =>
+        string.IsNullOrEmpty(src.DHA_OCORRENCIA_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_OCORRENCIA_039, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)))
+         .ForMember(dest => dest.DHA_DETECCAO_039, opt => opt.MapFrom(src =>
+        string.IsNullOrEmpty(src.DHA_DETECCAO_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_DETECCAO_039, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)))
+          .ForMember(dest => dest.DHA_RETORNO_039, opt => opt.MapFrom(src =>
+        string.IsNullOrEmpty(src.DHA_RETORNO_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_RETORNO_039, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)));
+
+        cfg.CreateMap<VOLUME, Volume>()
+        .ForMember(dest => dest.DHA_MEDICAO_039, opt => opt.MapFrom(src =>
+            string.IsNullOrEmpty(src.DHA_MEDICAO_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_MEDICAO_039, "dd/MM/yyyy", CultureInfo.InvariantCulture)));
+
+
+    });
+
+    IMapper mapper = mapperConfig.CreateMapper();
+    services.AddSingleton(mapper);
+    #endregion
 
     services.AddEndpointsApiExplorer();
     services.AddDbContext<DataContext>();
@@ -73,7 +109,7 @@ static void ConfigureServices(IServiceCollection services)
             Scheme = "bearer",
             BearerFormat = "JWT",
             In = ParameterLocation.Header,
-            Description = Configuration.JwtKey
+            Description = ConfigurationKeys.JwtKey
         });
 
         c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -92,7 +128,6 @@ static void ConfigureServices(IServiceCollection services)
     });
     });
 }
-
 static void ConfigureMiddlewares(IApplicationBuilder app)
 {
     app.UseMiddleware<UnauthorizedCaptureMiddleware>();

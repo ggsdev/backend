@@ -1,50 +1,44 @@
-﻿namespace PRIO.Models
+﻿using System.Text.Json.Serialization;
+
+namespace PRIO.Models
 {
+
+    public class Bsw : BaseModel
+    {
+        public DateTime? DHA_FALHA_BSW_039 { get; set; }
+
+        public double? DHA_PCT_BSW_039 { get; set; }
+
+        public double? DHA_PCT_MAXIMO_BSW_039 { get; set; }
+        [JsonIgnore]
+        public Measurement Measurement { get; set; }
+    }
+
+    public class Volume : BaseModel
+    {
+        public DateTime? DHA_MEDICAO_039 { get; set; }
+        public double? DHA_MED_DECLARADO_039 { get; set; }
+        public double? DHA_MED_REGISTRADO_039 { get; set; }
+        [JsonIgnore]
+        public Measurement Measurement { get; set; }
+    }
+
+    public class Calibration : BaseModel
+    {
+        public DateTime? DHA_FALHA_CALIBRACAO_039 { get; set; }
+
+        public double? DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039 { get; set; }
+
+        public double? DHA_NUM_FATOR_CALIBRACAO_ATUAL_039 { get; set; }
+
+        public string? DHA_CERTIFICADO_ATUAL_039 { get; set; }
+
+        public string? DHA_CERTIFICADO_ANTERIOR_039 { get; set; }
+        [JsonIgnore]
+        public Measurement Measurement { get; set; }
+    }
     public class Measurement : BaseModel
     {
-
-        #region 039
-        public string? COD_TAG_EQUIPAMENTO_039 { get; set; }
-
-        public string? COD_FALHA_SUPERIOR_039 { get; set; }
-
-        public short DSC_TIPO_FALHA_039 { get; set; }
-
-        public string? COD_FALHA_039 { get; set; }
-
-        public string? IND_TIPO_NOTIFICACAO_039 { get; set; }
-
-        public DateTime? DHA_OCORRENCIA_039 { get; set; }
-
-        public DateTime? DHA_DETECCAO_039 { get; set; }
-
-        public DateTime? DHA_RETORNO_039 { get; set; }
-
-        public short DHA_NUM_PREVISAO_RETORNO_DIAS_039 { get; set; }
-
-        public string? DHA_DSC_FALHA_039 { get; set; }
-
-        public string? DHA_DSC_ACAO_039 { get; set; }
-
-        public string? DHA_DSC_METODOLOGIA_039 { get; set; }
-
-        public string? DHA_NOM_RESPONSAVEL_RELATO_039 { get; set; }
-
-        public string? DHA_NUM_SERIE_EQUIPAMENTO_039 { get; set; }
-
-        public int? DHA_COD_INSTALACAO_039 { get; set; }
-        public DateTime DHA_FALHA_BSW_039 { get; set; }
-        public decimal DHA_PCT_BSW_039 { get; set; }
-        public decimal DHA_PCT_MAXIMO_BSW_039 { get; set; }
-        public DateTime DHA_MEDICAO_039 { get; set; }
-        public decimal DHA_MED_DECLARADO_039 { get; set; }
-        public decimal DHA_MED_REGISTRADO_039 { get; set; }
-        public DateTime? DHA_FALHA_CALIBRACAO_039 { get; set; }
-        public decimal? DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039 { get; set; }
-        public decimal? DHA_NUM_FATOR_CALIBRACAO_ATUAL_039 { get; set; }
-        public string? DHA_CERTIFICADO_ANTERIOR_039 { get; set; }
-        public string? DHA_CERTIFICADO_ATUAL_039 { get; set; }
-        #endregion
 
         #region 001
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_001 { get; set; }
@@ -288,7 +282,7 @@
         #region 003
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_003 { get; set; }
         public int? COD_INSTALACAO_003 { get; set; }
-        public short COD_TAG_PONTO_MEDICAO_003 { get; set; }
+        public short? COD_TAG_PONTO_MEDICAO_003 { get; set; }
         public string? NUM_SERIE_COMPUTADOR_VAZAO_003 { get; set; }
         public DateTime? DHA_COLETA_003 { get; set; }
         public decimal? MED_TEMPERATURA_1_003 { get; set; }
@@ -320,18 +314,19 @@
         public string? DSC_VERSAO_SOFTWARE_003 { get; set; }
         public decimal? CE_LIMITE_SPRR_ALARME_003 { get; set; }
         public decimal? ICE_LIMITE_INFRR_ALARME_1_003 { get; set; }
+        public bool? IND_HABILITACAO_ALARME_1_003 { get; set; }
         public bool? ICE_LIMITE_INFRR_ALARME_2_003 { get; set; }
         public string? NUM_SERIE_1_003 { get; set; }
         public decimal? MED_PRSO_LIMITE_SPRR_ALRME_1_003 { get; set; }
         public decimal? MED_PRSO_LMTE_INFRR_ALRME_1_003 { get; set; }
-        public bool? IND_HABILITACAO_ALARME_1_003 { get; set; }
         public decimal? MED_PRSO_ADOTADA_FALHA_1_003 { get; set; }
         public string? DSC_ESTADO_INSNO_CASO_FALHA_1_003 { get; set; }
         public string? IND_TIPO_PRESSAO_CONSIDERADA_003 { get; set; }
+        public bool? IND_HABILITACAO_ALARME_2_003 { get; set; }
         public string? NUM_SERIE_2_003 { get; set; }
         public decimal? MED_TMPTA_SPRR_ALARME_003 { get; set; }
         public decimal? MED_TMPTA_INFRR_ALRME_003 { get; set; }
-        public bool? IND_HABILITACAO_ALARME_2_003 { get; set; }
+        public bool? IND_HABILITACAO_ALARME_3_003 { get; set; }
         public decimal? MED_TMPTA_ADTTA_FALHA_003 { get; set; }
         public string? DSC_ESTADO_INSTRUMENTO_FALHA_003 { get; set; }
         public decimal? MED_DIAMETRO_REFERENCIA_003 { get; set; }
@@ -345,22 +340,22 @@
         public string? NUM_SERIE_3_003 { get; set; }
         public decimal? MED_PRSO_LIMITE_SPRR_ALRME_2_003 { get; set; }
         public decimal? MED_PRSO_LMTE_INFRR_ALRME_2_003 { get; set; }
+        public bool? IND_HABILITACAO_ALARME_4_003 { get; set; }
+        public decimal? MED_PRSO_ADOTADA_FALHA_2_003 { get; set; }
+        public string? DSC_ESTADO_INSNO_CASO_FALHA_2_003 { get; set; }
+        public decimal? MED_CUTOFF_KPA_1_003 { get; set; }
         public string? NUM_SERIE_4_003 { get; set; }
         public decimal? MED_PRSO_LIMITE_SPRR_ALRME_3_003 { get; set; }
         public decimal? MED_PRSO_LMTE_INFRR_ALRME_3_003 { get; set; }
         public string? NUM_SERIE_5_003 { get; set; }
         public decimal? MED_PRSO_LIMITE_SPRR_ALRME_4_003 { get; set; }
         public decimal? MED_PRSO_LMTE_INFRR_ALRME_4_003 { get; set; }
-        public bool? IND_HABILITACAO_ALARME_3_003 { get; set; }
-        public decimal? MED_PRSO_ADOTADA_FALHA_2_003 { get; set; }
-        public string? DSC_ESTADO_INSNO_CASO_FALHA_2_003 { get; set; }
-        public decimal? MED_CUTOFF_KPA_1_003 { get; set; }
-        public string? NUM_SERIE_6_003 { get; set; }
+        public bool? IND_HABILITACAO_ALARME_5_003 { get; set; }
         public decimal? MED_PRSO_LIMITE_SPRR_ALRME_5_003 { get; set; }
         public decimal? MED_PRSO_LMTE_INFRR_ALRME_5_003 { get; set; }
-        public bool? IND_HABILITACAO_ALARME_4_003 { get; set; }
         public decimal? MED_PRSO_ADOTADA_FALHA_3_003 { get; set; }
         public string? DSC_ESTADO_INSNO_CASO_FALHA_3_003 { get; set; }
+        public string? NUM_SERIE_6_003 { get; set; }
         public decimal? MED_CUTOFF_KPA_2_003 { get; set; }
         public DateTime? DHA_INICIO_PERIODO_MEDICAO_003 { get; set; }
         public DateTime? DHA_FIM_PERIODO_MEDICAO_003 { get; set; }
@@ -372,6 +367,44 @@
         public decimal? PRZ_DURACAO_FLUXO_EFETIVO_003 { get; set; }
         public decimal? MED_CORRIGIDO_MVMDO_003 { get; set; }
 
+        #endregion
+
+        #region 039
+        public string? COD_TAG_EQUIPAMENTO_039 { get; set; }
+
+        public string? COD_FALHA_SUPERIOR_039 { get; set; }
+
+        public short? DSC_TIPO_FALHA_039 { get; set; }
+
+        public string? COD_FALHA_039 { get; set; }
+
+        public string? IND_TIPO_NOTIFICACAO_039 { get; set; }
+
+        public DateTime? DHA_OCORRENCIA_039 { get; set; }
+
+        public DateTime? DHA_DETECCAO_039 { get; set; }
+
+        public DateTime? DHA_RETORNO_039 { get; set; } = null;
+
+        public short? DHA_NUM_PREVISAO_RETORNO_DIAS_039 { get; set; }
+
+        public string? DHA_DSC_FALHA_039 { get; set; }
+
+        public string? DHA_DSC_ACAO_039 { get; set; }
+
+        public string? DHA_DSC_METODOLOGIA_039 { get; set; }
+
+        public string? DHA_NOM_RESPONSAVEL_RELATO_039 { get; set; }
+
+        public string? DHA_NUM_SERIE_EQUIPAMENTO_039 { get; set; }
+
+        public int? DHA_COD_INSTALACAO_039 { get; set; }
+
+        public List<Calibration>? LISTA_CALIBRACAO { get; set; }
+
+        public List<Bsw>? LISTA_BSW { get; set; }
+
+        public List<Volume>? LISTA_VOLUME { get; set; }
         #endregion
 
         #region 040
@@ -391,19 +424,6 @@
         public DateTime? DHA_ATUALIZACAO_041 { get; set; }
         public decimal? NUM_FATOR_ENCOLHIMENTO_041 { get; set; }
         public string? NOM_BOLETIM_ANALISE_041 { get; set; }
-        #endregion
-
-        #region 045
-        public int? COD_INSTALACAO_045 { get; set; }
-        public string? COD_TAG_PONTO_MEDICAO_045 { get; set; }
-        public string? TAG_TANQUE_045 { get; set; }
-        public string? NUM_SERIE_045 { get; set; }
-        public decimal? MED_CAPACIDADE_LIQUIDA_045 { get; set; }
-        public decimal? MED_CAPACIDADE_BRUTA_045 { get; set; }
-        public decimal? MED_CAPACIDADE_CORRIGIDA_045 { get; set; }
-        public DateTime? DHA_MEDICAO_045 { get; set; }
-        public string? NOM_RELATORIO_BSW_045 { get; set; }
-        public bool? IND_NAVIO_045 { get; set; }
         #endregion
 
         #region 042
@@ -428,6 +448,19 @@
         public int? COD_INSTALACAO_042 { get; set; }
         public string? COD_TAG_PONTO_MEDICAO_OLEO_042 { get; set; }
         public string? COD_TAG_PONTO_MEDICAO_GAS_042 { get; set; }
+        #endregion
+
+        #region 045
+        public int? COD_INSTALACAO_045 { get; set; }
+        public string? COD_TAG_PONTO_MEDICAO_045 { get; set; }
+        public string? TAG_TANQUE_045 { get; set; }
+        public string? NUM_SERIE_045 { get; set; }
+        public decimal? MED_CAPACIDADE_LIQUIDA_045 { get; set; }
+        public decimal? MED_CAPACIDADE_BRUTA_045 { get; set; }
+        public decimal? MED_CAPACIDADE_CORRIGIDA_045 { get; set; }
+        public DateTime? DHA_MEDICAO_045 { get; set; }
+        public string? NOM_RELATORIO_BSW_045 { get; set; }
+        public bool? IND_NAVIO_045 { get; set; }
         #endregion
 
         public FileType? FileType { get; set; }

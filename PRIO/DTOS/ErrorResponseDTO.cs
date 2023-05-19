@@ -1,6 +1,6 @@
 ﻿namespace PRIO.DTOS
 {
-    public class ErrorResponse
+    public class ErrorResponseDTO
     {
         public string Message { get; set; }
     }

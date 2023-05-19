@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.Data;
 
@@ -11,9 +12,11 @@ using PRIO.Data;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230519120256_NullableDatetime")]
+    partial class NullableDatetime
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,20 +35,23 @@ namespace PRIO.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("DHA_FALHA_BSW_039")
+                        .IsRequired()
                         .HasColumnType("date");
 
-                    b.Property<double?>("DHA_PCT_BSW_039")
+                    b.Property<decimal?>("DHA_PCT_BSW_039")
+                        .IsRequired()
                         .HasPrecision(3, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
-                    b.Property<double?>("DHA_PCT_MAXIMO_BSW_039")
+                    b.Property<decimal?>("DHA_PCT_MAXIMO_BSW_039")
+                        .IsRequired()
                         .HasPrecision(3, 2)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("MeasurementId")
+                    b.Property<Guid?>("MeasurementId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -68,28 +74,33 @@ namespace PRIO.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DHA_CERTIFICADO_ANTERIOR_039")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar");
 
                     b.Property<string>("DHA_CERTIFICADO_ATUAL_039")
+                        .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("varchar");
 
                     b.Property<DateTime?>("DHA_FALHA_CALIBRACAO_039")
+                        .IsRequired()
                         .HasColumnType("date");
 
-                    b.Property<double?>("DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039")
+                    b.Property<decimal?>("DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039")
+                        .IsRequired()
                         .HasPrecision(5, 5)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
-                    b.Property<double?>("DHA_NUM_FATOR_CALIBRACAO_ATUAL_039")
+                    b.Property<decimal?>("DHA_NUM_FATOR_CALIBRACAO_ATUAL_039")
+                        .IsRequired()
                         .HasPrecision(5, 5)
-                        .HasColumnType("float");
+                        .HasColumnType("decimal");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("MeasurementId")
+                    b.Property<Guid?>("MeasurementId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -574,13 +585,16 @@ namespace PRIO.Migrations
                         .HasColumnType("datetime");
 
                     b.Property<string>("DHA_DSC_ACAO_039")
-                        .HasColumnType("text");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
 
                     b.Property<string>("DHA_DSC_FALHA_039")
-                        .HasColumnType("text");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
 
                     b.Property<string>("DHA_DSC_METODOLOGIA_039")
-                        .HasColumnType("text");
+                        .HasMaxLength(3000)
+                        .HasColumnType("varchar");
 
                     b.Property<DateTime?>("DHA_FIM_PERIODO_MEDICAO_001")
                         .HasColumnType("datetime");
@@ -2083,20 +2097,23 @@ namespace PRIO.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("DHA_MEDICAO_039")
+                        .IsRequired()
                         .HasColumnType("date");
 
-                    b.Property<double?>("DHA_MED_DECLARADO_039")
-                        .HasPrecision(8, 6)
-                        .HasColumnType("float");
+                    b.Property<decimal?>("DHA_MED_DECLARADO_039")
+                        .IsRequired()
+                        .HasPrecision(7, 6)
+                        .HasColumnType("decimal");
 
-                    b.Property<double?>("DHA_MED_REGISTRADO_039")
-                        .HasPrecision(8, 6)
-                        .HasColumnType("float");
+                    b.Property<decimal?>("DHA_MED_REGISTRADO_039")
+                        .IsRequired()
+                        .HasPrecision(7, 6)
+                        .HasColumnType("decimal");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("MeasurementId")
+                    b.Property<Guid?>("MeasurementId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -2303,24 +2320,16 @@ namespace PRIO.Migrations
 
             modelBuilder.Entity("PRIO.Models.Bsw", b =>
                 {
-                    b.HasOne("PRIO.Models.Measurement", "Measurement")
+                    b.HasOne("PRIO.Models.Measurement", null)
                         .WithMany("LISTA_BSW")
-                        .HasForeignKey("MeasurementId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Measurement");
+                        .HasForeignKey("MeasurementId");
                 });
 
             modelBuilder.Entity("PRIO.Models.Calibration", b =>
                 {
-                    b.HasOne("PRIO.Models.Measurement", "Measurement")
+                    b.HasOne("PRIO.Models.Measurement", null)
                         .WithMany("LISTA_CALIBRACAO")
-                        .HasForeignKey("MeasurementId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Measurement");
+                        .HasForeignKey("MeasurementId");
                 });
 
             modelBuilder.Entity("PRIO.Models.Cluster", b =>
@@ -2445,13 +2454,9 @@ namespace PRIO.Migrations
 
             modelBuilder.Entity("PRIO.Models.Volume", b =>
                 {
-                    b.HasOne("PRIO.Models.Measurement", "Measurement")
+                    b.HasOne("PRIO.Models.Measurement", null)
                         .WithMany("LISTA_VOLUME")
-                        .HasForeignKey("MeasurementId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Measurement");
+                        .HasForeignKey("MeasurementId");
                 });
 
             modelBuilder.Entity("PRIO.Models.Well", b =>

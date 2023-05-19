@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<a039>
+  <LISTA_DADOS_BASICOS>
+    <DADOS_BASICOS COD_FALHA="001_FRADE_2023" COD_TAG_PONTO_MEDICAO="044-FIT-1020B" COD_INSTALACAO="10398">
+      <COD_TAG_EQUIPAMENTO>044-FIT-1020B</COD_TAG_EQUIPAMENTO>
+      <COD_FALHA_SUPERIOR />
+      <DSC_TIPO_FALHA>7</DSC_TIPO_FALHA>
+      <IND_TIPO_NOTIFICACAO>F</IND_TIPO_NOTIFICACAO>
+      <DHA_OCORRENCIA>12/01/2023 00:00:00</DHA_OCORRENCIA>
+      <DHA_DETECCAO>13/01/2023 07:00:00</DHA_DETECCAO>
+      <DHA_RETORNO>13/01/2023 00:00:00</DHA_RETORNO>
+      <NUM_PREVISAO_RETORNO_DIAS />
+      <DSC_FALHA>Em 12 de janeiro de 2023, foram registradas medi��es esp�rias no medidor Fiscal Run 2 do tramo de medi��o 044-FIT-1020B no intervalo entre 00:00h do dia 12/01 � 00:00h do dia 13/01. O tramo estava isolado, portanto, o valor foi zerado.
+		
+</DSC_FALHA>
+      <DSC_ACAO>Reportar a Agencia, via NFSM, o volume correto</DSC_ACAO>
+      <DSC_METODOLOGIA>Volume Original = 1 Sm�
+Volume Corrigido = 0 Sm�</DSC_METODOLOGIA>
+      <NOM_RESPONSAVEL_RELATO>Arthur Arenari</NOM_RESPONSAVEL_RELATO>
+      <NUM_SERIE_EQUIPAMENTO>110035204 1002</NUM_SERIE_EQUIPAMENTO>
+      <LISTA_BSW />
+      <LISTA_VOLUME>
+        <VOLUME>
+          <DHA_MEDICAO>12/01/2023</DHA_MEDICAO>
+          <MED_DECLARADO>0,000000</MED_DECLARADO>
+          <MED_REGISTRADO>0,001000</MED_REGISTRADO>
+        </VOLUME>
+      </LISTA_VOLUME>
+      <LISTA_CALIBRACAO />
+    </DADOS_BASICOS>
+  </LISTA_DADOS_BASICOS>
+</a039>
