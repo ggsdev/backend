@@ -10,12 +10,9 @@
       <DHA_DETECCAO>13/01/2023 07:00:00</DHA_DETECCAO>
       <DHA_RETORNO>13/01/2023 00:00:00</DHA_RETORNO>
       <NUM_PREVISAO_RETORNO_DIAS />
-      <DSC_FALHA>Em 12 de janeiro de 2023, foram registradas medi��es esp�rias no medidor Fiscal Run 2 do tramo de medi��o 044-FIT-1020B no intervalo entre 00:00h do dia 12/01 � 00:00h do dia 13/01. O tramo estava isolado, portanto, o valor foi zerado.
-		
-</DSC_FALHA>
+      <DSC_FALHA>Em 12 de janeiro de 2023, foram registradas medi��es esp�rias no medidor Fiscal Run 2 do tramo de medi��o 044-FIT-1020B no intervalo entre 00:00h do dia 12/01 � 00:00h do dia 13/01. O tramo estava isolado, portanto, o valor foi zerado.</DSC_FALHA>
       <DSC_ACAO>Reportar a Agencia, via NFSM, o volume correto</DSC_ACAO>
-      <DSC_METODOLOGIA>Volume Original = 1 Sm�
-Volume Corrigido = 0 Sm�</DSC_METODOLOGIA>
+      <DSC_METODOLOGIA>Volume Original = 1 Sm�Volume Corrigido = 0 Sm�</DSC_METODOLOGIA>
       <NOM_RESPONSAVEL_RELATO>Arthur Arenari</NOM_RESPONSAVEL_RELATO>
       <NUM_SERIE_EQUIPAMENTO>110035204 1002</NUM_SERIE_EQUIPAMENTO>
       <LISTA_BSW />

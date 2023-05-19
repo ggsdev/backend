@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using PRIO.Data.Mappings;
 using PRIO.Data.Mappings.MeasurementMappping;
 using PRIO.Models;
@@ -8,7 +7,7 @@ namespace PRIO.Data
 {
     public class DataContext : DbContext
     {
-        private static readonly MemoryCache _cache = new(new MemoryCacheOptions());
+        //private static readonly MemoryCache _cache = new(new MemoryCacheOptions());
 
         public DbSet<User> Users { get; set; }
         public DbSet<Session> Sessions { get; set; }
