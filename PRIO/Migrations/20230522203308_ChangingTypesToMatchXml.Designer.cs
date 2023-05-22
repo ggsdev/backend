@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.Data;
 
@@ -11,9 +12,11 @@ using PRIO.Data;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230522203308_ChangingTypesToMatchXml")]
+    partial class ChangingTypesToMatchXml
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -330,6 +333,7 @@ namespace PRIO.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
@@ -339,6 +343,13 @@ namespace PRIO.Migrations
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
+
+                    b.Property<int>("QtdColumns")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Structure")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -485,31 +496,24 @@ namespace PRIO.Migrations
                         .HasColumnType("varchar");
 
                     b.Property<string>("COD_INSTALACAO_001")
-                        .HasMaxLength(20)
                         .HasColumnType("varchar");
 
                     b.Property<string>("COD_INSTALACAO_002")
-                        .HasMaxLength(20)
                         .HasColumnType("varchar");
 
                     b.Property<string>("COD_INSTALACAO_003")
-                        .HasMaxLength(20)
                         .HasColumnType("varchar");
 
                     b.Property<string>("COD_INSTALACAO_040")
-                        .HasMaxLength(20)
                         .HasColumnType("varchar");
 
                     b.Property<string>("COD_INSTALACAO_041")
-                        .HasMaxLength(20)
                         .HasColumnType("varchar");
 
                     b.Property<string>("COD_INSTALACAO_042")
-                        .HasMaxLength(20)
                         .HasColumnType("varchar");
 
                     b.Property<string>("COD_INSTALACAO_045")
-                        .HasMaxLength(20)
                         .HasColumnType("varchar");
 
                     b.Property<string>("COD_TAG_EQUIPAMENTO_039")
@@ -525,7 +529,6 @@ namespace PRIO.Migrations
                         .HasColumnType("varchar");
 
                     b.Property<string>("COD_TAG_PONTO_MEDICAO_003")
-                        .HasMaxLength(20)
                         .HasColumnType("varchar");
 
                     b.Property<string>("COD_TAG_PONTO_MEDICAO_040")
@@ -558,7 +561,6 @@ namespace PRIO.Migrations
                         .HasColumnType("date");
 
                     b.Property<string>("DHA_COD_INSTALACAO_039")
-                        .HasMaxLength(20)
                         .HasColumnType("varchar");
 
                     b.Property<DateTime?>("DHA_COLETA_001")
