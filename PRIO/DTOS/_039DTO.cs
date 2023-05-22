@@ -25,6 +25,4 @@ namespace PRIO.DTOS
         public List<Volume>? LISTA_VOLUME { get; set; }
         public FileType? FileType { get; set; }
     }
-
-
 }
