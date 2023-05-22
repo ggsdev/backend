@@ -42,7 +42,7 @@ namespace PRIO.Models
 
         #region 001
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_001 { get; set; }
-        public int? COD_INSTALACAO_001 { get; set; }
+        public string? COD_INSTALACAO_001 { get; set; }
         public string? COD_TAG_PONTO_MEDICAO_001 { get; set; }
         public string? NUM_SERIE_COMPUTADOR_VAZAO_001 { get; set; }
         public DateTime? DHA_COLETA_001 { get; set; }
@@ -158,7 +158,7 @@ namespace PRIO.Models
 
         #region 002
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_002 { get; set; }
-        public int? COD_INSTALACAO_002 { get; set; }
+        public string? COD_INSTALACAO_002 { get; set; }
         public string? COD_TAG_PONTO_MEDICAO_002 { get; set; }
         public string? NUM_SERIE_COMPUTADOR_VAZAO_002 { get; set; }
         public double? DHA_COLETA_002 { get; set; }
@@ -281,7 +281,7 @@ namespace PRIO.Models
 
         #region 003
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_003 { get; set; }
-        public int? COD_INSTALACAO_003 { get; set; }
+        public string? COD_INSTALACAO_003 { get; set; }
         public short? COD_TAG_PONTO_MEDICAO_003 { get; set; }
         public string? NUM_SERIE_COMPUTADOR_VAZAO_003 { get; set; }
         public DateTime? DHA_COLETA_003 { get; set; }
@@ -398,7 +398,7 @@ namespace PRIO.Models
 
         public string? DHA_NUM_SERIE_EQUIPAMENTO_039 { get; set; }
 
-        public int? DHA_COD_INSTALACAO_039 { get; set; }
+        public string? DHA_COD_INSTALACAO_039 { get; set; }
 
         public List<Calibration>? LISTA_CALIBRACAO { get; set; }
 
@@ -408,7 +408,7 @@ namespace PRIO.Models
         #endregion
 
         #region 040
-        public int? COD_INSTALACAO_040 { get; set; }
+        public string? COD_INSTALACAO_040 { get; set; }
         public string? COD_TAG_PONTO_MEDICAO_040 { get; set; }
         public decimal? PCT_BSW_040 { get; set; }
         public decimal? PCT_MAXIMO_BSW_040 { get; set; }
@@ -419,7 +419,7 @@ namespace PRIO.Models
         #endregion
 
         #region 041
-        public int? COD_INSTALACAO_041 { get; set; }
+        public string? COD_INSTALACAO_041 { get; set; }
         public string? COD_TAG_PONTO_MEDICAO_041 { get; set; }
         public DateTime? DHA_ATUALIZACAO_041 { get; set; }
         public decimal? NUM_FATOR_ENCOLHIMENTO_041 { get; set; }
@@ -445,13 +445,13 @@ namespace PRIO.Models
         public string? NOM_RELATORIO_FATOR_ENCLO_042 { get; set; }
         public decimal? PCT_RAZAO_SOLUBILIDADE_042 { get; set; }
         public string? NOM_RELATORIO_RZO_SOLUBILIDADE_042 { get; set; }
-        public int? COD_INSTALACAO_042 { get; set; }
+        public string? COD_INSTALACAO_042 { get; set; }
         public string? COD_TAG_PONTO_MEDICAO_OLEO_042 { get; set; }
         public string? COD_TAG_PONTO_MEDICAO_GAS_042 { get; set; }
         #endregion
 
         #region 045
-        public int? COD_INSTALACAO_045 { get; set; }
+        public string? COD_INSTALACAO_045 { get; set; }
         public string? COD_TAG_PONTO_MEDICAO_045 { get; set; }
         public string? TAG_TANQUE_045 { get; set; }
         public string? NUM_SERIE_045 { get; set; }
