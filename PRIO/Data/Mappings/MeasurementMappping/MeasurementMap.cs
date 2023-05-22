@@ -16,7 +16,7 @@ namespace PRIO.Data.Mappings.MeasurementMappping
 
             #region 040
 
-            builder.Property(x => x.COD_INSTALACAO_040)
+            builder.Property(x => x.COD_INSTALACAO_040).HasColumnType("varchar").HasMaxLength(20)
                 ;
 
             builder.Property(x => x.COD_TAG_PONTO_MEDICAO_040)
@@ -25,12 +25,12 @@ namespace PRIO.Data.Mappings.MeasurementMappping
                 ;
 
             builder.Property(x => x.PCT_BSW_040)
-                .HasColumnType("decimal(3,2)")
+                .HasColumnType("float(3,2)")
                 .HasPrecision(3, 2)
                 ;
 
             builder.Property(x => x.PCT_MAXIMO_BSW_040)
-                .HasColumnType("decimal(3,2)")
+                .HasColumnType("float(3,2)")
                 ;
 
             builder.Property(x => x.DHA_MEDICAO_040)
@@ -49,7 +49,8 @@ namespace PRIO.Data.Mappings.MeasurementMappping
             #region 041
 
             builder.Property(x => x.COD_INSTALACAO_041)
-                .HasColumnType("int")
+                .HasColumnType("varchar")
+                .HasMaxLength(20)
                 ;
 
             builder.Property(x => x.COD_TAG_PONTO_MEDICAO_041)
@@ -62,7 +63,7 @@ namespace PRIO.Data.Mappings.MeasurementMappping
                 ;
 
             builder.Property(x => x.NUM_FATOR_ENCOLHIMENTO_041)
-                .HasColumnType("decimal(6,6)")
+                .HasColumnType("float(6,6)")
                 .HasPrecision(6, 6)
                 ;
 
@@ -132,15 +133,15 @@ namespace PRIO.Data.Mappings.MeasurementMappping
                 .HasMaxLength(30);
 
             builder.Property(x => x.DHA_COD_INSTALACAO_039)
-                .HasColumnType("int")
+                .HasColumnType("varchar")
+                .HasMaxLength(20)
                 ;
 
             #endregion
 
             #region 045
 
-            builder.Property(x => x.COD_INSTALACAO_045)
-                .HasColumnType("int")
+            builder.Property(x => x.COD_INSTALACAO_045).HasColumnType("varchar").HasMaxLength(20)
                 ;
 
             builder.Property(x => x.COD_TAG_PONTO_MEDICAO_045)
@@ -159,17 +160,17 @@ namespace PRIO.Data.Mappings.MeasurementMappping
                 ;
 
             builder.Property(x => x.MED_CAPACIDADE_LIQUIDA_045)
-                .HasColumnType("decimal")
+                .HasColumnType("float")
                 .HasPrecision(7, 5)
                 ;
 
             builder.Property(x => x.MED_CAPACIDADE_BRUTA_045)
-                .HasColumnType("decimal")
+                .HasColumnType("float")
                 .HasPrecision(7, 5)
                 ;
 
             builder.Property(x => x.MED_CAPACIDADE_CORRIGIDA_045)
-                .HasColumnType("decimal")
+                .HasColumnType("float")
                 .HasPrecision(7, 5)
                 ;
 
@@ -195,12 +196,10 @@ namespace PRIO.Data.Mappings.MeasurementMappping
                 .HasMaxLength(30)
                 ;
 
-            builder.Property(x => x.COD_INSTALACAO_003)
-                .HasColumnType("int")
+            builder.Property(x => x.COD_INSTALACAO_003).HasColumnType("varchar").HasMaxLength(20)
                 ;
 
-            builder.Property(x => x.COD_TAG_PONTO_MEDICAO_003)
-               .HasColumnType("smallint");
+            builder.Property(x => x.COD_TAG_PONTO_MEDICAO_003).HasColumnType("varchar").HasMaxLength(20);
 
             builder.Property(x => x.NUM_SERIE_COMPUTADOR_VAZAO_003)
                .HasColumnType("varchar")
@@ -212,22 +211,22 @@ namespace PRIO.Data.Mappings.MeasurementMappping
                ;
 
             builder.Property(x => x.MED_TEMPERATURA_1_003)
-               .HasColumnType("decimal")
+               .HasColumnType("float")
                .HasPrecision(3, 2)
                ;
 
             builder.Property(x => x.MED_PRESSAO_ATMSA_003)
-               .HasColumnType("decimal")
+               .HasColumnType("float")
                .HasPrecision(3, 3)
                ;
 
             builder.Property(x => x.MED_PRESSAO_RFRNA_003)
-               .HasColumnType("decimal")
+               .HasColumnType("float")
                .HasPrecision(3, 3)
                ;
 
             builder.Property(x => x.MED_DENSIDADE_RELATIVA_003)
-               .HasColumnType("decimal")
+               .HasColumnType("float")
                .HasPrecision(8, 8)
                ;
 
@@ -237,107 +236,107 @@ namespace PRIO.Data.Mappings.MeasurementMappping
                ;
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_NITROGENIO_003)
-              .HasColumnType("decimal")
+              .HasColumnType("float")
               .HasPrecision(6, 6)
               ;
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_CO2_003)
-              .HasColumnType("decimal")
+              .HasColumnType("float")
               .HasPrecision(6, 6)
               ;
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_METANO_003)
-              .HasColumnType("decimal")
+              .HasColumnType("float")
               .HasPrecision(6, 6)
               ;
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_ETANO_003)
-              .HasColumnType("decimal")
+              .HasColumnType("float")
               .HasPrecision(6, 6)
               ;
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_PROPANO_003)
-              .HasColumnType("decimal")
+              .HasColumnType("float")
               .HasPrecision(6, 6)
               ;
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_N_BUTANO_003)
-              .HasColumnType("decimal")
+              .HasColumnType("float")
               .HasPrecision(6, 6)
               ;
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_I_BUTANO_003)
-              .HasColumnType("decimal")
+              .HasColumnType("float")
               .HasPrecision(6, 6)
               ;
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_N_PENTANO_003)
-              .HasColumnType("decimal")
+              .HasColumnType("float")
               .HasPrecision(6, 6)
               ;
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_I_PENTANO_003)
-              .HasColumnType("decimal")
+              .HasColumnType("float")
               .HasPrecision(6, 6)
               ;
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_HEXANO_003)
-              .HasColumnType("decimal")
+              .HasColumnType("float")
               .HasPrecision(6, 6)
               ;
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_HEPTANO_003)
-              .HasColumnType("decimal")
+              .HasColumnType("float")
               .HasPrecision(6, 6)
               ;
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_OCTANO_003)
-              .HasColumnType("decimal")
+              .HasColumnType("float")
               .HasPrecision(6, 6)
               ;
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_NONANO_003)
-              .HasColumnType("decimal")
+              .HasColumnType("float")
               .HasPrecision(6, 6)
               ;
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_DECANO_003)
-              .HasColumnType("decimal")
+              .HasColumnType("float")
               .HasPrecision(6, 6)
               ;
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_H2S_003)
-              .HasColumnType("decimal")
+              .HasColumnType("float")
               .HasPrecision(6, 6)
               ;
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_AGUA_003)
-              .HasColumnType("decimal")
+              .HasColumnType("float")
               .HasPrecision(6, 6)
               ;
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_HELIO_003)
-             .HasColumnType("decimal")
+             .HasColumnType("float")
              .HasPrecision(6, 6)
              ;
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_OXIGENIO_003)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 6)
             ;
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_CO_003)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 6)
             ;
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_HIDROGENIO_003)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 6)
             ;
 
             builder.Property(x => x.PCT_CROMATOGRAFIA_ARGONIO_003)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(6, 6)
             ;
 
@@ -347,12 +346,12 @@ namespace PRIO.Data.Mappings.MeasurementMappping
             ;
 
             builder.Property(x => x.CE_LIMITE_SPRR_ALARME_003)
-           .HasColumnType("decimal")
+           .HasColumnType("float")
            .HasPrecision(6, 3)
            ;
 
             builder.Property(x => x.ICE_LIMITE_INFRR_ALARME_1_003)
-           .HasColumnType("decimal")
+           .HasColumnType("float")
            .HasPrecision(6, 3)
            ;
 
@@ -366,12 +365,12 @@ namespace PRIO.Data.Mappings.MeasurementMappping
            ;
 
             builder.Property(x => x.MED_PRSO_LIMITE_SPRR_ALRME_1_003)
-           .HasColumnType("decimal")
+           .HasColumnType("float")
            .HasPrecision(6, 3)
            ;
 
             builder.Property(x => x.MED_PRSO_LMTE_INFRR_ALRME_1_003)
-           .HasColumnType("decimal")
+           .HasColumnType("float")
            .HasPrecision(6, 3)
            ;
 
@@ -381,7 +380,7 @@ namespace PRIO.Data.Mappings.MeasurementMappping
            ;
 
             builder.Property(x => x.MED_PRSO_ADOTADA_FALHA_1_003)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
            .HasPrecision(6, 3)
             ;
 
@@ -401,12 +400,12 @@ namespace PRIO.Data.Mappings.MeasurementMappping
             ;
 
             builder.Property(x => x.MED_TMPTA_SPRR_ALARME_003)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(3, 2)
             ;
 
             builder.Property(x => x.MED_TMPTA_INFRR_ALRME_003)
-           .HasColumnType("decimal")
+           .HasColumnType("float")
            .HasPrecision(3, 2)
            ;
 
@@ -416,7 +415,7 @@ namespace PRIO.Data.Mappings.MeasurementMappping
            ;
 
             builder.Property(x => x.MED_TMPTA_ADTTA_FALHA_003)
-           .HasColumnType("decimal")
+           .HasColumnType("float")
            .HasPrecision(3, 2)
            ;
 
@@ -426,12 +425,12 @@ namespace PRIO.Data.Mappings.MeasurementMappping
            ;
 
             builder.Property(x => x.MED_DIAMETRO_REFERENCIA_003)
-              .HasColumnType("decimal")
+              .HasColumnType("float")
               .HasPrecision(4, 3)
               ;
 
             builder.Property(x => x.MED_TEMPERATURA_RFRNA_003)
-          .HasColumnType("decimal")
+          .HasColumnType("float")
           .HasPrecision(3, 2)
           ;
 
@@ -441,12 +440,12 @@ namespace PRIO.Data.Mappings.MeasurementMappping
           ;
 
             builder.Property(x => x.MED_DMTRO_INTRO_TRCHO_MDCO_003)
-            .HasColumnType("decimal")
+            .HasColumnType("float")
             .HasPrecision(4, 3)
             ;
 
             builder.Property(x => x.MED_TMPTA_TRCHO_MDCO_003)
-             .HasColumnType("decimal")
+             .HasColumnType("float")
              .HasPrecision(3, 2)
              ;
 
@@ -471,11 +470,11 @@ namespace PRIO.Data.Mappings.MeasurementMappping
            ;
 
             builder.Property(x => x.MED_PRSO_LMTE_INFRR_ALRME_2_003)
-           .HasColumnType("decimal")
+           .HasColumnType("float")
            .HasPrecision(6, 3);
 
             builder.Property(x => x.MED_PRSO_LIMITE_SPRR_ALRME_2_003)
-           .HasColumnType("decimal")
+           .HasColumnType("float")
            .HasPrecision(6, 3);
 
             builder.Property(x => x.NUM_SERIE_4_003)
@@ -484,11 +483,11 @@ namespace PRIO.Data.Mappings.MeasurementMappping
           ;
 
             builder.Property(x => x.MED_PRSO_LIMITE_SPRR_ALRME_3_003)
-          .HasColumnType("decimal")
+          .HasColumnType("float")
           .HasPrecision(6, 3);
 
             builder.Property(x => x.MED_PRSO_LMTE_INFRR_ALRME_3_003)
-          .HasColumnType("decimal")
+          .HasColumnType("float")
           .HasPrecision(6, 3);
 
             builder.Property(x => x.NUM_SERIE_5_003)
@@ -497,11 +496,11 @@ namespace PRIO.Data.Mappings.MeasurementMappping
           ;
 
             builder.Property(x => x.MED_PRSO_LIMITE_SPRR_ALRME_4_003)
-          .HasColumnType("decimal")
+          .HasColumnType("float")
           .HasPrecision(6, 3);
 
             builder.Property(x => x.MED_PRSO_LMTE_INFRR_ALRME_4_003)
-          .HasColumnType("decimal")
+          .HasColumnType("float")
           .HasPrecision(6, 3);
 
             builder.Property(x => x.IND_HABILITACAO_ALARME_3_003)
@@ -510,7 +509,7 @@ namespace PRIO.Data.Mappings.MeasurementMappping
 
 
             builder.Property(x => x.MED_PRSO_ADOTADA_FALHA_2_003)
-           .HasColumnType("decimal")
+           .HasColumnType("float")
            .HasPrecision(6, 3);
 
             builder.Property(x => x.DSC_ESTADO_INSNO_CASO_FALHA_2_003)
@@ -518,7 +517,7 @@ namespace PRIO.Data.Mappings.MeasurementMappping
            .HasMaxLength(50);
 
             builder.Property(x => x.MED_CUTOFF_KPA_1_003)
-           .HasColumnType("decimal")
+           .HasColumnType("float")
            .HasPrecision(6, 3);
 
             builder.Property(x => x.NUM_SERIE_6_003)
@@ -527,11 +526,11 @@ namespace PRIO.Data.Mappings.MeasurementMappping
            ;
 
             builder.Property(x => x.MED_PRSO_LIMITE_SPRR_ALRME_5_003)
-         .HasColumnType("decimal")
+         .HasColumnType("float")
          .HasPrecision(6, 3);
 
             builder.Property(x => x.MED_PRSO_LMTE_INFRR_ALRME_5_003)
-          .HasColumnType("decimal")
+          .HasColumnType("float")
           .HasPrecision(6, 3);
 
             builder.Property(x => x.IND_HABILITACAO_ALARME_4_003)
@@ -540,7 +539,7 @@ namespace PRIO.Data.Mappings.MeasurementMappping
 
 
             builder.Property(x => x.MED_PRSO_ADOTADA_FALHA_3_003)
-          .HasColumnType("decimal")
+          .HasColumnType("float")
           .HasPrecision(6, 3)
           .HasMaxLength(50);
 
@@ -550,7 +549,7 @@ namespace PRIO.Data.Mappings.MeasurementMappping
           .HasPrecision(6, 3);
 
             builder.Property(x => x.MED_CUTOFF_KPA_2_003)
-          .HasColumnType("decimal")
+          .HasColumnType("float")
           .HasPrecision(6, 3);
 
             builder.Property(x => x.DHA_INICIO_PERIODO_MEDICAO_003)
@@ -562,31 +561,31 @@ namespace PRIO.Data.Mappings.MeasurementMappping
          ;
 
             builder.Property(x => x.ICE_DENSIDADE_RELATIVA_003)
-         .HasColumnType("decimal")
+         .HasColumnType("float")
          .HasPrecision(8, 8);
 
             builder.Property(x => x.MED_DIFERENCIAL_PRESSAO_003)
-         .HasColumnType("decimal")
+         .HasColumnType("float")
          .HasPrecision(6, 3)
          ;
 
             builder.Property(x => x.MED_PRESSAO_ESTATICA_003)
-         .HasColumnType("decimal")
+         .HasColumnType("float")
          .HasPrecision(6, 3)
          ;
 
             builder.Property(x => x.MED_TEMPERATURA_2_003)
-        .HasColumnType("decimal")
+        .HasColumnType("float")
         .HasPrecision(3, 2)
         ;
 
             builder.Property(x => x.PRZ_DURACAO_FLUXO_EFETIVO_003)
-        .HasColumnType("decimal")
+        .HasColumnType("float")
         .HasPrecision(4, 4)
         ;
 
             builder.Property(x => x.MED_CORRIGIDO_MVMDO_003)
-          .HasColumnType("decimal")
+          .HasColumnType("float")
           .HasPrecision(6, 5)
           ;
 
@@ -599,8 +598,7 @@ namespace PRIO.Data.Mappings.MeasurementMappping
             .HasMaxLength(30)
             ;
 
-            builder.Property(x => x.COD_INSTALACAO_002)
-            .HasColumnType("int")
+            builder.Property(x => x.COD_INSTALACAO_002).HasColumnType("varchar").HasMaxLength(20)
             ;
 
             builder.Property(x => x.COD_TAG_PONTO_MEDICAO_002)
@@ -1104,8 +1102,7 @@ namespace PRIO.Data.Mappings.MeasurementMappping
                 .HasMaxLength(30)
                 ;
 
-            builder.Property(x => x.COD_INSTALACAO_001)
-                .HasColumnType("int")
+            builder.Property(x => x.COD_INSTALACAO_001).HasColumnType("varchar").HasMaxLength(20)
                 ;
 
             builder.Property(x => x.COD_TAG_PONTO_MEDICAO_001)
@@ -1607,17 +1604,17 @@ namespace PRIO.Data.Mappings.MeasurementMappping
                 ;
 
             builder.Property(x => x.MED_POTENCIAL_OLEO_042)
-                .HasColumnType("decimal")
+                .HasColumnType("float")
                 .HasPrecision(8, 5)
                 ;
 
             builder.Property(x => x.MED_POTENCIAL_GAS_042)
-                .HasColumnType("decimal")
+                .HasColumnType("float")
                 .HasPrecision(8, 5)
                 ;
 
             builder.Property(x => x.MED_POTENCIAL_AGUA_042)
-                .HasColumnType("decimal")
+                .HasColumnType("float")
                 .HasPrecision(8, 5)
                 ;
 
@@ -1626,22 +1623,22 @@ namespace PRIO.Data.Mappings.MeasurementMappping
                 .HasPrecision(40);
 
             builder.Property(x => x.MED_VAZAO_OLEO_042)
-                .HasColumnType("decimal")
+                .HasColumnType("float")
                 .HasPrecision(8, 5)
                 ;
 
             builder.Property(x => x.MED_VAZAO_GAS_042)
-                .HasColumnType("decimal")
+                .HasColumnType("float")
                 .HasPrecision(8, 5)
                 ;
 
             builder.Property(x => x.MED_VAZAO_AGUA_042)
-                .HasColumnType("decimal")
+                .HasColumnType("float")
                 .HasPrecision(8, 5)
                 ;
 
             builder.Property(x => x.PCT_BSW_042)
-                .HasColumnType("decimal")
+                .HasColumnType("float")
                 .HasPrecision(3, 2)
                 ;
 
@@ -1650,7 +1647,7 @@ namespace PRIO.Data.Mappings.MeasurementMappping
                 .HasMaxLength(40);
 
             builder.Property(x => x.NUM_FATOR_ENCOLHIMENTO_042)
-                .HasColumnType("decimal")
+                .HasColumnType("float")
                 .HasPrecision(6, 6)
                 ;
 
@@ -1659,7 +1656,7 @@ namespace PRIO.Data.Mappings.MeasurementMappping
                 .HasMaxLength(40);
 
             builder.Property(x => x.PCT_RAZAO_SOLUBILIDADE_042)
-                .HasColumnType("decimal")
+                .HasColumnType("float")
                 .HasPrecision(5, 4)
                 ;
 
@@ -1667,8 +1664,7 @@ namespace PRIO.Data.Mappings.MeasurementMappping
                 .HasColumnType("varchar")
                 .HasMaxLength(40);
 
-            builder.Property(x => x.COD_INSTALACAO_042)
-                .HasColumnType("int")
+            builder.Property(x => x.COD_INSTALACAO_042).HasColumnType("varchar").HasMaxLength(20)
                 ;
 
 

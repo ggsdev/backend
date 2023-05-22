@@ -22,12 +22,6 @@ namespace PRIO.Data.Mappings
                 .HasColumnType("varchar")
                 .HasMaxLength(60);
 
-            builder.Property(x => x.QtdColumns)
-                .HasColumnType("int");
-
-            builder.Property(x => x.Structure)
-               .HasColumnType("text");
-
             builder.Property(x => x.IsActive);
 
             builder.Property(x => x.CreatedAt);

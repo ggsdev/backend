@@ -190,6 +190,7 @@ namespace PRIO.Models
         public double? PCT_CROMATOGRAFIA_HIDROGENIO_002 { get; set; }
         public double? PCT_CROMATOGRAFIA_ARGONIO_002 { get; set; }
         public string? DSC_VERSAO_SOFTWARE_002 { get; set; }
+
         public double? ICE_METER_FACTOR_1_002 { get; set; }
         public double? ICE_METER_FACTOR_2_002 { get; set; }
         public double? ICE_METER_FACTOR_3_002 { get; set; }
@@ -236,6 +237,7 @@ namespace PRIO.Models
         public double? ICE_K_FACTOR_13_002 { get; set; }
         public double? ICE_K_FACTOR_14_002 { get; set; }
         public double? ICE_K_FACTOR_15_002 { get; set; }
+
         public double? QTD_PULSOS_K_FACTOR_1_002 { get; set; }
         public double? QTD_PULSOS_K_FACTOR_2_002 { get; set; }
         public double? QTD_PULSOS_K_FACTOR_3_002 { get; set; }
@@ -256,6 +258,8 @@ namespace PRIO.Models
         public double? ICE_LIMITE_INFRR_ALARME_002 { get; set; }
 
         public string? IND_HABILITACAO_ALARME_1_002 { get; set; }
+
+
         public string? NUM_SERIE_1_002 { get; set; }
         public double? MED_PRSO_LIMITE_SPRR_ALRME_002 { get; set; }
         public double? MED_PRSO_LMTE_INFRR_ALRME_002 { get; set; }
@@ -263,12 +267,16 @@ namespace PRIO.Models
         public double? MED_PRSO_ADOTADA_FALHA_002 { get; set; }
         public string? DSC_ESTADO_INSNO_CASO_FALHA_002 { get; set; }
         public string? IND_TIPO_PRESSAO_CONSIDERADA_002 { get; set; }
+
+
         public string? NUM_SERIE_2_002 { get; set; }
         public double? MED_TMPTA_SPRR_ALARME_002 { get; set; }
         public double? MED_TMPTA_INFRR_ALRME_002 { get; set; }
         public string? IND_HABILITACAO_ALARME_3_002 { get; set; }
         public double? MED_TMPTA_ADTTA_FALHA_002 { get; set; }
         public string? DSC_ESTADO_INSTRUMENTO_FALHA_002 { get; set; }
+
+
         public DateTime? DHA_INICIO_PERIODO_MEDICAO_002 { get; set; }
         public DateTime? DHA_FIM_PERIODO_MEDICAO_002 { get; set; }
         public double? ICE_DENSIDADE_RELATIVA_002 { get; set; }
@@ -282,90 +290,97 @@ namespace PRIO.Models
         #region 003
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_003 { get; set; }
         public string? COD_INSTALACAO_003 { get; set; }
-        public short? COD_TAG_PONTO_MEDICAO_003 { get; set; }
+        public string? COD_TAG_PONTO_MEDICAO_003 { get; set; }
         public string? NUM_SERIE_COMPUTADOR_VAZAO_003 { get; set; }
         public DateTime? DHA_COLETA_003 { get; set; }
-        public decimal? MED_TEMPERATURA_1_003 { get; set; }
-        public decimal? MED_PRESSAO_ATMSA_003 { get; set; }
-        public decimal? MED_PRESSAO_RFRNA_003 { get; set; }
-        public decimal? MED_DENSIDADE_RELATIVA_003 { get; set; }
+        public double? MED_TEMPERATURA_1_003 { get; set; }
+        public double? MED_PRESSAO_ATMSA_003 { get; set; }
+        public double? MED_PRESSAO_RFRNA_003 { get; set; }
+        public double? MED_DENSIDADE_RELATIVA_003 { get; set; }
         public string? DSC_NORMA_UTILIZADA_CALCULO_003 { get; set; }
-        public decimal? PCT_CROMATOGRAFIA_NITROGENIO_003 { get; set; }
-        public decimal? PCT_CROMATOGRAFIA_CO2_003 { get; set; }
-        public decimal? PCT_CROMATOGRAFIA_METANO_003 { get; set; }
-        public decimal? PCT_CROMATOGRAFIA_ETANO_003 { get; set; }
-        public decimal? PCT_CROMATOGRAFIA_PROPANO_003 { get; set; }
-        public decimal? PCT_CROMATOGRAFIA_N_BUTANO_003 { get; set; }
-        public decimal? PCT_CROMATOGRAFIA_I_BUTANO_003 { get; set; }
-        public decimal? PCT_CROMATOGRAFIA_N_PENTANO_003 { get; set; }
-        public decimal? PCT_CROMATOGRAFIA_I_PENTANO_003 { get; set; }
-        public decimal? PCT_CROMATOGRAFIA_HEXANO_003 { get; set; }
-        public decimal? PCT_CROMATOGRAFIA_HEPTANO_003 { get; set; }
-        public decimal? PCT_CROMATOGRAFIA_OCTANO_003 { get; set; }
-        public decimal? PCT_CROMATOGRAFIA_NONANO_003 { get; set; }
-        public decimal? PCT_CROMATOGRAFIA_DECANO_003 { get; set; }
-        public decimal? PCT_CROMATOGRAFIA_H2S_003 { get; set; }
-        public decimal? PCT_CROMATOGRAFIA_AGUA_003 { get; set; }
-        public decimal? PCT_CROMATOGRAFIA_HELIO_003 { get; set; }
-        public decimal? PCT_CROMATOGRAFIA_OXIGENIO_003 { get; set; }
-        public decimal? PCT_CROMATOGRAFIA_CO_003 { get; set; }
-        public decimal? PCT_CROMATOGRAFIA_HIDROGENIO_003 { get; set; }
-        public decimal? PCT_CROMATOGRAFIA_ARGONIO_003 { get; set; }
+        public double? PCT_CROMATOGRAFIA_NITROGENIO_003 { get; set; }
+        public double? PCT_CROMATOGRAFIA_CO2_003 { get; set; }
+        public double? PCT_CROMATOGRAFIA_METANO_003 { get; set; }
+        public double? PCT_CROMATOGRAFIA_ETANO_003 { get; set; }
+        public double? PCT_CROMATOGRAFIA_PROPANO_003 { get; set; }
+        public double? PCT_CROMATOGRAFIA_N_BUTANO_003 { get; set; }
+        public double? PCT_CROMATOGRAFIA_I_BUTANO_003 { get; set; }
+        public double? PCT_CROMATOGRAFIA_N_PENTANO_003 { get; set; }
+        public double? PCT_CROMATOGRAFIA_I_PENTANO_003 { get; set; }
+        public double? PCT_CROMATOGRAFIA_HEXANO_003 { get; set; }
+        public double? PCT_CROMATOGRAFIA_HEPTANO_003 { get; set; }
+        public double? PCT_CROMATOGRAFIA_OCTANO_003 { get; set; }
+        public double? PCT_CROMATOGRAFIA_NONANO_003 { get; set; }
+        public double? PCT_CROMATOGRAFIA_DECANO_003 { get; set; }
+        public double? PCT_CROMATOGRAFIA_H2S_003 { get; set; }
+        public double? PCT_CROMATOGRAFIA_AGUA_003 { get; set; }
+        public double? PCT_CROMATOGRAFIA_HELIO_003 { get; set; }
+        public double? PCT_CROMATOGRAFIA_OXIGENIO_003 { get; set; }
+        public double? PCT_CROMATOGRAFIA_CO_003 { get; set; }
+        public double? PCT_CROMATOGRAFIA_HIDROGENIO_003 { get; set; }
+        public double? PCT_CROMATOGRAFIA_ARGONIO_003 { get; set; }
         public string? DSC_VERSAO_SOFTWARE_003 { get; set; }
-        public decimal? CE_LIMITE_SPRR_ALARME_003 { get; set; }
-        public decimal? ICE_LIMITE_INFRR_ALARME_1_003 { get; set; }
-        public bool? IND_HABILITACAO_ALARME_1_003 { get; set; }
-        public bool? ICE_LIMITE_INFRR_ALARME_2_003 { get; set; }
+
+
+        public double? CE_LIMITE_SPRR_ALARME_003 { get; set; }
+        public double? ICE_LIMITE_INFRR_ALARME_1_003 { get; set; }
+        public string? IND_HABILITACAO_ALARME_1_003 { get; set; }
+        public bool? ICE_LIMITE_INFRR_ALARME_2_003 { get; set; } //coluna não vem no xml
         public string? NUM_SERIE_1_003 { get; set; }
-        public decimal? MED_PRSO_LIMITE_SPRR_ALRME_1_003 { get; set; }
-        public decimal? MED_PRSO_LMTE_INFRR_ALRME_1_003 { get; set; }
-        public decimal? MED_PRSO_ADOTADA_FALHA_1_003 { get; set; }
+        public double? MED_PRSO_LIMITE_SPRR_ALRME_1_003 { get; set; }
+        public double? MED_PRSO_LMTE_INFRR_ALRME_1_003 { get; set; }
+        public double? MED_PRSO_ADOTADA_FALHA_1_003 { get; set; }
         public string? DSC_ESTADO_INSNO_CASO_FALHA_1_003 { get; set; }
         public string? IND_TIPO_PRESSAO_CONSIDERADA_003 { get; set; }
-        public bool? IND_HABILITACAO_ALARME_2_003 { get; set; }
+        public string? IND_HABILITACAO_ALARME_2_003 { get; set; }
         public string? NUM_SERIE_2_003 { get; set; }
-        public decimal? MED_TMPTA_SPRR_ALARME_003 { get; set; }
-        public decimal? MED_TMPTA_INFRR_ALRME_003 { get; set; }
-        public bool? IND_HABILITACAO_ALARME_3_003 { get; set; }
-        public decimal? MED_TMPTA_ADTTA_FALHA_003 { get; set; }
+        public double? MED_TMPTA_SPRR_ALARME_003 { get; set; }
+        public double? MED_TMPTA_INFRR_ALRME_003 { get; set; }
+        public string? IND_HABILITACAO_ALARME_3_003 { get; set; }
+        public double? MED_TMPTA_ADTTA_FALHA_003 { get; set; }
         public string? DSC_ESTADO_INSTRUMENTO_FALHA_003 { get; set; }
-        public decimal? MED_DIAMETRO_REFERENCIA_003 { get; set; }
-        public decimal? MED_TEMPERATURA_RFRNA_003 { get; set; }
+
+        
+        public double? MED_DIAMETRO_REFERENCIA_003 { get; set; }
+        public double? MED_TEMPERATURA_RFRNA_003 { get; set; }
         public string? DSC_MATERIAL_CONTRUCAO_PLACA_003 { get; set; }
-        public decimal? MED_DMTRO_INTRO_TRCHO_MDCO_003 { get; set; }
-        public decimal? MED_TMPTA_TRCHO_MDCO_003 { get; set; }
+        public double? MED_DMTRO_INTRO_TRCHO_MDCO_003 { get; set; }
+        public double? MED_TMPTA_TRCHO_MDCO_003 { get; set; }
         public string? DSC_MATERIAL_CNSTO_TRCHO_MDCO_003 { get; set; }
         public string? DSC_LCLZO_TMDA_PRSO_DFRNL_003 { get; set; }
         public string? IND_TOMADA_PRESSAO_ESTATICA_003 { get; set; }
         public string? NUM_SERIE_3_003 { get; set; }
-        public decimal? MED_PRSO_LIMITE_SPRR_ALRME_2_003 { get; set; }
-        public decimal? MED_PRSO_LMTE_INFRR_ALRME_2_003 { get; set; }
-        public bool? IND_HABILITACAO_ALARME_4_003 { get; set; }
-        public decimal? MED_PRSO_ADOTADA_FALHA_2_003 { get; set; }
+        public double? MED_PRSO_LIMITE_SPRR_ALRME_2_003 { get; set; }
+        public double? MED_PRSO_LMTE_INFRR_ALRME_2_003 { get; set; }
+        public string? IND_HABILITACAO_ALARME_4_003 { get; set; }
+        public double? MED_PRSO_ADOTADA_FALHA_2_003 { get; set; }
         public string? DSC_ESTADO_INSNO_CASO_FALHA_2_003 { get; set; }
-        public decimal? MED_CUTOFF_KPA_1_003 { get; set; }
+        public double? MED_CUTOFF_KPA_1_003 { get; set; }
         public string? NUM_SERIE_4_003 { get; set; }
-        public decimal? MED_PRSO_LIMITE_SPRR_ALRME_3_003 { get; set; }
-        public decimal? MED_PRSO_LMTE_INFRR_ALRME_3_003 { get; set; }
+
+
+        public double? MED_PRSO_LIMITE_SPRR_ALRME_3_003 { get; set; }
+        public double? MED_PRSO_LMTE_INFRR_ALRME_3_003 { get; set; }
         public string? NUM_SERIE_5_003 { get; set; }
-        public decimal? MED_PRSO_LIMITE_SPRR_ALRME_4_003 { get; set; }
-        public decimal? MED_PRSO_LMTE_INFRR_ALRME_4_003 { get; set; }
-        public bool? IND_HABILITACAO_ALARME_5_003 { get; set; }
-        public decimal? MED_PRSO_LIMITE_SPRR_ALRME_5_003 { get; set; }
-        public decimal? MED_PRSO_LMTE_INFRR_ALRME_5_003 { get; set; }
-        public decimal? MED_PRSO_ADOTADA_FALHA_3_003 { get; set; }
+        public double? MED_PRSO_LIMITE_SPRR_ALRME_4_003 { get; set; }
+        public double? MED_PRSO_LMTE_INFRR_ALRME_4_003 { get; set; }
+        public string? IND_HABILITACAO_ALARME_5_003 { get; set; }
+        public double? MED_PRSO_LIMITE_SPRR_ALRME_5_003 { get; set; }
+        public double? MED_PRSO_LMTE_INFRR_ALRME_5_003 { get; set; }
+        public double? MED_PRSO_ADOTADA_FALHA_3_003 { get; set; }
         public string? DSC_ESTADO_INSNO_CASO_FALHA_3_003 { get; set; }
         public string? NUM_SERIE_6_003 { get; set; }
-        public decimal? MED_CUTOFF_KPA_2_003 { get; set; }
+        public double? MED_CUTOFF_KPA_2_003 { get; set; }
+        
         public DateTime? DHA_INICIO_PERIODO_MEDICAO_003 { get; set; }
         public DateTime? DHA_FIM_PERIODO_MEDICAO_003 { get; set; }
-        public decimal? ICE_DENSIDADE_RELATIVA_003 { get; set; }
+        public double? ICE_DENSIDADE_RELATIVA_003 { get; set; }
 
-        public decimal? MED_DIFERENCIAL_PRESSAO_003 { get; set; }
-        public decimal? MED_PRESSAO_ESTATICA_003 { get; set; }
-        public decimal? MED_TEMPERATURA_2_003 { get; set; }
-        public decimal? PRZ_DURACAO_FLUXO_EFETIVO_003 { get; set; }
-        public decimal? MED_CORRIGIDO_MVMDO_003 { get; set; }
+        public double? MED_DIFERENCIAL_PRESSAO_003 { get; set; }
+        public double? MED_PRESSAO_ESTATICA_003 { get; set; }
+        public double? MED_TEMPERATURA_2_003 { get; set; }
+        public double? PRZ_DURACAO_FLUXO_EFETIVO_003 { get; set; }
+        public double? MED_CORRIGIDO_MVMDO_003 { get; set; }
 
         #endregion
 
@@ -410,8 +425,8 @@ namespace PRIO.Models
         #region 040
         public string? COD_INSTALACAO_040 { get; set; }
         public string? COD_TAG_PONTO_MEDICAO_040 { get; set; }
-        public decimal? PCT_BSW_040 { get; set; }
-        public decimal? PCT_MAXIMO_BSW_040 { get; set; }
+        public double? PCT_BSW_040 { get; set; }
+        public double? PCT_MAXIMO_BSW_040 { get; set; }
         public DateTime? DHA_MEDICAO_040 { get; set; }
         public string? NOM_BOLETIM_ANALISE_040 { get; set; }
         public bool? IND_USER_CALCULO_040 { get; set; }
@@ -422,7 +437,7 @@ namespace PRIO.Models
         public string? COD_INSTALACAO_041 { get; set; }
         public string? COD_TAG_PONTO_MEDICAO_041 { get; set; }
         public DateTime? DHA_ATUALIZACAO_041 { get; set; }
-        public decimal? NUM_FATOR_ENCOLHIMENTO_041 { get; set; }
+        public double? NUM_FATOR_ENCOLHIMENTO_041 { get; set; }
         public string? NOM_BOLETIM_ANALISE_041 { get; set; }
         #endregion
 
@@ -432,18 +447,18 @@ namespace PRIO.Models
         public DateTime? DHA_TESTE_042 { get; set; }
         public DateTime? DHA_APLICACAO_042 { get; set; }
         public bool? IND_VALIDO_042 { get; set; }
-        public decimal? MED_POTENCIAL_OLEO_042 { get; set; }
-        public decimal? MED_POTENCIAL_GAS_042 { get; set; }
-        public decimal? MED_POTENCIAL_AGUA_042 { get; set; }
+        public double? MED_POTENCIAL_OLEO_042 { get; set; }
+        public double? MED_POTENCIAL_GAS_042 { get; set; }
+        public double? MED_POTENCIAL_AGUA_042 { get; set; }
         public string? NOM_RELATORIO_042 { get; set; }
-        public decimal? MED_VAZAO_OLEO_042 { get; set; }
-        public decimal? MED_VAZAO_GAS_042 { get; set; }
-        public decimal? MED_VAZAO_AGUA_042 { get; set; }
-        public decimal? PCT_BSW_042 { get; set; }
+        public double? MED_VAZAO_OLEO_042 { get; set; }
+        public double? MED_VAZAO_GAS_042 { get; set; }
+        public double? MED_VAZAO_AGUA_042 { get; set; }
+        public double? PCT_BSW_042 { get; set; }
         public string? NOM_RELATORIO_BSW_042 { get; set; }
-        public decimal? NUM_FATOR_ENCOLHIMENTO_042 { get; set; }
+        public double? NUM_FATOR_ENCOLHIMENTO_042 { get; set; }
         public string? NOM_RELATORIO_FATOR_ENCLO_042 { get; set; }
-        public decimal? PCT_RAZAO_SOLUBILIDADE_042 { get; set; }
+        public double? PCT_RAZAO_SOLUBILIDADE_042 { get; set; }
         public string? NOM_RELATORIO_RZO_SOLUBILIDADE_042 { get; set; }
         public string? COD_INSTALACAO_042 { get; set; }
         public string? COD_TAG_PONTO_MEDICAO_OLEO_042 { get; set; }
@@ -455,9 +470,9 @@ namespace PRIO.Models
         public string? COD_TAG_PONTO_MEDICAO_045 { get; set; }
         public string? TAG_TANQUE_045 { get; set; }
         public string? NUM_SERIE_045 { get; set; }
-        public decimal? MED_CAPACIDADE_LIQUIDA_045 { get; set; }
-        public decimal? MED_CAPACIDADE_BRUTA_045 { get; set; }
-        public decimal? MED_CAPACIDADE_CORRIGIDA_045 { get; set; }
+        public double? MED_CAPACIDADE_LIQUIDA_045 { get; set; }
+        public double? MED_CAPACIDADE_BRUTA_045 { get; set; }
+        public double? MED_CAPACIDADE_CORRIGIDA_045 { get; set; }
         public DateTime? DHA_MEDICAO_045 { get; set; }
         public string? NOM_RELATORIO_BSW_045 { get; set; }
         public bool? IND_NAVIO_045 { get; set; }
