@@ -612,8 +612,7 @@ namespace PRIO.Data.Mappings.MeasurementMappping
             ;
 
             builder.Property(x => x.DHA_COLETA_002)
-            .HasColumnType("float")
-            .HasPrecision(3, 2)
+            .HasColumnType("datetime")
             ;
 
             builder.Property(x => x.MED_TEMPERATURA_1_002)
@@ -727,6 +726,7 @@ namespace PRIO.Data.Mappings.MeasurementMappping
 
             builder.Property(x => x.DSC_VERSAO_SOFTWARE_002)
             .HasColumnType("varchar")
+            .HasMaxLength(30);
             ;
 
             builder.Property(x => x.ICE_METER_FACTOR_1_002)

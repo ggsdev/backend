@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.Data;
 
@@ -11,9 +12,11 @@ using PRIO.Data;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230523170612_DHA_COLETATODATETIME")]
+    partial class DHA_COLETATODATETIME
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -695,7 +698,6 @@ namespace PRIO.Migrations
                         .HasColumnType("varchar");
 
                     b.Property<string>("DSC_VERSAO_SOFTWARE_002")
-                        .HasMaxLength(30)
                         .HasColumnType("varchar");
 
                     b.Property<string>("DSC_VERSAO_SOFTWARE_003")

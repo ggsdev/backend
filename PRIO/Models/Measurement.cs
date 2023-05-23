@@ -161,7 +161,7 @@ namespace PRIO.Models
         public string? COD_INSTALACAO_002 { get; set; }
         public string? COD_TAG_PONTO_MEDICAO_002 { get; set; }
         public string? NUM_SERIE_COMPUTADOR_VAZAO_002 { get; set; }
-        public double? DHA_COLETA_002 { get; set; }
+        public DateTime? DHA_COLETA_002 { get; set; }
         public double? MED_TEMPERATURA_1_002 { get; set; }
         public double? MED_PRESSAO_ATMSA_002 { get; set; }
         public double? MED_PRESSAO_RFRNA_002 { get; set; }
@@ -340,7 +340,7 @@ namespace PRIO.Models
         public double? MED_TMPTA_ADTTA_FALHA_003 { get; set; }
         public string? DSC_ESTADO_INSTRUMENTO_FALHA_003 { get; set; }
 
-        
+
         public double? MED_DIAMETRO_REFERENCIA_003 { get; set; }
         public double? MED_TEMPERATURA_RFRNA_003 { get; set; }
         public string? DSC_MATERIAL_CONTRUCAO_PLACA_003 { get; set; }
@@ -371,7 +371,7 @@ namespace PRIO.Models
         public string? DSC_ESTADO_INSNO_CASO_FALHA_3_003 { get; set; }
         public string? NUM_SERIE_6_003 { get; set; }
         public double? MED_CUTOFF_KPA_2_003 { get; set; }
-        
+
         public DateTime? DHA_INICIO_PERIODO_MEDICAO_003 { get; set; }
         public DateTime? DHA_FIM_PERIODO_MEDICAO_003 { get; set; }
         public double? ICE_DENSIDADE_RELATIVA_003 { get; set; }

@@ -8,6 +8,8 @@ using PRIO;
 using PRIO.Data;
 using PRIO.DTOS;
 using PRIO.Files._001;
+using PRIO.Files._002;
+using PRIO.Files._003;
 using PRIO.Files._039;
 using PRIO.Middlewares;
 using PRIO.Models;
@@ -55,8 +57,6 @@ static void ConfigureServices(IServiceCollection services)
         .ForMember(dest => dest.DHA_FALHA_BSW_039, opt => opt.MapFrom(src =>
         string.IsNullOrEmpty(src.DHA_FALHA_BSW_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_FALHA_BSW_039, "dd/MM/yyyy", CultureInfo.InvariantCulture)));
 
-        cfg.CreateMap<VOLUME, Volume>();
-
         cfg.CreateMap<CALIBRACAO, Calibration>()
         .ForMember(dest => dest.DHA_FALHA_CALIBRACAO_039, opt => opt.MapFrom(src =>
         string.IsNullOrEmpty(src.DHA_FALHA_CALIBRACAO_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_FALHA_CALIBRACAO_039, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)));
@@ -76,15 +76,25 @@ static void ConfigureServices(IServiceCollection services)
         cfg.CreateMap<Measurement, _039DTO>();
         #endregion
 
-
         #region 001
 
 
         cfg.CreateMap<_001PMO, Measurement>();
-
         cfg.CreateMap<Measurement, _001DTO>();
 
 
+
+
+        #endregion
+
+        #region 002
+        cfg.CreateMap<_002PMGL, Measurement>();
+        cfg.CreateMap<Measurement, _002DTO>();
+        #endregion
+
+        #region 003
+        cfg.CreateMap<_003PMGD, Measurement>();
+        cfg.CreateMap<Measurement, _003DTO>();
         #endregion
     });
 
