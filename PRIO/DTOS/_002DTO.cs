@@ -2,15 +2,13 @@
 
 namespace PRIO.DTOS
 {
-    public class _002DTO
+    public class _002DTO : BaseModel
     {
-        public Guid Id { get; set; }
-
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_002 { get; set; }
         public int? COD_INSTALACAO_002 { get; set; }
         public string? COD_TAG_PONTO_MEDICAO_002 { get; set; }
         public string? NUM_SERIE_COMPUTADOR_VAZAO_002 { get; set; }
-        public double? DHA_COLETA_002 { get; set; }
+        public DateTime? DHA_COLETA_002 { get; set; }
         public double? MED_TEMPERATURA_1_002 { get; set; }
         public double? MED_PRESSAO_ATMSA_002 { get; set; }
         public double? MED_PRESSAO_RFRNA_002 { get; set; }

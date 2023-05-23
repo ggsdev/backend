@@ -2,7 +2,7 @@
 using System.Xml.Linq;
 using System.Xml.Schema;
 
-namespace PRIO.Files._039
+namespace PRIO.Files
 {
     public class Functions
     {
@@ -15,12 +15,11 @@ namespace PRIO.Files._039
 
             schema.Add("", xsdFilePath);
 
-            XmlReader reader = XmlReader.Create(xmlFilePath);
-            XDocument doc = XDocument.Load(reader);
+            var reader = XmlReader.Create(xmlFilePath);
+            var doc = XDocument.Load(reader);
             doc.Validate(schema, ValidationEventHandler);
 
             reader.Close();
-
             return _result;
         }
 

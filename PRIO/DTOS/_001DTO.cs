@@ -2,9 +2,8 @@
 
 namespace PRIO.DTOS
 {
-    public class _001DTO
+    public class _001DTO : BaseModel
     {
-        public Guid Id { get; set; }
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_001 { get; set; }
         public int? COD_INSTALACAO_001 { get; set; }
         public string? COD_TAG_PONTO_MEDICAO_001 { get; set; }

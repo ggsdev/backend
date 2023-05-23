@@ -10,6 +10,38 @@ namespace PRIO.Files._002
         public List<DADOS_BASICOS_002> LISTA_DADOS_BASICOS { get; set; }
     }
 
+    [XmlRoot("LISTA_CONFIGURACAO_CV")]
+    public class LISTA_CONFIGURACAO_CV_002
+    {
+        [XmlElement("CONFIGURACAO_CV")]
+        public CONFIGURACAO_CV_002 CONFIGURACAO_CV_002 { get; set; }
+    }
+
+    [XmlRoot("LISTA_ELEMENTO_PRIMARIO")]
+    public class LISTA_ELEMENTO_PRIMARIO_002
+    {
+        [XmlElement("ELEMENTO_PRIMARIO")]
+        public ELEMENTO_PRIMARIO_002 ELEMENTO_PRIMARIO_002 { get; set; }
+    }
+
+    [XmlRoot("LISTA_INSTRUMENTO_PRESSAO")]
+    public class LISTA_INSTRUMENTO_PRESSAO_002
+    {
+        public INSTRUMENTO_PRESSAO_002 INSTRUMENTO_PRESSAO_002 { get; set; }
+    }
+    [XmlRoot("LISTA_INSTRUMENTO_TEMPERATURA")]
+    public class LISTA_INSTRUMENTO_TEMPERATURA_002
+    {
+        [XmlElement("INSTRUMENTO_TEMPERATURA")]
+        public INSTRUMENTO_TEMPERATURA_002 INSTRUMENTO_TEMPERATURA_002 { get; set; }
+    }
+    [XmlRoot("LISTA_PRODUCAO")]
+    public class LISTA_PRODUCAO_002
+    {
+        [XmlElement("PRODUCAO")]
+        public PRODUCAO_002 PRODUCAO_002 { get; set; }
+    }
+
     [XmlRoot("DADOS_BASICOS")]
     public class DADOS_BASICOS_002
     {
@@ -22,25 +54,20 @@ namespace PRIO.Files._002
         [XmlAttribute("COD_TAG_PONTO_MEDICAO")]
         public string? COD_TAG_PONTO_MEDICAO_002 { get; set; }
 
-        [XmlArray("LISTA_CONFIGURACAO_CV")]
-        [XmlArrayItem("CONFIGURACAO_CV")]
-        public List<CONFIGURACAO_CV_002> LISTA_CONFIGURACAO_CV { get; set; }
+        [XmlElement("LISTA_CONFIGURACAO_CV")]
+        public LISTA_CONFIGURACAO_CV_002 LISTA_CONFIGURACAO_CV_002 { get; set; }
 
-        [XmlArray("LISTA_ELEMENTO_PRIMARIO")]
-        [XmlArrayItem("ELEMENTO_PRIMARIO")]
-        public List<ELEMENTO_PRIMARIO_002> LISTA_ELEMENTO_PRIMARIO { get; set; }
+        [XmlElement("LISTA_ELEMENTO_PRIMARIO")]
+        public LISTA_ELEMENTO_PRIMARIO_002 LISTA_ELEMENTO_PRIMARIO_002 { get; set; }
 
-        [XmlArray("LISTA_INSTRUMENTO_PRESSAO")]
-        [XmlArrayItem("INSTRUMENTO_PRESSAO")]
-        public List<INSTRUMENTO_PRESSAO_002> LISTA_INSTRUMENTO_PRESSAO { get; set; }
+        [XmlElement("LISTA_INSTRUMENTO_PRESSAO")]
+        public LISTA_INSTRUMENTO_PRESSAO_002 LISTA_INSTRUMENTO_PRESSAO_002 { get; set; }
 
-        [XmlArray("LISTA_INSTRUMENTO_TEMPERATURA")]
-        [XmlArrayItem("INSTRUMENTO_TEMPERATURA")]
-        public List<INSTRUMENTO_TEMPERATURA_002> LISTA_INSTRUMENTO_TEMPERATURA { get; set; }
+        [XmlElement("LISTA_INSTRUMENTO_TEMPERATURA")]
+        public LISTA_INSTRUMENTO_TEMPERATURA_002 LISTA_INSTRUMENTO_TEMPERATURA_002 { get; set; }
 
-        [XmlArray("LISTA_PRODUCAO")]
-        [XmlArrayItem("PRODUCAO")]
-        public List<PRODUCAO_002> LISTA_PRODUCAO { get; set; }
+        [XmlElement("LISTA_PRODUCAO")]
+        public LISTA_PRODUCAO_002 LISTA_PRODUCAO_002 { get; set; }
     }
 
     [XmlRoot("CONFIGURACAO_CV")]
