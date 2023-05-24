@@ -1,8 +1,19 @@
-﻿namespace PRIO.ViewModels
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace PRIO.ViewModels
 {
     public class RequestXmlViewModel
     {
-        public string File { get; set; } = string.Empty;
+        [Required]
+        public List<FileContent> Files { get; set; } = new();
+    }
+
+    public class FileContent
+    {
+        [Required]
+        public string ContentBase64 { get; set; } = string.Empty;
+        [Required]
         public string FileName { get; set; } = string.Empty;
+
     }
 }
