@@ -163,7 +163,6 @@ namespace PRIO.Files._003
     [XmlRoot("INSTRUMENTO_PRESSAO")]
     public class INSTRUMENTO_PRESSAO_003
     {
-
         [XmlElement("NUM_SERIE")]
         public string? NUM_SERIE_1_003 { get; set; }
         [XmlElement("MED_PRSO_LIMITE_SPRR_ALRME")]
@@ -203,6 +202,84 @@ namespace PRIO.Files._003
         public string? DSC_ESTADO_INSTRUMENTO_FALHA_003 { get; set; }
     }
 
+    [XmlRoot("INST_DIFEREN_PRESSAO_ALTA")]
+    public class INST_DIFEREN_PRESSAO_ALTA_003
+    {
+        [XmlElement("NUM_SERIE")]
+        public string? NUM_SERIE_3_003 { get; set; }
+
+        [XmlElement("MED_PRSO_LIMITE_SPRR_ALRME")]
+        public string? MED_PRSO_LIMITE_SPRR_ALRME_2_003 { get; set; }
+
+        [XmlElement("MED_PRSO_LMTE_INFRR_ALRME")]
+        public string? MED_PRSO_LMTE_INFRR_ALRME_2_003 { get; set; }
+    }
+
+    [XmlRoot("INST_DIFEREN_PRESSAO_MEDIA")]
+    public class INST_DIFEREN_PRESSAO_MEDIA_003
+    {
+        [XmlElement("NUM_SERIE")]
+        public string? NUM_SERIE_4_003 { get; set; }
+
+        [XmlElement("MED_PRSO_LIMITE_SPRR_ALRME")]
+        public string? MED_PRSO_LIMITE_SPRR_ALRME_3_003 { get; set; }
+
+        [XmlElement("MED_PRSO_LMTE_INFRR_ALRME")]
+        public string? MED_PRSO_LMTE_INFRR_ALRME_3_003 { get; set; }
+    }
+
+    [XmlRoot("INST_DIFEREN_PRESSAO_BAIXA")]
+    public class INST_DIFEREN_PRESSAO_BAIXA_003
+    {
+        [XmlElement("NUM_SERIE")]
+        public string? NUM_SERIE_5_003 { get; set; }
+
+        [XmlElement("MED_PRSO_LIMITE_SPRR_ALRME")]
+        public string? MED_PRSO_LIMITE_SPRR_ALRME_4_003 { get; set; }
+
+        [XmlElement("MED_PRSO_LMTE_INFRR_ALRME")]
+        public string? MED_PRSO_LMTE_INFRR_ALRME_4_003 { get; set; }
+
+        [XmlElement("MED_PRSO_ADOTADA_FALHA")]
+        public string? MED_PRSO_ADOTADA_FALHA_2_003 { get; set; }
+
+        [XmlElement("DSC_ESTADO_INSNO_CASO_FALHA")]
+
+        public string? DSC_ESTADO_INSNO_CASO_FALHA_2_003 { get; set; }
+        [XmlElement("MED_CUTOFF_KPA")]
+
+        public string? MED_CUTOFF_KPA_1_003 { get; set; }
+        [XmlElement("IND_HABILITACAO_ALARME")]
+        public string? IND_HABILITACAO_ALARME_4_003 { get; set; }
+    }
+
+    [XmlRoot("INST_DIFEREN_PRESSAO_PRINCIPAL")]
+    public class INST_DIFEREN_PRESSAO_PRINCIPAL_003
+    {
+        [XmlElement("NUM_SERIE")]
+        public string? NUM_SERIE_6_003 { get; set; }
+
+        [XmlElement("MED_PRSO_LIMITE_SPRR_ALRME")]
+        public string? MED_PRSO_LIMITE_SPRR_ALRME_5_003 { get; set; }
+
+        [XmlElement("MED_PRSO_LMTE_INFRR_ALRME")]
+        public string? MED_PRSO_LMTE_INFRR_ALRME_5_003 { get; set; }
+
+        [XmlElement("IND_HABILITACAO_ALARME")]
+
+        public string? IND_HABILITACAO_ALARME_5_003 { get; set; }
+        [XmlElement("MED_PRSO_ADOTADA_FALHA")]
+
+        public string? MED_PRSO_ADOTADA_FALHA_3_003 { get; set; }
+
+        [XmlElement("DSC_ESTADO_INSNO_CASO_FALHA")]
+        public string? DSC_ESTADO_INSNO_CASO_FALHA_3_003 { get; set; }
+
+        [XmlElement("MED_CUTOFF_KPA")]
+        public string? MED_CUTOFF_KPA_2_003 { get; set; }
+
+    }
+
     [XmlRoot("PLACA_ORIFICIO")]
     public class PLACA_ORIFICIO_003
     {
@@ -231,70 +308,6 @@ namespace PRIO.Files._003
         [XmlElement("IND_TOMADA_PRESSAO_ESTATICA")]
         public string? IND_TOMADA_PRESSAO_ESTATICA_003 { get; set; }
 
-    }
-
-    [XmlRoot("INST_DIFEREN_PRESSAO_PRINCIPAL")]
-    public class INST_DIFEREN_PRESSAO_PRINCIPAL_003
-    {
-        [XmlElement("NUM_SERIE")]
-        public string? NUM_SERIE_3_003 { get; set; }
-        [XmlElement("MED_PRSO_LIMITE_SPRR_ALRME")]
-        public string? MED_PRSO_LIMITE_SPRR_ALRME_2_003 { get; set; }
-        [XmlElement("MED_PRSO_LMTE_INFRR_ALRME")]
-
-        public string? MED_PRSO_LMTE_INFRR_ALRME_2_003 { get; set; }
-
-        [XmlElement("IND_HABILITACAO_ALARME")]
-
-        public string? IND_HABILITACAO_ALARME_4_003 { get; set; }
-        [XmlElement("MED_PRSO_ADOTADA_FALHA")]
-
-        public string? MED_PRSO_ADOTADA_FALHA_2_003 { get; set; }
-
-        [XmlElement("DSC_ESTADO_INSNO_CASO_FALHA")]
-        public string? DSC_ESTADO_INSNO_CASO_FALHA_2_003 { get; set; }
-
-        [XmlElement("MED_CUTOFF_KPA")]
-        public string? MED_CUTOFF_KPA_1_003 { get; set; }
-
-    }
-
-    [XmlRoot("INST_DIFEREN_PRESSAO_ALTA")]
-    public class INST_DIFEREN_PRESSAO_ALTA_003
-    {
-
-        [XmlElement("NUM_SERIE")]
-        public string? NUM_SERIE_4_003 { get; set; }
-        [XmlElement("MED_PRSO_LIMITE_SPRR_ALRME")]
-
-        public string? MED_PRSO_LIMITE_SPRR_ALRME_3_003 { get; set; }
-        [XmlElement("MED_PRSO_LMTE_INFRR_ALRME")]
-
-        public string? MED_PRSO_LMTE_INFRR_ALRME_3_003 { get; set; }
-    }
-
-    [XmlRoot("INST_DIFEREN_PRESSAO_BAIXA")]
-    public class INST_DIFEREN_PRESSAO_BAIXA_003
-    {
-        [XmlElement("NUM_SERIE")]
-        public string? NUM_SERIE_5_003 { get; set; }
-        [XmlElement("MED_PRSO_LIMITE_SPRR_ALRME")]
-
-        public string? MED_PRSO_LIMITE_SPRR_ALRME_4_003 { get; set; }
-        [XmlElement("MED_PRSO_LMTE_INFRR_ALRME")]
-
-        public string? MED_PRSO_LMTE_INFRR_ALRME_4_003 { get; set; }
-        [XmlElement("MED_PRSO_ADOTADA_FALHA")]
-
-        public string? MED_PRSO_ADOTADA_FALHA_3_003 { get; set; }
-        [XmlElement("DSC_ESTADO_INSNO_CASO_FALHA")]
-
-        public string? DSC_ESTADO_INSNO_CASO_FALHA_3_003 { get; set; }
-        [XmlElement("MED_CUTOFF_KPA")]
-
-        public string? MED_CUTOFF_KPA_2_003 { get; set; }
-        [XmlElement("IND_HABILITACAO_ALARME")]
-        public string? IND_HABILITACAO_ALARME_5_003 { get; set; }
     }
 
     [XmlRoot("PRODUCAO")]

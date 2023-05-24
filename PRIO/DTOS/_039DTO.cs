@@ -22,6 +22,7 @@ namespace PRIO.DTOS
         public List<Calibration>? LISTA_CALIBRACAO { get; set; }
         public List<Bsw>? LISTA_BSW { get; set; }
         public List<Volume>? LISTA_VOLUME { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore]
         public FileType? FileType { get; set; }
     }
 }

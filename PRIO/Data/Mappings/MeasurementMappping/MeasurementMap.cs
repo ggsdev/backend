@@ -546,7 +546,7 @@ namespace PRIO.Data.Mappings.MeasurementMappping
 
             builder.Property(x => x.DSC_ESTADO_INSNO_CASO_FALHA_3_003)
           .HasColumnType("varchar")
-          .HasPrecision(6, 3);
+          .HasMaxLength(50);
 
             builder.Property(x => x.MED_CUTOFF_KPA_2_003)
           .HasColumnType("float")

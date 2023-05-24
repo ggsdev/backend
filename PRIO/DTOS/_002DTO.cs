@@ -5,7 +5,7 @@ namespace PRIO.DTOS
     public class _002DTO : BaseModel
     {
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_002 { get; set; }
-        public int? COD_INSTALACAO_002 { get; set; }
+        public string? COD_INSTALACAO_002 { get; set; }
         public string? COD_TAG_PONTO_MEDICAO_002 { get; set; }
         public string? NUM_SERIE_COMPUTADOR_VAZAO_002 { get; set; }
         public DateTime? DHA_COLETA_002 { get; set; }
