@@ -1,6 +1,7 @@
 ﻿using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
+using System.Xml.Serialization;
 
 namespace PRIO.Files
 {
@@ -32,6 +33,12 @@ namespace PRIO.Files
                 Console.WriteLine(e.Message);
             }
 
+        }
+
+        public static T? DeserializeXml<T>(XElement element)
+        {
+            var serializer = new XmlSerializer(typeof(T));
+            return (T)serializer.Deserialize(element.CreateReader());
         }
     }
 }

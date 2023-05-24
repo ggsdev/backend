@@ -320,12 +320,12 @@ namespace PRIO.Models
         public double? PCT_CROMATOGRAFIA_HIDROGENIO_003 { get; set; }
         public double? PCT_CROMATOGRAFIA_ARGONIO_003 { get; set; }
         public string? DSC_VERSAO_SOFTWARE_003 { get; set; }
-
-
         public double? CE_LIMITE_SPRR_ALARME_003 { get; set; }
         public double? ICE_LIMITE_INFRR_ALARME_1_003 { get; set; }
         public string? IND_HABILITACAO_ALARME_1_003 { get; set; }
         public bool? ICE_LIMITE_INFRR_ALARME_2_003 { get; set; } //coluna não vem no xml
+
+        #region instrumento pressao 003
         public string? NUM_SERIE_1_003 { get; set; }
         public double? MED_PRSO_LIMITE_SPRR_ALRME_1_003 { get; set; }
         public double? MED_PRSO_LMTE_INFRR_ALRME_1_003 { get; set; }
@@ -333,14 +333,18 @@ namespace PRIO.Models
         public string? DSC_ESTADO_INSNO_CASO_FALHA_1_003 { get; set; }
         public string? IND_TIPO_PRESSAO_CONSIDERADA_003 { get; set; }
         public string? IND_HABILITACAO_ALARME_2_003 { get; set; }
+        #endregion
+
+        #region instrumento temperatura
         public string? NUM_SERIE_2_003 { get; set; }
         public double? MED_TMPTA_SPRR_ALARME_003 { get; set; }
         public double? MED_TMPTA_INFRR_ALRME_003 { get; set; }
         public string? IND_HABILITACAO_ALARME_3_003 { get; set; }
         public double? MED_TMPTA_ADTTA_FALHA_003 { get; set; }
         public string? DSC_ESTADO_INSTRUMENTO_FALHA_003 { get; set; }
+        #endregion
 
-
+        #region placa orificio
         public double? MED_DIAMETRO_REFERENCIA_003 { get; set; }
         public double? MED_TEMPERATURA_RFRNA_003 { get; set; }
         public string? DSC_MATERIAL_CONTRUCAO_PLACA_003 { get; set; }
@@ -349,38 +353,50 @@ namespace PRIO.Models
         public string? DSC_MATERIAL_CNSTO_TRCHO_MDCO_003 { get; set; }
         public string? DSC_LCLZO_TMDA_PRSO_DFRNL_003 { get; set; }
         public string? IND_TOMADA_PRESSAO_ESTATICA_003 { get; set; }
+        #endregion
+
+        #region instrumento pressao alta
         public string? NUM_SERIE_3_003 { get; set; }
-        public double? MED_PRSO_LIMITE_SPRR_ALRME_2_003 { get; set; }
+        public double? MED_PRSO_LIMITE_SPRR_ALRME_2_003 { get; set; } //coluna não vem no xml
         public double? MED_PRSO_LMTE_INFRR_ALRME_2_003 { get; set; }
-        public string? IND_HABILITACAO_ALARME_4_003 { get; set; }
-        public double? MED_PRSO_ADOTADA_FALHA_2_003 { get; set; }
-        public string? DSC_ESTADO_INSNO_CASO_FALHA_2_003 { get; set; }
-        public double? MED_CUTOFF_KPA_1_003 { get; set; }
+        #endregion
+
+        #region instrumento pressao media
         public string? NUM_SERIE_4_003 { get; set; }
-
-
         public double? MED_PRSO_LIMITE_SPRR_ALRME_3_003 { get; set; }
         public double? MED_PRSO_LMTE_INFRR_ALRME_3_003 { get; set; }
+        #endregion
+
+        #region instrumento pressao baixa
         public string? NUM_SERIE_5_003 { get; set; }
         public double? MED_PRSO_LIMITE_SPRR_ALRME_4_003 { get; set; }
         public double? MED_PRSO_LMTE_INFRR_ALRME_4_003 { get; set; }
-        public string? IND_HABILITACAO_ALARME_5_003 { get; set; }
-        public double? MED_PRSO_LIMITE_SPRR_ALRME_5_003 { get; set; }
-        public double? MED_PRSO_LMTE_INFRR_ALRME_5_003 { get; set; }
+        public string? IND_HABILITACAO_ALARME_4_003 { get; set; }
         public double? MED_PRSO_ADOTADA_FALHA_3_003 { get; set; }
         public string? DSC_ESTADO_INSNO_CASO_FALHA_3_003 { get; set; }
-        public string? NUM_SERIE_6_003 { get; set; }
-        public double? MED_CUTOFF_KPA_2_003 { get; set; }
+        public double? MED_CUTOFF_KPA_1_003 { get; set; }
+        #endregion
 
+        #region instrumento pressao principal
+        public string? NUM_SERIE_6_003 { get; set; }
+        public double? MED_PRSO_LIMITE_SPRR_ALRME_5_003 { get; set; }
+        public double? MED_PRSO_LMTE_INFRR_ALRME_5_003 { get; set; }
+        public double? MED_PRSO_ADOTADA_FALHA_2_003 { get; set; }
+        public string? IND_HABILITACAO_ALARME_5_003 { get; set; }
+        public string? DSC_ESTADO_INSNO_CASO_FALHA_2_003 { get; set; }
+        public double? MED_CUTOFF_KPA_2_003 { get; set; }
+        #endregion
+
+        #region producao
         public DateTime? DHA_INICIO_PERIODO_MEDICAO_003 { get; set; }
         public DateTime? DHA_FIM_PERIODO_MEDICAO_003 { get; set; }
         public double? ICE_DENSIDADE_RELATIVA_003 { get; set; }
-
         public double? MED_DIFERENCIAL_PRESSAO_003 { get; set; }
         public double? MED_PRESSAO_ESTATICA_003 { get; set; }
         public double? MED_TEMPERATURA_2_003 { get; set; }
         public double? PRZ_DURACAO_FLUXO_EFETIVO_003 { get; set; }
         public double? MED_CORRIGIDO_MVMDO_003 { get; set; }
+        #endregion
 
         #endregion
 
