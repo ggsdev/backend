@@ -399,7 +399,7 @@
 
         public List<Volume>? LISTA_VOLUME { get; set; }
         #endregion
-        public FileType? FileType { get; set; }
-        public User? User { get; set; }
+        public FileType FileType { get; set; }
+        public User User { get; set; }
     }
 }
