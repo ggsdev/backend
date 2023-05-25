@@ -727,7 +727,7 @@ namespace PRIO.Controllers
 
                 }
             }
-            return Ok(responseResult);
+            return Created("measurements", responseResult);
         }
 
     }
