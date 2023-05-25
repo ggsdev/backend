@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PRIO.Models;
+using PRIO.Models.Measurements;
 
 namespace PRIO.Data.Mappings.MeasurementMappping
 {
@@ -29,7 +29,8 @@ namespace PRIO.Data.Mappings.MeasurementMappping
             builder.Property(x => x.DHA_CERTIFICADO_ATUAL_039).HasColumnType("varchar").HasMaxLength(30);
 
             builder.HasOne(x => x.Measurement)
-            .WithMany(m => m.LISTA_CALIBRACAO);
+            .WithMany(m => m.LISTA_CALIBRACAO)
+            .OnDelete(DeleteBehavior.Cascade);
         }
 
     }

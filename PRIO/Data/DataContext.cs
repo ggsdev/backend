@@ -2,6 +2,7 @@
 using PRIO.Data.Mappings;
 using PRIO.Data.Mappings.MeasurementMappping;
 using PRIO.Models;
+using PRIO.Models.Measurements;
 
 namespace PRIO.Data
 {
@@ -17,7 +18,6 @@ namespace PRIO.Data
         public DbSet<Reservoir> Reservoirs { get; set; }
         public DbSet<Completion> Completions { get; set; }
         public DbSet<Well> Wells { get; set; }
-        public DbSet<Unit> Units { get; set; }
 
         #region Measurement & Relations
         public DbSet<Measurement> Measurements { get; set; }
@@ -60,10 +60,18 @@ namespace PRIO.Data
 
             foreach (var entry in modifiedEntries)
             {
-                if (entry.State == EntityState.Added)
+                switch (entry.State)
                 {
-                    entry.Entity.CreatedAt = DateTime.UtcNow;
-                    entry.Entity.IsActive = true;
+                    case EntityState.Added:
+                        entry.Entity.CreatedAt = DateTime.UtcNow;
+                        entry.Entity.IsActive = true;
+
+                        break;
+
+                    case EntityState.Deleted:
+                        entry.Entity.IsActive = false;
+                        entry.Entity.DeletedAt = DateTime.UtcNow;
+                        break;
                 }
 
                 entry.Entity.UpdatedAt = DateTime.UtcNow;
@@ -80,7 +88,6 @@ namespace PRIO.Data
             modelBuilder.ApplyConfiguration(new ReservoirMap());
             modelBuilder.ApplyConfiguration(new SessionMap());
             modelBuilder.ApplyConfiguration(new WellMap());
-            modelBuilder.ApplyConfiguration(new UnitMap());
 
             #region Measurement & Relations
             modelBuilder.ApplyConfiguration(new MeasurementMap());

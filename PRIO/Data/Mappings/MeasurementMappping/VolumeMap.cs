@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PRIO.Models;
+using PRIO.Models.Measurements;
 
 namespace PRIO.Data.Mappings.MeasurementMappping
 {
@@ -23,7 +23,8 @@ namespace PRIO.Data.Mappings.MeasurementMappping
             builder.Property(x => x.DHA_MED_REGISTRADO_039).HasColumnType("float").HasPrecision(8, 6);
 
             builder.HasOne(x => x.Measurement)
-            .WithMany(m => m.LISTA_VOLUME);
+            .WithMany(m => m.LISTA_VOLUME)
+            .OnDelete(DeleteBehavior.Cascade);
 
         }
     }

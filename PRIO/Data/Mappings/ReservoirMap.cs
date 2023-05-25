@@ -15,22 +15,31 @@ namespace PRIO.Data.Mappings
                 .ValueGeneratedOnAdd();
 
             builder.Property(x => x.Name)
-                .IsRequired()
-                .HasColumnType("VARCHAR");
+                .HasColumnType("VARCHAR")
+                .HasMaxLength(120)
+                .IsRequired();
+
+            builder.Property(x => x.CodReservoir)
+                .HasColumnType("VARCHAR")
+                .HasMaxLength(120);
+
+            builder.Property(x => x.Description)
+                .HasColumnType("TEXT");
 
             builder.Property(x => x.CreatedAt);
 
             builder.Property(x => x.UpdatedAt);
 
+            builder.Property(x => x.DeletedAt);
+
             builder.Property(x => x.IsActive);
 
             builder.HasOne(c => c.User).
                 WithMany(u => u.Reservoirs)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasOne(x => x.Installation).
                 WithMany(u => u.Reservoirs)
-                .HasForeignKey("InstallationId")
                 .OnDelete(DeleteBehavior.Cascade);
         }
 

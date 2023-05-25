@@ -1,45 +1,7 @@
-﻿using System.Text.Json.Serialization;
-
-namespace PRIO.Models
+﻿namespace PRIO.Models.Measurements
 {
-
-    public class Bsw : BaseModel
-    {
-        public DateTime? DHA_FALHA_BSW_039 { get; set; }
-
-        public double? DHA_PCT_BSW_039 { get; set; }
-
-        public double? DHA_PCT_MAXIMO_BSW_039 { get; set; }
-        [JsonIgnore]
-        public Measurement Measurement { get; set; }
-    }
-
-    public class Volume : BaseModel
-    {
-        public DateTime? DHA_MEDICAO_039 { get; set; }
-        public double? DHA_MED_DECLARADO_039 { get; set; }
-        public double? DHA_MED_REGISTRADO_039 { get; set; }
-        [JsonIgnore]
-        public Measurement Measurement { get; set; }
-    }
-
-    public class Calibration : BaseModel
-    {
-        public DateTime? DHA_FALHA_CALIBRACAO_039 { get; set; }
-
-        public double? DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039 { get; set; }
-
-        public double? DHA_NUM_FATOR_CALIBRACAO_ATUAL_039 { get; set; }
-
-        public string? DHA_CERTIFICADO_ATUAL_039 { get; set; }
-
-        public string? DHA_CERTIFICADO_ANTERIOR_039 { get; set; }
-        [JsonIgnore]
-        public Measurement Measurement { get; set; }
-    }
     public class Measurement : BaseModel
     {
-
         #region 001
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_001 { get; set; }
         public string? COD_INSTALACAO_001 { get; set; }
@@ -437,63 +399,7 @@ namespace PRIO.Models
 
         public List<Volume>? LISTA_VOLUME { get; set; }
         #endregion
-
-        #region 040
-        public string? COD_INSTALACAO_040 { get; set; }
-        public string? COD_TAG_PONTO_MEDICAO_040 { get; set; }
-        public double? PCT_BSW_040 { get; set; }
-        public double? PCT_MAXIMO_BSW_040 { get; set; }
-        public DateTime? DHA_MEDICAO_040 { get; set; }
-        public string? NOM_BOLETIM_ANALISE_040 { get; set; }
-        public bool? IND_USER_CALCULO_040 { get; set; }
-
-        #endregion
-
-        #region 041
-        public string? COD_INSTALACAO_041 { get; set; }
-        public string? COD_TAG_PONTO_MEDICAO_041 { get; set; }
-        public DateTime? DHA_ATUALIZACAO_041 { get; set; }
-        public double? NUM_FATOR_ENCOLHIMENTO_041 { get; set; }
-        public string? NOM_BOLETIM_ANALISE_041 { get; set; }
-        #endregion
-
-        #region 042
-        public string? COD_CADASTRO_POCO_042 { get; set; }
-        public string? IND_TIPO_TESTE_042 { get; set; }
-        public DateTime? DHA_TESTE_042 { get; set; }
-        public DateTime? DHA_APLICACAO_042 { get; set; }
-        public bool? IND_VALIDO_042 { get; set; }
-        public double? MED_POTENCIAL_OLEO_042 { get; set; }
-        public double? MED_POTENCIAL_GAS_042 { get; set; }
-        public double? MED_POTENCIAL_AGUA_042 { get; set; }
-        public string? NOM_RELATORIO_042 { get; set; }
-        public double? MED_VAZAO_OLEO_042 { get; set; }
-        public double? MED_VAZAO_GAS_042 { get; set; }
-        public double? MED_VAZAO_AGUA_042 { get; set; }
-        public double? PCT_BSW_042 { get; set; }
-        public string? NOM_RELATORIO_BSW_042 { get; set; }
-        public double? NUM_FATOR_ENCOLHIMENTO_042 { get; set; }
-        public string? NOM_RELATORIO_FATOR_ENCLO_042 { get; set; }
-        public double? PCT_RAZAO_SOLUBILIDADE_042 { get; set; }
-        public string? NOM_RELATORIO_RZO_SOLUBILIDADE_042 { get; set; }
-        public string? COD_INSTALACAO_042 { get; set; }
-        public string? COD_TAG_PONTO_MEDICAO_OLEO_042 { get; set; }
-        public string? COD_TAG_PONTO_MEDICAO_GAS_042 { get; set; }
-        #endregion
-
-        #region 045
-        public string? COD_INSTALACAO_045 { get; set; }
-        public string? COD_TAG_PONTO_MEDICAO_045 { get; set; }
-        public string? TAG_TANQUE_045 { get; set; }
-        public string? NUM_SERIE_045 { get; set; }
-        public double? MED_CAPACIDADE_LIQUIDA_045 { get; set; }
-        public double? MED_CAPACIDADE_BRUTA_045 { get; set; }
-        public double? MED_CAPACIDADE_CORRIGIDA_045 { get; set; }
-        public DateTime? DHA_MEDICAO_045 { get; set; }
-        public string? NOM_RELATORIO_BSW_045 { get; set; }
-        public bool? IND_NAVIO_045 { get; set; }
-        #endregion
-
         public FileType? FileType { get; set; }
+        public User? User { get; set; }
     }
 }

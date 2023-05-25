@@ -6,17 +6,17 @@ using PRIO.DTOS;
 using PRIO.Models;
 using PRIO.Services;
 using PRIO.ViewModels;
-
+using PRIO.ViewModels.Users;
 
 namespace PRIO.Controllers
 {
     [ApiController]
-    public class UserControllers : ControllerBase
+    public class UserController : ControllerBase
     {
         private readonly UserServices _userServices;
         private readonly TokenServices _tokenServices;
 
-        public UserControllers(UserServices userService, TokenServices tokenService)
+        public UserController(UserServices userService, TokenServices tokenService)
         {
             _userServices = userService;
             _tokenServices = tokenService;

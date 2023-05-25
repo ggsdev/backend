@@ -20,9 +20,14 @@ namespace PRIO.Data.Mappings
                 .IsRequired()
                 .HasColumnType("VARCHAR");
 
+            builder.Property(x => x.Description)
+                .HasColumnType("TEXT");
+
             builder.Property(x => x.CreatedAt);
 
             builder.Property(x => x.UpdatedAt);
+
+            builder.Property(x => x.DeletedAt);
 
             builder.Property(x => x.IsActive);
 
@@ -32,9 +37,11 @@ namespace PRIO.Data.Mappings
 
             builder.HasOne(x => x.Reservoir).
                 WithMany(r => r.Completions)
-                .HasForeignKey("ReservoirId")
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasOne(x => x.Well)
+                .WithMany(c => c.Completions)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

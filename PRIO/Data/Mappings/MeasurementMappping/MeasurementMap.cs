@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PRIO.Models;
+using PRIO.Models.Measurements;
 
 namespace PRIO.Data.Mappings.MeasurementMappping
 {
@@ -13,64 +13,6 @@ namespace PRIO.Data.Mappings.MeasurementMappping
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id)
                 .ValueGeneratedOnAdd();
-
-            #region 040
-
-            builder.Property(x => x.COD_INSTALACAO_040).HasColumnType("varchar").HasMaxLength(20)
-                ;
-
-            builder.Property(x => x.COD_TAG_PONTO_MEDICAO_040)
-                .HasColumnType("varchar")
-                .HasMaxLength(20)
-                ;
-
-            builder.Property(x => x.PCT_BSW_040)
-                .HasColumnType("float(3,2)")
-                .HasPrecision(3, 2)
-                ;
-
-            builder.Property(x => x.PCT_MAXIMO_BSW_040)
-                .HasColumnType("float(3,2)")
-                ;
-
-            builder.Property(x => x.DHA_MEDICAO_040)
-                .HasColumnType("date")
-                ;
-
-            builder.Property(x => x.NOM_BOLETIM_ANALISE_040)
-                .HasColumnType("varchar")
-                .HasMaxLength(120);
-
-            builder.Property(x => x.IND_USER_CALCULO_040)
-                .HasColumnType("bit")
-                ;
-            #endregion
-
-            #region 041
-
-            builder.Property(x => x.COD_INSTALACAO_041)
-                .HasColumnType("varchar")
-                .HasMaxLength(20)
-                ;
-
-            builder.Property(x => x.COD_TAG_PONTO_MEDICAO_041)
-                .HasColumnType("varchar")
-                .HasMaxLength(20)
-                ;
-
-            builder.Property(x => x.DHA_ATUALIZACAO_041)
-                .HasColumnType("date")
-                ;
-
-            builder.Property(x => x.NUM_FATOR_ENCOLHIMENTO_041)
-                .HasColumnType("float(6,6)")
-                .HasPrecision(6, 6)
-                ;
-
-            builder.Property(x => x.NOM_BOLETIM_ANALISE_041)
-                .HasColumnType("varchar")
-                .HasMaxLength(100);
-            #endregion
 
             #region 039
 
@@ -136,56 +78,6 @@ namespace PRIO.Data.Mappings.MeasurementMappping
                 .HasColumnType("varchar")
                 .HasMaxLength(20)
                 ;
-
-            #endregion
-
-            #region 045
-
-            builder.Property(x => x.COD_INSTALACAO_045).HasColumnType("varchar").HasMaxLength(20)
-                ;
-
-            builder.Property(x => x.COD_TAG_PONTO_MEDICAO_045)
-                .HasColumnType("varchar")
-                .HasMaxLength(20)
-                ;
-
-            builder.Property(x => x.TAG_TANQUE_045)
-                .HasColumnType("varchar")
-                .HasMaxLength(20)
-                ;
-
-            builder.Property(x => x.NUM_SERIE_045)
-                .HasColumnType("varchar")
-                .HasMaxLength(30)
-                ;
-
-            builder.Property(x => x.MED_CAPACIDADE_LIQUIDA_045)
-                .HasColumnType("float")
-                .HasPrecision(7, 5)
-                ;
-
-            builder.Property(x => x.MED_CAPACIDADE_BRUTA_045)
-                .HasColumnType("float")
-                .HasPrecision(7, 5)
-                ;
-
-            builder.Property(x => x.MED_CAPACIDADE_CORRIGIDA_045)
-                .HasColumnType("float")
-                .HasPrecision(7, 5)
-                ;
-
-            builder.Property(x => x.DHA_MEDICAO_045)
-                .HasColumnType("datetime")
-                ;
-
-            builder.Property(x => x.NOM_RELATORIO_BSW_045)
-                .HasColumnType("varchar")
-                .HasMaxLength(40);
-
-            builder.Property(x => x.IND_NAVIO_045)
-                .HasColumnType("bit")
-                ;
-
 
             #endregion
 
@@ -1579,106 +1471,22 @@ namespace PRIO.Data.Mappings.MeasurementMappping
               ;
             #endregion
 
-            #region 042
+            builder.Property(x => x.CreatedAt);
 
-            builder.Property(x => x.COD_CADASTRO_POCO_042)
-                .HasColumnType("varchar")
-                .HasMaxLength(12)
-                ;
+            builder.Property(x => x.UpdatedAt);
 
-            builder.Property(x => x.IND_TIPO_TESTE_042)
-                .HasColumnType("char")
-                .HasMaxLength(1)
-                ;
+            builder.Property(x => x.DeletedAt);
 
-            builder.Property(x => x.DHA_TESTE_042)
-                .HasColumnType("datetime")
-                ;
-
-            builder.Property(x => x.DHA_APLICACAO_042)
-                .HasColumnType("datetime")
-                ;
-
-            builder.Property(x => x.IND_VALIDO_042)
-                .HasColumnType("bit")
-                ;
-
-            builder.Property(x => x.MED_POTENCIAL_OLEO_042)
-                .HasColumnType("float")
-                .HasPrecision(8, 5)
-                ;
-
-            builder.Property(x => x.MED_POTENCIAL_GAS_042)
-                .HasColumnType("float")
-                .HasPrecision(8, 5)
-                ;
-
-            builder.Property(x => x.MED_POTENCIAL_AGUA_042)
-                .HasColumnType("float")
-                .HasPrecision(8, 5)
-                ;
-
-            builder.Property(x => x.NOM_RELATORIO_042)
-                .HasColumnType("varchar")
-                .HasPrecision(40);
-
-            builder.Property(x => x.MED_VAZAO_OLEO_042)
-                .HasColumnType("float")
-                .HasPrecision(8, 5)
-                ;
-
-            builder.Property(x => x.MED_VAZAO_GAS_042)
-                .HasColumnType("float")
-                .HasPrecision(8, 5)
-                ;
-
-            builder.Property(x => x.MED_VAZAO_AGUA_042)
-                .HasColumnType("float")
-                .HasPrecision(8, 5)
-                ;
-
-            builder.Property(x => x.PCT_BSW_042)
-                .HasColumnType("float")
-                .HasPrecision(3, 2)
-                ;
-
-            builder.Property(x => x.NOM_RELATORIO_BSW_042)
-                .HasColumnType("varchar")
-                .HasMaxLength(40);
-
-            builder.Property(x => x.NUM_FATOR_ENCOLHIMENTO_042)
-                .HasColumnType("float")
-                .HasPrecision(6, 6)
-                ;
-
-            builder.Property(x => x.NOM_RELATORIO_FATOR_ENCLO_042)
-                .HasColumnType("varchar")
-                .HasMaxLength(40);
-
-            builder.Property(x => x.PCT_RAZAO_SOLUBILIDADE_042)
-                .HasColumnType("float")
-                .HasPrecision(5, 4)
-                ;
-
-            builder.Property(x => x.NOM_RELATORIO_RZO_SOLUBILIDADE_042)
-                .HasColumnType("varchar")
-                .HasMaxLength(40);
-
-            builder.Property(x => x.COD_INSTALACAO_042).HasColumnType("varchar").HasMaxLength(20)
-                ;
+            builder.Property(x => x.IsActive);
 
 
-            builder.Property(x => x.COD_TAG_PONTO_MEDICAO_OLEO_042)
-                .HasColumnType("varchar")
-                .HasMaxLength(20)
-                ;
+            builder.HasOne((x => x.FileType))
+                .WithMany(x => x.Measurements)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Property(x => x.COD_TAG_PONTO_MEDICAO_GAS_042)
-                .HasColumnType("varchar")
-                .HasMaxLength(20)
-                ;
-
-            #endregion
+            builder.HasOne((x => x.User))
+                .WithMany(x => x.Measurements)
+                .OnDelete(DeleteBehavior.SetNull);
 
         }
     }

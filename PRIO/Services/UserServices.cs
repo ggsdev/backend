@@ -2,7 +2,7 @@
 using PRIO.Data;
 using PRIO.DTOS;
 using PRIO.Models;
-using PRIO.ViewModels;
+using PRIO.ViewModels.Users;
 
 namespace PRIO.Services
 {

@@ -12,7 +12,7 @@ using PRIO.Files._002;
 using PRIO.Files._003;
 using PRIO.Files._039;
 using PRIO.Middlewares;
-using PRIO.Models;
+using PRIO.Models.Measurements;
 using PRIO.Services;
 using System.Globalization;
 using System.Text;
@@ -77,14 +77,8 @@ static void ConfigureServices(IServiceCollection services)
         #endregion
 
         #region 001
-
-
         cfg.CreateMap<_001PMO, Measurement>();
         cfg.CreateMap<Measurement, _001DTO>();
-
-
-
-
         #endregion
 
         #region 002

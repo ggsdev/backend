@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.Data;
 
@@ -11,9 +12,11 @@ using PRIO.Data;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230525181843_ManagingColumnsInMeasurement")]
+    partial class ManagingColumnsInMeasurement
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1861,7 +1864,7 @@ namespace PRIO.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ArtificialLift")
+                    b.Property<string>("ArtificialElevation")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("VARCHAR");
@@ -1916,27 +1919,27 @@ namespace PRIO.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Latitude4C")
+                    b.Property<string>("LatitudeBase4C")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("VARCHAR");
 
-                    b.Property<string>("LatitudeDD")
+                    b.Property<string>("LatitudeBaseDD")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("VARCHAR");
 
-                    b.Property<string>("Longitude4C")
+                    b.Property<string>("LongitudeBase4C")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("VARCHAR");
 
-                    b.Property<string>("LongitudeDD")
+                    b.Property<string>("LongitudeBaseDD")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("VARCHAR");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("NameAnp")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("VARCHAR");
