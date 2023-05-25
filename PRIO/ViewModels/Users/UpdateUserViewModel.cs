@@ -1,4 +1,4 @@
-﻿namespace PRIO.ViewModels
+﻿namespace PRIO.ViewModels.Users
 {
     public class UpdateUserViewModel
     {

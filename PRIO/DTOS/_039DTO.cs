@@ -1,9 +1,11 @@
 ﻿using PRIO.Models;
+using PRIO.Models.Measurements;
 
 namespace PRIO.DTOS
 {
     public class _039DTO : BaseModel
     {
+        public Guid Id { get; set; }
         public string? COD_TAG_EQUIPAMENTO_039 { get; set; }
         public string? COD_FALHA_SUPERIOR_039 { get; set; }
         public short? DSC_TIPO_FALHA_039 { get; set; }
@@ -22,7 +24,6 @@ namespace PRIO.DTOS
         public List<Calibration>? LISTA_CALIBRACAO { get; set; }
         public List<Bsw>? LISTA_BSW { get; set; }
         public List<Volume>? LISTA_VOLUME { get; set; }
-        [System.Text.Json.Serialization.JsonIgnore]
         public FileType? FileType { get; set; }
     }
 }

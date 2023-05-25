@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.Data;
 
@@ -11,9 +12,11 @@ using PRIO.Data;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230525180406_AlteringTablesToMatchNewRules")]
+    partial class AlteringTablesToMatchNewRules
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,7 +38,7 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTime>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -79,11 +82,11 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTime>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -137,7 +140,7 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTime>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -190,7 +193,7 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTime>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -226,7 +229,7 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTime>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -278,7 +281,7 @@ namespace PRIO.Migrations
                         .HasPrecision(3, 2)
                         .HasColumnType("float");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTime>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -328,7 +331,7 @@ namespace PRIO.Migrations
                         .HasPrecision(5, 5)
                         .HasColumnType("float");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTime>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -535,7 +538,7 @@ namespace PRIO.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("varchar");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTime>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -1673,14 +1676,9 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.HasIndex("FileTypeId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Measurements", (string)null);
                 });
@@ -1705,7 +1703,7 @@ namespace PRIO.Migrations
                         .HasPrecision(8, 6)
                         .HasColumnType("float");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTime>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -1741,7 +1739,7 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTime>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -1815,7 +1813,7 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTime>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -1861,7 +1859,7 @@ namespace PRIO.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ArtificialLift")
+                    b.Property<string>("ArtificialElevation")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("VARCHAR");
@@ -1907,36 +1905,36 @@ namespace PRIO.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("DeletedAt")
+                    b.Property<DateTime>("DeletedAt")
                         .HasColumnType("DATETIME");
 
                     b.Property<string>("Description")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Latitude4C")
+                    b.Property<string>("LatitudeBase4C")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("VARCHAR");
 
-                    b.Property<string>("LatitudeDD")
+                    b.Property<string>("LatitudeBaseDD")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("VARCHAR");
 
-                    b.Property<string>("Longitude4C")
+                    b.Property<string>("LongitudeBase4C")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("VARCHAR");
 
-                    b.Property<string>("LongitudeDD")
+                    b.Property<string>("LongitudeBaseDD")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("VARCHAR");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("NameAnp")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("VARCHAR");
@@ -2078,14 +2076,7 @@ namespace PRIO.Migrations
                         .HasForeignKey("FileTypeId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PRIO.Models.User", "User")
-                        .WithMany("Measurements")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.Navigation("FileType");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("PRIO.Models.Measurements.Volume", b =>
@@ -2180,8 +2171,6 @@ namespace PRIO.Migrations
                     b.Navigation("Fields");
 
                     b.Navigation("Installations");
-
-                    b.Navigation("Measurements");
 
                     b.Navigation("Reservoirs");
 

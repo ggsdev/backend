@@ -18,8 +18,11 @@ namespace PRIO.Middlewares
 
             if (authenticateResult.Succeeded && authenticateResult.Principal?.Identity is ClaimsIdentity claimsIdentity)
             {
-                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                context.Items["Id"] = userId;
+                var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    context.Items["Id"] = userId;
+                }
             }
 
             await _next(context);

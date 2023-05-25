@@ -16,20 +16,24 @@ namespace PRIO.Data.Mappings
                .ValueGeneratedOnAdd();
 
             builder.Property(x => x.Name)
-                .HasMaxLength(256);
+                .HasMaxLength(256)
+                .IsRequired();
 
             builder.Property(x => x.Acronym)
                 .HasColumnType("varchar")
-                .HasMaxLength(60);
+                .HasMaxLength(60)
+                .IsRequired();
+
+            builder.Property(x => x.Description)
+              .HasColumnType("text");
 
             builder.Property(x => x.IsActive);
 
             builder.Property(x => x.CreatedAt);
+
             builder.Property(x => x.UpdatedAt);
 
-            builder.Property(x => x.Description)
-               .HasColumnType("text");
-
+            builder.Property(x => x.DeletedAt);
         }
     }
 }

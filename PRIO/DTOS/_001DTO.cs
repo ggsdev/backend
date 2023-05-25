@@ -1,10 +1,10 @@
 ﻿using PRIO.Models;
-using System.Text.Json.Serialization;
 
 namespace PRIO.DTOS
 {
     public class _001DTO : BaseModel
     {
+        public Guid Id { get; set; }
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_001 { get; set; }
         public string? COD_INSTALACAO_001 { get; set; }
         public string? COD_TAG_PONTO_MEDICAO_001 { get; set; }
@@ -117,7 +117,6 @@ namespace PRIO.DTOS
         public double? MED_VOLUME_LIQUIDO_MVMDO_001 { get; set; }
         public double? MED_VOLUME_TTLZO_FIM_PRDO_001 { get; set; }
         public double? MED_VOLUME_TTLZO_INCO_PRDO_001 { get; set; }
-        [JsonIgnore]
         public FileType? FileType { get; set; }
     }
 }

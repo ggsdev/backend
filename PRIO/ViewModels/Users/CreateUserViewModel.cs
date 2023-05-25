@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PRIO.ViewModels
+namespace PRIO.ViewModels.Users
 {
     public class CreateUserViewModel
     {

@@ -17,24 +17,28 @@ namespace PRIO.Data.Mappings
                 .ValueGeneratedOnAdd();
 
             builder.Property(x => x.Name)
-                .IsRequired()
-                .HasColumnType("VARCHAR");
+                .HasColumnType("VARCHAR")
+                .HasMaxLength(256)
+                .IsRequired();
+
+            builder.Property(x => x.Description)
+                .HasColumnType("TEXT");
+
+            builder.Property(x => x.CodCluster)
+                .HasColumnType("VARCHAR")
+                .HasMaxLength(60);
 
             builder.Property(x => x.CreatedAt);
 
             builder.Property(x => x.UpdatedAt);
 
+            builder.Property(x => x.DeletedAt);
+
             builder.Property(x => x.IsActive);
 
             builder.HasOne(c => c.User).
                 WithMany(u => u.Clusters)
-                .OnDelete(DeleteBehavior.NoAction);
-
-            builder.HasOne(x => x.Unit).
-                WithMany(u => u.Clusters)
-                .HasForeignKey("UnitId")
-                .OnDelete(DeleteBehavior.Cascade);
-
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

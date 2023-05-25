@@ -2,9 +2,11 @@
 {
     public class Completion : BaseModel
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string CodCompletion { get; set; } = string.Empty;
+        public string CompletionId { get; set; } = string.Empty;
         public Reservoir Reservoir { get; set; }
         public User? User { get; set; }
-        public List<Well> Wells { get; set; }
+        public Well Well { get; set; }
     }
 }

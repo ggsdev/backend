@@ -4,6 +4,7 @@ namespace PRIO.DTOS
 {
     public class _003DTO : BaseModel
     {
+        public Guid Id { get; set; }
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_003 { get; set; }
         public string? COD_INSTALACAO_003 { get; set; }
         public string? COD_TAG_PONTO_MEDICAO_003 { get; set; }
@@ -91,7 +92,6 @@ namespace PRIO.DTOS
         public double? MED_TEMPERATURA_2_003 { get; set; }
         public double? PRZ_DURACAO_FLUXO_EFETIVO_003 { get; set; }
         public double? MED_CORRIGIDO_MVMDO_003 { get; set; }
-
         public FileType FileType { get; set; }
     }
 }

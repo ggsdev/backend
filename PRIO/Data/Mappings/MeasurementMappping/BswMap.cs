@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PRIO.Models;
+using PRIO.Models.Measurements;
 
 namespace PRIO.Data.Mappings.MeasurementMappping
 {
@@ -27,7 +27,8 @@ namespace PRIO.Data.Mappings.MeasurementMappping
             builder.Property(x => x.DHA_PCT_MAXIMO_BSW_039).HasColumnType("float").HasPrecision(3, 2);
 
             builder.HasOne(x => x.Measurement)
-            .WithMany(m => m.LISTA_BSW);
+                .WithMany(m => m.LISTA_BSW)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
