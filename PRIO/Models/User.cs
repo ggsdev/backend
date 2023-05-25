@@ -1,4 +1,5 @@
 ﻿using PRIO.Models.Measurements;
+using System.Text.Json.Serialization;
 
 namespace PRIO.Models
 {
@@ -18,6 +19,7 @@ namespace PRIO.Models
         public List<Reservoir>? Reservoirs { get; set; }
         public List<Completion>? Completions { get; set; }
         public List<Well>? Wells { get; set; }
+        [JsonIgnore]
         public List<Measurement>? Measurements { get; set; }
 
         #endregion

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS;
 using PRIO.Files;
@@ -24,11 +25,10 @@ namespace PRIO.Controllers
         public XMLController(IMapper mapper)
         {
             _mapper = mapper;
-
         }
 
-        [HttpPost("xmlbase64")]
-        public async Task<ActionResult> PostBase64FilesController([FromBody] RequestXmlViewModel data, [FromServices] DataContext context)
+        [HttpPost("measurements")]
+        public async Task<ActionResult> PostBase64Files([FromBody] RequestXmlViewModel data, [FromServices] DataContext context)
         {
             var responseResult = new DTOFiles
             {
@@ -37,6 +37,10 @@ namespace PRIO.Controllers
                 _003File = new List<_003DTO>(),
                 _039File = new List<_039DTO>(),
             };
+
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+
             for (int i = 0; i < data.Files.Count; ++i)
             {
                 var isValidFileName = new List<string>()
@@ -115,7 +119,7 @@ namespace PRIO.Controllers
                                         Acronym = data.Files[i].FileName,
 
                                     };
-
+                                    measurement.User = user;
                                     await context.Measurements.AddAsync(measurement);
                                     await context.SaveChangesAsync();
 
@@ -296,7 +300,12 @@ namespace PRIO.Controllers
                                             Name = "PMO",
                                             Acronym = data.Files[i].FileName,
 
-                                        }
+                                        },
+                                        #endregion
+
+                                        #region User relation
+                                        User = user,
+
                                         #endregion
                                     };
                                     await context.Measurements.AddAsync(measurement);
@@ -498,7 +507,12 @@ namespace PRIO.Controllers
                                             Name = "PMGL",
                                             Acronym = data.Files[i].FileName,
 
-                                        }
+                                        },
+                                        #endregion
+
+                                        #region User relation
+                                        User = user,
+
                                         #endregion
 
                                     };
@@ -699,7 +713,13 @@ namespace PRIO.Controllers
                                             Name = "PMGD",
                                             Acronym = data.Files[i].FileName,
 
-                                        }
+                                        },
+                                        #endregion
+
+
+                                        #region User relation
+                                        User = user,
+
                                         #endregion
                                     };
 
@@ -730,6 +750,67 @@ namespace PRIO.Controllers
             return Created("measurements", responseResult);
         }
 
+        [HttpGet($"measurements")]
+        public async Task<IActionResult> GetAll([FromServices] DataContext context, int pageNumber = 1, int pageSize = 1)
+        {
+            var responseResult = new DTOFiles
+            {
+                _001File = new List<_001DTO>(),
+                _002File = new List<_002DTO>(),
+                _003File = new List<_003DTO>(),
+                _039File = new List<_039DTO>(),
+            };
+
+            var files = await context.FileTypes
+                .Include(x => x.Measurements)
+                .ThenInclude(m => m.User)
+                .ToListAsync();
+
+            var measurements = files
+                .SelectMany(file => file.Measurements);
+
+            var paginatedMeasurements = measurements
+               .Skip((pageNumber - 1) * pageSize)
+               .Take(pageSize);
+
+            for (int i = 0; i < paginatedMeasurements.Count(); ++i)
+            {
+                var measurement = paginatedMeasurements.ElementAt(i);
+
+                switch (measurement.FileType.Acronym)
+                {
+                    case "001":
+                        {
+                            var measurementDTO = _mapper.Map<_001DTO>(measurement);
+                            responseResult._001File?.Add(measurementDTO);
+                            break;
+                        }
+
+                    case "002":
+                        {
+                            var measurementDTO = _mapper.Map<_002DTO>(measurement);
+                            responseResult._002File?.Add(measurementDTO);
+                            break;
+                        }
+
+                    case "003":
+                        {
+                            var measurementDTO = _mapper.Map<_003DTO>(measurement);
+                            responseResult._003File?.Add(measurementDTO);
+                            break;
+                        }
+
+                    case "039":
+                        {
+                            var measurementDTO = _mapper.Map<_039DTO>(measurement);
+                            responseResult._039File?.Add(measurementDTO);
+                            break;
+                        }
+                }
+            }
+
+            return Ok(responseResult);
+        }
     }
 }
 
