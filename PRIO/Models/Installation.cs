@@ -7,6 +7,7 @@
         public Field Field { get; set; }
         public User? User { get; set; }
         public List<Reservoir>? Reservoirs { get; set; }
+        public List<MeasuringEquipment>? MeasuringEquipments { get; set; }
 
         //public string Acronym { get; set; }
         //public string Operator { get; set; }

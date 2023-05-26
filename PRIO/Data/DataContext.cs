@@ -18,6 +18,7 @@ namespace PRIO.Data
         public DbSet<Reservoir> Reservoirs { get; set; }
         public DbSet<Completion> Completions { get; set; }
         public DbSet<Well> Wells { get; set; }
+        public DbSet<MeasuringEquipment> MeasuringEquipments { get; set; }
 
         #region Measurement & Relations
         public DbSet<Measurement> Measurements { get; set; }
@@ -60,18 +61,11 @@ namespace PRIO.Data
 
             foreach (var entry in modifiedEntries)
             {
-                switch (entry.State)
+                if (entry.State == EntityState.Added)
                 {
-                    case EntityState.Added:
-                        entry.Entity.CreatedAt = DateTime.UtcNow;
-                        entry.Entity.IsActive = true;
-
-                        break;
-
-                    case EntityState.Deleted:
-                        entry.Entity.IsActive = false;
-                        entry.Entity.DeletedAt = DateTime.UtcNow;
-                        break;
+                    entry.Entity.CreatedAt = DateTime.UtcNow;
+                    entry.Entity.DeletedAt = null;
+                    entry.Entity.IsActive = true;
                 }
 
                 entry.Entity.UpdatedAt = DateTime.UtcNow;
@@ -88,6 +82,7 @@ namespace PRIO.Data
             modelBuilder.ApplyConfiguration(new ReservoirMap());
             modelBuilder.ApplyConfiguration(new SessionMap());
             modelBuilder.ApplyConfiguration(new WellMap());
+            modelBuilder.ApplyConfiguration(new MeasuringEquipmentMap());
 
             #region Measurement & Relations
             modelBuilder.ApplyConfiguration(new MeasurementMap());

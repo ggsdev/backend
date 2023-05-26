@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace PRIO.Files._039
+namespace PRIO.Files.XML._039
 {
     [XmlRoot("a039")]
     public class _039EFM

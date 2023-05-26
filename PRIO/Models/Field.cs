@@ -1,4 +1,6 @@
-﻿namespace PRIO.Models
+﻿using System.Text.Json.Serialization;
+
+namespace PRIO.Models
 {
 
     public class Field : BaseModel
@@ -8,7 +10,9 @@
         public string State { get; set; } = string.Empty;
         public string Basin { get; set; } = string.Empty;
         public string Location { get; set; } = string.Empty;
+        [JsonIgnore]
         public Cluster Cluster { get; set; }
+        [JsonIgnore]
         public User? User { get; set; }
         public List<Installation>? Installations { get; set; }
 

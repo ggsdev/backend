@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace PRIO.Files._001
+namespace PRIO.Files.XML._001
 {
     [XmlRoot("a001")]
     public class _001PMO

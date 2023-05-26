@@ -3,7 +3,7 @@ using System.Xml.Linq;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 
-namespace PRIO.Files
+namespace PRIO.Files.XML
 {
     public class Functions
     {
@@ -29,7 +29,7 @@ namespace PRIO.Files
 
             if (e.Severity == XmlSeverityType.Error)
             {
-                _result.Add(e.Message);
+                _result?.Add(e.Message);
                 Console.WriteLine(e.Message);
             }
 

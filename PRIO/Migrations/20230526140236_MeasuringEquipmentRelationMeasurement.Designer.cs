@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.Data;
 
@@ -11,9 +12,11 @@ using PRIO.Data;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230526140236_MeasuringEquipmentRelationMeasurement")]
+    partial class MeasuringEquipmentRelationMeasurement
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1676,7 +1679,7 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -1776,14 +1779,9 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.HasIndex("InstallationId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("MeasuringEquipments", (string)null);
                 });
@@ -2148,7 +2146,8 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.User", "User")
                         .WithMany("Measurements")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
 
                     b.Navigation("FileType");
 
@@ -2176,14 +2175,7 @@ namespace PRIO.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PRIO.Models.User", "User")
-                        .WithMany("MeasuringEquipments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.Navigation("Installation");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("PRIO.Models.Reservoir", b =>
@@ -2276,8 +2268,6 @@ namespace PRIO.Migrations
                     b.Navigation("Installations");
 
                     b.Navigation("Measurements");
-
-                    b.Navigation("MeasuringEquipments");
 
                     b.Navigation("Reservoirs");
 

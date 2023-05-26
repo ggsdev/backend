@@ -13,15 +13,15 @@ namespace PRIO.Controllers
         public async Task<IActionResult> Create([FromBody] CreateClusterViewModel body, [FromServices] DataContext context)
         {
             var checkClusterInDatabase = await context.Clusters.FirstOrDefaultAsync((x) => x.CodCluster == body.CodCluster);
-            var userId = (Guid)HttpContext.Items["Id"]!;
-
-            var user = await context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
 
             if (checkClusterInDatabase is not null)
                 return Conflict(new ErrorResponseDTO
                 {
                     Message = $"Cluster with code: {body.CodCluster} already exists."
                 });
+
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
 
             var cluster = new Cluster
             {

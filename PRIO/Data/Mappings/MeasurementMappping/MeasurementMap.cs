@@ -1479,8 +1479,11 @@ namespace PRIO.Data.Mappings.MeasurementMappping
 
             builder.Property(x => x.IsActive);
 
-
             builder.HasOne((x => x.FileType))
+                .WithMany(x => x.Measurements)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne((x => x.MeasuringEquipment))
                 .WithMany(x => x.Measurements)
                 .OnDelete(DeleteBehavior.Cascade);
 
