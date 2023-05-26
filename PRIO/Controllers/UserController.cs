@@ -118,15 +118,10 @@ namespace PRIO.Controllers
 
             try
             {
-                if (body.Name != null) user.Name = body.Name;
-
-                if (body.Password != null) user.Password = BCrypt.Net.BCrypt.HashPassword(body.Password);
-
-                if (body.Email != null) user.Email = body.Email;
-
-                if (body.Username != null) user.Username = body.Username;
-
-                user.UpdatedAt = DateTime.UtcNow.ToLocalTime();
+                user.Name = body.Name is not null ? body.Name : user.Name;
+                user.Password = body.Password is not null ? BCrypt.Net.BCrypt.HashPassword(body.Password) : user.Password;
+                user.Email = body.Email is not null ? body.Email : user.Email;
+                user.Username = body.Username is not null ? body.Username : user.Username;
 
                 context.Users.Update(user);
                 await context.SaveChangesAsync();
@@ -158,9 +153,9 @@ namespace PRIO.Controllers
 
                 return NotFound(userError);
             }
-
+            user.DeletedAt = DateTime.UtcNow;
             user.IsActive = false;
-            user.UpdatedAt = DateTime.UtcNow.ToLocalTime();
+
             await context.SaveChangesAsync();
 
             return NoContent();

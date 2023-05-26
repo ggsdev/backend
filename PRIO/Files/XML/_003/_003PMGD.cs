@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace PRIO.Files._003
+namespace PRIO.Files.XML._003
 {
     [XmlRoot("a003")]
     public class _003PMGD

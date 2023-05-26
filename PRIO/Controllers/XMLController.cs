@@ -3,46 +3,57 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS;
-using PRIO.Files;
-using PRIO.Files._001;
-using PRIO.Files._002;
-using PRIO.Files._003;
-using PRIO.Files._039;
+using PRIO.Files.XML;
+using PRIO.Files.XML._001;
+using PRIO.Files.XML._002;
+using PRIO.Files.XML._003;
+using PRIO.Files.XML._039;
 using PRIO.Models;
 using PRIO.Models.Measurements;
 using PRIO.ViewModels;
 using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 
 namespace PRIO.Controllers
 {
     [ApiController]
-    public class XMLController : ControllerBase
+    public partial class XMLController : ControllerBase
     {
+
         private readonly IMapper _mapper;
+        private readonly DTOFiles _responseResult;
+
+        [GeneratedRegex("(?<=data:@file/xml;base64,)\\w+")]
+        private static partial Regex XmlRegex();
         public XMLController(IMapper mapper)
         {
             _mapper = mapper;
+            _responseResult = new();
         }
 
         [HttpPost("measurements")]
         public async Task<ActionResult> PostBase64Files([FromBody] RequestXmlViewModel data, [FromServices] DataContext context)
         {
-            var responseResult = new DTOFiles
-            {
-                _001File = new List<_001DTO>(),
-                _002File = new List<_002DTO>(),
-                _003File = new List<_003DTO>(),
-                _039File = new List<_039DTO>(),
-            };
-
             var userId = (Guid)HttpContext.Items["Id"]!;
             var user = await context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+            var addedMeasurements = new List<Measurement>();
 
             for (int i = 0; i < data.Files.Count; ++i)
             {
+                #region validations
+                var match = XmlRegex().Match(data.Files[i].ContentBase64);
+                if (!match.Success)
+                    return BadRequest(new ErrorResponseDTO
+                    {
+                        Message = $"One file has a non-XML extension. Failed to post file position in the list: {i} with file name: {data.Files[i].FileName}"
+
+                    });
+
+                var fileContent = data.Files[i].ContentBase64.Replace("data:@file/xml;base64,", "");
+
                 var isValidFileName = new List<string>()
                     {
                         "039",
@@ -54,11 +65,12 @@ namespace PRIO.Controllers
                 if (!isValidFileName)
                     return BadRequest(new ErrorResponseDTO
                     {
-                        Message = "File type invalid, types supported are: 001,002,003,039"
+                        Message = $"Invalid file name. Supported names are: 001, 002, 003, 039. Failed to post file position in the list: {i} with the file name: {data.Files[i].FileName}"
                     });
+                #endregion
 
                 #region pathing
-                var basePath = "C:\\Users\\gabri\\source\\repos\\PrioANP\\backend\\PRIO\\PRIO\\Files\\";
+                var basePath = "C:\\Users\\gabri\\source\\repos\\PrioANP\\backend\\PRIO\\PRIO\\Files\\XML";
                 var tempPath = Path.GetTempPath();
                 var formattedDateTime = DateTime.Now.ToString("yyyyMMddHHmmss");
                 var pathXml = Path.Combine(tempPath, $"{data.Files[i].FileName}_03255266_{formattedDateTime}_eeeeeeeeeeeeeee(campo_opcional).xml");
@@ -67,7 +79,7 @@ namespace PRIO.Controllers
 
                 #region writting, parsing
 
-                await System.IO.File.WriteAllBytesAsync(pathXml, Convert.FromBase64String(data.Files[i].ContentBase64));
+                await System.IO.File.WriteAllBytesAsync(pathXml, Convert.FromBase64String(fileContent));
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
                 var parserContext = new XmlParserContext(null, null, null, XmlSpace.None)
@@ -106,7 +118,7 @@ namespace PRIO.Controllers
                         case "039":
                             {
                                 #region elementos XML
-                                var dadosBasicos = Functions.DeserializeXml<DADOS_BASICOS_039>(dadosBasicosElement);
+                                var dadosBasicos = dadosBasicosElement is not null ? Functions.DeserializeXml<DADOS_BASICOS_039>(dadosBasicosElement) : null;
                                 #endregion
                                 try
                                 {
@@ -115,16 +127,15 @@ namespace PRIO.Controllers
                                     measurement.FileType = new FileType
                                     {
                                         Id = new Guid(),
-                                        Name = "EFM",
-                                        Acronym = data.Files[i].FileName,
+                                        Name = data.Files[i].FileName,
+                                        Acronym = "EFM",
 
                                     };
                                     measurement.User = user;
-                                    await context.Measurements.AddAsync(measurement);
-                                    await context.SaveChangesAsync();
-
+                                    addedMeasurements.Add(measurement);
                                     var measurement039DTO = _mapper.Map<_039DTO>(measurement);
-                                    responseResult._039File?.Add(measurement039DTO);
+                                    _responseResult._039File ??= new List<_039DTO>();
+                                    _responseResult._039File?.Add(measurement039DTO);
                                 }
                                 catch (Exception ex)
                                 {
@@ -134,9 +145,6 @@ namespace PRIO.Controllers
                                         Message = $"Something went wrong: {ex.Message}"
                                     });
                                 }
-
-
-                                //return Ok(measurement039DTO);
                                 break;
                             }
                         #endregion
@@ -145,21 +153,21 @@ namespace PRIO.Controllers
                         case "001":
                             {
                                 #region elementos XML
-                                var dadosBasicos = Functions.DeserializeXml<DADOS_BASICOS_001>(dadosBasicosElement);
+                                var dadosBasicos = dadosBasicosElement is not null ? Functions.DeserializeXml<DADOS_BASICOS_001>(dadosBasicosElement) : null;
 
-                                var configuracaoCvElement = dadosBasicosElement.Element("LISTA_CONFIGURACAO_CV")?.Element("CONFIGURACAO_CV");
+                                var configuracaoCvElement = dadosBasicosElement?.Element("LISTA_CONFIGURACAO_CV")?.Element("CONFIGURACAO_CV");
                                 var configuracaoCv = configuracaoCvElement is not null ? Functions.DeserializeXml<CONFIGURACAO_CV_001>(configuracaoCvElement) : null;
 
-                                var elementoPrimarioElement = dadosBasicosElement.Element("LISTA_ELEMENTO_PRIMARIO")?.Element("ELEMENTO_PRIMARIO");
+                                var elementoPrimarioElement = dadosBasicosElement?.Element("LISTA_ELEMENTO_PRIMARIO")?.Element("ELEMENTO_PRIMARIO");
                                 var elementoPrimario = elementoPrimarioElement is not null ? Functions.DeserializeXml<ELEMENTO_PRIMARIO_001>(elementoPrimarioElement) : null;
 
-                                var instrumentoPressaoElement = dadosBasicosElement.Element("LISTA_INSTRUMENTO_PRESSAO")?.Element("INSTRUMENTO_PRESSAO");
+                                var instrumentoPressaoElement = dadosBasicosElement?.Element("LISTA_INSTRUMENTO_PRESSAO")?.Element("INSTRUMENTO_PRESSAO");
                                 var instrumentoPressao = instrumentoPressaoElement is not null ? Functions.DeserializeXml<INSTRUMENTO_PRESSAO_001>(instrumentoPressaoElement) : null;
 
-                                var instrumentoTemperaturaElement = dadosBasicosElement.Element("LISTA_INSTRUMENTO_TEMPERATURA")?.Element("INSTRUMENTO_TEMPERATURA");
+                                var instrumentoTemperaturaElement = dadosBasicosElement?.Element("LISTA_INSTRUMENTO_TEMPERATURA")?.Element("INSTRUMENTO_TEMPERATURA");
                                 var instrumentoTemperatura = instrumentoTemperaturaElement is not null ? Functions.DeserializeXml<INSTRUMENTO_TEMPERATURA_001>(instrumentoTemperaturaElement) : null;
 
-                                var producaoElement = dadosBasicosElement.Element("LISTA_PRODUCAO")?.Element("PRODUCAO");
+                                var producaoElement = dadosBasicosElement?.Element("LISTA_PRODUCAO")?.Element("PRODUCAO");
                                 var producao = producaoElement is not null ? Functions.DeserializeXml<PRODUCAO_001>(producaoElement) : null;
                                 #endregion
 
@@ -297,8 +305,8 @@ namespace PRIO.Controllers
                                         FileType = new FileType
                                         {
                                             Id = new Guid(),
-                                            Name = "PMO",
-                                            Acronym = data.Files[i].FileName,
+                                            Name = data.Files[i].FileName,
+                                            Acronym = "PMO",
 
                                         },
                                         #endregion
@@ -308,11 +316,10 @@ namespace PRIO.Controllers
 
                                         #endregion
                                     };
-                                    await context.Measurements.AddAsync(measurement);
-                                    await context.SaveChangesAsync();
-
+                                    addedMeasurements.Add(measurement);
                                     var measurement001DTO = _mapper.Map<_001DTO>(measurement);
-                                    responseResult._001File?.Add(measurement001DTO);
+                                    _responseResult._001File ??= new List<_001DTO>();
+                                    _responseResult._001File?.Add(measurement001DTO);
                                 }
                                 catch (Exception ex)
                                 {
@@ -331,7 +338,7 @@ namespace PRIO.Controllers
                         case "002":
                             {
                                 #region elementos XML
-                                var dadosBasicos = Functions.DeserializeXml<DADOS_BASICOS_002>(dadosBasicosElement);
+                                var dadosBasicos = dadosBasicosElement is not null ? Functions.DeserializeXml<DADOS_BASICOS_002>(dadosBasicosElement) : null;
 
                                 var configuracaoCvElement = dadosBasicosElement?.Element("LISTA_CONFIGURACAO_CV")?.Element("CONFIGURACAO_CV");
                                 var configuracaoCv = configuracaoCvElement is not null ? Functions.DeserializeXml<CONFIGURACAO_CV_002>(configuracaoCvElement) : null;
@@ -392,7 +399,7 @@ namespace PRIO.Controllers
                                         PCT_CROMATOGRAFIA_HIDROGENIO_002 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_HIDROGENIO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_HIDROGENIO_002) ? PCT_CROMATOGRAFIA_HIDROGENIO_002 : 0,
                                         PCT_CROMATOGRAFIA_ARGONIO_002 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_ARGONIO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_ARGONIO_002) ? PCT_CROMATOGRAFIA_ARGONIO_002 : 0,
 
-                                        DSC_VERSAO_SOFTWARE_002 = configuracaoCv.DSC_VERSAO_SOFTWARE_002,
+                                        DSC_VERSAO_SOFTWARE_002 = configuracaoCv?.DSC_VERSAO_SOFTWARE_002,
 
                                         #endregion
 
@@ -504,8 +511,8 @@ namespace PRIO.Controllers
                                         FileType = new FileType
                                         {
                                             Id = new Guid(),
-                                            Name = "PMGL",
-                                            Acronym = data.Files[i].FileName,
+                                            Name = data.Files[i].FileName,
+                                            Acronym = "PMGL",
 
                                         },
                                         #endregion
@@ -516,14 +523,11 @@ namespace PRIO.Controllers
                                         #endregion
 
                                     };
-
-
-                                    await context.Measurements.AddAsync(measurement);
-
-                                    await context.SaveChangesAsync();
+                                    addedMeasurements.Add(measurement);
 
                                     var measurement002DTO = _mapper.Map<_002DTO>(measurement);
-                                    responseResult._002File?.Add(measurement002DTO);
+                                    _responseResult._002File ??= new List<_002DTO>();
+                                    _responseResult._002File?.Add(measurement002DTO);
 
                                 }
                                 catch (Exception ex)
@@ -545,7 +549,7 @@ namespace PRIO.Controllers
                             {
 
                                 #region elementos XML
-                                var dadosBasicos = Functions.DeserializeXml<DADOS_BASICOS_003>(dadosBasicosElement);
+                                var dadosBasicos = dadosBasicosElement is not null ? Functions.DeserializeXml<DADOS_BASICOS_003>(dadosBasicosElement) : null;
 
                                 var configuracaoCvElement = dadosBasicosElement?.Element("LISTA_CONFIGURACAO_CV")?.Element("CONFIGURACAO_CV");
                                 var configuracaoCv = configuracaoCvElement is not null ? Functions.DeserializeXml<CONFIGURACAO_CV_003>(configuracaoCvElement) : null;
@@ -583,20 +587,20 @@ namespace PRIO.Controllers
                                     var measurement = new Measurement
                                     {
                                         #region atributos
-                                        NUM_SERIE_ELEMENTO_PRIMARIO_003 = dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_003,
-                                        COD_INSTALACAO_003 = dadosBasicos.COD_INSTALACAO_003,
-                                        COD_TAG_PONTO_MEDICAO_003 = dadosBasicos.COD_TAG_PONTO_MEDICAO_003,
+                                        NUM_SERIE_ELEMENTO_PRIMARIO_003 = dadosBasicos?.NUM_SERIE_ELEMENTO_PRIMARIO_003,
+                                        COD_INSTALACAO_003 = dadosBasicos?.COD_INSTALACAO_003,
+                                        COD_TAG_PONTO_MEDICAO_003 = dadosBasicos?.COD_TAG_PONTO_MEDICAO_003,
                                         #endregion
 
                                         #region configuracao cv
 
-                                        NUM_SERIE_COMPUTADOR_VAZAO_003 = configuracaoCv.NUM_SERIE_COMPUTADOR_VAZAO_003,
+                                        NUM_SERIE_COMPUTADOR_VAZAO_003 = configuracaoCv?.NUM_SERIE_COMPUTADOR_VAZAO_003,
                                         DHA_COLETA_003 = DateTime.TryParseExact(configuracaoCv?.DHA_COLETA_003, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var DHA_COLETA_003) ? DHA_COLETA_003 : null,
                                         MED_TEMPERATURA_1_003 = double.TryParse(configuracaoCv?.MED_TEMPERATURA_1_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TEMPERATURA_1_003) ? MED_TEMPERATURA_1_003 : 0,
                                         MED_PRESSAO_ATMSA_003 = double.TryParse(configuracaoCv?.MED_PRESSAO_ATMSA_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRESSAO_ATMSA_003) ? MED_PRESSAO_ATMSA_003 : 0,
                                         MED_PRESSAO_RFRNA_003 = double.TryParse(configuracaoCv?.MED_PRESSAO_RFRNA_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRESSAO_RFRNA_003) ? MED_PRESSAO_RFRNA_003 : 0,
                                         MED_DENSIDADE_RELATIVA_003 = double.TryParse(configuracaoCv?.MED_DENSIDADE_RELATIVA_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_DENSIDADE_RELATIVA_003) ? MED_DENSIDADE_RELATIVA_003 : 0,
-                                        DSC_NORMA_UTILIZADA_CALCULO_003 = configuracaoCv.DSC_NORMA_UTILIZADA_CALCULO_003,
+                                        DSC_NORMA_UTILIZADA_CALCULO_003 = configuracaoCv?.DSC_NORMA_UTILIZADA_CALCULO_003,
 
                                         PCT_CROMATOGRAFIA_NITROGENIO_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_NITROGENIO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_NITROGENIO_003) ? PCT_CROMATOGRAFIA_NITROGENIO_003 : 0,
                                         PCT_CROMATOGRAFIA_CO2_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_CO2_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_CO2_003) ? PCT_CROMATOGRAFIA_CO2_003 : 0,
@@ -619,46 +623,46 @@ namespace PRIO.Controllers
                                         PCT_CROMATOGRAFIA_CO_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_CO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_CO_003) ? PCT_CROMATOGRAFIA_CO_003 : 0,
                                         PCT_CROMATOGRAFIA_HIDROGENIO_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_HIDROGENIO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_HIDROGENIO_003) ? PCT_CROMATOGRAFIA_HIDROGENIO_003 : 0,
                                         PCT_CROMATOGRAFIA_ARGONIO_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_ARGONIO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_ARGONIO_003) ? PCT_CROMATOGRAFIA_ARGONIO_003 : 0,
-                                        DSC_VERSAO_SOFTWARE_003 = configuracaoCv.DSC_VERSAO_SOFTWARE_003,
+                                        DSC_VERSAO_SOFTWARE_003 = configuracaoCv?.DSC_VERSAO_SOFTWARE_003,
 
                                         #endregion
 
                                         #region elemento primario
-                                        CE_LIMITE_SPRR_ALARME_003 = double.TryParse(elementoPrimario.CE_LIMITE_SPRR_ALARME_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double CE_LIMITE_SPRR_ALARME_003) ? CE_LIMITE_SPRR_ALARME_003 : 0,
-                                        ICE_LIMITE_INFRR_ALARME_1_003 = double.TryParse(elementoPrimario.ICE_LIMITE_INFRR_ALARME_1_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_LIMITE_INFRR_ALARME_1_003) ? ICE_LIMITE_INFRR_ALARME_1_003 : 0,
-                                        IND_HABILITACAO_ALARME_1_003 = elementoPrimario.IND_HABILITACAO_ALARME_1_003,
+                                        CE_LIMITE_SPRR_ALARME_003 = double.TryParse(elementoPrimario?.CE_LIMITE_SPRR_ALARME_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double CE_LIMITE_SPRR_ALARME_003) ? CE_LIMITE_SPRR_ALARME_003 : 0,
+                                        ICE_LIMITE_INFRR_ALARME_1_003 = double.TryParse(elementoPrimario?.ICE_LIMITE_INFRR_ALARME_1_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_LIMITE_INFRR_ALARME_1_003) ? ICE_LIMITE_INFRR_ALARME_1_003 : 0,
+                                        IND_HABILITACAO_ALARME_1_003 = elementoPrimario?.IND_HABILITACAO_ALARME_1_003,
 
                                         #endregion
 
                                         #region instrumento pressao
-                                        NUM_SERIE_1_003 = instrumentoPressao.NUM_SERIE_1_003,
-                                        MED_PRSO_LIMITE_SPRR_ALRME_1_003 = double.TryParse(instrumentoPressao.MED_PRSO_LIMITE_SPRR_ALRME_1_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRSO_LIMITE_SPRR_ALRME_1_003) ? MED_PRSO_LIMITE_SPRR_ALRME_1_003 : 0,
-                                        MED_PRSO_LMTE_INFRR_ALRME_1_003 = double.TryParse(instrumentoPressao.MED_PRSO_LMTE_INFRR_ALRME_1_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRSO_LMTE_INFRR_ALRME_1_003) ? MED_PRSO_LMTE_INFRR_ALRME_1_003 : 0,
-                                        MED_PRSO_ADOTADA_FALHA_1_003 = double.TryParse(instrumentoPressao.MED_PRSO_ADOTADA_FALHA_1_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRSO_ADOTADA_FALHA_1_003) ? MED_PRSO_ADOTADA_FALHA_1_003 : 0,
-                                        DSC_ESTADO_INSNO_CASO_FALHA_1_003 = instrumentoPressao.DSC_ESTADO_INSNO_CASO_FALHA_1_003,
-                                        IND_TIPO_PRESSAO_CONSIDERADA_003 = instrumentoPressao.IND_TIPO_PRESSAO_CONSIDERADA_003,
-                                        IND_HABILITACAO_ALARME_2_003 = instrumentoPressao.IND_HABILITACAO_ALARME_2_003,
+                                        NUM_SERIE_1_003 = instrumentoPressao?.NUM_SERIE_1_003,
+                                        MED_PRSO_LIMITE_SPRR_ALRME_1_003 = double.TryParse(instrumentoPressao?.MED_PRSO_LIMITE_SPRR_ALRME_1_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRSO_LIMITE_SPRR_ALRME_1_003) ? MED_PRSO_LIMITE_SPRR_ALRME_1_003 : 0,
+                                        MED_PRSO_LMTE_INFRR_ALRME_1_003 = double.TryParse(instrumentoPressao?.MED_PRSO_LMTE_INFRR_ALRME_1_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRSO_LMTE_INFRR_ALRME_1_003) ? MED_PRSO_LMTE_INFRR_ALRME_1_003 : 0,
+                                        MED_PRSO_ADOTADA_FALHA_1_003 = double.TryParse(instrumentoPressao?.MED_PRSO_ADOTADA_FALHA_1_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRSO_ADOTADA_FALHA_1_003) ? MED_PRSO_ADOTADA_FALHA_1_003 : 0,
+                                        DSC_ESTADO_INSNO_CASO_FALHA_1_003 = instrumentoPressao?.DSC_ESTADO_INSNO_CASO_FALHA_1_003,
+                                        IND_TIPO_PRESSAO_CONSIDERADA_003 = instrumentoPressao?.IND_TIPO_PRESSAO_CONSIDERADA_003,
+                                        IND_HABILITACAO_ALARME_2_003 = instrumentoPressao?.IND_HABILITACAO_ALARME_2_003,
 
                                         #endregion
 
                                         #region instrumento temperatura
-                                        NUM_SERIE_2_003 = instrumentoTemperatura.NUM_SERIE_2_003,
-                                        MED_TMPTA_SPRR_ALARME_003 = double.TryParse(instrumentoTemperatura.MED_TMPTA_SPRR_ALARME_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TMPTA_SPRR_ALARME_003) ? MED_TMPTA_SPRR_ALARME_003 : 0,
-                                        MED_TMPTA_INFRR_ALRME_003 = double.TryParse(instrumentoTemperatura.MED_TMPTA_INFRR_ALRME_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TMPTA_INFRR_ALRME_003) ? MED_TMPTA_INFRR_ALRME_003 : 0,
-                                        IND_HABILITACAO_ALARME_3_003 = instrumentoTemperatura.IND_HABILITACAO_ALARME_3_003,
-                                        MED_TMPTA_ADTTA_FALHA_003 = double.TryParse(instrumentoTemperatura.MED_TMPTA_ADTTA_FALHA_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TMPTA_ADTTA_FALHA_003) ? MED_TMPTA_ADTTA_FALHA_003 : 0,
-                                        DSC_ESTADO_INSTRUMENTO_FALHA_003 = instrumentoTemperatura.DSC_ESTADO_INSTRUMENTO_FALHA_003,
+                                        NUM_SERIE_2_003 = instrumentoTemperatura?.NUM_SERIE_2_003,
+                                        MED_TMPTA_SPRR_ALARME_003 = double.TryParse(instrumentoTemperatura?.MED_TMPTA_SPRR_ALARME_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TMPTA_SPRR_ALARME_003) ? MED_TMPTA_SPRR_ALARME_003 : 0,
+                                        MED_TMPTA_INFRR_ALRME_003 = double.TryParse(instrumentoTemperatura?.MED_TMPTA_INFRR_ALRME_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TMPTA_INFRR_ALRME_003) ? MED_TMPTA_INFRR_ALRME_003 : 0,
+                                        IND_HABILITACAO_ALARME_3_003 = instrumentoTemperatura?.IND_HABILITACAO_ALARME_3_003,
+                                        MED_TMPTA_ADTTA_FALHA_003 = double.TryParse(instrumentoTemperatura?.MED_TMPTA_ADTTA_FALHA_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TMPTA_ADTTA_FALHA_003) ? MED_TMPTA_ADTTA_FALHA_003 : 0,
+                                        DSC_ESTADO_INSTRUMENTO_FALHA_003 = instrumentoTemperatura?.DSC_ESTADO_INSTRUMENTO_FALHA_003,
                                         #endregion
 
                                         #region placa orificio
-                                        MED_DIAMETRO_REFERENCIA_003 = double.TryParse(placaOrificio.MED_DIAMETRO_REFERENCIA_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_DIAMETRO_REFERENCIA_003) ? MED_DIAMETRO_REFERENCIA_003 : 0,
-                                        MED_TEMPERATURA_RFRNA_003 = double.TryParse(placaOrificio.MED_TEMPERATURA_RFRNA_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TEMPERATURA_RFRNA_003) ? MED_TEMPERATURA_RFRNA_003 : 0,
-                                        DSC_MATERIAL_CONTRUCAO_PLACA_003 = placaOrificio.DSC_MATERIAL_CONTRUCAO_PLACA_003,
-                                        MED_DMTRO_INTRO_TRCHO_MDCO_003 = double.TryParse(placaOrificio.MED_DMTRO_INTRO_TRCHO_MDCO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_DMTRO_INTRO_TRCHO_MDCO_003) ? MED_DMTRO_INTRO_TRCHO_MDCO_003 : 0,
-                                        MED_TMPTA_TRCHO_MDCO_003 = double.TryParse(placaOrificio.MED_TMPTA_TRCHO_MDCO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TMPTA_TRCHO_MDCO_003) ? MED_TMPTA_TRCHO_MDCO_003 : 0,
-                                        DSC_MATERIAL_CNSTO_TRCHO_MDCO_003 = placaOrificio.DSC_MATERIAL_CNSTO_TRCHO_MDCO_003,
-                                        DSC_LCLZO_TMDA_PRSO_DFRNL_003 = placaOrificio.DSC_LCLZO_TMDA_PRSO_DFRNL_003,
-                                        IND_TOMADA_PRESSAO_ESTATICA_003 = placaOrificio.IND_TOMADA_PRESSAO_ESTATICA_003,
+                                        MED_DIAMETRO_REFERENCIA_003 = double.TryParse(placaOrificio?.MED_DIAMETRO_REFERENCIA_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_DIAMETRO_REFERENCIA_003) ? MED_DIAMETRO_REFERENCIA_003 : 0,
+                                        MED_TEMPERATURA_RFRNA_003 = double.TryParse(placaOrificio?.MED_TEMPERATURA_RFRNA_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TEMPERATURA_RFRNA_003) ? MED_TEMPERATURA_RFRNA_003 : 0,
+                                        DSC_MATERIAL_CONTRUCAO_PLACA_003 = placaOrificio?.DSC_MATERIAL_CONTRUCAO_PLACA_003,
+                                        MED_DMTRO_INTRO_TRCHO_MDCO_003 = double.TryParse(placaOrificio?.MED_DMTRO_INTRO_TRCHO_MDCO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_DMTRO_INTRO_TRCHO_MDCO_003) ? MED_DMTRO_INTRO_TRCHO_MDCO_003 : 0,
+                                        MED_TMPTA_TRCHO_MDCO_003 = double.TryParse(placaOrificio?.MED_TMPTA_TRCHO_MDCO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TMPTA_TRCHO_MDCO_003) ? MED_TMPTA_TRCHO_MDCO_003 : 0,
+                                        DSC_MATERIAL_CNSTO_TRCHO_MDCO_003 = placaOrificio?.DSC_MATERIAL_CNSTO_TRCHO_MDCO_003,
+                                        DSC_LCLZO_TMDA_PRSO_DFRNL_003 = placaOrificio?.DSC_LCLZO_TMDA_PRSO_DFRNL_003,
+                                        IND_TOMADA_PRESSAO_ESTATICA_003 = placaOrificio?.IND_TOMADA_PRESSAO_ESTATICA_003,
                                         #endregion
 
                                         #region inst diferen pressao alta   
@@ -696,26 +700,25 @@ namespace PRIO.Controllers
                                         #endregion
 
                                         #region producao
-                                        DHA_INICIO_PERIODO_MEDICAO_003 = DateTime.TryParseExact(producao.DHA_INICIO_PERIODO_MEDICAO_003, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var DHA_INICIO_PERIODO_MEDICAO_003) ? DHA_INICIO_PERIODO_MEDICAO_003 : null,
-                                        DHA_FIM_PERIODO_MEDICAO_003 = DateTime.TryParseExact(producao.DHA_FIM_PERIODO_MEDICAO_003, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var DHA_FIM_PERIODO_MEDICAO_003) ? DHA_FIM_PERIODO_MEDICAO_003 : null,
-                                        ICE_DENSIDADE_RELATIVA_003 = double.TryParse(producao.ICE_DENSIDADE_RELATIVA_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_DENSIDADE_RELATIVA_003) ? ICE_DENSIDADE_RELATIVA_003 : 0,
-                                        MED_DIFERENCIAL_PRESSAO_003 = double.TryParse(producao.MED_DIFERENCIAL_PRESSAO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_DIFERENCIAL_PRESSAO_003) ? MED_DIFERENCIAL_PRESSAO_003 : 0,
-                                        MED_PRESSAO_ESTATICA_003 = double.TryParse(producao.MED_PRESSAO_ESTATICA_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRESSAO_ESTATICA_003) ? MED_PRESSAO_ESTATICA_003 : 0,
-                                        MED_TEMPERATURA_2_003 = double.TryParse(producao.MED_TEMPERATURA_2_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TEMPERATURA_2_003) ? MED_TEMPERATURA_2_003 : 0,
-                                        PRZ_DURACAO_FLUXO_EFETIVO_003 = double.TryParse(producao.PRZ_DURACAO_FLUXO_EFETIVO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PRZ_DURACAO_FLUXO_EFETIVO_003) ? PRZ_DURACAO_FLUXO_EFETIVO_003 : 0,
-                                        MED_CORRIGIDO_MVMDO_003 = double.TryParse(producao.MED_CORRIGIDO_MVMDO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_CORRIGIDO_MVMDO_003) ? MED_CORRIGIDO_MVMDO_003 : 0,
+                                        DHA_INICIO_PERIODO_MEDICAO_003 = DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_003, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var DHA_INICIO_PERIODO_MEDICAO_003) ? DHA_INICIO_PERIODO_MEDICAO_003 : null,
+                                        DHA_FIM_PERIODO_MEDICAO_003 = DateTime.TryParseExact(producao?.DHA_FIM_PERIODO_MEDICAO_003, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var DHA_FIM_PERIODO_MEDICAO_003) ? DHA_FIM_PERIODO_MEDICAO_003 : null,
+                                        ICE_DENSIDADE_RELATIVA_003 = double.TryParse(producao?.ICE_DENSIDADE_RELATIVA_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_DENSIDADE_RELATIVA_003) ? ICE_DENSIDADE_RELATIVA_003 : 0,
+                                        MED_DIFERENCIAL_PRESSAO_003 = double.TryParse(producao?.MED_DIFERENCIAL_PRESSAO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_DIFERENCIAL_PRESSAO_003) ? MED_DIFERENCIAL_PRESSAO_003 : 0,
+                                        MED_PRESSAO_ESTATICA_003 = double.TryParse(producao?.MED_PRESSAO_ESTATICA_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRESSAO_ESTATICA_003) ? MED_PRESSAO_ESTATICA_003 : 0,
+                                        MED_TEMPERATURA_2_003 = double.TryParse(producao?.MED_TEMPERATURA_2_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TEMPERATURA_2_003) ? MED_TEMPERATURA_2_003 : 0,
+                                        PRZ_DURACAO_FLUXO_EFETIVO_003 = double.TryParse(producao?.PRZ_DURACAO_FLUXO_EFETIVO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PRZ_DURACAO_FLUXO_EFETIVO_003) ? PRZ_DURACAO_FLUXO_EFETIVO_003 : 0,
+                                        MED_CORRIGIDO_MVMDO_003 = double.TryParse(producao?.MED_CORRIGIDO_MVMDO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_CORRIGIDO_MVMDO_003) ? MED_CORRIGIDO_MVMDO_003 : 0,
                                         #endregion
 
                                         #region FileType relation
                                         FileType = new FileType
                                         {
                                             Id = new Guid(),
-                                            Name = "PMGD",
-                                            Acronym = data.Files[i].FileName,
+                                            Name = data.Files[i].FileName,
+                                            Acronym = "PMGD",
 
                                         },
                                         #endregion
-
 
                                         #region User relation
                                         User = user,
@@ -723,12 +726,10 @@ namespace PRIO.Controllers
                                         #endregion
                                     };
 
-                                    await context.Measurements.AddAsync(measurement);
-
-                                    await context.SaveChangesAsync();
-
+                                    addedMeasurements.Add(measurement);
                                     var measurement003DTO = _mapper.Map<_003DTO>(measurement);
-                                    responseResult._003File?.Add(measurement003DTO);
+                                    _responseResult._003File ??= new List<_003DTO>();
+                                    _responseResult._003File?.Add(measurement003DTO);
                                 }
                                 catch (Exception ex)
                                 {
@@ -742,75 +743,84 @@ namespace PRIO.Controllers
                             break;
 
                             #endregion
-
                     }
-
                 }
             }
-            return Created("measurements", responseResult);
+            await context.AddRangeAsync(addedMeasurements);
+            await context.SaveChangesAsync();
+
+            return Created("measurements", _responseResult);
         }
 
         [HttpGet($"measurements")]
-        public async Task<IActionResult> GetAll([FromServices] DataContext context, int pageNumber = 1, int pageSize = 1)
+        public async Task<IActionResult> GetAll([FromServices] DataContext context, [FromQuery] string? acronym, [FromQuery] string? name)
         {
-            var responseResult = new DTOFiles
+            var filesQuery = context.FileTypes.Include(x => x.Measurements).ThenInclude(m => m.User);
+
+            if (!string.IsNullOrEmpty(acronym))
             {
-                _001File = new List<_001DTO>(),
-                _002File = new List<_002DTO>(),
-                _003File = new List<_003DTO>(),
-                _039File = new List<_039DTO>(),
-            };
+                var possibleAcronymValues = new List<string> { "PMO", "PMGL", "PMGD", "EFM" };
+                var isValidValue = possibleAcronymValues.Contains(acronym.Trim());
+                if (!isValidValue)
+                    return BadRequest(new ErrorResponseDTO
+                    {
+                        Message = $"Acronym valid values are: PMO, PMGL, PMGD, EFM"
+                    });
 
-            var files = await context.FileTypes
-                .Include(x => x.Measurements)
-                .ThenInclude(m => m.User)
-                .ToListAsync();
+                filesQuery = context.FileTypes
+                   .Where(x => x.Acronym == acronym)
+                   .Include(x => x.Measurements)
+                   .ThenInclude(m => m.User);
+            }
 
-            var measurements = files
-                .SelectMany(file => file.Measurements);
-
-            var paginatedMeasurements = measurements
-               .Skip((pageNumber - 1) * pageSize)
-               .Take(pageSize);
-
-            for (int i = 0; i < paginatedMeasurements.Count(); ++i)
+            if (!string.IsNullOrEmpty(name))
             {
-                var measurement = paginatedMeasurements.ElementAt(i);
+                var possibleNameValues = new List<string> { "001", "002", "003", "039" };
+                var isValidValue = possibleNameValues.Contains(name.ToUpper().Trim());
+                if (!isValidValue)
+                    return BadRequest(new ErrorResponseDTO
+                    {
+                        Message = "Name valid values are: 001, 002, 003, 039"
+                    });
 
-                switch (measurement.FileType.Acronym)
+                filesQuery = context.FileTypes
+                    .Where(x => x.Name == name)
+                    .Include(x => x.Measurements)
+                    .ThenInclude(m => m.User);
+            }
+
+            var files = await filesQuery.ToListAsync();
+            var measurements = files.SelectMany(file => file.Measurements);
+
+            foreach (var measurement in measurements)
+            {
+                switch (measurement.FileType.Name)
                 {
                     case "001":
-                        {
-                            var measurementDTO = _mapper.Map<_001DTO>(measurement);
-                            responseResult._001File?.Add(measurementDTO);
-                            break;
-                        }
+                        _responseResult._001File ??= new List<_001DTO>();
+                        _responseResult._001File.Add(_mapper.Map<_001DTO>(measurement));
+                        break;
 
                     case "002":
-                        {
-                            var measurementDTO = _mapper.Map<_002DTO>(measurement);
-                            responseResult._002File?.Add(measurementDTO);
-                            break;
-                        }
+                        _responseResult._002File ??= new List<_002DTO>();
+                        _responseResult._002File.Add(_mapper.Map<_002DTO>(measurement));
+                        break;
 
                     case "003":
-                        {
-                            var measurementDTO = _mapper.Map<_003DTO>(measurement);
-                            responseResult._003File?.Add(measurementDTO);
-                            break;
-                        }
+                        _responseResult._003File ??= new List<_003DTO>();
+                        _responseResult._003File.Add(_mapper.Map<_003DTO>(measurement));
+                        break;
 
                     case "039":
-                        {
-                            var measurementDTO = _mapper.Map<_039DTO>(measurement);
-                            responseResult._039File?.Add(measurementDTO);
-                            break;
-                        }
+                        _responseResult._039File ??= new List<_039DTO>();
+                        _responseResult._039File.Add(_mapper.Map<_039DTO>(measurement));
+                        break;
                 }
             }
 
-            return Ok(responseResult);
+            return Ok(_responseResult);
         }
+
     }
 }
 

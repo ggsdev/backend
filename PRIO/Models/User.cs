@@ -21,6 +21,7 @@ namespace PRIO.Models
         public List<Well>? Wells { get; set; }
         [JsonIgnore]
         public List<Measurement>? Measurements { get; set; }
+        public List<MeasuringEquipment>? MeasuringEquipments { get; set; }
 
         #endregion
     }

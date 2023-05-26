@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.Data;
 
@@ -11,9 +12,11 @@ using PRIO.Data;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230526135939_MeasuringEquipmentTable")]
+    partial class MeasuringEquipmentTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1158,9 +1161,6 @@ namespace PRIO.Migrations
                         .HasPrecision(10, 2)
                         .HasColumnType("float");
 
-                    b.Property<Guid?>("MeasuringEquipmentId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("NUM_SERIE_1_001")
                         .HasMaxLength(30)
                         .HasColumnType("varchar");
@@ -1676,14 +1676,12 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("FileTypeId");
-
-                    b.HasIndex("MeasuringEquipmentId");
 
                     b.HasIndex("UserId");
 
@@ -1776,14 +1774,9 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.HasIndex("InstallationId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("MeasuringEquipments", (string)null);
                 });
@@ -2140,19 +2133,13 @@ namespace PRIO.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PRIO.Models.MeasuringEquipment", "MeasuringEquipment")
-                        .WithMany("Measurements")
-                        .HasForeignKey("MeasuringEquipmentId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("PRIO.Models.User", "User")
                         .WithMany("Measurements")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
 
                     b.Navigation("FileType");
-
-                    b.Navigation("MeasuringEquipment");
 
                     b.Navigation("User");
                 });
@@ -2176,14 +2163,7 @@ namespace PRIO.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PRIO.Models.User", "User")
-                        .WithMany("MeasuringEquipments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.Navigation("Installation");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("PRIO.Models.Reservoir", b =>
@@ -2255,11 +2235,6 @@ namespace PRIO.Migrations
                     b.Navigation("LISTA_VOLUME");
                 });
 
-            modelBuilder.Entity("PRIO.Models.MeasuringEquipment", b =>
-                {
-                    b.Navigation("Measurements");
-                });
-
             modelBuilder.Entity("PRIO.Models.Reservoir", b =>
                 {
                     b.Navigation("Completions");
@@ -2276,8 +2251,6 @@ namespace PRIO.Migrations
                     b.Navigation("Installations");
 
                     b.Navigation("Measurements");
-
-                    b.Navigation("MeasuringEquipments");
 
                     b.Navigation("Reservoirs");
 
