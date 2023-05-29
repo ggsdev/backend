@@ -7,6 +7,7 @@ using PRIO.ViewModels.Clusters;
 
 namespace PRIO.Controllers
 {
+    [ApiController]
     public class ClusterController : ControllerBase
     {
         [HttpPost("clusters")]
@@ -35,6 +36,14 @@ namespace PRIO.Controllers
             await context.SaveChangesAsync();
 
             return Created($"clusters/{cluster.Id}", cluster);
+        }
+
+
+        [HttpGet("clusters")]
+        public async Task<IActionResult> Get([FromServices] DataContext context)
+        {
+            var clusters = await context.Clusters.Include(x => x.Fields).ToListAsync();
+            return Ok(clusters);
         }
     }
 }

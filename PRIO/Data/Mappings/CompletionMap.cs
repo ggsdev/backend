@@ -18,7 +18,12 @@ namespace PRIO.Data.Mappings
 
             builder.Property(x => x.Name)
                 .IsRequired()
-                .HasColumnType("VARCHAR");
+                .HasColumnType("VARCHAR")
+                .HasMaxLength(256);
+
+            builder.Property(x => x.CodCompletion)
+                .HasColumnType("VARCHAR")
+                .HasMaxLength(256);
 
             builder.Property(x => x.Description)
                 .HasColumnType("TEXT");

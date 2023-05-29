@@ -5,7 +5,8 @@ namespace PRIO.DTOS
 {
     public class _039DTO : BaseModel
     {
-        public new Guid Id { get; set; }
+        public Guid Id { get; set; }
+
         public string? COD_TAG_EQUIPAMENTO_039 { get; set; }
         public string? COD_FALHA_SUPERIOR_039 { get; set; }
         public short? DSC_TIPO_FALHA_039 { get; set; }
