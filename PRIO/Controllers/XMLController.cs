@@ -39,7 +39,6 @@ namespace PRIO.Controllers
         {
             var userId = (Guid)HttpContext.Items["Id"]!;
             var user = await context.Users.FirstOrDefaultAsync(x => x.Id == userId);
-            var addedMeasurements = new List<Measurement>();
 
             for (int i = 0; i < data.Files.Count; ++i)
             {
@@ -123,16 +122,15 @@ namespace PRIO.Controllers
                                 try
                                 {
                                     var measurement = _mapper.Map<Measurement>(dadosBasicos);
-
                                     measurement.FileType = new FileType
                                     {
-                                        Id = new Guid(),
                                         Name = data.Files[i].FileName,
                                         Acronym = "EFM",
 
                                     };
                                     measurement.User = user;
-                                    addedMeasurements.Add(measurement);
+                                    await context.Measurements.AddAsync(measurement);
+
                                     var measurement039DTO = _mapper.Map<_039DTO>(measurement);
                                     _responseResult._039File ??= new List<_039DTO>();
                                     _responseResult._039File?.Add(measurement039DTO);
@@ -304,7 +302,6 @@ namespace PRIO.Controllers
                                         #region FileType relation
                                         FileType = new FileType
                                         {
-                                            Id = new Guid(),
                                             Name = data.Files[i].FileName,
                                             Acronym = "PMO",
 
@@ -315,8 +312,10 @@ namespace PRIO.Controllers
                                         User = user,
 
                                         #endregion
+
                                     };
-                                    addedMeasurements.Add(measurement);
+                                    await context.Measurements.AddAsync(measurement);
+
                                     var measurement001DTO = _mapper.Map<_001DTO>(measurement);
                                     _responseResult._001File ??= new List<_001DTO>();
                                     _responseResult._001File?.Add(measurement001DTO);
@@ -510,7 +509,6 @@ namespace PRIO.Controllers
                                         #region FileType relation
                                         FileType = new FileType
                                         {
-                                            Id = new Guid(),
                                             Name = data.Files[i].FileName,
                                             Acronym = "PMGL",
 
@@ -522,9 +520,9 @@ namespace PRIO.Controllers
 
                                         #endregion
 
-                                    };
-                                    addedMeasurements.Add(measurement);
 
+                                    };
+                                    await context.AddAsync(measurement);
                                     var measurement002DTO = _mapper.Map<_002DTO>(measurement);
                                     _responseResult._002File ??= new List<_002DTO>();
                                     _responseResult._002File?.Add(measurement002DTO);
@@ -713,7 +711,6 @@ namespace PRIO.Controllers
                                         #region FileType relation
                                         FileType = new FileType
                                         {
-                                            Id = new Guid(),
                                             Name = data.Files[i].FileName,
                                             Acronym = "PMGD",
 
@@ -724,9 +721,10 @@ namespace PRIO.Controllers
                                         User = user,
 
                                         #endregion
+
                                     };
 
-                                    addedMeasurements.Add(measurement);
+                                    await context.Measurements.AddAsync(measurement);
                                     var measurement003DTO = _mapper.Map<_003DTO>(measurement);
                                     _responseResult._003File ??= new List<_003DTO>();
                                     _responseResult._003File?.Add(measurement003DTO);
@@ -746,7 +744,6 @@ namespace PRIO.Controllers
                     }
                 }
             }
-            await context.AddRangeAsync(addedMeasurements);
             await context.SaveChangesAsync();
 
             return Created("measurements", _responseResult);
@@ -760,7 +757,7 @@ namespace PRIO.Controllers
             if (!string.IsNullOrEmpty(acronym))
             {
                 var possibleAcronymValues = new List<string> { "PMO", "PMGL", "PMGD", "EFM" };
-                var isValidValue = possibleAcronymValues.Contains(acronym.Trim());
+                var isValidValue = possibleAcronymValues.Contains(acronym.ToUpper().Trim());
                 if (!isValidValue)
                     return BadRequest(new ErrorResponseDTO
                     {

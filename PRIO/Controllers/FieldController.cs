@@ -14,21 +14,28 @@ namespace PRIO.Controllers
         public async Task<IActionResult> Create([FromBody] CreateFieldViewModel body, [FromServices] DataContext context)
         {
             var cluster = await context.Clusters.FirstOrDefaultAsync(x => x.Id == body.ClusterId);
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-
             if (cluster is null)
                 return BadRequest(new ErrorResponseDTO
                 {
                     Message = $"Cluster not found with the provided id: {body.ClusterId}"
                 });
 
+            var fieldInDatabase = await context.Fields.FirstOrDefaultAsync(x => x.CodField == body.CodField);
+            if (fieldInDatabase is not null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = $"Field with code: {body.CodField} already exists, try another code."
+                });
+
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+
             var field = new Field
             {
                 Name = body.Name,
                 Cluster = cluster,
                 User = user,
-                //Description = body.Description is not null ? body.Description : null,
+                Description = body.Description is not null ? body.Description : null,
                 Basin = body.Basin,
                 Location = body.Location,
                 State = body.State,
@@ -41,6 +48,14 @@ namespace PRIO.Controllers
 
             return Created($"fields/{field.Id}", field);
 
+        }
+
+        [HttpGet("fields")]
+        public async Task<IActionResult> Get([FromServices] DataContext context)
+        {
+            var fields = await context.Fields.Include(x => x.Cluster).Include(x => x.Installations).ToListAsync();
+            Console.WriteLine(fields[0].Cluster.Id);
+            return Ok(fields);
         }
     }
 }
