@@ -4,22 +4,17 @@ using PRIO.Models;
 
 namespace PRIO.Data.Mappings
 {
-    public class ReservoirMap : IEntityTypeConfiguration<Reservoir>
+    public class ZoneMap : IEntityTypeConfiguration<Zone>
     {
-        public void Configure(EntityTypeBuilder<Reservoir> builder)
+        public void Configure(EntityTypeBuilder<Zone> builder)
         {
-            builder.ToTable("Reservoirs");
+            builder.ToTable("Zones");
 
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id)
                 .ValueGeneratedOnAdd();
 
-            builder.Property(x => x.Name)
-                .HasColumnType("VARCHAR")
-                .HasMaxLength(120)
-                .IsRequired();
-
-            builder.Property(x => x.CodReservoir)
+            builder.Property(x => x.CodZone)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(120);
 
@@ -35,11 +30,11 @@ namespace PRIO.Data.Mappings
             builder.Property(x => x.IsActive);
 
             builder.HasOne(c => c.User).
-                WithMany(u => u.Reservoirs)
+                WithMany(u => u.Zones)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            builder.HasOne(x => x.Zone).
-                WithMany(u => u.Reservoirs)
+            builder.HasOne(x => x.Field).
+                WithMany(u => u.Zones)
                 .OnDelete(DeleteBehavior.Cascade);
         }
 

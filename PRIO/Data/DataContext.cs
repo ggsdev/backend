@@ -11,8 +11,9 @@ namespace PRIO.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Session> Sessions { get; set; }
         public DbSet<Cluster> Clusters { get; set; }
-        public DbSet<Field> Fields { get; set; }
         public DbSet<Installation> Installations { get; set; }
+        public DbSet<Field> Fields { get; set; }
+        public DbSet<Zone> Zones { get; set; }
         public DbSet<Reservoir> Reservoirs { get; set; }
         public DbSet<Completion> Completions { get; set; }
         public DbSet<Well> Wells { get; set; }
@@ -64,12 +65,13 @@ namespace PRIO.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new UserMap());
-            modelBuilder.ApplyConfiguration(new ClusterMap());
-            modelBuilder.ApplyConfiguration(new CompletionMap());
-            modelBuilder.ApplyConfiguration(new FieldMap());
-            modelBuilder.ApplyConfiguration(new InstallationMap());
-            modelBuilder.ApplyConfiguration(new ReservoirMap());
             modelBuilder.ApplyConfiguration(new SessionMap());
+            modelBuilder.ApplyConfiguration(new ClusterMap());
+            modelBuilder.ApplyConfiguration(new InstallationMap());
+            modelBuilder.ApplyConfiguration(new FieldMap());
+            modelBuilder.ApplyConfiguration(new ZoneMap());
+            modelBuilder.ApplyConfiguration(new ReservoirMap());
+            modelBuilder.ApplyConfiguration(new CompletionMap());
             modelBuilder.ApplyConfiguration(new WellMap());
             modelBuilder.ApplyConfiguration(new MeasuringEquipmentMap());
 

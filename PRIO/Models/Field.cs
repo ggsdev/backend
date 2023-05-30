@@ -14,6 +14,6 @@ namespace PRIO.Models
         public User? User { get; set; }
         [JsonIgnore]
         public Installation Installation { get; set; }
-        public List<Reservoir>? Reservoirs { get; set; }
+        public List<Zone>? Zones { get; set; }
     }
 }
