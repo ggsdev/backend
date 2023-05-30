@@ -19,6 +19,7 @@ namespace PRIO.Models
         public List<Reservoir>? Reservoirs { get; set; }
         public List<Completion>? Completions { get; set; }
         public List<Well>? Wells { get; set; }
+        public List<Zone>? Zones { get; set; }
         [JsonIgnore]
         public List<Measurement>? Measurements { get; set; }
         public List<MeasuringEquipment>? MeasuringEquipments { get; set; }
