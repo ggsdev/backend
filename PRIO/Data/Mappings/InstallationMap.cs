@@ -34,10 +34,6 @@ namespace PRIO.Data.Mappings
 
             builder.Property(x => x.IsActive);
 
-            builder.HasOne(x => x.Field)
-                .WithMany(f => f.Installations)
-                .OnDelete(DeleteBehavior.Cascade);
-
             builder.HasOne(x => x.User)
                .WithMany(u => u.Installations)
                .OnDelete(DeleteBehavior.SetNull);
