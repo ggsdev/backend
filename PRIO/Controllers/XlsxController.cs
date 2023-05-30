@@ -113,10 +113,8 @@ namespace PRIO.Controllers
                                 var installation = new Installation
                                 {
                                     Name = rowInstallation,
-                                    User = user,
-                                    Field = _lastFoundField,
-                                };
-
+                                    User = user
+                                 }
                                 await context.Installations.AddAsync(installation);
 
                                 installations.Add(installation);

@@ -58,6 +58,10 @@ namespace PRIO.Data.Mappings
                 WithMany(u => u.Fields)
                 .OnDelete(DeleteBehavior.SetNull);
 
+            builder.HasOne(x => x.Installation)
+            .WithMany(f => f.Fields)
+            .OnDelete(DeleteBehavior.Cascade);
+
             //builder.Property(x => x.Acronym)
             //    .HasColumnType("VARCHAR")
             //    .HasMaxLength(120);
