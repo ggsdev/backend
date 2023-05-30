@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.Data;
 
@@ -11,9 +12,11 @@ using PRIO.Data;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230530194727_CascadeDeletionInstallation")]
+    partial class CascadeDeletionInstallation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1809,6 +1812,9 @@ namespace PRIO.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid>("FieldId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -1823,14 +1829,11 @@ namespace PRIO.Migrations
                     b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ZoneId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("FieldId");
 
-                    b.HasIndex("ZoneId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Reservoirs", (string)null);
                 });
@@ -2039,46 +2042,6 @@ namespace PRIO.Migrations
                     b.ToTable("Wells", (string)null);
                 });
 
-            modelBuilder.Entity("PRIO.Models.Zone", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CodZone")
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("FieldId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FieldId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Zones", (string)null);
-                });
-
             modelBuilder.Entity("PRIO.Models.Cluster", b =>
                 {
                     b.HasOne("PRIO.Models.User", "User")
@@ -2229,20 +2192,20 @@ namespace PRIO.Migrations
 
             modelBuilder.Entity("PRIO.Models.Reservoir", b =>
                 {
+                    b.HasOne("PRIO.Models.Field", "Field")
+                        .WithMany("Reservoirs")
+                        .HasForeignKey("FieldId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("PRIO.Models.User", "User")
                         .WithMany("Reservoirs")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("PRIO.Models.Zone", "Zone")
-                        .WithMany("Reservoirs")
-                        .HasForeignKey("ZoneId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Field");
 
                     b.Navigation("User");
-
-                    b.Navigation("Zone");
                 });
 
             modelBuilder.Entity("PRIO.Models.Session", b =>
@@ -2265,24 +2228,6 @@ namespace PRIO.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("PRIO.Models.Zone", b =>
-                {
-                    b.HasOne("PRIO.Models.Field", "Field")
-                        .WithMany("Zones")
-                        .HasForeignKey("FieldId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PRIO.Models.User", "User")
-                        .WithMany("Zones")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Field");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("PRIO.Models.Cluster", b =>
                 {
                     b.Navigation("Installations");
@@ -2290,7 +2235,7 @@ namespace PRIO.Migrations
 
             modelBuilder.Entity("PRIO.Models.Field", b =>
                 {
-                    b.Navigation("Zones");
+                    b.Navigation("Reservoirs");
                 });
 
             modelBuilder.Entity("PRIO.Models.FileType", b =>
@@ -2343,18 +2288,11 @@ namespace PRIO.Migrations
                     b.Navigation("Session");
 
                     b.Navigation("Wells");
-
-                    b.Navigation("Zones");
                 });
 
             modelBuilder.Entity("PRIO.Models.Well", b =>
                 {
                     b.Navigation("Completions");
-                });
-
-            modelBuilder.Entity("PRIO.Models.Zone", b =>
-                {
-                    b.Navigation("Reservoirs");
                 });
 #pragma warning restore 612, 618
         }

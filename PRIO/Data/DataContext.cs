@@ -9,8 +9,6 @@ namespace PRIO.Data
 {
     public class DataContext : DbContext
     {
-        //private static readonly MemoryCache _cache = new(new MemoryCacheOptions());
-
         public DbSet<User> Users { get; set; }
         public DbSet<Session> Sessions { get; set; }
         public DbSet<Cluster> Clusters { get; set; }
@@ -33,13 +31,6 @@ namespace PRIO.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //var secrets = _cache.GetOrCreate("secrets", entry =>
-            //{
-            //    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
-            //    return FetchingSecrets.FetchSecretsAsync().GetAwaiter().GetResult();
-            //});
-
-            //optionsBuilder.UseSqlServer($"Server={secrets.DatabaseServer};Database={secrets.DatabaseName};User ID={secrets.DatabaseUser};Password={secrets.DatabasePassword};Encrypt=false;");
 
             var envVars = DotEnv.Read();
 
@@ -51,7 +42,6 @@ namespace PRIO.Data
             var encrypt = envVars["ENCRYPT"];
 
             optionsBuilder.UseSqlServer($"Server={server};Database={database};User ID={userId};Password={password};Encrypt={encrypt};");
-
 
         }
         public override int SaveChanges()
