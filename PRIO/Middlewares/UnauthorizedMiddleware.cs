@@ -19,7 +19,7 @@ namespace PRIO.Middlewares
             if (authenticateResult.Succeeded && authenticateResult.Principal?.Identity is ClaimsIdentity claimsIdentity)
             {
                 var userIdClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-                if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out Guid userId))
+                if (userIdClaim is not null && Guid.TryParse(userIdClaim.Value, out Guid userId))
                 {
                     context.Items["Id"] = userId;
                 }
@@ -29,7 +29,6 @@ namespace PRIO.Middlewares
 
             if (context.Response.StatusCode == 401 && !context.Response.HasStarted)
             {
-                authenticateResult = await context.AuthenticateAsync();
                 string? message;
 
                 switch (authenticateResult.Failure)
@@ -45,10 +44,12 @@ namespace PRIO.Middlewares
                         break;
                 }
 
+
                 context.Response.ContentType = "application/json";
                 await context.Response.WriteAsync($"{{\"message\": \"{message}\"}}");
 
             }
+
         }
 
     }

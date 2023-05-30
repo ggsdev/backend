@@ -29,7 +29,7 @@ namespace PRIO.Controllers
                 Name = body.Name,
                 CodCluster = body.CodCluster,
                 Description = body.Description is not null ? body.Description : null,
-                User = user,
+                User = user!,
             };
 
             await context.Clusters.AddAsync(cluster);
