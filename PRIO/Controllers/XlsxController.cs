@@ -62,37 +62,9 @@ namespace PRIO.Controllers
                                 };
                                 _lastFoundCluster = cluster;
 
-
                                 await context.Clusters.AddAsync(cluster);
 
                                 clusters.Add(cluster);
-                            }
-
-                        }
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(rowField) && !string.IsNullOrWhiteSpace(rowCodeField))
-                    {
-                        var fieldInReadingProcessing = fields.Find(f => f.Name.ToLower() == rowField.ToLower());
-                        if (fieldInReadingProcessing is null)
-                        {
-                            var fieldInDatabase = await context.Fields.FirstOrDefaultAsync(x => x.Name.ToLower() == rowField.ToLower());
-
-                            if (fieldInDatabase is null && _lastFoundCluster is not null)
-                            {
-                                _lastFoundField = fieldInDatabase;
-
-                                var field = new Field
-                                {
-                                    Name = rowField,
-                                    User = user,
-                                    Cluster = _lastFoundCluster,
-                                    CodField = rowCodeField is not null ? rowCodeField : string.Empty
-                                };
-
-                                await context.Fields.AddAsync(field);
-
-                                fields.Add(field);
                             }
 
                         }
@@ -106,20 +78,55 @@ namespace PRIO.Controllers
                         {
                             var installationInDatabase = await context.Installations.FirstOrDefaultAsync(x => x.Name.ToLower() == rowInstallation.ToLower());
 
-                            if (installationInDatabase is null && _lastFoundField is not null)
+                            if (installationInDatabase is null && _lastFoundCluster is not null)
                             {
-                                _lastFoundInstallation = installationInDatabase;
 
                                 var installation = new Installation
                                 {
                                     Name = rowInstallation,
-                                    User = user
-                                 }
+                                    User = user,
+                                    Cluster = _lastFoundCluster,
+                                };
+
+                                _lastFoundInstallation = installation;
+
+
                                 await context.Installations.AddAsync(installation);
 
                                 installations.Add(installation);
 
                             }
+                        }
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(rowField) && !string.IsNullOrWhiteSpace(rowCodeField))
+                    {
+                        var fieldInReadingProcessing = fields.Find(f => f.Name.ToLower() == rowField.ToLower());
+                        if (fieldInReadingProcessing is null)
+                        {
+                            var fieldInDatabase = await context.Fields.FirstOrDefaultAsync(x => x.Name.ToLower() == rowField.ToLower());
+
+                            Console.WriteLine(_lastFoundCluster?.Name);
+                            Console.WriteLine(_lastFoundInstallation?.Name);
+
+                            if (fieldInDatabase is null && (_lastFoundCluster is not null && _lastFoundInstallation is not null))
+                            {
+                                var field = new Field
+                                {
+                                    Name = rowField,
+                                    User = user,
+                                    Installation = _lastFoundInstallation,
+                                    Cluster = _lastFoundCluster,
+                                    CodField = rowCodeField is not null ? rowCodeField : string.Empty
+                                };
+
+                                _lastFoundField = field;
+
+                                await context.Fields.AddAsync(field);
+
+                                fields.Add(field);
+                            }
+
                         }
                     }
                 }
