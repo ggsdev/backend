@@ -13,13 +13,7 @@ namespace PRIO.Controllers
         [HttpPost("installations")]
         public async Task<IActionResult> Create([FromBody] CreateInstallationViewModel body, [FromServices] DataContext context)
         {
-            var field = await context.Fields.FirstOrDefaultAsync(x => x.Id == body.FieldId);
-            if (field is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"Field with id: {body.FieldId} not found"
-                });
-
+   
             var installationInDatabase = await context.Installations.FirstOrDefaultAsync(x => x.CodInstallation == body.CodInstallation);
             if (installationInDatabase is not null)
                 return NotFound(new ErrorResponseDTO
@@ -35,19 +29,18 @@ namespace PRIO.Controllers
                 Name = body.Name,
                 Description = body.Description,
                 CodInstallation = body.CodInstallation,
-                Field = field,
                 User = user
             };
 
             await context.Installations.AddAsync(installation);
             await context.SaveChangesAsync();
-            return Created($"installations/{field.Id}", installation);
+            return Created($"installations/{installation.Id}", installation);
         }
 
         [HttpGet("installations")]
         public async Task<IActionResult> Get([FromServices] DataContext context)
         {
-            var installations = await context.Installations.Include(x => x.Reservoirs).ToListAsync();
+            var installations = await context.Installations.ToListAsync();
             return Ok(installations);
         }
     }

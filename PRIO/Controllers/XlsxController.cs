@@ -111,7 +111,6 @@ namespace PRIO.Controllers
                                 {
                                     Name = rowInstallation,
                                     User = user,
-                                    Field = existingField,
                                 };
 
                                 installations.Add(installation);

@@ -5,7 +5,7 @@
         public string Name { get; set; } = string.Empty;
         public string CodReservoir { get; set; } = string.Empty;
         public User? User { get; set; }
-        public Installation Installation { get; set; }
+        public Field Field { get; set; }
         public List<Completion>? Completions { get; set; }
     }
 }

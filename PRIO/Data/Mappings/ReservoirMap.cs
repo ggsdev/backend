@@ -38,7 +38,7 @@ namespace PRIO.Data.Mappings
                 WithMany(u => u.Reservoirs)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            builder.HasOne(x => x.Installation).
+            builder.HasOne(x => x.Field).
                 WithMany(u => u.Reservoirs)
                 .OnDelete(DeleteBehavior.Cascade);
         }
