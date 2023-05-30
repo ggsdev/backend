@@ -86,7 +86,6 @@ namespace PRIO.Controllers
                                 {
                                     Name = rowField,
                                     User = user,
-                                    Cluster = _lastFoundCluster,
                                     CodField = rowCodeField is not null ? rowCodeField : string.Empty
                                 };
 
@@ -114,7 +113,7 @@ namespace PRIO.Controllers
                                 {
                                     Name = rowInstallation,
                                     User = user
-                                 }
+                                };
                                 await context.Installations.AddAsync(installation);
 
                                 installations.Add(installation);

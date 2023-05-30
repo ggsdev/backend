@@ -50,7 +50,7 @@ namespace PRIO.Data.Mappings
 
             builder.Property(x => x.IsActive);
 
-            builder.HasOne(x => x.Cluster)
+            builder.HasOne(x => x.Installation)
                 .WithMany(c => c.Fields)
                 .OnDelete(DeleteBehavior.Cascade);
 

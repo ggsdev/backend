@@ -42,7 +42,7 @@ namespace PRIO.Controllers
         [HttpGet("clusters")]
         public async Task<IActionResult> Get([FromServices] DataContext context)
         {
-            var clusters = await context.Clusters.Include(x => x.Fields).ToListAsync();
+            var clusters = await context.Clusters.Include(x => x.Installations).ToListAsync();
             return Ok(clusters);
         }
     }
