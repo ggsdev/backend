@@ -27,6 +27,13 @@ namespace PRIO.Controllers
             var userId = (Guid)HttpContext.Items["Id"]!;
             var user = await context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
 
+            if (user is null)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+
+
             var fileInfo = new FileInfo(pathXslx);
             using (ExcelPackage package = new(fileInfo))
             {
@@ -60,21 +67,26 @@ namespace PRIO.Controllers
                                     Name = rowCluster,
                                     User = user,
                                 };
-                                _lastFoundCluster = cluster;
 
                                 await context.Clusters.AddAsync(cluster);
+                                _lastFoundCluster = cluster;
+
 
                                 clusters.Add(cluster);
                             }
+                            else
+                            {
+                                _lastFoundCluster = clusterInReadingProcess;
 
+                            }
                         }
                     }
 
                     if (!string.IsNullOrWhiteSpace(rowInstallation))
                     {
-                        var installationInReadingProcessing = installations.Find(f => f.Name.ToLower() == rowInstallation.ToLower());
+                        var installationInReadingProcess = installations.Find(f => f.Name.ToLower() == rowInstallation.ToLower());
 
-                        if (installationInReadingProcessing is null)
+                        if (installationInReadingProcess is null)
                         {
                             var installationInDatabase = await context.Installations.FirstOrDefaultAsync(x => x.Name.ToLower() == rowInstallation.ToLower());
 
@@ -88,44 +100,49 @@ namespace PRIO.Controllers
                                     Cluster = _lastFoundCluster,
                                 };
 
-                                _lastFoundInstallation = installation;
-
-
                                 await context.Installations.AddAsync(installation);
+                                _lastFoundInstallation = installation;
 
                                 installations.Add(installation);
 
-                            }
+                            };
+                        }
+                        else
+                        {
+                            _lastFoundInstallation = installationInReadingProcess;
+
                         }
                     }
 
+
                     if (!string.IsNullOrWhiteSpace(rowField) && !string.IsNullOrWhiteSpace(rowCodeField))
                     {
-                        var fieldInReadingProcessing = fields.Find(f => f.Name.ToLower() == rowField.ToLower());
-                        if (fieldInReadingProcessing is null)
+                        var fieldInReadingProcess = fields.Find(f => f.Name.ToLower() == rowField.ToLower());
+                        if (fieldInReadingProcess is null)
                         {
                             var fieldInDatabase = await context.Fields.FirstOrDefaultAsync(x => x.Name.ToLower() == rowField.ToLower());
 
-                            Console.WriteLine(_lastFoundCluster?.Name);
-                            Console.WriteLine(_lastFoundInstallation?.Name);
-
-                            if (fieldInDatabase is null && (_lastFoundCluster is not null && _lastFoundInstallation is not null))
+                            if (fieldInDatabase is null && _lastFoundInstallation is not null)
                             {
                                 var field = new Field
                                 {
                                     Name = rowField,
                                     User = user,
                                     Installation = _lastFoundInstallation,
-                                    Cluster = _lastFoundCluster,
                                     CodField = rowCodeField is not null ? rowCodeField : string.Empty
                                 };
 
-                                _lastFoundField = field;
 
                                 await context.Fields.AddAsync(field);
+                                _lastFoundField = field;
 
                                 fields.Add(field);
                             }
+
+                        }
+                        else
+                        {
+                            _lastFoundField = fieldInReadingProcess;
 
                         }
                     }

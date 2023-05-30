@@ -33,7 +33,6 @@ namespace PRIO.Controllers
             var field = new Field
             {
                 Name = body.Name,
-                Cluster = cluster,
                 User = user,
                 Description = body.Description is not null ? body.Description : null,
                 Basin = body.Basin,
@@ -53,8 +52,7 @@ namespace PRIO.Controllers
         [HttpGet("fields")]
         public async Task<IActionResult> Get([FromServices] DataContext context)
         {
-            var fields = await context.Fields.Include(x => x.Cluster).ToListAsync();
-            Console.WriteLine(fields[0].Cluster.Id);
+            var fields = await context.Fields.Include(x => x.Reservoirs).ToListAsync();
             return Ok(fields);
         }
     }

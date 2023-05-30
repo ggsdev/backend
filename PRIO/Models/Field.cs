@@ -10,7 +10,6 @@ namespace PRIO.Models
         public string State { get; set; } = string.Empty;
         public string Basin { get; set; } = string.Empty;
         public string Location { get; set; } = string.Empty;
-        public Cluster Cluster { get; set; }
         [JsonIgnore]
         public User? User { get; set; }
         [JsonIgnore]

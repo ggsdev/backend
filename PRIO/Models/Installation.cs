@@ -8,6 +8,7 @@ namespace PRIO.Models
         public string? CodInstallation { get; set; }
         [JsonIgnore]
         public User? User { get; set; }
+        public Cluster? Cluster { get; set; }
         public List<Field>? Fields { get; set; }
         public List<MeasuringEquipment>? MeasuringEquipments { get; set; }
     }

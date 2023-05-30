@@ -9,6 +9,6 @@ namespace PRIO.Models
         [JsonIgnore]
         public User User { get; set; }
         [JsonIgnore]
-        public List<Field>? Fields { get; set; }
+        public List<Installation>? Installations { get; set; }
     }
 }
