@@ -3,6 +3,7 @@ using PRIO.Data.Mappings;
 using PRIO.Data.Mappings.MeasurementMappping;
 using PRIO.Models;
 using PRIO.Models.Measurements;
+using dotenv.net;
 
 namespace PRIO.Data
 {
@@ -39,7 +40,17 @@ namespace PRIO.Data
             //});
 
             //optionsBuilder.UseSqlServer($"Server={secrets.DatabaseServer};Database={secrets.DatabaseName};User ID={secrets.DatabaseUser};Password={secrets.DatabasePassword};Encrypt=false;");
-            optionsBuilder.UseSqlServer($"Server=localhost;Database=PRIOANP;User ID=pablo;Password=1234;Encrypt=false;");
+
+            var envVars = DotEnv.Read();
+
+
+            var server = envVars["SERVER"];
+            var database = envVars["DATABASE"];
+            var userId = envVars["USER_ID"];
+            var password = envVars["PASSWORD"];
+            var encrypt = envVars["ENCRYPT"];
+
+            optionsBuilder.UseSqlServer($"Server={server};Database={database};User ID={userId};Password={password};Encrypt={encrypt};");
 
 
         }

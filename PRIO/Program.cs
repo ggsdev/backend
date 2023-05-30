@@ -1,4 +1,5 @@
 using AutoMapper;
+using dotenv.net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -94,6 +95,9 @@ static void ConfigureServices(IServiceCollection services)
 
     IMapper mapper = mapperConfig.CreateMapper();
     services.AddSingleton(mapper);
+
+    DotEnv.Load();
+
 
     services.AddEndpointsApiExplorer();
     services.AddDbContext<DataContext>();
