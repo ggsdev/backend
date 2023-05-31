@@ -4,7 +4,7 @@ namespace PRIO.Models
 {
     public class Zone : BaseModel
     {
-        public string? CodZone { get; set; }
+        public string CodZone { get; set; } = string.Empty;
         [JsonIgnore]
         public User? User { get; set; }
         public Field Field { get; set; }
