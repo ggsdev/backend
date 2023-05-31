@@ -5,6 +5,7 @@ using PRIO.Data;
 using PRIO.DTOS;
 using PRIO.Models;
 using PRIO.ViewModels;
+using System.Globalization;
 
 namespace PRIO.Controllers
 {
@@ -17,6 +18,7 @@ namespace PRIO.Controllers
         private Reservoir? _lastFoundReservoir;
         private Zone? _lastFoundZone;
         private Completion? _lastFoundCompletion;
+        private Well? _lastFoundWell;
 
         [HttpPost("xlsx")]
         public async Task<IActionResult> PostBase64File([FromBody] RequestXslxViewModel data, [FromServices] DataContext context)
@@ -46,8 +48,8 @@ namespace PRIO.Controllers
                 var dimension = worksheetTab.Dimension;
 
                 var clusters = new List<Cluster>();
-                var fields = new List<Field>();
                 var installations = new List<Installation>();
+                var fields = new List<Field>();
                 var reservoirs = new List<Reservoir>();
                 var zones = new List<Zone>();
                 var completions = new List<Completion>();
@@ -68,7 +70,7 @@ namespace PRIO.Controllers
 
                     var rowCompletion = worksheetTab.Cells[row, 9].Value?.ToString();
 
-                    #region Well
+                    #region Well rows
 
                     var rowWellNameAnp = worksheetTab.Cells[row, 10].Value?.ToString();
                     var rowWellOperatorName = worksheetTab.Cells[row, 11].Value?.ToString();
@@ -77,17 +79,28 @@ namespace PRIO.Controllers
                     var rowWellCategoryReclassification = worksheetTab.Cells[row, 14].Value?.ToString();
                     var rowWellCategoryOperator = worksheetTab.Cells[row, 15].Value?.ToString();
                     var rowWellStatusOperator = worksheetTab.Cells[row, 16].Value?.ToString();
+                    bool? rowWellStatusOperatorBoolean = null;
+                    if (rowWellStatusOperator?.ToLower() == "ativo")
+                        rowWellStatusOperatorBoolean = true;
+                    if (rowWellStatusOperator?.ToLower() == "inativo")
+                        rowWellStatusOperatorBoolean = false;
                     var rowWellProfile = worksheetTab.Cells[row, 17].Value?.ToString();
                     var rowWellWaterDepth = worksheetTab.Cells[row, 18].Value?.ToString();
+
                     var rowWellPerforationTopMd = worksheetTab.Cells[row, 19].Value?.ToString();
                     var rowWellBottomPerforationMd = worksheetTab.Cells[row, 20].Value?.ToString();
                     var rowWellArtificialLift = worksheetTab.Cells[row, 21].Value?.ToString();
-                    var rowWellLatitudeBase4c = worksheetTab.Cells[row, 22].Value?.ToString();
-                    var rowWellLongitudeBase4c = worksheetTab.Cells[row, 23].Value?.ToString();
-                    var rowWell = worksheetTab.Cells[row, 24].Value?.ToString();
-                    var rowWell = worksheetTab.Cells[row, 25].Value?.ToString();
+                    var rowWellLatitude4c = worksheetTab.Cells[row, 22].Value?.ToString();
+                    var rowWellLongitude4c = worksheetTab.Cells[row, 23].Value?.ToString();
+                    var rowWellLatitudeDD = worksheetTab.Cells[row, 24].Value?.ToString();
+                    var rowWellLongitudeDD = worksheetTab.Cells[row, 25].Value?.ToString();
+                    var rowWellDatumHorizontal = worksheetTab.Cells[row, 26].Value?.ToString();
+                    var rowWellTypeCoordinate = worksheetTab.Cells[row, 27].Value?.ToString();
+                    var rowWellCoodX = worksheetTab.Cells[row, 28].Value?.ToString();
+                    var rowWellCoordY = worksheetTab.Cells[row, 29].Value?.ToString();
 
                     #endregion
+
                     if (!string.IsNullOrWhiteSpace(rowCluster))
                     {
                         var clusterInReadingProcess = clusters.Find(x => x.Name.ToLower() == rowCluster.ToLower());
@@ -103,14 +116,16 @@ namespace PRIO.Controllers
                                     User = user,
                                 };
 
+
                                 _lastFoundCluster = cluster;
                                 clusters.Add(cluster);
                             }
-                            else
-                            {
-                                _lastFoundCluster = clusterInReadingProcess;
 
-                            }
+                        }
+                        else
+                        {
+                            _lastFoundCluster = clusterInReadingProcess;
+
                         }
                     }
 
@@ -132,6 +147,7 @@ namespace PRIO.Controllers
                                     Cluster = _lastFoundCluster,
                                 };
 
+
                                 _lastFoundInstallation = installation;
                                 installations.Add(installation);
 
@@ -144,7 +160,7 @@ namespace PRIO.Controllers
                         }
                     }
 
-                    if (!string.IsNullOrWhiteSpace(rowField) && !string.IsNullOrWhiteSpace(rowCodeField))
+                    if (!string.IsNullOrWhiteSpace(rowField))
                     {
                         var fieldInReadingProcess = fields.Find(f => f.Name.ToLower() == rowField.ToLower());
                         if (fieldInReadingProcess is null)
@@ -179,7 +195,7 @@ namespace PRIO.Controllers
                         var zoneInReadingProcess = zones.Find(x => x.CodZone.ToLower() == rowZone.ToLower());
                         if (zoneInReadingProcess is null)
                         {
-                            var zoneInDatabase = await context.Zones.FirstOrDefaultAsync(x => x.CodZone.ToLower().Trim() == rowZone.ToLower().Trim());
+                            var zoneInDatabase = await context.Zones.FirstOrDefaultAsync(x => x.CodZone.ToLower() == rowZone.ToLower());
                             if (zoneInDatabase is null && _lastFoundField is not null)
                             {
                                 var zone = new Zone
@@ -189,14 +205,17 @@ namespace PRIO.Controllers
                                     Field = _lastFoundField
                                 };
 
+
                                 _lastFoundZone = zone;
+
                                 zones.Add(zone);
                             }
-                            else
-                            {
-                                _lastFoundZone = zoneInReadingProcess;
 
-                            }
+                        }
+                        else
+                        {
+                            _lastFoundZone = zoneInReadingProcess;
+
                         }
                     }
 
@@ -216,78 +235,104 @@ namespace PRIO.Controllers
                                 };
 
                                 _lastFoundReservoir = reservoir;
+
                                 reservoirs.Add(reservoir);
                             }
-                            else
-                            {
-                                _lastFoundReservoir = reservoirInReadingProcess;
 
-                            }
+                        }
+                        else
+                        {
+                            _lastFoundReservoir = reservoirInReadingProcess;
+
                         }
                     }
 
-                    if (!string.IsNullOrWhiteSpace(rowCompletion))
+                    if (!string.IsNullOrWhiteSpace(rowWellCodeAnp))
+                    {
+                        var wellInReadingProcess = wells.Find(x => x.CodWellAnp?.ToLower().Trim() == rowWellCodeAnp?.ToLower().Trim());
+
+                        if (wellInReadingProcess is null)
+                        {
+
+                            var wellInDatabase = await context.Wells.FirstOrDefaultAsync(x => x.CodWellAnp!.ToLower().Trim() == rowWellCodeAnp!.ToLower().Trim());
+                            if (wellInDatabase is null)
+                            {
+                                var well = new Well
+                                {
+                                    Name = rowWellNameAnp,
+                                    WellOperatorName = rowWellOperatorName,
+                                    CodWellAnp = rowWellCodeAnp,
+                                    CategoryAnp = rowWellCategoryAnp,
+                                    CategoryReclassificationAnp = rowWellCategoryReclassification,
+                                    CategoryOperator = rowWellCategoryOperator,
+                                    StatusOperator = rowWellStatusOperatorBoolean,
+                                    Type = rowWellProfile,
+                                    WaterDepth = double.TryParse(rowWellWaterDepth?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var rowWellWaterDepthDouble) ? rowWellWaterDepthDouble : 0,
+                                    TopOfPerforated = double.TryParse(rowWellPerforationTopMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var topOfPerforated) ? topOfPerforated : 0,
+                                    BaseOfPerforated = double.TryParse(rowWellBottomPerforationMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var baseOfPerforated) ? baseOfPerforated : 0,
+                                    ArtificialLift = rowWellArtificialLift,
+                                    Latitude4C = rowWellLatitude4c,
+                                    Longitude4C = rowWellLongitude4c,
+                                    LatitudeDD = rowWellLatitudeDD,
+                                    LongitudeDD = rowWellLongitudeDD,
+                                    DatumHorizontal = rowWellDatumHorizontal,
+                                    TypeBaseCoordinate = rowWellTypeCoordinate,
+                                    CoordX = rowWellCoodX,
+                                    CoordY = rowWellCoordY,
+                                    User = user,
+
+                                };
+
+                                _lastFoundWell = well;
+                                wells.Add(well);
+                            }
+                        }
+                        else
+                        {
+                            _lastFoundWell = wellInReadingProcess;
+
+                        }
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(rowCompletion) && !string.IsNullOrWhiteSpace(rowWellNameAnp))
                     {
                         var completionInReadingProcess = completions.Find(x => x.Name.ToLower() == rowCompletion.ToLower());
                         if (completionInReadingProcess is null)
                         {
                             var completionInDatabase = await context.Completions.FirstOrDefaultAsync(x => x.Name.ToLower().Trim() == rowCompletion.ToLower().Trim());
-                            if (completionInDatabase is null && _lastFoundReservoir is not null)
+                            if (completionInDatabase is null && _lastFoundWell is not null)
                             {
+                                var reservoir = reservoirs.Find(x => x.Name.ToLower() == rowReservoir?.ToLower());
+
                                 var completion = new Completion
                                 {
                                     Name = rowCompletion,
                                     User = user,
-                                    Reservoir = _lastFoundReservoir
+                                    Reservoir = reservoir,
+                                    Well = _lastFoundWell
                                 };
 
                                 _lastFoundCompletion = completion;
+
                                 completions.Add(completion);
                             }
-                            else
-                            {
-                                _lastFoundCompletion = completionInReadingProcess;
 
-                            }
                         }
-                    }
-
-
-
-                    if (!string.IsNullOrWhiteSpace(rowCompletion))
-                    {
-                        var completionInReadingProcess = completions.Find(x => x.Name.ToLower() == rowCompletion.ToLower());
-                        if (completionInReadingProcess is null)
+                        else
                         {
-                            var completionInDatabase = await context.Completions.FirstOrDefaultAsync(x => x.Name.ToLower().Trim() == rowCompletion.ToLower().Trim());
-                            if (completionInDatabase is null && _lastFoundReservoir is not null)
-                            {
-                                var completion = new Completion
-                                {
-                                    Name = rowCompletion,
-                                    User = user,
-                                    Reservoir = _lastFoundReservoir
-                                };
-
-                                _lastFoundCompletion = completion;
-                                completions.Add(completion);
-                            }
-                            else
-                            {
-                                _lastFoundCompletion = completionInReadingProcess;
-
-                            }
+                            _lastFoundCompletion = completionInReadingProcess;
                         }
                     }
-
-
                 }
                 try
                 {
-                    //await context.AddRangeAsync(installations);
-                    //await context.AddRangeAsync(clusters);
-                    //await context.AddRangeAsync(fields);
+                    await context.AddRangeAsync(clusters);
+                    await context.AddRangeAsync(installations);
+                    await context.AddRangeAsync(fields);
+                    await context.AddRangeAsync(zones);
                     await context.AddRangeAsync(reservoirs);
+                    await context.AddRangeAsync(completions);
+                    await context.AddRangeAsync(wells);
                     await context.SaveChangesAsync();
 
                 }
