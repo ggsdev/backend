@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.Data;
 
@@ -11,9 +12,11 @@ using PRIO.Data;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230531122016_WellNullableColumns")]
+    partial class WellNullableColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -90,7 +93,7 @@ namespace PRIO.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("VARCHAR");
 
-                    b.Property<Guid?>("ReservoirId")
+                    b.Property<Guid>("ReservoirId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -1983,7 +1986,6 @@ namespace PRIO.Migrations
                         .HasColumnType("VARCHAR");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("VARCHAR");
 
@@ -2080,7 +2082,8 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Reservoir", "Reservoir")
                         .WithMany("Completions")
                         .HasForeignKey("ReservoirId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("PRIO.Models.User", "User")
                         .WithMany("Completions")
