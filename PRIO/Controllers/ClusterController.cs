@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Azure;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS;
@@ -10,6 +13,12 @@ namespace PRIO.Controllers
     [ApiController]
     public class ClusterController : ControllerBase
     {
+        private readonly IMapper _mapper;
+
+        public ClusterController(IMapper mapper) {
+            _mapper = mapper;
+        }
+
         [HttpPost("clusters")]
         public async Task<IActionResult> Create([FromBody] CreateClusterViewModel body, [FromServices] DataContext context)
         {
@@ -21,10 +30,11 @@ namespace PRIO.Controllers
                     Message = $"Cluster with code: {body.CodCluster} already exists."
                 });
 
+
             var userId = (Guid)HttpContext.Items["Id"]!;
             var user = await context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
 
-            if (user is not null)
+            if (user is null)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = $"User is not found"
@@ -50,6 +60,30 @@ namespace PRIO.Controllers
         {
             var clusters = await context.Clusters.Include(x => x.Installations).ToListAsync();
             return Ok(clusters);
+        }  
+        
+        [HttpGet("clusters/{clusterId}")]
+        public async Task<IActionResult> Get([FromRoute] string clusterId , [FromServices] DataContext context)
+        {
+            var cluster = await context.Clusters.FirstOrDefaultAsync(x => x.Id.Equals(clusterId));
+            return Ok(cluster);
+        }
+
+        [HttpPatch]
+        [Route("clusters/{clusterId}")]
+        public async Task<IActionResult> UpdateCluster([FromRoute] Guid clusterId, [FromBody] UpdateClusterViewModel body, [FromServices] DataContext context)
+        {
+            var cluster = await context.Clusters.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == clusterId);
+            if (cluster is null)
+            {
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = $"Cluster with ID: {clusterId} not found."
+                });
+            }
+            Console.WriteLine(cluster);
+           
+            return NoContent();
         }
     }
 }

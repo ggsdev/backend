@@ -7,10 +7,10 @@ namespace PRIO.ViewModels.Installations
         [Required(ErrorMessage = "Name is required.")]
         public string Name { get; set; } = string.Empty;
 
-        public string? CodInstallation { get; set; }
+        [Required(ErrorMessage = "ClusterId is required.")]
+        public Guid ClusterId { get; set; }
 
-        [Required(ErrorMessage = "FieldId is required.")]
-        public Guid FieldId { get; set; }
+        public string? CodInstallation { get; set; }
 
         public string? Description { get; set; }
 

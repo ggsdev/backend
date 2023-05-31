@@ -16,6 +16,7 @@ using PRIO.Middlewares;
 using PRIO.Models;
 using PRIO.Models.Measurements;
 using PRIO.Services;
+using PRIO.ViewModels.Clusters;
 using System.Globalization;
 using System.Text;
 
@@ -93,9 +94,13 @@ static void ConfigureServices(IServiceCollection services)
         cfg.CreateMap<Measurement, _003DTO>();
         #endregion
 
+
         cfg.CreateMap<Field, FieldDTO>();
         cfg.CreateMap<User, UserDTO>();
         cfg.CreateMap<Zone, ZoneDTO>();
+        cfg.CreateMap<UpdateClusterViewModel, Cluster>();
+       
+
     });
 
     IMapper mapper = mapperConfig.CreateMapper();
