@@ -24,6 +24,12 @@ namespace PRIO.Controllers
             var userId = (Guid)HttpContext.Items["Id"]!;
             var user = await context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
 
+            if (user is not null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = $"User is not found"
+                });
+
             var cluster = new Cluster
             {
                 Name = body.Name,
