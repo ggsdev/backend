@@ -8,7 +8,7 @@ namespace PRIO.Services
 {
     public class UserServices
     {
-        private readonly DataContext _context;
+        private DataContext _context;
 
         public UserServices(DataContext context)
         {

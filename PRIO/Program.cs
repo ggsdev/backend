@@ -13,6 +13,7 @@ using PRIO.Files.XML._002;
 using PRIO.Files.XML._003;
 using PRIO.Files.XML._039;
 using PRIO.Middlewares;
+using PRIO.Models;
 using PRIO.Models.Measurements;
 using PRIO.Services;
 using System.Globalization;
@@ -91,6 +92,10 @@ static void ConfigureServices(IServiceCollection services)
         cfg.CreateMap<_003PMGD, Measurement>();
         cfg.CreateMap<Measurement, _003DTO>();
         #endregion
+
+        cfg.CreateMap<Field, FieldDTO>();
+        cfg.CreateMap<User, UserDTO>();
+        cfg.CreateMap<Zone, ZoneDTO>();
     });
 
     IMapper mapper = mapperConfig.CreateMapper();
@@ -103,6 +108,7 @@ static void ConfigureServices(IServiceCollection services)
     services.AddDbContext<DataContext>();
     services.AddScoped<TokenServices>();
     services.AddScoped<UserServices>();
+    services.AddScoped<FieldServices>();
 
     services.AddAuthentication(x =>
     {

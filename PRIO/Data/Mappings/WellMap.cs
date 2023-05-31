@@ -17,7 +17,8 @@ namespace PRIO.Data.Mappings
 
             builder.Property(e => e.Name)
                 .HasColumnType("VARCHAR")
-                .HasMaxLength(150);
+                .HasMaxLength(150)
+                .IsRequired();
 
             builder.Property(e => e.WellOperatorName)
                 .HasColumnType("VARCHAR")
@@ -103,104 +104,6 @@ namespace PRIO.Data.Mappings
             builder.HasOne(x => x.User).
                 WithMany(u => u.Wells)
                 .OnDelete(DeleteBehavior.NoAction);
-
-            //builder.Property(e => e.FieldCod)
-            //   .HasColumnType("VARCHAR")
-            //   .HasMaxLength(255);
-
-            //builder.Property(e => e.CurrentSituation)
-            //   .HasColumnType("VARCHAR")
-            //   .HasMaxLength(255);
-
-            //builder.Property(e => e.MD)
-            //   .HasColumnType("VARCHAR")
-            //   .HasMaxLength(255);
-
-            //builder.Property(e => e.TVD)
-            //   .HasColumnType("VARCHAR")
-            //   .HasMaxLength(255);
-
-            //builder.Property(e => e.SounderDepth)
-            //    .HasColumnType("float")
-            //    .HasPrecision(10, 2);
-
-            //builder.Property(e => e.InstallationName)
-            //    .HasColumnType("VARCHAR")
-            //    .HasMaxLength(255);
-
-            //builder.Property(e => e.EnviromentProduction)
-            //    .HasColumnType("VARCHAR")
-            //    .HasMaxLength(255);
-
-            //builder.Property(e => e.Block)
-            //    .HasColumnType("VARCHAR")
-            //    .HasMaxLength(255);
-
-            //builder.Property(e => e.ClusterName)
-            //    .HasColumnType("VARCHAR")
-            //    .HasMaxLength(255);
-
-            //builder.Property(e => e.CodInstallation)
-            //    .HasColumnType("VARCHAR")
-            //    .HasMaxLength(255);
-
-            //builder.Property(e => e.ReservoirName)
-            //    .HasColumnType("VARCHAR")
-            //    .HasMaxLength(255);
-
-            //builder.Property(e => e.ProductionByReservoir)
-            //    .HasColumnType("VARCHAR")
-            //    .HasMaxLength(255);
-
-            //builder.Property(e => e.CompletionName)
-            //    .HasColumnType("VARCHAR")
-            //    .HasMaxLength(255);
-
-            //builder.Property(e => e.FieldName)
-            //    .HasColumnType("VARCHAR")
-            //    .HasMaxLength(255);
-
-            //builder.Property(e => e.CompanyCodOperator)
-            //    .HasColumnType("VARCHAR")
-            //    .HasMaxLength(255);
-
-            //builder.Property(e => e.Basin)
-            //   .HasColumnType("VARCHAR")
-            //    .HasMaxLength(255);
-
-            //builder.Property(e => e.State)
-            //    .HasColumnType("VARCHAR")
-            //    .HasMaxLength(255);
-
-            //builder.Property(e => e.Category)
-            //    .HasColumnType("VARCHAR")
-            //    .HasMaxLength(255);
-
-            //builder.Property(e => e.CompletionDate)
-            //    .HasColumnType("DATE");
-
-            //builder.Property(e => e.DrillingFinishDate)
-            //    .HasColumnType("DATE");
-
-            //builder.Property(e => e.DrillingStartDate)
-            //    .HasColumnType("DATE");
-
-            //builder.Property(e => e.Latitude)
-            //    .HasColumnType("VARCHAR")
-            //    .HasMaxLength(60);
-
-            //builder.Property(e => e.Longitude)
-            //    .HasColumnType("VARCHAR")
-            //    .HasMaxLength(60);
-
-            //builder.Property(e => e.Location)
-            //    .HasColumnType("VARCHAR")
-            //    .HasMaxLength(255);
-
-            //builder.Property(e => e.RegisterNum)
-            //   .HasColumnType("VARCHAR")
-            //   .HasMaxLength(255);
-
         }
 
     }

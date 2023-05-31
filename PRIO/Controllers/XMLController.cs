@@ -119,6 +119,7 @@ namespace PRIO.Controllers
                                 #region elementos XML
                                 var dadosBasicos = dadosBasicosElement is not null ? Functions.DeserializeXml<DADOS_BASICOS_039>(dadosBasicosElement) : null;
                                 #endregion
+
                                 try
                                 {
                                     var measurement = _mapper.Map<Measurement>(dadosBasicos);
