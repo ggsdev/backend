@@ -12,9 +12,9 @@ namespace PRIO.ViewModels.Fields
         public string State { get; set; } = string.Empty;
         public string Location { get; set; } = string.Empty;
         public bool? IsActive { get; set; } = true;
-        public string? Description { get; set; }
+        public string Description { get; set; } = string.Empty;
         [Required]
-        public Guid ClusterId { get; set; }
+        public Guid InstallationId { get; set; }
 
     }
 }
