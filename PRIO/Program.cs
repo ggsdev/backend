@@ -95,10 +95,13 @@ static void ConfigureServices(IServiceCollection services)
         #endregion
 
 
+        cfg.CreateMap<Cluster, ClusterDTO>();
+        cfg.CreateMap<Installation, InstallationDTO>();
         cfg.CreateMap<Field, FieldDTO>();
-        cfg.CreateMap<User, UserDTO>();
         cfg.CreateMap<Zone, ZoneDTO>();
-        cfg.CreateMap<UpdateClusterViewModel, Cluster>();
+        cfg.CreateMap<Reservoir, ReservoirDTO>();
+        cfg.CreateMap<Well, WellDTO>();
+        cfg.CreateMap<User, UserDTO>();
        
 
     });

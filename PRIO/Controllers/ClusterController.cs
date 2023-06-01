@@ -7,24 +7,28 @@ using PRIO.Data;
 using PRIO.DTOS;
 using PRIO.Models;
 using PRIO.ViewModels.Clusters;
+using PRIO.ViewModels.Installations;
 
 namespace PRIO.Controllers
 {
     [ApiController]
     public class ClusterController : ControllerBase
     {
+        private readonly DataContext _context;
         private readonly IMapper _mapper;
 
-        public ClusterController(IMapper mapper) {
+        public ClusterController(DataContext context, IMapper mapper)
+        {
+            _context = context;
             _mapper = mapper;
+
         }
 
         [HttpPost("clusters")]
-        public async Task<IActionResult> Create([FromBody] CreateClusterViewModel body, [FromServices] DataContext context)
+        public async Task<IActionResult> Create([FromBody] CreateClusterViewModel body)
         {
-            var checkClusterInDatabase = await context.Clusters.FirstOrDefaultAsync((x) => x.CodCluster == body.CodCluster);
-
-            if (checkClusterInDatabase is not null)
+            var clusterInDatabase = await _context.Clusters.FirstOrDefaultAsync((x) => x.CodCluster == body.CodCluster);
+            if (clusterInDatabase is not null)
                 return Conflict(new ErrorResponseDTO
                 {
                     Message = $"Cluster with code: {body.CodCluster} already exists."
@@ -32,8 +36,7 @@ namespace PRIO.Controllers
 
 
             var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
             if (user is null)
                 return NotFound(new ErrorResponseDTO
                 {
@@ -45,44 +48,80 @@ namespace PRIO.Controllers
                 Name = body.Name,
                 CodCluster = body.CodCluster,
                 Description = body.Description is not null ? body.Description : null,
-                User = user!,
+                User = user,
             };
+            
 
-            await context.Clusters.AddAsync(cluster);
-            await context.SaveChangesAsync();
+            await _context.Clusters.AddAsync(cluster);
+            await _context.SaveChangesAsync();
 
-            return Created($"clusters/{cluster.Id}", cluster);
+
+
+            var clusterDTO = _mapper.Map<Cluster, ClusterDTO>(cluster);
+
+            return Created($"clusters/{cluster.Id}", clusterDTO);
         }
 
 
         [HttpGet("clusters")]
         public async Task<IActionResult> Get([FromServices] DataContext context)
         {
-            var clusters = await context.Clusters.Include(x => x.Installations).ToListAsync();
-            return Ok(clusters);
+            var clusters = await _context.Clusters.Include(x => x.Installations).Include(x => x.User).ToListAsync();
+            var clustersDTO = _mapper.Map<List<Cluster>, List<ClusterDTO>>(clusters);
+            return Ok(clustersDTO);
         }  
         
         [HttpGet("clusters/{clusterId}")]
-        public async Task<IActionResult> Get([FromRoute] string clusterId , [FromServices] DataContext context)
+        public async Task<IActionResult> GetById([FromRoute] Guid clusterId)
         {
-            var cluster = await context.Clusters.FirstOrDefaultAsync(x => x.Id.Equals(clusterId));
-            return Ok(cluster);
-        }
-
-        [HttpPatch]
-        [Route("clusters/{clusterId}")]
-        public async Task<IActionResult> UpdateCluster([FromRoute] Guid clusterId, [FromBody] UpdateClusterViewModel body, [FromServices] DataContext context)
-        {
-            var cluster = await context.Clusters.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == clusterId);
+            var cluster = await _context.Clusters.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == clusterId);
             if (cluster is null)
-            {
                 return NotFound(new ErrorResponseDTO
                 {
-                    Message = $"Cluster with ID: {clusterId} not found."
+                    Message = "Cluster not found"
                 });
-            }
-            Console.WriteLine(cluster);
-           
+            var clusterDTO = _mapper.Map<Cluster, ClusterDTO>(cluster);
+            return Ok(clusterDTO);
+        }
+
+        [HttpPatch("clusters/{clusterId}")]
+        public async Task<IActionResult> Update([FromRoute] Guid clusterId, [FromBody] UpdateClusterViewModel body)
+        {
+            var cluster = await _context.Clusters.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == clusterId);
+            if (cluster is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = "Cluster not found"
+                });
+
+            cluster.Name = body.Name is not null ? body.Name : cluster.Name;
+            cluster.Description = body.Description is not null ? body.Description : cluster.Description;
+            cluster.CodCluster = body.CodCluster is not null ? body.CodCluster : cluster.CodCluster;
+
+
+            _context.Update(cluster);
+            await _context.SaveChangesAsync();
+
+            var clusternDTO = _mapper.Map<Cluster, ClusterDTO>(cluster);
+            return Ok(clusternDTO);
+        }
+
+        [HttpDelete("clusters/{clusterId}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid clusterId)
+        {
+            var cluster = await _context.Clusters.FirstOrDefaultAsync(x => x.Id == clusterId);
+            if (cluster is null || !cluster.IsActive)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = "Cluster not found or inactive already"
+                });
+
+            cluster.IsActive = false;
+            cluster.DeletedAt = DateTime.UtcNow;
+
+            _context.Update(cluster);
+            await _context.SaveChangesAsync();
+
             return NoContent();
         }
     }
