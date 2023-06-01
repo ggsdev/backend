@@ -127,30 +127,49 @@ namespace PRIO.Controllers
             }
 
             well.Name = body.Name is not null ? body.Name : well.Name;
-            well.Description = body.Description is not null ? body.Description : well.Description;
             well.CodWell = body.CodWell is not null ? body.CodWell : well.CodWell;
+            well.WellOperatorName = body.WellOperatorName is not null ? body.WellOperatorName : well.WellOperatorName;
+            well.CodWellAnp = body.CodWellAnp is not null ? body.CodWellAnp : well.CodWellAnp;
+            well.CategoryAnp = body.CategoryAnp is not null ? body.CategoryAnp : well.CategoryAnp;
+            well.CategoryReclassificationAnp = body.CategoryReclassificationAnp is not null ? body.CategoryReclassificationAnp : well.CategoryReclassificationAnp;
+            well.CategoryOperator = body.CategoryOperator is not null ? body.CategoryOperator : well.CategoryOperator;
+            well.StatusOperator = body.StatusOperator is not null ? body.StatusOperator : well.StatusOperator;
+            well.Type = body.Type is not null ? body.Type : well.Type;
+            well.WaterDepth = body.WaterDepth is not null ? body.WaterDepth : well.WaterDepth;
+            well.TopOfPerforated = body.TopOfPerforated is not null ? body.TopOfPerforated : well.TopOfPerforated;
+            well.BaseOfPerforated = body.BaseOfPerforated is not null ? body.BaseOfPerforated : well.BaseOfPerforated;
+            well.ArtificialLift = body.ArtificialLift is not null ? body.ArtificialLift : well.ArtificialLift;
+            well.Latitude4C = body.Latitude4C is not null ? body.Latitude4C : well.Latitude4C;
+            well.Longitude4C = body.Longitude4C is not null ? body.Longitude4C : well.Longitude4C;
+            well.LatitudeDD = body.LatitudeDD is not null ? body.LatitudeDD : well.LatitudeDD;
+            well.LongitudeDD = body.LongitudeDD is not null ? body.LongitudeDD : well.LongitudeDD;
+            well.DatumHorizontal = body.DatumHorizontal is not null ? body.DatumHorizontal : well.DatumHorizontal;
+            well.TypeBaseCoordinate = body.TypeBaseCoordinate is not null ? body.TypeBaseCoordinate : well.TypeBaseCoordinate;
+            well.CoordX = body.CoordX is not null ? body.CoordX : well.CoordX;
+            well.CoordY = body.CoordY is not null ? body.CoordY : well.CoordY;
+            well.Description = body.Description is not null ? body.Description : well.Description;
 
             _context.Update(well);
             await _context.SaveChangesAsync();
 
-            var wellDTO = _mapper.Map<Reservoir, ReservoirDTO>(well);
+            var wellDTO = _mapper.Map<Well, WellDTO>(well);
             return Ok(wellDTO);
         }
 
-        [HttpDelete("wells/{wellsId}")]
-        public async Task<IActionResult> Delete([FromRoute] Guid reservoirId)
+        [HttpDelete("wells/{wellId}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid wellId)
         {
-            var reservoir = await _context.Reservoirs.FirstOrDefaultAsync(x => x.Id == reservoirId);
-            if (reservoir is null || !reservoir.IsActive)
+            var well = await _context.Wells.FirstOrDefaultAsync(x => x.Id == wellId);
+            if (well is null || !well.IsActive)
                 return NotFound(new ErrorResponseDTO
                 {
-                    Message = "Reservoir not found or inactive already"
+                    Message = "Well not found or inactive already"
                 });
 
-            reservoir.IsActive = false;
-            reservoir.DeletedAt = DateTime.UtcNow;
+            well.IsActive = false;
+            well.DeletedAt = DateTime.UtcNow;
 
-            _context.Update(reservoir);
+            _context.Update(well);
             await _context.SaveChangesAsync();
 
             return NoContent();
