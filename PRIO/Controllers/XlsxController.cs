@@ -110,9 +110,9 @@ namespace PRIO.Controllers
 
                             entityDictionary[columnCluster.ToLower()] = cluster;
 
-                            _lastFoundCluster = (Cluster)cluster;
                         }
 
+                        _lastFoundCluster = (Cluster)cluster;
                     }
 
                     if (!string.IsNullOrWhiteSpace(columnInstallation) && !entityDictionary.TryGetValue(columnInstallation.ToLower(), out var installation))
@@ -131,9 +131,9 @@ namespace PRIO.Controllers
 
                             entityDictionary[columnInstallation.ToLower()] = installation;
 
-                            _lastFoundInstallation = (Installation)installation;
                         }
 
+                        _lastFoundInstallation = installation is not null ? (Installation)installation : null;
                     }
 
                     if (!string.IsNullOrWhiteSpace(columnField) && !entityDictionary.TryGetValue(columnField.ToLower(), out var field))
@@ -151,9 +151,9 @@ namespace PRIO.Controllers
                             };
 
                             entityDictionary[columnField.ToLower()] = field;
-                            _lastFoundField = (Field)field;
                         }
 
+                        _lastFoundField = field is not null ? (Field)field : null;
                     }
 
                     if (!string.IsNullOrWhiteSpace(columnZone) && !entityDictionary.TryGetValue(columnZone.ToLower(), out var zone))
@@ -169,9 +169,9 @@ namespace PRIO.Controllers
                             };
 
                             entityDictionary[columnZone.ToLower()] = zone;
-                            _lastFoundZone = (Zone)zone;
                         }
 
+                        _lastFoundZone = zone is not null ? (Zone)zone : null;
                     }
 
                     if (!string.IsNullOrWhiteSpace(columnReservoir) && !entityDictionary.TryGetValue(columnReservoir.ToLower(), out var reservoir))
@@ -187,15 +187,15 @@ namespace PRIO.Controllers
                             };
 
                             entityDictionary[columnReservoir.ToLower()] = reservoir;
-                            _lastFoundReservoir = (Reservoir)reservoir;
                         }
 
+                        _lastFoundReservoir = reservoir is not null ? (Reservoir)reservoir : null;
                     }
 
                     if (!string.IsNullOrWhiteSpace(columnWellCodeAnp) && !entityDictionary.TryGetValue(columnWellCodeAnp.ToLower(), out var well))
                     {
                         well = await context.Wells.FirstOrDefaultAsync(x => x.CodWellAnp.ToLower() == columnWellCodeAnp.ToLower());
-                        if (well is null)
+                        if (well is null && _lastFoundField is not null)
                         {
                             well = new Well
                             {
@@ -220,12 +220,13 @@ namespace PRIO.Controllers
                                 CoordX = columnWellCoordX,
                                 CoordY = columnWellCoordY,
                                 User = user,
+                                Field = _lastFoundField
                             };
 
                             entityDictionary[columnWellCodeAnp.ToLower()] = well;
-                            _lastFoundWell = (Well)well;
                         }
 
+                        _lastFoundWell = well is not null ? (Well)well : null;
                     }
 
                     if (!string.IsNullOrWhiteSpace(columnCompletion) && !string.IsNullOrWhiteSpace(columnWellNameAnp) && !entityDictionary.TryGetValue(columnCompletion.ToLower(), out var completion))

@@ -21,7 +21,7 @@ namespace PRIO.Controllers
         }
         [HttpPost("wells")]
         public async Task<IActionResult> Create([FromBody] CreateWellViewModel body)
-        {   
+        {
             var wellInDatabase = await _context.Wells.FirstOrDefaultAsync(x => x.CodWell == body.CodWell);
             if (wellInDatabase is not null)
                 return Conflict(new ErrorResponseDTO
@@ -68,7 +68,8 @@ namespace PRIO.Controllers
                 CoordX = body.CoordX,
                 CoordY = body.CoordY,
                 Description = body.Description,
-                Field = FieldFound
+                Field = FieldFound,
+                User = user,
             };
 
             await _context.AddAsync(well);
@@ -133,7 +134,7 @@ namespace PRIO.Controllers
             _context.Update(well);
             await _context.SaveChangesAsync();
 
-            var wellDTO = _mapper.Map<Reservoir, ReservoirDTO>(well);
+            var wellDTO = _mapper.Map<Well, WellDTO>(well);
             return Ok(wellDTO);
         }
 
