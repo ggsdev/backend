@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.Data;
 
@@ -11,9 +12,11 @@ using PRIO.Data;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230601194559_clusterHistoryModel")]
+    partial class clusterHistoryModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -68,9 +71,6 @@ namespace PRIO.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ClusterId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("CodCluster")
                         .HasColumnType("nvarchar(max)");
 
@@ -86,29 +86,34 @@ namespace PRIO.Migrations
                     b.Property<string>("DescriptionOld")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("IsActive")
+                    b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<bool?>("IsActiveOld")
+                    b.Property<bool>("IsActiveOld")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NameOld")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("clusterId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClusterId");
-
                     b.HasIndex("UserId");
+
+                    b.HasIndex("clusterId");
 
                     b.ToTable("ClustersHistories");
                 });
@@ -2138,17 +2143,19 @@ namespace PRIO.Migrations
 
             modelBuilder.Entity("PRIO.Models.ClusterHistory", b =>
                 {
-                    b.HasOne("PRIO.Models.Cluster", "Cluster")
-                        .WithMany("ClusterHistories")
-                        .HasForeignKey("ClusterId");
-
                     b.HasOne("PRIO.Models.User", "User")
-                        .WithMany("ClusterHistories")
-                        .HasForeignKey("UserId");
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Cluster");
+                    b.HasOne("PRIO.Models.Cluster", "cluster")
+                        .WithMany("ClusterHistories")
+                        .HasForeignKey("clusterId");
 
                     b.Navigation("User");
+
+                    b.Navigation("cluster");
                 });
 
             modelBuilder.Entity("PRIO.Models.Completion", b =>
@@ -2396,8 +2403,6 @@ namespace PRIO.Migrations
 
             modelBuilder.Entity("PRIO.Models.User", b =>
                 {
-                    b.Navigation("ClusterHistories");
-
                     b.Navigation("Clusters");
 
                     b.Navigation("Completions");

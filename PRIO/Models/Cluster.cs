@@ -9,5 +9,6 @@ namespace PRIO.Models
         public User User { get; set; }
         [JsonIgnore]
         public List<Installation>? Installations { get; set; }
+        public List<ClusterHistory>? ClusterHistories { get; set; }
     }
 }

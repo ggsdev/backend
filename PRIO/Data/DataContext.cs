@@ -12,6 +12,7 @@ namespace PRIO.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Session> Sessions { get; set; }
         public DbSet<Cluster> Clusters { get; set; }
+        public DbSet<ClusterHistory> ClustersHistories { get; set; }
         public DbSet<Installation> Installations { get; set; }
         public DbSet<Field> Fields { get; set; }
         public DbSet<Zone> Zones { get; set; }

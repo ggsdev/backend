@@ -50,12 +50,28 @@ namespace PRIO.Controllers
                 Description = body.Description is not null ? body.Description : null,
                 User = user,
             };
-            
 
             await _context.Clusters.AddAsync(cluster);
+            await _context.SaveChangesAsync(); 
+
+            var clusterInDatabaseAfterSave = await _context.Clusters.FirstOrDefaultAsync((x) => x.CodCluster == body.CodCluster);
+
+            var clusterHistory = new ClusterHistory
+            {
+                Name = body.Name,
+                NameOld = null,
+                CodClusterOld = null,
+                CodCluster = body.CodCluster,
+                DescriptionOld = null,
+                Description = body.Description is not null ? body.Description : null,
+                User = user,
+                IsActiveOld = null,
+                IsActive = true,
+                Cluster = clusterInDatabaseAfterSave,
+            };
+
+            await _context.ClustersHistories.AddAsync(clusterHistory);
             await _context.SaveChangesAsync();
-
-
 
             var clusterDTO = _mapper.Map<Cluster, ClusterDTO>(cluster);
 
