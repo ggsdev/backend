@@ -125,32 +125,43 @@ namespace PRIO.Controllers
                     Message = "Completion not found"
                 });
 
-            string codeCompletionUpdated = completion.CodCompletion;
+            var wellQuery = _context.Wells.Include(x => x.Field);
+
+            var reservoirQuery = _context.Reservoirs
+                    .Include(x => x.Zone)
+                    .ThenInclude(z => z.Field);
+
 
             if (body.WellId is not null)
             {
-                var well = await _context.Wells.Include(x => x.Field).FirstOrDefaultAsync(x => x.Id == body.WellId);
+                var well = await wellQuery.FirstOrDefaultAsync(x => x.Id == body.WellId);
                 if (well is null)
                     return NotFound(new ErrorResponseDTO
                     {
                         Message = "Well not found"
                     });
 
-                if (well.Field.Id != completion.Well.Field.Id)
+                var reservoir = await reservoirQuery.FirstOrDefaultAsync(z => z.Id == body.ReservoirId);
+                if (reservoir is null)
+                {
+                    return NotFound(new ErrorResponseDTO
+                    {
+                        Message = "Reservoir not found"
+                    });
+                }
+
+                if (well.Field.Id != reservoir.Zone.Field.Id)
                     return Conflict(new ErrorResponseDTO
                     {
-                        Message = $"Well: {well.Name} and Completion: {completion.Name} doesn't belong to the same Field"
+                        Message = $"Well: {well.Name} and Reservoir: {reservoir.Name} doesn't belong to the same Field"
                     });
 
-                codeCompletionUpdated += $"{well.Name}_{completion.Reservoir.Zone.CodZone}";
+                completion.CodCompletion = $"{well.Name}_{completion.Reservoir.Zone.CodZone}";
             }
 
             if (body.ReservoirId is not null)
             {
-                var reservoir = await _context.Reservoirs
-                    .Include(x => x.Zone)
-                    .ThenInclude(z => z.Field)
-                    .FirstOrDefaultAsync(x => x.Id == body.ReservoirId);
+                var reservoir = await reservoirQuery.FirstOrDefaultAsync(x => x.Id == body.ReservoirId);
 
                 if (reservoir is null)
                 {
@@ -160,16 +171,22 @@ namespace PRIO.Controllers
                     });
                 }
 
-                if (reservoir.Zone.Field.Id != completion.Well.Field.Id)
-                    return Conflict(new ErrorResponseDTO
+                var well = await wellQuery.FirstOrDefaultAsync(x => x.Id == body.WellId);
+                if (well is null)
+                    return NotFound(new ErrorResponseDTO
                     {
-                        Message = $"Reservoir: {reservoir.Name} and Completion: {completion.Name} doesn't belong to the same Field"
+                        Message = "Well not found"
                     });
 
-                //codeCompletionUpdated.Replace();
-                //parei aqui
-            }
+                if (reservoir.Zone.Field.Id != well.Field.Id)
+                    return Conflict(new ErrorResponseDTO
+                    {
+                        Message = $"Reservoir: {reservoir.Name} and Well: {well.Name} doesn't belong to the same Field"
+                    });
 
+                var findUnderline = completion.CodCompletion.IndexOf("_");
+                completion.CodCompletion = completion.CodCompletion.Replace(completion.CodCompletion.Substring(findUnderline), reservoir.Zone.CodZone);
+            }
 
             completion.Description = body.Description is not null ? body.Description : completion.Description;
             completion.Name = body.Name is not null ? body.Name : completion.Name;
