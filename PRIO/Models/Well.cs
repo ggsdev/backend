@@ -5,6 +5,7 @@
         public string? Name { get; set; }
         public string? WellOperatorName { get; set; }
         public string CodWellAnp { get; set; } = string.Empty;
+        public string? CodWell { get; set; }
         public string? CategoryAnp { get; set; }
         public string? CategoryReclassificationAnp { get; set; }
         public string? CategoryOperator { get; set; }
@@ -23,6 +24,7 @@
         public string? CoordX { get; set; }
         public string? CoordY { get; set; }
         public User? User { get; set; }
+        public Field? Field { get; set; }
         public List<Completion>? Completions { get; set; }
     }
 }

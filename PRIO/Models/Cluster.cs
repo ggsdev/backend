@@ -6,7 +6,6 @@ namespace PRIO.Models
     {
         public string Name { get; set; } = string.Empty;
         public string? CodCluster { get; set; }
-        [JsonIgnore]
         public User User { get; set; }
         [JsonIgnore]
         public List<Installation>? Installations { get; set; }
