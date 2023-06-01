@@ -80,7 +80,7 @@ namespace PRIO.Controllers
 
 
         [HttpGet("clusters")]
-        public async Task<IActionResult> Get([FromServices] DataContext context)
+        public async Task<IActionResult> Get()
         {
             var clusters = await _context.Clusters.Include(x => x.Installations).Include(x => x.User).ToListAsync();
             var clustersDTO = _mapper.Map<List<Cluster>, List<ClusterDTO>>(clusters);

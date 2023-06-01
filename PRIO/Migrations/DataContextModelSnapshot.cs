@@ -110,7 +110,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ClustersHistories");
+                    b.ToTable("ClustersHistories", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.Models.Completion", b =>
