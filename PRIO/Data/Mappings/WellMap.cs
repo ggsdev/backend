@@ -23,6 +23,10 @@ namespace PRIO.Data.Mappings
             builder.Property(e => e.WellOperatorName)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(150);
+            
+            builder.Property(e => e.CodWell)
+                .HasColumnType("VARCHAR")
+                .HasMaxLength(150);
 
             builder.Property(e => e.CodWellAnp)
                 .HasColumnType("VARCHAR")

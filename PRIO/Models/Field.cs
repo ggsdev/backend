@@ -14,5 +14,6 @@ namespace PRIO.Models
         [JsonIgnore]
         public Installation Installation { get; set; }
         public List<Zone>? Zones { get; set; }
+        public List<Well>? Wells { get; set; }
     }
 }
