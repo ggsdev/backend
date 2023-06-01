@@ -103,7 +103,6 @@ static void ConfigureServices(IServiceCollection services)
 
     DotEnv.Load();
 
-
     services.AddEndpointsApiExplorer();
     services.AddDbContext<DataContext>();
     services.AddScoped<TokenServices>();

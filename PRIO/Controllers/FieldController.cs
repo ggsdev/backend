@@ -134,7 +134,6 @@ namespace PRIO.Controllers
             return Ok(fieldDTO);
         }
 
-
         [HttpDelete("fields/{id}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {

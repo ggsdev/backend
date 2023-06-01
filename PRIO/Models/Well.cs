@@ -4,7 +4,7 @@
     {
         public string? Name { get; set; }
         public string? WellOperatorName { get; set; }
-        public string? CodWellAnp { get; set; }
+        public string CodWellAnp { get; set; } = string.Empty;
         public string? CategoryAnp { get; set; }
         public string? CategoryReclassificationAnp { get; set; }
         public string? CategoryOperator { get; set; }

@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using dotenv.net;
+using Microsoft.EntityFrameworkCore;
 using PRIO.Data.Mappings;
 using PRIO.Data.Mappings.MeasurementMappping;
 using PRIO.Models;
 using PRIO.Models.Measurements;
-using dotenv.net;
 
 namespace PRIO.Data
 {
@@ -31,9 +31,7 @@ namespace PRIO.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-
             var envVars = DotEnv.Read();
-
 
             var server = envVars["SERVER"];
             var database = envVars["DATABASE"];
@@ -42,7 +40,6 @@ namespace PRIO.Data
             var encrypt = envVars["ENCRYPT"];
 
             optionsBuilder.UseSqlServer($"Server={server};Database={database};User ID={userId};Password={password};Encrypt={encrypt};");
-
         }
         public override int SaveChanges()
         {
