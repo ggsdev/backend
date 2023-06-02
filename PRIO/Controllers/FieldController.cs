@@ -257,7 +257,7 @@ namespace PRIO.Controllers
         [HttpPatch("fields/{fieldId}/restore")]
         public async Task<IActionResult> Restore([FromRoute] Guid fieldId)
         {
-            var field = await _context.Fields.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == fieldId);
+            var field = await _context.Fields.Include(x => x.Installation).Include(x => x.User).FirstOrDefaultAsync(x => x.Id == fieldId);
             if (field is null || field.IsActive is true)
                 return NotFound(new ErrorResponseDTO
                 {
@@ -304,6 +304,27 @@ namespace PRIO.Controllers
 
             var fieldDTO = _mapper.Map<Field, FieldDTO>(field);
             return Ok(fieldDTO);
+        }
+
+        [HttpGet("fields/{fieldId}/history")]
+        public async Task<IActionResult> GetHistory([FromRoute] Guid fieldId)
+        {
+            var field = await _context.Fields.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == fieldId);
+            if (field is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = "Cluster not found"
+                });
+
+            var fieldHistories = await _context.FieldHistories.Include(x => x.User)
+                                                      .Include(x => x.Field)
+                                                      .Where(x => x.Field.Id == fieldId)
+                                                      .OrderByDescending(x => x.CreatedAt)
+                                                      .ToListAsync();
+
+            var fieldHistoryDTO = _mapper.Map<List<FieldHistory>, List<FieldHistoryDTO>>(fieldHistories);
+
+            return Ok(fieldHistoryDTO);
         }
 
     }
