@@ -1,4 +1,7 @@
-﻿using PRIO.Models.Measurements;
+﻿using PRIO.Models.Clusters;
+using PRIO.Models.Fields;
+using PRIO.Models.Installations;
+using PRIO.Models.Measurements;
 using System.Text.Json.Serialization;
 
 namespace PRIO.Models

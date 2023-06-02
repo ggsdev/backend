@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PRIO.Models;
+using PRIO.Models.Installations;
 
-namespace PRIO.Data.Mappings
+namespace PRIO.Data.Mappings.InstallationMapping
 {
     public class InstallationMap : IEntityTypeConfiguration<Installation>
     {

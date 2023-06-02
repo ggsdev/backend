@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PRIO.Models;
+using PRIO.Models.Clusters;
 
-namespace PRIO.Data.Mappings
+namespace PRIO.Data.Mappings.ClusterMapping
 {
     public class ClusterMap : IEntityTypeConfiguration<Cluster>
     {

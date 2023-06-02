@@ -1,4 +1,5 @@
-﻿using PRIO.Models.Measurements;
+﻿using PRIO.Models.Installations;
+using PRIO.Models.Measurements;
 
 namespace PRIO.Models
 {

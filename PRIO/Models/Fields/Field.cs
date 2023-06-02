@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
+using PRIO.Models.Installations;
 
-namespace PRIO.Models
+namespace PRIO.Models.Fields
 {
 
     public class Field : BaseModel

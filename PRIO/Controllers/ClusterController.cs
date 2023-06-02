@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS;
 using PRIO.Models;
+using PRIO.Models.Clusters;
 using PRIO.ViewModels.Clusters;
 using PRIO.ViewModels.Installations;
 
@@ -150,10 +151,10 @@ namespace PRIO.Controllers
         public async Task<IActionResult> Restore([FromRoute] Guid clusterId)
         {
             var cluster = await _context.Clusters.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == clusterId);
-            if (cluster is null)
+            if (cluster is null || cluster.IsActive is true)
                 return NotFound(new ErrorResponseDTO
                 {
-                    Message = "Cluster not found"
+                    Message = "Cluster not found or active already"
                 });
 
             var userId = (Guid)HttpContext.Items["Id"]!;
@@ -234,6 +235,26 @@ namespace PRIO.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+        [HttpGet("clusters/{clusterId}/history")]
+        public async Task<IActionResult> GetHistory([FromRoute] Guid clusterId)
+        {
+            var cluster = await _context.Clusters.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == clusterId);
+            if (cluster is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = "Cluster not found"
+                });
+
+            var clusterHistories = await _context.ClustersHistories.Include(x => x.User)
+                                                      .Include(x => x.Cluster)
+                                                      .Where(x => x.Cluster.Id == clusterId)
+                                                      .OrderByDescending(x => x.CreatedAt)
+                                                      .ToListAsync();
+
+            var clusterHistoriesDTO = _mapper.Map<List<ClusterHistory>, List<ClusterHistoryDTO>>(clusterHistories);
+
+            return Ok(clusterHistoriesDTO);
         }
     }
 }
