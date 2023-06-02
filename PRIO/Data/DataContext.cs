@@ -73,8 +73,7 @@ namespace PRIO.Data
                 {
                     baseModel.CreatedAt = DateTime.UtcNow;
                     baseModel.UpdatedAt = DateTime.UtcNow;
-                    baseModel.DeletedAt = null;
-                    baseModel.IsActive = true;
+
                 }
 
                 if (entry.Entity is ClusterHistory baseHistoryModel)

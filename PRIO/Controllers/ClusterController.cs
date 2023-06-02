@@ -67,6 +67,7 @@ namespace PRIO.Controllers
                 User = user,
                 IsActiveOld = null,
                 IsActive = true,
+                Type = "CREATE",
                 Cluster = clusterInDatabaseAfterSave,
             };
 
@@ -110,10 +111,33 @@ namespace PRIO.Controllers
                     Message = "Cluster not found"
                 });
 
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = $"User is not found"
+                });
+
+            var clusterHistory = new ClusterHistory
+            {
+                Name = body.Name is not null ? body.Name : cluster.Name,
+                NameOld = cluster.Name,
+                CodCluster = body.CodCluster is not null ? body.CodCluster : cluster.CodCluster,
+                CodClusterOld = cluster.CodCluster,
+                Description = body.Description is not null ? body.Description : cluster.Description,
+                DescriptionOld = cluster.Description,
+                IsActive = true,
+                IsActiveOld = cluster.IsActive,
+                Type = "UPDATE",
+                User = user,
+                Cluster = cluster,
+            };
+            _context.Update(clusterHistory);
+
             cluster.Name = body.Name is not null ? body.Name : cluster.Name;
             cluster.Description = body.Description is not null ? body.Description : cluster.Description;
             cluster.CodCluster = body.CodCluster is not null ? body.CodCluster : cluster.CodCluster;
-
 
             _context.Update(cluster);
             await _context.SaveChangesAsync();
@@ -132,10 +156,40 @@ namespace PRIO.Controllers
                     Message = "Cluster not found or inactive already"
                 });
 
+
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = $"User is not found"
+                });
+
+
+            var clusterHistory = new ClusterHistory
+            {
+                Name = cluster.Name,
+                NameOld = cluster.Name,
+                CodCluster = cluster.CodCluster,
+                CodClusterOld = cluster.CodCluster,
+                Description = cluster.Description,
+                DescriptionOld = cluster.Description,
+                IsActive = false,
+                IsActiveOld = cluster.IsActive,
+                Type = "DELETE",
+                User = user,
+                Cluster = cluster,
+            };
+            _context.Update(clusterHistory);
+
+            cluster.Name = cluster.Name;
+            cluster.Description =cluster.Description;
+            cluster.CodCluster = cluster.CodCluster;
             cluster.IsActive = false;
             cluster.DeletedAt = DateTime.UtcNow;
 
-            _context.Update(cluster);
+            _context.Clusters.Update(cluster);
+
             await _context.SaveChangesAsync();
 
             return NoContent();

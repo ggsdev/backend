@@ -19,6 +19,10 @@ namespace PRIO.Data.Mappings
             builder.Property(x => x.NameOld)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(256);
+                
+            builder.Property(x => x.Type)
+                .HasColumnType("VARCHAR")
+                .HasMaxLength(256);
 
             builder.Property(x => x.Name)
                 .HasColumnType("VARCHAR")
