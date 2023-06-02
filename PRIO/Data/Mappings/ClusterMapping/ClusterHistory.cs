@@ -10,7 +10,7 @@ namespace PRIO.Data.Mappings.ClusterMapping
         {
 
             builder.ToTable
-                    ("Clusters");
+                    ("ClusterHistories");
 
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id)
