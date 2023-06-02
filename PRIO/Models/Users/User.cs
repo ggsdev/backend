@@ -29,9 +29,11 @@ namespace PRIO.Models.Users
         public List<Installation>? Installations { get; set; }
         public List<InstallationHistory>? InstallationHistories { get; set; }
         public List<Reservoir>? Reservoirs { get; set; }
+        public List<ReservoirHistory>? ReservoirHistories { get; set; }
         public List<Completion>? Completions { get; set; }
         public List<Well>? Wells { get; set; }
         public List<Zone>? Zones { get; set; }
+        public List<ZoneHistory>? ZoneHistories { get; set; }
         [JsonIgnore]
         public List<Measurement>? Measurements { get; set; }
         public List<MeasuringEquipment>? MeasuringEquipments { get; set; }

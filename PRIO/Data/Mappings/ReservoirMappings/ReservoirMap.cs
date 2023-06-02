@@ -40,8 +40,7 @@ namespace PRIO.Data.Mappings.ReservoirMapping
 
             builder.HasOne(x => x.Zone).
                 WithMany(u => u.Reservoirs)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
         }
-
     }
 }

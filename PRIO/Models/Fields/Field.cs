@@ -20,5 +20,6 @@ namespace PRIO.Models.Fields
         public List<Zone>? Zones { get; set; }
         public List<Well>? Wells { get; set; }
         public List<FieldHistory>? FieldHistories { get; set; }
+        public List<ZoneHistory>? ZoneHistories { get; set; }
     }
 }

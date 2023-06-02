@@ -14,6 +14,7 @@ using PRIO.Data.Mappings.SessionMappings;
 using PRIO.Data.Mappings.UserMapping;
 using PRIO.Data.Mappings.WellMapping;
 using PRIO.Data.Mappings.ZoneMapping;
+using PRIO.Data.Mappings.ZoneMappings;
 using PRIO.Models.BaseModels;
 using PRIO.Models.Clusters;
 using PRIO.Models.Completions;
@@ -40,7 +41,9 @@ namespace PRIO.Data
         public DbSet<Field> Fields { get; set; }
         public DbSet<FieldHistory> FieldHistories { get; set; }
         public DbSet<Zone> Zones { get; set; }
+        public DbSet<ZoneHistory> ZoneHistories { get; set; }
         public DbSet<Reservoir> Reservoirs { get; set; }
+        public DbSet<ReservoirHistory> ReservoirsHistories { get; set; }
         public DbSet<Completion> Completions { get; set; }
         public DbSet<Well> Wells { get; set; }
         public DbSet<MeasuringEquipment> MeasuringEquipments { get; set; }
@@ -108,14 +111,22 @@ namespace PRIO.Data
         {
             modelBuilder.ApplyConfiguration(new UserMap());
             modelBuilder.ApplyConfiguration(new SessionMap());
+
             modelBuilder.ApplyConfiguration(new ClusterMap());
             modelBuilder.ApplyConfiguration(new ClusterHistoryMap());
+
             modelBuilder.ApplyConfiguration(new InstallationMap());
             modelBuilder.ApplyConfiguration(new InstallationHistoryMap());
+
             modelBuilder.ApplyConfiguration(new FieldMap());
             modelBuilder.ApplyConfiguration(new FieldHistoryMap());
+
             modelBuilder.ApplyConfiguration(new ZoneMap());
+            modelBuilder.ApplyConfiguration(new ZoneHistoryMap());
+
             modelBuilder.ApplyConfiguration(new ReservoirMap());
+            modelBuilder.ApplyConfiguration(new ReservoirHistoryMap());
+
             modelBuilder.ApplyConfiguration(new CompletionMap());
             modelBuilder.ApplyConfiguration(new WellMap());
             modelBuilder.ApplyConfiguration(new MeasuringEquipmentMap());

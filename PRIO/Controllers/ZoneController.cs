@@ -5,11 +5,13 @@ using PRIO.Data;
 using PRIO.DTOS;
 using PRIO.DTOS.ZoneDTOS;
 using PRIO.Models.Zones;
+using PRIO.Utils;
 using PRIO.ViewModels.Zones;
 
 namespace PRIO.Controllers
 {
     [ApiController]
+    [Route("zones")]
     public class ZoneController : ControllerBase
     {
         private readonly DataContext _context;
@@ -21,7 +23,7 @@ namespace PRIO.Controllers
             _mapper = mapper;
 
         }
-        [HttpPost("zones")]
+        [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateZoneViewModel body)
         {
             var zoneInDatabase = await _context.Zones.FirstOrDefaultAsync(x => x.CodZone == body.CodZone);
@@ -33,11 +35,21 @@ namespace PRIO.Controllers
 
             var field = await _context.Fields.FirstOrDefaultAsync(x => x.Id == body.FieldId);
             if (field is null)
-                return NotFound("Field not found");
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = "Field not found"
+                });
 
             var userId = (Guid)HttpContext.Items["Id"]!;
             var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
 
+            if (user is null)
+            {
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = $"User is not found"
+                });
+            }
             var zone = new Zone
             {
                 CodZone = body.CodZone,
@@ -46,7 +58,23 @@ namespace PRIO.Controllers
                 User = user,
             };
 
-            await _context.AddAsync(zone);
+            await _context.Zones.AddAsync(zone);
+
+            var zoneHistory = new ZoneHistory
+            {
+                CodZone = zone.CodZone,
+
+                Field = field,
+
+                Description = zone.Description,
+
+                User = user,
+                Zone = zone,
+
+                Type = TypeOperation.Create
+            };
+
+            await _context.ZoneHistories.AddAsync(zoneHistory);
             await _context.SaveChangesAsync();
 
             var zoneDTO = _mapper.Map<Zone, ZoneDTO>(zone);
@@ -54,19 +82,19 @@ namespace PRIO.Controllers
             return Created($"zones/{zone.Id}", zoneDTO);
         }
 
-        [HttpGet("zones")]
+        [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var zones = await _context.Zones.Include(x => x.Reservoirs).Include(x => x.User).ToListAsync();
+            var zones = await _context.Zones.Include(x => x.Reservoirs).Include(x => x.ZoneHistories).Include(x => x.User).ToListAsync();
             var zonesDTO = _mapper.Map<List<Zone>, List<ZoneDTO>>(zones);
 
             return Ok(zonesDTO);
         }
 
-        [HttpGet("zones/{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var zone = await _context.Zones.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id);
+            var zone = await _context.Zones.Include(x => x.Reservoirs).Include(x => x.ZoneHistories).Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id);
             if (zone is null)
                 return NotFound(new ErrorResponseDTO
                 {
@@ -78,35 +106,63 @@ namespace PRIO.Controllers
 
         }
 
-        [HttpPatch("zones/{id}")]
+        [HttpPatch("{id}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateZoneViewModel body)
         {
-            var zone = await _context.Zones.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id);
+            var zone = await _context.Zones.Include(x => x.Field).FirstOrDefaultAsync(x => x.Id == id);
             if (zone is null)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Zone not found"
                 });
 
-            if (body.FieldId is not null)
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+
+            if (user is null)
             {
-                var fieldInDatabase = await _context.Fields.FirstOrDefaultAsync(x => x.Id == body.FieldId);
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = $"User is not found"
+                });
+            }
 
-                if (fieldInDatabase is null)
-                    return NotFound(new ErrorResponseDTO
-                    {
-                        Message = "Field not found"
-                    });
+            var field = await _context.Fields.FirstOrDefaultAsync(x => x.Id == body.FieldId);
 
-                zone.Field = fieldInDatabase is not null ? fieldInDatabase : zone.Field;
+            var zoneHistory = new ZoneHistory
+            {
+                CodZone = body.CodZone is not null ? body.CodZone : zone.CodZone,
+                CodZoneOld = zone.CodZone,
 
+                Field = field is not null ? field : zone.Field,
+                FieldOldId = zone.Field.Id,
+
+                Description = body.Description is not null ? body.Description : zone.Description,
+                DescriptionOld = zone.Description,
+                FieldName = field is not null ? field.Name : zone.Field.Name,
+                FieldNameOld = zone.Field.Name,
+
+                User = user,
+                Zone = zone,
+
+                Type = TypeOperation.Update
+            };
+
+            await _context.ZoneHistories.AddAsync(zoneHistory);
+
+            if (body.FieldId is not null && field is null)
+            {
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = "Field not found"
+                });
             }
 
             zone.Description = body.Description is not null ? body.Description : zone.Description;
             zone.CodZone = body.CodZone is not null ? body.CodZone : zone.CodZone;
+            zone.Field = field is not null ? field : zone.Field;
 
-
-            _context.Update(zone);
+            _context.Zones.Update(zone);
             await _context.SaveChangesAsync();
 
             var zoneDTO = _mapper.Map<Zone, ZoneDTO>(zone);
@@ -115,18 +171,104 @@ namespace PRIO.Controllers
 
         }
 
-        [HttpDelete("zones/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            var zone = await _context.Zones.FirstOrDefaultAsync(x => x.Id == id);
+            var zone = await _context.Zones.Include(x => x.Field).FirstOrDefaultAsync(x => x.Id == id);
             if (zone is null || !zone.IsActive)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Zone not found or inactive already"
                 });
 
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = $"User not found"
+                });
+
+            var zoneHistory = new ZoneHistory
+            {
+                CodZone = zone.CodZone,
+                CodZoneOld = zone.CodZone,
+
+                Field = zone.Field,
+                FieldOldId = zone.Field.Id,
+
+                Description = zone.Description,
+                DescriptionOld = zone.Description,
+
+                FieldName = zone.Field.Name,
+                FieldNameOld = zone.Field.Name,
+
+                User = user,
+                Zone = zone,
+
+                IsActive = false,
+                IsActiveOld = zone.IsActive,
+
+                Type = TypeOperation.Delete
+            };
+
+            await _context.ZoneHistories.AddAsync(zoneHistory);
+
             zone.IsActive = false;
             zone.DeletedAt = DateTime.UtcNow;
+
+            _context.Update(zone);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpPatch("{id}/restore")]
+        public async Task<IActionResult> Restore([FromRoute] Guid id)
+        {
+            var zone = await _context.Zones.Include(x => x.Field).FirstOrDefaultAsync(x => x.Id == id);
+
+            if (zone is null || zone.IsActive)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = "Zone not found or is active already"
+                });
+
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = $"User not found"
+                });
+
+            var zoneHistory = new ZoneHistory
+            {
+                CodZone = zone.CodZone,
+                CodZoneOld = zone.CodZone,
+
+                Field = zone.Field,
+                FieldOldId = zone.Field.Id,
+
+                Description = zone.Description,
+                DescriptionOld = zone.Description,
+
+                FieldName = zone.Field.Name,
+                FieldNameOld = zone.Field.Name,
+
+                IsActive = true,
+                IsActiveOld = zone.IsActive,
+
+                User = user,
+                Zone = zone,
+
+                Type = TypeOperation.Restore
+            };
+
+            await _context.ZoneHistories.AddAsync(zoneHistory);
+
+            zone.IsActive = true;
+            zone.DeletedAt = null;
 
             _context.Update(zone);
             await _context.SaveChangesAsync();
