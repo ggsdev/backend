@@ -50,12 +50,29 @@ namespace PRIO.Controllers
                 Description = body.Description is not null ? body.Description : null,
                 User = user,
             };
-            
 
             await _context.Clusters.AddAsync(cluster);
+            await _context.SaveChangesAsync(); 
+
+            var clusterInDatabaseAfterSave = await _context.Clusters.FirstOrDefaultAsync((x) => x.CodCluster == body.CodCluster);
+
+            var clusterHistory = new ClusterHistory
+            {
+                Name = body.Name,
+                NameOld = null,
+                CodClusterOld = null,
+                CodCluster = body.CodCluster,
+                DescriptionOld = null,
+                Description = body.Description is not null ? body.Description : null,
+                User = user,
+                IsActiveOld = null,
+                IsActive = true,
+                Type = "CREATE",
+                Cluster = clusterInDatabaseAfterSave,
+            };
+
+            await _context.ClustersHistories.AddAsync(clusterHistory);
             await _context.SaveChangesAsync();
-
-
 
             var clusterDTO = _mapper.Map<Cluster, ClusterDTO>(cluster);
 
@@ -64,7 +81,7 @@ namespace PRIO.Controllers
 
 
         [HttpGet("clusters")]
-        public async Task<IActionResult> Get([FromServices] DataContext context)
+        public async Task<IActionResult> Get()
         {
             var clusters = await _context.Clusters.Include(x => x.Installations).Include(x => x.User).ToListAsync();
             var clustersDTO = _mapper.Map<List<Cluster>, List<ClusterDTO>>(clusters);
@@ -94,10 +111,33 @@ namespace PRIO.Controllers
                     Message = "Cluster not found"
                 });
 
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = $"User is not found"
+                });
+
+            var clusterHistory = new ClusterHistory
+            {
+                Name = body.Name is not null ? body.Name : cluster.Name,
+                NameOld = cluster.Name,
+                CodCluster = body.CodCluster is not null ? body.CodCluster : cluster.CodCluster,
+                CodClusterOld = cluster.CodCluster,
+                Description = body.Description is not null ? body.Description : cluster.Description,
+                DescriptionOld = cluster.Description,
+                IsActive = true,
+                IsActiveOld = cluster.IsActive,
+                Type = "UPDATE",
+                User = user,
+                Cluster = cluster,
+            };
+            _context.Update(clusterHistory);
+
             cluster.Name = body.Name is not null ? body.Name : cluster.Name;
             cluster.Description = body.Description is not null ? body.Description : cluster.Description;
             cluster.CodCluster = body.CodCluster is not null ? body.CodCluster : cluster.CodCluster;
-
 
             _context.Update(cluster);
             await _context.SaveChangesAsync();
@@ -116,10 +156,40 @@ namespace PRIO.Controllers
                     Message = "Cluster not found or inactive already"
                 });
 
+
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = $"User is not found"
+                });
+
+
+            var clusterHistory = new ClusterHistory
+            {
+                Name = cluster.Name,
+                NameOld = cluster.Name,
+                CodCluster = cluster.CodCluster,
+                CodClusterOld = cluster.CodCluster,
+                Description = cluster.Description,
+                DescriptionOld = cluster.Description,
+                IsActive = false,
+                IsActiveOld = cluster.IsActive,
+                Type = "DELETE",
+                User = user,
+                Cluster = cluster,
+            };
+            _context.Update(clusterHistory);
+
+            cluster.Name = cluster.Name;
+            cluster.Description =cluster.Description;
+            cluster.CodCluster = cluster.CodCluster;
             cluster.IsActive = false;
             cluster.DeletedAt = DateTime.UtcNow;
 
-            _context.Update(cluster);
+            _context.Clusters.Update(cluster);
+
             await _context.SaveChangesAsync();
 
             return NoContent();
