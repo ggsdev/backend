@@ -7,6 +7,7 @@ using PRIO.Data.Mappings.InstallationMapping;
 using PRIO.Data.Mappings.MeasurementMappping;
 using PRIO.Models;
 using PRIO.Models.Clusters;
+using PRIO.Models.Fields;
 using PRIO.Models.Installations;
 using PRIO.Models.Measurements;
 

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS;
-using PRIO.Models;
+using PRIO.Models.Fields;
 using PRIO.Services;
 using PRIO.ViewModels.Fields;
 

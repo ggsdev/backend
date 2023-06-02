@@ -11,6 +11,6 @@ namespace PRIO.Models.Clusters
         public string? CodCluster { get; set; }
         [JsonIgnore]
         public User? User { get; set; }
-        public Cluster? Cluster { get; set; }
+        public Cluster Cluster { get; set; }
     }
 }

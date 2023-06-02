@@ -1,9 +1,7 @@
-﻿using System.Text.Json.Serialization;
-using PRIO.Models.Installations;
-
-namespace PRIO.Models
+﻿using PRIO.Models.Installations;
+using System.Text.Json.Serialization;
+namespace PRIO.Models.Fields
 {
-
     public class Field : BaseModel
     {
         public string Name { get; set; } = string.Empty;

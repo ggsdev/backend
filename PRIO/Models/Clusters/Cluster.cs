@@ -1,4 +1,4 @@
-﻿using PRIO.Models.Installations;
+using PRIO.Models.Installations;
 using System.Text.Json.Serialization;
 
 namespace PRIO.Models.Clusters

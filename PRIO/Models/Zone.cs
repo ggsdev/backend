@@ -1,4 +1,6 @@
-﻿namespace PRIO.Models
+﻿using PRIO.Models.Fields;
+
+namespace PRIO.Models
 {
     public class Zone : BaseModel
     {

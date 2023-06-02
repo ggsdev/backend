@@ -143,6 +143,50 @@ namespace PRIO.Controllers
             return Ok(clusternDTO);
         }
 
+        [HttpPatch("clusters/{clusterId}/restore")]
+        public async Task<IActionResult> Restore([FromRoute] Guid clusterId)
+        {
+            var cluster = await _context.Clusters.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == clusterId);
+            if (cluster is null || cluster.IsActive is true)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = "Cluster not found or active already"
+                });
+
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = $"User is not found"
+                });
+
+            var clusterHistory = new ClusterHistory
+            {
+                Name = cluster.Name,
+                NameOld = cluster.Name,
+                CodCluster = cluster.CodCluster,
+                CodClusterOld = cluster.CodCluster,
+                Description = cluster.Description,
+                DescriptionOld = cluster.Description,
+                IsActive = true,
+                IsActiveOld = cluster.IsActive,
+                Type = "RESTORE",
+                User = user,
+                Cluster = cluster,
+            };
+            _context.Update(clusterHistory);
+
+            cluster.IsActive = true;
+            cluster.DeletedAt = null;
+
+            _context.Update(cluster);
+            await _context.SaveChangesAsync();
+
+            var clusternDTO = _mapper.Map<Cluster, ClusterDTO>(cluster);
+            return Ok(clusternDTO);
+        }
+
         [HttpDelete("clusters/{clusterId}")]
         public async Task<IActionResult> Delete([FromRoute] Guid clusterId)
         {
@@ -179,9 +223,6 @@ namespace PRIO.Controllers
             };
             _context.Update(clusterHistory);
 
-            cluster.Name = cluster.Name;
-            cluster.Description = cluster.Description;
-            cluster.CodCluster = cluster.CodCluster;
             cluster.IsActive = false;
             cluster.DeletedAt = DateTime.UtcNow;
 
@@ -190,6 +231,26 @@ namespace PRIO.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+        [HttpGet("clusters/{clusterId}/history")]
+        public async Task<IActionResult> GetHistory([FromRoute] Guid clusterId)
+        {
+            var cluster = await _context.Clusters.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == clusterId);
+            if (cluster is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = "Cluster not found"
+                });
+
+            var clusterHistories = await _context.ClustersHistories.Include(x => x.User)
+                                                      .Include(x => x.Cluster)
+                                                      .Where(x => x.Cluster.Id == clusterId)
+                                                      .OrderByDescending(x => x.CreatedAt)
+                                                      .ToListAsync();
+
+            var clusterHistoriesDTO = _mapper.Map<List<ClusterHistory>, List<ClusterHistoryDTO>>(clusterHistories);
+
+            return Ok(clusterHistoriesDTO);
         }
     }
 }
