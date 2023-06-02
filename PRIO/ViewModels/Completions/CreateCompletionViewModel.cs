@@ -4,8 +4,7 @@ namespace PRIO.ViewModels.Completions
 {
     public class CreateCompletionViewModel
     {
-        [Required(ErrorMessage = "Name is required")]
-        public string Name { get; set; } = string.Empty;
+        public string? CodCompletion { get; set; }
         public string? Description { get; set; }
         [Required(ErrorMessage = "ReservoirId is required")]
         public Guid? ReservoirId { get; set; }
