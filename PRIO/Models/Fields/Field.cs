@@ -1,4 +1,5 @@
 ﻿using PRIO.Models.BaseModels;
+using PRIO.Models.Clusters;
 using PRIO.Models.Installations;
 using PRIO.Models.Users;
 using PRIO.Models.Wells;
@@ -18,5 +19,6 @@ namespace PRIO.Models.Fields
         public Installation Installation { get; set; }
         public List<Zone>? Zones { get; set; }
         public List<Well>? Wells { get; set; }
+        public List<FieldHistory>? FieldHistories { get; set; }
     }
 }

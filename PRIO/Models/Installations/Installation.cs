@@ -14,8 +14,9 @@ namespace PRIO.Models.Installations
         [JsonIgnore]
         public User? User { get; set; }
         public Cluster Cluster { get; set; }
-        public List<Field>? Fields { get; set; }
-        public List<InstallationHistory>? InstallationHistories { get; set; }
         public List<MeasuringEquipment>? MeasuringEquipments { get; set; }
+        public List<InstallationHistory>? InstallationHistories { get; set; }
+        public List<Field>? Fields { get; set; }
+        public List<FieldHistory>? FieldHistories { get; set; }
     }
 }

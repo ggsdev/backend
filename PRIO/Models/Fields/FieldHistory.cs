@@ -1,5 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using PRIO.Models.BaseModels;
+using PRIO.Models.Fields;
+using PRIO.Models.Installations;
 using PRIO.Models.Users;
 
 namespace PRIO.Models.Clusters
@@ -17,8 +19,9 @@ namespace PRIO.Models.Clusters
         public string? BasinOld { get; set; }
         public string? Location { get; set; }
         public string? LocationOld { get; set; }
-        public Cluster Cluster { get; set; }
-        public Cluster ClusterOld { get; set; }
+        public Installation? Installation { get; set; }
+        public Guid? InstallationOld { get; set; }
+        public Field Field { get; set; }
         public User? User { get; set; }
     }
 }

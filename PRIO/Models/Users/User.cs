@@ -25,6 +25,7 @@ namespace PRIO.Models.Users
         public List<Cluster>? Clusters { get; set; }
         public List<ClusterHistory>? ClusterHistories { get; set; }
         public List<Field>? Fields { get; set; }
+        public List<FieldHistory>? FieldHistories { get; set; }
         public List<Installation>? Installations { get; set; }
         public List<InstallationHistory>? InstallationHistories { get; set; }
         public List<Reservoir>? Reservoirs { get; set; }

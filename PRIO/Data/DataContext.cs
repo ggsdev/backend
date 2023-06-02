@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using PRIO.Data.Mappings.ClusterMapping;
 using PRIO.Data.Mappings.CompletionMapping;
 using PRIO.Data.Mappings.FieldMapping;
+using PRIO.Data.Mappings.FieldMappings;
 using PRIO.Data.Mappings.FileTypeMappings;
 using PRIO.Data.Mappings.InstallationMapping;
 using PRIO.Data.Mappings.MeasurementMappping;
@@ -37,6 +38,7 @@ namespace PRIO.Data
         public DbSet<Installation> Installations { get; set; }
         public DbSet<InstallationHistory> InstallationsHistories { get; set; }
         public DbSet<Field> Fields { get; set; }
+        public DbSet<FieldHistory> FieldHistories { get; set; }
         public DbSet<Zone> Zones { get; set; }
         public DbSet<Reservoir> Reservoirs { get; set; }
         public DbSet<Completion> Completions { get; set; }
@@ -81,7 +83,7 @@ namespace PRIO.Data
             var modifiedEntriesBaseModel = ChangeTracker.Entries<BaseModel>()
                 .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
 
-            var modifiedEntriesOutraClasseBase = ChangeTracker.Entries<ClusterHistory>()
+            var modifiedEntriesOutraClasseBase = ChangeTracker.Entries<BaseHistoryModel>()
                 .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
 
             var modifiedEntries = modifiedEntriesBaseModel.Cast<EntityEntry>()
@@ -94,10 +96,9 @@ namespace PRIO.Data
                 {
                     baseModel.CreatedAt = DateTime.UtcNow;
                     baseModel.UpdatedAt = DateTime.UtcNow;
-
                 }
 
-                if (entry.Entity is ClusterHistory baseHistoryModel)
+                if (entry.Entity is BaseHistoryModel baseHistoryModel)
                 {
                     baseHistoryModel.CreatedAt = DateTime.UtcNow;
                     baseHistoryModel.UpdatedAt = DateTime.UtcNow;
@@ -115,6 +116,7 @@ namespace PRIO.Data
             modelBuilder.ApplyConfiguration(new InstallationMap());
             modelBuilder.ApplyConfiguration(new InstallationHistoryMap());
             modelBuilder.ApplyConfiguration(new FieldMap());
+            modelBuilder.ApplyConfiguration(new FieldHistoryMap());
             modelBuilder.ApplyConfiguration(new ZoneMap());
             modelBuilder.ApplyConfiguration(new ReservoirMap());
             modelBuilder.ApplyConfiguration(new CompletionMap());
