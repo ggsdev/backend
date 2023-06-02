@@ -24,7 +24,7 @@
         public string? CoordX { get; set; }
         public string? CoordY { get; set; }
         public User? User { get; set; }
-        public Field? Field { get; set; }
+        public Field Field { get; set; }
         public List<Completion>? Completions { get; set; }
     }
 }
