@@ -1,4 +1,6 @@
-﻿using PRIO.Models.Measurements;
+﻿using PRIO.Models.Clusters;
+using PRIO.Models.Installations;
+using PRIO.Models.Measurements;
 using System.Text.Json.Serialization;
 
 namespace PRIO.Models
@@ -17,6 +19,7 @@ namespace PRIO.Models
         public List<ClusterHistory>? ClusterHistories { get; set; }
         public List<Field>? Fields { get; set; }
         public List<Installation>? Installations { get; set; }
+        public List<InstallationHistory>? InstallationHistories { get; set; }
         public List<Reservoir>? Reservoirs { get; set; }
         public List<Completion>? Completions { get; set; }
         public List<Well>? Wells { get; set; }

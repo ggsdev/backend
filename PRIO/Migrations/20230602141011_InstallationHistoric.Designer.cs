@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.Data;
 
@@ -11,9 +12,11 @@ using PRIO.Data;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230602141011_InstallationHistoric")]
+    partial class InstallationHistoric
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -72,21 +75,19 @@ namespace PRIO.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CodCluster")
-                        .HasMaxLength(60)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CodClusterOld")
-                        .HasMaxLength(60)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DescriptionOld")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool?>("IsActive")
                         .HasColumnType("bit");
@@ -95,16 +96,13 @@ namespace PRIO.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NameOld")
-                        .HasMaxLength(256)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Type")
-                        .HasMaxLength(256)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -118,7 +116,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ClusterHistories", (string)null);
+                    b.ToTable("ClustersHistories");
                 });
 
             modelBuilder.Entity("PRIO.Models.Completion", b =>
@@ -331,21 +329,19 @@ namespace PRIO.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CodInstallation")
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CodInstallationOld")
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DescriptionOld")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("InstallationId")
                         .HasColumnType("uniqueidentifier");
@@ -358,14 +354,9 @@ namespace PRIO.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NameOld")
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("Type")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -384,7 +375,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("InstallationHistories", (string)null);
+                    b.ToTable("InstallationsHistories");
                 });
 
             modelBuilder.Entity("PRIO.Models.Measurements.Bsw", b =>
@@ -2226,13 +2217,11 @@ namespace PRIO.Migrations
                 {
                     b.HasOne("PRIO.Models.Clusters.Cluster", "Cluster")
                         .WithMany("ClusterHistories")
-                        .HasForeignKey("ClusterId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .HasForeignKey("ClusterId");
 
                     b.HasOne("PRIO.Models.User", "User")
                         .WithMany("ClusterHistories")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Cluster");
 
@@ -2320,13 +2309,12 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Installations.Installation", "Installation")
                         .WithMany("InstallationHistories")
                         .HasForeignKey("InstallationId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("PRIO.Models.User", "User")
                         .WithMany("InstallationHistories")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Cluster");
 

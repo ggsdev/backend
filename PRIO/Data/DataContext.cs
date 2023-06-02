@@ -2,8 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using PRIO.Data.Mappings;
+using PRIO.Data.Mappings.ClusterMapping;
+using PRIO.Data.Mappings.InstallationMapping;
 using PRIO.Data.Mappings.MeasurementMappping;
 using PRIO.Models;
+using PRIO.Models.Clusters;
+using PRIO.Models.Installations;
 using PRIO.Models.Measurements;
 
 namespace PRIO.Data
@@ -15,6 +19,7 @@ namespace PRIO.Data
         public DbSet<Cluster> Clusters { get; set; }
         public DbSet<ClusterHistory> ClustersHistories { get; set; }
         public DbSet<Installation> Installations { get; set; }
+        public DbSet<InstallationHistory> InstallationsHistories { get; set; }
         public DbSet<Field> Fields { get; set; }
         public DbSet<Zone> Zones { get; set; }
         public DbSet<Reservoir> Reservoirs { get; set; }
@@ -90,7 +95,9 @@ namespace PRIO.Data
             modelBuilder.ApplyConfiguration(new UserMap());
             modelBuilder.ApplyConfiguration(new SessionMap());
             modelBuilder.ApplyConfiguration(new ClusterMap());
+            modelBuilder.ApplyConfiguration(new ClusterHistoryMap());
             modelBuilder.ApplyConfiguration(new InstallationMap());
+            modelBuilder.ApplyConfiguration(new InstallationHistoryMap());
             modelBuilder.ApplyConfiguration(new FieldMap());
             modelBuilder.ApplyConfiguration(new ZoneMap());
             modelBuilder.ApplyConfiguration(new ReservoirMap());

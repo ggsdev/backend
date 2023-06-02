@@ -23,7 +23,7 @@ namespace PRIO.Data.Mappings
             builder.Property(e => e.WellOperatorName)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(150);
-            
+
             builder.Property(e => e.CodWell)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(150);
@@ -106,6 +106,10 @@ namespace PRIO.Data.Mappings
                 .HasColumnType("DATETIME");
 
             builder.HasOne(x => x.User).
+                WithMany(u => u.Wells)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasOne(x => x.Field).
                 WithMany(u => u.Wells)
                 .OnDelete(DeleteBehavior.NoAction);
         }
