@@ -1,5 +1,4 @@
 ﻿using PRIO.DTOS.UserDTOS;
-using PRIO.Models;
 
 namespace PRIO.DTOS.InstallationDTOS
 {
@@ -12,5 +11,6 @@ namespace PRIO.DTOS.InstallationDTOS
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public UserDTO? User { get; set; }
+        public List<InstallationHistoryDTO> InstallationHistories { get; set; }
     }
 }

@@ -1,6 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
-using PRIO.Models.Fields;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PRIO.Models.Clusters;
 
 namespace PRIO.Data.Mappings.FieldMappings
@@ -46,6 +45,7 @@ namespace PRIO.Data.Mappings.FieldMappings
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(120);
 
+
             builder.Property(x => x.BasinOld)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(120);
@@ -63,8 +63,8 @@ namespace PRIO.Data.Mappings.FieldMappings
                 .HasMaxLength(120);
 
             builder.Property(x => x.Description)
-               .HasColumnType("TEXT"); 
-            
+               .HasColumnType("TEXT");
+
             builder.Property(x => x.DescriptionOld)
                .HasColumnType("TEXT");
 
@@ -72,17 +72,17 @@ namespace PRIO.Data.Mappings.FieldMappings
 
             builder.Property(x => x.UpdatedAt);
 
-            builder.Property(x => x.IsActive); 
-            
+            builder.Property(x => x.IsActive);
+
             builder.Property(x => x.IsActiveOld);
 
             builder.HasOne(x => x.Field)
                 .WithMany(c => c.FieldHistories)
-                .OnDelete(DeleteBehavior.NoAction);     
-            
+                .OnDelete(DeleteBehavior.NoAction);
+
             builder.HasOne(x => x.Installation)
                 .WithMany(c => c.FieldHistories)
-                .OnDelete(DeleteBehavior.NoAction);   
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(x => x.User).
                 WithMany(u => u.FieldHistories)
