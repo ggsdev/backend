@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PRIO.Models.Clusters;
+using PRIO.Models.Fields;
 
 namespace PRIO.Data.Mappings.FieldMappings
 {
