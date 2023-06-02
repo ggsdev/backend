@@ -52,13 +52,13 @@ namespace PRIO.Data.Mappings.FieldMapping
                 .WithMany(c => c.Fields)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne(x => x.User).
-                WithMany(u => u.Fields)
+            builder.HasOne(x => x.User)
+                .WithMany(u => u.Fields)
                 .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasOne(x => x.Installation)
-            .WithMany(f => f.Fields)
-            .OnDelete(DeleteBehavior.Cascade);
+                .WithMany(f => f.Fields)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

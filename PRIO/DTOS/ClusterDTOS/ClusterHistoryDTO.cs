@@ -1,4 +1,7 @@
-﻿namespace PRIO.DTOS.ClusterDTOS
+﻿using PRIO.DTOS.UserDTOS;
+using PRIO.Models.Users;
+
+namespace PRIO.DTOS.ClusterDTOS
 {
     public class ClusterHistoryDTO
     {
@@ -13,5 +16,6 @@
         public bool? IsActiveOld { get; set; }
         public string? CreatedAt { get; set; }
         public string? Type { get; set; }
+        public UserDTO? User { get; set; }
     }
 }

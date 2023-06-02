@@ -1,10 +1,8 @@
-﻿using System.Text.Json.Serialization;
-using PRIO.Models.BaseModels;
-using PRIO.Models.Fields;
+﻿using PRIO.Models.BaseModels;
 using PRIO.Models.Installations;
 using PRIO.Models.Users;
 
-namespace PRIO.Models.Clusters
+namespace PRIO.Models.Fields
 {
     public class FieldHistory : BaseHistoryModel
     {
