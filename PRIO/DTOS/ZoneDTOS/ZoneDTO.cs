@@ -1,4 +1,5 @@
-﻿using PRIO.DTOS.UserDTOS;
+﻿using PRIO.DTOS.ReservoirDTOS;
+using PRIO.DTOS.UserDTOS;
 
 namespace PRIO.DTOS.ZoneDTOS
 {
@@ -10,5 +11,7 @@ namespace PRIO.DTOS.ZoneDTOS
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public UserDTO? User { get; set; }
+        //public List<ZoneHistory>? ZoneHistories { get; set; }
+        public List<ReservoirDTO>? Reservoirs { get; set; }
     }
 }

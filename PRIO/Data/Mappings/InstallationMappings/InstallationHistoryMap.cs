@@ -43,17 +43,6 @@ namespace PRIO.Data.Mappings.InstallationMapping
 
             builder.Property(x => x.IsActive);
 
-            builder.HasOne(x => x.User)
-               .WithMany(u => u.InstallationHistories)
-               .OnDelete(DeleteBehavior.SetNull);
-
-            builder.HasOne(x => x.Installation)
-               .WithMany(u => u.InstallationHistories)
-               .OnDelete(DeleteBehavior.NoAction);
-
-            builder.HasOne(x => x.Cluster)
-               .WithMany(u => u.InstallationHistories)
-               .OnDelete(DeleteBehavior.NoAction);
 
             builder.Property(x => x.ClusterName)
                 .HasColumnType("VARCHAR")
@@ -67,6 +56,18 @@ namespace PRIO.Data.Mappings.InstallationMapping
             builder.Property(x => x.ClusterNameOld)
                .HasColumnType("VARCHAR")
                 .HasMaxLength(256);
+
+            builder.HasOne(x => x.User)
+               .WithMany(u => u.InstallationHistories)
+               .OnDelete(DeleteBehavior.SetNull);
+
+            builder.HasOne(x => x.Installation)
+               .WithMany(u => u.InstallationHistories)
+               .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasOne(x => x.Cluster)
+               .WithMany(u => u.InstallationHistories)
+               .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }
