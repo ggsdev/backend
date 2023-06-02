@@ -1,6 +1,7 @@
-﻿using System.Text.Json.Serialization;
+﻿using PRIO.Models.Installations;
+using System.Text.Json.Serialization;
 
-namespace PRIO.Models
+namespace PRIO.Models.Clusters
 {
     public class Cluster : BaseModel
     {

@@ -14,6 +14,8 @@ using PRIO.Files.XML._003;
 using PRIO.Files.XML._039;
 using PRIO.Middlewares;
 using PRIO.Models;
+using PRIO.Models.Clusters;
+using PRIO.Models.Installations;
 using PRIO.Models.Measurements;
 using PRIO.Services;
 using System.Globalization;

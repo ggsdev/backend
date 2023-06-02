@@ -1,13 +1,10 @@
 ﻿using AutoMapper;
-using Azure;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS;
-using PRIO.Models;
+using PRIO.Models.Clusters;
 using PRIO.ViewModels.Clusters;
-using PRIO.ViewModels.Installations;
 
 namespace PRIO.Controllers
 {
@@ -52,7 +49,7 @@ namespace PRIO.Controllers
             };
 
             await _context.Clusters.AddAsync(cluster);
-            await _context.SaveChangesAsync(); 
+            await _context.SaveChangesAsync();
 
             var clusterInDatabaseAfterSave = await _context.Clusters.FirstOrDefaultAsync((x) => x.CodCluster == body.CodCluster);
 
@@ -86,8 +83,8 @@ namespace PRIO.Controllers
             var clusters = await _context.Clusters.Include(x => x.Installations).Include(x => x.User).ToListAsync();
             var clustersDTO = _mapper.Map<List<Cluster>, List<ClusterDTO>>(clusters);
             return Ok(clustersDTO);
-        }  
-        
+        }
+
         [HttpGet("clusters/{clusterId}")]
         public async Task<IActionResult> GetById([FromRoute] Guid clusterId)
         {
@@ -183,7 +180,7 @@ namespace PRIO.Controllers
             _context.Update(clusterHistory);
 
             cluster.Name = cluster.Name;
-            cluster.Description =cluster.Description;
+            cluster.Description = cluster.Description;
             cluster.CodCluster = cluster.CodCluster;
             cluster.IsActive = false;
             cluster.DeletedAt = DateTime.UtcNow;

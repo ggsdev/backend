@@ -3,10 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS;
-using PRIO.Models;
+using PRIO.Models.Installations;
 using PRIO.ViewModels.Installations;
-using PRIO.ViewModels.Zones;
-using System.Security.Policy;
 
 namespace PRIO.Controllers
 {
@@ -33,7 +31,7 @@ namespace PRIO.Controllers
                 });
 
             var clusterFound = await _context.Clusters.FirstOrDefaultAsync(x => x.Id == body.ClusterId);
-            if (clusterFound is null) 
+            if (clusterFound is null)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = $"Cluster is not found"
@@ -57,6 +55,19 @@ namespace PRIO.Controllers
             };
 
             await _context.AddAsync(installation);
+
+            var installationHistory = new InstallationHistory
+            {
+                Cluster = clusterFound,
+                CodInstallation = installation.CodInstallation,
+                Description = installation.Description,
+                MeasuringEquipments = installation.MeasuringEquipments,
+                User = user,
+                Fields = installation.Fields,
+                Type = "CREATE"
+            };
+
+            await _context.AddAsync(installationHistory);
             await _context.SaveChangesAsync();
 
             var installationDTO = _mapper.Map<Installation, InstallationDTO>(installation);
@@ -67,7 +78,7 @@ namespace PRIO.Controllers
         [HttpGet("installations")]
         public async Task<IActionResult> Get()
         {
-            var installations = await _context.Installations.Include(x => x.Fields).Include(x => x.User).ToListAsync();
+            var installations = await _context.Installations.Include(x => x.InstallationHistories).Include(x => x.Fields).Include(x => x.User).ToListAsync();
             var installationsDTO = _mapper.Map<List<Installation>, List<InstallationDTO>>(installations);
             return Ok(installationsDTO);
         }
@@ -76,7 +87,7 @@ namespace PRIO.Controllers
         public async Task<IActionResult> GetById([FromRoute] Guid installationId)
         {
 
-            var installation = await _context.Installations.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == installationId);
+            var installation = await _context.Installations.Include(x => x.InstallationHistories).Include(x => x.User).FirstOrDefaultAsync(x => x.Id == installationId);
             if (installation is null)
                 return NotFound(new ErrorResponseDTO
                 {
@@ -97,30 +108,49 @@ namespace PRIO.Controllers
                     Message = "Installation not found"
                 });
 
-            if (body.ClusterId is not null)
+            var clusterInDatabase = await _context.Clusters.FirstOrDefaultAsync(x => x.Id == body.ClusterId);
+
+            var installationHistory = new InstallationHistory
             {
-                var clusterInDatabase = await _context.Clusters.FirstOrDefaultAsync(x => x.Id == body.ClusterId);
+                Name = body.Name is not null ? body.Name : installation.Name,
+                NameOld = installation.Name,
 
-                if (clusterInDatabase is null)
-                    return NotFound(new ErrorResponseDTO
-                    {
-                        Message = "Cluster not found"
-                    });
+                Cluster = (body.ClusterId is not null && clusterInDatabase is not null) ? clusterInDatabase : installation.Cluster,
+                ClusterOld = installation.Cluster,
 
-                installation.Cluster = clusterInDatabase is not null ? clusterInDatabase : installation.Cluster;
+                CodInstallation = installation.CodInstallation,
+                CodInstallationOld = installation.CodInstallation,
 
+                Description = body.Description is not null ? body.Description : installation.Description,
+                DescriptionOld = installation.Description,
+
+                User = installation.User,
+
+                MeasuringEquipments = installation.MeasuringEquipments,
+                Fields = installation.Fields,
+
+                Type = "UPDATE"
+            };
+
+            _context.Update(installationHistory);
+
+            if (body.ClusterId is not null && clusterInDatabase is null)
+            {
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = "Cluster not found"
+                });
             }
 
             installation.Name = body.Name is not null ? body.Name : installation.Name;
             installation.Description = body.Description is not null ? body.Description : installation.Description;
             installation.CodInstallation = body.CodInstallation is not null ? body.CodInstallation : installation.CodInstallation;
-
+            installation.Cluster = clusterInDatabase is not null ? clusterInDatabase : installation.Cluster;
 
             _context.Update(installation);
             await _context.SaveChangesAsync();
 
             var installationDTO = _mapper.Map<Installation, InstallationDTO>(installation);
-
             return Ok(installationDTO);
 
         }
@@ -134,6 +164,33 @@ namespace PRIO.Controllers
                     Message = "Installation not found or inactive already"
                 });
 
+            var installationHistory = new InstallationHistory
+            {
+                Name = installation.Name,
+                NameOld = installation.Name,
+
+                Cluster = installation.Cluster,
+                ClusterOld = installation.Cluster,
+
+                CodInstallation = installation.CodInstallation,
+                CodInstallationOld = installation.CodInstallation,
+
+                Description = installation.Description,
+                DescriptionOld = installation.Description,
+
+                User = installation.User,
+
+                MeasuringEquipments = installation.MeasuringEquipments,
+                Fields = installation.Fields,
+
+                IsActive = false,
+                IsActiveOld = installation.IsActive,
+
+                Type = "DELETE"
+            };
+
+            _context.Update(installationHistory);
+
             installation.IsActive = false;
             installation.DeletedAt = DateTime.UtcNow;
 
@@ -141,6 +198,54 @@ namespace PRIO.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        [HttpPatch("installations/{installationId}/restore")]
+        public async Task<IActionResult> Restore([FromRoute] Guid installationId)
+        {
+            var installation = await _context.Installations.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == installationId);
+            if (installation is null || installation.IsActive)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = "Installation not found or active already"
+                });
+
+            var installationHistory = new InstallationHistory
+            {
+                Name = installation.Name,
+                NameOld = installation.Name,
+
+                Cluster = installation.Cluster,
+                ClusterOld = installation.Cluster,
+
+                CodInstallation = installation.CodInstallation,
+                CodInstallationOld = installation.CodInstallation,
+
+                Description = installation.Description,
+                DescriptionOld = installation.Description,
+
+                User = installation.User,
+
+                MeasuringEquipments = installation.MeasuringEquipments,
+                Fields = installation.Fields,
+
+                IsActive = true,
+                IsActiveOld = installation.IsActive,
+
+                Type = "RESTORE"
+            };
+
+            _context.Update(installationHistory);
+
+            installation.IsActive = true;
+            installation.DeletedAt = null;
+
+            _context.Update(installation);
+            await _context.SaveChangesAsync();
+
+            var installationDTO = _mapper.Map<Installation, InstallationDTO>(installation);
+
+            return Ok(installationDTO);
         }
     }
 }
