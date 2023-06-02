@@ -50,9 +50,6 @@ namespace PRIO.Controllers
             };
 
             await _context.Clusters.AddAsync(cluster);
-            await _context.SaveChangesAsync();
-
-            var clusterInDatabaseAfterSave = await _context.Clusters.FirstOrDefaultAsync((x) => x.CodCluster == body.CodCluster);
 
             var clusterHistory = new ClusterHistory
             {
@@ -66,7 +63,7 @@ namespace PRIO.Controllers
                 IsActiveOld = null,
                 IsActive = true,
                 Type = "CREATE",
-                Cluster = clusterInDatabaseAfterSave,
+                Cluster = cluster,
             };
 
             await _context.ClustersHistories.AddAsync(clusterHistory);

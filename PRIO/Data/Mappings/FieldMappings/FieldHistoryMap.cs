@@ -19,50 +19,44 @@ namespace PRIO.Data.Mappings.FieldMappings
             builder.Property(x => x.Name)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(120)
-                .IsRequired();   
-            
+                .IsRequired();
+
             builder.Property(x => x.NameOld)
+                .HasColumnType("VARCHAR")
+                .HasMaxLength(120);
+
+            builder.Property(x => x.CodField)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(120)
                 .IsRequired();
 
-            builder.Property(x => x.CodField)
-                .HasColumnType("VARCHAR")
-                .HasMaxLength(120);       
-            
             builder.Property(x => x.CodFieldOld)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(120);
 
             builder.Property(x => x.State)
                .HasColumnType("VARCHAR")
-               .HasMaxLength(120)
-               .IsRequired();     
-            
+               .HasMaxLength(120);
+
             builder.Property(x => x.StateOld)
                .HasColumnType("VARCHAR")
-               .HasMaxLength(120)
-               .IsRequired();
+               .HasMaxLength(120);
 
             builder.Property(x => x.Basin)
                 .HasColumnType("VARCHAR")
-                .HasMaxLength(120)
-                .IsRequired();        
-            
+                .HasMaxLength(120);
+
             builder.Property(x => x.BasinOld)
                 .HasColumnType("VARCHAR")
-                .HasMaxLength(120)
-                .IsRequired();
+                .HasMaxLength(120);
 
             builder.Property(x => x.Location)
                 .HasColumnType("VARCHAR")
-                .HasMaxLength(120)
-                .IsRequired();        
-            
+                .HasMaxLength(120);
+
             builder.Property(x => x.LocationOld)
                 .HasColumnType("VARCHAR")
-                .HasMaxLength(120)
-                .IsRequired();
+                .HasMaxLength(120);
 
             builder.Property(x => x.InstallationOld)
                 .HasColumnType("UniqueIdentifier")
@@ -93,7 +87,6 @@ namespace PRIO.Data.Mappings.FieldMappings
             builder.HasOne(x => x.User).
                 WithMany(u => u.FieldHistories)
                 .OnDelete(DeleteBehavior.SetNull);
-
         }
     }
 }

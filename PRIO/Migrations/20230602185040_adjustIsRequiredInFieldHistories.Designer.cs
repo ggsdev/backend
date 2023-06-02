@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.Data;
 
@@ -11,9 +12,11 @@ using PRIO.Data;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230602185040_adjustIsRequiredInFieldHistories")]
+    partial class adjustIsRequiredInFieldHistories
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -178,6 +181,7 @@ namespace PRIO.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Basin")
+                        .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("VARCHAR");
 
@@ -202,6 +206,7 @@ namespace PRIO.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Location")
+                        .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("VARCHAR");
 
@@ -211,6 +216,7 @@ namespace PRIO.Migrations
                         .HasColumnType("VARCHAR");
 
                     b.Property<string>("State")
+                        .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("VARCHAR");
 

@@ -3,10 +3,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS;
+using PRIO.DTOS.ClusterDTOS;
 using PRIO.DTOS.FieldDTOS;
+using PRIO.Models.Clusters;
 using PRIO.Models.Fields;
+using PRIO.Models.Installations;
 using PRIO.Services;
+using PRIO.Utils;
 using PRIO.ViewModels.Fields;
+using System.Diagnostics.Metrics;
 
 namespace PRIO.Controllers
 {
@@ -64,14 +69,36 @@ namespace PRIO.Controllers
                 CodField = body.CodField,
                 Installation = installationInDatabase,
             };
-
             await _context.Fields.AddAsync(field);
+
+            var fieldHistory = new FieldHistory
+            {
+                Name = body.Name,
+                NameOld = null,
+                CodField = body.CodField,
+                CodFieldOld = null,
+                Basin = body.Basin,
+                BasinOld = null,
+                Location = body.Location,
+                LocationOld = null,
+                State = body.State,
+                StateOld = null,
+                Description = body.Description,
+                DescriptionOld = null,
+                IsActiveOld = null,
+                IsActive = true,
+                User = user,
+                Field = field,
+                Installation = installationInDatabase,
+                InstallationOld = installationInDatabase.Id,
+                Type = TypeOperation.Create,
+                
+            };
+            await _context.FieldHistories.AddAsync(fieldHistory);
             await _context.SaveChangesAsync();
 
             var fieldDTO = _mapper.Map<Field, FieldDTO>(field);
-
             return Created($"fields/{field.Id}", fieldDTO);
-
         }
 
         [HttpGet("fields")]
@@ -98,15 +125,49 @@ namespace PRIO.Controllers
 
         }
 
-        [HttpPatch("fields/{id}")]
-        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateFieldViewModel body)
+        [HttpPatch("fields/{fieldId}")]
+        public async Task<IActionResult> Update([FromRoute] Guid fieldId, [FromBody] UpdateFieldViewModel body)
         {
-            var field = await _fieldServices.GetFieldById(id);
+            var field = await _context.Fields.Include(x => x.User).Include(x => x.Installation).FirstOrDefaultAsync(x => x.Id == fieldId);
+            Console.WriteLine(field.Installation.Id);
             if (field is null)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Field not found"
                 });
+
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = $"User is not found"
+                });
+
+
+
+
+            var fieldHistory = new FieldHistory
+            {
+                Name = body.Name is not null ? body.Name : field.Name,
+                NameOld = field.Name,
+                CodField = body.CodField is not null ? body.CodField : field.CodField,
+                CodFieldOld = field.CodField,
+                Basin = body.Basin is not null ? body.Basin : field.Basin,
+                BasinOld = field.Basin,
+                Location = body.Location is not null ? body.Location : field.Location,
+                LocationOld = field.Location,
+                State = body.State is not null ? body.State : field.State,
+                StateOld = field.State,
+                Description = body.Description is not null ? body.Description : field.Description,
+                DescriptionOld = field.Description,
+                IsActiveOld = true,
+                IsActive = field.IsActive,
+                User = user,
+                Field = field,
+                InstallationOld = field.Installation.Id,
+                Type = TypeOperation.Update,
+            };
 
             if (body.InstallationId is not null)
             {
@@ -117,8 +178,15 @@ namespace PRIO.Controllers
                     {
                         Message = "Installation not found"
                     });
-                field.Installation = installationInDatabase is not null ? installationInDatabase : field.Installation;
+                fieldHistory.Installation = installationInDatabase;
+                field.Installation = installationInDatabase;
             }
+            else { 
+                fieldHistory.Installation = field.Installation;
+                field.Installation = field.Installation;
+            }
+
+            await _context.FieldHistories.AddAsync(fieldHistory);
 
             field.State = body.State is not null ? body.State : field.State;
             field.Name = body.Name is not null ? body.Name : field.Name;
@@ -135,21 +203,107 @@ namespace PRIO.Controllers
             return Ok(fieldDTO);
         }
 
-        [HttpDelete("fields/{id}")]
-        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        [HttpDelete("fields/{fieldId}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid fieldId)
         {
-            var field = await _fieldServices.GetFieldById(id);
+            var field = await _context.Fields.Include(x => x.Installation).FirstOrDefaultAsync(x => x.Id == fieldId);
             if (field is null || !field.IsActive)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Field not found or inactive already"
                 });
 
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = $"User is not found"
+                });
+
+            var fieldHistory = new FieldHistory
+            {
+                Name = field.Name,
+                NameOld = field.Name,
+                CodField = field.CodField,
+                CodFieldOld = field.CodField,
+                Basin = field.Basin,
+                BasinOld = field.Basin,
+                Location = field.Location,
+                LocationOld = field.Location,
+                State = field.State,
+                StateOld = field.State,
+                Description = field.Description,
+                DescriptionOld = field.Description,
+                IsActiveOld = field.IsActive,
+                IsActive = false,
+                User = user,
+                Field = field,
+                Installation = field.Installation,
+                InstallationOld = field.Installation.Id,
+                Type = TypeOperation.Delete,
+            };
+            _context.Update(fieldHistory);
+
             field.IsActive = false;
             field.DeletedAt = DateTime.UtcNow;
 
+            _context.Update(field);
+
             await _context.SaveChangesAsync();
             return NoContent();
+        }
+
+        [HttpPatch("fields/{fieldId}/restore")]
+        public async Task<IActionResult> Restore([FromRoute] Guid fieldId)
+        {
+            var field = await _context.Fields.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == fieldId);
+            if (field is null || field.IsActive is true)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = "Field not found or active already"
+                });
+
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = $"User is not found"
+                });
+            Console.WriteLine(field);
+            var fieldHistory = new FieldHistory
+            {
+                Name = field.Name,
+                NameOld = field.Name,
+                CodField = field.CodField,
+                CodFieldOld = field.CodField,
+                Basin = field.Basin,
+                BasinOld = field.Basin,
+                Location = field.Location,
+                LocationOld = field.Location,
+                State = field.State,
+                StateOld = field.State,
+                Description = field.Description,
+                DescriptionOld = field.Description,
+                IsActiveOld = field.IsActive,
+                IsActive = true,
+                User = user,
+                Field = field,
+                Installation = field.Installation,
+                InstallationOld = field.Installation.Id,
+                Type = TypeOperation.Restore,
+            };
+            _context.Update(fieldHistory);
+
+            field.IsActive = true;
+            field.DeletedAt = null;
+
+            _context.Update(field);
+            await _context.SaveChangesAsync();
+
+            var fieldDTO = _mapper.Map<Field, FieldDTO>(field);
+            return Ok(fieldDTO);
         }
 
     }
