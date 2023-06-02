@@ -9,9 +9,10 @@ namespace PRIO.Models.Clusters
     {
         public string Name { get; set; } = string.Empty;
         public string? CodCluster { get; set; }
-        public User User { get; set; }
+        public User? User { get; set; }
         [JsonIgnore]
         public List<Installation>? Installations { get; set; }
         public List<ClusterHistory>? ClusterHistories { get; set; }
+        public List<InstallationHistory>? InstallationHistories { get; set; }
     }
 }

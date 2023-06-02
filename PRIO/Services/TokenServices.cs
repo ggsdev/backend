@@ -22,7 +22,6 @@ namespace PRIO.Services
         {
             var envVars = DotEnv.Read();
             var jwtKey = envVars["SECRET_KEY"];
-
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(jwtKey);
 

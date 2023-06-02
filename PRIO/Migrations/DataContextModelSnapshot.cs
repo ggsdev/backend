@@ -52,7 +52,7 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -295,9 +295,6 @@ namespace PRIO.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("InstallationHistoryId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("InstallationId")
                         .HasColumnType("uniqueidentifier");
 
@@ -326,8 +323,6 @@ namespace PRIO.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("InstallationHistoryId");
 
                     b.HasIndex("InstallationId");
 
@@ -426,8 +421,18 @@ namespace PRIO.Migrations
                     b.Property<Guid>("ClusterId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("ClusterName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("ClusterNameOld")
+                        .HasMaxLength(256)
+                        .HasColumnType("VARCHAR");
+
                     b.Property<Guid?>("ClusterOldId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasMaxLength(256)
+                        .HasColumnType("UNIQUEIDENTIFIER");
 
                     b.Property<string>("CodInstallation")
                         .HasMaxLength(120)
@@ -476,8 +481,6 @@ namespace PRIO.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ClusterId");
-
-                    b.HasIndex("ClusterOldId");
 
                     b.HasIndex("InstallationId");
 
@@ -1980,9 +1983,6 @@ namespace PRIO.Migrations
                         .HasMaxLength(120)
                         .HasColumnType("varchar");
 
-                    b.Property<Guid?>("InstallationHistoryId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("InstallationId")
                         .HasColumnType("uniqueidentifier");
 
@@ -2011,8 +2011,6 @@ namespace PRIO.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("InstallationHistoryId");
 
                     b.HasIndex("InstallationId");
 
@@ -2315,8 +2313,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("Clusters")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("User");
                 });
@@ -2392,10 +2389,6 @@ namespace PRIO.Migrations
 
             modelBuilder.Entity("PRIO.Models.Fields.Field", b =>
                 {
-                    b.HasOne("PRIO.Models.Installations.InstallationHistory", null)
-                        .WithMany("Fields")
-                        .HasForeignKey("InstallationHistoryId");
-
                     b.HasOne("PRIO.Models.Installations.Installation", "Installation")
                         .WithMany("Fields")
                         .HasForeignKey("InstallationId")
@@ -2433,14 +2426,10 @@ namespace PRIO.Migrations
             modelBuilder.Entity("PRIO.Models.Installations.InstallationHistory", b =>
                 {
                     b.HasOne("PRIO.Models.Clusters.Cluster", "Cluster")
-                        .WithMany()
+                        .WithMany("InstallationHistories")
                         .HasForeignKey("ClusterId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.HasOne("PRIO.Models.Clusters.Cluster", "ClusterOld")
-                        .WithMany()
-                        .HasForeignKey("ClusterOldId");
 
                     b.HasOne("PRIO.Models.Installations.Installation", "Installation")
                         .WithMany("InstallationHistories")
@@ -2454,8 +2443,6 @@ namespace PRIO.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Cluster");
-
-                    b.Navigation("ClusterOld");
 
                     b.Navigation("Installation");
 
@@ -2522,10 +2509,6 @@ namespace PRIO.Migrations
 
             modelBuilder.Entity("PRIO.Models.MeasuringEquipments.MeasuringEquipment", b =>
                 {
-                    b.HasOne("PRIO.Models.Installations.InstallationHistory", null)
-                        .WithMany("MeasuringEquipments")
-                        .HasForeignKey("InstallationHistoryId");
-
                     b.HasOne("PRIO.Models.Installations.Installation", "Installation")
                         .WithMany("MeasuringEquipments")
                         .HasForeignKey("InstallationId")
@@ -2610,6 +2593,8 @@ namespace PRIO.Migrations
                 {
                     b.Navigation("ClusterHistories");
 
+                    b.Navigation("InstallationHistories");
+
                     b.Navigation("Installations");
                 });
 
@@ -2634,13 +2619,6 @@ namespace PRIO.Migrations
                     b.Navigation("Fields");
 
                     b.Navigation("InstallationHistories");
-
-                    b.Navigation("MeasuringEquipments");
-                });
-
-            modelBuilder.Entity("PRIO.Models.Installations.InstallationHistory", b =>
-                {
-                    b.Navigation("Fields");
 
                     b.Navigation("MeasuringEquipments");
                 });

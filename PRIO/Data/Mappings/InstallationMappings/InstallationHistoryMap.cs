@@ -50,6 +50,23 @@ namespace PRIO.Data.Mappings.InstallationMapping
             builder.HasOne(x => x.Installation)
                .WithMany(u => u.InstallationHistories)
                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasOne(x => x.Cluster)
+               .WithMany(u => u.InstallationHistories)
+               .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Property(x => x.ClusterName)
+                .HasColumnType("VARCHAR")
+                .HasMaxLength(256)
+                .IsRequired();
+
+            builder.Property(x => x.ClusterOldId)
+                .HasColumnType("UNIQUEIDENTIFIER")
+                .HasMaxLength(256);
+
+            builder.Property(x => x.ClusterNameOld)
+               .HasColumnType("VARCHAR")
+                .HasMaxLength(256);
         }
     }
 }

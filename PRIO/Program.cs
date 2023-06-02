@@ -61,7 +61,6 @@ static void ConfigureServices(IServiceCollection services)
 {
     var envVars = DotEnv.Read();
     var jwtKey = envVars["SECRET_KEY"];
-
     var key = Encoding.ASCII.GetBytes(jwtKey);
     services.AddControllers(config =>
     {

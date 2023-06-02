@@ -36,7 +36,7 @@ namespace PRIO.Data
         public DbSet<Cluster> Clusters { get; set; }
         public DbSet<ClusterHistory> ClustersHistories { get; set; }
         public DbSet<Installation> Installations { get; set; }
-        public DbSet<InstallationHistory> InstallationsHistories { get; set; }
+        public DbSet<InstallationHistory> InstallationHistories { get; set; }
         public DbSet<Field> Fields { get; set; }
         public DbSet<FieldHistory> FieldHistories { get; set; }
         public DbSet<Zone> Zones { get; set; }
@@ -91,19 +91,16 @@ namespace PRIO.Data
 
             foreach (var entry in modifiedEntries)
             {
-
                 if (entry.Entity is BaseModel baseModel)
                 {
                     baseModel.CreatedAt = DateTime.UtcNow;
                     baseModel.UpdatedAt = DateTime.UtcNow;
                 }
-
                 if (entry.Entity is BaseHistoryModel baseHistoryModel)
                 {
                     baseHistoryModel.CreatedAt = DateTime.UtcNow;
                     baseHistoryModel.UpdatedAt = DateTime.UtcNow;
                 }
-
             }
         }
 

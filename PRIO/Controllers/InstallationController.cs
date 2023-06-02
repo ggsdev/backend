@@ -5,11 +5,13 @@ using PRIO.Data;
 using PRIO.DTOS;
 using PRIO.DTOS.InstallationDTOS;
 using PRIO.Models.Installations;
+using PRIO.Utils;
 using PRIO.ViewModels.Installations;
 
 namespace PRIO.Controllers
 {
     [ApiController]
+    [Route("installations")]
     public class InstallationController : ControllerBase
     {
         private readonly DataContext _context;
@@ -19,9 +21,9 @@ namespace PRIO.Controllers
         {
             _context = context;
             _mapper = mapper;
-
         }
-        [HttpPost("installations")]
+
+        [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateInstallationViewModel body)
         {
             var installationInDatabase = await _context.Installations.FirstOrDefaultAsync(x => x.CodInstallation == body.CodInstallation);
@@ -55,20 +57,31 @@ namespace PRIO.Controllers
                 User = user
             };
 
-            await _context.AddAsync(installation);
+            await _context.Installations.AddAsync(installation);
 
             var installationHistory = new InstallationHistory
             {
                 Cluster = clusterFound,
+                ClusterOldId = clusterFound.Id,
+
+                Name = installation.Name,
+                NameOld = installation.Name,
+
+                ClusterName = clusterFound.Name,
+                ClusterNameOld = clusterFound.Name,
+
                 CodInstallation = installation.CodInstallation,
+                CodInstallationOld = installation.CodInstallation,
+
                 Description = installation.Description,
-                MeasuringEquipments = installation.MeasuringEquipments,
+                DescriptionOld = installation.Description,
+
                 User = user,
-                Fields = installation.Fields,
-                Type = "CREATE"
+                Installation = installation,
+                Type = TypeOperation.Create
             };
 
-            await _context.AddAsync(installationHistory);
+            await _context.InstallationHistories.AddAsync(installationHistory);
             await _context.SaveChangesAsync();
 
             var installationDTO = _mapper.Map<Installation, InstallationDTO>(installation);
@@ -76,7 +89,7 @@ namespace PRIO.Controllers
             return Created($"installations/{installation.Id}", installationDTO);
         }
 
-        [HttpGet("installations")]
+        [HttpGet]
         public async Task<IActionResult> Get()
         {
             var installations = await _context.Installations.Include(x => x.InstallationHistories).Include(x => x.Fields).Include(x => x.User).ToListAsync();
@@ -84,10 +97,9 @@ namespace PRIO.Controllers
             return Ok(installationsDTO);
         }
 
-        [HttpGet("installations/{installationId}")]
+        [HttpGet("{installationId}")]
         public async Task<IActionResult> GetById([FromRoute] Guid installationId)
         {
-
             var installation = await _context.Installations.Include(x => x.InstallationHistories).Include(x => x.User).FirstOrDefaultAsync(x => x.Id == installationId);
             if (installation is null)
                 return NotFound(new ErrorResponseDTO
@@ -99,10 +111,10 @@ namespace PRIO.Controllers
             return Ok(installationDTO);
         }
 
-        [HttpPatch("installations/{installationId}")]
+        [HttpPatch("{installationId}")]
         public async Task<IActionResult> Update([FromRoute] Guid installationId, [FromBody] UpdateInstallationViewModel body)
         {
-            var installation = await _context.Installations.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == installationId);
+            var installation = await _context.Installations.Include(x => x.User).Include(x => x.Cluster).FirstOrDefaultAsync(x => x.Id == installationId);
             if (installation is null)
                 return NotFound(new ErrorResponseDTO
                 {
@@ -116,8 +128,8 @@ namespace PRIO.Controllers
                 Name = body.Name is not null ? body.Name : installation.Name,
                 NameOld = installation.Name,
 
-                Cluster = (body.ClusterId is not null && clusterInDatabase is not null) ? clusterInDatabase : installation.Cluster,
-                ClusterOld = installation.Cluster,
+                Cluster = clusterInDatabase is not null ? clusterInDatabase : installation.Cluster,
+                ClusterOldId = installation.Cluster.Id,
 
                 CodInstallation = installation.CodInstallation,
                 CodInstallationOld = installation.CodInstallation,
@@ -127,13 +139,12 @@ namespace PRIO.Controllers
 
                 User = installation.User,
 
-                MeasuringEquipments = installation.MeasuringEquipments,
-                Fields = installation.Fields,
+                Installation = installation,
 
-                Type = "UPDATE"
+                Type = TypeOperation.Update
             };
 
-            _context.Update(installationHistory);
+            await _context.InstallationHistories.AddAsync(installationHistory);
 
             if (body.ClusterId is not null && clusterInDatabase is null)
             {
@@ -148,17 +159,17 @@ namespace PRIO.Controllers
             installation.CodInstallation = body.CodInstallation is not null ? body.CodInstallation : installation.CodInstallation;
             installation.Cluster = clusterInDatabase is not null ? clusterInDatabase : installation.Cluster;
 
-            _context.Update(installation);
+            _context.Installations.Update(installation);
             await _context.SaveChangesAsync();
 
             var installationDTO = _mapper.Map<Installation, InstallationDTO>(installation);
             return Ok(installationDTO);
 
         }
-        [HttpDelete("installations/{installationId}")]
+        [HttpDelete("{installationId}")]
         public async Task<IActionResult> Delete([FromRoute] Guid installationId)
         {
-            var installation = await _context.Installations.FirstOrDefaultAsync(x => x.Id == installationId);
+            var installation = await _context.Installations.Include(x => x.Cluster).FirstOrDefaultAsync(x => x.Id == installationId);
             if (installation is null || !installation.IsActive)
                 return NotFound(new ErrorResponseDTO
                 {
@@ -171,7 +182,7 @@ namespace PRIO.Controllers
                 NameOld = installation.Name,
 
                 Cluster = installation.Cluster,
-                ClusterOld = installation.Cluster,
+                ClusterOldId = installation.Cluster.Id,
 
                 CodInstallation = installation.CodInstallation,
                 CodInstallationOld = installation.CodInstallation,
@@ -181,30 +192,29 @@ namespace PRIO.Controllers
 
                 User = installation.User,
 
-                MeasuringEquipments = installation.MeasuringEquipments,
-                Fields = installation.Fields,
-
                 IsActive = false,
                 IsActiveOld = installation.IsActive,
 
-                Type = "DELETE"
+                Installation = installation,
+
+                Type = TypeOperation.Delete
             };
 
-            _context.Update(installationHistory);
+            await _context.InstallationHistories.AddAsync(installationHistory);
 
             installation.IsActive = false;
             installation.DeletedAt = DateTime.UtcNow;
 
-            _context.Update(installation);
+            _context.Installations.Update(installation);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        [HttpPatch("installations/{installationId}/restore")]
+        [HttpPatch("{installationId}/restore")]
         public async Task<IActionResult> Restore([FromRoute] Guid installationId)
         {
-            var installation = await _context.Installations.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == installationId);
+            var installation = await _context.Installations.Include(x => x.User).Include(x => x.Cluster).FirstOrDefaultAsync(x => x.Id == installationId);
             if (installation is null || installation.IsActive)
                 return NotFound(new ErrorResponseDTO
                 {
@@ -217,7 +227,7 @@ namespace PRIO.Controllers
                 NameOld = installation.Name,
 
                 Cluster = installation.Cluster,
-                ClusterOld = installation.Cluster,
+                ClusterOldId = installation.Cluster.Id,
 
                 CodInstallation = installation.CodInstallation,
                 CodInstallationOld = installation.CodInstallation,
@@ -227,21 +237,20 @@ namespace PRIO.Controllers
 
                 User = installation.User,
 
-                MeasuringEquipments = installation.MeasuringEquipments,
-                Fields = installation.Fields,
+                Installation = installation,
 
                 IsActive = true,
                 IsActiveOld = installation.IsActive,
 
-                Type = "RESTORE"
+                Type = TypeOperation.Restore
             };
 
-            _context.Update(installationHistory);
+            await _context.InstallationHistories.AddAsync(installationHistory);
 
             installation.IsActive = true;
             installation.DeletedAt = null;
 
-            _context.Update(installation);
+            _context.Installations.Update(installation);
             await _context.SaveChangesAsync();
 
             var installationDTO = _mapper.Map<Installation, InstallationDTO>(installation);

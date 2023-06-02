@@ -1,7 +1,5 @@
 ﻿using PRIO.Models.BaseModels;
 using PRIO.Models.Clusters;
-using PRIO.Models.Fields;
-using PRIO.Models.MeasuringEquipments;
 using PRIO.Models.Users;
 using System.Text.Json.Serialization;
 
@@ -16,13 +14,11 @@ namespace PRIO.Models.Installations
         public string? Type { get; set; }
         [JsonIgnore]
         public User? User { get; set; }
-
         public Cluster Cluster { get; set; }
-        public Cluster? ClusterOld { get; set; }
-
+        public string ClusterName { get; set; } = string.Empty;
+        public string? ClusterNameOld { get; set; }
+        public Guid? ClusterOldId { get; set; }
         public Installation Installation { get; set; }
-        public List<Field>? Fields { get; set; }
-        public List<MeasuringEquipment>? MeasuringEquipments { get; set; }
 
     }
 }
