@@ -242,6 +242,7 @@ namespace PRIO.Controllers
 
             var clusterHistories = await _context.ClustersHistories.Include(x => x.User)
                                                       .Include(x => x.Cluster)
+                                                      .Include(x => x.User)
                                                       .Where(x => x.Cluster.Id == clusterId)
                                                       .OrderByDescending(x => x.CreatedAt)
                                                       .ToListAsync();

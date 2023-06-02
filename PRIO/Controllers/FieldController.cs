@@ -309,18 +309,18 @@ namespace PRIO.Controllers
         [HttpGet("fields/{fieldId}/history")]
         public async Task<IActionResult> GetHistory([FromRoute] Guid fieldId)
         {
-            var field = await _context.Fields.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == fieldId);
-            if (field is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = "Cluster not found"
-                });
-
             var fieldHistories = await _context.FieldHistories.Include(x => x.User)
                                                       .Include(x => x.Field)
+                                                      .Include(x => x.User)
                                                       .Where(x => x.Field.Id == fieldId)
                                                       .OrderByDescending(x => x.CreatedAt)
                                                       .ToListAsync();
+            if (fieldHistories is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = "Field not found"
+                });
+
 
             var fieldHistoryDTO = _mapper.Map<List<FieldHistory>, List<FieldHistoryDTO>>(fieldHistories);
 
