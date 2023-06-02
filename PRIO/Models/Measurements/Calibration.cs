@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using PRIO.Models.BaseModels;
 
 namespace PRIO.Models.Measurements
 {

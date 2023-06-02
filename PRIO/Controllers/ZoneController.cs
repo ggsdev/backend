@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS;
-using PRIO.Models;
+using PRIO.DTOS.ZoneDTOS;
+using PRIO.Models.Zones;
 using PRIO.ViewModels.Zones;
 
 namespace PRIO.Controllers

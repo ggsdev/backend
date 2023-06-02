@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS;
-using PRIO.Models;
+using PRIO.DTOS.ReservoirDTOS;
+using PRIO.Models.Reservoirs;
 using PRIO.ViewModels.Zones;
 using System.Security.Policy;
 

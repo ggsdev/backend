@@ -1,4 +1,8 @@
-﻿using PRIO.Models.Installations;
+﻿using PRIO.Models.BaseModels;
+using PRIO.Models.Installations;
+using PRIO.Models.Users;
+using PRIO.Models.Wells;
+using PRIO.Models.Zones;
 using System.Text.Json.Serialization;
 namespace PRIO.Models.Fields
 {

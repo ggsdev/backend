@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
-using PRIO.DTOS;
-using PRIO.Models;
+using PRIO.DTOS.UserDTOS;
+using PRIO.Models.Users;
 using PRIO.ViewModels.Users;
 
 namespace PRIO.Services

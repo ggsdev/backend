@@ -1,4 +1,6 @@
 ﻿using System.Text.Json.Serialization;
+using PRIO.Models.BaseModels;
+using PRIO.Models.Users;
 
 namespace PRIO.Models.Clusters
 {

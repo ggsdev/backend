@@ -1,4 +1,9 @@
-﻿namespace PRIO.Models.Measurements
+﻿using PRIO.Models.BaseModels;
+using PRIO.Models.FileTypes;
+using PRIO.Models.MeasuringEquipments;
+using PRIO.Models.Users;
+
+namespace PRIO.Models.Measurements
 {
     public class Measurement : BaseModel
     {

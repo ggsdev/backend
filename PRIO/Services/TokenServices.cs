@@ -1,6 +1,7 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using dotenv.net;
+using Microsoft.IdentityModel.Tokens;
 using PRIO.Data;
-using PRIO.Models;
+using PRIO.Models.Users;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -19,8 +20,11 @@ namespace PRIO.Services
 
         private static string GenerateToken(User user)
         {
+            var envVars = DotEnv.Read();
+            var jwtKey = envVars["SECRET_KEY"];
+
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(ConfigurationKeys.JwtKey);
+            var key = Encoding.ASCII.GetBytes(jwtKey);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {

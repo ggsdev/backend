@@ -1,15 +1,30 @@
 ﻿using dotenv.net;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using PRIO.Data.Mappings;
 using PRIO.Data.Mappings.ClusterMapping;
+using PRIO.Data.Mappings.CompletionMapping;
+using PRIO.Data.Mappings.FieldMapping;
+using PRIO.Data.Mappings.FileTypeMappings;
 using PRIO.Data.Mappings.InstallationMapping;
 using PRIO.Data.Mappings.MeasurementMappping;
-using PRIO.Models;
+using PRIO.Data.Mappings.MeasuringEquipmentMapping;
+using PRIO.Data.Mappings.ReservoirMapping;
+using PRIO.Data.Mappings.SessionMappings;
+using PRIO.Data.Mappings.UserMapping;
+using PRIO.Data.Mappings.WellMapping;
+using PRIO.Data.Mappings.ZoneMapping;
+using PRIO.Models.BaseModels;
 using PRIO.Models.Clusters;
+using PRIO.Models.Completions;
 using PRIO.Models.Fields;
+using PRIO.Models.FileTypes;
 using PRIO.Models.Installations;
 using PRIO.Models.Measurements;
+using PRIO.Models.MeasuringEquipments;
+using PRIO.Models.Reservoirs;
+using PRIO.Models.Users;
+using PRIO.Models.Wells;
+using PRIO.Models.Zones;
 
 namespace PRIO.Data
 {

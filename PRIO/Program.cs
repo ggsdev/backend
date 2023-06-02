@@ -5,19 +5,30 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using PRIO;
 using PRIO.Data;
-using PRIO.DTOS;
+using PRIO.DTOS.ClusterDTOS;
+using PRIO.DTOS.CompletionDTOS;
+using PRIO.DTOS.FieldDTOS;
+using PRIO.DTOS.InstallationDTOS;
+using PRIO.DTOS.ReservoirDTOS;
+using PRIO.DTOS.UserDTOS;
+using PRIO.DTOS.WellDTOS;
+using PRIO.DTOS.XMLFilesDTOS;
+using PRIO.DTOS.ZoneDTOS;
 using PRIO.Files.XML._001;
 using PRIO.Files.XML._002;
 using PRIO.Files.XML._003;
 using PRIO.Files.XML._039;
 using PRIO.Middlewares;
-using PRIO.Models;
 using PRIO.Models.Clusters;
+using PRIO.Models.Completions;
 using PRIO.Models.Fields;
 using PRIO.Models.Installations;
 using PRIO.Models.Measurements;
+using PRIO.Models.Reservoirs;
+using PRIO.Models.Users;
+using PRIO.Models.Wells;
+using PRIO.Models.Zones;
 using PRIO.Services;
 using System.Globalization;
 using System.Text;
@@ -43,10 +54,15 @@ app.UseAuthorization();
 app.MapControllers();
 app.Run();
 
+DotEnv.Load();
+
+
 static void ConfigureServices(IServiceCollection services)
 {
+    var envVars = DotEnv.Read();
+    var jwtKey = envVars["SECRET_KEY"];
 
-    var key = Encoding.ASCII.GetBytes(ConfigurationKeys.JwtKey);
+    var key = Encoding.ASCII.GetBytes(jwtKey);
     services.AddControllers(config =>
     {
         var policy = new AuthorizationPolicyBuilder()
@@ -113,8 +129,6 @@ static void ConfigureServices(IServiceCollection services)
     IMapper mapper = mapperConfig.CreateMapper();
     services.AddSingleton(mapper);
 
-    DotEnv.Load();
-
     services.AddEndpointsApiExplorer();
     services.AddDbContext<DataContext>();
     services.AddScoped<TokenServices>();
@@ -147,7 +161,7 @@ static void ConfigureServices(IServiceCollection services)
             Scheme = "bearer",
             BearerFormat = "JWT",
             In = ParameterLocation.Header,
-            Description = ConfigurationKeys.JwtKey
+            Description = jwtKey
         });
 
         c.AddSecurityRequirement(new OpenApiSecurityRequirement

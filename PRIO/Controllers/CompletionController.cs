@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS;
-using PRIO.Models;
+using PRIO.DTOS.CompletionDTOS;
+using PRIO.Models.Completions;
 using PRIO.ViewModels.Completions;
 
 namespace PRIO.Controllers

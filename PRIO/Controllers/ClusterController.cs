@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS;
+using PRIO.DTOS.ClusterDTOS;
 using PRIO.Models.Clusters;
 using PRIO.ViewModels.Clusters;
 

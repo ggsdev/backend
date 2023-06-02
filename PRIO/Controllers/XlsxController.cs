@@ -4,12 +4,16 @@ using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using PRIO.Data;
 using PRIO.DTOS;
-using PRIO.Models;
+using PRIO.Models.BaseModels;
 using PRIO.Models.Clusters;
+using PRIO.Models.Completions;
 using PRIO.Models.Fields;
 using PRIO.Models.Installations;
+using PRIO.Models.Reservoirs;
+using PRIO.Models.Wells;
+using PRIO.Models.Zones;
 using PRIO.Utils;
-using PRIO.ViewModels;
+using PRIO.ViewModels.Files;
 using System.Globalization;
 
 namespace PRIO.Controllers
