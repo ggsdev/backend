@@ -13,6 +13,7 @@ using PRIO.Data.Mappings.ReservoirMapping;
 using PRIO.Data.Mappings.SessionMappings;
 using PRIO.Data.Mappings.UserMapping;
 using PRIO.Data.Mappings.WellMapping;
+using PRIO.Data.Mappings.WellMappings;
 using PRIO.Data.Mappings.ZoneMapping;
 using PRIO.Data.Mappings.ZoneMappings;
 using PRIO.Models.BaseModels;
@@ -128,7 +129,10 @@ namespace PRIO.Data
             modelBuilder.ApplyConfiguration(new ReservoirHistoryMap());
 
             modelBuilder.ApplyConfiguration(new CompletionMap());
+
             modelBuilder.ApplyConfiguration(new WellMap());
+            modelBuilder.ApplyConfiguration(new WellHistoryMap());
+
             modelBuilder.ApplyConfiguration(new MeasuringEquipmentMap());
 
             #region Measurement & Relations

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.Data;
 
@@ -11,9 +12,11 @@ using PRIO.Data;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230605165123_changeNameColumnWellHistories")]
+    partial class changeNameColumnWellHistories
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2111,17 +2114,17 @@ namespace PRIO.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ZoneCod")
+                    b.Property<Guid>("ZoneId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ZoneName")
                         .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("VARCHAR");
 
-                    b.Property<string>("ZoneCodOld")
+                    b.Property<string>("ZoneNameOld")
                         .HasMaxLength(120)
                         .HasColumnType("VARCHAR");
-
-                    b.Property<Guid>("ZoneId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("ZoneOldId")
                         .HasMaxLength(120)

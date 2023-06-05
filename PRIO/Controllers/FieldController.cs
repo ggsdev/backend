@@ -86,7 +86,7 @@ namespace PRIO.Controllers
                 User = user,
                 Field = field,
                 Installation = installationInDatabase,
-                InstallationOld = installationInDatabase.Id,
+                InstallationOld = null,
                 TypeOperation = TypeOperation.Create,
             };
             await _context.FieldHistories.AddAsync(fieldHistory);
@@ -159,7 +159,7 @@ namespace PRIO.Controllers
                 IsActive = field.IsActive,
                 User = user,
                 Field = field,
-                InstallationOld = field.Installation.Id,
+                InstallationOld = field.Installation?.Id,
                 TypeOperation = TypeOperation.Update,
             };
 

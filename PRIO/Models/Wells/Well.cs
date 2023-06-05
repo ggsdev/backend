@@ -3,6 +3,7 @@ using PRIO.Models.BaseModels;
 using PRIO.Models.Completions;
 using PRIO.Models.Fields;
 using PRIO.Models.Users;
+using System.Text.Json.Serialization;
 
 namespace PRIO.Models.Wells
 {
@@ -30,6 +31,7 @@ namespace PRIO.Models.Wells
         public string? CoordX { get; set; }
         public string? CoordY { get; set; }
         public User? User { get; set; }
+        [JsonIgnore]
         public Field? Field { get; set; }
         public List<Completion>? Completions { get; set; }
         public List<WellHistory>? WellHistories { get; set; }

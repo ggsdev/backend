@@ -25,6 +25,7 @@ namespace PRIO.DTOS.WellDTOS
         public string LongitudeDD { get; set; } = string.Empty;
         public string DatumHorizontal { get; set; } = string.Empty;
         public string TypeBaseCoordinate { get; set; } = string.Empty;
+        public string TypeOperation { get; set; } = string.Empty;
         public string CoordX { get; set; } = string.Empty;
         public string CoordY { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
