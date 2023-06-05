@@ -113,15 +113,16 @@ static void ConfigureServices(IServiceCollection services)
 
 
         cfg.CreateMap<Cluster, ClusterDTO>();
+        cfg.CreateMap<ClusterHistory, ClusterHistoryDTO>();
         cfg.CreateMap<Installation, InstallationDTO>();
         cfg.CreateMap<InstallationHistory, InstallationHistoryDTO>();
         cfg.CreateMap<Field, FieldDTO>();
+        cfg.CreateMap<FieldHistory, FieldHistoryDTO>();
         cfg.CreateMap<Zone, ZoneDTO>();
         cfg.CreateMap<Reservoir, ReservoirDTO>();
         cfg.CreateMap<Well, WellDTO>();
         cfg.CreateMap<Completion, CompletionDTO>();
         cfg.CreateMap<User, UserDTO>();
-        cfg.CreateMap<ClusterHistory, ClusterHistoryDTO>();
 
 
     });

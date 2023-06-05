@@ -311,7 +311,6 @@ namespace PRIO.Controllers
         {
             var fieldHistories = await _context.FieldHistories.Include(x => x.User)
                                                       .Include(x => x.Field)
-                                                      .Include(x => x.User)
                                                       .Where(x => x.Field.Id == fieldId)
                                                       .OrderByDescending(x => x.CreatedAt)
                                                       .ToListAsync();
