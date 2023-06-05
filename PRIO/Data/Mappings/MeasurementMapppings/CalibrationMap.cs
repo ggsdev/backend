@@ -30,7 +30,8 @@ namespace PRIO.Data.Mappings.MeasurementMappping
 
             builder.HasOne(x => x.Measurement)
             .WithMany(m => m.LISTA_CALIBRACAO)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
         }
 
     }

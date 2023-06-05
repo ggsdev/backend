@@ -18,6 +18,7 @@ namespace PRIO.Data.Mappings.ReservoirMapping
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(120)
                 .IsRequired();
+
             builder.Property(x => x.NameOld)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(120);
@@ -59,15 +60,18 @@ namespace PRIO.Data.Mappings.ReservoirMapping
 
             builder.HasOne(c => c.User).
                 WithMany(u => u.ReservoirHistories)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired();
 
             builder.HasOne(x => x.Reservoir).
                 WithMany(u => u.ReservoirHistories)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired();
 
             builder.HasOne(x => x.Zone).
                 WithMany(u => u.ReservoirHistories)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired();
         }
 
     }

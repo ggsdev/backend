@@ -24,7 +24,8 @@ namespace PRIO.Data.Mappings.MeasurementMappping
 
             builder.HasOne(x => x.Measurement)
             .WithMany(m => m.LISTA_VOLUME)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
 
         }
     }

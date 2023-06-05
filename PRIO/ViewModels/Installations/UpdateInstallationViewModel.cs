@@ -1,10 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace PRIO.ViewModels.Installations
+﻿namespace PRIO.ViewModels.Installations
 {
     public class UpdateInstallationViewModel
     {
-        public string? Name { get; set; } = string.Empty;
+        public string? Name { get; set; }
 
         public Guid? ClusterId { get; set; }
 

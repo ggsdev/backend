@@ -1,5 +1,5 @@
-﻿using System.Text.Json.Serialization;
-using PRIO.Models.BaseModels;
+﻿using PRIO.Models.BaseModels;
+using System.Text.Json.Serialization;
 
 namespace PRIO.Models.Measurements
 {
@@ -11,6 +11,6 @@ namespace PRIO.Models.Measurements
 
         public double DHA_PCT_MAXIMO_BSW_039 { get; set; }
         [JsonIgnore]
-        public Measurement Measurement { get; set; }
+        public Measurement? Measurement { get; set; }
     }
 }

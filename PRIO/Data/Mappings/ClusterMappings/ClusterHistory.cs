@@ -22,11 +22,13 @@ namespace PRIO.Data.Mappings.ClusterMapping
 
             builder.Property(x => x.Type)
                 .HasColumnType("VARCHAR")
-                .HasMaxLength(256);
+                .HasMaxLength(20)
+                .IsRequired();
 
             builder.Property(x => x.Name)
                 .HasColumnType("VARCHAR")
-                .HasMaxLength(256);
+                .HasMaxLength(256)
+                .IsRequired();
 
             builder.Property(x => x.CodClusterOld)
                 .HasColumnType("VARCHAR")
@@ -52,11 +54,13 @@ namespace PRIO.Data.Mappings.ClusterMapping
 
             builder.HasOne(c => c.User).
                 WithMany(u => u.ClusterHistories)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired();
 
             builder.HasOne(c => c.Cluster).
                 WithMany(u => u.ClusterHistories)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired();
         }
     }
 }

@@ -5,12 +5,13 @@ namespace PRIO.ViewModels.Users
     public class CreateUserViewModel
     {
         [Required]
-        public string Email { get; set; } = string.Empty;
+        [EmailAddress(ErrorMessage = "E-mail invalid")]
+        public string? Email { get; set; }
         [Required]
-        public string Name { get; set; } = string.Empty;
+        public string? Name { get; set; }
         [Required]
-        public string Username { get; set; } = string.Empty;
+        public string? Username { get; set; }
         [Required]
-        public string Password { get; set; } = string.Empty;
+        public string? Password { get; set; }
     }
 }
