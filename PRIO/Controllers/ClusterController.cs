@@ -62,7 +62,7 @@ namespace PRIO.Controllers
                 User = user,
                 IsActiveOld = null,
                 IsActive = true,
-                Type = "CREATE",
+                TypeOperation = "CREATE",
                 Cluster = cluster,
             };
 
@@ -124,7 +124,7 @@ namespace PRIO.Controllers
                 DescriptionOld = cluster.Description,
                 IsActive = true,
                 IsActiveOld = cluster.IsActive,
-                Type = "UPDATE",
+                TypeOperation = "UPDATE",
                 User = user,
                 Cluster = cluster,
             };
@@ -169,7 +169,7 @@ namespace PRIO.Controllers
                 DescriptionOld = cluster.Description,
                 IsActive = true,
                 IsActiveOld = cluster.IsActive,
-                Type = "RESTORE",
+                TypeOperation = "RESTORE",
                 User = user,
                 Cluster = cluster,
             };
@@ -215,7 +215,7 @@ namespace PRIO.Controllers
                 DescriptionOld = cluster.Description,
                 IsActive = false,
                 IsActiveOld = cluster.IsActive,
-                Type = "DELETE",
+                TypeOperation = "DELETE",
                 User = user,
                 Cluster = cluster,
             };

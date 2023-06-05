@@ -91,7 +91,7 @@ namespace PRIO.Controllers
                 Field = field,
                 Installation = installationInDatabase,
                 InstallationOld = installationInDatabase.Id,
-                Type = TypeOperation.Create,
+                TypeOperation = TypeOperation.Create,
                 
             };
             await _context.FieldHistories.AddAsync(fieldHistory);
@@ -166,7 +166,7 @@ namespace PRIO.Controllers
                 User = user,
                 Field = field,
                 InstallationOld = field.Installation.Id,
-                Type = TypeOperation.Update,
+                TypeOperation = TypeOperation.Update,
             };
 
             if (body.InstallationId is not null)
@@ -241,7 +241,7 @@ namespace PRIO.Controllers
                 Field = field,
                 Installation = field.Installation,
                 InstallationOld = field.Installation.Id,
-                Type = TypeOperation.Delete,
+                TypeOperation = TypeOperation.Delete,
             };
             _context.Update(fieldHistory);
 
@@ -292,7 +292,7 @@ namespace PRIO.Controllers
                 Field = field,
                 Installation = field.Installation,
                 InstallationOld = field.Installation.Id,
-                Type = TypeOperation.Restore,
+                TypeOperation = TypeOperation.Restore,
             };
             _context.Update(fieldHistory);
 

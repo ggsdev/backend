@@ -73,7 +73,7 @@ namespace PRIO.Controllers
 
                 User = user,
                 Installation = installation,
-                Type = TypeOperation.Create
+                TypeOperation = TypeOperation.Create
             };
 
             await _context.InstallationHistories.AddAsync(installationHistory);
@@ -154,7 +154,7 @@ namespace PRIO.Controllers
 
                 Installation = installation,
 
-                Type = TypeOperation.Update
+                TypeOperation = TypeOperation.Update
             };
 
             await _context.InstallationHistories.AddAsync(installationHistory);
@@ -218,7 +218,7 @@ namespace PRIO.Controllers
 
                 Installation = installation,
 
-                Type = TypeOperation.Delete
+                TypeOperation = TypeOperation.Delete
             };
 
             await _context.InstallationHistories.AddAsync(installationHistory);
@@ -271,7 +271,7 @@ namespace PRIO.Controllers
                 IsActive = true,
                 IsActiveOld = installation.IsActive,
 
-                Type = TypeOperation.Restore
+                TypeOperation = TypeOperation.Restore
             };
 
             await _context.InstallationHistories.AddAsync(installationHistory);

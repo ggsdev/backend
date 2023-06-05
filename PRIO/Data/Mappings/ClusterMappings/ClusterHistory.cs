@@ -20,7 +20,7 @@ namespace PRIO.Data.Mappings.ClusterMapping
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(256);
 
-            builder.Property(x => x.Type)
+            builder.Property(x => x.TypeOperation)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(20)
                 .IsRequired();

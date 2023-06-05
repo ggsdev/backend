@@ -6,7 +6,7 @@ namespace PRIO.Models.Fields
 {
     public class FieldHistory : BaseHistoryModel
     {
-        public string? Type { get; set; }
+        public string? TypeOperation { get; set; }
         public string? Name { get; set; }
         public string? NameOld { get; set; }
         public string? CodField { get; set; }

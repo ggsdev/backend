@@ -11,7 +11,7 @@ namespace PRIO.Models.Installations
         public string? NameOld { get; set; }
         public string? CodInstallation { get; set; }
         public string? CodInstallationOld { get; set; }
-        public string? Type { get; set; }
+        public string? TypeOperation { get; set; }
         [JsonIgnore]
         public User? User { get; set; }
         public Cluster? Cluster { get; set; }

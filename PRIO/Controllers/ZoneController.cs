@@ -71,7 +71,7 @@ namespace PRIO.Controllers
                 User = user,
                 Zone = zone,
 
-                Type = TypeOperation.Create
+                TypeOperation = TypeOperation.Create
             };
 
             await _context.ZoneHistories.AddAsync(zoneHistory);
@@ -145,7 +145,7 @@ namespace PRIO.Controllers
                 User = user,
                 Zone = zone,
 
-                Type = TypeOperation.Update
+                TypeOperation = TypeOperation.Update
             };
 
             await _context.ZoneHistories.AddAsync(zoneHistory);
@@ -209,7 +209,7 @@ namespace PRIO.Controllers
                 IsActive = false,
                 IsActiveOld = zone.IsActive,
 
-                Type = TypeOperation.Delete
+                TypeOperation = TypeOperation.Delete
             };
 
             await _context.ZoneHistories.AddAsync(zoneHistory);
@@ -262,7 +262,7 @@ namespace PRIO.Controllers
                 User = user,
                 Zone = zone,
 
-                Type = TypeOperation.Restore
+                TypeOperation = TypeOperation.Restore
             };
 
             await _context.ZoneHistories.AddAsync(zoneHistory);
