@@ -32,6 +32,7 @@ namespace PRIO.Models.Users
         public List<ReservoirHistory>? ReservoirHistories { get; set; }
         public List<Completion>? Completions { get; set; }
         public List<Well>? Wells { get; set; }
+        public List<WellHistory>? WellHistories { get; set; }
         public List<Zone>? Zones { get; set; }
         public List<ZoneHistory>? ZoneHistories { get; set; }
         [JsonIgnore]

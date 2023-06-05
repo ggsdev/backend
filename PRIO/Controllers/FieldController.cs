@@ -88,7 +88,6 @@ namespace PRIO.Controllers
                 Installation = installationInDatabase,
                 InstallationOld = installationInDatabase.Id,
                 TypeOperation = TypeOperation.Create,
-
             };
             await _context.FieldHistories.AddAsync(fieldHistory);
             await _context.SaveChangesAsync();

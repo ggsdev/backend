@@ -63,7 +63,9 @@ namespace PRIO.Controllers
                 User = user,
                 IsActiveOld = null,
                 IsActive = true,
+
                 TypeOperation = TypeOperation.Create,
+
                 Cluster = cluster,
             };
 
@@ -125,7 +127,9 @@ namespace PRIO.Controllers
                 DescriptionOld = cluster.Description,
                 IsActive = true,
                 IsActiveOld = cluster.IsActive,
+
                 TypeOperation = TypeOperation.Update,
+
                 User = user,
                 Cluster = cluster,
             };
@@ -171,6 +175,7 @@ namespace PRIO.Controllers
                 IsActive = true,
                 IsActiveOld = cluster.IsActive,
                 TypeOperation = TypeOperation.Restore,
+
                 User = user,
                 Cluster = cluster,
             };
