@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using PRIO.Data;
 using PRIO.DTOS;
 using PRIO.DTOS.ZoneDTOS;
@@ -15,8 +14,8 @@ namespace PRIO.Controllers
     [Route("zones")]
     public class ZoneController : BaseApiController
     {
-        public ZoneController(DataContext context, IMapper mapper, IMemoryCache cache)
-            : base(context, cache, mapper)
+        public ZoneController(DataContext context, IMapper mapper)
+            : base(context, mapper)
         {
         }
 
@@ -37,7 +36,8 @@ namespace PRIO.Controllers
                     Message = "Field not found"
                 });
 
-            var user = await GetUserFromCache();
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
 
             if (user is null)
             {
@@ -125,7 +125,8 @@ namespace PRIO.Controllers
                     Message = "Zone not found"
                 });
 
-            var user = await GetUserFromCache();
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
 
             if (user is null)
             {
@@ -189,7 +190,8 @@ namespace PRIO.Controllers
                     Message = "Zone not found or inactive already"
                 });
 
-            var user = await GetUserFromCache();
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
 
             if (user is null)
                 return NotFound(new ErrorResponseDTO
@@ -242,7 +244,8 @@ namespace PRIO.Controllers
                     Message = "Zone not found or is active already"
                 });
 
-            var user = await GetUserFromCache();
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
             if (user is null)
                 return NotFound(new ErrorResponseDTO
                 {

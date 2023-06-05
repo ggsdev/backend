@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.Data;
 
@@ -11,9 +12,11 @@ using PRIO.Data;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230605144643_ReservoirHistoryFixes")]
+    partial class ReservoirHistoryFixes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2345,79 +2348,61 @@ namespace PRIO.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ArtificialLift")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ArtificialLiftOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double?>("BaseOfPerforated")
-                        .HasPrecision(10, 2)
                         .HasColumnType("float");
 
                     b.Property<double?>("BaseOfPerforatedOld")
-                        .HasPrecision(10, 2)
                         .HasColumnType("float");
 
                     b.Property<string>("CategoryAnp")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CategoryAnpOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CategoryOperator")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CategoryOperatorOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CategoryReclassificationAnp")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CategoryReclassificationAnpOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CodWell")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CodWellAnp")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CodWellAnpOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CodWellOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CoordX")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CoordXOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CoordY")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CoordYOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("DATETIME");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("DatumHorizontal")
                         .HasColumnType("nvarchar(max)");
@@ -2426,17 +2411,16 @@ namespace PRIO.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DescriptionOld")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("FieldId")
+                    b.Property<Guid?>("FieldId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("FieldOld")
-                        .HasMaxLength(120)
-                        .HasColumnType("UniqueIdentifier");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool?>("IsActive")
                         .HasColumnType("bit");
@@ -2445,45 +2429,34 @@ namespace PRIO.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Latitude4C")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Latitude4COld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LatitudeDD")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LatitudeDDOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Longitude4C")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Longitude4COld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LongitudeDD")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LongitudeDDOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NameOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool?>("StatusOperator")
                         .HasColumnType("bit");
@@ -2492,53 +2465,43 @@ namespace PRIO.Migrations
                         .HasColumnType("bit");
 
                     b.Property<double?>("TopOfPerforated")
-                        .HasPrecision(10, 2)
                         .HasColumnType("float");
 
                     b.Property<double?>("TopOfPerforatedOld")
-                        .HasPrecision(10, 2)
                         .HasColumnType("float");
 
                     b.Property<string>("Type")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TypeBaseCoordinate")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TypeBaseCoordinateOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TypeOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TypeOperation")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<double?>("WaterDepth")
-                        .HasPrecision(10, 2)
                         .HasColumnType("float");
 
                     b.Property<double?>("WaterDepthOld")
-                        .HasPrecision(10, 2)
                         .HasColumnType("float");
 
-                    b.Property<Guid>("WellId")
+                    b.Property<Guid?>("WellId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("WellOperatorName")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("WellOperatorNameOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -2548,7 +2511,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("WellId");
 
-                    b.ToTable("WellHistories", (string)null);
+                    b.ToTable("WellHistories");
                 });
 
             modelBuilder.Entity("PRIO.Models.Zones.Zone", b =>
@@ -2971,21 +2934,15 @@ namespace PRIO.Migrations
                 {
                     b.HasOne("PRIO.Models.Fields.Field", "Field")
                         .WithMany("WellHistories")
-                        .HasForeignKey("FieldId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .HasForeignKey("FieldId");
 
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("WellHistories")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.HasOne("PRIO.Models.Wells.Well", "Well")
                         .WithMany("WellHistories")
-                        .HasForeignKey("WellId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .HasForeignKey("WellId");
 
                     b.Navigation("Field");
 

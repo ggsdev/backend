@@ -125,6 +125,8 @@ static void ConfigureServices(IServiceCollection services)
         cfg.CreateMap<ZoneHistory, ZoneHistoryDTO>();
 
         cfg.CreateMap<Reservoir, ReservoirDTO>();
+        cfg.CreateMap<ReservoirHistory, ReservoirHistoryDTO>();
+
         cfg.CreateMap<Well, WellDTO>();
         cfg.CreateMap<WellHistory, WellHistoryDTO>();
 

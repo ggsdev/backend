@@ -1,7 +1,5 @@
-﻿using Newtonsoft.Json;
-using PRIO.DTOS.InstallationDTOS;
+﻿using PRIO.DTOS.InstallationDTOS;
 using PRIO.DTOS.UserDTOS;
-using PRIO.Models.Installations;
 
 namespace PRIO.DTOS.FieldDTOS
 {
@@ -19,8 +17,8 @@ namespace PRIO.DTOS.FieldDTOS
         public string? State { get; set; }
         public string? StateOld { get; set; }
         public InstallationDTO? Installation { get; set; }
-        public UserDTO? User { get; set; } 
-        public FieldDTO? Field { get; set; } 
+        public UserDTO? User { get; set; }
+        public FieldDTO? Field { get; set; }
         public string? InstallationOld { get; set; }
         public string? Description { get; set; }
         public string? DescriptionOld { get; set; }
