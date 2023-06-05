@@ -5,13 +5,17 @@ using PRIO.Models.Wells;
 
 namespace PRIO.Models.Completions
 {
-    public class Completion : BaseModel
+    public class CompletionHistory : BaseHistoryModel
     {
         public string? Name { get; set; }
+        public string? NameOld { get; set; }
         public string? CodCompletion { get; set; }
+        public string? CodCompletionOld { get; set; }
+        public Completion? Completion { get; set; }
         public Reservoir? Reservoir { get; set; }
+        public Guid? ReservoirOld { get; set; }
         public Well? Well { get; set; }
+        public Guid? WellOld { get; set; }
         public User? User { get; set; }
-        public List<CompletionHistory>? CompletionHistories { get; set; }
     }
 }

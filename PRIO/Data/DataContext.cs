@@ -46,6 +46,7 @@ namespace PRIO.Data
         public DbSet<Reservoir> Reservoirs { get; set; }
         public DbSet<ReservoirHistory> ReservoirHistories { get; set; }
         public DbSet<Completion> Completions { get; set; }
+        public DbSet<CompletionHistory> CompletionHistories { get; set; }
         public DbSet<Well> Wells { get; set; }
         public DbSet<WellHistory> WellHistories { get; set; }
         public DbSet<MeasuringEquipment> MeasuringEquipments { get; set; }

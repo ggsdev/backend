@@ -35,5 +35,6 @@ namespace PRIO.Models.Wells
         public Field? Field { get; set; }
         public List<Completion>? Completions { get; set; }
         public List<WellHistory>? WellHistories { get; set; }
+        public List<CompletionHistory>? CompletionHistories { get; set; }
     }
 }
