@@ -104,12 +104,18 @@ namespace PRIO.Controllers
         [HttpGet("{id:Guid}/history")]
         public async Task<IActionResult> GetHistoryById([FromRoute] Guid id)
         {
-            var zoneHistories = await _context.ZoneHistories.Include(x => x.User).Include(x => x.Field).Include(x => x.Zone).Where(x => x.Zone.Id == id).ToListAsync();
+            var zoneHistories = await _context.ZoneHistories
+                .Include(x => x.User).Include(x => x.Field)
+                .Include(x => x.Zone)
+                .Where(x => x.Zone.Id == id)
+                .ToListAsync();
+
             if (zoneHistories is null)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Zone not found"
                 });
+
             var zoneHistoriesDTO = _mapper.Map<List<ZoneHistory>, List<ZoneHistoryDTO>>(zoneHistories);
 
             return Ok(zoneHistoriesDTO);
@@ -144,7 +150,7 @@ namespace PRIO.Controllers
                 CodZoneOld = zone.CodZone,
 
                 Field = field is not null ? field : zone.Field,
-                FieldOldId = zone.Field?.Id,
+                FieldOldId = zone.Field.Id,
 
                 Description = body.Description is not null ? body.Description : zone.Description,
                 DescriptionOld = zone.Description,
@@ -280,10 +286,11 @@ namespace PRIO.Controllers
             zone.IsActive = true;
             zone.DeletedAt = null;
 
-            _context.Update(zone);
+            _context.Zones.Update(zone);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            var zoneDTO = _mapper.Map<Zone, ZoneDTO>(zone);
+            return Ok(zoneDTO);
         }
     }
 }

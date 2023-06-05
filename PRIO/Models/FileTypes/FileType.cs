@@ -9,6 +9,6 @@ namespace PRIO.Models.FileTypes
         public string? Name { get; set; }
         public string? Acronym { get; set; }
         [JsonIgnore]
-        public List<Measurement>? Measurements { get; set; }
+        public List<Measurement> Measurements { get; set; }
     }
 }

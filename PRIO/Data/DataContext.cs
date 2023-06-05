@@ -58,7 +58,10 @@ namespace PRIO.Data
         public DbSet<Bsw> Bsws { get; set; }
         #endregion
 
+        public DataContext(DbContextOptions<DataContext> options) : base(options)
+        {
 
+        }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var envVars = DotEnv.Read();

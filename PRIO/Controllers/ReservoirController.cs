@@ -116,7 +116,6 @@ namespace PRIO.Controllers
                     Message = "Reservoir not found"
                 });
 
-            Console.WriteLine(reservoirHistories.Count);
             var reservoirHistoriesDTO = _mapper.Map<List<ReservoirHistory>, List<ReservoirHistoryDTO>>(reservoirHistories);
             return Ok(reservoirHistoriesDTO);
         }
@@ -133,6 +132,12 @@ namespace PRIO.Controllers
 
             var userId = (Guid)HttpContext.Items["Id"]!;
             var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+
+            if (user is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = $"User not found"
+                });
 
             var zoneInDatabase = await _context.Zones.FirstOrDefaultAsync(x => x.Id == body.ZoneId);
 
@@ -188,8 +193,15 @@ namespace PRIO.Controllers
                 {
                     Message = "Reservoir not found or inactive already"
                 });
+
             var userId = (Guid)HttpContext.Items["Id"]!;
             var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+
+            if (user is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = $"User not found"
+                });
 
             var reservoirHistory = new ReservoirHistory
             {
@@ -240,6 +252,12 @@ namespace PRIO.Controllers
 
             var userId = (Guid)HttpContext.Items["Id"]!;
             var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+
+            if (user is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = $"User not found"
+                });
 
             var reservoirHistory = new ReservoirHistory
             {
