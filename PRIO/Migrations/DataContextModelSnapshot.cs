@@ -2728,7 +2728,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("Clusters")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -2745,7 +2745,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("ClusterHistories")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Cluster");
@@ -2824,7 +2824,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("Fields")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Installation");
@@ -2849,7 +2849,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("FieldHistories")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Field");
@@ -2870,7 +2870,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("Installations")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Cluster");
@@ -2895,7 +2895,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("InstallationHistories")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Cluster");
@@ -2943,7 +2943,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("Measurements")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("FileType");
@@ -2975,7 +2975,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("MeasuringEquipments")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Installation");
@@ -2988,7 +2988,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("Reservoirs")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("PRIO.Models.Zones.Zone", "Zone")
@@ -3013,7 +3013,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("ReservoirHistories")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("PRIO.Models.Zones.Zone", "Zone")
@@ -3097,7 +3097,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("Zones")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Field");
@@ -3116,7 +3116,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("ZoneHistories")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("PRIO.Models.Zones.Zone", "Zone")

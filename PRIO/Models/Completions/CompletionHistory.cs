@@ -11,6 +11,7 @@ namespace PRIO.Models.Completions
         public string? NameOld { get; set; }
         public string? CodCompletion { get; set; }
         public string? CodCompletionOld { get; set; }
+        public Completion? Completion { get; set; }
         public Reservoir? Reservoir { get; set; }
         public Guid? ReservoirOld { get; set; }
         public Well? Well { get; set; }

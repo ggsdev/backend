@@ -36,7 +36,7 @@ namespace PRIO.Data.Mappings.ReservoirMapping
 
             builder.HasOne(c => c.User).
                 WithMany(u => u.Reservoirs)
-                .OnDelete(DeleteBehavior.SetNull)
+                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
             builder.HasOne(x => x.Zone).

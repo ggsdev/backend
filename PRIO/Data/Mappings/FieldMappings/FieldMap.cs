@@ -55,7 +55,7 @@ namespace PRIO.Data.Mappings.FieldMapping
 
             builder.HasOne(x => x.User)
                 .WithMany(u => u.Fields)
-                .OnDelete(DeleteBehavior.SetNull)
+                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
         }
     }

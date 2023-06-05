@@ -52,7 +52,7 @@ namespace PRIO.Data.Mappings.ClusterMapping
 
             builder.HasOne(c => c.User).
                 WithMany(u => u.ClusterHistories)
-                .OnDelete(DeleteBehavior.SetNull)
+                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
             builder.HasOne(c => c.Cluster).

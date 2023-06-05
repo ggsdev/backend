@@ -1490,7 +1490,7 @@ namespace PRIO.Data.Mappings.MeasurementMappping
 
             builder.HasOne((x => x.User))
                 .WithMany(x => x.Measurements)
-                .OnDelete(DeleteBehavior.SetNull)
+                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
         }
