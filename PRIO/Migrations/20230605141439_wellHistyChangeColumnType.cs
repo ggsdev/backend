@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -11,15 +10,7 @@ namespace PRIO.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "UpdatedAt",
-                table: "WellHistories");
 
-            migrationBuilder.AddColumn<string>(
-                name: "TypeOperation",
-                table: "WellHistories",
-                type: "nvarchar(max)",
-                nullable: true);
         }
 
         /// <inheritdoc />
