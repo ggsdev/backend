@@ -5,15 +5,15 @@ namespace PRIO.ViewModels.Files
     public class RequestXmlViewModel
     {
         [Required]
-        public List<FileContent> Files { get; set; } = new();
+        public List<FileContent>? Files { get; set; }
     }
 
     public class FileContent
     {
         [Required]
-        public string ContentBase64 { get; set; } = string.Empty;
+        public string? ContentBase64 { get; set; }
         [Required]
-        public string FileName { get; set; } = string.Empty;
+        public string? FileName { get; set; }
 
     }
 }

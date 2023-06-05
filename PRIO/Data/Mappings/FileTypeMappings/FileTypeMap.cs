@@ -16,12 +16,12 @@ namespace PRIO.Data.Mappings.FileTypeMappings
                .ValueGeneratedOnAdd();
 
             builder.Property(x => x.Name)
-                .HasMaxLength(256)
+                .HasMaxLength(10)
                 .IsRequired();
 
             builder.Property(x => x.Acronym)
                 .HasColumnType("varchar")
-                .HasMaxLength(60)
+                .HasMaxLength(10)
                 .IsRequired();
 
             builder.Property(x => x.Description)

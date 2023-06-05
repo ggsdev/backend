@@ -14,11 +14,11 @@ namespace PRIO.Models.Installations
         public string? Type { get; set; }
         [JsonIgnore]
         public User? User { get; set; }
-        public Cluster Cluster { get; set; }
+        public Cluster? Cluster { get; set; }
         public string ClusterName { get; set; } = string.Empty;
         public string? ClusterNameOld { get; set; }
         public Guid? ClusterOldId { get; set; }
-        public Installation Installation { get; set; }
+        public Installation? Installation { get; set; }
 
     }
 }

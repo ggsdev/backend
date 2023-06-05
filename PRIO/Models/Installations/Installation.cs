@@ -13,7 +13,7 @@ namespace PRIO.Models.Installations
         public string? CodInstallation { get; set; }
         [JsonIgnore]
         public User? User { get; set; }
-        public Cluster Cluster { get; set; }
+        public Cluster? Cluster { get; set; }
         public List<MeasuringEquipment>? MeasuringEquipments { get; set; }
         public List<InstallationHistory>? InstallationHistories { get; set; }
         public List<Field>? Fields { get; set; }

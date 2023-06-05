@@ -19,7 +19,7 @@ namespace PRIO.Models.Fields
         public string? LocationOld { get; set; }
         public Installation? Installation { get; set; }
         public Guid? InstallationOld { get; set; }
-        public Field Field { get; set; }
+        public Field? Field { get; set; }
         public User? User { get; set; }
     }
 }

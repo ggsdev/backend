@@ -1,5 +1,5 @@
-﻿using System.Text.Json.Serialization;
-using PRIO.Models.BaseModels;
+﻿using PRIO.Models.BaseModels;
+using System.Text.Json.Serialization;
 
 namespace PRIO.Models.Measurements
 {
@@ -9,6 +9,6 @@ namespace PRIO.Models.Measurements
         public double? DHA_MED_DECLARADO_039 { get; set; }
         public double? DHA_MED_REGISTRADO_039 { get; set; }
         [JsonIgnore]
-        public Measurement Measurement { get; set; }
+        public Measurement? Measurement { get; set; }
     }
 }

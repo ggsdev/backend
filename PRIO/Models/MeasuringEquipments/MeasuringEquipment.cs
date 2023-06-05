@@ -11,7 +11,7 @@ namespace PRIO.Models.MeasuringEquipments
         public string TagEquipment { get; set; } = string.Empty;
         public string TagMeasuringPoint { get; set; } = string.Empty;
         public string Fluid { get; set; } = string.Empty;
-        public Installation Installation { get; set; }
+        public Installation? Installation { get; set; }
         public List<Measurement>? Measurements { get; set; }
         public User? User { get; set; }
 

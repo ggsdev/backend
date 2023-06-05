@@ -10,7 +10,7 @@ namespace PRIO.Models.Reservoirs
         public string Name { get; set; } = string.Empty;
         public string CodReservoir { get; set; } = string.Empty;
         public User? User { get; set; }
-        public Zone Zone { get; set; }
+        public Zone? Zone { get; set; }
         public List<Completion>? Completions { get; set; }
         public List<ReservoirHistory>? ReservoirHistories { get; set; }
     }

@@ -22,7 +22,7 @@ namespace PRIO.Data.Mappings.FieldMapping
 
             builder.Property(x => x.CodField)
                 .HasColumnType("VARCHAR")
-                .HasMaxLength(120)
+                .HasMaxLength(10)
                 .IsRequired();
 
             builder.Property(x => x.State)
@@ -50,15 +50,13 @@ namespace PRIO.Data.Mappings.FieldMapping
 
             builder.HasOne(x => x.Installation)
                 .WithMany(c => c.Fields)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired();
 
             builder.HasOne(x => x.User)
                 .WithMany(u => u.Fields)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            builder.HasOne(x => x.Installation)
-                .WithMany(f => f.Fields)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired();
         }
     }
 }

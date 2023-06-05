@@ -14,10 +14,10 @@ namespace PRIO.Models.Users
 {
     public class User : BaseModel
     {
-        public string Name { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-        public string Username { get; set; } = string.Empty;
+        public string? Name { get; set; }
+        public string? Email { get; set; }
+        public string? Password { get; set; }
+        public string? Username { get; set; }
 
         #region Relationships
         //public Role Role { get; set; }

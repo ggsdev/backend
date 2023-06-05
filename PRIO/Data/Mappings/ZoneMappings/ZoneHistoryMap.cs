@@ -39,15 +39,18 @@ namespace PRIO.Data.Mappings.ZoneMappings
 
             builder.HasOne(c => c.User).
                 WithMany(u => u.ZoneHistories)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired();
 
             builder.HasOne(x => x.Zone).
                 WithMany(u => u.ZoneHistories)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired();
 
-            builder.HasOne(x => x.Field).
-            WithMany(u => u.ZoneHistories)
-            .OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(x => x.Field)
+                .WithMany(u => u.ZoneHistories)
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired();
         }
     }
 }

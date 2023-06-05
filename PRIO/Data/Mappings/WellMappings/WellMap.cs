@@ -106,11 +106,13 @@ namespace PRIO.Data.Mappings.WellMapping
 
             builder.HasOne(x => x.User).
                 WithMany(u => u.Wells)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired();
 
             builder.HasOne(x => x.Field).
                 WithMany(u => u.Wells)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired();
         }
 
     }

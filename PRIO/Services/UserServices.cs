@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS.UserDTOS;
 using PRIO.Models.Users;
@@ -8,11 +9,14 @@ namespace PRIO.Services
 {
     public class UserServices
     {
-        private DataContext _context;
 
-        public UserServices(DataContext context)
+        private DataContext _context;
+        private IMapper _mapper;
+
+        public UserServices(DataContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<User?> GetUserByIdAsync(Guid id)
@@ -33,7 +37,7 @@ namespace PRIO.Services
                 if (!user.IsActive)
                     continue;
 
-                var userDTO = MapToDTO(user);
+                var userDTO = _mapper.Map<User, UserDTO>(user);
                 userDTOs.Add(userDTO);
             }
 
@@ -48,28 +52,13 @@ namespace PRIO.Services
                 Username = body.Username,
                 Email = body.Email,
                 Password = BCrypt.Net.BCrypt.HashPassword(body.Password),
-                CreatedAt = DateTime.UtcNow.ToLocalTime(),
             };
 
             await _context.AddAsync(user);
             await _context.SaveChangesAsync();
 
-            var userDTO = MapToDTO(user);
+            var userDTO = _mapper.Map<User, UserDTO>(user);
             return userDTO;
-        }
-
-
-        public UserDTO MapToDTO(User user)
-        {
-            return new UserDTO
-            {
-                Id = user.Id,
-                Name = user.Name,
-                Username = user.Username,
-                Email = user.Email,
-                IsActive = user.IsActive,
-                CreatedAt = user.CreatedAt,
-            };
         }
 
     }

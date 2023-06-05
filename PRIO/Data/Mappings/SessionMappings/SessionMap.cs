@@ -29,7 +29,8 @@ namespace PRIO.Data.Mappings.SessionMappings
             builder.HasOne(x => x.User)
                 .WithOne(u => u.Session)
                 .HasForeignKey<Session>("UserId")
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
 
         }
     }

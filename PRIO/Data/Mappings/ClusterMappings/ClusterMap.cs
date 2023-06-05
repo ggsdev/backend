@@ -38,7 +38,8 @@ namespace PRIO.Data.Mappings.ClusterMapping
 
             builder.HasOne(c => c.User).
                 WithMany(u => u.Clusters)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired();
         }
     }
 }

@@ -33,11 +33,11 @@ namespace PRIO.Controllers
                     Message = $"Installation with code: {body.CodInstallation} already exists, try another code."
                 });
 
-            var clusterFound = await _context.Clusters.FirstOrDefaultAsync(x => x.Id == body.ClusterId);
-            if (clusterFound is null)
+            var clusterInDatabase = await _context.Clusters.FirstOrDefaultAsync(x => x.Id == body.ClusterId);
+            if (clusterInDatabase is null)
                 return NotFound(new ErrorResponseDTO
                 {
-                    Message = $"Cluster is not found"
+                    Message = $"Cluster not found"
                 });
 
             var userId = (Guid)HttpContext.Items["Id"]!;
@@ -51,9 +51,9 @@ namespace PRIO.Controllers
             var installation = new Installation
             {
                 Name = body.Name,
-                Description = body.Description is not null ? body.Description : null,
+                Description = body.Description,
                 CodInstallation = body.CodInstallation,
-                Cluster = clusterFound,
+                Cluster = clusterInDatabase,
                 User = user
             };
 
@@ -61,11 +61,11 @@ namespace PRIO.Controllers
 
             var installationHistory = new InstallationHistory
             {
-                Cluster = clusterFound,
+                Cluster = clusterInDatabase,
 
                 Name = installation.Name,
 
-                ClusterName = clusterFound.Name,
+                ClusterName = clusterInDatabase.Name,
 
                 CodInstallation = installation.CodInstallation,
 
@@ -92,13 +92,13 @@ namespace PRIO.Controllers
             return Ok(installationsDTO);
         }
 
-        [HttpGet("{installationId}")]
-        public async Task<IActionResult> GetById([FromRoute] Guid installationId)
+        [HttpGet("{id:Guid}")]
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var installation = await _context.Installations
                 .Include(x => x.User)
                 .Include(x => x.InstallationHistories)
-                .FirstOrDefaultAsync(x => x.Id == installationId);
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (installation is null)
                 return NotFound(new ErrorResponseDTO
@@ -108,15 +108,15 @@ namespace PRIO.Controllers
 
             var installationDTO = _mapper.Map<Installation, InstallationDTO>(installation);
 
-            installationDTO.InstallationHistories = installationDTO.InstallationHistories.OrderByDescending(fh => fh.CreatedAt).ToList();
+            installationDTO.InstallationHistories = installationDTO.InstallationHistories?.OrderByDescending(fh => fh.CreatedAt).ToList();
 
             return Ok(installationDTO);
         }
 
-        [HttpPatch("{installationId}")]
-        public async Task<IActionResult> Update([FromRoute] Guid installationId, [FromBody] UpdateInstallationViewModel body)
+        [HttpPatch("{id:Guid}")]
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateInstallationViewModel body)
         {
-            var installation = await _context.Installations.Include(x => x.User).Include(x => x.Cluster).FirstOrDefaultAsync(x => x.Id == installationId);
+            var installation = await _context.Installations.Include(x => x.User).Include(x => x.Cluster).FirstOrDefaultAsync(x => x.Id == id);
             if (installation is null)
                 return NotFound(new ErrorResponseDTO
                 {
@@ -179,10 +179,10 @@ namespace PRIO.Controllers
             return Ok(installationDTO);
 
         }
-        [HttpDelete("{installationId}")]
-        public async Task<IActionResult> Delete([FromRoute] Guid installationId)
+        [HttpDelete("{id:Guid}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            var installation = await _context.Installations.Include(x => x.Cluster).FirstOrDefaultAsync(x => x.Id == installationId);
+            var installation = await _context.Installations.Include(x => x.Cluster).FirstOrDefaultAsync(x => x.Id == id);
             if (installation is null || !installation.IsActive)
                 return NotFound(new ErrorResponseDTO
                 {
@@ -232,10 +232,10 @@ namespace PRIO.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{installationId}/restore")]
-        public async Task<IActionResult> Restore([FromRoute] Guid installationId)
+        [HttpPatch("{id:Guid}/restore")]
+        public async Task<IActionResult> Restore([FromRoute] Guid id)
         {
-            var installation = await _context.Installations.Include(x => x.Cluster).FirstOrDefaultAsync(x => x.Id == installationId);
+            var installation = await _context.Installations.Include(x => x.Cluster).FirstOrDefaultAsync(x => x.Id == id);
             if (installation is null || installation.IsActive)
                 return NotFound(new ErrorResponseDTO
                 {

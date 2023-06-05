@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,11 +16,15 @@ namespace PRIO.Controllers
     {
         private readonly UserServices _userServices;
         private readonly TokenServices _tokenServices;
+        private DataContext _context;
+        private IMapper _mapper;
 
-        public UserController(UserServices userService, TokenServices tokenService)
+        public UserController(UserServices userService, TokenServices tokenService, IMapper mapper, DataContext context)
         {
             _userServices = userService;
             _tokenServices = tokenService;
+            _mapper = mapper;
+            _context = context;
         }
 
         #region Get
@@ -38,9 +43,9 @@ namespace PRIO.Controllers
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponseDTO))]
-        public async Task<IActionResult> Post([FromBody] CreateUserViewModel body, [FromServices] DataContext context)
+        public async Task<IActionResult> Post([FromBody] CreateUserViewModel body)
         {
-            var userInDatabase = await context.Users.FirstOrDefaultAsync((x) => x.Email == body.Email || x.Username == body.Username);
+            var userInDatabase = await _context.Users.FirstOrDefaultAsync((x) => x.Email == body.Email || x.Username == body.Username);
 
             if (userInDatabase != null)
                 return StatusCode(409, new { message = "User with this e-mail or username already exists." });
@@ -92,7 +97,7 @@ namespace PRIO.Controllers
                 return StatusCode(403, errorResponse);
             }
 
-            var userDTO = _userServices.MapToDTO(user);
+            var userDTO = _mapper.Map<User, UserDTO>(user);
             return Ok(userDTO);
         }
         #endregion
@@ -101,7 +106,7 @@ namespace PRIO.Controllers
         [HttpPatch("users/{id:Guid}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponseDTO))]
-        public async Task<IActionResult> UpdatePartialAsync([FromRoute] Guid id, [FromBody] UpdateUserViewModel body, [FromServices] DataContext context)
+        public async Task<IActionResult> UpdatePartialAsync([FromRoute] Guid id, [FromBody] UpdateUserViewModel body)
         {
             var user = await _userServices.GetUserByIdAsync(id);
 
@@ -123,8 +128,8 @@ namespace PRIO.Controllers
                 user.Email = body.Email is not null ? body.Email : user.Email;
                 user.Username = body.Username is not null ? body.Username : user.Username;
 
-                context.Users.Update(user);
-                await context.SaveChangesAsync();
+                _context.Users.Update(user);
+                await _context.SaveChangesAsync();
 
                 return Ok(user);
             }
@@ -140,7 +145,7 @@ namespace PRIO.Controllers
         [HttpDelete("users/{id:Guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponseDTO))]
-        public async Task<IActionResult> DeleteAsync([FromRoute] Guid id, [FromServices] DataContext context)
+        public async Task<IActionResult> DeleteAsync([FromRoute] Guid id)
         {
             var user = await _userServices.GetUserByIdAsync(id);
 
@@ -156,7 +161,7 @@ namespace PRIO.Controllers
             user.DeletedAt = DateTime.UtcNow;
             user.IsActive = false;
 
-            await context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
@@ -168,11 +173,10 @@ namespace PRIO.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginDTO))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponseDTO))]
         public async Task<IActionResult> Login(
-        [FromBody] LoginViewModel body,
-        [FromServices] DataContext context)
+        [FromBody] LoginViewModel body)
         {
 
-            var user = await context
+            var user = await _context
                 .Users
                 .Include(u => u.Session)
                 .FirstOrDefaultAsync(x => x.Email == body.Email && x.IsActive);

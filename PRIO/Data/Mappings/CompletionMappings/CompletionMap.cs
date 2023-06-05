@@ -17,9 +17,9 @@ namespace PRIO.Data.Mappings.CompletionMapping
                 .ValueGeneratedOnAdd();
 
             builder.Property(x => x.Name)
-                .IsRequired()
                 .HasColumnType("VARCHAR")
-                .HasMaxLength(256);
+                .HasMaxLength(256)
+                .IsRequired();
 
             builder.Property(x => x.CodCompletion)
                 .HasColumnType("VARCHAR")
@@ -38,15 +38,18 @@ namespace PRIO.Data.Mappings.CompletionMapping
 
             builder.HasOne(c => c.User).
                 WithMany(u => u.Completions)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired();
 
             builder.HasOne(x => x.Reservoir).
                 WithMany(r => r.Completions)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired();
 
             builder.HasOne(x => x.Well)
                 .WithMany(c => c.Completions)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired();
         }
     }
 }

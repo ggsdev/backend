@@ -59,15 +59,18 @@ namespace PRIO.Data.Mappings.InstallationMapping
 
             builder.HasOne(x => x.User)
                .WithMany(u => u.InstallationHistories)
-               .OnDelete(DeleteBehavior.SetNull);
+               .OnDelete(DeleteBehavior.SetNull)
+               .IsRequired();
 
             builder.HasOne(x => x.Installation)
                .WithMany(u => u.InstallationHistories)
-               .OnDelete(DeleteBehavior.NoAction);
+               .OnDelete(DeleteBehavior.NoAction)
+               .IsRequired();
 
             builder.HasOne(x => x.Cluster)
                .WithMany(u => u.InstallationHistories)
-               .OnDelete(DeleteBehavior.NoAction);
+               .OnDelete(DeleteBehavior.NoAction)
+               .IsRequired();
         }
     }
 }
