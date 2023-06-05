@@ -36,7 +36,7 @@ namespace PRIO.Data.Mappings.InstallationMapping
 
             builder.HasOne(x => x.User)
                .WithMany(u => u.Installations)
-               .OnDelete(DeleteBehavior.SetNull)
+               .OnDelete(DeleteBehavior.NoAction)
                .IsRequired();
 
             builder.HasOne(x => x.Cluster)

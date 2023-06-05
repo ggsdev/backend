@@ -42,7 +42,7 @@ namespace PRIO.Data.Mappings.MeasuringEquipmentMapping
 
             builder.HasOne(x => x.User)
                 .WithMany(d => d.MeasuringEquipments)
-                .OnDelete(DeleteBehavior.SetNull)
+                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
         }
 

@@ -91,7 +91,7 @@ namespace PRIO.Data.Mappings.FieldMappings
 
             builder.HasOne(x => x.User).
                 WithMany(u => u.FieldHistories)
-                .OnDelete(DeleteBehavior.SetNull)
+                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
         }
     }

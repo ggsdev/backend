@@ -10,7 +10,6 @@ namespace PRIO.Services
 {
     public class TokenServices
     {
-
         private readonly DataContext _context;
 
         public TokenServices(DataContext context)
@@ -44,7 +43,7 @@ namespace PRIO.Services
 
         public async Task<string> CreateSessionAndToken(User user, string userHttpAgent)
         {
-            if (user.Session is not null && (user.Session.ExpiresIn > DateTime.UtcNow.ToLocalTime() && user.Session.UserHttpAgent == userHttpAgent))
+            if (user.Session is not null && (user.Session.ExpiresIn > DateTime.UtcNow && user.Session.UserHttpAgent == userHttpAgent))
                 return user.Session.Token;
 
             var token = GenerateToken(user);
@@ -64,12 +63,12 @@ namespace PRIO.Services
                 return token;
             }
 
-            if (user.Session.ExpiresIn < DateTime.UtcNow.ToLocalTime() || user.Session.UserHttpAgent != userHttpAgent)
+            if (user.Session.ExpiresIn < DateTime.UtcNow || user.Session.UserHttpAgent != userHttpAgent)
             {
                 user.Session = new Session
                 {
                     Token = token,
-                    ExpiresIn = DateTime.UtcNow.AddDays(5).ToLocalTime(),
+                    ExpiresIn = DateTime.UtcNow.AddDays(5),
                     UserHttpAgent = userHttpAgent
                 };
 

@@ -150,7 +150,7 @@ namespace PRIO.Migrations
                     b.Property<Guid?>("ReservoirHistoryId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ReservoirId")
+                    b.Property<Guid?>("ReservoirId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -178,6 +178,73 @@ namespace PRIO.Migrations
                     b.HasIndex("WellId");
 
                     b.ToTable("Completions", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.Models.Completions.CompletionHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CodCompletion")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CodCompletionOld")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("CompletionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DescriptionOld")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsActiveOld")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameOld")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ReservoirId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ReservoirOld")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TypeOperation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("WellId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("WellOld")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompletionId");
+
+                    b.HasIndex("ReservoirId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("WellId");
+
+                    b.ToTable("CompletionHistories");
                 });
 
             modelBuilder.Entity("PRIO.Models.Fields.Field", b =>
@@ -2661,7 +2728,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("Clusters")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -2678,7 +2745,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("ClusterHistories")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Cluster");
@@ -2695,8 +2762,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Reservoirs.Reservoir", "Reservoir")
                         .WithMany("Completions")
                         .HasForeignKey("ReservoirId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("Completions")
@@ -2721,6 +2787,33 @@ namespace PRIO.Migrations
                     b.Navigation("Well");
                 });
 
+            modelBuilder.Entity("PRIO.Models.Completions.CompletionHistory", b =>
+                {
+                    b.HasOne("PRIO.Models.Completions.Completion", "Completion")
+                        .WithMany("CompletionHistories")
+                        .HasForeignKey("CompletionId");
+
+                    b.HasOne("PRIO.Models.Reservoirs.Reservoir", "Reservoir")
+                        .WithMany("CompletionHistories")
+                        .HasForeignKey("ReservoirId");
+
+                    b.HasOne("PRIO.Models.Users.User", "User")
+                        .WithMany("CompletionHistories")
+                        .HasForeignKey("UserId");
+
+                    b.HasOne("PRIO.Models.Wells.Well", "Well")
+                        .WithMany("CompletionHistories")
+                        .HasForeignKey("WellId");
+
+                    b.Navigation("Completion");
+
+                    b.Navigation("Reservoir");
+
+                    b.Navigation("User");
+
+                    b.Navigation("Well");
+                });
+
             modelBuilder.Entity("PRIO.Models.Fields.Field", b =>
                 {
                     b.HasOne("PRIO.Models.Installations.Installation", "Installation")
@@ -2732,7 +2825,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("Fields")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Installation");
@@ -2757,7 +2850,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("FieldHistories")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Field");
@@ -2778,7 +2871,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("Installations")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Cluster");
@@ -2803,7 +2896,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("InstallationHistories")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Cluster");
@@ -2851,7 +2944,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("Measurements")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("FileType");
@@ -2883,7 +2976,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("MeasuringEquipments")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Installation");
@@ -2896,7 +2989,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("Reservoirs")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("PRIO.Models.Zones.Zone", "Zone")
@@ -2921,7 +3014,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("ReservoirHistories")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("PRIO.Models.Zones.Zone", "Zone")
@@ -3005,7 +3098,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("Zones")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Field");
@@ -3024,7 +3117,7 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("ZoneHistories")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("PRIO.Models.Zones.Zone", "Zone")
@@ -3047,6 +3140,11 @@ namespace PRIO.Migrations
                     b.Navigation("InstallationHistories");
 
                     b.Navigation("Installations");
+                });
+
+            modelBuilder.Entity("PRIO.Models.Completions.Completion", b =>
+                {
+                    b.Navigation("CompletionHistories");
                 });
 
             modelBuilder.Entity("PRIO.Models.Fields.Field", b =>
@@ -3094,6 +3192,8 @@ namespace PRIO.Migrations
 
             modelBuilder.Entity("PRIO.Models.Reservoirs.Reservoir", b =>
                 {
+                    b.Navigation("CompletionHistories");
+
                     b.Navigation("Completions");
 
                     b.Navigation("ReservoirHistories");
@@ -3109,6 +3209,8 @@ namespace PRIO.Migrations
                     b.Navigation("ClusterHistories");
 
                     b.Navigation("Clusters");
+
+                    b.Navigation("CompletionHistories");
 
                     b.Navigation("Completions");
 
@@ -3141,6 +3243,8 @@ namespace PRIO.Migrations
 
             modelBuilder.Entity("PRIO.Models.Wells.Well", b =>
                 {
+                    b.Navigation("CompletionHistories");
+
                     b.Navigation("Completions");
 
                     b.Navigation("WellHistories");

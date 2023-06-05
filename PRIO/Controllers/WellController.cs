@@ -363,7 +363,7 @@ namespace PRIO.Controllers
                 TypeOperation = TypeOperation.Delete,
             };
             await _context.WellHistories.AddAsync(wellHistory);
-
+                
             well.IsActive = false;
             well.DeletedAt = DateTime.UtcNow;
 

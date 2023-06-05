@@ -13,5 +13,6 @@ namespace PRIO.Models.Reservoirs
         public Zone? Zone { get; set; }
         public List<Completion>? Completions { get; set; }
         public List<ReservoirHistory>? ReservoirHistories { get; set; }
+        public List<CompletionHistory>? CompletionHistories { get; set; }
     }
 }

@@ -43,8 +43,7 @@ namespace PRIO.Data.Mappings.CompletionMapping
 
             builder.HasOne(x => x.Reservoir).
                 WithMany(r => r.Completions)
-                .OnDelete(DeleteBehavior.NoAction)
-                .IsRequired();
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(x => x.Well)
                 .WithMany(c => c.Completions)

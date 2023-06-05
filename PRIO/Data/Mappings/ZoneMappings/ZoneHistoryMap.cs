@@ -42,7 +42,7 @@ namespace PRIO.Data.Mappings.ZoneMappings
 
             builder.HasOne(c => c.User).
                 WithMany(u => u.ZoneHistories)
-                .OnDelete(DeleteBehavior.SetNull)
+                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
             builder.HasOne(x => x.Zone).
