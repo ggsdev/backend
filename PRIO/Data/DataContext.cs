@@ -102,7 +102,6 @@ namespace PRIO.Data
                 if (entry.Entity is BaseHistoryModel baseHistoryModel)
                 {
                     baseHistoryModel.CreatedAt = DateTime.UtcNow;
-                    baseHistoryModel.UpdatedAt = DateTime.UtcNow;
                 }
             }
         }

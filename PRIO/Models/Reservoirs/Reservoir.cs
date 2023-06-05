@@ -7,8 +7,8 @@ namespace PRIO.Models.Reservoirs
 {
     public class Reservoir : BaseModel
     {
-        public string Name { get; set; } = string.Empty;
-        public string CodReservoir { get; set; } = string.Empty;
+        public string? Name { get; set; }
+        public string? CodReservoir { get; set; }
         public User? User { get; set; }
         public Zone? Zone { get; set; }
         public List<Completion>? Completions { get; set; }

@@ -35,6 +35,10 @@ namespace PRIO.Data.Mappings.ReservoirMapping
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(120)
                 .IsRequired();
+            builder.Property(x => x.TypeOperation)
+                .HasColumnType("VARCHAR")
+                .HasMaxLength(20)
+                .IsRequired();
 
             builder.Property(x => x.ZoneNameOld)
                 .HasColumnType("VARCHAR")
@@ -51,8 +55,6 @@ namespace PRIO.Data.Mappings.ReservoirMapping
                 .HasColumnType("TEXT");
 
             builder.Property(x => x.CreatedAt);
-
-            builder.Property(x => x.UpdatedAt);
 
             builder.Property(x => x.IsActive);
 

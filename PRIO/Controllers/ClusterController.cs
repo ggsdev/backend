@@ -5,6 +5,7 @@ using PRIO.Data;
 using PRIO.DTOS;
 using PRIO.DTOS.ClusterDTOS;
 using PRIO.Models.Clusters;
+using PRIO.Utils;
 using PRIO.ViewModels.Clusters;
 
 namespace PRIO.Controllers
@@ -62,7 +63,7 @@ namespace PRIO.Controllers
                 User = user,
                 IsActiveOld = null,
                 IsActive = true,
-                Type = "CREATE",
+                TypeOperation = TypeOperation.Create,
                 Cluster = cluster,
             };
 
@@ -124,7 +125,7 @@ namespace PRIO.Controllers
                 DescriptionOld = cluster.Description,
                 IsActive = true,
                 IsActiveOld = cluster.IsActive,
-                Type = "UPDATE",
+                TypeOperation = TypeOperation.Update,
                 User = user,
                 Cluster = cluster,
             };
@@ -169,7 +170,7 @@ namespace PRIO.Controllers
                 DescriptionOld = cluster.Description,
                 IsActive = true,
                 IsActiveOld = cluster.IsActive,
-                Type = "RESTORE",
+                TypeOperation = TypeOperation.Restore,
                 User = user,
                 Cluster = cluster,
             };
@@ -215,7 +216,7 @@ namespace PRIO.Controllers
                 DescriptionOld = cluster.Description,
                 IsActive = false,
                 IsActiveOld = cluster.IsActive,
-                Type = "DELETE",
+                TypeOperation = TypeOperation.Delete,
                 User = user,
                 Cluster = cluster,
             };
@@ -240,12 +241,12 @@ namespace PRIO.Controllers
                     Message = "Cluster not found"
                 });
 
-            var clusterHistories = await _context.ClustersHistories.Include(x => x.User)
-                                                      .Include(x => x.Cluster)
-                                                      .Include(x => x.User)
-                                                      .Where(x => x.Cluster.Id == clusterId)
-                                                      .OrderByDescending(x => x.CreatedAt)
-                                                      .ToListAsync();
+            var clusterHistories = await _context.ClustersHistories
+                                                    .Include(x => x.User)
+                                                    .Include(x => x.Cluster)
+                                                    .Where(x => x.Cluster.Id == clusterId)
+                                                    .OrderByDescending(x => x.CreatedAt)
+                                                    .ToListAsync();
 
             var clusterHistoriesDTO = _mapper.Map<List<ClusterHistory>, List<ClusterHistoryDTO>>(clusterHistories);
 

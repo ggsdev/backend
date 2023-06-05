@@ -7,7 +7,7 @@ namespace PRIO.Models.Clusters
 {
     public class Cluster : BaseModel
     {
-        public string Name { get; set; } = string.Empty;
+        public string? Name { get; set; }
         public string? CodCluster { get; set; }
         public User? User { get; set; }
         [JsonIgnore]

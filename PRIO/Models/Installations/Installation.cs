@@ -9,7 +9,7 @@ namespace PRIO.Models.Installations
 {
     public class Installation : BaseModel
     {
-        public string Name { get; set; } = string.Empty;
+        public string? Name { get; set; }
         public string? CodInstallation { get; set; }
         [JsonIgnore]
         public User? User { get; set; }

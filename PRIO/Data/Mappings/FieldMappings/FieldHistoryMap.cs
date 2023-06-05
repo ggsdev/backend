@@ -62,6 +62,11 @@ namespace PRIO.Data.Mappings.FieldMappings
                 .HasColumnType("UniqueIdentifier")
                 .HasMaxLength(120);
 
+            builder.Property(x => x.TypeOperation)
+                .HasColumnType("VARCHAR")
+                .HasMaxLength(20)
+                .IsRequired();
+
             builder.Property(x => x.Description)
                .HasColumnType("TEXT");
 
@@ -69,8 +74,6 @@ namespace PRIO.Data.Mappings.FieldMappings
                .HasColumnType("TEXT");
 
             builder.Property(x => x.CreatedAt);
-
-            builder.Property(x => x.UpdatedAt);
 
             builder.Property(x => x.IsActive);
 

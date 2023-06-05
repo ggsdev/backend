@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using PRIO.Data;
 using PRIO.DTOS;
 using PRIO.DTOS.ZoneDTOS;
@@ -12,17 +13,13 @@ namespace PRIO.Controllers
 {
     [ApiController]
     [Route("zones")]
-    public class ZoneController : ControllerBase
+    public class ZoneController : BaseApiController
     {
-        private readonly DataContext _context;
-        private readonly IMapper _mapper;
-
-        public ZoneController(DataContext context, IMapper mapper)
+        public ZoneController(DataContext context, IMapper mapper, IMemoryCache cache)
+            : base(context, cache, mapper)
         {
-            _context = context;
-            _mapper = mapper;
-
         }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateZoneViewModel body)
         {
@@ -40,8 +37,7 @@ namespace PRIO.Controllers
                     Message = "Field not found"
                 });
 
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            var user = await GetUserFromCache();
 
             if (user is null)
             {
@@ -71,7 +67,7 @@ namespace PRIO.Controllers
                 User = user,
                 Zone = zone,
 
-                Type = TypeOperation.Create
+                TypeOperation = TypeOperation.Create
             };
 
             await _context.ZoneHistories.AddAsync(zoneHistory);
@@ -91,7 +87,7 @@ namespace PRIO.Controllers
             return Ok(zonesDTO);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:Guid}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var zone = await _context.Zones.Include(x => x.Reservoirs).Include(x => x.ZoneHistories).Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id);
@@ -103,10 +99,23 @@ namespace PRIO.Controllers
             var zoneDTO = _mapper.Map<Zone, ZoneDTO>(zone);
 
             return Ok(zoneDTO);
-
         }
 
-        [HttpPatch("{id}")]
+        [HttpGet("{id:Guid}/history")]
+        public async Task<IActionResult> GetHistoryById([FromRoute] Guid id)
+        {
+            var zoneHistories = await _context.ZoneHistories.Include(x => x.User).Include(x => x.Field).Include(x => x.Zone).Where(x => x.Zone.Id == id).ToListAsync();
+            if (zoneHistories is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = "Zone not found"
+                });
+            var zoneHistoriesDTO = _mapper.Map<List<ZoneHistory>, List<ZoneHistoryDTO>>(zoneHistories);
+
+            return Ok(zoneHistoriesDTO);
+        }
+
+        [HttpPatch("{id:Guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateZoneViewModel body)
         {
             var zone = await _context.Zones.Include(x => x.Field).FirstOrDefaultAsync(x => x.Id == id);
@@ -116,8 +125,7 @@ namespace PRIO.Controllers
                     Message = "Zone not found"
                 });
 
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            var user = await GetUserFromCache();
 
             if (user is null)
             {
@@ -135,17 +143,17 @@ namespace PRIO.Controllers
                 CodZoneOld = zone.CodZone,
 
                 Field = field is not null ? field : zone.Field,
-                FieldOldId = zone.Field.Id,
+                FieldOldId = zone.Field?.Id,
 
                 Description = body.Description is not null ? body.Description : zone.Description,
                 DescriptionOld = zone.Description,
-                FieldName = field is not null ? field.Name : zone.Field.Name,
-                FieldNameOld = zone.Field.Name,
+                FieldName = field is not null ? field.Name : zone.Field?.Name,
+                FieldNameOld = zone.Field?.Name,
 
                 User = user,
                 Zone = zone,
 
-                Type = TypeOperation.Update
+                TypeOperation = TypeOperation.Update
             };
 
             await _context.ZoneHistories.AddAsync(zoneHistory);
@@ -171,7 +179,7 @@ namespace PRIO.Controllers
 
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             var zone = await _context.Zones.Include(x => x.Field).FirstOrDefaultAsync(x => x.Id == id);
@@ -181,8 +189,8 @@ namespace PRIO.Controllers
                     Message = "Zone not found or inactive already"
                 });
 
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            var user = await GetUserFromCache();
+
             if (user is null)
                 return NotFound(new ErrorResponseDTO
                 {
@@ -195,13 +203,13 @@ namespace PRIO.Controllers
                 CodZoneOld = zone.CodZone,
 
                 Field = zone.Field,
-                FieldOldId = zone.Field.Id,
+                FieldOldId = zone.Field?.Id,
 
                 Description = zone.Description,
                 DescriptionOld = zone.Description,
 
-                FieldName = zone.Field.Name,
-                FieldNameOld = zone.Field.Name,
+                FieldName = zone.Field?.Name,
+                FieldNameOld = zone.Field?.Name,
 
                 User = user,
                 Zone = zone,
@@ -209,7 +217,7 @@ namespace PRIO.Controllers
                 IsActive = false,
                 IsActiveOld = zone.IsActive,
 
-                Type = TypeOperation.Delete
+                TypeOperation = TypeOperation.Delete
             };
 
             await _context.ZoneHistories.AddAsync(zoneHistory);
@@ -223,7 +231,7 @@ namespace PRIO.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{id}/restore")]
+        [HttpPatch("{id:Guid}/restore")]
         public async Task<IActionResult> Restore([FromRoute] Guid id)
         {
             var zone = await _context.Zones.Include(x => x.Field).FirstOrDefaultAsync(x => x.Id == id);
@@ -234,8 +242,7 @@ namespace PRIO.Controllers
                     Message = "Zone not found or is active already"
                 });
 
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            var user = await GetUserFromCache();
             if (user is null)
                 return NotFound(new ErrorResponseDTO
                 {
@@ -248,13 +255,13 @@ namespace PRIO.Controllers
                 CodZoneOld = zone.CodZone,
 
                 Field = zone.Field,
-                FieldOldId = zone.Field.Id,
+                FieldOldId = zone.Field?.Id,
 
                 Description = zone.Description,
                 DescriptionOld = zone.Description,
 
-                FieldName = zone.Field.Name,
-                FieldNameOld = zone.Field.Name,
+                FieldName = zone.Field?.Name,
+                FieldNameOld = zone.Field?.Name,
 
                 IsActive = true,
                 IsActiveOld = zone.IsActive,
@@ -262,7 +269,7 @@ namespace PRIO.Controllers
                 User = user,
                 Zone = zone,
 
-                Type = TypeOperation.Restore
+                TypeOperation = TypeOperation.Restore
             };
 
             await _context.ZoneHistories.AddAsync(zoneHistory);
@@ -275,6 +282,5 @@ namespace PRIO.Controllers
 
             return NoContent();
         }
-
     }
 }

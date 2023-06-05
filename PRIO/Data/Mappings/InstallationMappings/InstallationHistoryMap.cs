@@ -39,8 +39,6 @@ namespace PRIO.Data.Mappings.InstallationMapping
 
             builder.Property(x => x.CreatedAt);
 
-            builder.Property(x => x.UpdatedAt);
-
             builder.Property(x => x.IsActive);
 
 
@@ -61,6 +59,11 @@ namespace PRIO.Data.Mappings.InstallationMapping
                .WithMany(u => u.InstallationHistories)
                .OnDelete(DeleteBehavior.SetNull)
                .IsRequired();
+
+            builder.Property(x => x.TypeOperation)
+                .HasColumnType("VARCHAR")
+                .HasMaxLength(20)
+                .IsRequired();
 
             builder.HasOne(x => x.Installation)
                .WithMany(u => u.InstallationHistories)

@@ -6,8 +6,8 @@ namespace PRIO.Models.FileTypes
 {
     public class FileType : BaseModel
     {
-        public string Name { get; set; } = string.Empty;
-        public string Acronym { get; set; } = string.Empty;
+        public string? Name { get; set; }
+        public string? Acronym { get; set; }
         [JsonIgnore]
         public List<Measurement>? Measurements { get; set; }
     }

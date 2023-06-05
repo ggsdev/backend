@@ -20,7 +20,7 @@ namespace PRIO.Data.Mappings.ClusterMapping
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(256);
 
-            builder.Property(x => x.Type)
+            builder.Property(x => x.TypeOperation)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(20)
                 .IsRequired();
@@ -49,8 +49,6 @@ namespace PRIO.Data.Mappings.ClusterMapping
             builder.Property(x => x.IsActive);
 
             builder.Property(x => x.CreatedAt);
-
-            builder.Property(x => x.UpdatedAt);
 
             builder.HasOne(c => c.User).
                 WithMany(u => u.ClusterHistories)

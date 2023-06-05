@@ -7,7 +7,7 @@ namespace PRIO.Models.Completions
 {
     public class Completion : BaseModel
     {
-        public string Name { get; set; } = string.Empty;
+        public string? Name { get; set; }
         public string? CodCompletion { get; set; }
         public Reservoir? Reservoir { get; set; }
         public Well? Well { get; set; }

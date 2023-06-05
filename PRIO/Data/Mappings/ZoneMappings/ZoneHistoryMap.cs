@@ -29,9 +29,12 @@ namespace PRIO.Data.Mappings.ZoneMappings
             builder.Property(x => x.DescriptionOld)
                 .HasColumnType("TEXT");
 
-            builder.Property(x => x.CreatedAt);
+            builder.Property(x => x.TypeOperation)
+                .HasColumnType("VARCHAR")
+                .HasMaxLength(20)
+                .IsRequired();
 
-            builder.Property(x => x.UpdatedAt);
+            builder.Property(x => x.CreatedAt);
 
             builder.Property(x => x.IsActive);
 
