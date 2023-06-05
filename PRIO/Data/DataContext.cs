@@ -43,7 +43,7 @@ namespace PRIO.Data
         public DbSet<Zone> Zones { get; set; }
         public DbSet<ZoneHistory> ZoneHistories { get; set; }
         public DbSet<Reservoir> Reservoirs { get; set; }
-        public DbSet<ReservoirHistory> ReservoirsHistories { get; set; }
+        public DbSet<ReservoirHistory> ReservoirHistories { get; set; }
         public DbSet<Completion> Completions { get; set; }
         public DbSet<Well> Wells { get; set; }
         public DbSet<WellHistory> WellHistories { get; set; }
