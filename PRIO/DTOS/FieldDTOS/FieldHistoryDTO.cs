@@ -27,6 +27,6 @@ namespace PRIO.DTOS.FieldDTOS
         public bool? IsActive { get; set; }
         public bool? IsActiveOld { get; set; }
         public string? CreatedAt { get; set; }
-        public string? Type { get; set; }
+        public string? TypeOperation { get; set; }
     }
 }

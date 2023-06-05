@@ -15,7 +15,7 @@ namespace PRIO.DTOS.ClusterDTOS
         public bool? IsActive { get; set; }
         public bool? IsActiveOld { get; set; }
         public string? CreatedAt { get; set; }
-        public string? Type { get; set; }
+        public string? TypeOperation { get; set; }
         public UserDTO? User { get; set; }
     }
 }

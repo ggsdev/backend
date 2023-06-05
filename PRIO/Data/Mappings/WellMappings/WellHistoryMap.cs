@@ -8,7 +8,7 @@ namespace PRIO.Data.Mappings.WellMappings
     {
         public void Configure(EntityTypeBuilder<WellHistory> builder)
         {
-            builder.ToTable("Wells");
+            builder.ToTable("WellHistories");
 
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id)
