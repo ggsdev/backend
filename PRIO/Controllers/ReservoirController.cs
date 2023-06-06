@@ -107,6 +107,7 @@ namespace PRIO.Controllers
                 .Include(x => x.Zone)
                 .Include(x => x.Reservoir)
                 .Where(x => x.Reservoir.Id == id)
+                .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
 
             if (reservoirHistories is null)
