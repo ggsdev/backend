@@ -34,6 +34,7 @@ namespace PRIO.Data
     public class DataContext : DbContext
     {
         public DbSet<User> Users { get; set; }
+        public DbSet<UserHistory> UserHistories { get; set; }
         public DbSet<Session> Sessions { get; set; }
         public DbSet<Cluster> Clusters { get; set; }
         public DbSet<ClusterHistory> ClustersHistories { get; set; }
