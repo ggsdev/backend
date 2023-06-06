@@ -107,6 +107,7 @@ namespace PRIO.Controllers
                 .Include(x => x.Zone)
                 .Include(x => x.Reservoir)
                 .Where(x => x.Reservoir.Id == id)
+                .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
 
             if (reservoirHistories is null)
@@ -184,7 +185,7 @@ namespace PRIO.Controllers
         [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            var reservoir = await _context.Reservoirs.FirstOrDefaultAsync(x => x.Id == id);
+            var reservoir = await _context.Reservoirs.Include(x => x.Zone).FirstOrDefaultAsync(x => x.Id == id);
             if (reservoir is null || !reservoir.IsActive)
                 return NotFound(new ErrorResponseDTO
                 {
@@ -238,7 +239,7 @@ namespace PRIO.Controllers
         [HttpPatch("{id:Guid}/restore")]
         public async Task<IActionResult> Restore([FromRoute] Guid id)
         {
-            var reservoir = await _context.Reservoirs.FirstOrDefaultAsync(x => x.Id == id);
+            var reservoir = await _context.Reservoirs.Include(x=> x.Zone).FirstOrDefaultAsync(x => x.Id == id);
             if (reservoir is null || reservoir.IsActive)
                 return NotFound(new ErrorResponseDTO
                 {

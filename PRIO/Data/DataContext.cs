@@ -12,6 +12,7 @@ using PRIO.Data.Mappings.MeasuringEquipmentMapping;
 using PRIO.Data.Mappings.ReservoirMapping;
 using PRIO.Data.Mappings.SessionMappings;
 using PRIO.Data.Mappings.UserMapping;
+using PRIO.Data.Mappings.UserMappings;
 using PRIO.Data.Mappings.WellMapping;
 using PRIO.Data.Mappings.WellMappings;
 using PRIO.Data.Mappings.ZoneMapping;
@@ -125,6 +126,7 @@ namespace PRIO.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new UserMap());
+            modelBuilder.ApplyConfiguration(new UserHistoryMap());
             modelBuilder.ApplyConfiguration(new SessionMap());
 
             modelBuilder.ApplyConfiguration(new ClusterMap());
