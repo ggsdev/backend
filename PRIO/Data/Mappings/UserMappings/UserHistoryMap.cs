@@ -10,7 +10,7 @@ namespace PRIO.Data.Mappings.UserMappings
         {
 
             builder.ToTable
-                    ("Users");
+                    ("UserHistories");
 
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id)
@@ -72,9 +72,6 @@ namespace PRIO.Data.Mappings.UserMappings
             builder.Property(x => x.IsActive); 
             
             builder.Property(x => x.IsActiveOld);
-
-            builder.HasIndex(x => x.Email)
-                .IsUnique();
 
             builder.Property(x => x.TypeOperation)
                 .HasColumnType("VARCHAR")

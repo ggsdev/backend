@@ -134,7 +134,7 @@ static void ConfigureServices(IServiceCollection services)
         cfg.CreateMap<CompletionHistory, CompletionHistoryDTO>();
 
         cfg.CreateMap<User, UserDTO>();
-        //cfg.CreateMap<UserHistory, UserHistoryDTO>();
+        cfg.CreateMap<UserHistory, UserHistoryDTO>();
 
     });
 

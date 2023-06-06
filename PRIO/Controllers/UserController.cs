@@ -63,6 +63,14 @@ namespace PRIO.Controllers
                 };
                 await _context.AddAsync(user);
 
+                var userId = (Guid)HttpContext.Items["Id"]!;
+                var userOperation = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+                if (userOperation is null)
+                    return NotFound(new ErrorResponseDTO
+                    {
+                        Message = $"User is not found"
+                    });
+
                 var userHistory = new UserHistory
                 {
                     Name = body.Name,
@@ -81,7 +89,8 @@ namespace PRIO.Controllers
                     IsActiveOld = null,
                     TypeOperation = TypeOperation.Create,
                     User = user,
-                    
+                    UserOperationId = userOperation.Id
+
                 };
 
                 await _context.AddAsync(userHistory);
@@ -156,6 +165,14 @@ namespace PRIO.Controllers
                 return NotFound(errorResponse);
             }
 
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var userOperation = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (userOperation is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = $"User is not found"
+                });
+
             try
             {
                 var userHistory = new UserHistory
@@ -176,6 +193,7 @@ namespace PRIO.Controllers
                     IsActiveOld = user.IsActive,
                     TypeOperation = TypeOperation.Update,
                     User = user,
+                    UserOperationId = userOperation.Id
                 };
 
                 user.Name = body.Name is not null ? body.Name : user.Name;
@@ -216,6 +234,15 @@ namespace PRIO.Controllers
                 return NotFound(userError);
             }
 
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var userOperation = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (userOperation is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = $"User is not found"
+                });
+
+
             var userHistory = new UserHistory
             {
                 Name = user.Name,
@@ -234,6 +261,7 @@ namespace PRIO.Controllers
                 IsActiveOld = user.IsActive,
                 TypeOperation = TypeOperation.Delete,
                 User = user,
+                UserOperationId = userOperation.Id
             };
 
             await _context.AddAsync(userHistory);
@@ -263,6 +291,14 @@ namespace PRIO.Controllers
                 return NotFound(userError);
             }
 
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var userOperation = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (userOperation is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = $"User is not found"
+                });
+
             var userHistory = new UserHistory
             {
                 Name = user.Name,
@@ -281,6 +317,7 @@ namespace PRIO.Controllers
                 IsActiveOld = user.IsActive,
                 TypeOperation = TypeOperation.Restore,
                 User = user,
+                UserOperationId = userOperation.Id
             };
             await _context.AddAsync(userHistory);
 
@@ -294,6 +331,31 @@ namespace PRIO.Controllers
             return Ok(UserDTO);
         }
 
+        [HttpGet("users/{id}/history")]
+        public async Task<IActionResult> GetHistory([FromRoute] Guid id)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (user is null)
+            {
+                var userError = new ErrorResponseDTO
+                {
+                    Message = "User not found or inactive."
+                };
+
+                return NotFound(userError);
+            }
+
+            var userHistories = await _context.UserHistories
+                                                    .Include(x => x.User)
+                                                    .Where(x => x.User.Id == id)
+                                                    .OrderByDescending(x => x.CreatedAt)
+                                                    .ToListAsync();
+
+            var userHistoriesDTO = _mapper.Map<List<UserHistory>, List<UserHistoryDTO>>(userHistories);
+
+            return Ok(userHistoriesDTO);
+        }
         #endregion
     }
 }
