@@ -1,12 +1,10 @@
-﻿using PRIO.Models.BaseModels;
-using PRIO.Models.FileTypes;
+﻿using PRIO.Models.FileTypes;
 
 namespace PRIO.DTOS.XMLFilesDTOS
 {
-    public class _003DTO : BaseModel
+    public class _003DTO
     {
         public Guid Id { get; set; }
-
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_003 { get; set; }
         public string? COD_INSTALACAO_003 { get; set; }
         public string? COD_TAG_PONTO_MEDICAO_003 { get; set; }

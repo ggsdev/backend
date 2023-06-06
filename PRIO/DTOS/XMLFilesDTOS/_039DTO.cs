@@ -1,13 +1,11 @@
-﻿using PRIO.Models.BaseModels;
-using PRIO.Models.FileTypes;
+﻿using PRIO.Models.FileTypes;
 using PRIO.Models.Measurements;
 
 namespace PRIO.DTOS.XMLFilesDTOS
 {
-    public class _039DTO : BaseModel
+    public class _039DTO
     {
         public Guid Id { get; set; }
-
         public string? COD_TAG_EQUIPAMENTO_039 { get; set; }
         public string? COD_FALHA_SUPERIOR_039 { get; set; }
         public short? DSC_TIPO_FALHA_039 { get; set; }

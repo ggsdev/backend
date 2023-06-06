@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using PRIO.Data;
 using PRIO.DTOS;
+using PRIO.DTOS.XLSDTOS;
 using PRIO.Models.BaseModels;
 using PRIO.Models.Clusters;
 using PRIO.Models.Completions;
@@ -59,6 +60,7 @@ namespace PRIO.Controllers
                 for (int row = 2; row <= dimension.End.Row; row++)
                 {
                     var columnCluster = worksheetTab.Cells[row, columnPositions[XlsUtils.ClusterColumnName]].Value?.ToString();
+                    var columnUepCode = worksheetTab.Cells[row, columnPositions[XlsUtils.ClusterUepCodeColumnName]].Value?.ToString();
 
                     var columnInstallation = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationColumnName]].Value?.ToString();
 
@@ -111,6 +113,7 @@ namespace PRIO.Controllers
                             {
                                 Name = columnCluster,
                                 User = user,
+                                UepCode = columnUepCode
                             };
 
                             entityDictionary[columnCluster.ToLower()] = cluster;
@@ -267,7 +270,7 @@ namespace PRIO.Controllers
                 }
             }
 
-            return Created("xlsx", new
+            return Created("xlsx", new ImportResponseDTO
             {
                 Message = "File imported successfully"
             });

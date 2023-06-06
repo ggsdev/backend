@@ -5,6 +5,7 @@ namespace PRIO.Utils
     internal static class XlsUtils
     {
         public const string ClusterColumnName = "CLUSTER";
+        public const string ClusterUepCodeColumnName = "UEP_CODE";
         public const string FieldColumnName = "FIELD";
         public const string InstallationColumnName = "PLATFORM";
         public const string FieldCodeColumnName = "FIELD_CODE";
@@ -45,6 +46,7 @@ namespace PRIO.Utils
                 {
                     cellValue = cellValue.ToUpper();
                     if (cellValue == ClusterColumnName ||
+                        cellValue == ClusterUepCodeColumnName ||
                         cellValue == FieldColumnName ||
                         cellValue == InstallationColumnName ||
                         cellValue == FieldCodeColumnName ||

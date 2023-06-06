@@ -61,19 +61,28 @@ namespace PRIO.Data
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
-
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+
+
+
             var envVars = DotEnv.Read();
 
-            var server = envVars["SERVER"];
-            var database = envVars["DATABASE"];
-            var userId = envVars["USER_ID"];
-            var password = envVars["PASSWORD"];
-            var encrypt = envVars["ENCRYPT"];
+            if (envVars.ContainsKey("SERVER") &&
+                envVars.ContainsKey("DATABASE") &&
+                envVars.ContainsKey("USER_ID") &&
+                envVars.ContainsKey("PASSWORD") &&
+                envVars.ContainsKey("ENCRYPT"))
+            {
+                var server = envVars["SERVER"];
+                var database = envVars["DATABASE"];
+                var userId = envVars["USER_ID"];
+                var password = envVars["PASSWORD"];
+                var encrypt = envVars["ENCRYPT"];
 
-            optionsBuilder.UseSqlServer($"Server={server};Database={database};User ID={userId};Password={password};Encrypt={encrypt};");
+                optionsBuilder.UseSqlServer($"Server={server};Database={database};User ID={userId};Password={password};Encrypt={encrypt};");
+            }
         }
         public override int SaveChanges()
         {

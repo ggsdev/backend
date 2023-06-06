@@ -133,7 +133,7 @@ namespace PRIO.Controllers
                                     measurement.User = user;
                                     await context.Measurements.AddAsync(measurement);
 
-                                    var measurement039DTO = _mapper.Map<_039DTO>(measurement);
+                                    var measurement039DTO = _mapper.Map<Measurement, _039DTO>(measurement);
                                     _responseResult._039File ??= new List<_039DTO>();
                                     _responseResult._039File?.Add(measurement039DTO);
                                 }
@@ -318,7 +318,7 @@ namespace PRIO.Controllers
                                     };
                                     await context.Measurements.AddAsync(measurement);
 
-                                    var measurement001DTO = _mapper.Map<_001DTO>(measurement);
+                                    var measurement001DTO = _mapper.Map<Measurement, _001DTO>(measurement);
                                     _responseResult._001File ??= new List<_001DTO>();
                                     _responseResult._001File?.Add(measurement001DTO);
                                 }
@@ -525,7 +525,7 @@ namespace PRIO.Controllers
 
                                     };
                                     await context.AddAsync(measurement);
-                                    var measurement002DTO = _mapper.Map<_002DTO>(measurement);
+                                    var measurement002DTO = _mapper.Map<Measurement, _002DTO>(measurement);
                                     _responseResult._002File ??= new List<_002DTO>();
                                     _responseResult._002File?.Add(measurement002DTO);
 
@@ -727,7 +727,7 @@ namespace PRIO.Controllers
                                     };
 
                                     await context.Measurements.AddAsync(measurement);
-                                    var measurement003DTO = _mapper.Map<_003DTO>(measurement);
+                                    var measurement003DTO = _mapper.Map<Measurement, _003DTO>(measurement);
                                     _responseResult._003File ??= new List<_003DTO>();
                                     _responseResult._003File?.Add(measurement003DTO);
                                 }
