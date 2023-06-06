@@ -1,4 +1,5 @@
 ﻿using PRIO.DTOS.UserDTOS;
+using PRIO.DTOS.ZoneDTOS;
 
 namespace PRIO.DTOS.ReservoirDTOS
 {
@@ -9,9 +10,7 @@ namespace PRIO.DTOS.ReservoirDTOS
         public string? NameOld { get; set; }
         public string? CodReservoir { get; set; }
         public string? CodReservoirOld { get; set; }
-        public string? ZoneCod { get; set; }
-        public string? ZoneCodOld { get; set; }
-        public Guid? ZoneId { get; set; }
+        public ZoneDTO? Zone { get; set; }
         public Guid? ZoneOldId { get; set; }
         public UserDTO? User { get; set; }
         public string? Description { get; set; }

@@ -61,8 +61,6 @@ namespace PRIO.Controllers
 
                 Name = installation.Name,
 
-                ClusterName = clusterInDatabase.Name,
-
                 CodInstallation = installation.CodInstallation,
 
                 Description = installation.Description,
@@ -161,8 +159,6 @@ namespace PRIO.Controllers
 
                 Cluster = clusterInDatabase is not null ? clusterInDatabase : installation.Cluster,
                 ClusterOldId = installation.Cluster?.Id,
-                ClusterName = clusterInDatabase is not null ? clusterInDatabase.Name : installation.Cluster?.Name,
-                ClusterNameOld = installation.Cluster?.Name,
 
                 User = user,
 
@@ -219,9 +215,6 @@ namespace PRIO.Controllers
                 Cluster = installation.Cluster,
                 ClusterOldId = installation.Cluster?.Id,
 
-                ClusterName = installation.Cluster?.Name,
-                ClusterNameOld = installation.Cluster?.Name,
-
                 CodInstallation = installation.CodInstallation,
                 CodInstallationOld = installation.CodInstallation,
 
@@ -274,9 +267,6 @@ namespace PRIO.Controllers
 
                 Cluster = installation.Cluster,
                 ClusterOldId = installation.Cluster?.Id,
-
-                ClusterName = installation.Cluster?.Name,
-                ClusterNameOld = installation.Cluster?.Name,
 
                 CodInstallation = installation.CodInstallation,
                 CodInstallationOld = installation.CodInstallation,

@@ -31,19 +31,10 @@ namespace PRIO.Data.Mappings.ReservoirMapping
                 .HasColumnType("UNIQUEIDENTIFIER")
                 .HasMaxLength(120);
 
-            builder.Property(x => x.ZoneCod)
-                .HasColumnType("VARCHAR")
-                .HasMaxLength(120)
-                .IsRequired();
-
             builder.Property(x => x.TypeOperation)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(20)
                 .IsRequired();
-
-            builder.Property(x => x.ZoneCodOld)
-                .HasColumnType("VARCHAR")
-                .HasMaxLength(120);
 
             builder.Property(x => x.CodReservoirOld)
                 .HasColumnType("VARCHAR")

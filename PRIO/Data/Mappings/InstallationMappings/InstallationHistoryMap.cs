@@ -41,18 +41,8 @@ namespace PRIO.Data.Mappings.InstallationMapping
 
             builder.Property(x => x.IsActive);
 
-
-            builder.Property(x => x.ClusterName)
-                .HasColumnType("VARCHAR")
-                .HasMaxLength(256)
-                .IsRequired();
-
             builder.Property(x => x.ClusterOldId)
                 .HasColumnType("UNIQUEIDENTIFIER")
-                .HasMaxLength(256);
-
-            builder.Property(x => x.ClusterNameOld)
-               .HasColumnType("VARCHAR")
                 .HasMaxLength(256);
 
             builder.HasOne(x => x.User)

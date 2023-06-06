@@ -155,8 +155,6 @@ namespace PRIO.Controllers
 
                 Description = body.Description is not null ? body.Description : zone.Description,
                 DescriptionOld = zone.Description,
-                FieldName = field is not null ? field.Name : zone.Field?.Name,
-                FieldNameOld = zone.Field?.Name,
 
                 User = user,
                 Zone = zone,
@@ -217,9 +215,6 @@ namespace PRIO.Controllers
                 Description = zone.Description,
                 DescriptionOld = zone.Description,
 
-                FieldName = zone.Field?.Name,
-                FieldNameOld = zone.Field?.Name,
-
                 User = user,
                 Zone = zone,
 
@@ -269,9 +264,6 @@ namespace PRIO.Controllers
 
                 Description = zone.Description,
                 DescriptionOld = zone.Description,
-
-                FieldName = zone.Field?.Name,
-                FieldNameOld = zone.Field?.Name,
 
                 IsActive = true,
                 IsActiveOld = zone.IsActive,

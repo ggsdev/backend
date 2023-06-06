@@ -66,7 +66,6 @@ namespace PRIO.Controllers
                 Reservoir = reservoir,
 
                 Zone = zoneInDatabase,
-                ZoneCod = zoneInDatabase.CodZone,
 
                 TypeOperation = TypeOperation.Create,
             };
@@ -154,8 +153,6 @@ namespace PRIO.Controllers
 
                 Zone = zoneInDatabase is not null ? zoneInDatabase : reservoir.Zone,
                 ZoneOldId = reservoir.Zone?.Id,
-                ZoneCod = zoneInDatabase is not null ? zoneInDatabase.CodZone : reservoir.Zone?.CodZone,
-                ZoneCodOld = reservoir.Zone?.CodZone,
 
                 User = user,
 
@@ -219,8 +216,6 @@ namespace PRIO.Controllers
 
                 Zone = reservoir.Zone,
                 ZoneOldId = reservoir.Zone?.Id,
-                ZoneCod = reservoir.Zone?.CodZone,
-                ZoneCodOld = reservoir.Zone?.CodZone,
 
                 User = user,
 
@@ -275,8 +270,6 @@ namespace PRIO.Controllers
 
                 Zone = reservoir.Zone,
                 ZoneOldId = reservoir.Zone?.Id,
-                ZoneCod = reservoir.Zone?.CodZone,
-                ZoneCodOld = reservoir.Zone?.CodZone,
 
                 User = user,
 

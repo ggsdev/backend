@@ -142,9 +142,9 @@ static void ConfigureServices(IServiceCollection services)
     services.AddEndpointsApiExplorer();
     services.AddDbContext<DataContext>();
     services.AddScoped<TokenServices>();
-    services.AddScoped<UserServices>();
+    //services.AddScoped<UserServices>();
     services.AddScoped<FieldServices>();
-    services.AddMemoryCache();
+    //services.AddMemoryCache();
 
     services.AddAuthentication(x =>
     {

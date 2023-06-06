@@ -14,8 +14,6 @@ namespace PRIO.Models.Installations
         [JsonIgnore]
         public User? User { get; set; }
         public Cluster? Cluster { get; set; }
-        public string? ClusterName { get; set; }
-        public string? ClusterNameOld { get; set; }
         public Guid? ClusterOldId { get; set; }
         public Installation? Installation { get; set; }
 

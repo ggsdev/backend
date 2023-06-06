@@ -14,8 +14,6 @@ namespace PRIO.Models.Reservoirs
         public User? User { get; set; }
         public Reservoir? Reservoir { get; set; }
         public Zone? Zone { get; set; }
-        public string? ZoneCod { get; set; }
-        public string? ZoneCodOld { get; set; }
         public Guid? ZoneOldId { get; set; }
         public List<Completion>? Completions { get; set; }
     }

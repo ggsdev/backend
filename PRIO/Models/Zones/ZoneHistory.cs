@@ -12,7 +12,5 @@ namespace PRIO.Models.Zones
         public Field? Field { get; set; }
         public Guid? FieldOldId { get; set; }
         public Zone? Zone { get; set; }
-        public string? FieldName { get; set; }
-        public string? FieldNameOld { get; set; }
     }
 }

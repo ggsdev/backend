@@ -1,4 +1,5 @@
-﻿using PRIO.DTOS.UserDTOS;
+﻿using PRIO.DTOS.FieldDTOS;
+using PRIO.DTOS.UserDTOS;
 
 namespace PRIO.DTOS.ZoneDTOS
 {
@@ -9,9 +10,7 @@ namespace PRIO.DTOS.ZoneDTOS
         public string? NameOld { get; set; }
         public string? CodInstallation { get; set; }
         public string? CodInstallationOld { get; set; }
-        public string? FieldName { get; set; }
-        public string? FieldNameOld { get; set; }
-        public Guid? FieldId { get; set; }
+        public FieldDTO? Field { get; set; }
         public Guid? FieldOldId { get; set; }
         public UserDTO? User { get; set; }
         public string? Description { get; set; }

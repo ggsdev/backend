@@ -6,7 +6,6 @@ using PRIO.Data;
 using PRIO.DTOS;
 using PRIO.DTOS.UserDTOS;
 using PRIO.Models.Users;
-using PRIO.Services;
 using PRIO.ViewModels.Users;
 
 namespace PRIO.Controllers
@@ -14,17 +13,13 @@ namespace PRIO.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly UserServices _userServices;
-        private readonly TokenServices _tokenServices;
         private DataContext _context;
         private IMapper _mapper;
 
-        public UserController(UserServices userService, TokenServices tokenService, IMapper mapper, DataContext context)
+        public UserController(DataContext context, IMapper mapper)
         {
-            _userServices = userService;
-            _tokenServices = tokenService;
-            _mapper = mapper;
             _context = context;
+            _mapper = mapper;
         }
 
         #region Get
@@ -33,7 +28,8 @@ namespace PRIO.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserDTO>))]
         public async Task<IActionResult> Get()
         {
-            var userDTOS = await _userServices.RetrieveAllUsersAndMap();
+            var users = await _context.Users.ToListAsync();
+            var userDTOS = _mapper.Map<List<User>, List<UserDTO>>(users);
             return Ok(userDTOS);
         }
         #endregion
@@ -52,8 +48,19 @@ namespace PRIO.Controllers
 
             try
             {
-                var user = await _userServices.CreateUserAsync(body);
-                return Created($"users/{user.Id}", user);
+                var user = new User
+                {
+                    Name = body.Name,
+                    Username = body.Username,
+                    Email = body.Email,
+                    Password = BCrypt.Net.BCrypt.HashPassword(body.Password),
+                };
+
+                await _context.AddAsync(user);
+                await _context.SaveChangesAsync();
+
+                var userDTO = _mapper.Map<User, UserDTO>(user);
+                return Created($"users/{user.Id}", userDTO);
             }
             catch (DbUpdateException e)
             {
@@ -73,7 +80,7 @@ namespace PRIO.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponseDTO))]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var user = await _userServices.GetUserByIdAsync(id);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
 
             if (user is null)
             {
@@ -108,7 +115,7 @@ namespace PRIO.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponseDTO))]
         public async Task<IActionResult> UpdatePartialAsync([FromRoute] Guid id, [FromBody] UpdateUserViewModel body)
         {
-            var user = await _userServices.GetUserByIdAsync(id);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
 
 
             if (user == null || !user.IsActive)
@@ -131,7 +138,8 @@ namespace PRIO.Controllers
                 _context.Users.Update(user);
                 await _context.SaveChangesAsync();
 
-                return Ok(user);
+                var userDTO = _mapper.Map<User, UserDTO>(user);
+                return Ok(userDTO);
             }
             catch (DbUpdateException e)
             {
@@ -147,7 +155,7 @@ namespace PRIO.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponseDTO))]
         public async Task<IActionResult> DeleteAsync([FromRoute] Guid id)
         {
-            var user = await _userServices.GetUserByIdAsync(id);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
 
             if (user is null)
             {
@@ -166,51 +174,5 @@ namespace PRIO.Controllers
             return NoContent();
         }
         #endregion
-
-        #region Login
-        [HttpPost("login")]
-        [AllowAnonymous]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginDTO))]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponseDTO))]
-        public async Task<IActionResult> Login(
-        [FromBody] LoginViewModel body)
-        {
-
-            var user = await _context
-                .Users
-                .Include(u => u.Session)
-                .FirstOrDefaultAsync(x => x.Email == body.Email && x.IsActive);
-
-            if (user is null)
-            {
-                var errorResponse = new ErrorResponseDTO
-                {
-                    Message = "E-mail or password invalid"
-                };
-
-                return Unauthorized(errorResponse);
-            }
-
-            var passwordMatch = BCrypt.Net.BCrypt.Verify(body.Password, user.Password);
-            if (!passwordMatch)
-            {
-                var errorResponse = new ErrorResponseDTO
-                {
-                    Message = "E-mail or password invalid"
-                };
-
-                return Unauthorized(errorResponse);
-            }
-
-            var userHttpAgent = Request.Headers["User-Agent"].ToString();
-            var token = await _tokenServices.CreateSessionAndToken(user, userHttpAgent);
-
-            return Ok(new LoginDTO
-            {
-                Token = token,
-            });
-        }
-        #endregion
-
     }
 }
