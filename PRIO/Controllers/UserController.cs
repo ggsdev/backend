@@ -4,9 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS;
+using PRIO.DTOS.ClusterDTOS;
 using PRIO.DTOS.UserDTOS;
+using PRIO.Models.Clusters;
 using PRIO.Models.Users;
+using PRIO.Utils;
 using PRIO.ViewModels.Users;
+using System.Diagnostics.Metrics;
 
 namespace PRIO.Controllers
 {
@@ -54,9 +58,34 @@ namespace PRIO.Controllers
                     Username = body.Username,
                     Email = body.Email,
                     Password = BCrypt.Net.BCrypt.HashPassword(body.Password),
+                    Description = body.Description is not null ? body.Description : null,
+                    Type = body.Type
+                };
+                await _context.AddAsync(user);
+
+                var userHistory = new UserHistory
+                {
+                    Name = body.Name,
+                    NameOld = null,
+                    Username = body.Username,
+                    UsernameOld = null,
+                    Email = body.Email,
+                    EmailOld = null,
+                    Password = BCrypt.Net.BCrypt.HashPassword(body.Password),
+                    PasswordOld = null,
+                    Description = body.Description is not null ? body.Description : null,
+                    DescriptionOld = null,
+                    Type = body.Type,
+                    TypeOld = null,
+                    IsActive = true,
+                    IsActiveOld = null,
+                    TypeOperation = TypeOperation.Create,
+                    User = user,
+                    
                 };
 
-                await _context.AddAsync(user);
+                await _context.AddAsync(userHistory);
+
                 await _context.SaveChangesAsync();
 
                 var userDTO = _mapper.Map<User, UserDTO>(user);
@@ -117,7 +146,6 @@ namespace PRIO.Controllers
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
 
-
             if (user == null || !user.IsActive)
             {
                 var errorResponse = new ErrorResponseDTO
@@ -130,11 +158,32 @@ namespace PRIO.Controllers
 
             try
             {
+                var userHistory = new UserHistory
+                {
+                    Name = body.Name is not null ? body.Name : user.Name,
+                    NameOld = user.Name,
+                    Username = body.Username is not null ? body.Username : user.Username,
+                    UsernameOld = user.Username,
+                    Email = body.Email is not null ? body.Email : user.Email,
+                    EmailOld = user.Email,
+                    Password = body.Password is not null ? BCrypt.Net.BCrypt.HashPassword(body.Password) : user.Password,
+                    PasswordOld = user.Password,
+                    Description = body.Description is not null ? body.Description : user.Description,
+                    DescriptionOld = user.Description,
+                    Type = body.Type is not null ? body.Type : user.Type,
+                    TypeOld = user.Type,
+                    IsActive = true,
+                    IsActiveOld = user.IsActive,
+                    TypeOperation = TypeOperation.Update,
+                    User = user,
+                };
+
                 user.Name = body.Name is not null ? body.Name : user.Name;
                 user.Password = body.Password is not null ? BCrypt.Net.BCrypt.HashPassword(body.Password) : user.Password;
                 user.Email = body.Email is not null ? body.Email : user.Email;
                 user.Username = body.Username is not null ? body.Username : user.Username;
 
+                await _context.AddAsync(userHistory);
                 _context.Users.Update(user);
                 await _context.SaveChangesAsync();
 
@@ -166,13 +215,85 @@ namespace PRIO.Controllers
 
                 return NotFound(userError);
             }
+
+            var userHistory = new UserHistory
+            {
+                Name = user.Name,
+                NameOld = user.Name,
+                Username = user.Username,
+                UsernameOld = user.Username,
+                Email = user.Email,
+                EmailOld = user.Email,
+                Password = user.Password,
+                PasswordOld = user.Password,
+                Description = user.Description,
+                DescriptionOld = user.Description,
+                Type = user.Type,
+                TypeOld = user.Type,
+                IsActive = false,
+                IsActiveOld = user.IsActive,
+                TypeOperation = TypeOperation.Delete,
+                User = user,
+            };
+
+            await _context.AddAsync(userHistory);
+
             user.DeletedAt = DateTime.UtcNow;
             user.IsActive = false;
+
+            _context.Users.Update(user);
 
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
+
+        [HttpPatch("users/{id}/restore")]
+        public async Task<IActionResult> Restore([FromRoute] Guid id)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (user is null)
+            {
+                var userError = new ErrorResponseDTO
+                {
+                    Message = "User not found or inactive."
+                };
+
+                return NotFound(userError);
+            }
+
+            var userHistory = new UserHistory
+            {
+                Name = user.Name,
+                NameOld = user.Name,
+                Username = user.Username,
+                UsernameOld = user.Username,
+                Email = user.Email,
+                EmailOld = user.Email,
+                Password = user.Password,
+                PasswordOld = user.Password,
+                Description = user.Description,
+                DescriptionOld = user.Description,
+                Type = user.Type,
+                TypeOld = user.Type,
+                IsActive = true,
+                IsActiveOld = user.IsActive,
+                TypeOperation = TypeOperation.Restore,
+                User = user,
+            };
+            await _context.AddAsync(userHistory);
+
+            user.IsActive = true;
+            user.DeletedAt = null;
+
+            _context.Update(user);
+            await _context.SaveChangesAsync();
+
+            var UserDTO = _mapper.Map<User, UserDTO>(user);
+            return Ok(UserDTO);
+        }
+
         #endregion
     }
 }

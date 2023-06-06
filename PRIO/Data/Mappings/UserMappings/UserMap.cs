@@ -33,6 +33,11 @@ namespace PRIO.Data.Mappings.UserMapping
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(150)
                 .IsRequired();
+            
+            builder.Property(x => x.Type)
+                .HasColumnType("VARCHAR")
+                .HasMaxLength(150)
+                .IsRequired();
 
             builder.Property(x => x.Description)
                 .HasColumnType("TEXT");

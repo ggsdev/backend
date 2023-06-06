@@ -18,6 +18,7 @@ namespace PRIO.Models.Users
         public string? Email { get; set; }
         public string? Password { get; set; }
         public string? Username { get; set; }
+        public string? Type { get; set; }
 
         #region Relationships
         //public Role Role { get; set; }
@@ -39,7 +40,7 @@ namespace PRIO.Models.Users
         [JsonIgnore]
         public List<Measurement>? Measurements { get; set; }
         public List<MeasuringEquipment>? MeasuringEquipments { get; set; }
-
+        public List<UserHistory>? UserHistories { get; set; }
         #endregion
     }
 }

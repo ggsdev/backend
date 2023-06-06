@@ -179,7 +179,7 @@ namespace PRIO.Controllers
                 User = user,
                 Cluster = cluster,
             };
-            _context.Update(clusterHistory);
+            await _context.AddAsync(clusterHistory);
 
             cluster.IsActive = true;
             cluster.DeletedAt = null;
