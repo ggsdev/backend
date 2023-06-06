@@ -13,6 +13,7 @@ namespace PRIO.ViewModels.Users
         public string? Username { get; set; }
         [Required]
         public string? Password { get; set; }
+        [Required]
         public string? Type { get; set; }
         public string? Description { get; set; }
     }
