@@ -146,7 +146,7 @@ namespace PRIO.Controllers
 
                     if (!string.IsNullOrWhiteSpace(columnField) && !entityDictionary.TryGetValue(columnField.ToLower(), out var field))
                     {
-                        field = await context.Fields.FirstOrDefaultAsync(x => x.Name.ToLower() == columnField.ToLower());
+                        field = await context.Fields.FirstOrDefaultAsync(x => x.Name.ToLower().Trim() == columnField.ToLower().Trim());
 
                         if (field is null && _lastFoundInstallation is not null)
                         {
@@ -154,13 +154,12 @@ namespace PRIO.Controllers
                             {
                                 Name = columnField,
                                 User = user,
-                                Installation = _lastFoundInstallation,
-                                CodField = columnCodeField is not null ? columnCodeField : string.Empty
+                                Installation = _lastFoundInstallation.Name == columnInstallation ? _lastFoundInstallation : (Installation)entityDictionary.GetValueOrDefault(columnInstallation.ToLower()),
+                                CodField = columnCodeField,
                             };
 
                             entityDictionary[columnField.ToLower()] = field;
                         }
-
                         _lastFoundField = field is not null ? (Field)field : null;
                     }
 
@@ -173,7 +172,7 @@ namespace PRIO.Controllers
                             {
                                 CodZone = columnZone,
                                 User = user,
-                                Field = _lastFoundField
+                                Field = _lastFoundField.Name == columnField ? _lastFoundField : (Field)entityDictionary.GetValueOrDefault(columnField.ToLower()),
                             };
 
                             entityDictionary[columnZone.ToLower()] = zone;
@@ -191,7 +190,7 @@ namespace PRIO.Controllers
                             {
                                 Name = columnReservoir,
                                 User = user,
-                                Zone = _lastFoundZone
+                                Zone = _lastFoundZone.CodZone == columnZone ? _lastFoundZone : (Zone)entityDictionary.GetValueOrDefault(columnZone.ToLower()),
                             };
 
                             entityDictionary[columnReservoir.ToLower()] = reservoir;
@@ -228,7 +227,7 @@ namespace PRIO.Controllers
                                 CoordX = columnWellCoordX,
                                 CoordY = columnWellCoordY,
                                 User = user,
-                                Field = _lastFoundField
+                                Field = _lastFoundField.Name == columnField ? _lastFoundField : (Field)entityDictionary.GetValueOrDefault(columnField.ToLower()),
                             };
 
                             entityDictionary[columnWellCodeAnp.ToLower()] = well;
@@ -242,13 +241,12 @@ namespace PRIO.Controllers
                         completion = await context.Completions.FirstOrDefaultAsync(x => x.Name.ToLower() == columnCompletion.ToLower());
                         if (completion is null && _lastFoundWell is not null)
                         {
-
                             completion = new Completion
                             {
                                 Name = columnCompletion,
                                 User = user,
                                 Reservoir = columnReservoir is not null ? _lastFoundReservoir : null,
-                                Well = _lastFoundWell
+                                Well = _lastFoundWell.CodWellAnp == columnWellCodeAnp ? _lastFoundWell : (Well)entityDictionary.GetValueOrDefault(columnWellCodeAnp?.ToLower()),
                             };
                             entityDictionary[columnCompletion.ToLower()] = completion;
                         }
