@@ -8,6 +8,8 @@ namespace PRIO.Models.Clusters
     {
         public string? NameOld { get; set; }
         public string? Name { get; set; }
+        public string? UepCode { get; set; }
+        public string? UepCodeOld { get; set; }
         public string? CodClusterOld { get; set; }
         public string? CodCluster { get; set; }
         [JsonIgnore]

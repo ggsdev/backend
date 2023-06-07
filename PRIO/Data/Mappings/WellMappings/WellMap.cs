@@ -29,7 +29,8 @@ namespace PRIO.Data.Mappings.WellMapping
 
             builder.Property(e => e.CodWellAnp)
                 .HasColumnType("VARCHAR")
-                .HasMaxLength(150);
+                .HasMaxLength(150)
+                .IsRequired();
 
             builder.Property(e => e.CategoryAnp)
                 .HasColumnType("VARCHAR")
@@ -90,6 +91,10 @@ namespace PRIO.Data.Mappings.WellMapping
                .HasMaxLength(150);
 
             builder.Property(e => e.CoordY)
+               .HasColumnType("VARCHAR")
+               .HasMaxLength(150);
+
+            builder.Property(e => e.DatumHorizontal)
                .HasColumnType("VARCHAR")
                .HasMaxLength(150);
 

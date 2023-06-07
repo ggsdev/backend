@@ -8,7 +8,6 @@ namespace PRIO.Data.Mappings.ClusterMapping
     {
         public void Configure(EntityTypeBuilder<ClusterHistory> builder)
         {
-
             builder.ToTable
                     ("ClusterHistories");
 
@@ -29,6 +28,14 @@ namespace PRIO.Data.Mappings.ClusterMapping
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(256)
                 .IsRequired();
+
+            builder.Property(x => x.UepCode)
+                .HasColumnType("VARCHAR")
+                .HasMaxLength(60);
+
+            builder.Property(x => x.UepCodeOld)
+                .HasColumnType("VARCHAR")
+                .HasMaxLength(60);
 
             builder.Property(x => x.CodClusterOld)
                 .HasColumnType("VARCHAR")
