@@ -4,13 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS;
-using PRIO.DTOS.ClusterDTOS;
 using PRIO.DTOS.UserDTOS;
-using PRIO.Models.Clusters;
 using PRIO.Models.Users;
 using PRIO.Utils;
 using PRIO.ViewModels.Users;
-using System.Diagnostics.Metrics;
 
 namespace PRIO.Controllers
 {

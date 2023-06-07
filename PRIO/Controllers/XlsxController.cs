@@ -21,13 +21,6 @@ namespace PRIO.Controllers
     [ApiController]
     public class XlsxController : ControllerBase
     {
-        private Cluster? _lastFoundCluster;
-        private Field? _lastFoundField;
-        private Installation? _lastFoundInstallation;
-        private Reservoir? _lastFoundReservoir;
-        private Zone? _lastFoundZone;
-        private Well? _lastFoundWell;
-
         [HttpPost("xlsx")]
         public async Task<IActionResult> PostBase64File([FromBody] RequestXslxViewModel data, [FromServices] DataContext context)
         {
@@ -55,6 +48,8 @@ namespace PRIO.Controllers
                 var dimension = worksheetTab.Dimension;
 
                 var entityDictionary = new Dictionary<string, BaseModel>();
+                var entityHistoriesDictionary = new Dictionary<string, BaseHistoryModel>();
+
                 var columnPositions = XlsUtils.GetColumnPositions(worksheetTab);
 
                 for (int row = 2; row <= dimension.End.Row; row++)
@@ -74,13 +69,12 @@ namespace PRIO.Controllers
                     var columnCompletion = worksheetTab.Cells[row, columnPositions[XlsUtils.CompletionColumnName]].Value?.ToString();
 
                     #region Well rows
-
                     var columnWellNameAnp = worksheetTab.Cells[row, columnPositions[XlsUtils.WellNameColumnName]].Value?.ToString();
                     var columnWellOperatorName = worksheetTab.Cells[row, columnPositions[XlsUtils.WellNameOperatorColumnName]].Value?.ToString();
                     var columnWellCodeAnp = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCodeAnpColumnName]].Value?.ToString();
                     var columnWellCategoryAnp = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCategoryAnpColumnName]].Value?.ToString();
                     var columnWellCategoryReclassification = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCategoryReclassificationColumnName]].Value?.ToString();
-                    var columnWellCategoryOperator = worksheetTab.Cells[row, columnPositions[XlsUtils.WellNameOperatorColumnName]].Value?.ToString();
+                    var columnWellCategoryOperator = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCategoryOperatorColumnName]].Value?.ToString();
                     var columnWellStatusOperator = worksheetTab.Cells[row, columnPositions[XlsUtils.WellStatusOperatorColumnName]].Value?.ToString();
                     bool? columnWellStatusOperatorBoolean = null;
                     if (columnWellStatusOperator?.ToLower() == "ativo")
@@ -89,7 +83,6 @@ namespace PRIO.Controllers
                         columnWellStatusOperatorBoolean = false;
                     var columnWellProfile = worksheetTab.Cells[row, columnPositions[XlsUtils.WellProfileColumnName]].Value?.ToString();
                     var columnWellWaterDepth = worksheetTab.Cells[row, columnPositions[XlsUtils.WellWaterDepthColumnName]].Value?.ToString();
-
                     var columnWellPerforationTopMd = worksheetTab.Cells[row, columnPositions[XlsUtils.WellPerforationTopMdColumnName]].Value?.ToString();
                     var columnWellBottomPerforationMd = worksheetTab.Cells[row, columnPositions[XlsUtils.WellBottomPerforationColumnName]].Value?.ToString();
                     var columnWellArtificialLift = worksheetTab.Cells[row, columnPositions[XlsUtils.WellArtificialLiftColumnName]].Value?.ToString();
@@ -101,7 +94,6 @@ namespace PRIO.Controllers
                     var columnWellTypeCoordinate = worksheetTab.Cells[row, columnPositions[XlsUtils.WellTypeCoordinateColumnName]].Value?.ToString();
                     var columnWellCoordX = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCoordXColumnName]].Value?.ToString();
                     var columnWellCoordY = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCoordYColumnName]].Value?.ToString();
-
                     #endregion
 
                     if (!string.IsNullOrWhiteSpace(columnCluster) && !entityDictionary.TryGetValue(columnCluster.ToLower(), out var cluster))
@@ -116,93 +108,143 @@ namespace PRIO.Controllers
                                 UepCode = columnUepCode
                             };
 
+                            var clusterHistory = new ClusterHistory
+                            {
+                                Name = columnCluster,
+                                User = user,
+                                UepCode = columnUepCode,
+                                TypeOperation = TypeOperation.Import,
+
+                                Cluster = (Cluster)cluster,
+                            };
+
                             entityDictionary[columnCluster.ToLower()] = cluster;
-
+                            entityHistoriesDictionary[columnCluster.ToLower()] = clusterHistory;
                         }
-
-                        _lastFoundCluster = (Cluster)cluster;
                     }
 
                     if (!string.IsNullOrWhiteSpace(columnInstallation) && !entityDictionary.TryGetValue(columnInstallation.ToLower(), out var installation))
                     {
                         installation = await context.Installations.FirstOrDefaultAsync(x => x.Name.ToLower() == columnInstallation.ToLower());
 
-                        if (installation is null && _lastFoundCluster is not null)
+                        if (installation is null)
                         {
-
                             installation = new Installation
                             {
                                 Name = columnInstallation,
                                 User = user,
-                                Cluster = _lastFoundCluster,
+                                Cluster = columnCluster is not null ? (Cluster)entityDictionary.GetValueOrDefault(columnCluster.ToLower())! : null,
+                            };
+
+                            var installationHistory = new InstallationHistory
+                            {
+                                Cluster = columnCluster is not null ? (Cluster)entityDictionary.GetValueOrDefault(columnCluster.ToLower())! : null,
+
+                                Name = columnInstallation,
+
+                                User = user,
+                                Installation = (Installation)installation,
+                                TypeOperation = TypeOperation.Import
                             };
 
                             entityDictionary[columnInstallation.ToLower()] = installation;
+                            entityHistoriesDictionary[columnInstallation.ToLower()] = installationHistory;
 
                         }
-
-                        _lastFoundInstallation = installation is not null ? (Installation)installation : null;
                     }
 
                     if (!string.IsNullOrWhiteSpace(columnField) && !entityDictionary.TryGetValue(columnField.ToLower(), out var field))
                     {
                         field = await context.Fields.FirstOrDefaultAsync(x => x.Name.ToLower().Trim() == columnField.ToLower().Trim());
 
-                        if (field is null && _lastFoundInstallation is not null)
+                        if (field is null)
                         {
                             field = new Field
                             {
                                 Name = columnField,
                                 User = user,
-                                Installation = _lastFoundInstallation.Name == columnInstallation ? _lastFoundInstallation : (Installation)entityDictionary.GetValueOrDefault(columnInstallation.ToLower()),
+                                Installation = columnInstallation is not null ? (Installation)entityDictionary.GetValueOrDefault(columnInstallation.ToLower())! : null,
                                 CodField = columnCodeField,
+                            };
+                            var fieldHistory = new FieldHistory
+                            {
+                                Name = columnField,
+                                CodField = columnCodeField,
+                                User = user,
+                                Field = (Field)field,
+                                Installation = columnInstallation is not null ? (Installation)entityDictionary.GetValueOrDefault(columnInstallation.ToLower())! : null,
+                                TypeOperation = TypeOperation.Import,
                             };
 
                             entityDictionary[columnField.ToLower()] = field;
+                            entityHistoriesDictionary[columnField.ToLower()] = fieldHistory;
+
                         }
-                        _lastFoundField = field is not null ? (Field)field : null;
                     }
 
                     if (!string.IsNullOrWhiteSpace(columnZone) && !entityDictionary.TryGetValue(columnZone.ToLower(), out var zone))
                     {
                         zone = await context.Zones.FirstOrDefaultAsync(x => x.CodZone.ToLower() == columnZone.ToLower());
-                        if (zone is null && _lastFoundField is not null)
+                        if (zone is null)
                         {
                             zone = new Zone
                             {
                                 CodZone = columnZone,
                                 User = user,
-                                Field = _lastFoundField.Name == columnField ? _lastFoundField : (Field)entityDictionary.GetValueOrDefault(columnField.ToLower()),
+                                Field = columnField is not null ? (Field)entityDictionary.GetValueOrDefault(columnField.ToLower())! : null,
+                            };
+
+                            var zoneHistory = new ZoneHistory
+                            {
+                                CodZone = columnZone,
+
+                                Field = columnField is not null ? (Field)entityDictionary.GetValueOrDefault(columnField.ToLower())! : null,
+                                User = user,
+                                Zone = (Zone)zone,
+
+                                TypeOperation = TypeOperation.Import
                             };
 
                             entityDictionary[columnZone.ToLower()] = zone;
-                        }
+                            entityHistoriesDictionary[columnZone.ToLower()] = zoneHistory;
 
-                        _lastFoundZone = zone is not null ? (Zone)zone : null;
+                        }
                     }
 
                     if (!string.IsNullOrWhiteSpace(columnReservoir) && !entityDictionary.TryGetValue(columnReservoir.ToLower(), out var reservoir))
                     {
                         reservoir = await context.Reservoirs.FirstOrDefaultAsync(x => x.Name.ToLower() == columnReservoir.ToLower());
-                        if (reservoir is null && _lastFoundZone is not null)
+                        if (reservoir is null)
                         {
                             reservoir = new Reservoir
                             {
                                 Name = columnReservoir,
                                 User = user,
-                                Zone = _lastFoundZone.CodZone == columnZone ? _lastFoundZone : (Zone)entityDictionary.GetValueOrDefault(columnZone.ToLower()),
+                                Zone = columnZone is not null ? (Zone)entityDictionary.GetValueOrDefault(columnZone.ToLower())! : null,
+                            };
+
+                            var reservoirHistory = new ReservoirHistory
+                            {
+                                Name = columnReservoir,
+
+                                User = user,
+                                Reservoir = (Reservoir)reservoir,
+
+                                Zone = columnZone is not null ? (Zone)entityDictionary.GetValueOrDefault(columnZone.ToLower())! : null,
+
+                                TypeOperation = TypeOperation.Import,
                             };
 
                             entityDictionary[columnReservoir.ToLower()] = reservoir;
-                        }
+                            entityHistoriesDictionary[columnReservoir.ToLower()] = reservoirHistory;
 
-                        _lastFoundReservoir = reservoir is not null ? (Reservoir)reservoir : null;
+                        }
                     }
 
                     if (!string.IsNullOrWhiteSpace(columnWellCodeAnp) && !entityDictionary.TryGetValue(columnWellCodeAnp.ToLower(), out var well))
                     {
                         well = await context.Wells.FirstOrDefaultAsync(x => x.CodWellAnp.ToLower() == columnWellCodeAnp.ToLower());
-                        if (well is null && _lastFoundField is not null)
+                        if (well is null)
                         {
                             well = new Well
                             {
@@ -227,36 +269,72 @@ namespace PRIO.Controllers
                                 CoordX = columnWellCoordX,
                                 CoordY = columnWellCoordY,
                                 User = user,
-                                Field = _lastFoundField.Name == columnField ? _lastFoundField : (Field)entityDictionary.GetValueOrDefault(columnField.ToLower()),
+                                Field = columnField is not null ? (Field)entityDictionary.GetValueOrDefault(columnField.ToLower())! : null,
+                            };
+                            var wellHistory = new WellHistory
+                            {
+                                Name = columnWellNameAnp,
+                                WellOperatorName = columnWellOperatorName,
+                                CodWellAnp = columnWellCodeAnp,
+                                CategoryAnp = columnWellCategoryAnp,
+                                CategoryReclassificationAnp = columnWellCategoryReclassification,
+                                CategoryOperator = columnWellCategoryOperator,
+                                StatusOperator = columnWellStatusOperatorBoolean,
+                                Type = columnWellProfile,
+                                WaterDepth = columnWellWaterDepthDouble,
+                                TopOfPerforated = topOfPerforated,
+                                BaseOfPerforated = baseOfPerforated,
+                                ArtificialLift = columnWellArtificialLift,
+                                Latitude4C = columnWellLatitude4c,
+                                Longitude4C = columnWellLongitude4c,
+                                LongitudeDD = columnWellLongitudeDD,
+                                LatitudeDD = columnWellLatitudeDD,
+                                DatumHorizontal = columnWellDatumHorizontal,
+                                TypeBaseCoordinate = columnWellTypeCoordinate,
+                                CoordX = columnWellCoordX,
+                                CoordY = columnWellCoordY,
+                                Field = columnField is not null ? (Field)entityDictionary.GetValueOrDefault(columnField.ToLower())! : null,
+                                User = user,
+                                TypeOperation = TypeOperation.Import,
+                                Well = (Well)well,
                             };
 
                             entityDictionary[columnWellCodeAnp.ToLower()] = well;
+                            entityHistoriesDictionary[columnWellCodeAnp.ToLower()] = wellHistory;
                         }
-
-                        _lastFoundWell = well is not null ? (Well)well : null;
                     }
 
-                    if (!string.IsNullOrWhiteSpace(columnCompletion) && !string.IsNullOrWhiteSpace(columnWellNameAnp) && !entityDictionary.TryGetValue(columnCompletion.ToLower(), out var completion))
+                    if (!string.IsNullOrWhiteSpace(columnCompletion) && !entityDictionary.TryGetValue(columnCompletion.ToLower(), out var completion))
                     {
                         completion = await context.Completions.FirstOrDefaultAsync(x => x.Name.ToLower() == columnCompletion.ToLower());
-                        if (completion is null && _lastFoundWell is not null)
+                        if (completion is null)
                         {
                             completion = new Completion
                             {
                                 Name = columnCompletion,
                                 User = user,
-                                Reservoir = columnReservoir is not null ? _lastFoundReservoir : null,
-                                Well = _lastFoundWell.CodWellAnp == columnWellCodeAnp ? _lastFoundWell : (Well)entityDictionary.GetValueOrDefault(columnWellCodeAnp?.ToLower()),
+                                Reservoir = columnReservoir is not null ? (Reservoir)entityDictionary.GetValueOrDefault(columnReservoir?.ToLower())! : null,
+                                Well = columnWellCodeAnp is not null ? (Well)entityDictionary.GetValueOrDefault(columnWellCodeAnp?.ToLower())! : null,
+                            };
+
+                            var completionHistory = new CompletionHistory
+                            {
+                                Name = columnCompletion,
+                                Reservoir = columnReservoir is not null ? (Reservoir)entityDictionary.GetValueOrDefault(columnReservoir?.ToLower())! : null,
+                                Well = columnWellCodeAnp is not null ? (Well)entityDictionary.GetValueOrDefault(columnWellCodeAnp?.ToLower())! : null,
+                                User = user,
+                                TypeOperation = TypeOperation.Import
                             };
                             entityDictionary[columnCompletion.ToLower()] = completion;
+                            entityHistoriesDictionary[columnCompletion.ToLower()] = completionHistory;
                         }
                     }
                 }
                 try
                 {
                     await context.AddRangeAsync(entityDictionary.Values);
+                    await context.AddRangeAsync(entityHistoriesDictionary.Values);
                     await context.SaveChangesAsync();
-
                 }
                 catch (Exception ex)
                 {
