@@ -11,7 +11,7 @@ using PRIO.Models.Users;
 namespace PRIO.TESTS.Users
 {
     [TestFixture]
-    public class UserControllerTests
+    internal class UserControllerTests
     {
         private UserController _controller;
         private IMapper _mapper;

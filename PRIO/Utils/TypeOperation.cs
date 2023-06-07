@@ -6,5 +6,6 @@
         public readonly static string Update = "UPDATE";
         public readonly static string Create = "CREATE";
         public readonly static string Restore = "RESTORE";
+        public readonly static string Import = "IMPORT";
     }
 }
