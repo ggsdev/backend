@@ -10,6 +10,7 @@ using PRIO.DTOS.ClusterDTOS;
 using PRIO.DTOS.CompletionDTOS;
 using PRIO.DTOS.FieldDTOS;
 using PRIO.DTOS.InstallationDTOS;
+using PRIO.DTOS.MeasuringEquipment;
 using PRIO.DTOS.ReservoirDTOS;
 using PRIO.DTOS.UserDTOS;
 using PRIO.DTOS.WellDTOS;
@@ -25,6 +26,7 @@ using PRIO.Models.Completions;
 using PRIO.Models.Fields;
 using PRIO.Models.Installations;
 using PRIO.Models.Measurements;
+using PRIO.Models.MeasuringEquipments;
 using PRIO.Models.Reservoirs;
 using PRIO.Models.Users;
 using PRIO.Models.Wells;
@@ -135,6 +137,8 @@ static void ConfigureServices(IServiceCollection services)
 
         cfg.CreateMap<User, UserDTO>();
         cfg.CreateMap<UserHistory, UserHistoryDTO>();
+
+        cfg.CreateMap<MeasuringEquipment, MeasuringEquipmentDTO>();
 
     });
 

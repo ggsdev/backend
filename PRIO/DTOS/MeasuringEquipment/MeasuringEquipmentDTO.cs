@@ -1,12 +1,10 @@
-﻿using PRIO.Models.BaseModels;
-using PRIO.Models.Installations;
-using PRIO.Models.Measurements;
-using PRIO.Models.Users;
+﻿using PRIO.DTOS.UserDTOS;
 
-namespace PRIO.Models.MeasuringEquipments
+namespace PRIO.DTOS.MeasuringEquipment
 {
-    public class MeasuringEquipment : BaseModel
+    public class MeasuringEquipmentDTO
     {
+        public Guid Id { get; set; }
         public string? TagEquipment { get; set; }
         public string? TagMeasuringPoint { get; set; }
         public string? SerieNumber { get; set; }
@@ -20,9 +18,9 @@ namespace PRIO.Models.MeasuringEquipments
         public string? ChannelNumber { get; set; }
         public bool? InOperation { get; set; }
         public string? Fluid { get; set; }
-        public Installation? Installation { get; set; }
-        public List<Measurement>? Measurements { get; set; }
-        public User? User { get; set; }
-
+        public string? Description { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public UserDTO? User { get; set; }
     }
 }

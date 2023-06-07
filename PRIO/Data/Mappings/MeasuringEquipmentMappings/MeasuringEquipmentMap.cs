@@ -23,7 +23,7 @@ namespace PRIO.Data.Mappings.MeasuringEquipmentMapping
                 .HasColumnType("varchar")
                 .HasMaxLength(60)
                 .IsRequired();
-            
+
             builder.Property(x => x.SerieNumber)
                 .HasColumnType("varchar")
                 .HasMaxLength(60)
@@ -33,33 +33,33 @@ namespace PRIO.Data.Mappings.MeasuringEquipmentMapping
                 .HasColumnType("varchar")
                 .HasMaxLength(10)
                 .IsRequired();
-            
+
             builder.Property(x => x.TypeEquipment)
                 .HasColumnType("varchar")
                 .HasMaxLength(60)
                 .IsRequired();
-            
+
             builder.Property(x => x.Model)
                 .HasColumnType("varchar")
                 .HasMaxLength(60)
                 .IsRequired();
-            
+
             builder.Property(x => x.HasSeal)
                 .IsRequired();
-            
+
             builder.Property(x => x.MVS)
                 .IsRequired();
-            
+
             builder.Property(x => x.CommunicationProtocol)
                 .HasColumnType("varchar")
                 .HasMaxLength(60)
                 .IsRequired();
-          
+
             builder.Property(x => x.TypePoint)
                 .HasColumnType("varchar")
                 .HasMaxLength(60)
                 .IsRequired();
-                          
+
             builder.Property(x => x.ChannelNumber)
                 .HasColumnType("varchar")
                 .HasMaxLength(10)
