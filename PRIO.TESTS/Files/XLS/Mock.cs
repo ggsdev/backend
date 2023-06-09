@@ -300,13 +300,9 @@
         public static readonly string _completionWellCod74281026753NoReservoir = "7-TBMT-12H-RJS_";
         public static readonly string _completionWellCod74281029234 = "7-POL-38HP-RJS_11775";
 
-
         public static readonly string _completionWellCod74281019769 = "3-TXCO-3DA-RJS_";
         public static readonly string _completionWellCod74281022570 = "7-POL-5H-RJS_";
         public static readonly string _completionWellCod74281024180 = "7-FR-15HP-RJS_9122";
-
-
-
 
         //adicionar mais completações para teste name/wellcode
         //7-POL-17H-RJS_
@@ -314,13 +310,15 @@
         //74281023796
         //74281023817
 
-        public static readonly int _totalClusters = 3;
-        public static readonly int _totalInstallations = 4;
-        public static readonly int _totalReservoirs = 19;
-        public static readonly int _totalZones = 16;
-        public static readonly int _totalFields = 5;
-        public static readonly int _totalWells = 265;
-        public static readonly int _totalCompletions = 267;
+
+        //refatorar para contar linhas do xls tirando duplicados
+        public static readonly int _totalClusters = 3 * 2;
+        public static readonly int _totalInstallations = 4 * 2;
+        public static readonly int _totalReservoirs = 19 * 2;
+        public static readonly int _totalZones = 16 * 2;
+        public static readonly int _totalFields = 5 * 2;
+        public static readonly int _totalWells = 265 * 2;
+        public static readonly int _totalCompletions = 267 * 2;
     }
 
     public class WellMock

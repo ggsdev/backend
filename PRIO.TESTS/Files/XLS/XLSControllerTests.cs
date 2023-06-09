@@ -66,27 +66,28 @@ namespace PRIO.TESTS.Files.XLS
             Assert.That(((ImportResponseDTO)createdResult.Value).Message, Is.EqualTo("File imported successfully"));
         }
 
-        //[Test]
-        //public async Task CheckIfTotalMatchesIfExcelRows()
-        //{
-        //    await _controller.PostBase64File(_viewModel, _context);
+        //refatorar contando rows do xls * 2 (historicos)
+        [Test]
+        public async Task CheckIfTotalMatchesIfExcelRows()
+        {
+            await _controller.PostBase64File(_viewModel, _context);
 
-        //    var clustersCount = _context.Clusters.Count();
-        //    var installationsCount = _context.Installations.Count();
-        //    var fieldsCount = _context.Fields.Count();
-        //    var zonesCount = _context.Zones.Count();
-        //    var reservoirsCount = _context.Reservoirs.Count();
-        //    var wellsCount = _context.Wells.Count();
-        //    var completionsCount = _context.Completions.Count();
+            var clustersAndHistoriesCount = _context.Clusters.Count() + _context.ClustersHistories.Count();
+            var installationsAndHistoriesCount = _context.Installations.Count() + _context.InstallationHistories.Count();
+            var fieldsAndHistoriesCount = _context.Fields.Count() + _context.FieldHistories.Count();
+            var zonesAndHistoriesCount = _context.Zones.Count() + _context.ZoneHistories.Count();
+            var reservoirsAndHistoriesCount = _context.Reservoirs.Count() + _context.ReservoirHistories.Count();
+            var wellsAndHistoriesCount = _context.Wells.Count() + _context.WellHistories.Count();
+            var completionsAndHistoriesCount = _context.Completions.Count() + _context.CompletionHistories.Count();
 
-        //    Assert.That(clustersCount, Is.EqualTo(Mock._totalClusters));
-        //    Assert.That(installationsCount, Is.EqualTo(Mock._totalInstallations));
-        //    Assert.That(fieldsCount, Is.EqualTo(Mock._totalFields));
-        //    Assert.That(zonesCount, Is.EqualTo(Mock._totalZones));
-        //    Assert.That(reservoirsCount, Is.EqualTo(Mock._totalReservoirs));
-        //    Assert.That(wellsCount, Is.EqualTo(Mock._totalWells));
-        //    Assert.That(completionsCount, Is.EqualTo(Mock._totalCompletions));
-        //}
+            Assert.That(clustersAndHistoriesCount, Is.EqualTo(Mock._totalClusters));
+            Assert.That(installationsAndHistoriesCount, Is.EqualTo(Mock._totalInstallations));
+            Assert.That(fieldsAndHistoriesCount, Is.EqualTo(Mock._totalFields));
+            Assert.That(zonesAndHistoriesCount, Is.EqualTo(Mock._totalZones));
+            Assert.That(reservoirsAndHistoriesCount, Is.EqualTo(Mock._totalReservoirs));
+            Assert.That(wellsAndHistoriesCount, Is.EqualTo(Mock._totalWells));
+            Assert.That(completionsAndHistoriesCount, Is.EqualTo(Mock._totalCompletions));
+        }
 
         [Test]
         public async Task ClustersSuccesfullyCreated()

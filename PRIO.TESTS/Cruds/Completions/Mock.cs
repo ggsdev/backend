@@ -2,6 +2,8 @@
 {
     internal class Mock
     {
+        public static readonly Guid _invalidId = Guid.NewGuid();
+
         //public static readonly Cluster _cluster1 = new()
         //{
         //    UepCode = "12332",
