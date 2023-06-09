@@ -4,7 +4,7 @@ using PRIO.Data;
 
 namespace PRIO.Controllers
 {
-    public class BaseApiController : ControllerBase
+    public abstract class BaseApiController : ControllerBase
     {
         protected readonly DataContext _context;
         protected readonly IMapper _mapper;

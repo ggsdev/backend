@@ -5,7 +5,7 @@ namespace PRIO.DTOS.FieldDTOS
 {
     public class FieldHistoryDTO
     {
-        public Guid Id { get; set; }
+        public Guid? Id { get; set; }
         public string? Name { get; set; }
         public string? NameOld { get; set; }
         public string? CodField { get; set; }

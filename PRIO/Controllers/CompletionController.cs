@@ -4,10 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS;
 using PRIO.DTOS.CompletionDTOS;
-using PRIO.DTOS.WellDTOS;
 using PRIO.Models.Completions;
-using PRIO.Models.Reservoirs;
-using PRIO.Models.Wells;
 using PRIO.Utils;
 using PRIO.ViewModels.Completions;
 
@@ -42,6 +39,7 @@ namespace PRIO.Controllers
                     Message = $"Well with id: {body.WellId} not found"
                 });
 
+            //verificar se manualmente uma completação pode não ter um reservatorio associado igual ao XLS
             var reservoir = await _context.Reservoirs.Include(x => x.Zone).ThenInclude(z => z.Field).FirstOrDefaultAsync(x => x.Id == body.ReservoirId);
             if (reservoir is null)
                 return NotFound(new ErrorResponseDTO
@@ -82,7 +80,7 @@ namespace PRIO.Controllers
                 CodCompletionOld = null,
                 Reservoir = reservoir,
                 ReservoirOld = null,
-                Well =  well,
+                Well = well,
                 WellOld = null,
                 User = user,
                 Description = body.Description,
@@ -194,9 +192,6 @@ namespace PRIO.Controllers
                         Message = $"Well: {well.Name} and Reservoir: {reservoir.Name} doesn't belong to the same Field"
                     });
 
-                Console.WriteLine(well.Name);
-                Console.WriteLine(completion.Reservoir?.Zone);
-
                 completion.Name = $"{well.Name}_{completion.Reservoir.Zone.CodZone}";
                 completion.Well = well;
                 completionHistory.Name = $"{well.Name}_{completion.Reservoir.Zone.CodZone}";
@@ -282,7 +277,7 @@ namespace PRIO.Controllers
                 ReservoirOld = completion.Reservoir?.Id,
                 User = user,
                 TypeOperation = TypeOperation.Delete,
-                
+
             };
 
             completion.IsActive = false;
