@@ -24,11 +24,9 @@ namespace PRIO.Controllers
         [HttpPost("xlsx")]
         public async Task<IActionResult> PostBase64File([FromBody] RequestXslxViewModel data, [FromServices] DataContext context)
         {
-            var basePath = "C:\\Users\\gabri\\source\\repos\\PrioANP\\backend\\PRIO\\PRIO\\Files\\";
-            var pathXslx = basePath + "teste.xlsx";
-
+            var tempFilePath = Path.GetTempFileName();
             var contentBase64 = data.ContentBase64?.Replace("data:@file/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,", "");
-            await System.IO.File.WriteAllBytesAsync(pathXslx, Convert.FromBase64String(contentBase64!));
+            await System.IO.File.WriteAllBytesAsync(tempFilePath, Convert.FromBase64String(contentBase64!));
 
             var userId = (Guid)HttpContext.Items["Id"]!;
             var user = await context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
@@ -39,7 +37,7 @@ namespace PRIO.Controllers
                     Message = "User not identified, please login first"
                 });
 
-            var fileInfo = new FileInfo(pathXslx);
+            var fileInfo = new FileInfo(tempFilePath);
             using (ExcelPackage package = new(fileInfo))
             {
                 var workbook = package.Workbook;

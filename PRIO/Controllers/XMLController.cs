@@ -70,11 +70,10 @@ namespace PRIO.Controllers
                 #endregion
 
                 #region pathing
-                var basePath = "C:\\Users\\gabri\\source\\repos\\PrioANP\\backend\\PRIO\\PRIO\\Files\\XML";
-                var tempPath = Path.GetTempPath();
-                var formattedDateTime = DateTime.Now.ToString("yyyyMMddHHmmss");
-                var pathXml = Path.Combine(tempPath, $"{data.Files[i].FileName}_03255266_{formattedDateTime}_eeeeeeeeeeeeeee(campo_opcional).xml");
-                var pathSchema = basePath + $"\\_{data.Files[i].FileName}\\Schema.xsd";
+                var projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\.."));
+                var relativeSchemaPath = Path.Combine("Files", "XML", $"_{data.Files[i].FileName}\\Schema.xsd");
+                var pathXml = Path.GetTempPath() + "xmlImports.xml";
+                var pathSchema = Path.GetFullPath(Path.Combine(projectRoot, relativeSchemaPath));
                 #endregion
 
                 #region writting, parsing
