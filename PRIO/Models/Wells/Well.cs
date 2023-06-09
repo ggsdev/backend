@@ -1,5 +1,4 @@
-﻿using PRIO.DTOS.WellDTOS;
-using PRIO.Models.BaseModels;
+﻿using PRIO.Models.BaseModels;
 using PRIO.Models.Completions;
 using PRIO.Models.Fields;
 using PRIO.Models.Users;

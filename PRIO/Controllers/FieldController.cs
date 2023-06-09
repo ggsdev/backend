@@ -5,7 +5,6 @@ using PRIO.Data;
 using PRIO.DTOS;
 using PRIO.DTOS.FieldDTOS;
 using PRIO.Models.Fields;
-using PRIO.Services;
 using PRIO.Utils;
 using PRIO.ViewModels.Fields;
 
@@ -15,13 +14,11 @@ namespace PRIO.Controllers
     public class FieldController : ControllerBase
     {
         private readonly DataContext _context;
-        private readonly FieldServices _fieldServices;
         private readonly IMapper _mapper;
 
-        public FieldController(DataContext context, FieldServices fieldService, IMapper mapper)
+        public FieldController(DataContext context, IMapper mapper)
         {
             _context = context;
-            _fieldServices = fieldService;
             _mapper = mapper;
 
         }
@@ -31,7 +28,7 @@ namespace PRIO.Controllers
         {
             var fieldInDatabase = await _context.Fields.FirstOrDefaultAsync(x => x.CodField == body.CodField);
             if (fieldInDatabase is not null)
-                return NotFound(new ErrorResponseDTO
+                return Conflict(new ErrorResponseDTO
                 {
                     Message = $"Field with code: {body.CodField} already exists."
                 });
@@ -108,7 +105,7 @@ namespace PRIO.Controllers
         [HttpGet("fields/{id}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var field = await _fieldServices.GetFieldById(id);
+            var field = await _context.Fields.FirstOrDefaultAsync(x => x.Id == id);
             if (field is null)
                 return NotFound(new ErrorResponseDTO
                 {
@@ -137,9 +134,6 @@ namespace PRIO.Controllers
                 {
                     Message = $"User is not found"
                 });
-
-
-
 
             var fieldHistory = new FieldHistory
             {

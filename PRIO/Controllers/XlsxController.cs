@@ -75,9 +75,9 @@ namespace PRIO.Controllers
                     var columnWellCategoryOperator = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCategoryOperatorColumnName]].Value?.ToString();
                     var columnWellStatusOperator = worksheetTab.Cells[row, columnPositions[XlsUtils.WellStatusOperatorColumnName]].Value?.ToString();
                     bool? columnWellStatusOperatorBoolean = null;
-                    if (columnWellStatusOperator?.ToLower() == "ativo")
+                    if (columnWellStatusOperator.Contains("ativo".ToLower()))
                         columnWellStatusOperatorBoolean = true;
-                    if (columnWellStatusOperator?.ToLower() == "inativo")
+                    if (columnWellStatusOperator.Contains("inativo".ToLower()))
                         columnWellStatusOperatorBoolean = false;
                     var columnWellProfile = worksheetTab.Cells[row, columnPositions[XlsUtils.WellProfileColumnName]].Value?.ToString();
                     var columnWellWaterDepth = worksheetTab.Cells[row, columnPositions[XlsUtils.WellWaterDepthColumnName]].Value?.ToString();
