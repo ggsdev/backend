@@ -6,6 +6,7 @@ using PRIO.Data;
 using PRIO.DTOS.XLSDTOS;
 using PRIO.Models.Users;
 using PRIO.ViewModels.Files;
+
 namespace PRIO.TESTS.Files.XLS
 {
     [TestFixture]
@@ -26,7 +27,10 @@ namespace PRIO.TESTS.Files.XLS
 
             _context = new DataContext(contextOptions);
 
-            _pathXLS = "C:\\Users\\gabri\\source\\repos\\PrioANP\\backend\\PRIO\\PRIO.TESTS\\Files\\XLS\\base64Mock.txt";
+            var projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\.."));
+            var relativePath = Path.Combine("Files", "XLS", "base64Mock.txt");
+            _pathXLS = Path.GetFullPath(Path.Combine(projectRoot, relativePath));
+
             _user = new User()
             {
                 Name = "userTeste",
