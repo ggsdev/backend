@@ -195,7 +195,7 @@ namespace PRIO.TESTS.Cruds.Completions
             };
 
             await _controller.Create(_viewModel);
-            var completion = await _context.CompletionHistories.SingleOrDefaultAsync();
+            var completion = await _context.Completions.SingleOrDefaultAsync();
             var history = await _context.CompletionHistories.SingleOrDefaultAsync();
 
             Assert.That(history, Is.Not.Null);
