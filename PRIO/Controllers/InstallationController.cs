@@ -29,6 +29,7 @@ namespace PRIO.Controllers
                     Message = $"Installation with code: {body.CodInstallation} already exists, try another code."
                 });
 
+            Console.WriteLine("oi");
             var clusterInDatabase = await _context.Clusters.FirstOrDefaultAsync(x => x.Id == body.ClusterId);
             if (clusterInDatabase is null)
                 return NotFound(new ErrorResponseDTO
