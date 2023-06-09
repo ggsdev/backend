@@ -31,6 +31,7 @@
 
   <ItemGroup>
     <Folder Include="Cruds\Fields\" />
+    <Folder Include="Files\XML\" />
   </ItemGroup>
 
 </Project>

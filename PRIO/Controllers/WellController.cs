@@ -31,8 +31,8 @@ namespace PRIO.Controllers
                     Message = $"Well with code: {body.CodWell} already exists, try another code."
                 });
 
-            var FieldFound = await _context.Fields.FirstOrDefaultAsync(x => x.Id == body.FieldId);
-            if (FieldFound is null)
+            var fieldFound = await _context.Fields.FirstOrDefaultAsync(x => x.Id == body.FieldId);
+            if (fieldFound is null)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = $"Field is not found"
@@ -70,7 +70,7 @@ namespace PRIO.Controllers
                 CoordX = body.CoordX,
                 CoordY = body.CoordY,
                 Description = body.Description,
-                Field = FieldFound,
+                Field = fieldFound,
                 User = user,
             };
 
@@ -122,7 +122,7 @@ namespace PRIO.Controllers
                 CoordYOld = null,
                 Description = body.Description,
                 DescriptionOld = null,
-                Field = FieldFound,
+                Field = fieldFound,
                 FieldOld = null,
                 User = user,
                 TypeOperation = TypeOperation.Create,
@@ -136,7 +136,7 @@ namespace PRIO.Controllers
 
             var wellDTO = _mapper.Map<Well, WellDTO>(well);
 
-            return Created($"reservoirs/{well.Id}", wellDTO);
+            return Created($"wells/{well.Id}", wellDTO);
         }
 
         [HttpGet("wells")]
