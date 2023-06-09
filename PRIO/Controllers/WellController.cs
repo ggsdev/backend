@@ -6,7 +6,7 @@ using PRIO.DTOS;
 using PRIO.DTOS.WellDTOS;
 using PRIO.Models.Wells;
 using PRIO.Utils;
-using PRIO.ViewModels.Zones;
+using PRIO.ViewModels.Wells;
 
 namespace PRIO.Controllers
 {

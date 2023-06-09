@@ -50,10 +50,11 @@ namespace PRIO.Controllers
 
                 var columnPositions = XlsUtils.GetColumnPositions(worksheetTab);
 
-                for (int row = 2; row <= dimension.End.Row; row++)
+                for (int row = 2; row <= dimension.End.Row; ++row)
                 {
                     var columnCluster = worksheetTab.Cells[row, columnPositions[XlsUtils.ClusterColumnName]].Value?.ToString();
                     var columnUepCode = worksheetTab.Cells[row, columnPositions[XlsUtils.ClusterUepCodeColumnName]].Value?.ToString();
+                    //var columnsInstallationCod = worksheetTab.Cells[row, columnPositions[XlsUtils.ClusterUepCodeColumnName]].Value?.ToString();
 
                     var columnInstallation = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationColumnName]].Value?.ToString();
 
@@ -130,6 +131,7 @@ namespace PRIO.Controllers
                             installation = new Installation
                             {
                                 Name = columnInstallation,
+                                //CodInstallation = columnsInstallationCod,
                                 User = user,
                                 Cluster = columnCluster is not null ? (Cluster)entityDictionary.GetValueOrDefault(columnCluster.ToLower())! : null,
                             };
@@ -137,7 +139,7 @@ namespace PRIO.Controllers
                             var installationHistory = new InstallationHistory
                             {
                                 Cluster = columnCluster is not null ? (Cluster)entityDictionary.GetValueOrDefault(columnCluster.ToLower())! : null,
-
+                                //CodInstallation = columnsInstallationCod,
                                 Name = columnInstallation,
 
                                 User = user,

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PRIO.ViewModels.Zones
+namespace PRIO.ViewModels.Wells
 {
     public class CreateWellViewModel
     {
