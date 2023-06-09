@@ -423,7 +423,7 @@ namespace PRIO.TESTS.Cruds.Completions
             Assert.That(completionInDatabase, Is.Not.Null);
             Assert.That(historyInDatabase, Is.Not.Null);
             Assert.That(completionInDatabase.IsActive, Is.True);
-            Assert.That(historyInDatabase.IsActive, Is.EqualTo(completionInDatabase.IsActive));
+            Assert.That(historyInDatabase.IsActive, Is.True);
             Assert.That(historyInDatabase.IsActiveOld, Is.False);
             Assert.That(historyInDatabase.TypeOperation, Is.EqualTo(Utils.TypeOperation.Restore));
             Assert.That(completionInDatabase.DeletedAt, Is.Null);

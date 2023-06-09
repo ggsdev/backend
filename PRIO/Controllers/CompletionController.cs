@@ -322,7 +322,7 @@ namespace PRIO.Controllers
             {
                 NameOld = completion.Name,
                 Name = completion.Name,
-                IsActive = false,
+                IsActive = true,
                 IsActiveOld = completion.IsActive,
                 Description = completion.Description,
                 DescriptionOld = completion.Description,
