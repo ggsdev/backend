@@ -73,7 +73,7 @@ namespace PRIO.Controllers
             await _context.ZoneHistories.AddAsync(zoneHistory);
             await _context.SaveChangesAsync();
 
-            var zoneDTO = _mapper.Map<Zone, ZoneDTO>(zone);
+            var zoneDTO = _mapper.Map<Zone, CreateUpdateZoneDTO>(zone);
 
             return Created($"zones/{zone.Id}", zoneDTO);
         }
@@ -109,6 +109,7 @@ namespace PRIO.Controllers
                 .Include(x => x.Field)
                 .Include(x => x.Zone)
                 .Where(x => x.Zone.Id == id)
+                .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
 
             if (zoneHistories is null)
@@ -179,7 +180,7 @@ namespace PRIO.Controllers
             _context.Zones.Update(zone);
             await _context.SaveChangesAsync();
 
-            var zoneDTO = _mapper.Map<Zone, ZoneDTO>(zone);
+            var zoneDTO = _mapper.Map<Zone, CreateUpdateZoneDTO>(zone);
 
             return Ok(zoneDTO);
 
@@ -282,7 +283,7 @@ namespace PRIO.Controllers
             _context.Zones.Update(zone);
             await _context.SaveChangesAsync();
 
-            var zoneDTO = _mapper.Map<Zone, ZoneDTO>(zone);
+            var zoneDTO = _mapper.Map<Zone, CreateUpdateZoneDTO>(zone);
             return Ok(zoneDTO);
         }
     }

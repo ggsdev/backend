@@ -73,7 +73,7 @@ namespace PRIO.Controllers
             await _context.InstallationHistories.AddAsync(installationHistory);
             await _context.SaveChangesAsync();
 
-            var installationDTO = _mapper.Map<Installation, InstallationDTO>(installation);
+            var installationDTO = _mapper.Map<Installation, CreateUpdateInstallationDTO>(installation);
 
             return Created($"installations/{installation.Id}", installationDTO);
         }
@@ -113,6 +113,7 @@ namespace PRIO.Controllers
                 .Include(x => x.Cluster)
                 .Include(x => x.Installation)
                 .Where(x => x.Installation.Id == id)
+                .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
 
             if (installationHistories is null)
@@ -151,7 +152,7 @@ namespace PRIO.Controllers
                 Name = body.Name is not null ? body.Name : installation.Name,
                 NameOld = installation.Name,
 
-                CodInstallation = installation.CodInstallation,
+                CodInstallation = body.CodInstallation is not null ? installation.CodInstallation : installation.CodInstallation,
                 CodInstallationOld = installation.CodInstallation,
 
                 Description = body.Description is not null ? body.Description : installation.Description,
@@ -185,9 +186,8 @@ namespace PRIO.Controllers
             _context.Installations.Update(installation);
             await _context.SaveChangesAsync();
 
-            var installationDTO = _mapper.Map<Installation, InstallationDTO>(installation);
+            var installationDTO = _mapper.Map<Installation, CreateUpdateInstallationDTO>(installation);
             return Ok(installationDTO);
-
         }
         [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
@@ -292,7 +292,7 @@ namespace PRIO.Controllers
             _context.Installations.Update(installation);
             await _context.SaveChangesAsync();
 
-            var installationDTO = _mapper.Map<Installation, InstallationDTO>(installation);
+            var installationDTO = _mapper.Map<Installation, CreateUpdateInstallationDTO>(installation);
 
             return Ok(installationDTO);
         }

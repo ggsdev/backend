@@ -3,10 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS;
-using PRIO.DTOS.FieldDTOS;
 using PRIO.DTOS.WellDTOS;
-using PRIO.Models.Fields;
-using PRIO.Models.Users;
 using PRIO.Models.Wells;
 using PRIO.Utils;
 using PRIO.ViewModels.Zones;
@@ -363,7 +360,7 @@ namespace PRIO.Controllers
                 TypeOperation = TypeOperation.Delete,
             };
             await _context.WellHistories.AddAsync(wellHistory);
-                
+
             well.IsActive = false;
             well.DeletedAt = DateTime.UtcNow;
 
@@ -390,7 +387,6 @@ namespace PRIO.Controllers
                 {
                     Message = $"User is not found"
                 });
-            Console.WriteLine(well);
             var wellHistory = new WellHistory
             {
                 Name = well.Name,
