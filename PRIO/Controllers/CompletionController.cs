@@ -32,6 +32,15 @@ namespace PRIO.Controllers
                     Message = $"User not found"
                 });
 
+            if (!ModelState.IsValid)
+            {
+                var errorResponse = new ErrorResponseDTO
+                {
+                    Message = "Invalid request body"
+                };
+                return BadRequest(errorResponse);
+            }
+
             var well = await _context.Wells.Include(x => x.Field).FirstOrDefaultAsync(x => x.Id == body.WellId);
             if (well is null)
                 return NotFound(new ErrorResponseDTO

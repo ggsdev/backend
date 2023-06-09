@@ -172,16 +172,26 @@ namespace PRIO.Controllers
             await _context.InstallationHistories.AddAsync(installationHistory);
 
             if (body.ClusterId is not null && clusterInDatabase is null)
-            {
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Cluster not found"
                 });
+
+            if (body.CodInstallation is not null)
+            {
+                var installationWithSameCode = await _context.Installations.FirstOrDefaultAsync(x => x.CodInstallation == body.CodInstallation);
+
+                if (installationWithSameCode is null || installationWithSameCode?.Id == installation.Id)
+                    installation.CodInstallation = body.CodInstallation;
+                else
+                    return Conflict(new ErrorResponseDTO
+                    {
+                        Message = $"Installation with code: {body.CodInstallation} already exists, name: {installationWithSameCode?.Name}"
+                    });
             }
 
             installation.Name = body.Name is not null ? body.Name : installation.Name;
             installation.Description = body.Description is not null ? body.Description : installation.Description;
-            installation.CodInstallation = body.CodInstallation is not null ? body.CodInstallation : installation.CodInstallation;
             installation.Cluster = clusterInDatabase is not null ? clusterInDatabase : installation.Cluster;
 
             _context.Installations.Update(installation);

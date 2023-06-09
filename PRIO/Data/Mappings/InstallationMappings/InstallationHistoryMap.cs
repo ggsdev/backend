@@ -25,7 +25,8 @@ namespace PRIO.Data.Mappings.InstallationMapping
 
             builder.Property(x => x.CodInstallation)
                 .HasColumnType("VARCHAR")
-                .HasMaxLength(120);
+                .HasMaxLength(120)
+                .IsRequired();
 
             builder.Property(x => x.CodInstallationOld)
                 .HasColumnType("VARCHAR")
