@@ -183,37 +183,7 @@ namespace PRIO.TESTS.Cruds.Installations
             }
         }
 
-        //Patch
-        [Test]
-        public async Task Delete_InstallationReturnsANoContent()
-        {
-            Cluster _cluster1 = new()
-            {
-                UepCode = "12332",
-                Name = "ClusterTest",
-                User = _user
-            };
-            _context.Add(_cluster1);
-
-            Installation _installation = new()
-            {
-                Name = "InstallationTest",
-                CodInstallation = "InstallationTest",
-                Cluster = _cluster1
-            };
-            _context.Add(_installation);
-            _context.SaveChanges();
-
-            var response = await _controller.Delete(_installation.Id);
-            var createdResult = (NoContentResult)response;
-
-            Assert.IsInstanceOf<NoContentResult>(response);
-            var installation = await _context.Installations.SingleOrDefaultAsync();
-            Assert.That(installation.IsActive, Is.EqualTo(false));
-            Assert.That(installation.DeletedAt, Is.Not.Null);
-            Assert.That(createdResult.StatusCode, Is.EqualTo(204));
-        }
-
+        //PATCH
         [Test]
         public async Task Update_InstallationReturnsACreatedStatusWithDTO()
         {
@@ -248,6 +218,37 @@ namespace PRIO.TESTS.Cruds.Installations
             Assert.That(((CreateUpdateInstallationDTO)createdResult.Value).Name, Is.EqualTo(_viewModel2.Name));
             Assert.That(((CreateUpdateInstallationDTO)createdResult.Value).CodInstallation, Is.EqualTo(_viewModel2.CodInstallation));
             Assert.That(createdResult.StatusCode, Is.EqualTo(200));
+        }
+
+        //DELETE
+        [Test]
+        public async Task Delete_InstallationReturnsANoContent()
+        {
+            Cluster _cluster1 = new()
+            {
+                UepCode = "12332",
+                Name = "ClusterTest",
+                User = _user
+            };
+            _context.Add(_cluster1);
+
+            Installation _installation = new()
+            {
+                Name = "InstallationTest",
+                CodInstallation = "InstallationTest",
+                Cluster = _cluster1
+            };
+            _context.Add(_installation);
+            _context.SaveChanges();
+
+            var response = await _controller.Delete(_installation.Id);
+            var createdResult = (NoContentResult)response;
+
+            Assert.IsInstanceOf<NoContentResult>(response);
+            var installation = await _context.Installations.SingleOrDefaultAsync();
+            Assert.That(installation.IsActive, Is.EqualTo(false));
+            Assert.That(installation.DeletedAt, Is.Not.Null);
+            Assert.That(createdResult.StatusCode, Is.EqualTo(204));
         }
 
 

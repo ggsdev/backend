@@ -62,6 +62,7 @@ namespace PRIO.TESTS.Cruds.Clusters
             _context.Dispose();
         }
 
+        //CREATE
         [Test]
         public async Task Create_ClusterReturnsACreatedStatusWithDTO()
         {
@@ -99,7 +100,6 @@ namespace PRIO.TESTS.Cruds.Clusters
             Assert.IsInstanceOf<ConflictObjectResult>(response);
             Assert.That(((ErrorResponseDTO)createdResult.Value).Message, Is.EqualTo($"Cluster with code: {_viewModel.CodCluster} already exists."));
             Assert.That(createdResult.StatusCode, Is.EqualTo(409));
-
         }
 
         [Test]
@@ -127,6 +127,7 @@ namespace PRIO.TESTS.Cruds.Clusters
                 Assert.That(ex.Message, Contains.Substring("Required properties '{'Name'}' are missing"));
             }
         }
+
         [Test]
         public async Task Create_AlsoCreateAClusterHistoryOfTypeCreate()
         {
@@ -148,6 +149,57 @@ namespace PRIO.TESTS.Cruds.Clusters
             Assert.That(history.User, Is.Not.Null);
             Assert.That(history.User.Name, Is.EqualTo(_user.Name));
             Assert.That(history.Name, Is.EqualTo(cluster.Name));
+        }
+
+        //PATCH
+        [Test]
+        public async Task Update_ClusterReturnsACreatedStatusWithDTO()
+        {
+            Cluster _cluster1 = new()
+            {
+                UepCode = "12332",
+                Name = "ClusterTest",
+                User = _user
+            };
+            _context.Add(_cluster1);
+            _context.SaveChanges();
+
+            var _viewModel2 = new UpdateClusterViewModel
+            {
+                Name = "ClusterTest2",
+                CodCluster = "ClusterTest2",
+            };
+
+            var response = await _controller.Update(_cluster1.Id, _viewModel2);
+            var createdResult = (OkObjectResult)response;
+
+            Assert.IsInstanceOf<OkObjectResult>(response);
+            Assert.That(((ClusterDTO)createdResult.Value).Name, Is.EqualTo(_viewModel2.Name));
+            Assert.That(((ClusterDTO)createdResult.Value).CodCluster, Is.EqualTo(_viewModel2.CodCluster));
+            Assert.That(createdResult.StatusCode, Is.EqualTo(200));
+        }
+
+        //DELETE
+        [Test]
+        public async Task Delete_ClusterReturnsANoContent()
+        {
+            Cluster _cluster1 = new()
+            {
+                UepCode = "12332",
+                Name = "ClusterTest",
+                User = _user
+            };
+            _context.Add(_cluster1);
+            _context.SaveChanges();
+
+            var response = await _controller.Delete(_cluster1.Id);
+            var createdResult = (NoContentResult)response;
+
+            Assert.IsInstanceOf<NoContentResult>(response);
+            var cluster = await _context.Clusters.SingleOrDefaultAsync();
+            Assert.That(cluster.IsActive, Is.EqualTo(false));
+            Assert.That(cluster.DeletedAt, Is.Not.Null);
+            Assert.That(createdResult.StatusCode, Is.EqualTo(204));
         }
     }
 }
