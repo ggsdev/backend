@@ -1,4 +1,4 @@
-﻿namespace PRIO.ViewModels.Zones
+﻿namespace PRIO.ViewModels.Reservoirs
 {
     public class UpdateReservoirViewModel
     {
