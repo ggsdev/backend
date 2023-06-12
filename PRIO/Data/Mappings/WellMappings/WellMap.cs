@@ -21,7 +21,8 @@ namespace PRIO.Data.Mappings.WellMapping
 
             builder.Property(e => e.WellOperatorName)
                 .HasColumnType("VARCHAR")
-                .HasMaxLength(150);
+                .HasMaxLength(150)
+                .IsRequired();
 
             builder.Property(e => e.CodWell)
                 .HasColumnType("VARCHAR")
@@ -34,7 +35,8 @@ namespace PRIO.Data.Mappings.WellMapping
 
             builder.Property(e => e.CategoryAnp)
                 .HasColumnType("VARCHAR")
-                .HasMaxLength(150);
+                .HasMaxLength(150)
+                .IsRequired();
 
             builder.Property(e => e.CategoryReclassificationAnp)
                 .HasColumnType("VARCHAR")
@@ -49,18 +51,19 @@ namespace PRIO.Data.Mappings.WellMapping
 
             builder.Property(e => e.Type)
                 .HasColumnType("VARCHAR")
-                .HasMaxLength(150);
+                .HasMaxLength(150)
+                .IsRequired();
 
             builder.Property(e => e.WaterDepth)
-                .HasColumnType("float")
+                .HasColumnType("decimal")
                 .HasPrecision(10, 2);
 
             builder.Property(e => e.TopOfPerforated)
-               .HasColumnType("float")
+               .HasColumnType("decimal")
                 .HasPrecision(10, 2);
 
             builder.Property(e => e.BaseOfPerforated)
-               .HasColumnType("float")
+               .HasColumnType("decimal")
                 .HasPrecision(10, 2);
 
             builder.Property(e => e.ArtificialLift)
@@ -69,34 +72,34 @@ namespace PRIO.Data.Mappings.WellMapping
 
             builder.Property(e => e.Latitude4C)
               .HasColumnType("VARCHAR")
-              .HasMaxLength(150);
+              .HasMaxLength(150).IsRequired();
 
             builder.Property(e => e.Longitude4C)
               .HasColumnType("VARCHAR")
-              .HasMaxLength(150);
+              .HasMaxLength(150).IsRequired();
 
             builder.Property(e => e.LatitudeDD)
               .HasColumnType("VARCHAR")
-              .HasMaxLength(150);
+              .HasMaxLength(150).IsRequired();
             builder.Property(e => e.LongitudeDD)
               .HasColumnType("VARCHAR")
-              .HasMaxLength(150);
+              .HasMaxLength(150).IsRequired();
 
             builder.Property(e => e.TypeBaseCoordinate)
               .HasColumnType("VARCHAR")
-              .HasMaxLength(150);
+              .HasMaxLength(150).IsRequired();
 
             builder.Property(e => e.CoordX)
                .HasColumnType("VARCHAR")
-               .HasMaxLength(150);
+               .HasMaxLength(150).IsRequired();
 
             builder.Property(e => e.CoordY)
                .HasColumnType("VARCHAR")
-               .HasMaxLength(150);
+               .HasMaxLength(150).IsRequired();
 
             builder.Property(e => e.DatumHorizontal)
                .HasColumnType("VARCHAR")
-               .HasMaxLength(150);
+               .HasMaxLength(150).IsRequired();
 
             builder.Property(e => e.IsActive);
 
@@ -119,6 +122,5 @@ namespace PRIO.Data.Mappings.WellMapping
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
         }
-
     }
 }

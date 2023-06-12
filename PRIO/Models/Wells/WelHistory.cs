@@ -25,12 +25,12 @@ namespace PRIO.Models.Wells
         public bool? StatusOperatorOld { get; set; }
         public string? Type { get; set; }
         public string? TypeOld { get; set; }
-        public double? WaterDepth { get; set; }
-        public double? WaterDepthOld { get; set; }
-        public double? TopOfPerforated { get; set; }
-        public double? TopOfPerforatedOld { get; set; }
-        public double? BaseOfPerforated { get; set; }
-        public double? BaseOfPerforatedOld { get; set; }
+        public decimal? WaterDepth { get; set; }
+        public decimal? WaterDepthOld { get; set; }
+        public decimal? TopOfPerforated { get; set; }
+        public decimal? TopOfPerforatedOld { get; set; }
+        public decimal? BaseOfPerforated { get; set; }
+        public decimal? BaseOfPerforatedOld { get; set; }
         public string? ArtificialLift { get; set; }
         public string? ArtificialLiftOld { get; set; }
         public string? Latitude4C { get; set; }

@@ -60,37 +60,37 @@ namespace PRIO.Controllers
                 };
                 await _context.AddAsync(user);
 
-                var userId = (Guid)HttpContext.Items["Id"]!;
-                var userOperation = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-                if (userOperation is null)
-                    return NotFound(new ErrorResponseDTO
-                    {
-                        Message = $"User is not found"
-                    });
+                //var userId = (Guid)HttpContext.Items["Id"]!;
+                //var userOperation = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+                //if (userOperation is null)
+                //    return NotFound(new ErrorResponseDTO
+                //    {
+                //        Message = $"User is not found"
+                //    });
 
-                var userHistory = new UserHistory
-                {
-                    Name = body.Name,
-                    NameOld = null,
-                    Username = body.Username,
-                    UsernameOld = null,
-                    Email = body.Email,
-                    EmailOld = null,
-                    Password = BCrypt.Net.BCrypt.HashPassword(body.Password),
-                    PasswordOld = null,
-                    Description = body.Description is not null ? body.Description : null,
-                    DescriptionOld = null,
-                    Type = body.Type,
-                    TypeOld = null,
-                    IsActive = true,
-                    IsActiveOld = null,
-                    TypeOperation = TypeOperation.Create,
-                    User = user,
-                    UserOperationId = userOperation.Id
+                //var userHistory = new UserHistory
+                //{
+                //    Name = body.Name,
+                //    NameOld = null,
+                //    Username = body.Username,
+                //    UsernameOld = null,
+                //    Email = body.Email,
+                //    EmailOld = null,
+                //    Password = BCrypt.Net.BCrypt.HashPassword(body.Password),
+                //    PasswordOld = null,
+                //    Description = body.Description is not null ? body.Description : null,
+                //    DescriptionOld = null,
+                //    Type = body.Type,
+                //    TypeOld = null,
+                //    IsActive = true,
+                //    IsActiveOld = null,
+                //    TypeOperation = TypeOperation.Create,
+                //    User = user,
+                //    UserOperationId = userOperation.Id
 
-                };
+                //};
 
-                await _context.AddAsync(userHistory);
+                //await _context.AddAsync(userHistory);
 
                 await _context.SaveChangesAsync();
 

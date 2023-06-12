@@ -179,7 +179,6 @@ namespace PRIO.Controllers
                 {
                     Message = $"User is not found"
                 });
-            Console.WriteLine(well.Field);
 
 
             var wellHistory = new WellHistory
@@ -364,6 +363,7 @@ namespace PRIO.Controllers
             well.IsActive = false;
             well.DeletedAt = DateTime.UtcNow;
 
+            Console.WriteLine(well.WaterDepth);
             _context.Update(well);
             await _context.SaveChangesAsync();
 
