@@ -25,16 +25,27 @@ namespace PRIO.Controllers
         [HttpPost("equipments")]
         public async Task<IActionResult> Create([FromBody] CreateEquipmentViewModel body)
         {
+            var fluidsAllowed = new List<string>
+            {
+                "gás","óleo","água"
+            };
+
+            if (body.Fluid is not null && !fluidsAllowed.Contains(body.Fluid.ToLower()))
+            {
+                return BadRequest(new ErrorResponseDTO
+                {
+                    Message = "Fluids allowed are: gás, óleo,água"
+                });
+            }
+
             var userId = (Guid)HttpContext.Items["Id"]!;
             var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
             if (user is null)
                 return NotFound(new ErrorResponseDTO
                 {
-                    Message = $"User is not found"
+                    Message = $"User not found"
                 });
             var installationInDatabase = await _context.Installations.FirstOrDefaultAsync(x => x.Id == body.InstallationId);
-            Console.WriteLine(body.InstallationId);
-            Console.WriteLine(installationInDatabase);
             if (installationInDatabase is null)
                 return NotFound(new ErrorResponseDTO
                 {

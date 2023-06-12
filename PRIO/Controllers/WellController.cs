@@ -74,7 +74,7 @@ namespace PRIO.Controllers
                 User = user,
             };
 
-            await _context.AddAsync(well);
+            await _context.Wells.AddAsync(well);
 
             var wellHistory = new WellHistory
             {
@@ -130,7 +130,7 @@ namespace PRIO.Controllers
                 IsActive = true,
                 IsActiveOld = null
             };
-            await _context.AddAsync(wellHistory);
+            await _context.WellHistories.AddAsync(wellHistory);
 
             await _context.SaveChangesAsync();
 

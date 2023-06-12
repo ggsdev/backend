@@ -256,7 +256,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("WellId");
 
-                    b.ToTable("CompletionHistories");
+                    b.ToTable("CompletionHistories", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.Models.Fields.Field", b =>
