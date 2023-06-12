@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.Data;
 
@@ -11,9 +12,11 @@ using PRIO.Data;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230612134630_RefactoringWellColumns")]
+    partial class RefactoringWellColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2562,13 +2565,13 @@ namespace PRIO.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("VARCHAR");
 
-                    b.Property<decimal?>("BaseOfPerforated")
+                    b.Property<double?>("BaseOfPerforated")
                         .HasPrecision(10, 2)
-                        .HasColumnType("decimal");
+                        .HasColumnType("float");
 
-                    b.Property<decimal?>("BaseOfPerforatedOld")
+                    b.Property<double?>("BaseOfPerforatedOld")
                         .HasPrecision(10, 2)
-                        .HasColumnType("decimal");
+                        .HasColumnType("float");
 
                     b.Property<string>("CategoryAnp")
                         .IsRequired()
@@ -2709,13 +2712,13 @@ namespace PRIO.Migrations
                     b.Property<bool?>("StatusOperatorOld")
                         .HasColumnType("bit");
 
-                    b.Property<decimal?>("TopOfPerforated")
+                    b.Property<double?>("TopOfPerforated")
                         .HasPrecision(10, 2)
-                        .HasColumnType("decimal");
+                        .HasColumnType("float");
 
-                    b.Property<decimal?>("TopOfPerforatedOld")
+                    b.Property<double?>("TopOfPerforatedOld")
                         .HasPrecision(10, 2)
-                        .HasColumnType("decimal");
+                        .HasColumnType("float");
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -2741,13 +2744,13 @@ namespace PRIO.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal?>("WaterDepth")
+                    b.Property<double?>("WaterDepth")
                         .HasPrecision(10, 2)
-                        .HasColumnType("decimal");
+                        .HasColumnType("float");
 
-                    b.Property<decimal?>("WaterDepthOld")
+                    b.Property<double?>("WaterDepthOld")
                         .HasPrecision(10, 2)
-                        .HasColumnType("decimal");
+                        .HasColumnType("float");
 
                     b.Property<Guid>("WellId")
                         .HasColumnType("uniqueidentifier");

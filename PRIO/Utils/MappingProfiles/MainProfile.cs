@@ -1,0 +1,119 @@
+﻿using AutoMapper;
+using PRIO.DTOS.ClusterDTOS;
+using PRIO.DTOS.CompletionDTOS;
+using PRIO.DTOS.FieldDTOS;
+using PRIO.DTOS.InstallationDTOS;
+using PRIO.DTOS.MeasuringEquipment;
+using PRIO.DTOS.ReservoirDTOS;
+using PRIO.DTOS.UserDTOS;
+using PRIO.DTOS.WellDTOS;
+using PRIO.DTOS.XMLFilesDTOS;
+using PRIO.DTOS.ZoneDTOS;
+using PRIO.Files.XML._001;
+using PRIO.Files.XML._002;
+using PRIO.Files.XML._003;
+using PRIO.Files.XML._039;
+using PRIO.Models.Clusters;
+using PRIO.Models.Completions;
+using PRIO.Models.Fields;
+using PRIO.Models.Installations;
+using PRIO.Models.Measurements;
+using PRIO.Models.MeasuringEquipments;
+using PRIO.Models.Reservoirs;
+using PRIO.Models.Users;
+using PRIO.Models.Wells;
+using PRIO.Models.Zones;
+using System.Globalization;
+
+namespace PRIO.Utils.MappingProfiles
+{
+    public class MainProfile : Profile
+    {
+        public MainProfile()
+        {
+            #region 039
+            CreateMap<BSW, Bsw>()
+            .ForMember(dest => dest.DHA_FALHA_BSW_039, opt => opt.MapFrom(src =>
+            string.IsNullOrEmpty(src.DHA_FALHA_BSW_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_FALHA_BSW_039, "dd/MM/yyyy", CultureInfo.InvariantCulture)));
+
+            CreateMap<CALIBRACAO, Calibration>()
+            .ForMember(dest => dest.DHA_FALHA_CALIBRACAO_039, opt => opt.MapFrom(src =>
+            string.IsNullOrEmpty(src.DHA_FALHA_CALIBRACAO_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_FALHA_CALIBRACAO_039, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)));
+
+            CreateMap<DADOS_BASICOS_039, Measurement>()
+            .ForMember(dest => dest.DHA_OCORRENCIA_039, opt => opt.MapFrom(src =>
+            string.IsNullOrEmpty(src.DHA_OCORRENCIA_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_OCORRENCIA_039, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)))
+             .ForMember(dest => dest.DHA_DETECCAO_039, opt => opt.MapFrom(src =>
+            string.IsNullOrEmpty(src.DHA_DETECCAO_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_DETECCAO_039, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)))
+              .ForMember(dest => dest.DHA_RETORNO_039, opt => opt.MapFrom(src =>
+            string.IsNullOrEmpty(src.DHA_RETORNO_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_RETORNO_039, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)));
+
+            CreateMap<VOLUME, Volume>()
+            .ForMember(dest => dest.DHA_MEDICAO_039, opt => opt.MapFrom(src =>
+                string.IsNullOrEmpty(src.DHA_MEDICAO_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_MEDICAO_039, "dd/MM/yyyy", CultureInfo.InvariantCulture)));
+
+            CreateMap<Measurement, _039DTO>();
+            #endregion
+
+            #region 001
+            CreateMap<_001PMO, Measurement>();
+            CreateMap<Measurement, _001DTO>();
+            #endregion
+
+            #region 002
+            CreateMap<_002PMGL, Measurement>();
+            CreateMap<Measurement, _002DTO>();
+            #endregion
+
+            #region 003
+            CreateMap<_003PMGD, Measurement>();
+            CreateMap<Measurement, _003DTO>();
+            #endregion
+
+            CreateMap<Cluster, ClusterDTO>();
+            CreateMap<ClusterHistory, ClusterHistoryDTO>();
+
+            CreateMap<Installation, InstallationDTO>();
+            CreateMap<Installation, CreateUpdateInstallationDTO>();
+            CreateMap<InstallationHistory, InstallationHistoryDTO>();
+
+            CreateMap<Field, FieldDTO>();
+            CreateMap<FieldHistory, FieldHistoryDTO>();
+
+            CreateMap<Zone, ZoneDTO>();
+            CreateMap<Zone, CreateUpdateZoneDTO>();
+            CreateMap<ZoneHistory, ZoneHistoryDTO>();
+
+            CreateMap<Reservoir, ReservoirDTO>();
+            CreateMap<ReservoirHistory, ReservoirHistoryDTO>();
+
+            CreateMap<Well, WellDTO>()
+                .ForMember(dest => dest.WaterDepth, opt => opt.MapFrom(src => TruncateTwoDecimals(src.WaterDepth)))
+                .ForMember(dest => dest.TopOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.TopOfPerforated)))
+                .ForMember(dest => dest.BaseOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.BaseOfPerforated)));
+            CreateMap<WellHistory, WellHistoryDTO>();
+
+            CreateMap<Completion, CompletionDTO>();
+            CreateMap<CompletionHistory, CompletionHistoryDTO>();
+
+            CreateMap<User, UserDTO>();
+            CreateMap<UserHistory, UserHistoryDTO>();
+
+            CreateMap<MeasuringEquipment, MeasuringEquipmentDTO>();
+        }
+
+        private static decimal? TruncateTwoDecimals(decimal? value)
+        {
+            if (value.HasValue)
+            {
+                int scale = 2;
+
+                decimal truncatedValue = decimal.Truncate(value.Value * (decimal)Math.Pow(10, scale)) / (decimal)Math.Pow(10, scale);
+
+                return truncatedValue;
+            }
+
+            return null;
+        }
+    }
+}

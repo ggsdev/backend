@@ -1,5 +1,4 @@
 ﻿using PRIO.DTOS.UserDTOS;
-using PRIO.Models;
 
 namespace PRIO.DTOS.WellDTOS
 {
@@ -15,9 +14,9 @@ namespace PRIO.DTOS.WellDTOS
         public string CategoryOperator { get; set; } = string.Empty;
         public bool StatusOperator { get; set; }
         public string Type { get; set; } = string.Empty;
-        public double WaterDepth { get; set; }
-        public double TopOfPerforated { get; set; }
-        public double BaseOfPerforated { get; set; }
+        public decimal WaterDepth { get; set; }
+        public decimal TopOfPerforated { get; set; }
+        public decimal BaseOfPerforated { get; set; }
         public string ArtificialLift { get; set; } = string.Empty;
         public string Latitude4C { get; set; } = string.Empty;
         public string Longitude4C { get; set; } = string.Empty;

@@ -1,32 +1,60 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using PRIO.Validators;
+using System.ComponentModel.DataAnnotations;
 
 namespace PRIO.ViewModels.Wells
 {
     public class CreateWellViewModel
     {
-        [Required(ErrorMessage = "Well code is required")]
         public string? CodWell { get; set; }
+        [Required(ErrorMessage = "Name ANP code is required")]
         public string? Name { get; set; }
         public string? WellOperatorName { get; set; }
+        [Required(ErrorMessage = "Code ANP is required")]
         public string? CodWellAnp { get; set; }
+        [Required(ErrorMessage = "Category ANP is required")]
         public string? CategoryAnp { get; set; }
         public string? CategoryReclassificationAnp { get; set; }
         public string? CategoryOperator { get; set; }
         public bool StatusOperator { get; set; }
+        [Required(ErrorMessage = "Type is required")]
         public string? Type { get; set; }
-        public double WaterDepth { get; set; }
-        public double TopOfPerforated { get; set; }
-        public double BaseOfPerforated { get; set; }
+        [DecimalPrecision(12)]
+        public decimal WaterDepth { get; set; }
+        [DecimalPrecision(12)]
+        public decimal TopOfPerforated { get; set; }
+        [DecimalPrecision(12)]
+        public decimal BaseOfPerforated { get; set; }
         public string? ArtificialLift { get; set; }
+        [Required(ErrorMessage = "Latitude4C is required")]
+        [RegularExpression(@"^-?\d{2}:\d{2}:\d{2},\d{3}$",
+        ErrorMessage = "Invalid latitude. Please use the format 'dd:mm:ss,sss'.")]
         public string? Latitude4C { get; set; }
+        [Required(ErrorMessage = "Longitude4C is required")]
+        [RegularExpression(@"^-?\d{2}:\d{2}:\d{2},\d{3}$",
+        ErrorMessage = "Invalid longitude. Please use the format 'dd:mm:ss,sss'.")]
         public string? Longitude4C { get; set; }
+        [Required(ErrorMessage = "LatitudeDD is required")]
+        [RegularExpression(@"^-?\d{1,2},\d{10}$",
+        ErrorMessage = "Invalid latitude. Please use the format 'dd,dddddddddd'.")]
         public string? LatitudeDD { get; set; }
+        [Required(ErrorMessage = "LongitudeDD is required")]
+        [RegularExpression(@"^-?\d{1,2},\d{10}$",
+        ErrorMessage = "Invalid latitude. Please use the format 'dd,dddddddddd'.")]
         public string? LongitudeDD { get; set; }
+        [Required(ErrorMessage = "DatumHorizontal is required")]
         public string? DatumHorizontal { get; set; }
+        [Required(ErrorMessage = "TypeBaseCoordinate is required")]
         public string? TypeBaseCoordinate { get; set; }
+        [Required(ErrorMessage = "CoordX is required")]
+        [RegularExpression(@"^-?\d{1,2},\d{10}$",
+        ErrorMessage = "Invalid CoordinatesX format. Please use the decimal format 'dd,dddddddddd'.")]
         public string? CoordX { get; set; }
+        [Required(ErrorMessage = "CoordY is required")]
+        [RegularExpression(@"^(-?\d{1,2},\d{10})$",
+        ErrorMessage = "Invalid CoordinatesY format. Please use the decimal format 'dd,dddddddddd'.")]
         public string? CoordY { get; set; }
         public string? Description { get; set; }
+        [Required(ErrorMessage = "FieldId is required")]
         public Guid FieldId { get; set; }
     }
 }
