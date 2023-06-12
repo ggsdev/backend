@@ -1,5 +1,4 @@
-﻿using PRIO.Models.Users;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace PRIO.ViewModels.MeasuringEquipment
 {
@@ -30,8 +29,8 @@ namespace PRIO.ViewModels.MeasuringEquipment
         [Required(ErrorMessage = "InOperation name is a required field.")]
         public bool? InOperation { get; set; }
         public string? Fluid { get; set; }
+        [Required(ErrorMessage = "InstallationId is a required field.")]
         public Guid? InstallationId { get; set; }
-        public User? User { get; set; }
         public bool? IsActive { get; set; } = true;
         public string? Description { get; set; }
     }

@@ -10,9 +10,9 @@ namespace PRIO.ViewModels.Files
 
     public class FileContent
     {
-        [Required]
+        [Required(ErrorMessage = "Base64 string is required")]
         public string? ContentBase64 { get; set; }
-        [Required]
+        [Required(ErrorMessage = "File name is required")]
         public string? FileName { get; set; }
 
     }

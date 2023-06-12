@@ -470,10 +470,28 @@ namespace PRIO.TESTS.Cruds.Completions
 
             Well _well1 = new()
             {
-                Field = _field1,
+                Name = "1233a3",
+                WellOperatorName = "1233aa3",
+                CodWellAnp = "1233aa3",
+                CategoryAnp = "1233a3",
+                CategoryReclassificationAnp = "1233a3",
+                CategoryOperator = "1233a3",
+                StatusOperator = true,
+                Type = "1233a3",
+                WaterDepth = 322.52m,
+                TopOfPerforated = 2.5m,
+                BaseOfPerforated = 2.5m,
+                ArtificialLift = "1233a3",
+                Latitude4C = "22:03:34,054",
+                Longitude4C = "22:03:34,054",
+                LatitudeDD = "-22,0594594444",
+                LongitudeDD = "39,8311675000",
+                DatumHorizontal = "1233a3",
+                TypeBaseCoordinate = "1233a3",
+                CoordX = "-39,7706275000",
+                CoordY = "-22,1108369444",
                 User = _user,
-                Name = "ReservoirTest",
-                CodWellAnp = "123213111"
+                Field = _field1,
             };
 
             Cluster _cluster2 = new()
@@ -515,10 +533,28 @@ namespace PRIO.TESTS.Cruds.Completions
 
             Well _well2 = new()
             {
-                Field = _field2,
+                Name = "1233a3",
+                WellOperatorName = "1233aa3",
+                CodWellAnp = "1233aa3",
+                CategoryAnp = "1233a3",
+                CategoryReclassificationAnp = "1233a3",
+                CategoryOperator = "1233a3",
+                StatusOperator = true,
+                Type = "1233a3",
+                WaterDepth = 322.52m,
+                TopOfPerforated = 2.5m,
+                BaseOfPerforated = 2.5m,
+                ArtificialLift = "1233a3",
+                Latitude4C = "22:03:34,054",
+                Longitude4C = "22:03:34,054",
+                LatitudeDD = "-22,0594594444",
+                LongitudeDD = "39,8311675000",
+                DatumHorizontal = "1233a3",
+                TypeBaseCoordinate = "1233a3",
+                CoordX = "-39,7706275000",
+                CoordY = "-22,1108369444",
                 User = _user,
-                Name = "ReservoirTest2",
-                CodWellAnp = "223213111"
+                Field = _field2,
             };
 
 

@@ -35,7 +35,11 @@ namespace PRIO.ViewModels.Wells
         public string? LongitudeDD { get; set; }
         public string? DatumHorizontal { get; set; }
         public string? TypeBaseCoordinate { get; set; }
+        [RegularExpression(@"^-?\d{1,2},\d{10}$",
+        ErrorMessage = "Invalid CoordinatesX format. Please use the decimal format 'dd,dddddddddd'.")]
         public string? CoordX { get; set; }
+        [RegularExpression(@"^-?\d{1,2},\d{10}$",
+        ErrorMessage = "Invalid CoordinatesY format. Please use the decimal format 'dd,dddddddddd'.")]
         public string? CoordY { get; set; }
         public string? Description { get; set; }
         public Guid? FieldId { get; set; }
