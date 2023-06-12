@@ -94,7 +94,6 @@ namespace PRIO.TESTS.Cruds.Installations
         [Test]
         public async Task Create_InstallationIsAlreadyExists()
         {
-
             Cluster _cluster1 = new()
             {
                 UepCode = "12332",
@@ -148,6 +147,7 @@ namespace PRIO.TESTS.Cruds.Installations
                 Assert.That(badRequestResult.StatusCode, Is.EqualTo(400));
             }
         }
+
         [Test]
         public async Task Create_CheckRequiredNameField()
         {

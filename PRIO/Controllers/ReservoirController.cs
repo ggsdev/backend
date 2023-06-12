@@ -6,7 +6,7 @@ using PRIO.DTOS;
 using PRIO.DTOS.ReservoirDTOS;
 using PRIO.Models.Reservoirs;
 using PRIO.Utils;
-using PRIO.ViewModels.Zones;
+using PRIO.ViewModels.Reservoirs;
 
 namespace PRIO.Controllers
 {
@@ -239,7 +239,7 @@ namespace PRIO.Controllers
         [HttpPatch("{id:Guid}/restore")]
         public async Task<IActionResult> Restore([FromRoute] Guid id)
         {
-            var reservoir = await _context.Reservoirs.Include(x=> x.Zone).FirstOrDefaultAsync(x => x.Id == id);
+            var reservoir = await _context.Reservoirs.Include(x => x.Zone).FirstOrDefaultAsync(x => x.Id == id);
             if (reservoir is null || reservoir.IsActive)
                 return NotFound(new ErrorResponseDTO
                 {
