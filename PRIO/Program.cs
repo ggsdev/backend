@@ -12,6 +12,7 @@ using PRIO.Utils.MappingProfiles;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+DotEnv.Load();
 
 ConfigureServices(builder.Services);
 
@@ -31,9 +32,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.Run();
-
-DotEnv.Load();
-
 
 static void ConfigureServices(IServiceCollection services)
 {
