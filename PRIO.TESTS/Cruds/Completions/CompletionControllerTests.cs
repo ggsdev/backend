@@ -433,7 +433,6 @@ namespace PRIO.TESTS.Cruds.Completions
         {
             Cluster _cluster1 = new()
             {
-                UepCode = "12332",
                 Name = "ClusterTest",
                 User = _user
             };
@@ -443,7 +442,7 @@ namespace PRIO.TESTS.Cruds.Completions
                 Name = "InstallationTest",
                 User = _user,
                 Cluster = _cluster1,
-                CodInstallation = "unique1"
+                CodInstallationUep = "unique1"
             };
 
             Field _field1 = new()
@@ -496,7 +495,6 @@ namespace PRIO.TESTS.Cruds.Completions
 
             Cluster _cluster2 = new()
             {
-                UepCode = "22332",
                 Name = "ClusterTest2",
                 User = _user
             };
@@ -506,7 +504,7 @@ namespace PRIO.TESTS.Cruds.Completions
                 Name = "InstallationTest2",
                 User = _user,
                 Cluster = _cluster2,
-                CodInstallation = "unique2"
+                CodInstallationUep = "unique2"
             };
 
             Field _field2 = new()

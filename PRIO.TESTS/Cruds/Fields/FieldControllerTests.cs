@@ -61,7 +61,6 @@ namespace PRIO.TESTS.Cruds.Fields
             var cluster = new Cluster
             {
                 Name = "testeClus",
-                UepCode = "213123",
                 User = _user,
             };
             _context.Clusters.Add(cluster);
@@ -69,7 +68,7 @@ namespace PRIO.TESTS.Cruds.Fields
             _installation1 = new()
             {
                 Name = "testeInst",
-                CodInstallation = "codmocked",
+                CodInstallationUep = "codmocked",
                 User = _user,
                 Cluster = cluster,
             };
@@ -77,7 +76,7 @@ namespace PRIO.TESTS.Cruds.Fields
             _installation2 = new()
             {
                 Name = "testeInst2",
-                CodInstallation = "codmasdocked2",
+                CodInstallationUep = "codmasdocked2",
                 User = _user,
                 Cluster = cluster,
             };
