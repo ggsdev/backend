@@ -8,8 +8,8 @@ namespace PRIO.DTOS.InstallationDTOS
         public Guid Id { get; set; }
         public string? Name { get; set; }
         public string? NameOld { get; set; }
-        public string? CodInstallation { get; set; }
-        public string? CodInstallationOld { get; set; }
+        public string? CodInstallationUep { get; set; }
+        public string? CodInstallationUepOld { get; set; }
         public ClusterDTO? Cluster { get; set; }
         public Guid? ClusterOldId { get; set; }
         public UserDTO? User { get; set; }

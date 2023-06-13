@@ -4,34 +4,34 @@ namespace PRIO.Utils
 {
     internal static class XlsUtils
     {
-        public const string ClusterColumnName = "CLUSTER";
-        public const string ClusterUepCodeColumnName = "UEP_CODE";
-        public const string FieldColumnName = "FIELD";
-        public const string InstallationColumnName = "PLATFORM";
-        public const string FieldCodeColumnName = "FIELD_CODE";
-        public const string ReservoirColumnName = "RESERVOIR";
-        public const string ZoneCodeColumnName = "ZONE_CODE";
-        public const string CompletionColumnName = "COMPLETION";
-        public const string WellNameColumnName = "WELL_NAME_ANP";
-        public const string WellNameOperatorColumnName = "WELL_NAME_OPERATOR";
-        public const string WellCodeAnpColumnName = "WELL_CODE_ANP";
-        public const string WellCategoryAnpColumnName = "CATEGORY_ANP";
-        public const string WellCategoryReclassificationColumnName = "CATEGORY_RECLASSIFICATION_ANP";
-        public const string WellCategoryOperatorColumnName = "CATEGORY_OPERATOR";
-        public const string WellStatusOperatorColumnName = "STATUS_OPERATOR";
-        public const string WellProfileColumnName = "WELL_PROFILE";
-        public const string WellWaterDepthColumnName = "WATER_DEPTH (M)";
-        public const string WellPerforationTopMdColumnName = "PERFORATION_TOP_MD (M)";
-        public const string WellBottomPerforationColumnName = "BOTTOM_PERFORATION_MD (M)";
-        public const string WellArtificialLiftColumnName = "ARTIFICIAL_LIFT";
-        public const string WellLatitude4cColumnName = "LATITUDE_BASE_4C";
-        public const string WellLongitude4cColumnName = "LONGITUDE_BASE_4C";
-        public const string WellLatitudeDDColumnName = "LATITUDE_BASE_DD";
-        public const string WellLongitudeDDColumnName = "LONGITUDE_BASE_DD";
-        public const string WellDatumHorizontalColumnName = "DATUM_HORIZONTAL";
-        public const string WellTypeCoordinateColumnName = "TIPO_DE_COORDENADA_DE_BASE";
-        public const string WellCoordXColumnName = "COORD_X";
-        public const string WellCoordYColumnName = "COORD_Y";
+        internal static readonly string ClusterColumnName = "CLUSTER";
+        internal static readonly string InstallationCodUepColumnName = "UEP_CODE";
+        internal static readonly string FieldColumnName = "FIELD";
+        internal static readonly string InstallationColumnName = "PLATFORM";
+        internal static readonly string FieldCodeColumnName = "FIELD_CODE";
+        internal static readonly string ReservoirColumnName = "RESERVOIR";
+        internal static readonly string ZoneCodeColumnName = "ZONE_CODE";
+        internal static readonly string CompletionColumnName = "COMPLETION";
+        internal static readonly string WellNameColumnName = "WELL_NAME_ANP";
+        internal static readonly string WellNameOperatorColumnName = "WELL_NAME_OPERATOR";
+        internal static readonly string WellCodeAnpColumnName = "WELL_CODE_ANP";
+        internal static readonly string WellCategoryAnpColumnName = "CATEGORY_ANP";
+        internal static readonly string WellCategoryReclassificationColumnName = "CATEGORY_RECLASSIFICATION_ANP";
+        internal static readonly string WellCategoryOperatorColumnName = "CATEGORY_OPERATOR";
+        internal static readonly string WellStatusOperatorColumnName = "STATUS_OPERATOR";
+        internal static readonly string WellProfileColumnName = "WELL_PROFILE";
+        internal static readonly string WellWaterDepthColumnName = "WATER_DEPTH (M)";
+        internal static readonly string WellPerforationTopMdColumnName = "PERFORATION_TOP_MD (M)";
+        internal static readonly string WellBottomPerforationColumnName = "BOTTOM_PERFORATION_MD (M)";
+        internal static readonly string WellArtificialLiftColumnName = "ARTIFICIAL_LIFT";
+        internal static readonly string WellLatitude4cColumnName = "LATITUDE_BASE_4C";
+        internal static readonly string WellLongitude4cColumnName = "LONGITUDE_BASE_4C";
+        internal static readonly string WellLatitudeDDColumnName = "LATITUDE_BASE_DD";
+        internal static readonly string WellLongitudeDDColumnName = "LONGITUDE_BASE_DD";
+        internal static readonly string WellDatumHorizontalColumnName = "DATUM_HORIZONTAL";
+        internal static readonly string WellTypeCoordinateColumnName = "TIPO_DE_COORDENADA_DE_BASE";
+        internal static readonly string WellCoordXColumnName = "COORD_X";
+        internal static readonly string WellCoordYColumnName = "COORD_Y";
 
         public static Dictionary<string, int> GetColumnPositions(ExcelWorksheet worksheet)
         {
@@ -46,7 +46,7 @@ namespace PRIO.Utils
                 {
                     cellValue = cellValue.ToUpper();
                     if (cellValue == ClusterColumnName ||
-                        cellValue == ClusterUepCodeColumnName ||
+                        cellValue == InstallationCodUepColumnName ||
                         cellValue == FieldColumnName ||
                         cellValue == InstallationColumnName ||
                         cellValue == FieldCodeColumnName ||

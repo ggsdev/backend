@@ -106,15 +106,12 @@ namespace PRIO.TESTS.Files.XLS
 
             Assert.That(forteCluster, Is.Not.Null);
             Assert.That(forteCluster.User, Is.Not.Null);
-            Assert.That(forteCluster.UepCode?.ToUpper(), Is.EqualTo(Mock._clusterForteUepCode));
 
             Assert.That(bravoCluster, Is.Not.Null);
             Assert.That(bravoCluster.User, Is.Not.Null);
-            Assert.That(bravoCluster.UepCode?.ToUpper(), Is.EqualTo(Mock._clusterBravoUepCode));
 
             Assert.That(valenteCluster, Is.Not.Null);
             Assert.That(valenteCluster.User, Is.Not.Null);
-            Assert.That(valenteCluster.UepCode?.ToUpper(), Is.EqualTo(Mock._clusterValenteUepCode));
         }
 
         [Test]

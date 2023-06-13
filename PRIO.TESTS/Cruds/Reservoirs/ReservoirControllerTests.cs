@@ -82,7 +82,6 @@ namespace PRIO.TESTS.Cruds.Reservoirs
 
             Cluster _cluster1 = new()
             {
-                UepCode = "ClusterTest",
                 Name = "ClusterTest",
                 User = _user
             };
@@ -91,7 +90,7 @@ namespace PRIO.TESTS.Cruds.Reservoirs
             Installation _installation1 = new()
             {
                 Name = "InstallationTest",
-                CodInstallation = "InstallationTest",
+                CodInstallationUep = "InstallationTest",
                 Cluster = _cluster1,
                 User = _user
             };
@@ -136,7 +135,6 @@ namespace PRIO.TESTS.Cruds.Reservoirs
         {
             Cluster _cluster1 = new()
             {
-                UepCode = "ClusterTest",
                 Name = "ClusterTest",
                 User = _user
             };
@@ -145,7 +143,7 @@ namespace PRIO.TESTS.Cruds.Reservoirs
             Installation _installation1 = new()
             {
                 Name = "InstallationTest",
-                CodInstallation = "InstallationTest",
+                CodInstallationUep = "InstallationTest",
                 Cluster = _cluster1,
                 User = _user
             };
@@ -192,7 +190,6 @@ namespace PRIO.TESTS.Cruds.Reservoirs
         {
             Cluster _cluster1 = new()
             {
-                UepCode = "ClusterTest",
                 Name = "ClusterTest",
                 User = _user
             };
@@ -201,7 +198,7 @@ namespace PRIO.TESTS.Cruds.Reservoirs
             Installation _installation1 = new()
             {
                 Name = "InstallationTest",
-                CodInstallation = "InstallationTest",
+                CodInstallationUep = "InstallationTest",
                 Cluster = _cluster1,
                 User = _user
             };
@@ -254,7 +251,6 @@ namespace PRIO.TESTS.Cruds.Reservoirs
         {
             Cluster _cluster1 = new()
             {
-                UepCode = "ClusterTest",
                 Name = "ClusterTest",
                 User = _user
             };
@@ -263,7 +259,7 @@ namespace PRIO.TESTS.Cruds.Reservoirs
             Installation _installation1 = new()
             {
                 Name = "InstallationTest",
-                CodInstallation = "InstallationTest",
+                CodInstallationUep = "InstallationTest",
                 Cluster = _cluster1,
                 User = _user
             };
@@ -314,7 +310,6 @@ namespace PRIO.TESTS.Cruds.Reservoirs
         {
             Cluster _cluster1 = new()
             {
-                UepCode = "12332",
                 Name = "clustertest",
                 User = _user
             };
@@ -324,7 +319,7 @@ namespace PRIO.TESTS.Cruds.Reservoirs
             Installation _installation1 = new()
             {
                 Name = "InstallationTest",
-                CodInstallation = "InstallationTest",
+                CodInstallationUep = "InstallationTest",
                 Cluster = _cluster1,
                 User = _user
             };
@@ -378,7 +373,6 @@ namespace PRIO.TESTS.Cruds.Reservoirs
         {
             Cluster _cluster1 = new()
             {
-                UepCode = "12332",
                 Name = "clustertest",
                 User = _user
             };
@@ -387,7 +381,7 @@ namespace PRIO.TESTS.Cruds.Reservoirs
             Installation _installation1 = new()
             {
                 Name = "InstallationTest",
-                CodInstallation = "InstallationTest",
+                CodInstallationUep = "InstallationTest",
                 Cluster = _cluster1,
                 User = _user
             };
@@ -436,7 +430,6 @@ namespace PRIO.TESTS.Cruds.Reservoirs
         {
             Cluster _cluster1 = new()
             {
-                UepCode = "ClusterTest",
                 Name = "ClusterTest",
                 User = _user
             };
@@ -445,7 +438,7 @@ namespace PRIO.TESTS.Cruds.Reservoirs
             Installation _installation1 = new()
             {
                 Name = "InstallationTest",
-                CodInstallation = "InstallationTest",
+                CodInstallationUep = "InstallationTest",
                 Cluster = _cluster1,
                 User = _user
             };

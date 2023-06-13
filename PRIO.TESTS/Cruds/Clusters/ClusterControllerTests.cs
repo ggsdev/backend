@@ -157,7 +157,6 @@ namespace PRIO.TESTS.Cruds.Clusters
         {
             Cluster _cluster1 = new()
             {
-                UepCode = "12332",
                 Name = "ClusterTest",
                 User = _user
             };
@@ -185,7 +184,6 @@ namespace PRIO.TESTS.Cruds.Clusters
         {
             Cluster _cluster1 = new()
             {
-                UepCode = "12332",
                 Name = "ClusterTest",
                 User = _user
             };

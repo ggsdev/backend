@@ -24,10 +24,6 @@ namespace PRIO.Controllers
         [HttpPost("xlsx")]
         public async Task<IActionResult> PostBase64File([FromBody] RequestXslxViewModel data, [FromServices] DataContext context)
         {
-            var tempFilePath = Path.GetTempFileName();
-            var contentBase64 = data.ContentBase64?.Replace("data:@file/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,", "");
-            await System.IO.File.WriteAllBytesAsync(tempFilePath, Convert.FromBase64String(contentBase64!));
-
             var userId = (Guid)HttpContext.Items["Id"]!;
             var user = await context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
 
@@ -37,11 +33,14 @@ namespace PRIO.Controllers
                     Message = "User not identified, please login first"
                 });
 
-            var fileInfo = new FileInfo(tempFilePath);
-            using (ExcelPackage package = new(fileInfo))
+            var contentBase64 = data.ContentBase64?.Replace("data:@file/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,", "");
+            using (var stream = new MemoryStream(Convert.FromBase64String(contentBase64!)))
+            using (ExcelPackage package = new(stream))
             {
                 var workbook = package.Workbook;
-                var worksheetTab = workbook.Worksheets[0];
+                var worksheetTab = workbook.Worksheets.FirstOrDefault(x => x.Name.ToLower().Trim() == "informações gerais poços");
+                worksheetTab ??= workbook.Worksheets[0];
+                //testar procura de aba da planilha
 
                 var dimension = worksheetTab.Dimension;
 
@@ -53,10 +52,9 @@ namespace PRIO.Controllers
                 for (int row = 2; row <= dimension.End.Row; ++row)
                 {
                     var columnCluster = worksheetTab.Cells[row, columnPositions[XlsUtils.ClusterColumnName]].Value?.ToString();
-                    var columnUepCode = worksheetTab.Cells[row, columnPositions[XlsUtils.ClusterUepCodeColumnName]].Value?.ToString();
-                    //var columnsInstallationCod = worksheetTab.Cells[row, columnPositions[XlsUtils.ClusterUepCodeColumnName]].Value?.ToString();
 
                     var columnInstallation = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationColumnName]].Value?.ToString();
+                    var columnInstallationCodUep = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationCodUepColumnName]].Value?.ToString();
 
                     var columnField = worksheetTab.Cells[row, columnPositions[XlsUtils.FieldColumnName]].Value?.ToString();
                     var columnCodeField = worksheetTab.Cells[row, columnPositions[XlsUtils.FieldCodeColumnName]].Value?.ToString();
@@ -74,11 +72,11 @@ namespace PRIO.Controllers
                     var columnWellCategoryAnp = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCategoryAnpColumnName]].Value?.ToString();
                     var columnWellCategoryReclassification = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCategoryReclassificationColumnName]].Value?.ToString();
                     var columnWellCategoryOperator = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCategoryOperatorColumnName]].Value?.ToString();
-                    var columnWellStatusOperator = worksheetTab.Cells[row, columnPositions[XlsUtils.WellStatusOperatorColumnName]].Value?.ToString();
+                    var columnWellStatusOperator = worksheetTab.Cells[row, columnPositions[XlsUtils.WellStatusOperatorColumnName]].Value?.ToString()?.ToLower();
                     bool? columnWellStatusOperatorBoolean = null;
-                    if (columnWellStatusOperator.Contains("ativo".ToLower()))
+                    if (columnWellStatusOperator is not null && columnWellStatusOperator.Contains("ativo"))
                         columnWellStatusOperatorBoolean = true;
-                    if (columnWellStatusOperator.Contains("inativo".ToLower()))
+                    if (columnWellStatusOperator is not null && columnWellStatusOperator.Contains("inativo"))
                         columnWellStatusOperatorBoolean = false;
                     var columnWellProfile = worksheetTab.Cells[row, columnPositions[XlsUtils.WellProfileColumnName]].Value?.ToString();
                     var columnWellWaterDepth = worksheetTab.Cells[row, columnPositions[XlsUtils.WellWaterDepthColumnName]].Value?.ToString();
@@ -104,14 +102,12 @@ namespace PRIO.Controllers
                             {
                                 Name = columnCluster,
                                 User = user,
-                                UepCode = columnUepCode
                             };
 
                             var clusterHistory = new ClusterHistory
                             {
                                 Name = columnCluster,
                                 User = user,
-                                UepCode = columnUepCode,
                                 TypeOperation = TypeOperation.Import,
 
                                 Cluster = (Cluster)cluster,
@@ -131,7 +127,7 @@ namespace PRIO.Controllers
                             installation = new Installation
                             {
                                 Name = columnInstallation,
-                                //CodInstallation = columnsInstallationCod,
+                                CodInstallationUep = columnInstallationCodUep,
                                 User = user,
                                 Cluster = columnCluster is not null ? (Cluster)entityDictionary.GetValueOrDefault(columnCluster.ToLower())! : null,
                             };
@@ -139,7 +135,7 @@ namespace PRIO.Controllers
                             var installationHistory = new InstallationHistory
                             {
                                 Cluster = columnCluster is not null ? (Cluster)entityDictionary.GetValueOrDefault(columnCluster.ToLower())! : null,
-                                //CodInstallation = columnsInstallationCod,
+                                CodInstallationUep = columnInstallationCodUep,
                                 Name = columnInstallation,
 
                                 User = user,
