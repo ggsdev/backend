@@ -26,6 +26,15 @@ namespace PRIO.Controllers
         [HttpPost("fields")]
         public async Task<IActionResult> Create([FromBody] CreateFieldViewModel body)
         {
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+
+            if (user is null)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+
             var fieldInDatabase = await _context.Fields.FirstOrDefaultAsync(x => x.CodField == body.CodField);
             if (fieldInDatabase is not null)
                 return Conflict(new ErrorResponseDTO
@@ -40,16 +49,6 @@ namespace PRIO.Controllers
                     Message = $"Installation not found"
                 });
 
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-
-            if (user is null)
-            {
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = "User not found"
-                });
-            }
 
             var field = new Field
             {
@@ -120,19 +119,16 @@ namespace PRIO.Controllers
         [HttpPatch("fields/{fieldId}")]
         public async Task<IActionResult> Update([FromRoute] Guid fieldId, [FromBody] UpdateFieldViewModel body)
         {
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+
             var field = await _context.Fields.Include(x => x.User).Include(x => x.Installation).FirstOrDefaultAsync(x => x.Id == fieldId);
             if (field is null)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Field not found"
-                });
-
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User is not found"
                 });
 
             var fieldHistory = new FieldHistory
@@ -195,19 +191,16 @@ namespace PRIO.Controllers
         [HttpDelete("fields/{fieldId}")]
         public async Task<IActionResult> Delete([FromRoute] Guid fieldId)
         {
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+
             var field = await _context.Fields.Include(x => x.Installation).FirstOrDefaultAsync(x => x.Id == fieldId);
             if (field is null || !field.IsActive)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Field not found or inactive already"
-                });
-
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User is not found"
                 });
 
             var fieldHistory = new FieldHistory
@@ -246,6 +239,11 @@ namespace PRIO.Controllers
         [HttpPatch("fields/{fieldId}/restore")]
         public async Task<IActionResult> Restore([FromRoute] Guid fieldId)
         {
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+
             var field = await _context.Fields.Include(x => x.Installation).Include(x => x.User).FirstOrDefaultAsync(x => x.Id == fieldId);
             if (field is null || field.IsActive is true)
                 return NotFound(new ErrorResponseDTO
@@ -253,14 +251,6 @@ namespace PRIO.Controllers
                     Message = "Field not found or active already"
                 });
 
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User is not found"
-                });
-            Console.WriteLine(field);
             var fieldHistory = new FieldHistory
             {
                 Name = field.Name,

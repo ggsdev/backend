@@ -28,20 +28,20 @@ namespace PRIO.Controllers
             //    {
             //        Message = $"Installation with code: {body.CodInstallation} already exists, try another code."
             //    });
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+
+            if (user is null)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
 
             var clusterInDatabase = await _context.Clusters.FirstOrDefaultAsync(x => x.Id == body.ClusterId);
             if (clusterInDatabase is null)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = $"Cluster not found"
-                });
-
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User is not found"
                 });
 
             var installation = new Installation
@@ -130,19 +130,20 @@ namespace PRIO.Controllers
         [HttpPatch("{id:Guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateInstallationViewModel body)
         {
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+
+            if (user is null)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+
             var installation = await _context.Installations.Include(x => x.Cluster).FirstOrDefaultAsync(x => x.Id == id);
             if (installation is null)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Installation not found"
-                });
-
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User not found"
                 });
 
             var clusterInDatabase = await _context.Clusters.FirstOrDefaultAsync(x => x.Id == body.ClusterId);
@@ -202,19 +203,20 @@ namespace PRIO.Controllers
         [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+
+            if (user is null)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+
             var installation = await _context.Installations.Include(x => x.Cluster).FirstOrDefaultAsync(x => x.Id == id);
             if (installation is null || !installation.IsActive)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Installation not found or inactive already"
-                });
-
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User not found"
                 });
 
             var installationHistory = new InstallationHistory
@@ -255,19 +257,20 @@ namespace PRIO.Controllers
         [HttpPatch("{id:Guid}/restore")]
         public async Task<IActionResult> Restore([FromRoute] Guid id)
         {
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+
+            if (user is null)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+
             var installation = await _context.Installations.Include(x => x.Cluster).FirstOrDefaultAsync(x => x.Id == id);
             if (installation is null || installation.IsActive)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Installation not found or active already"
-                });
-
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User not found"
                 });
 
             var installationHistory = new InstallationHistory

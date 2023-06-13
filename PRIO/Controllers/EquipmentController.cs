@@ -41,10 +41,8 @@ namespace PRIO.Controllers
             var userId = (Guid)HttpContext.Items["Id"]!;
             var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
             if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User not found"
-                });
+                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+
             var installationInDatabase = await _context.Installations.FirstOrDefaultAsync(x => x.Id == body.InstallationId);
             if (installationInDatabase is null)
                 return NotFound(new ErrorResponseDTO
@@ -85,10 +83,7 @@ namespace PRIO.Controllers
             var userId = (Guid)HttpContext.Items["Id"]!;
             var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
             if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User is not found"
-                });
+                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
 
             var equipments = await _context.MeasuringEquipments.ToListAsync();
             var equipmentDTO = _mapper.Map<List<MeasuringEquipment>, List<MeasuringEquipmentDTO>>(equipments);
@@ -102,10 +97,8 @@ namespace PRIO.Controllers
             var userId = (Guid)HttpContext.Items["Id"]!;
             var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
             if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User is not found"
-                });
+                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+
             var equipment = _context.MeasuringEquipments.FirstOrDefault(x => x.Id == id);
             if (equipment is null)
                 return NotFound(new ErrorResponseDTO
@@ -173,10 +166,7 @@ namespace PRIO.Controllers
             var userId = (Guid)HttpContext.Items["Id"]!;
             var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
             if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User not found"
-                });
+                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
 
             var equipment = _context.MeasuringEquipments.FirstOrDefault(x => x.Id == id);
             if (equipment is null || !equipment.IsActive)
@@ -200,10 +190,7 @@ namespace PRIO.Controllers
             var userId = (Guid)HttpContext.Items["Id"]!;
             var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
             if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User not found"
-                });
+                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
 
             var equipment = _context.MeasuringEquipments.FirstOrDefault(x => x.Id == id);
             if (equipment is null || equipment.IsActive)

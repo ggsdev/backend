@@ -26,6 +26,11 @@ namespace PRIO.Controllers
         [HttpPost("clusters")]
         public async Task<IActionResult> Create([FromBody] CreateClusterViewModel body)
         {
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+
             var clusterInDatabase = await _context.Clusters.FirstOrDefaultAsync((x) => x.CodCluster == body.CodCluster);
             if (clusterInDatabase is not null)
                 return Conflict(new ErrorResponseDTO
@@ -33,14 +38,6 @@ namespace PRIO.Controllers
                     Message = $"Cluster with code: {body.CodCluster} already exists."
                 });
 
-
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User is not found"
-                });
 
             var cluster = new Cluster
             {
@@ -102,19 +99,16 @@ namespace PRIO.Controllers
         [HttpPatch("clusters/{clusterId}")]
         public async Task<IActionResult> Update([FromRoute] Guid clusterId, [FromBody] UpdateClusterViewModel body)
         {
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+
             var cluster = await _context.Clusters.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == clusterId);
             if (cluster is null)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Cluster not found"
-                });
-
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User is not found"
                 });
 
             var clusterHistory = new ClusterHistory
@@ -149,19 +143,16 @@ namespace PRIO.Controllers
         [HttpPatch("clusters/{clusterId}/restore")]
         public async Task<IActionResult> Restore([FromRoute] Guid clusterId)
         {
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+
             var cluster = await _context.Clusters.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == clusterId);
             if (cluster is null || cluster.IsActive is true)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Cluster not found or active already"
-                });
-
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User is not found"
                 });
 
             var clusterHistory = new ClusterHistory
@@ -194,20 +185,17 @@ namespace PRIO.Controllers
         [HttpDelete("clusters/{clusterId}")]
         public async Task<IActionResult> Delete([FromRoute] Guid clusterId)
         {
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+
+
             var cluster = await _context.Clusters.FirstOrDefaultAsync(x => x.Id == clusterId);
             if (cluster is null || !cluster.IsActive)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Cluster not found or inactive already"
-                });
-
-
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User is not found"
                 });
 
 

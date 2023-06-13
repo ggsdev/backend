@@ -22,6 +22,11 @@ namespace PRIO.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateZoneViewModel body)
         {
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+
             var zoneInDatabase = await _context.Zones.FirstOrDefaultAsync(x => x.CodZone == body.CodZone);
             if (zoneInDatabase is not null)
                 return Conflict(new ErrorResponseDTO
@@ -36,16 +41,6 @@ namespace PRIO.Controllers
                     Message = "Field not found"
                 });
 
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-
-            if (user is null)
-            {
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User is not found"
-                });
-            }
             var zone = new Zone
             {
                 CodZone = body.CodZone,
@@ -126,23 +121,17 @@ namespace PRIO.Controllers
         [HttpPatch("{id:Guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateZoneViewModel body)
         {
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+
             var zone = await _context.Zones.Include(x => x.Field).FirstOrDefaultAsync(x => x.Id == id);
             if (zone is null)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Zone not found"
                 });
-
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-
-            if (user is null)
-            {
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User is not found"
-                });
-            }
 
             var field = await _context.Fields.FirstOrDefaultAsync(x => x.Id == body.FieldId);
 
@@ -189,6 +178,11 @@ namespace PRIO.Controllers
         [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+
             var zone = await _context.Zones.Include(x => x.Field).FirstOrDefaultAsync(x => x.Id == id);
             if (zone is null || !zone.IsActive)
                 return NotFound(new ErrorResponseDTO
@@ -196,14 +190,6 @@ namespace PRIO.Controllers
                     Message = "Zone not found or inactive already"
                 });
 
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-
-            if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User not found"
-                });
 
             var zoneHistory = new ZoneHistory
             {
@@ -239,20 +225,17 @@ namespace PRIO.Controllers
         [HttpPatch("{id:Guid}/restore")]
         public async Task<IActionResult> Restore([FromRoute] Guid id)
         {
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+
             var zone = await _context.Zones.Include(x => x.Field).FirstOrDefaultAsync(x => x.Id == id);
 
             if (zone is null || zone.IsActive)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Zone not found or is active already"
-                });
-
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User not found"
                 });
 
             var zoneHistory = new ZoneHistory

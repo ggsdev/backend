@@ -24,6 +24,11 @@ namespace PRIO.Controllers
         [HttpPost("wells")]
         public async Task<IActionResult> Create([FromBody] CreateWellViewModel body)
         {
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+
             var wellInDatabase = await _context.Wells.FirstOrDefaultAsync(x => x.CodWell == body.CodWell);
             if (wellInDatabase is not null)
                 return Conflict(new ErrorResponseDTO
@@ -36,14 +41,6 @@ namespace PRIO.Controllers
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = $"Field is not found"
-                });
-
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User is not found"
                 });
 
             var well = new Well
@@ -150,7 +147,6 @@ namespace PRIO.Controllers
         [HttpGet("wells/{wellId}")]
         public async Task<IActionResult> GetById([FromRoute] Guid wellId)
         {
-            Console.WriteLine("oi");
             var well = await _context.Wells.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == wellId);
             if (well is null)
                 return NotFound(new ErrorResponseDTO
@@ -165,21 +161,17 @@ namespace PRIO.Controllers
         [HttpPatch("wells/{wellId}")]
         public async Task<IActionResult> Update([FromRoute] Guid wellId, [FromBody] UpdateWellViewModel body)
         {
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+
             var well = await _context.Wells.Include(x => x.Field).Include(x => x.User).FirstOrDefaultAsync(x => x.Id == wellId);
             if (well is null)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Well not found"
                 });
-
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User is not found"
-                });
-
 
             var wellHistory = new WellHistory
             {
@@ -288,21 +280,19 @@ namespace PRIO.Controllers
         [HttpDelete("wells/{wellId}")]
         public async Task<IActionResult> Delete([FromRoute] Guid wellId)
         {
+
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+
+
             var well = await _context.Wells.FirstOrDefaultAsync(x => x.Id == wellId);
             if (well is null || !well.IsActive)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Well not found or inactive already"
                 });
-
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User is not found"
-                });
-
 
             var wellHistory = new WellHistory
             {
@@ -373,6 +363,11 @@ namespace PRIO.Controllers
         [HttpPatch("wells/{wellId}/restore")]
         public async Task<IActionResult> Restore([FromRoute] Guid wellId)
         {
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+
             var well = await _context.Wells.Include(x => x.Field).Include(x => x.User).FirstOrDefaultAsync(x => x.Id == wellId);
             if (well is null || well.IsActive is true)
                 return NotFound(new ErrorResponseDTO
@@ -380,13 +375,6 @@ namespace PRIO.Controllers
                     Message = "Well not found or active already"
                 });
 
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User is not found"
-                });
             var wellHistory = new WellHistory
             {
                 Name = well.Name,

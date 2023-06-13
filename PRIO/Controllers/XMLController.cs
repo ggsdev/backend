@@ -39,7 +39,9 @@ namespace PRIO.Controllers
         public async Task<ActionResult> PostBase64Files([FromBody] RequestXmlViewModel data, [FromServices] DataContext context)
         {
             var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+            var user = await context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            if (user is null)
+                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
 
             for (int i = 0; i < data.Files.Count; ++i)
             {

@@ -22,6 +22,15 @@ namespace PRIO.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateReservoirViewModel body)
         {
+            var userId = (Guid)HttpContext.Items["Id"]!;
+            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+
+            if (user is null)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+
             var reservoirInDatabase = await _context.Reservoirs.FirstOrDefaultAsync(x => x.CodReservoir == body.CodReservoir);
             if (reservoirInDatabase is not null)
                 return Conflict(new ErrorResponseDTO
@@ -36,13 +45,6 @@ namespace PRIO.Controllers
                     Message = $"Zone not found"
                 });
 
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User not found"
-                });
 
             var reservoir = new Reservoir
             {
@@ -134,9 +136,9 @@ namespace PRIO.Controllers
             var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
 
             if (user is null)
-                return NotFound(new ErrorResponseDTO
+                return Unauthorized(new ErrorResponseDTO
                 {
-                    Message = $"User not found"
+                    Message = "User not identified, please login first"
                 });
 
             var zoneInDatabase = await _context.Zones.FirstOrDefaultAsync(x => x.Id == body.ZoneId);
@@ -196,9 +198,9 @@ namespace PRIO.Controllers
             var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
 
             if (user is null)
-                return NotFound(new ErrorResponseDTO
+                return Unauthorized(new ErrorResponseDTO
                 {
-                    Message = $"User not found"
+                    Message = "User not identified, please login first"
                 });
 
             var reservoirHistory = new ReservoirHistory
@@ -250,9 +252,9 @@ namespace PRIO.Controllers
             var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
 
             if (user is null)
-                return NotFound(new ErrorResponseDTO
+                return Unauthorized(new ErrorResponseDTO
                 {
-                    Message = $"User not found"
+                    Message = "User not identified, please login first"
                 });
 
             var reservoirHistory = new ReservoirHistory

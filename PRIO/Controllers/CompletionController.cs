@@ -24,13 +24,12 @@ namespace PRIO.Controllers
         [HttpPost("completions")]
         public async Task<IActionResult> Create([FromBody] CreateCompletionViewModel body)
         {
+
             var userId = (Guid)HttpContext.Items["Id"]!;
             var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
             if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User not found"
-                });
+                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+
 
             if (!ModelState.IsValid)
             {
@@ -137,10 +136,7 @@ namespace PRIO.Controllers
             var userId = (Guid)HttpContext.Items["Id"]!;
             var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
             if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User not found"
-                });
+                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
 
             var completion = await _context.Completions
                 .Include(x => x.Well)
@@ -255,10 +251,7 @@ namespace PRIO.Controllers
             var userId = (Guid)HttpContext.Items["Id"]!;
             var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
             if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User not found"
-                });
+                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
 
             var completion = await _context.Completions.Include(x => x.Well).Include(x => x.Reservoir)
                 .FirstOrDefaultAsync(x => x.Id == id);
@@ -304,10 +297,7 @@ namespace PRIO.Controllers
             var userId = (Guid)HttpContext.Items["Id"]!;
             var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
             if (user is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User not found"
-                });
+                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
 
             var completion = await _context.Completions.Include(x => x.Well).Include(x => x.Reservoir)
                 .FirstOrDefaultAsync(x => x.Id == id);
