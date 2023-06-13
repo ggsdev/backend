@@ -6,9 +6,12 @@ using PRIO.Data.Mappings.CompletionMapping;
 using PRIO.Data.Mappings.FieldMapping;
 using PRIO.Data.Mappings.FieldMappings;
 using PRIO.Data.Mappings.FileTypeMappings;
+using PRIO.Data.Mappings.GroupMappings;
 using PRIO.Data.Mappings.InstallationMapping;
 using PRIO.Data.Mappings.MeasurementMappping;
 using PRIO.Data.Mappings.MeasuringEquipmentMapping;
+using PRIO.Data.Mappings.MenuMappings;
+using PRIO.Data.Mappings.PermissionMappings;
 using PRIO.Data.Mappings.ReservoirMapping;
 using PRIO.Data.Mappings.SessionMappings;
 using PRIO.Data.Mappings.UserMapping;
@@ -22,9 +25,13 @@ using PRIO.Models.Clusters;
 using PRIO.Models.Completions;
 using PRIO.Models.Fields;
 using PRIO.Models.FileTypes;
+using PRIO.Models.Groups;
+using PRIO.Models.Groups.GroupsMenus;
 using PRIO.Models.Installations;
 using PRIO.Models.Measurements;
 using PRIO.Models.MeasuringEquipments;
+using PRIO.Models.Menus;
+using PRIO.Models.Permissions;
 using PRIO.Models.Reservoirs;
 using PRIO.Models.Users;
 using PRIO.Models.Wells;
@@ -52,6 +59,11 @@ namespace PRIO.Data
         public DbSet<Well> Wells { get; set; }
         public DbSet<WellHistory> WellHistories { get; set; }
         public DbSet<MeasuringEquipment> MeasuringEquipments { get; set; }
+
+        public DbSet<Group> Groups { get; set; }
+        public DbSet<Permission> Permissions { get; set; }
+        public DbSet<GroupMenu> GroupMenus { get; set; }
+        public DbSet<Menu> Menus { get; set; }
 
         #region Measurement & Relations
         public DbSet<Measurement> Measurements { get; set; }
@@ -147,6 +159,10 @@ namespace PRIO.Data
             modelBuilder.ApplyConfiguration(new WellHistoryMap());
 
             modelBuilder.ApplyConfiguration(new MeasuringEquipmentMap());
+
+            modelBuilder.ApplyConfiguration(new GroupMap());
+            modelBuilder.ApplyConfiguration(new MenuMap());
+            modelBuilder.ApplyConfiguration(new PermissionMap());
 
             #region Measurement & Relations
             modelBuilder.ApplyConfiguration(new MeasurementMap());
