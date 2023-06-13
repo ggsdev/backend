@@ -29,14 +29,6 @@ namespace PRIO.Data.Mappings.ClusterMapping
                 .HasMaxLength(256)
                 .IsRequired();
 
-            builder.Property(x => x.UepCode)
-                .HasColumnType("VARCHAR")
-                .HasMaxLength(60);
-
-            builder.Property(x => x.UepCodeOld)
-                .HasColumnType("VARCHAR")
-                .HasMaxLength(60);
-
             builder.Property(x => x.CodClusterOld)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(60);

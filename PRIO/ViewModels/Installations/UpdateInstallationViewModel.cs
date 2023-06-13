@@ -6,7 +6,7 @@
 
         public Guid? ClusterId { get; set; }
 
-        public string? CodInstallation { get; set; }
+        public string? CodInstallationUep { get; set; }
 
         public string? Description { get; set; }
 

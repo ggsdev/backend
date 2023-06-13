@@ -66,9 +66,6 @@ namespace PRIO.Data
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-
-
-
             var envVars = DotEnv.Read();
 
             if (envVars.ContainsKey("SERVER") &&

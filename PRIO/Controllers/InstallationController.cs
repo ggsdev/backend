@@ -22,14 +22,13 @@ namespace PRIO.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateInstallationViewModel body)
         {
-            var installationInDatabase = await _context.Installations.FirstOrDefaultAsync(x => x.CodInstallation == body.CodInstallation);
-            if (installationInDatabase is not null)
-                return Conflict(new ErrorResponseDTO
-                {
-                    Message = $"Installation with code: {body.CodInstallation} already exists, try another code."
-                });
+            //var installationInDatabase = await _context.Installations.FirstOrDefaultAsync(x => x.Cod == body.Cod);
+            //if (installationInDatabase is not null)
+            //    return Conflict(new ErrorResponseDTO
+            //    {
+            //        Message = $"Installation with code: {body.CodInstallation} already exists, try another code."
+            //    });
 
-            Console.WriteLine("oi");
             var clusterInDatabase = await _context.Clusters.FirstOrDefaultAsync(x => x.Id == body.ClusterId);
             if (clusterInDatabase is null)
                 return NotFound(new ErrorResponseDTO
@@ -49,7 +48,7 @@ namespace PRIO.Controllers
             {
                 Name = body.Name,
                 Description = body.Description,
-                CodInstallation = body.CodInstallation,
+                CodInstallationUep = body.CodInstallationUep,
                 Cluster = clusterInDatabase,
                 User = user
             };
@@ -62,7 +61,7 @@ namespace PRIO.Controllers
 
                 Name = installation.Name,
 
-                CodInstallation = installation.CodInstallation,
+                CodInstallationUep = installation.CodInstallationUep,
 
                 Description = installation.Description,
 
@@ -153,8 +152,8 @@ namespace PRIO.Controllers
                 Name = body.Name is not null ? body.Name : installation.Name,
                 NameOld = installation.Name,
 
-                CodInstallation = body.CodInstallation is not null ? installation.CodInstallation : installation.CodInstallation,
-                CodInstallationOld = installation.CodInstallation,
+                CodInstallationUep = body.CodInstallationUep is not null ? installation.CodInstallationUep : installation.CodInstallationUep,
+                CodInstallationUepOld = installation.CodInstallationUep,
 
                 Description = body.Description is not null ? body.Description : installation.Description,
                 DescriptionOld = installation.Description,
@@ -177,19 +176,19 @@ namespace PRIO.Controllers
                     Message = "Cluster not found"
                 });
 
-            if (body.CodInstallation is not null)
-            {
-                var installationWithSameCode = await _context.Installations.FirstOrDefaultAsync(x => x.CodInstallation == body.CodInstallation);
+            //if (body.CodInstallationUep is not null)
+            //{
+            //    var installationWithSameCode = await _context.Installations.FirstOrDefaultAsync(x => x.CodInstallationUep == body.CodInstallationUep);
 
-                if (installationWithSameCode is null || installationWithSameCode?.Id == installation.Id)
-                    installation.CodInstallation = body.CodInstallation;
-                else
-                    return Conflict(new ErrorResponseDTO
-                    {
-                        Message = $"Installation with code: {body.CodInstallation} already exists, name: {installationWithSameCode?.Name}"
-                    });
-            }
+            //    if (installationWithSameCode is null || installationWithSameCode?.Id == installation.Id)
+            //    else
+            //        return Conflict(new ErrorResponseDTO
+            //        {
+            //            Message = $"Installation with code: {body.CodInstallationUep} already exists, name: {installationWithSameCode?.Name}"
+            //        });
+            //}
 
+            installation.CodInstallationUep = body.CodInstallationUep is not null ? body.CodInstallationUep : installation.CodInstallationUep;
             installation.Name = body.Name is not null ? body.Name : installation.Name;
             installation.Description = body.Description is not null ? body.Description : installation.Description;
             installation.Cluster = clusterInDatabase is not null ? clusterInDatabase : installation.Cluster;
@@ -226,8 +225,8 @@ namespace PRIO.Controllers
                 Cluster = installation.Cluster,
                 ClusterOldId = installation.Cluster?.Id,
 
-                CodInstallation = installation.CodInstallation,
-                CodInstallationOld = installation.CodInstallation,
+                CodInstallationUep = installation.CodInstallationUep,
+                CodInstallationUepOld = installation.CodInstallationUep,
 
                 Description = installation.Description,
                 DescriptionOld = installation.Description,
@@ -279,8 +278,8 @@ namespace PRIO.Controllers
                 Cluster = installation.Cluster,
                 ClusterOldId = installation.Cluster?.Id,
 
-                CodInstallation = installation.CodInstallation,
-                CodInstallationOld = installation.CodInstallation,
+                CodInstallationUep = installation.CodInstallationUep,
+                CodInstallationUepOld = installation.CodInstallationUep,
 
                 Description = installation.Description,
                 DescriptionOld = installation.Description,

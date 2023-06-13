@@ -24,10 +24,6 @@ namespace PRIO.Data.Mappings.ClusterMapping
             builder.Property(x => x.Description)
                 .HasColumnType("TEXT");
 
-            builder.Property(x => x.UepCode)
-                .HasColumnType("VARCHAR")
-                .HasMaxLength(60);
-
             builder.Property(x => x.CodCluster)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(60);

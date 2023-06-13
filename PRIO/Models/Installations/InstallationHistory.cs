@@ -9,8 +9,8 @@ namespace PRIO.Models.Installations
     {
         public string? Name { get; set; }
         public string? NameOld { get; set; }
-        public string? CodInstallation { get; set; }
-        public string? CodInstallationOld { get; set; }
+        public string? CodInstallationUep { get; set; }
+        public string? CodInstallationUepOld { get; set; }
         [JsonIgnore]
         public User? User { get; set; }
         public Cluster? Cluster { get; set; }

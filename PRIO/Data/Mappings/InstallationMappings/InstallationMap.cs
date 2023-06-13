@@ -19,7 +19,7 @@ namespace PRIO.Data.Mappings.InstallationMapping
                 .HasMaxLength(120)
                 .IsRequired();
 
-            builder.Property(x => x.CodInstallation)
+            builder.Property(x => x.CodInstallationUep)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(120)
                 .IsRequired();
@@ -34,9 +34,6 @@ namespace PRIO.Data.Mappings.InstallationMapping
             builder.Property(x => x.DeletedAt);
 
             builder.Property(x => x.IsActive);
-
-            builder.HasIndex(x => x.CodInstallation)
-                .IsUnique();
 
             builder.HasOne(x => x.User)
                .WithMany(u => u.Installations)
