@@ -42,8 +42,10 @@ namespace PRIO.TESTS.Files.XLS
             _context.Users.Add(_user);
             _context.SaveChanges();
 
+
             var httpContext = new DefaultHttpContext();
             httpContext.Items["Id"] = _user.Id;
+            httpContext.Items["INSTANCE"] = "bravo";
 
             _controller = new XlsxController();
             _controller.ControllerContext.HttpContext = httpContext;
@@ -56,6 +58,7 @@ namespace PRIO.TESTS.Files.XLS
         [TearDown]
         public void TearDown()
         {
+            _context.Database.EnsureDeleted();
             _context.Dispose();
         }
 

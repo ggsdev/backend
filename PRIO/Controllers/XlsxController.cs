@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using dotenv.net;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using PRIO.Data;
@@ -21,6 +22,7 @@ namespace PRIO.Controllers
     [ApiController]
     public class XlsxController : ControllerBase
     {
+        private readonly string _consolidationInstance = "consolidador";
         [HttpPost("xlsx")]
         public async Task<IActionResult> PostBase64File([FromBody] RequestXslxViewModel data, [FromServices] DataContext context)
         {
@@ -32,15 +34,18 @@ namespace PRIO.Controllers
                 {
                     Message = "User not identified, please login first"
                 });
+            var envVars = DotEnv.Read();
 
             var contentBase64 = data.ContentBase64?.Replace("data:@file/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,", "");
             using (var stream = new MemoryStream(Convert.FromBase64String(contentBase64!)))
             using (ExcelPackage package = new(stream))
             {
+                envVars.TryGetValue("INSTANCE", out var getInstanceName);
+                getInstanceName ??= _consolidationInstance;
+
                 var workbook = package.Workbook;
                 var worksheetTab = workbook.Worksheets.FirstOrDefault(x => x.Name.ToLower().Trim() == "informações gerais poços");
                 worksheetTab ??= workbook.Worksheets[0];
-                //testar procura de aba da planilha
 
                 var dimension = worksheetTab.Dimension;
 
@@ -52,6 +57,9 @@ namespace PRIO.Controllers
                 for (int row = 2; row <= dimension.End.Row; ++row)
                 {
                     var columnCluster = worksheetTab.Cells[row, columnPositions[XlsUtils.ClusterColumnName]].Value?.ToString();
+
+                    if (!(columnCluster?.ToLower() == getInstanceName || getInstanceName.ToLower() == _consolidationInstance))
+                        continue;
 
                     var columnInstallation = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationColumnName]].Value?.ToString();
                     var columnInstallationCodUep = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationCodUepColumnName]].Value?.ToString();
@@ -92,6 +100,7 @@ namespace PRIO.Controllers
                     var columnWellCoordX = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCoordXColumnName]].Value?.ToString();
                     var columnWellCoordY = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCoordYColumnName]].Value?.ToString();
                     #endregion
+
 
                     if (!string.IsNullOrWhiteSpace(columnCluster) && !entityDictionary.TryGetValue(columnCluster.ToLower(), out var cluster))
                     {
