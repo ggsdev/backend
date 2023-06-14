@@ -9,8 +9,8 @@ namespace PRIO.Models.Groups
         public Guid Id { get; set; }
         public Group? Group { get; set; }
         public Menu? Menu { get; set; }
-        public List<UserPermission>? Permissions { get; set; }
-        public List<Operation>? Operations { get; set; }
+        public List<UserPermissions>? Permissions { get; set; }
+        public List<GroupOperations>? Operations { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }

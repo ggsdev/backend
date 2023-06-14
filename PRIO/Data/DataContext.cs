@@ -53,7 +53,6 @@ namespace PRIO.Data
         public DbSet<FieldHistory> FieldHistories { get; set; }
         public DbSet<Zone> Zones { get; set; }
         public DbSet<ZoneHistory> ZoneHistories { get; set; }
-        public DbSet<Operation> Operations { get; set; }
         public DbSet<Reservoir> Reservoirs { get; set; }
         public DbSet<ReservoirHistory> ReservoirHistories { get; set; }
         public DbSet<Completion> Completions { get; set; }
@@ -63,8 +62,10 @@ namespace PRIO.Data
         public DbSet<MeasuringEquipment> MeasuringEquipments { get; set; }
 
         public DbSet<Group> Groups { get; set; }
-        public DbSet<UserPermission> Permissions { get; set; }
+        public DbSet<GroupOperations> GroupOperations { get; set; }
+        public DbSet<UserOperations> UserOperations { get; set; }
         public DbSet<GroupPermissions> GroupPermissions { get; set; }
+        public DbSet<UserPermissions> UserPermissions { get; set; }
         public DbSet<Menu> Menus { get; set; }
 
         #region Measurement & Relations

@@ -4,9 +4,9 @@ using PRIO.Models.Permissions;
 
 namespace PRIO.Data.Mappings.PermissionMappings
 {
-    public class PermissionMap : IEntityTypeConfiguration<UserPermission>
+    public class PermissionMap : IEntityTypeConfiguration<UserPermissions>
     {
-        public void Configure(EntityTypeBuilder<UserPermission> builder)
+        public void Configure(EntityTypeBuilder<UserPermissions> builder)
         {
             builder.ToTable("UserPermissions");
 

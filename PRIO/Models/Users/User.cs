@@ -24,7 +24,7 @@ namespace PRIO.Models.Users
         #region Relationships
         //public Role Role { get; set; }
 
-        public List<UserPermission>? UserPermissions { get; set; }
+        public List<UserPermissions>? UserPermissions { get; set; }
         public Session? Session { get; set; }
         public List<Cluster>? Clusters { get; set; }
         public List<ClusterHistory>? ClusterHistories { get; set; }
