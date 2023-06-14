@@ -65,6 +65,7 @@ namespace PRIO.TESTS.Cruds.Reservoirs
 
             var httpContext = new DefaultHttpContext();
             httpContext.Items["Id"] = _user.Id;
+            httpContext.Items["User"] = _user;
 
             _controller = new ReservoirController(_context, _mapper);
             _controller.ControllerContext.HttpContext = httpContext;

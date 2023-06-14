@@ -55,29 +55,22 @@ namespace PRIO.Controllers
                 State = body.State,
                 CodField = body.CodField,
                 Installation = installationInDatabase,
+                IsActive = body.IsActive is not null ? body.IsActive.Value : true,
             };
             await _context.Fields.AddAsync(field);
 
             var fieldHistory = new FieldHistory
             {
                 Name = body.Name,
-                NameOld = null,
                 CodField = body.CodField,
-                CodFieldOld = null,
                 Basin = body.Basin,
-                BasinOld = null,
                 Location = body.Location,
-                LocationOld = null,
                 State = body.State,
-                StateOld = null,
                 Description = body.Description,
-                DescriptionOld = null,
-                IsActiveOld = null,
                 IsActive = true,
                 User = user,
                 Field = field,
                 Installation = installationInDatabase,
-                InstallationOld = null,
                 TypeOperation = TypeOperation.Create,
             };
             await _context.FieldHistories.AddAsync(fieldHistory);

@@ -49,6 +49,7 @@ namespace PRIO.Controllers
 
                 Zone = zoneInDatabase,
                 User = user,
+                IsActive = body.IsActive is not null ? body.IsActive.Value : true,
             };
 
             await _context.Reservoirs.AddAsync(reservoir);

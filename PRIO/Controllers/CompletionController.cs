@@ -65,6 +65,7 @@ namespace PRIO.Controllers
                 User = user,
                 Well = well,
                 Reservoir = reservoir,
+                IsActive = body.IsActive is not null ? body.IsActive.Value : true,
             };
 
             await _context.Completions.AddAsync(completion);

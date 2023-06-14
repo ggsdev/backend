@@ -40,7 +40,8 @@ namespace PRIO.Controllers
                 Description = body.Description,
                 CodInstallationUep = body.CodInstallationUep,
                 Cluster = clusterInDatabase,
-                User = user
+                User = user,
+                IsActive = body.IsActive is not null ? body.IsActive.Value : true,
             };
 
             await _context.Installations.AddAsync(installation);

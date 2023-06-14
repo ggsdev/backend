@@ -47,6 +47,7 @@ namespace PRIO.Controllers
                 Field = field,
                 Description = body.Description,
                 User = user,
+                IsActive = body.IsActive is not null ? body.IsActive.Value : true,
             };
 
             await _context.Zones.AddAsync(zone);

@@ -44,6 +44,7 @@ namespace PRIO.Controllers
                 CodCluster = body.CodCluster,
                 Description = body.Description is not null ? body.Description : null,
                 User = user,
+                IsActive = body.IsActive is not null ? body.IsActive.Value : true,
             };
 
             await _context.Clusters.AddAsync(cluster);

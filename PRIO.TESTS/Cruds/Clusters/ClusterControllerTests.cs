@@ -50,6 +50,7 @@ namespace PRIO.TESTS.Cruds.Clusters
 
             var httpContext = new DefaultHttpContext();
             httpContext.Items["Id"] = _user.Id;
+            httpContext.Items["User"] = _user;
 
             _controller = new ClusterController(_context, _mapper);
             _controller.ControllerContext.HttpContext = httpContext;

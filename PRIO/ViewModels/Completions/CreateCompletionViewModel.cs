@@ -10,5 +10,6 @@ namespace PRIO.ViewModels.Completions
         public Guid? ReservoirId { get; set; }
         [Required(ErrorMessage = "WellId is required")]
         public Guid? WellId { get; set; }
+        public bool? IsActive { get; set; }
     }
 }

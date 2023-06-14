@@ -10,5 +10,6 @@ namespace PRIO.ViewModels.Zones
         [Required(ErrorMessage = "Field id is required")]
         public Guid? FieldId { get; set; }
         public string? Description { get; set; }
+        public bool? IsActive { get; set; }
     }
 }
