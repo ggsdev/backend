@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.Data;
 
@@ -11,9 +12,11 @@ using PRIO.Data;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230614134656_CompletionHistoryMapping")]
+    partial class CompletionHistoryMapping
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -194,7 +197,7 @@ namespace PRIO.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("VARCHAR");
 
-                    b.Property<Guid>("CompletionId")
+                    b.Property<Guid?>("CompletionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
@@ -221,7 +224,7 @@ namespace PRIO.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("VARCHAR");
 
-                    b.Property<Guid?>("ReservoirId")
+                    b.Property<Guid>("ReservoirId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("ReservoirOld")
@@ -3088,14 +3091,13 @@ namespace PRIO.Migrations
                 {
                     b.HasOne("PRIO.Models.Completions.Completion", "Completion")
                         .WithMany("CompletionHistories")
-                        .HasForeignKey("CompletionId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .HasForeignKey("CompletionId");
 
                     b.HasOne("PRIO.Models.Reservoirs.Reservoir", "Reservoir")
                         .WithMany("CompletionHistories")
                         .HasForeignKey("ReservoirId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("PRIO.Models.Users.User", "User")
                         .WithMany("CompletionHistories")

@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PRIO.Models.Completions;
 
 namespace PRIO.Data.Mappings.CompletionMappings
@@ -19,8 +19,8 @@ namespace PRIO.Data.Mappings.CompletionMappings
             builder.Property(x => x.Name)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(256)
-                .IsRequired();            
-            
+                .IsRequired();
+
             builder.Property(x => x.NameOld)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(256);
@@ -28,19 +28,19 @@ namespace PRIO.Data.Mappings.CompletionMappings
             builder.Property(x => x.CodCompletion)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(256);
-            
+
             builder.Property(x => x.CodCompletionOld)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(256);
 
             builder.Property(x => x.Description)
                 .HasColumnType("TEXT");
-            
+
             builder.Property(x => x.DescriptionOld)
                 .HasColumnType("TEXT");
 
             builder.Property(x => x.IsActive);
-            
+
             builder.Property(x => x.IsActiveOld);
 
             builder.Property(x => x.CreatedAt);
@@ -48,7 +48,7 @@ namespace PRIO.Data.Mappings.CompletionMappings
             builder.Property(x => x.ReservoirOld)
              .HasColumnType("UniqueIdentifier")
              .HasMaxLength(120);
-            
+
             builder.Property(x => x.WellOld)
              .HasColumnType("UniqueIdentifier")
              .HasMaxLength(120);
@@ -60,8 +60,12 @@ namespace PRIO.Data.Mappings.CompletionMappings
 
             builder.HasOne(x => x.Reservoir).
                 WithMany(r => r.CompletionHistories)
-                .OnDelete(DeleteBehavior.NoAction)
-                .IsRequired();
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasOne(x => x.Completion).
+               WithMany(r => r.CompletionHistories)
+               .OnDelete(DeleteBehavior.NoAction)
+               .IsRequired();
 
             builder.HasOne(x => x.Well)
                 .WithMany(c => c.CompletionHistories)
