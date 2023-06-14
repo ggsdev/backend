@@ -7,7 +7,7 @@ namespace PRIO.ViewModels.Wells
     {
         public bool? IsActive { get; set; }
         public string? CodWell { get; set; }
-        [Required(ErrorMessage = "Name ANP code is required")]
+        [Required(ErrorMessage = "Name ANP is required")]
         public string? Name { get; set; }
         public string? WellOperatorName { get; set; }
         [Required(ErrorMessage = "Code ANP is required")]

@@ -45,8 +45,7 @@ namespace PRIO.Controllers
             {
                 Name = body.Name,
                 Description = body.Description,
-                CodReservoir = body.CodReservoir,
-
+                CodReservoir = body.CodReservoir is not null ? body.CodReservoir : GenerateCode.Generate(body.Name),
                 Zone = zoneInDatabase,
                 User = user,
                 IsActive = body.IsActive is not null ? body.IsActive.Value : true,

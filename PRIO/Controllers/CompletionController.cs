@@ -56,18 +56,17 @@ namespace PRIO.Controllers
                 {
                     Message = $"Completion with name: {well.Name}_{reservoir.Zone.CodZone} already exists."
                 });
-
+            var completionName = $"{well.Name}_{reservoir.Zone.CodZone}";
             completion = new Completion
             {
-                Name = $"{well.Name}_{reservoir.Zone.CodZone}",
-                CodCompletion = body.CodCompletion,
+                Name = completionName,
+                CodCompletion = body.CodCompletion is not null ? body.CodCompletion : GenerateCode.Generate(completionName),
                 Description = body.Description,
                 User = user,
                 Well = well,
                 Reservoir = reservoir,
                 IsActive = body.IsActive is not null ? body.IsActive.Value : true,
             };
-
             await _context.Completions.AddAsync(completion);
 
             var completionHistory = new CompletionHistory

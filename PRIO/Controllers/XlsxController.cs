@@ -110,6 +110,7 @@ namespace PRIO.Controllers
                                 Name = columnCluster,
                                 User = user,
                                 IsActive = true,
+                                CodCluster = GenerateCode.Generate(columnCluster),
                             };
 
                             var clusterHistory = new ClusterHistory
@@ -117,7 +118,6 @@ namespace PRIO.Controllers
                                 Name = columnCluster,
                                 User = user,
                                 TypeOperation = TypeOperation.Import,
-                                IsActive = true,
                                 Cluster = (Cluster)cluster,
                             };
 
@@ -146,7 +146,6 @@ namespace PRIO.Controllers
                                 Cluster = columnCluster is not null ? (Cluster)entityDictionary.GetValueOrDefault(columnCluster.ToLower())! : null,
                                 CodInstallationUep = columnInstallationCodUep,
                                 Name = columnInstallation,
-                                IsActive = true,
                                 User = user,
                                 Installation = (Installation)installation,
                                 TypeOperation = TypeOperation.Import
@@ -177,7 +176,6 @@ namespace PRIO.Controllers
                                 Name = columnField,
                                 CodField = columnCodeField,
                                 User = user,
-                                IsActive = true,
                                 Field = (Field)field,
                                 Installation = columnInstallation is not null ? (Installation)entityDictionary.GetValueOrDefault(columnInstallation.ToLower())! : null,
                                 TypeOperation = TypeOperation.Import,
@@ -205,7 +203,6 @@ namespace PRIO.Controllers
                             var zoneHistory = new ZoneHistory
                             {
                                 CodZone = columnZone,
-                                IsActive = true,
                                 Field = columnField is not null ? (Field)entityDictionary.GetValueOrDefault(columnField.ToLower())! : null,
                                 User = user,
                                 Zone = (Zone)zone,
@@ -228,6 +225,7 @@ namespace PRIO.Controllers
                             {
                                 Name = columnReservoir,
                                 User = user,
+                                CodReservoir = GenerateCode.Generate(columnReservoir),
                                 Zone = columnZone is not null ? (Zone)entityDictionary.GetValueOrDefault(columnZone.ToLower())! : null,
                                 IsActive = true,
                             };
@@ -235,7 +233,6 @@ namespace PRIO.Controllers
                             var reservoirHistory = new ReservoirHistory
                             {
                                 Name = columnReservoir,
-                                IsActive = true,
                                 User = user,
                                 Reservoir = (Reservoir)reservoir,
 
@@ -281,6 +278,7 @@ namespace PRIO.Controllers
                                 IsActive = true,
                                 Field = columnField is not null ? (Field)entityDictionary.GetValueOrDefault(columnField.ToLower())! : null,
                             };
+
                             var wellHistory = new WellHistory
                             {
                                 Name = columnWellNameAnp,
@@ -307,7 +305,6 @@ namespace PRIO.Controllers
                                 User = user,
                                 TypeOperation = TypeOperation.Import,
                                 Well = (Well)well,
-                                IsActive = true,
                             };
 
                             entityDictionary[columnWellCodeAnp.ToLower()] = well;
@@ -324,6 +321,7 @@ namespace PRIO.Controllers
                             {
                                 Name = columnCompletion,
                                 User = user,
+                                CodCompletion = GenerateCode.Generate(columnCompletion),
                                 Reservoir = columnReservoir is not null ? (Reservoir)entityDictionary.GetValueOrDefault(columnReservoir?.ToLower())! : null,
                                 Well = columnWellCodeAnp is not null ? (Well)entityDictionary.GetValueOrDefault(columnWellCodeAnp?.ToLower())! : null,
                                 IsActive = true
@@ -335,7 +333,6 @@ namespace PRIO.Controllers
                                 Reservoir = columnReservoir is not null ? (Reservoir)entityDictionary.GetValueOrDefault(columnReservoir?.ToLower())! : null,
                                 Well = columnWellCodeAnp is not null ? (Well)entityDictionary.GetValueOrDefault(columnWellCodeAnp?.ToLower())! : null,
                                 User = user,
-                                IsActive = true,
                                 Completion = (Completion)completion,
                                 TypeOperation = TypeOperation.Import,
                             };

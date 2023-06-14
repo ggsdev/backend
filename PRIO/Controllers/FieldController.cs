@@ -57,6 +57,7 @@ namespace PRIO.Controllers
                 Installation = installationInDatabase,
                 IsActive = body.IsActive is not null ? body.IsActive.Value : true,
             };
+
             await _context.Fields.AddAsync(field);
 
             var fieldHistory = new FieldHistory

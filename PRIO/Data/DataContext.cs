@@ -122,14 +122,24 @@ namespace PRIO.Data
 
             foreach (var entry in modifiedEntries)
             {
-                if (entry.Entity is BaseModel baseModel)
+                if (entry.State == EntityState.Added)
                 {
-                    baseModel.CreatedAt = DateTime.UtcNow;
-                    baseModel.UpdatedAt = DateTime.UtcNow;
+                    if (entry.Entity is BaseModel baseModel)
+                    {
+                        baseModel.CreatedAt = DateTime.UtcNow;
+                        baseModel.UpdatedAt = DateTime.UtcNow;
+                    }
+                    if (entry.Entity is BaseHistoryModel baseHistoryModel)
+                    {
+                        baseHistoryModel.CreatedAt = DateTime.UtcNow;
+                    }
                 }
-                if (entry.Entity is BaseHistoryModel baseHistoryModel)
+                if (entry.State == EntityState.Modified)
                 {
-                    baseHistoryModel.CreatedAt = DateTime.UtcNow;
+                    if (entry.Entity is BaseModel baseModel)
+                    {
+                        baseModel.UpdatedAt = DateTime.UtcNow;
+                    }
                 }
             }
         }

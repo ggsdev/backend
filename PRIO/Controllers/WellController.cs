@@ -46,7 +46,7 @@ namespace PRIO.Controllers
 
             var well = new Well
             {
-                CodWell = body.CodWell,
+                CodWell = body.CodWell is not null ? body.CodWell : GenerateCode.Generate(body.Name),
                 Name = body.Name,
                 WellOperatorName = body.WellOperatorName,
                 CodWellAnp = body.CodWellAnp,

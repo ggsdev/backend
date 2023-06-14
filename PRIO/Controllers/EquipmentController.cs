@@ -72,7 +72,6 @@ namespace PRIO.Controllers
                 User = user,
                 IsActive = body.IsActive is not null ? body.IsActive.Value : true,
             };
-
             await _context.MeasuringEquipments.AddAsync(equipment);
             await _context.SaveChangesAsync();
 

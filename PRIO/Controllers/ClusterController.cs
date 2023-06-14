@@ -41,10 +41,10 @@ namespace PRIO.Controllers
             var cluster = new Cluster
             {
                 Name = body.Name,
-                CodCluster = body.CodCluster,
                 Description = body.Description is not null ? body.Description : null,
                 User = user,
                 IsActive = body.IsActive is not null ? body.IsActive.Value : true,
+                CodCluster = body.CodCluster is not null ? body.CodCluster : GenerateCode.Generate(body.Name)
             };
 
             await _context.Clusters.AddAsync(cluster);
@@ -52,15 +52,9 @@ namespace PRIO.Controllers
             var clusterHistory = new ClusterHistory
             {
                 Name = body.Name,
-                NameOld = null,
-                CodClusterOld = null,
-                CodCluster = body.CodCluster,
-                DescriptionOld = null,
                 Description = body.Description is not null ? body.Description : null,
                 User = user,
-                IsActiveOld = null,
-                IsActive = true,
-
+                CodCluster = cluster.CodCluster,
                 TypeOperation = TypeOperation.Create,
 
                 Cluster = cluster,
@@ -101,37 +95,41 @@ namespace PRIO.Controllers
         {
             var user = HttpContext.Items["User"] as User;
 
-            var cluster = await _context.Clusters.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id);
+            var cluster = await _context.Clusters.Include(x => x.User).Include(x => x.ClusterHistories).FirstOrDefaultAsync(x => x.Id == id);
             if (cluster is null)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Cluster not found"
                 });
 
-            var clusterHistory = new ClusterHistory
+            var lastClusterHistory = cluster.ClusterHistories?.LastOrDefault();
+            var isUserUpdatingSomething = (body.Name is not null && cluster.Name != body.Name) ||
+                (body.Description is not null && cluster.Description != body.Description) ||
+                (body.CodCluster is not null && cluster.CodCluster != body.CodCluster);
+
+            if (isUserUpdatingSomething)
             {
-                Name = body.Name is not null ? body.Name : cluster.Name,
-                NameOld = cluster.Name,
-                CodCluster = body.CodCluster is not null ? body.CodCluster : cluster.CodCluster,
-                CodClusterOld = cluster.CodCluster,
-                Description = body.Description is not null ? body.Description : cluster.Description,
-                DescriptionOld = cluster.Description,
-                IsActive = true,
-                IsActiveOld = cluster.IsActive,
+                var clusterHistory = new ClusterHistory
+                {
+                    Name = body.Name ?? cluster.Name,
+                    NameOld = (body.Name == cluster.Name) ? lastClusterHistory?.NameOld : cluster.Name,
+                    CodCluster = body.CodCluster ?? cluster.CodCluster,
+                    CodClusterOld = (body.CodCluster == cluster.CodCluster) ? lastClusterHistory?.CodClusterOld : cluster.CodCluster,
+                    Description = body.Description ?? cluster.Description,
+                    DescriptionOld = (body.Description == cluster.Description) ? lastClusterHistory?.DescriptionOld : cluster.Description,
+                    IsActiveOld = (body.IsActive == cluster.IsActive) ? lastClusterHistory?.IsActiveOld : cluster.IsActive,
+                    TypeOperation = TypeOperation.Update,
+                    User = user,
+                    Cluster = cluster
+                };
 
-                TypeOperation = TypeOperation.Update,
+                cluster.Name ??= body.Name;
+                cluster.Description ??= body.Description;
+                cluster.CodCluster ??= body.CodCluster;
 
-                User = user,
-                Cluster = cluster,
-            };
-            _context.Update(clusterHistory);
-
-            cluster.Name = body.Name is not null ? body.Name : cluster.Name;
-            cluster.Description = body.Description is not null ? body.Description : cluster.Description;
-            cluster.CodCluster = body.CodCluster is not null ? body.CodCluster : cluster.CodCluster;
-
-            _context.Update(cluster);
-            await _context.SaveChangesAsync();
+                _context.UpdateRange(cluster, clusterHistory);
+                await _context.SaveChangesAsync();
+            }
 
             var clusternDTO = _mapper.Map<Cluster, ClusterDTO>(cluster);
             return Ok(clusternDTO);
@@ -142,23 +140,24 @@ namespace PRIO.Controllers
         {
             var user = HttpContext.Items["User"] as User;
 
-            var cluster = await _context.Clusters.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id);
+            var cluster = await _context.Clusters.Include(x => x.User).Include(x => x.ClusterHistories).FirstOrDefaultAsync(x => x.Id == id);
             if (cluster is null || cluster.IsActive is true)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Cluster not found or active already"
                 });
 
+            var lastClusterHistory = cluster.ClusterHistories?.LastOrDefault();
+
             var clusterHistory = new ClusterHistory
             {
                 Name = cluster.Name,
-                NameOld = cluster.Name,
+                NameOld = lastClusterHistory?.NameOld,
                 CodCluster = cluster.CodCluster,
-                CodClusterOld = cluster.CodCluster,
+                CodClusterOld = lastClusterHistory?.CodClusterOld,
                 Description = cluster.Description,
-                DescriptionOld = cluster.Description,
-                IsActive = true,
-                IsActiveOld = cluster.IsActive,
+                DescriptionOld = lastClusterHistory?.DescriptionOld,
+                IsActiveOld = lastClusterHistory?.IsActiveOld,
                 TypeOperation = TypeOperation.Restore,
 
                 User = user,
@@ -181,23 +180,25 @@ namespace PRIO.Controllers
         {
             var user = HttpContext.Items["User"] as User;
 
-            var cluster = await _context.Clusters.FirstOrDefaultAsync(x => x.Id == id);
+            var cluster = await _context.Clusters.Include(x => x.ClusterHistories).FirstOrDefaultAsync(x => x.Id == id);
             if (cluster is null || !cluster.IsActive)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Cluster not found or inactive already"
                 });
 
+            var lastClusterHistory = cluster.ClusterHistories?.LastOrDefault();
+
             var clusterHistory = new ClusterHistory
             {
                 Name = cluster.Name,
-                NameOld = cluster.Name,
+                NameOld = lastClusterHistory?.NameOld,
                 CodCluster = cluster.CodCluster,
-                CodClusterOld = cluster.CodCluster,
+                CodClusterOld = lastClusterHistory?.CodClusterOld,
                 Description = cluster.Description,
-                DescriptionOld = cluster.Description,
+                DescriptionOld = lastClusterHistory?.DescriptionOld,
                 IsActive = false,
-                IsActiveOld = cluster.IsActive,
+                IsActiveOld = lastClusterHistory?.IsActiveOld,
                 TypeOperation = TypeOperation.Delete,
                 User = user,
                 Cluster = cluster,
