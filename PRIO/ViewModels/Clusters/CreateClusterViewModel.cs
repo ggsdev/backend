@@ -8,7 +8,7 @@ namespace PRIO.ViewModels.Clusters
         public string? Name { get; set; }
         public string? CodCluster { get; set; }
         public string? UepCode { get; set; }
-        public bool? IsActive { get; set; } = true;
+        public bool? IsActive { get; set; }
         public string? Description { get; set; }
     }
 }

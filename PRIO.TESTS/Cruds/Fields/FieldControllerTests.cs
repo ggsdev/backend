@@ -88,6 +88,7 @@ namespace PRIO.TESTS.Cruds.Fields
 
             var httpContext = new DefaultHttpContext();
             httpContext.Items["Id"] = _user.Id;
+            httpContext.Items["User"] = _user;
 
             _controller = new FieldController(_context, _mapper);
             _controller.ControllerContext.HttpContext = httpContext;

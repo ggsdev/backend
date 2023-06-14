@@ -494,7 +494,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("MenuId");
 
-                    b.ToTable("GroupMenus");
+                    b.ToTable("GroupMenus", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.Models.Installations.Installation", b =>
