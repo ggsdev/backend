@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS;
 using PRIO.DTOS.WellDTOS;
+using PRIO.Filters;
+using PRIO.Models.Users;
 using PRIO.Models.Wells;
 using PRIO.Utils;
 using PRIO.ViewModels.Wells;
@@ -11,6 +13,8 @@ using PRIO.ViewModels.Wells;
 namespace PRIO.Controllers
 {
     [ApiController]
+    [Route("wells")]
+    [ServiceFilter(typeof(AuthorizationFilter))]
     public class WellController : ControllerBase
     {
         private readonly DataContext _context;
@@ -21,13 +25,10 @@ namespace PRIO.Controllers
             _context = context;
             _mapper = mapper;
         }
-        [HttpPost("wells")]
+        [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateWellViewModel body)
         {
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+            var user = HttpContext.Items["User"] as User;
 
             var wellInDatabase = await _context.Wells.FirstOrDefaultAsync(x => x.CodWell == body.CodWell);
             if (wellInDatabase is not null)
@@ -76,51 +77,28 @@ namespace PRIO.Controllers
             var wellHistory = new WellHistory
             {
                 CodWell = body.CodWell,
-                CodWellOld = null,
                 Name = body.Name,
-                NameOld = null,
                 WellOperatorName = body.WellOperatorName,
-                WellOperatorNameOld = null,
                 CodWellAnp = body.CodWellAnp,
-                CodWellAnpOld = null,
                 CategoryAnp = body.CategoryAnp,
-                CategoryAnpOld = null,
                 CategoryReclassificationAnp = body.CategoryReclassificationAnp,
-                CategoryReclassificationAnpOld = null,
                 CategoryOperator = body.CategoryOperator,
-                CategoryOperatorOld = null,
                 StatusOperator = body.StatusOperator,
-                StatusOperatorOld = null,
                 Type = body.Type,
-                TypeOld = null,
                 WaterDepth = body.WaterDepth,
-                WaterDepthOld = null,
                 TopOfPerforated = body.TopOfPerforated,
-                TopOfPerforatedOld = null,
                 BaseOfPerforated = body.BaseOfPerforated,
-                BaseOfPerforatedOld = null,
                 ArtificialLift = body.ArtificialLift,
-                ArtificialLiftOld = null,
                 Latitude4C = body.Latitude4C,
-                Latitude4COld = null,
                 Longitude4C = body.Longitude4C,
-                Longitude4COld = null,
                 LongitudeDD = body.LongitudeDD,
-                LongitudeDDOld = null,
                 LatitudeDD = body.LatitudeDD,
-                LatitudeDDOld = null,
                 DatumHorizontal = body.DatumHorizontal,
-                DatumHorizontalOld = null,
                 TypeBaseCoordinate = body.TypeBaseCoordinate,
-                TypeBaseCoordinateOld = null,
                 CoordX = body.CoordX,
-                CoordXOld = null,
                 CoordY = body.CoordY,
-                CoordYOld = null,
                 Description = body.Description,
-                DescriptionOld = null,
                 Field = fieldFound,
-                FieldOld = null,
                 User = user,
                 TypeOperation = TypeOperation.Create,
                 Well = well,
@@ -136,7 +114,7 @@ namespace PRIO.Controllers
             return Created($"wells/{well.Id}", wellDTO);
         }
 
-        [HttpGet("wells")]
+        [HttpGet]
         public async Task<IActionResult> Get()
         {
             var wells = await _context.Wells.Include(x => x.Completions).Include(x => x.User).ToListAsync();
@@ -144,10 +122,10 @@ namespace PRIO.Controllers
             return Ok(wellsDTO);
         }
 
-        [HttpGet("wells/{wellId}")]
-        public async Task<IActionResult> GetById([FromRoute] Guid wellId)
+        [HttpGet("{id:Guid}")]
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var well = await _context.Wells.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == wellId);
+            var well = await _context.Wells.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id);
             if (well is null)
                 return NotFound(new ErrorResponseDTO
                 {
@@ -158,15 +136,12 @@ namespace PRIO.Controllers
             return Ok(wellDTO);
         }
 
-        [HttpPatch("wells/{wellId}")]
-        public async Task<IActionResult> Update([FromRoute] Guid wellId, [FromBody] UpdateWellViewModel body)
+        [HttpPatch("{id:Guid}")]
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateWellViewModel body)
         {
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+            var user = HttpContext.Items["User"] as User;
 
-            var well = await _context.Wells.Include(x => x.Field).Include(x => x.User).FirstOrDefaultAsync(x => x.Id == wellId);
+            var well = await _context.Wells.Include(x => x.Field).Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id);
             if (well is null)
                 return NotFound(new ErrorResponseDTO
                 {
@@ -277,17 +252,12 @@ namespace PRIO.Controllers
             return Ok(wellDTO);
         }
 
-        [HttpDelete("wells/{wellId}")]
-        public async Task<IActionResult> Delete([FromRoute] Guid wellId)
+        [HttpDelete("{id:Guid}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
+            var user = HttpContext.Items["User"] as User;
 
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
-
-
-            var well = await _context.Wells.FirstOrDefaultAsync(x => x.Id == wellId);
+            var well = await _context.Wells.FirstOrDefaultAsync(x => x.Id == id);
             if (well is null || !well.IsActive)
                 return NotFound(new ErrorResponseDTO
                 {
@@ -360,15 +330,12 @@ namespace PRIO.Controllers
             return NoContent();
         }
 
-        [HttpPatch("wells/{wellId}/restore")]
-        public async Task<IActionResult> Restore([FromRoute] Guid wellId)
+        [HttpPatch("{id:Guid}/restore")]
+        public async Task<IActionResult> Restore([FromRoute] Guid id)
         {
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+            var user = HttpContext.Items["User"] as User;
 
-            var well = await _context.Wells.Include(x => x.Field).Include(x => x.User).FirstOrDefaultAsync(x => x.Id == wellId);
+            var well = await _context.Wells.Include(x => x.Field).Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id);
             if (well is null || well.IsActive is true)
                 return NotFound(new ErrorResponseDTO
                 {
@@ -441,13 +408,13 @@ namespace PRIO.Controllers
             return Ok(wellDTO);
         }
 
-        [HttpGet("wells/{wellId}/history")]
-        public async Task<IActionResult> GetHistory([FromRoute] Guid wellId)
+        [HttpGet("{id:Guid}/history")]
+        public async Task<IActionResult> GetHistory([FromRoute] Guid id)
         {
             var wellHistories = await _context.WellHistories.Include(x => x.User)
                                                       .Include(x => x.Field)
                                                       .Include(x => x.Well)
-                                                      .Where(x => x.Well.Id == wellId)
+                                                      .Where(x => x.Well.Id == id)
                                                       .OrderByDescending(x => x.CreatedAt)
                                                       .ToListAsync();
 

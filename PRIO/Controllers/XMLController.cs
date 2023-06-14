@@ -9,8 +9,10 @@ using PRIO.Files.XML._001;
 using PRIO.Files.XML._002;
 using PRIO.Files.XML._003;
 using PRIO.Files.XML._039;
+using PRIO.Filters;
 using PRIO.Models.FileTypes;
 using PRIO.Models.Measurements;
+using PRIO.Models.Users;
 using PRIO.ViewModels.Files;
 using System.Globalization;
 using System.Text;
@@ -21,9 +23,10 @@ using System.Xml.Linq;
 namespace PRIO.Controllers
 {
     [ApiController]
+    [Route("measurements")]
+    [ServiceFilter(typeof(AuthorizationFilter))]
     public partial class XMLController : ControllerBase
     {
-
         private readonly IMapper _mapper;
         private readonly DTOFiles _responseResult;
 
@@ -35,13 +38,10 @@ namespace PRIO.Controllers
             _responseResult = new();
         }
 
-        [HttpPost("measurements")]
+        [HttpPost]
         public async Task<ActionResult> PostBase64Files([FromBody] RequestXmlViewModel data, [FromServices] DataContext context)
         {
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+            var user = HttpContext.Items["User"] as User;
 
             for (int i = 0; i < data.Files.Count; ++i)
             {
@@ -752,7 +752,7 @@ namespace PRIO.Controllers
             return Created("measurements", _responseResult);
         }
 
-        [HttpGet($"measurements")]
+        [HttpGet]
         public async Task<IActionResult> GetAll([FromServices] DataContext context, [FromQuery] string? acronym, [FromQuery] string? name)
         {
             var filesQuery = context.FileTypes.Include(x => x.Measurements).ThenInclude(m => m.User);

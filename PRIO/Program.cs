@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PRIO.Data;
+using PRIO.Filters;
 using PRIO.Middlewares;
 using PRIO.Services;
 using PRIO.Utils.MappingProfiles;
@@ -45,6 +46,8 @@ static void ConfigureServices(IServiceCollection services)
                         .Build();
         config.Filters.Add(new AuthorizeFilter(policy));
     });
+
+    services.AddScoped<AuthorizationFilter>();
 
     var mapperConfig = new MapperConfiguration(cfg =>
     {

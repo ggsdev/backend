@@ -4,7 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS;
 using PRIO.DTOS.InstallationDTOS;
+using PRIO.Filters;
 using PRIO.Models.Installations;
+using PRIO.Models.Users;
 using PRIO.Utils;
 using PRIO.ViewModels.Installations;
 
@@ -12,6 +14,7 @@ namespace PRIO.Controllers
 {
     [ApiController]
     [Route("installations")]
+    [ServiceFilter(typeof(AuthorizationFilter))]
     public class InstallationController : BaseApiController
     {
         public InstallationController(DataContext context, IMapper mapper)
@@ -22,20 +25,7 @@ namespace PRIO.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateInstallationViewModel body)
         {
-            //var installationInDatabase = await _context.Installations.FirstOrDefaultAsync(x => x.Cod == body.Cod);
-            //if (installationInDatabase is not null)
-            //    return Conflict(new ErrorResponseDTO
-            //    {
-            //        Message = $"Installation with code: {body.CodInstallation} already exists, try another code."
-            //    });
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO
-                {
-                    Message = "User not identified, please login first"
-                });
+            var user = HttpContext.Items["User"] as User;
 
             var clusterInDatabase = await _context.Clusters.FirstOrDefaultAsync(x => x.Id == body.ClusterId);
             if (clusterInDatabase is null)
@@ -81,7 +71,7 @@ namespace PRIO.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var installations = await _context.Installations.Include(x => x.InstallationHistories).Include(x => x.Fields).Include(x => x.User).ToListAsync();
+            var installations = await _context.Installations.Include(x => x.Fields).Include(x => x.User).ToListAsync();
             var installationsDTO = _mapper.Map<List<Installation>, List<InstallationDTO>>(installations);
             return Ok(installationsDTO);
         }
@@ -91,7 +81,6 @@ namespace PRIO.Controllers
         {
             var installation = await _context.Installations
                 .Include(x => x.User)
-                .Include(x => x.InstallationHistories)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (installation is null)
@@ -130,14 +119,7 @@ namespace PRIO.Controllers
         [HttpPatch("{id:Guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateInstallationViewModel body)
         {
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO
-                {
-                    Message = "User not identified, please login first"
-                });
+            var user = HttpContext.Items["User"] as User;
 
             var installation = await _context.Installations.Include(x => x.Cluster).FirstOrDefaultAsync(x => x.Id == id);
             if (installation is null)
@@ -177,18 +159,6 @@ namespace PRIO.Controllers
                     Message = "Cluster not found"
                 });
 
-            //if (body.CodInstallationUep is not null)
-            //{
-            //    var installationWithSameCode = await _context.Installations.FirstOrDefaultAsync(x => x.CodInstallationUep == body.CodInstallationUep);
-
-            //    if (installationWithSameCode is null || installationWithSameCode?.Id == installation.Id)
-            //    else
-            //        return Conflict(new ErrorResponseDTO
-            //        {
-            //            Message = $"Installation with code: {body.CodInstallationUep} already exists, name: {installationWithSameCode?.Name}"
-            //        });
-            //}
-
             installation.CodInstallationUep = body.CodInstallationUep is not null ? body.CodInstallationUep : installation.CodInstallationUep;
             installation.Name = body.Name is not null ? body.Name : installation.Name;
             installation.Description = body.Description is not null ? body.Description : installation.Description;
@@ -203,14 +173,7 @@ namespace PRIO.Controllers
         [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO
-                {
-                    Message = "User not identified, please login first"
-                });
+            var user = HttpContext.Items["User"] as User;
 
             var installation = await _context.Installations.Include(x => x.Cluster).FirstOrDefaultAsync(x => x.Id == id);
             if (installation is null || !installation.IsActive)
@@ -257,14 +220,7 @@ namespace PRIO.Controllers
         [HttpPatch("{id:Guid}/restore")]
         public async Task<IActionResult> Restore([FromRoute] Guid id)
         {
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO
-                {
-                    Message = "User not identified, please login first"
-                });
+            var user = HttpContext.Items["User"] as User;
 
             var installation = await _context.Installations.Include(x => x.Cluster).FirstOrDefaultAsync(x => x.Id == id);
             if (installation is null || installation.IsActive)

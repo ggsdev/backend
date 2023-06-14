@@ -5,12 +5,14 @@ using OfficeOpenXml;
 using PRIO.Data;
 using PRIO.DTOS;
 using PRIO.DTOS.XLSDTOS;
+using PRIO.Filters;
 using PRIO.Models.BaseModels;
 using PRIO.Models.Clusters;
 using PRIO.Models.Completions;
 using PRIO.Models.Fields;
 using PRIO.Models.Installations;
 using PRIO.Models.Reservoirs;
+using PRIO.Models.Users;
 using PRIO.Models.Wells;
 using PRIO.Models.Zones;
 using PRIO.Utils;
@@ -20,20 +22,16 @@ using System.Globalization;
 namespace PRIO.Controllers
 {
     [ApiController]
+    [Route("xlsx")]
+    [ServiceFilter(typeof(AuthorizationFilter))]
     public class XlsxController : ControllerBase
     {
         private readonly string _consolidationInstance = "consolidador";
-        [HttpPost("xlsx")]
+        [HttpPost]
         public async Task<IActionResult> PostBase64File([FromBody] RequestXslxViewModel data, [FromServices] DataContext context)
         {
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            var user = HttpContext.Items["User"] as User;
 
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO
-                {
-                    Message = "User not identified, please login first"
-                });
             var envVars = DotEnv.Read();
 
             var contentBase64 = data.ContentBase64?.Replace("data:@file/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,", "");
