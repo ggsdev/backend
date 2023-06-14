@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using PRIO.Data.Mappings.ClusterMapping;
 using PRIO.Data.Mappings.CompletionMapping;
-using PRIO.Data.Mappings.CompletionMappings;
 using PRIO.Data.Mappings.FieldMapping;
 using PRIO.Data.Mappings.FieldMappings;
 using PRIO.Data.Mappings.FileTypeMappings;
@@ -155,7 +154,7 @@ namespace PRIO.Data
             modelBuilder.ApplyConfiguration(new ReservoirHistoryMap());
 
             modelBuilder.ApplyConfiguration(new CompletionMap());
-            modelBuilder.ApplyConfiguration(new CompletionHistoryMap());
+            //modelBuilder.ApplyConfiguration(new CompletionHistoryMap());
 
             modelBuilder.ApplyConfiguration(new WellMap());
             modelBuilder.ApplyConfiguration(new WellHistoryMap());

@@ -109,6 +109,7 @@ namespace PRIO.Controllers
                             {
                                 Name = columnCluster,
                                 User = user,
+                                IsActive = true,
                             };
 
                             var clusterHistory = new ClusterHistory
@@ -116,7 +117,7 @@ namespace PRIO.Controllers
                                 Name = columnCluster,
                                 User = user,
                                 TypeOperation = TypeOperation.Import,
-
+                                IsActive = true,
                                 Cluster = (Cluster)cluster,
                             };
 
@@ -136,6 +137,7 @@ namespace PRIO.Controllers
                                 Name = columnInstallation,
                                 CodInstallationUep = columnInstallationCodUep,
                                 User = user,
+                                IsActive = true,
                                 Cluster = columnCluster is not null ? (Cluster)entityDictionary.GetValueOrDefault(columnCluster.ToLower())! : null,
                             };
 
@@ -144,7 +146,7 @@ namespace PRIO.Controllers
                                 Cluster = columnCluster is not null ? (Cluster)entityDictionary.GetValueOrDefault(columnCluster.ToLower())! : null,
                                 CodInstallationUep = columnInstallationCodUep,
                                 Name = columnInstallation,
-
+                                IsActive = true,
                                 User = user,
                                 Installation = (Installation)installation,
                                 TypeOperation = TypeOperation.Import
@@ -168,12 +170,14 @@ namespace PRIO.Controllers
                                 User = user,
                                 Installation = columnInstallation is not null ? (Installation)entityDictionary.GetValueOrDefault(columnInstallation.ToLower())! : null,
                                 CodField = columnCodeField,
+                                IsActive = true,
                             };
                             var fieldHistory = new FieldHistory
                             {
                                 Name = columnField,
                                 CodField = columnCodeField,
                                 User = user,
+                                IsActive = true,
                                 Field = (Field)field,
                                 Installation = columnInstallation is not null ? (Installation)entityDictionary.GetValueOrDefault(columnInstallation.ToLower())! : null,
                                 TypeOperation = TypeOperation.Import,
@@ -194,13 +198,14 @@ namespace PRIO.Controllers
                             {
                                 CodZone = columnZone,
                                 User = user,
+                                IsActive = true,
                                 Field = columnField is not null ? (Field)entityDictionary.GetValueOrDefault(columnField.ToLower())! : null,
                             };
 
                             var zoneHistory = new ZoneHistory
                             {
                                 CodZone = columnZone,
-
+                                IsActive = true,
                                 Field = columnField is not null ? (Field)entityDictionary.GetValueOrDefault(columnField.ToLower())! : null,
                                 User = user,
                                 Zone = (Zone)zone,
@@ -224,12 +229,13 @@ namespace PRIO.Controllers
                                 Name = columnReservoir,
                                 User = user,
                                 Zone = columnZone is not null ? (Zone)entityDictionary.GetValueOrDefault(columnZone.ToLower())! : null,
+                                IsActive = true,
                             };
 
                             var reservoirHistory = new ReservoirHistory
                             {
                                 Name = columnReservoir,
-
+                                IsActive = true,
                                 User = user,
                                 Reservoir = (Reservoir)reservoir,
 
@@ -272,6 +278,7 @@ namespace PRIO.Controllers
                                 CoordX = columnWellCoordX,
                                 CoordY = columnWellCoordY,
                                 User = user,
+                                IsActive = true,
                                 Field = columnField is not null ? (Field)entityDictionary.GetValueOrDefault(columnField.ToLower())! : null,
                             };
                             var wellHistory = new WellHistory
@@ -300,6 +307,7 @@ namespace PRIO.Controllers
                                 User = user,
                                 TypeOperation = TypeOperation.Import,
                                 Well = (Well)well,
+                                IsActive = true,
                             };
 
                             entityDictionary[columnWellCodeAnp.ToLower()] = well;
@@ -318,6 +326,7 @@ namespace PRIO.Controllers
                                 User = user,
                                 Reservoir = columnReservoir is not null ? (Reservoir)entityDictionary.GetValueOrDefault(columnReservoir?.ToLower())! : null,
                                 Well = columnWellCodeAnp is not null ? (Well)entityDictionary.GetValueOrDefault(columnWellCodeAnp?.ToLower())! : null,
+                                IsActive = true
                             };
 
                             var completionHistory = new CompletionHistory
@@ -326,7 +335,8 @@ namespace PRIO.Controllers
                                 Reservoir = columnReservoir is not null ? (Reservoir)entityDictionary.GetValueOrDefault(columnReservoir?.ToLower())! : null,
                                 Well = columnWellCodeAnp is not null ? (Well)entityDictionary.GetValueOrDefault(columnWellCodeAnp?.ToLower())! : null,
                                 User = user,
-                                TypeOperation = TypeOperation.Import
+                                IsActive = true,
+                                TypeOperation = TypeOperation.Import,
                             };
                             entityDictionary[columnCompletion.ToLower()] = completion;
                             entityHistoriesDictionary[columnCompletion.ToLower()] = completionHistory;
