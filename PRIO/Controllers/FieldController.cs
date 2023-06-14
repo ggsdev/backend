@@ -4,13 +4,17 @@ using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS;
 using PRIO.DTOS.FieldDTOS;
+using PRIO.Filters;
 using PRIO.Models.Fields;
+using PRIO.Models.Users;
 using PRIO.Utils;
 using PRIO.ViewModels.Fields;
 
 namespace PRIO.Controllers
 {
     [ApiController]
+    [Route("fields")]
+    [ServiceFilter(typeof(AuthorizationFilter))]
     public class FieldController : ControllerBase
     {
         private readonly DataContext _context;
@@ -20,20 +24,12 @@ namespace PRIO.Controllers
         {
             _context = context;
             _mapper = mapper;
-
         }
 
-        [HttpPost("fields")]
+        [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateFieldViewModel body)
         {
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO
-                {
-                    Message = "User not identified, please login first"
-                });
+            var user = HttpContext.Items["User"] as User;
 
             var fieldInDatabase = await _context.Fields.FirstOrDefaultAsync(x => x.CodField == body.CodField);
             if (fieldInDatabase is not null)
@@ -48,7 +44,6 @@ namespace PRIO.Controllers
                 {
                     Message = $"Installation not found"
                 });
-
 
             var field = new Field
             {
@@ -92,7 +87,7 @@ namespace PRIO.Controllers
             return Created($"fields/{field.Id}", fieldDTO);
         }
 
-        [HttpGet("fields")]
+        [HttpGet]
         public async Task<IActionResult> Get()
         {
             var fields = await _context.Fields.Include(x => x.Zones).Include(x => x.User).ToListAsync();
@@ -101,7 +96,7 @@ namespace PRIO.Controllers
             return Ok(fieldsDTO);
         }
 
-        [HttpGet("fields/{id}")]
+        [HttpGet("{id:Guid}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var field = await _context.Fields.FirstOrDefaultAsync(x => x.Id == id);
@@ -116,15 +111,15 @@ namespace PRIO.Controllers
 
         }
 
-        [HttpPatch("fields/{fieldId}")]
-        public async Task<IActionResult> Update([FromRoute] Guid fieldId, [FromBody] UpdateFieldViewModel body)
+        [HttpPatch("{id:Guid}")]
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateFieldViewModel body)
         {
             var userId = (Guid)HttpContext.Items["Id"]!;
             var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
             if (user is null)
                 return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
 
-            var field = await _context.Fields.Include(x => x.User).Include(x => x.Installation).FirstOrDefaultAsync(x => x.Id == fieldId);
+            var field = await _context.Fields.Include(x => x.User).Include(x => x.Installation).FirstOrDefaultAsync(x => x.Id == id);
             if (field is null)
                 return NotFound(new ErrorResponseDTO
                 {
@@ -188,15 +183,12 @@ namespace PRIO.Controllers
             return Ok(fieldDTO);
         }
 
-        [HttpDelete("fields/{fieldId}")]
-        public async Task<IActionResult> Delete([FromRoute] Guid fieldId)
+        [HttpDelete("{id:Guid}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+            var user = HttpContext.Items["User"] as User;
 
-            var field = await _context.Fields.Include(x => x.Installation).FirstOrDefaultAsync(x => x.Id == fieldId);
+            var field = await _context.Fields.Include(x => x.Installation).FirstOrDefaultAsync(x => x.Id == id);
             if (field is null || !field.IsActive)
                 return NotFound(new ErrorResponseDTO
                 {
@@ -236,13 +228,10 @@ namespace PRIO.Controllers
             return NoContent();
         }
 
-        [HttpPatch("fields/{fieldId}/restore")]
+        [HttpPatch("{id:Guid}/restore")]
         public async Task<IActionResult> Restore([FromRoute] Guid fieldId)
         {
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+            var user = HttpContext.Items["User"] as User;
 
             var field = await _context.Fields.Include(x => x.Installation).Include(x => x.User).FirstOrDefaultAsync(x => x.Id == fieldId);
             if (field is null || field.IsActive is true)
@@ -285,12 +274,12 @@ namespace PRIO.Controllers
             return Ok(fieldDTO);
         }
 
-        [HttpGet("fields/{fieldId}/history")]
-        public async Task<IActionResult> GetHistory([FromRoute] Guid fieldId)
+        [HttpGet("{id:Guid}/history")]
+        public async Task<IActionResult> GetHistory([FromRoute] Guid id)
         {
             var fieldHistories = await _context.FieldHistories.Include(x => x.User)
                                                       .Include(x => x.Field)
-                                                      .Where(x => x.Field.Id == fieldId)
+                                                      .Where(x => x.Field.Id == id)
                                                       .OrderByDescending(x => x.CreatedAt)
                                                       .ToListAsync();
             if (fieldHistories is null)

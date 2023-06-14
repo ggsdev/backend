@@ -4,13 +4,17 @@ using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS;
 using PRIO.DTOS.ClusterDTOS;
+using PRIO.Filters;
 using PRIO.Models.Clusters;
+using PRIO.Models.Users;
 using PRIO.Utils;
 using PRIO.ViewModels.Clusters;
 
 namespace PRIO.Controllers
 {
     [ApiController]
+    [Route("clusters")]
+    [ServiceFilter(typeof(AuthorizationFilter))]
     public class ClusterController : ControllerBase
     {
         private readonly DataContext _context;
@@ -20,16 +24,12 @@ namespace PRIO.Controllers
         {
             _context = context;
             _mapper = mapper;
-
         }
 
-        [HttpPost("clusters")]
+        [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateClusterViewModel body)
         {
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+            var user = HttpContext.Items["User"] as User;
 
             var clusterInDatabase = await _context.Clusters.FirstOrDefaultAsync((x) => x.CodCluster == body.CodCluster);
             if (clusterInDatabase is not null)
@@ -37,7 +37,6 @@ namespace PRIO.Controllers
                 {
                     Message = $"Cluster with code: {body.CodCluster} already exists."
                 });
-
 
             var cluster = new Cluster
             {
@@ -75,7 +74,7 @@ namespace PRIO.Controllers
         }
 
 
-        [HttpGet("clusters")]
+        [HttpGet]
         public async Task<IActionResult> Get()
         {
             var clusters = await _context.Clusters.Include(x => x.Installations).Include(x => x.User).ToListAsync();
@@ -83,10 +82,10 @@ namespace PRIO.Controllers
             return Ok(clustersDTO);
         }
 
-        [HttpGet("clusters/{clusterId}")]
-        public async Task<IActionResult> GetById([FromRoute] Guid clusterId)
+        [HttpGet("{id:Guid}")]
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var cluster = await _context.Clusters.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == clusterId);
+            var cluster = await _context.Clusters.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id);
             if (cluster is null)
                 return NotFound(new ErrorResponseDTO
                 {
@@ -96,15 +95,12 @@ namespace PRIO.Controllers
             return Ok(clusterDTO);
         }
 
-        [HttpPatch("clusters/{clusterId}")]
-        public async Task<IActionResult> Update([FromRoute] Guid clusterId, [FromBody] UpdateClusterViewModel body)
+        [HttpPatch("{id:Guid}")]
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateClusterViewModel body)
         {
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+            var user = HttpContext.Items["User"] as User;
 
-            var cluster = await _context.Clusters.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == clusterId);
+            var cluster = await _context.Clusters.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id);
             if (cluster is null)
                 return NotFound(new ErrorResponseDTO
                 {
@@ -140,15 +136,12 @@ namespace PRIO.Controllers
             return Ok(clusternDTO);
         }
 
-        [HttpPatch("clusters/{clusterId}/restore")]
-        public async Task<IActionResult> Restore([FromRoute] Guid clusterId)
+        [HttpPatch("{id:Guid}/restore")]
+        public async Task<IActionResult> Restore([FromRoute] Guid id)
         {
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+            var user = HttpContext.Items["User"] as User;
 
-            var cluster = await _context.Clusters.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == clusterId);
+            var cluster = await _context.Clusters.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id);
             if (cluster is null || cluster.IsActive is true)
                 return NotFound(new ErrorResponseDTO
                 {
@@ -182,22 +175,17 @@ namespace PRIO.Controllers
             return Ok(clusternDTO);
         }
 
-        [HttpDelete("clusters/{clusterId}")]
-        public async Task<IActionResult> Delete([FromRoute] Guid clusterId)
+        [HttpDelete("{id:Guid}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+            var user = HttpContext.Items["User"] as User;
 
-
-            var cluster = await _context.Clusters.FirstOrDefaultAsync(x => x.Id == clusterId);
+            var cluster = await _context.Clusters.FirstOrDefaultAsync(x => x.Id == id);
             if (cluster is null || !cluster.IsActive)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Cluster not found or inactive already"
                 });
-
 
             var clusterHistory = new ClusterHistory
             {
@@ -224,10 +212,10 @@ namespace PRIO.Controllers
 
             return NoContent();
         }
-        [HttpGet("clusters/{clusterId}/history")]
-        public async Task<IActionResult> GetHistory([FromRoute] Guid clusterId)
+        [HttpGet("{id:Guid}/history")]
+        public async Task<IActionResult> GetHistory([FromRoute] Guid id)
         {
-            var cluster = await _context.Clusters.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == clusterId);
+            var cluster = await _context.Clusters.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id);
             if (cluster is null)
                 return NotFound(new ErrorResponseDTO
                 {
@@ -237,7 +225,7 @@ namespace PRIO.Controllers
             var clusterHistories = await _context.ClustersHistories
                                                     .Include(x => x.User)
                                                     .Include(x => x.Cluster)
-                                                    .Where(x => x.Cluster.Id == clusterId)
+                                                    .Where(x => x.Cluster.Id == id)
                                                     .OrderByDescending(x => x.CreatedAt)
                                                     .ToListAsync();
 

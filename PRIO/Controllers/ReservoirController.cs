@@ -4,7 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS;
 using PRIO.DTOS.ReservoirDTOS;
+using PRIO.Filters;
 using PRIO.Models.Reservoirs;
+using PRIO.Models.Users;
 using PRIO.Utils;
 using PRIO.ViewModels.Reservoirs;
 
@@ -12,6 +14,7 @@ namespace PRIO.Controllers
 {
     [ApiController]
     [Route("reservoirs")]
+    [ServiceFilter(typeof(AuthorizationFilter))]
     public class ReservoirController : BaseApiController
     {
         public ReservoirController(DataContext context, IMapper mapper)
@@ -22,14 +25,7 @@ namespace PRIO.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateReservoirViewModel body)
         {
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO
-                {
-                    Message = "User not identified, please login first"
-                });
+            var user = HttpContext.Items["User"] as User;
 
             var reservoirInDatabase = await _context.Reservoirs.FirstOrDefaultAsync(x => x.CodReservoir == body.CodReservoir);
             if (reservoirInDatabase is not null)
@@ -44,7 +40,6 @@ namespace PRIO.Controllers
                 {
                     Message = $"Zone not found"
                 });
-
 
             var reservoir = new Reservoir
             {
@@ -125,20 +120,13 @@ namespace PRIO.Controllers
         [HttpPatch("{id:Guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateReservoirViewModel body)
         {
+            var user = HttpContext.Items["User"] as User;
+
             var reservoir = await _context.Reservoirs.Include(x => x.User).Include(x => x.Zone).FirstOrDefaultAsync(x => x.Id == id);
             if (reservoir is null)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Reservoir not found"
-                });
-
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO
-                {
-                    Message = "User not identified, please login first"
                 });
 
             var zoneInDatabase = await _context.Zones.FirstOrDefaultAsync(x => x.Id == body.ZoneId);
@@ -194,14 +182,7 @@ namespace PRIO.Controllers
                     Message = "Reservoir not found or inactive already"
                 });
 
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO
-                {
-                    Message = "User not identified, please login first"
-                });
+            var user = HttpContext.Items["User"] as User;
 
             var reservoirHistory = new ReservoirHistory
             {
@@ -248,14 +229,7 @@ namespace PRIO.Controllers
                     Message = "Reservoir not found or active already"
                 });
 
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO
-                {
-                    Message = "User not identified, please login first"
-                });
+            var user = HttpContext.Items["User"] as User;
 
             var reservoirHistory = new ReservoirHistory
             {

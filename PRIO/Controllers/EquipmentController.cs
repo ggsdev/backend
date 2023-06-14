@@ -4,12 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS;
 using PRIO.DTOS.MeasuringEquipment;
+using PRIO.Filters;
 using PRIO.Models.MeasuringEquipments;
 using PRIO.ViewModels.MeasuringEquipment;
 
 namespace PRIO.Controllers
 {
     [ApiController]
+    [Route("equipments")]
+    [ServiceFilter(typeof(AuthorizationFilter))]
     public class EquipmentController : ControllerBase
     {
         private readonly DataContext _context;
@@ -19,7 +22,6 @@ namespace PRIO.Controllers
         {
             _context = context;
             _mapper = mapper;
-
         }
 
         [HttpPost("equipments")]

@@ -4,13 +4,17 @@ using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS;
 using PRIO.DTOS.CompletionDTOS;
+using PRIO.Filters;
 using PRIO.Models.Completions;
+using PRIO.Models.Users;
 using PRIO.Utils;
 using PRIO.ViewModels.Completions;
 
 namespace PRIO.Controllers
 {
     [ApiController]
+    [Route("completions")]
+    [ServiceFilter(typeof(AuthorizationFilter))]
     public class CompletionController : ControllerBase
     {
         private readonly DataContext _context;
@@ -21,24 +25,10 @@ namespace PRIO.Controllers
             _context = context;
             _mapper = mapper;
         }
-        [HttpPost("completions")]
+        [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateCompletionViewModel body)
         {
-
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
-
-
-            if (!ModelState.IsValid)
-            {
-                var errorResponse = new ErrorResponseDTO
-                {
-                    Message = "Invalid request body"
-                };
-                return BadRequest(errorResponse);
-            }
+            var user = HttpContext.Items["User"] as User;
 
             var well = await _context.Wells.Include(x => x.Field).FirstOrDefaultAsync(x => x.Id == body.WellId);
             if (well is null)
@@ -47,7 +37,6 @@ namespace PRIO.Controllers
                     Message = $"Well with id: {body.WellId} not found"
                 });
 
-            //verificar se manualmente uma completação pode não ter um reservatorio associado igual ao XLS
             var reservoir = await _context.Reservoirs.Include(x => x.Zone).ThenInclude(z => z.Field).FirstOrDefaultAsync(x => x.Id == body.ReservoirId);
             if (reservoir is null)
                 return NotFound(new ErrorResponseDTO
@@ -105,7 +94,7 @@ namespace PRIO.Controllers
             return Created($"completions/{completion.Id}", completionDTO);
         }
 
-        [HttpGet("completions")]
+        [HttpGet]
         public async Task<IActionResult> Get()
         {
             var completions = await _context.Completions.Include(x => x.Well).Include(x => x.Reservoir).Include(x => x.User).ToListAsync();
@@ -115,7 +104,7 @@ namespace PRIO.Controllers
             return Ok(completionsDTO);
         }
 
-        [HttpGet("completions/{id}")]
+        [HttpGet("{id:Guid}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var completion = await _context.Completions.Include(x => x.Well).Include(x => x.Reservoir).Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id);
@@ -130,13 +119,10 @@ namespace PRIO.Controllers
         }
 
 
-        [HttpPatch("completions/{id}")]
+        [HttpPatch("{id:Guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateCompletionViewModel body)
         {
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+            var user = HttpContext.Items["User"] as User;
 
             var completion = await _context.Completions
                 .Include(x => x.Well)
@@ -245,13 +231,10 @@ namespace PRIO.Controllers
             return Ok(completionDTO);
         }
 
-        [HttpDelete("completions/{id}")]
+        [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+            var user = HttpContext.Items["User"] as User;
 
             var completion = await _context.Completions.Include(x => x.Well).Include(x => x.Reservoir)
                 .FirstOrDefaultAsync(x => x.Id == id);
@@ -291,14 +274,10 @@ namespace PRIO.Controllers
 
             return NoContent();
         }
-        [HttpPatch("completions/{id}/restore")]
+        [HttpPatch("{id:Guid}/restore")]
         public async Task<IActionResult> Restore([FromRoute] Guid id)
         {
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
-
+            var user = HttpContext.Items["User"] as User;
             var completion = await _context.Completions.Include(x => x.Well).Include(x => x.Reservoir)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -339,7 +318,7 @@ namespace PRIO.Controllers
             return Ok(completionDTO);
         }
 
-        [HttpGet("completions/{id}/history")]
+        [HttpGet("{id:Guid}/history")]
         public async Task<IActionResult> GetHistory([FromRoute] Guid id)
         {
             var completionHistories = await _context.CompletionHistories.Include(x => x.User)
