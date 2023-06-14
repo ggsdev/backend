@@ -45,14 +45,6 @@ namespace PRIO.Data.Mappings.CompletionMappings
 
             builder.Property(x => x.CreatedAt);
 
-            builder.Property(x => x.ReservoirOld)
-             .HasColumnType("UniqueIdentifier")
-             .HasMaxLength(120);
-
-            builder.Property(x => x.WellOld)
-             .HasColumnType("UniqueIdentifier")
-             .HasMaxLength(120);
-
             builder.HasOne(c => c.User).
                 WithMany(u => u.CompletionHistories)
                 .OnDelete(DeleteBehavior.NoAction)

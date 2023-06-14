@@ -336,6 +336,7 @@ namespace PRIO.Controllers
                                 Well = columnWellCodeAnp is not null ? (Well)entityDictionary.GetValueOrDefault(columnWellCodeAnp?.ToLower())! : null,
                                 User = user,
                                 IsActive = true,
+                                Completion = (Completion)completion,
                                 TypeOperation = TypeOperation.Import,
                             };
                             entityDictionary[columnCompletion.ToLower()] = completion;

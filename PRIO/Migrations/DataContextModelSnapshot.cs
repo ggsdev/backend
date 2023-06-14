@@ -34,7 +34,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("OperationsId");
 
-                    b.ToTable("GroupPermissionsOperation");
+                    b.ToTable("GroupPermissionsOperation", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.Models.Clusters.Cluster", b =>
@@ -509,7 +509,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("MenuId");
 
-                    b.ToTable("GroupPermissions");
+                    b.ToTable("GroupPermissions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.Models.Installations.Installation", b =>
@@ -2258,7 +2258,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Operations");
+                    b.ToTable("Operations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.Models.Permissions.UserPermission", b =>
