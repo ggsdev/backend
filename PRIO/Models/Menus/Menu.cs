@@ -1,5 +1,5 @@
 ﻿using PRIO.Models.BaseModels;
-using PRIO.Models.Groups.GroupsMenus;
+using PRIO.Models.Groups;
 
 namespace PRIO.Models.Menus
 {
@@ -11,6 +11,6 @@ namespace PRIO.Models.Menus
         public string? Order { get; set; }
         public Menu? Parent { get; set; }
         public List<Menu>? Children { get; set; }
-        public List<GroupMenu>? GroupMenus { get; set; }
+        public List<GroupPermissions>? GroupPermissions { get; set; }
     }
 }

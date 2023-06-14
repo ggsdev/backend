@@ -26,11 +26,11 @@ using PRIO.Models.Completions;
 using PRIO.Models.Fields;
 using PRIO.Models.FileTypes;
 using PRIO.Models.Groups;
-using PRIO.Models.Groups.GroupsMenus;
 using PRIO.Models.Installations;
 using PRIO.Models.Measurements;
 using PRIO.Models.MeasuringEquipments;
 using PRIO.Models.Menus;
+using PRIO.Models.Operations;
 using PRIO.Models.Permissions;
 using PRIO.Models.Reservoirs;
 using PRIO.Models.Users;
@@ -52,6 +52,7 @@ namespace PRIO.Data
         public DbSet<FieldHistory> FieldHistories { get; set; }
         public DbSet<Zone> Zones { get; set; }
         public DbSet<ZoneHistory> ZoneHistories { get; set; }
+        public DbSet<Operation> Operations { get; set; }
         public DbSet<Reservoir> Reservoirs { get; set; }
         public DbSet<ReservoirHistory> ReservoirHistories { get; set; }
         public DbSet<Completion> Completions { get; set; }
@@ -61,8 +62,8 @@ namespace PRIO.Data
         public DbSet<MeasuringEquipment> MeasuringEquipments { get; set; }
 
         public DbSet<Group> Groups { get; set; }
-        public DbSet<Permission> Permissions { get; set; }
-        public DbSet<GroupMenu> GroupMenus { get; set; }
+        public DbSet<UserPermission> Permissions { get; set; }
+        public DbSet<GroupPermissions> GroupPermissions { get; set; }
         public DbSet<Menu> Menus { get; set; }
 
         #region Measurement & Relations

@@ -22,6 +22,21 @@ namespace PRIO.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("GroupPermissionsOperation", b =>
+                {
+                    b.Property<Guid>("GroupPermissionsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("OperationsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("GroupPermissionsId", "OperationsId");
+
+                    b.HasIndex("OperationsId");
+
+                    b.ToTable("GroupPermissionsOperation");
+                });
+
             modelBuilder.Entity("PRIO.Models.Clusters.Cluster", b =>
                 {
                     b.Property<Guid>("Id")
@@ -470,7 +485,7 @@ namespace PRIO.Migrations
                     b.ToTable("Groups", (string)null);
                 });
 
-            modelBuilder.Entity("PRIO.Models.Groups.GroupsMenus.GroupMenu", b =>
+            modelBuilder.Entity("PRIO.Models.Groups.GroupPermissions", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -494,7 +509,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("MenuId");
 
-                    b.ToTable("GroupMenus", (string)null);
+                    b.ToTable("GroupPermissions");
                 });
 
             modelBuilder.Entity("PRIO.Models.Installations.Installation", b =>
@@ -2232,7 +2247,21 @@ namespace PRIO.Migrations
                     b.ToTable("Menus", (string)null);
                 });
 
-            modelBuilder.Entity("PRIO.Models.Permissions.Permission", b =>
+            modelBuilder.Entity("PRIO.Models.Operations.Operation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Operations");
+                });
+
+            modelBuilder.Entity("PRIO.Models.Permissions.UserPermission", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2262,6 +2291,9 @@ namespace PRIO.Migrations
                         .HasMaxLength(120)
                         .HasColumnType("VARCHAR");
 
+                    b.Property<string>("MenuOrder")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("MenuRoute")
                         .HasMaxLength(120)
                         .HasColumnType("VARCHAR");
@@ -2275,7 +2307,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Permissions", (string)null);
+                    b.ToTable("UserPermissions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.Models.Reservoirs.Reservoir", b =>
@@ -2442,9 +2474,6 @@ namespace PRIO.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("VARCHAR");
 
-                    b.Property<Guid?>("GroupId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -2475,8 +2504,6 @@ namespace PRIO.Migrations
 
                     b.HasIndex("Email")
                         .IsUnique();
-
-                    b.HasIndex("GroupId");
 
                     b.ToTable("Users", (string)null);
                 });
@@ -3020,6 +3047,21 @@ namespace PRIO.Migrations
                     b.ToTable("ZoneHistories", (string)null);
                 });
 
+            modelBuilder.Entity("GroupPermissionsOperation", b =>
+                {
+                    b.HasOne("PRIO.Models.Groups.GroupPermissions", null)
+                        .WithMany()
+                        .HasForeignKey("GroupPermissionsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.Models.Operations.Operation", null)
+                        .WithMany()
+                        .HasForeignKey("OperationsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("PRIO.Models.Clusters.Cluster", b =>
                 {
                     b.HasOne("PRIO.Models.Users.User", "User")
@@ -3164,14 +3206,14 @@ namespace PRIO.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("PRIO.Models.Groups.GroupsMenus.GroupMenu", b =>
+            modelBuilder.Entity("PRIO.Models.Groups.GroupPermissions", b =>
                 {
                     b.HasOne("PRIO.Models.Groups.Group", "Group")
-                        .WithMany("GroupMenus")
+                        .WithMany("GroupPermissions")
                         .HasForeignKey("GroupId");
 
                     b.HasOne("PRIO.Models.Menus.Menu", "Menu")
-                        .WithMany("GroupMenus")
+                        .WithMany("GroupPermissions")
                         .HasForeignKey("MenuId");
 
                     b.Navigation("Group");
@@ -3312,16 +3354,16 @@ namespace PRIO.Migrations
                     b.Navigation("Parent");
                 });
 
-            modelBuilder.Entity("PRIO.Models.Permissions.Permission", b =>
+            modelBuilder.Entity("PRIO.Models.Permissions.UserPermission", b =>
                 {
-                    b.HasOne("PRIO.Models.Groups.GroupsMenus.GroupMenu", "GroupMenu")
+                    b.HasOne("PRIO.Models.Groups.GroupPermissions", "GroupMenu")
                         .WithMany("Permissions")
                         .HasForeignKey("GroupMenuId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("PRIO.Models.Users.User", "User")
-                        .WithMany("Permissions")
+                        .WithMany("UserPermissions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -3386,16 +3428,6 @@ namespace PRIO.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("PRIO.Models.Users.User", b =>
-                {
-                    b.HasOne("PRIO.Models.Groups.Group", "Group")
-                        .WithMany("Users")
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Group");
                 });
 
             modelBuilder.Entity("PRIO.Models.Users.UserHistory", b =>
@@ -3535,12 +3567,10 @@ namespace PRIO.Migrations
 
             modelBuilder.Entity("PRIO.Models.Groups.Group", b =>
                 {
-                    b.Navigation("GroupMenus");
-
-                    b.Navigation("Users");
+                    b.Navigation("GroupPermissions");
                 });
 
-            modelBuilder.Entity("PRIO.Models.Groups.GroupsMenus.GroupMenu", b =>
+            modelBuilder.Entity("PRIO.Models.Groups.GroupPermissions", b =>
                 {
                     b.Navigation("Permissions");
                 });
@@ -3574,7 +3604,7 @@ namespace PRIO.Migrations
                 {
                     b.Navigation("Children");
 
-                    b.Navigation("GroupMenus");
+                    b.Navigation("GroupPermissions");
                 });
 
             modelBuilder.Entity("PRIO.Models.Reservoirs.Reservoir", b =>
@@ -3613,8 +3643,6 @@ namespace PRIO.Migrations
 
                     b.Navigation("MeasuringEquipments");
 
-                    b.Navigation("Permissions");
-
                     b.Navigation("ReservoirHistories");
 
                     b.Navigation("Reservoirs");
@@ -3622,6 +3650,8 @@ namespace PRIO.Migrations
                     b.Navigation("Session");
 
                     b.Navigation("UserHistories");
+
+                    b.Navigation("UserPermissions");
 
                     b.Navigation("WellHistories");
 

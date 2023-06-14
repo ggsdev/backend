@@ -50,9 +50,7 @@ namespace PRIO.Data.Mappings.UserMapping
             builder.HasIndex(x => x.Email)
                 .IsUnique();
 
-            builder.HasOne(x => x.Group)
-               .WithMany(u => u.Users)
-               .OnDelete(DeleteBehavior.SetNull);
+
         }
     }
 }

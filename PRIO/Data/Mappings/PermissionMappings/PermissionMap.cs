@@ -4,11 +4,11 @@ using PRIO.Models.Permissions;
 
 namespace PRIO.Data.Mappings.PermissionMappings
 {
-    public class PermissionMap : IEntityTypeConfiguration<Permission>
+    public class PermissionMap : IEntityTypeConfiguration<UserPermission>
     {
-        public void Configure(EntityTypeBuilder<Permission> builder)
+        public void Configure(EntityTypeBuilder<UserPermission> builder)
         {
-            builder.ToTable("Permissions");
+            builder.ToTable("UserPermissions");
 
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id)
@@ -33,7 +33,7 @@ namespace PRIO.Data.Mappings.PermissionMappings
             builder.Property(x => x.CreatedAt);
 
             builder.HasOne(x => x.User)
-               .WithMany(u => u.Permissions)
+               .WithMany(u => u.UserPermissions)
                .OnDelete(DeleteBehavior.NoAction)
                .IsRequired();
 

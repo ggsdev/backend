@@ -2,7 +2,6 @@
 using PRIO.Models.Clusters;
 using PRIO.Models.Completions;
 using PRIO.Models.Fields;
-using PRIO.Models.Groups;
 using PRIO.Models.Installations;
 using PRIO.Models.Measurements;
 using PRIO.Models.MeasuringEquipments;
@@ -25,8 +24,7 @@ namespace PRIO.Models.Users
         #region Relationships
         //public Role Role { get; set; }
 
-        public Group? Group { get; set; }
-        public List<Permission>? Permissions { get; set; }
+        public List<UserPermission>? UserPermissions { get; set; }
         public Session? Session { get; set; }
         public List<Cluster>? Clusters { get; set; }
         public List<ClusterHistory>? ClusterHistories { get; set; }
