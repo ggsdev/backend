@@ -70,6 +70,7 @@ namespace PRIO.Controllers
                 Installation = installationInDatabase,
                 Description = body.Description is not null ? body.Description : null,
                 User = user,
+                IsActive = body.IsActive is not null ? body.IsActive.Value : true,
             };
 
             await _context.MeasuringEquipments.AddAsync(equipment);
@@ -93,7 +94,7 @@ namespace PRIO.Controllers
 
         }
 
-        [HttpGet("equipments/{id}")]
+        [HttpGet("equipments/{id:Guid}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var userId = (Guid)HttpContext.Items["Id"]!;
@@ -111,7 +112,7 @@ namespace PRIO.Controllers
             return Ok(equipmentDTO);
         }
 
-        [HttpPatch("equipments/{id}")]
+        [HttpPatch("equipments/{id:Guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateEquipmentViewModel body)
         {
             var equipment = _context.MeasuringEquipments.Include(x => x.Installation).FirstOrDefault(x => x.Id == id);
@@ -162,7 +163,7 @@ namespace PRIO.Controllers
             return Ok(equipmentDTO);
         }
 
-        [HttpDelete("equipments/{id}")]
+        [HttpDelete("equipments/{id:Guid}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             var userId = (Guid)HttpContext.Items["Id"]!;
@@ -186,7 +187,7 @@ namespace PRIO.Controllers
             return NoContent();
         }
 
-        [HttpPatch("equipments/{id}/restore")]
+        [HttpPatch("equipments/{id:Guid}/restore")]
         public async Task<IActionResult> Restore([FromRoute] Guid id)
         {
             var userId = (Guid)HttpContext.Items["Id"]!;

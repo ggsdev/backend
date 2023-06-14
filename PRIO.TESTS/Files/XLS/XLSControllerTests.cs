@@ -42,10 +42,10 @@ namespace PRIO.TESTS.Files.XLS
             _context.Users.Add(_user);
             _context.SaveChanges();
 
-
             var httpContext = new DefaultHttpContext();
             httpContext.Items["Id"] = _user.Id;
             httpContext.Items["INSTANCE"] = "bravo";
+            httpContext.Items["User"] = _user;
 
             _controller = new XlsxController();
             _controller.ControllerContext.HttpContext = httpContext;

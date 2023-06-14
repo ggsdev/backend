@@ -120,6 +120,7 @@ namespace PRIO.TESTS.Cruds.Wells
 
             var httpContext = new DefaultHttpContext();
             httpContext.Items["Id"] = _user.Id;
+            httpContext.Items["User"] = _user;
 
             _controller = new WellController(_context, _mapper);
             _controller.ControllerContext.HttpContext = httpContext;

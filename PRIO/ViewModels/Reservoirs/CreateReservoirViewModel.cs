@@ -10,5 +10,6 @@ namespace PRIO.ViewModels.Reservoirs
         public string? Description { get; set; }
         [Required(ErrorMessage = "Zone id is required")]
         public Guid? ZoneId { get; set; }
+        public bool? IsActive { get; set; }
     }
 }

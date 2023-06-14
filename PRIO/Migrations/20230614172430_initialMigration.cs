@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PRIO.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class initialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -30,6 +30,61 @@ namespace PRIO.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Groups",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Groups", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Menus",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: true),
+                    Route = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: true),
+                    Icon = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: true),
+                    Order = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ParentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Menus", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Menus_Menus_ParentId",
+                        column: x => x.ParentId,
+                        principalTable: "Menus",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Operations",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Operations", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -38,6 +93,7 @@ namespace PRIO.Migrations
                     Email = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
                     Password = table.Column<string>(type: "VARCHAR(90)", maxLength: 90, nullable: false),
                     Username = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
+                    Type = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -47,6 +103,31 @@ namespace PRIO.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GroupPermissions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    MenuId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GroupPermissions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GroupPermissions_Groups_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "Groups",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_GroupPermissions_Menus_MenuId",
+                        column: x => x.MenuId,
+                        principalTable: "Menus",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -96,6 +177,95 @@ namespace PRIO.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserHistories",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
+                    NameOld = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: true),
+                    Email = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
+                    EmailOld = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
+                    Password = table.Column<string>(type: "VARCHAR(90)", maxLength: 90, nullable: false),
+                    PasswordOld = table.Column<string>(type: "VARCHAR(90)", maxLength: 90, nullable: true),
+                    Username = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
+                    UsernameOld = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: true),
+                    Type = table.Column<string>(type: "VARCHAR(90)", maxLength: 90, nullable: false),
+                    TypeOld = table.Column<string>(type: "VARCHAR(90)", maxLength: 90, nullable: true),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserOperationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DescriptionOld = table.Column<string>(type: "TEXT", nullable: true),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    IsActiveOld = table.Column<bool>(type: "bit", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: true),
+                    TypeOperation = table.Column<string>(type: "VARCHAR(20)", maxLength: 20, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserHistories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserHistories_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GroupPermissionsOperation",
+                columns: table => new
+                {
+                    GroupPermissionsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OperationsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GroupPermissionsOperation", x => new { x.GroupPermissionsId, x.OperationsId });
+                    table.ForeignKey(
+                        name: "FK_GroupPermissionsOperation_GroupPermissions_GroupPermissionsId",
+                        column: x => x.GroupPermissionsId,
+                        principalTable: "GroupPermissions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GroupPermissionsOperation_Operations_OperationsId",
+                        column: x => x.OperationsId,
+                        principalTable: "Operations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserPermissions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    GroupName = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: true),
+                    MenuId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    MenuName = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: true),
+                    MenuRoute = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: true),
+                    MenuOrder = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MenuIcon = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: true),
+                    GroupMenuId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserPermissions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserPermissions_GroupPermissions_GroupMenuId",
+                        column: x => x.GroupMenuId,
+                        principalTable: "GroupPermissions",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserPermissions_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ClusterHistories",
                 columns: table => new
                 {
@@ -134,7 +304,8 @@ namespace PRIO.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
-                    CodInstallation = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: true),
+                    CodInstallationUep = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
+                    Cod = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ClusterId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -198,12 +369,10 @@ namespace PRIO.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
                     NameOld = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: true),
-                    CodInstallation = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: true),
-                    CodInstallationOld = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: true),
+                    CodInstallationUep = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
+                    CodInstallationUepOld = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: true),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ClusterId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ClusterName = table.Column<string>(type: "VARCHAR(256)", maxLength: 256, nullable: false),
-                    ClusterNameOld = table.Column<string>(type: "VARCHAR(256)", maxLength: 256, nullable: true),
                     ClusterOldId = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 256, nullable: true),
                     InstallationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -238,9 +407,18 @@ namespace PRIO.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Type = table.Column<string>(type: "varchar(120)", maxLength: 120, nullable: false),
-                    TagEquipment = table.Column<string>(type: "varchar(120)", maxLength: 120, nullable: false),
-                    TagMeasuringPoint = table.Column<string>(type: "varchar(120)", maxLength: 120, nullable: false),
+                    TagEquipment = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false),
+                    TagMeasuringPoint = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false),
+                    SerieNumber = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false),
+                    Type = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false),
+                    TypeEquipment = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false),
+                    Model = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false),
+                    HasSeal = table.Column<bool>(type: "bit", nullable: false),
+                    MVS = table.Column<bool>(type: "bit", nullable: false),
+                    CommunicationProtocol = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false),
+                    TypePoint = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false),
+                    ChannelNumber = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false),
+                    InOperation = table.Column<bool>(type: "bit", nullable: false),
                     Fluid = table.Column<string>(type: "varchar(120)", maxLength: 120, nullable: false),
                     InstallationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -318,26 +496,26 @@ namespace PRIO.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
-                    WellOperatorName = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
-                    CodWellAnp = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
+                    WellOperatorName = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
+                    CodWellAnp = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
                     CodWell = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
-                    CategoryAnp = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
+                    CategoryAnp = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
                     CategoryReclassificationAnp = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
                     CategoryOperator = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
                     StatusOperator = table.Column<bool>(type: "bit", nullable: true),
-                    Type = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
-                    WaterDepth = table.Column<double>(type: "float(10)", precision: 10, scale: 2, nullable: true),
-                    TopOfPerforated = table.Column<double>(type: "float(10)", precision: 10, scale: 2, nullable: true),
-                    BaseOfPerforated = table.Column<double>(type: "float(10)", precision: 10, scale: 2, nullable: true),
+                    Type = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
+                    WaterDepth = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: true),
+                    TopOfPerforated = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: true),
+                    BaseOfPerforated = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: true),
                     ArtificialLift = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
-                    Latitude4C = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
-                    Longitude4C = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
-                    LatitudeDD = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
-                    LongitudeDD = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
-                    DatumHorizontal = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TypeBaseCoordinate = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
-                    CoordX = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
-                    CoordY = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
+                    Latitude4C = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
+                    Longitude4C = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
+                    LatitudeDD = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
+                    LongitudeDD = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
+                    DatumHorizontal = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
+                    TypeBaseCoordinate = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
+                    CoordX = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
+                    CoordY = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FieldId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "DATETIME", nullable: false),
@@ -762,13 +940,13 @@ namespace PRIO.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
                     NameOld = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
-                    WellOperatorName = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
+                    WellOperatorName = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
                     WellOperatorNameOld = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
-                    CodWellAnp = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
+                    CodWellAnp = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
                     CodWellAnpOld = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
                     CodWell = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
                     CodWellOld = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
-                    CategoryAnp = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
+                    CategoryAnp = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
                     CategoryAnpOld = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
                     CategoryReclassificationAnp = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
                     CategoryReclassificationAnpOld = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
@@ -776,31 +954,31 @@ namespace PRIO.Migrations
                     CategoryOperatorOld = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
                     StatusOperator = table.Column<bool>(type: "bit", nullable: true),
                     StatusOperatorOld = table.Column<bool>(type: "bit", nullable: true),
-                    Type = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
+                    Type = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
                     TypeOld = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
-                    WaterDepth = table.Column<double>(type: "float(10)", precision: 10, scale: 2, nullable: true),
-                    WaterDepthOld = table.Column<double>(type: "float(10)", precision: 10, scale: 2, nullable: true),
-                    TopOfPerforated = table.Column<double>(type: "float(10)", precision: 10, scale: 2, nullable: true),
-                    TopOfPerforatedOld = table.Column<double>(type: "float(10)", precision: 10, scale: 2, nullable: true),
-                    BaseOfPerforated = table.Column<double>(type: "float(10)", precision: 10, scale: 2, nullable: true),
-                    BaseOfPerforatedOld = table.Column<double>(type: "float(10)", precision: 10, scale: 2, nullable: true),
+                    WaterDepth = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: true),
+                    WaterDepthOld = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: true),
+                    TopOfPerforated = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: true),
+                    TopOfPerforatedOld = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: true),
+                    BaseOfPerforated = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: true),
+                    BaseOfPerforatedOld = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: true),
                     ArtificialLift = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
                     ArtificialLiftOld = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
-                    Latitude4C = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
+                    Latitude4C = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
                     Latitude4COld = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
-                    Longitude4C = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
+                    Longitude4C = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
                     Longitude4COld = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
-                    LatitudeDD = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
+                    LatitudeDD = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
                     LatitudeDDOld = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
-                    LongitudeDD = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
+                    LongitudeDD = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
                     LongitudeDDOld = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
                     DatumHorizontal = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DatumHorizontalOld = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TypeBaseCoordinate = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
+                    TypeBaseCoordinate = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
                     TypeBaseCoordinateOld = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
-                    CoordX = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
+                    CoordX = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
                     CoordXOld = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
-                    CoordY = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
+                    CoordY = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
                     CoordYOld = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FieldId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -874,8 +1052,6 @@ namespace PRIO.Migrations
                     FieldId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FieldOldId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ZoneId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FieldName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FieldNameOld = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DescriptionOld = table.Column<string>(type: "TEXT", nullable: true),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
@@ -995,8 +1171,6 @@ namespace PRIO.Migrations
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ReservoirId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ZoneId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ZoneCod = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
-                    ZoneCodOld = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: true),
                     ZoneOldId = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 120, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DescriptionOld = table.Column<string>(type: "TEXT", nullable: true),
@@ -1078,19 +1252,19 @@ namespace PRIO.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NameOld = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CodCompletion = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CodCompletionOld = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CompletionId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Name = table.Column<string>(type: "VARCHAR(256)", maxLength: 256, nullable: false),
+                    NameOld = table.Column<string>(type: "VARCHAR(256)", maxLength: 256, nullable: true),
+                    CodCompletion = table.Column<string>(type: "VARCHAR(256)", maxLength: 256, nullable: true),
+                    CodCompletionOld = table.Column<string>(type: "VARCHAR(256)", maxLength: 256, nullable: true),
+                    CompletionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ReservoirId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ReservoirOld = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    WellId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    WellOld = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ReservoirOld = table.Column<Guid>(type: "UniqueIdentifier", maxLength: 120, nullable: true),
+                    WellId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    WellOld = table.Column<Guid>(type: "UniqueIdentifier", maxLength: 120, nullable: true),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DescriptionOld = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DescriptionOld = table.Column<string>(type: "TEXT", nullable: true),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
                     IsActiveOld = table.Column<bool>(type: "bit", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: true),
                     TypeOperation = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -1216,6 +1390,21 @@ namespace PRIO.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_GroupPermissions_GroupId",
+                table: "GroupPermissions",
+                column: "GroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GroupPermissions_MenuId",
+                table: "GroupPermissions",
+                column: "MenuId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GroupPermissionsOperation_OperationsId",
+                table: "GroupPermissionsOperation",
+                column: "OperationsId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_InstallationHistories_ClusterId",
                 table: "InstallationHistories",
                 column: "ClusterId");
@@ -1266,6 +1455,11 @@ namespace PRIO.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Menus_ParentId",
+                table: "Menus",
+                column: "ParentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ReservoirHistories_ReservoirId",
                 table: "ReservoirHistories",
                 column: "ReservoirId");
@@ -1295,6 +1489,21 @@ namespace PRIO.Migrations
                 table: "Sessions",
                 column: "UserId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserHistories_UserId",
+                table: "UserHistories",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserPermissions_GroupMenuId",
+                table: "UserPermissions",
+                column: "GroupMenuId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserPermissions_UserId",
+                table: "UserPermissions",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",
@@ -1377,10 +1586,19 @@ namespace PRIO.Migrations
                 name: "FieldHistories");
 
             migrationBuilder.DropTable(
+                name: "GroupPermissionsOperation");
+
+            migrationBuilder.DropTable(
                 name: "InstallationHistories");
 
             migrationBuilder.DropTable(
                 name: "Sessions");
+
+            migrationBuilder.DropTable(
+                name: "UserHistories");
+
+            migrationBuilder.DropTable(
+                name: "UserPermissions");
 
             migrationBuilder.DropTable(
                 name: "Volumes_039");
@@ -1392,6 +1610,12 @@ namespace PRIO.Migrations
                 name: "Completions");
 
             migrationBuilder.DropTable(
+                name: "Operations");
+
+            migrationBuilder.DropTable(
+                name: "GroupPermissions");
+
+            migrationBuilder.DropTable(
                 name: "Measurements");
 
             migrationBuilder.DropTable(
@@ -1399,6 +1623,12 @@ namespace PRIO.Migrations
 
             migrationBuilder.DropTable(
                 name: "WellHistories");
+
+            migrationBuilder.DropTable(
+                name: "Groups");
+
+            migrationBuilder.DropTable(
+                name: "Menus");
 
             migrationBuilder.DropTable(
                 name: "FileTypes");

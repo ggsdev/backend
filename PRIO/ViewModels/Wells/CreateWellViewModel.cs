@@ -5,6 +5,7 @@ namespace PRIO.ViewModels.Wells
 {
     public class CreateWellViewModel
     {
+        public bool? IsActive { get; set; }
         public string? CodWell { get; set; }
         [Required(ErrorMessage = "Name ANP code is required")]
         public string? Name { get; set; }
