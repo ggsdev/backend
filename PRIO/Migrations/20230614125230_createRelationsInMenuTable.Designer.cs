@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.Data;
 
@@ -11,9 +12,11 @@ using PRIO.Data;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230614125230_createRelationsInMenuTable")]
+    partial class createRelationsInMenuTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2185,6 +2188,10 @@ namespace PRIO.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Children")
+                        .HasMaxLength(120)
+                        .HasColumnType("VARCHAR");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -2205,11 +2212,9 @@ namespace PRIO.Migrations
                         .HasMaxLength(120)
                         .HasColumnType("VARCHAR");
 
-                    b.Property<string>("Order")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("ParentId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Parent")
+                        .HasMaxLength(120)
+                        .HasColumnType("VARCHAR");
 
                     b.Property<string>("Route")
                         .HasMaxLength(120)
@@ -2219,8 +2224,6 @@ namespace PRIO.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ParentId");
 
                     b.ToTable("Menus", (string)null);
                 });
@@ -3289,15 +3292,6 @@ namespace PRIO.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("PRIO.Models.Menus.Menu", b =>
-                {
-                    b.HasOne("PRIO.Models.Menus.Menu", "Parent")
-                        .WithMany("Children")
-                        .HasForeignKey("ParentId");
-
-                    b.Navigation("Parent");
-                });
-
             modelBuilder.Entity("PRIO.Models.Permissions.Permission", b =>
                 {
                     b.HasOne("PRIO.Models.Groups.GroupsMenus.GroupMenu", "GroupMenu")
@@ -3558,8 +3552,6 @@ namespace PRIO.Migrations
 
             modelBuilder.Entity("PRIO.Models.Menus.Menu", b =>
                 {
-                    b.Navigation("Children");
-
                     b.Navigation("GroupMenus");
                 });
 

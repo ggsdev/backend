@@ -8,8 +8,9 @@ namespace PRIO.Models.Menus
         public string? Name { get; set; }
         public string? Route { get; set; }
         public string? Icon { get; set; }
-        public string? Parent { get; set; }
-        public string? Children { get; set; }
+        public string? Order { get; set; }
+        public Menu? Parent { get; set; }
+        public List<Menu>? Children { get; set; }
         public List<GroupMenu>? GroupMenus { get; set; }
     }
 }

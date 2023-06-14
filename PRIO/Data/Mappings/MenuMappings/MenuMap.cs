@@ -26,13 +26,11 @@ namespace PRIO.Data.Mappings.MenuMappings
                     .HasColumnType("VARCHAR")
                     .HasMaxLength(120);
 
-            builder.Property(x => x.Parent)
-                    .HasColumnType("VARCHAR")
-                    .HasMaxLength(120);
+            builder.HasOne(x => x.Parent)
+                   .WithMany();
 
-            builder.Property(x => x.Children)
-                    .HasColumnType("VARCHAR")
-                    .HasMaxLength(120);
+            builder.HasMany(x => x.Children)
+                   .WithOne(x => x.Parent);
 
             builder.Property(x => x.Description)
                     .HasColumnType("TEXT");
