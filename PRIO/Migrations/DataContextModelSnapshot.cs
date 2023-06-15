@@ -2071,7 +2071,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GlobalOperations");
+                    b.ToTable("GlobalOperations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.Models.SystemHistory", b =>
@@ -2170,7 +2170,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("GroupPermissionId");
 
-                    b.ToTable("GroupOperations");
+                    b.ToTable("GroupOperations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.Models.UserControlAccessModels.GroupPermission", b =>
@@ -2186,22 +2186,32 @@ namespace PRIO.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("GroupName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("VARCHAR");
 
                     b.Property<string>("MenuIcon")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("VARCHAR");
 
                     b.Property<Guid?>("MenuId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("MenuName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("VARCHAR");
 
                     b.Property<string>("MenuOrder")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("VARCHAR");
 
                     b.Property<string>("MenuRoute")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(90)
+                        .HasColumnType("VARCHAR");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -2212,7 +2222,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("MenuId");
 
-                    b.ToTable("GroupPermissions");
+                    b.ToTable("GroupPermissions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.Models.UserControlAccessModels.Menu", b =>
@@ -2367,7 +2377,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserPermissionId");
 
-                    b.ToTable("UserOperations");
+                    b.ToTable("UserOperations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.Models.UserControlAccessModels.UserPermission", b =>

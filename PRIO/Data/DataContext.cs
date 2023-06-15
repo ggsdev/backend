@@ -5,6 +5,7 @@ using PRIO.Data.Mappings;
 using PRIO.Data.Mappings.ControlAccessMappings;
 using PRIO.Data.Mappings.HierarchyMappings;
 using PRIO.Data.Mappings.MeasurementMappping;
+using PRIO.Data.Mappings.UserControlAccessMappings;
 using PRIO.Models;
 using PRIO.Models.BaseModels;
 using PRIO.Models.HierarchyModels;
@@ -139,6 +140,7 @@ namespace PRIO.Data
             modelBuilder.ApplyConfiguration(new GroupMap());
             modelBuilder.ApplyConfiguration(new MenuMap());
             modelBuilder.ApplyConfiguration(new UserPermissionMap());
+            modelBuilder.ApplyConfiguration(new GroupPermissionMap());
 
             #region Measurement & Relations
             modelBuilder.ApplyConfiguration(new MeasurementMap());

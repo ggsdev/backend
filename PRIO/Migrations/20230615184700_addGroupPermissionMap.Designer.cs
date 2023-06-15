@@ -12,8 +12,8 @@ using PRIO.Data;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230615165627_populate")]
-    partial class populate
+    [Migration("20230615184700_addGroupPermissionMap")]
+    partial class addGroupPermissionMap
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2189,22 +2189,32 @@ namespace PRIO.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("GroupName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("VARCHAR");
 
                     b.Property<string>("MenuIcon")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("VARCHAR");
 
                     b.Property<Guid?>("MenuId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("MenuName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("VARCHAR");
 
                     b.Property<string>("MenuOrder")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("VARCHAR");
 
                     b.Property<string>("MenuRoute")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(90)
+                        .HasColumnType("VARCHAR");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -2215,7 +2225,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("MenuId");
 
-                    b.ToTable("GroupPermissions");
+                    b.ToTable("GroupPermissions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.Models.UserControlAccessModels.Menu", b =>
