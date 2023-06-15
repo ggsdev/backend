@@ -2071,25 +2071,27 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GlobalOperations");
+                    b.ToTable("GlobalOperations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.Models.SystemHistory", b =>
                 {
-                    b.Property<Guid?>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("CreatedAt")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("CreatedBy")
+                    b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("FieldsChanged")
+                        .IsRequired()
                         .HasColumnType("varchar(max)");
 
                     b.Property<string>("PreviousData")
+                        .IsRequired()
                         .HasColumnType("varchar(max)");
 
                     b.Property<string>("Table")
@@ -2097,7 +2099,7 @@ namespace PRIO.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar");
 
-                    b.Property<Guid?>("TableItemId")
+                    b.Property<Guid>("TableItemId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("TypeOperation")
@@ -2112,12 +2114,7 @@ namespace PRIO.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(max)");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("SystemHistories", (string)null);
                 });
@@ -2173,7 +2170,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("GroupPermissionId");
 
-                    b.ToTable("GroupOperations");
+                    b.ToTable("GroupOperations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.Models.UserControlAccessModels.GroupPermission", b =>
@@ -2215,7 +2212,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("MenuId");
 
-                    b.ToTable("GroupPermissions");
+                    b.ToTable("GroupPermissions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.Models.UserControlAccessModels.Menu", b =>
@@ -2370,7 +2367,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserPermissionId");
 
-                    b.ToTable("UserOperations");
+                    b.ToTable("UserOperations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.Models.UserControlAccessModels.UserPermission", b =>
@@ -2635,13 +2632,6 @@ namespace PRIO.Migrations
                     b.Navigation("Measurement");
                 });
 
-            modelBuilder.Entity("PRIO.Models.SystemHistory", b =>
-                {
-                    b.HasOne("PRIO.Models.UserControlAccessModels.User", null)
-                        .WithMany("SystemHistories")
-                        .HasForeignKey("UserId");
-                });
-
             modelBuilder.Entity("PRIO.Models.UserControlAccessModels.GroupOperation", b =>
                 {
                     b.HasOne("PRIO.Models.Operations.GlobalOperation", "GlobalOperation")
@@ -2833,8 +2823,6 @@ namespace PRIO.Migrations
                     b.Navigation("Reservoirs");
 
                     b.Navigation("Session");
-
-                    b.Navigation("SystemHistories");
 
                     b.Navigation("UserPermissions");
 
