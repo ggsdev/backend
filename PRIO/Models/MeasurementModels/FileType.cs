@@ -1,6 +1,6 @@
 ﻿using PRIO.Models.BaseModels;
 
-namespace PRIO.Models.Measurements
+namespace PRIO.Models.MeasurementModels
 {
     public class FileType : BaseModel
     {

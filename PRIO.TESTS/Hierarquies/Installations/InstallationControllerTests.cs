@@ -13,7 +13,7 @@ using PRIO.Models.UserControlAccessModels;
 using PRIO.ViewModels.Installations;
 using System.ComponentModel.DataAnnotations;
 
-namespace PRIO.TESTS.Cruds.Installations
+namespace PRIO.TESTS.Hierarquies.Installations
 {
     internal class InstallationControllerTests
     {

@@ -1,4 +1,4 @@
-﻿namespace PRIO.TESTS.Cruds.Completions
+﻿namespace PRIO.TESTS.Hierarquies.Completions
 {
     internal class Mock
     {

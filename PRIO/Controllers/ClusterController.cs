@@ -5,6 +5,7 @@ using PRIO.Data;
 using PRIO.DTOS.GlobalDTOS;
 using PRIO.DTOS.HierarchyDTOS.ClusterDTOS;
 using PRIO.Filters;
+using PRIO.Models;
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
 using PRIO.Utils;
@@ -48,6 +49,16 @@ namespace PRIO.Controllers
             };
 
             await _context.Clusters.AddAsync(cluster);
+
+            var history = new SystemHistory
+            {
+                Table = HistoryColumns.TableCluster,
+                CreatedBy = user.Id,
+                TableItemId = cluster.Id,
+
+
+            };
+
 
             await _context.SaveChangesAsync();
 

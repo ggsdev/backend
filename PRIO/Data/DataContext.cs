@@ -1,12 +1,14 @@
 ﻿using dotenv.net;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using PRIO.Data.Mappings;
 using PRIO.Data.Mappings.ControlAccessMappings;
 using PRIO.Data.Mappings.HierarchyMappings;
 using PRIO.Data.Mappings.MeasurementMappping;
+using PRIO.Models;
 using PRIO.Models.BaseModels;
 using PRIO.Models.HierarchyModels;
-using PRIO.Models.Measurements;
+using PRIO.Models.MeasurementModels;
 using PRIO.Models.Operations;
 using PRIO.Models.UserControlAccessModels;
 
@@ -25,6 +27,7 @@ namespace PRIO.Data
         public DbSet<Completion> Completions { get; set; }
         public DbSet<Well> Wells { get; set; }
         public DbSet<MeasuringEquipment> MeasuringEquipments { get; set; }
+        public DbSet<SystemHistory> SystemHistories { get; set; }
 
         public DbSet<Group> Groups { get; set; }
         public DbSet<GroupOperation> GroupOperations { get; set; }
@@ -80,7 +83,7 @@ namespace PRIO.Data
             var modifiedEntriesBaseModel = ChangeTracker.Entries<BaseModel>()
                 .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
 
-            var modifiedEntriesOutraClasseBase = ChangeTracker.Entries<BaseHistoryModel>()
+            var modifiedEntriesOutraClasseBase = ChangeTracker.Entries<SystemHistory>()
                 .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
 
             var modifiedEntries = modifiedEntriesBaseModel.Cast<EntityEntry>()
@@ -95,9 +98,9 @@ namespace PRIO.Data
                         baseModel.CreatedAt = DateTime.UtcNow;
                         baseModel.UpdatedAt = DateTime.UtcNow;
                     }
-                    if (entry.Entity is BaseHistoryModel baseHistoryModel)
+                    if (entry.Entity is SystemHistory systemHistoryModel)
                     {
-                        baseHistoryModel.CreatedAt = DateTime.UtcNow;
+                        systemHistoryModel.CreatedAt = DateTime.UtcNow;
                     }
                 }
                 if (entry.State == EntityState.Modified)
@@ -130,6 +133,8 @@ namespace PRIO.Data
             modelBuilder.ApplyConfiguration(new WellMap());
 
             modelBuilder.ApplyConfiguration(new MeasuringEquipmentMap());
+
+            modelBuilder.ApplyConfiguration(new SystemHistoryMap());
 
             modelBuilder.ApplyConfiguration(new GroupMap());
             modelBuilder.ApplyConfiguration(new MenuMap());

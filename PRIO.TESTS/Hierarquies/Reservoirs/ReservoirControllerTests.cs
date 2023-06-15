@@ -16,7 +16,7 @@ using PRIO.Models.UserControlAccessModels;
 using PRIO.ViewModels.Reservoirs;
 using System.ComponentModel.DataAnnotations;
 
-namespace PRIO.TESTS.Cruds.Reservoirs
+namespace PRIO.TESTS.Hierarquies.Reservoirs
 {
     internal class ReservoirControllerTests
     {

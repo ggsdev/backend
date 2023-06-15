@@ -1,7 +1,7 @@
 ﻿using PRIO.Models.BaseModels;
 using System.Text.Json.Serialization;
 
-namespace PRIO.Models.Measurements
+namespace PRIO.Models.MeasurementModels
 {
     public class Volume : BaseModel
     {

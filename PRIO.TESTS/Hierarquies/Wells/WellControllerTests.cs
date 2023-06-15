@@ -12,7 +12,7 @@ using PRIO.Models.UserControlAccessModels;
 using PRIO.ViewModels.Wells;
 using System.ComponentModel.DataAnnotations;
 
-namespace PRIO.TESTS.Cruds.Wells
+namespace PRIO.TESTS.Hierarquies.Wells
 {
     [TestFixture]
     internal class WellControllerTests

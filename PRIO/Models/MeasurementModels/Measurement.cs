@@ -2,7 +2,7 @@
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
 
-namespace PRIO.Models.Measurements
+namespace PRIO.Models.MeasurementModels
 {
     public class Measurement : BaseModel
     {

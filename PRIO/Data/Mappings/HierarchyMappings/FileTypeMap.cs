@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PRIO.Models.Measurements;
+using PRIO.Models.MeasurementModels;
 
 namespace PRIO.Data.Mappings.HierarchyMappings
 {

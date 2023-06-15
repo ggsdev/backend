@@ -12,7 +12,7 @@ using PRIO.Models.UserControlAccessModels;
 using PRIO.ViewModels.Fields;
 using System.ComponentModel.DataAnnotations;
 
-namespace PRIO.TESTS.Cruds.Fields
+namespace PRIO.TESTS.Hierarquies.Fields
 {
     [TestFixture]
     internal class FieldControllerTests

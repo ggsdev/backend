@@ -11,7 +11,7 @@ using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
 using PRIO.ViewModels.Clusters;
 
-namespace PRIO.TESTS.Cruds.Clusters
+namespace PRIO.TESTS.Hierarquies.Clusters
 {
     internal class ClusterControllerTests
     {

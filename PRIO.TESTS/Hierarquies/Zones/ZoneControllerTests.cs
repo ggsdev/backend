@@ -15,7 +15,7 @@ using PRIO.Models.UserControlAccessModels;
 using PRIO.ViewModels.Zones;
 using System.ComponentModel.DataAnnotations;
 
-namespace PRIO.TESTS.Cruds.Zones
+namespace PRIO.TESTS.Hierarquies.Zones
 {
     internal class ZoneControllerTests
     {

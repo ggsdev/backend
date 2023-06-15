@@ -1,5 +1,5 @@
 ﻿using PRIO.Models.BaseModels;
-using PRIO.Models.Measurements;
+using PRIO.Models.MeasurementModels;
 using PRIO.Models.UserControlAccessModels;
 
 namespace PRIO.Models.HierarchyModels

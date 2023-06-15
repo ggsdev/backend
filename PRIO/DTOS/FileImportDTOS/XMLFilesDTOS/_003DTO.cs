@@ -1,4 +1,4 @@
-﻿using PRIO.Models.Measurements;
+﻿using PRIO.Models.MeasurementModels;
 
 namespace PRIO.DTOS.FileImportDTOS.XMLFilesDTOS
 {

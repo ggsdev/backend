@@ -6,6 +6,7 @@ using PRIO.Data;
 using PRIO.DTOS.FileImportDTOS.XLSDTOS;
 using PRIO.DTOS.GlobalDTOS;
 using PRIO.Filters;
+using PRIO.Models;
 using PRIO.Models.BaseModels;
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
@@ -42,7 +43,7 @@ namespace PRIO.Controllers
                 var dimension = worksheetTab.Dimension;
 
                 var entityDictionary = new Dictionary<string, BaseModel>();
-                var entityHistoriesDictionary = new Dictionary<string, BaseHistoryModel>();
+                var entityHistoriesDictionary = new Dictionary<string, SystemHistory>();
 
                 var columnPositions = XlsUtils.GetColumnPositions(worksheetTab);
 

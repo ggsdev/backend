@@ -1,6 +1,6 @@
 ﻿using PRIO.Models.BaseModels;
 using PRIO.Models.HierarchyModels;
-using PRIO.Models.Measurements;
+using PRIO.Models.MeasurementModels;
 using System.Text.Json.Serialization;
 
 namespace PRIO.Models.UserControlAccessModels

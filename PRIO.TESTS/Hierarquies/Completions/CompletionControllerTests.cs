@@ -14,7 +14,7 @@ using PRIO.Models.UserControlAccessModels;
 using PRIO.ViewModels.Completions;
 using System.ComponentModel.DataAnnotations;
 
-namespace PRIO.TESTS.Cruds.Completions
+namespace PRIO.TESTS.Hierarquies.Completions
 {
     [TestFixture]
     internal class CompletionControllerTests
