@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
-using PRIO.DTOS;
-using PRIO.DTOS.MeasuringEquipment;
+using PRIO.DTOS.GlobalDTOS;
+using PRIO.DTOS.HierarchyDTOS.MeasuringEquipment;
 using PRIO.Filters;
-using PRIO.Models.MeasuringEquipments;
+using PRIO.Models.HierarchyModels;
 using PRIO.ViewModels.MeasuringEquipment;
 
 namespace PRIO.Controllers

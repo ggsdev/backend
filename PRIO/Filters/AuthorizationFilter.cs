@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
-using PRIO.DTOS;
+using PRIO.DTOS.GlobalDTOS;
 
 namespace PRIO.Filters
 {

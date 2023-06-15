@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using PRIO.DTOS;
+using PRIO.DTOS.GlobalDTOS;
 
 namespace PRIO.Middlewares
 {

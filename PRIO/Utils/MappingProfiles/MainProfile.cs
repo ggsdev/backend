@@ -1,28 +1,21 @@
 ﻿using AutoMapper;
-using PRIO.DTOS.ClusterDTOS;
-using PRIO.DTOS.CompletionDTOS;
-using PRIO.DTOS.FieldDTOS;
-using PRIO.DTOS.InstallationDTOS;
-using PRIO.DTOS.MeasuringEquipment;
-using PRIO.DTOS.ReservoirDTOS;
+using PRIO.DTOS.FileImportDTOS.XMLFilesDTOS;
+using PRIO.DTOS.HierarchyDTOS.ClusterDTOS;
+using PRIO.DTOS.HierarchyDTOS.CompletionDTOS;
+using PRIO.DTOS.HierarchyDTOS.FieldDTOS;
+using PRIO.DTOS.HierarchyDTOS.InstallationDTOS;
+using PRIO.DTOS.HierarchyDTOS.MeasuringEquipment;
+using PRIO.DTOS.HierarchyDTOS.ReservoirDTOS;
+using PRIO.DTOS.HierarchyDTOS.WellDTOS;
+using PRIO.DTOS.HierarchyDTOS.ZoneDTOS;
 using PRIO.DTOS.UserDTOS;
-using PRIO.DTOS.WellDTOS;
-using PRIO.DTOS.XMLFilesDTOS;
-using PRIO.DTOS.ZoneDTOS;
 using PRIO.Files.XML._001;
 using PRIO.Files.XML._002;
 using PRIO.Files.XML._003;
 using PRIO.Files.XML._039;
-using PRIO.Models.Clusters;
-using PRIO.Models.Completions;
-using PRIO.Models.Fields;
-using PRIO.Models.Installations;
+using PRIO.Models.HierarchyModels;
 using PRIO.Models.Measurements;
-using PRIO.Models.MeasuringEquipments;
-using PRIO.Models.Reservoirs;
-using PRIO.Models.Users;
-using PRIO.Models.Wells;
-using PRIO.Models.Zones;
+using PRIO.Models.UserControlAccessModels;
 using System.Globalization;
 
 namespace PRIO.Utils.MappingProfiles
@@ -71,33 +64,25 @@ namespace PRIO.Utils.MappingProfiles
             #endregion
 
             CreateMap<Cluster, ClusterDTO>();
-            CreateMap<ClusterHistory, ClusterHistoryDTO>();
 
             CreateMap<Installation, InstallationDTO>();
             CreateMap<Installation, CreateUpdateInstallationDTO>();
-            CreateMap<InstallationHistory, InstallationHistoryDTO>();
 
             CreateMap<Field, FieldDTO>();
-            CreateMap<FieldHistory, FieldHistoryDTO>();
 
             CreateMap<Zone, ZoneDTO>();
             CreateMap<Zone, CreateUpdateZoneDTO>();
-            CreateMap<ZoneHistory, ZoneHistoryDTO>();
 
             CreateMap<Reservoir, ReservoirDTO>();
-            CreateMap<ReservoirHistory, ReservoirHistoryDTO>();
 
             CreateMap<Well, WellDTO>()
                 .ForMember(dest => dest.WaterDepth, opt => opt.MapFrom(src => TruncateTwoDecimals(src.WaterDepth)))
                 .ForMember(dest => dest.TopOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.TopOfPerforated)))
                 .ForMember(dest => dest.BaseOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.BaseOfPerforated)));
-            CreateMap<WellHistory, WellHistoryDTO>();
 
             CreateMap<Completion, CompletionDTO>();
-            CreateMap<CompletionHistory, CompletionHistoryDTO>();
 
             CreateMap<User, UserDTO>();
-            CreateMap<UserHistory, UserHistoryDTO>();
 
             CreateMap<MeasuringEquipment, MeasuringEquipmentDTO>();
         }

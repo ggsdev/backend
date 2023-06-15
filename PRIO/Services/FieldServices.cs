@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
-using PRIO.Models.Fields;
+using PRIO.Models.HierarchyModels;
 
 namespace PRIO.Services
 {
