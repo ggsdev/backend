@@ -7,6 +7,7 @@ using PRIO.Data.Mappings.MeasurementMappping;
 using PRIO.Models.BaseModels;
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.Measurements;
+using PRIO.Models.Operations;
 using PRIO.Models.UserControlAccessModels;
 
 namespace PRIO.Data
@@ -19,15 +20,17 @@ namespace PRIO.Data
         public DbSet<Installation> Installations { get; set; }
         public DbSet<Field> Fields { get; set; }
         public DbSet<Zone> Zones { get; set; }
-        public DbSet<Operation> Operations { get; set; }
+        public DbSet<GlobalOperation> GlobalOperations { get; set; }
         public DbSet<Reservoir> Reservoirs { get; set; }
         public DbSet<Completion> Completions { get; set; }
         public DbSet<Well> Wells { get; set; }
         public DbSet<MeasuringEquipment> MeasuringEquipments { get; set; }
 
         public DbSet<Group> Groups { get; set; }
-        public DbSet<UserPermission> Permissions { get; set; }
-        public DbSet<GroupPermissions> GroupPermissions { get; set; }
+        public DbSet<GroupOperation> GroupOperations { get; set; }
+        public DbSet<UserOperation> UserOperations { get; set; }
+        public DbSet<GroupPermission> GroupPermissions { get; set; }
+        public DbSet<UserPermission> UserPermissions { get; set; }
         public DbSet<Menu> Menus { get; set; }
 
         #region Measurement & Relations
@@ -130,7 +133,7 @@ namespace PRIO.Data
 
             modelBuilder.ApplyConfiguration(new GroupMap());
             modelBuilder.ApplyConfiguration(new MenuMap());
-            modelBuilder.ApplyConfiguration(new PermissionMap());
+            modelBuilder.ApplyConfiguration(new UserPermissionMap());
 
             #region Measurement & Relations
             modelBuilder.ApplyConfiguration(new MeasurementMap());

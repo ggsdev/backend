@@ -10,6 +10,6 @@ namespace PRIO.Models.UserControlAccessModels
         public string? Order { get; set; }
         public Menu? Parent { get; set; }
         public List<Menu>? Children { get; set; }
-        public List<GroupPermissions>? GroupPermissions { get; set; }
+        public List<GroupPermission>? GroupPermissions { get; set; }
     }
 }

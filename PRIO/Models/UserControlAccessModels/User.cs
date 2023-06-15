@@ -13,8 +13,6 @@ namespace PRIO.Models.UserControlAccessModels
         public string? Username { get; set; }
 
         #region Relationships
-        //public Role Role { get; set; }
-
         public List<UserPermission>? UserPermissions { get; set; }
         public Session? Session { get; set; }
         public List<Cluster>? Clusters { get; set; }

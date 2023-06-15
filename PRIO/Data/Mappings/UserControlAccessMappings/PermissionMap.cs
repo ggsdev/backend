@@ -4,7 +4,7 @@ using PRIO.Models.UserControlAccessModels;
 
 namespace PRIO.Data.Mappings.ControlAccessMappings
 {
-    public class PermissionMap : IEntityTypeConfiguration<UserPermission>
+    public class UserPermissionMap : IEntityTypeConfiguration<UserPermission>
     {
         public void Configure(EntityTypeBuilder<UserPermission> builder)
         {
