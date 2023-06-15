@@ -4,8 +4,8 @@
     {
         public Guid? Id { get; set; }
         public Guid? GroupId { get; set; }
-        public Guid? MenuId { get; set; }
         public string? GroupName { get; set; }
+        public Guid? MenuId { get; set; }
         public string? MenuName { get; set; }
         public string? MenuRoute { get; set; }
         public string? MenuIcon { get; set; }
