@@ -3,10 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
-using PRIO.DTOS;
+using PRIO.DTOS.GlobalDTOS;
 using PRIO.DTOS.UserDTOS;
-using PRIO.Models.Users;
-using PRIO.Utils;
+using PRIO.Models.UserControlAccessModels;
 using PRIO.ViewModels.Users;
 
 namespace PRIO.Controllers
@@ -56,42 +55,8 @@ namespace PRIO.Controllers
                     Email = body.Email,
                     Password = BCrypt.Net.BCrypt.HashPassword(body.Password),
                     Description = body.Description is not null ? body.Description : null,
-                    Type = body.Type
                 };
                 await _context.AddAsync(user);
-
-                //var userId = (Guid)HttpContext.Items["Id"]!;
-                //var userOperation = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-                //if (userOperation is null)
-                //    return NotFound(new ErrorResponseDTO
-                //    {
-                //        Message = $"User is not found"
-                //    });
-
-                //var userHistory = new UserHistory
-                //{
-                //    Name = body.Name,
-                //    NameOld = null,
-                //    Username = body.Username,
-                //    UsernameOld = null,
-                //    Email = body.Email,
-                //    EmailOld = null,
-                //    Password = BCrypt.Net.BCrypt.HashPassword(body.Password),
-                //    PasswordOld = null,
-                //    Description = body.Description is not null ? body.Description : null,
-                //    DescriptionOld = null,
-                //    Type = body.Type,
-                //    TypeOld = null,
-                //    IsActive = true,
-                //    IsActiveOld = null,
-                //    TypeOperation = TypeOperation.Create,
-                //    User = user,
-                //    UserOperationId = userOperation.Id
-
-                //};
-
-                //await _context.AddAsync(userHistory);
-
                 await _context.SaveChangesAsync();
 
                 var userDTO = _mapper.Map<User, UserDTO>(user);
@@ -172,33 +137,12 @@ namespace PRIO.Controllers
 
             try
             {
-                var userHistory = new UserHistory
-                {
-                    Name = body.Name is not null ? body.Name : user.Name,
-                    NameOld = user.Name,
-                    Username = body.Username is not null ? body.Username : user.Username,
-                    UsernameOld = user.Username,
-                    Email = body.Email is not null ? body.Email : user.Email,
-                    EmailOld = user.Email,
-                    Password = body.Password is not null ? BCrypt.Net.BCrypt.HashPassword(body.Password) : user.Password,
-                    PasswordOld = user.Password,
-                    Description = body.Description is not null ? body.Description : user.Description,
-                    DescriptionOld = user.Description,
-                    Type = body.Type is not null ? body.Type : user.Type,
-                    TypeOld = user.Type,
-                    IsActive = true,
-                    IsActiveOld = user.IsActive,
-                    TypeOperation = TypeOperation.Update,
-                    User = user,
-                    UserOperationId = userOperation.Id
-                };
 
                 user.Name = body.Name is not null ? body.Name : user.Name;
                 user.Password = body.Password is not null ? BCrypt.Net.BCrypt.HashPassword(body.Password) : user.Password;
                 user.Email = body.Email is not null ? body.Email : user.Email;
                 user.Username = body.Username is not null ? body.Username : user.Username;
 
-                await _context.AddAsync(userHistory);
                 _context.Users.Update(user);
                 await _context.SaveChangesAsync();
 
@@ -239,30 +183,6 @@ namespace PRIO.Controllers
                     Message = $"User is not found"
                 });
 
-
-            var userHistory = new UserHistory
-            {
-                Name = user.Name,
-                NameOld = user.Name,
-                Username = user.Username,
-                UsernameOld = user.Username,
-                Email = user.Email,
-                EmailOld = user.Email,
-                Password = user.Password,
-                PasswordOld = user.Password,
-                Description = user.Description,
-                DescriptionOld = user.Description,
-                Type = user.Type,
-                TypeOld = user.Type,
-                IsActive = false,
-                IsActiveOld = user.IsActive,
-                TypeOperation = TypeOperation.Delete,
-                User = user,
-                UserOperationId = userOperation.Id
-            };
-
-            await _context.AddAsync(userHistory);
-
             user.DeletedAt = DateTime.UtcNow;
             user.IsActive = false;
 
@@ -296,28 +216,6 @@ namespace PRIO.Controllers
                     Message = $"User is not found"
                 });
 
-            var userHistory = new UserHistory
-            {
-                Name = user.Name,
-                NameOld = user.Name,
-                Username = user.Username,
-                UsernameOld = user.Username,
-                Email = user.Email,
-                EmailOld = user.Email,
-                Password = user.Password,
-                PasswordOld = user.Password,
-                Description = user.Description,
-                DescriptionOld = user.Description,
-                Type = user.Type,
-                TypeOld = user.Type,
-                IsActive = true,
-                IsActiveOld = user.IsActive,
-                TypeOperation = TypeOperation.Restore,
-                User = user,
-                UserOperationId = userOperation.Id
-            };
-            await _context.AddAsync(userHistory);
-
             user.IsActive = true;
             user.DeletedAt = null;
 
@@ -328,31 +226,31 @@ namespace PRIO.Controllers
             return Ok(UserDTO);
         }
 
-        [HttpGet("users/{id}/history")]
-        public async Task<IActionResult> GetHistory([FromRoute] Guid id)
-        {
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
+        //[HttpGet("users/{id}/history")]
+        //public async Task<IActionResult> GetHistory([FromRoute] Guid id)
+        //{
+        //    var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
 
-            if (user is null)
-            {
-                var userError = new ErrorResponseDTO
-                {
-                    Message = "User not found or inactive."
-                };
+        //    if (user is null)
+        //    {
+        //        var userError = new ErrorResponseDTO
+        //        {
+        //            Message = "User not found or inactive."
+        //        };
 
-                return NotFound(userError);
-            }
+        //        return NotFound(userError);
+        //    }
 
-            var userHistories = await _context.UserHistories
-                                                    .Include(x => x.User)
-                                                    .Where(x => x.User.Id == id)
-                                                    .OrderByDescending(x => x.CreatedAt)
-                                                    .ToListAsync();
+        //    var userHistories = await _context.UserHistories
+        //                                            .Include(x => x.User)
+        //                                            .Where(x => x.User.Id == id)
+        //                                            .OrderByDescending(x => x.CreatedAt)
+        //                                            .ToListAsync();
 
-            var userHistoriesDTO = _mapper.Map<List<UserHistory>, List<UserHistoryDTO>>(userHistories);
+        //    var userHistoriesDTO = _mapper.Map<List<UserHistory>, List<UserHistoryDTO>>(userHistories);
 
-            return Ok(userHistoriesDTO);
-        }
+        //    return Ok(userHistoriesDTO);
+        //}
         #endregion
     }
 }

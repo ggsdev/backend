@@ -1,7 +1,6 @@
 ﻿using PRIO.Models.BaseModels;
-using PRIO.Models.FileTypes;
-using PRIO.Models.MeasuringEquipments;
-using PRIO.Models.Users;
+using PRIO.Models.HierarchyModels;
+using PRIO.Models.UserControlAccessModels;
 
 namespace PRIO.Models.Measurements
 {

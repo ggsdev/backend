@@ -2,12 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
-using PRIO.DTOS;
-using PRIO.DTOS.FieldDTOS;
+using PRIO.DTOS.GlobalDTOS;
+using PRIO.DTOS.HierarchyDTOS.FieldDTOS;
 using PRIO.Filters;
-using PRIO.Models.Fields;
-using PRIO.Models.Users;
-using PRIO.Utils;
+using PRIO.Models.HierarchyModels;
+using PRIO.Models.UserControlAccessModels;
 using PRIO.ViewModels.Fields;
 
 namespace PRIO.Controllers
@@ -57,23 +56,8 @@ namespace PRIO.Controllers
                 Installation = installationInDatabase,
                 IsActive = body.IsActive is not null ? body.IsActive.Value : true,
             };
-            await _context.Fields.AddAsync(field);
 
-            var fieldHistory = new FieldHistory
-            {
-                Name = body.Name,
-                CodField = body.CodField,
-                Basin = body.Basin,
-                Location = body.Location,
-                State = body.State,
-                Description = body.Description,
-                IsActive = true,
-                User = user,
-                Field = field,
-                Installation = installationInDatabase,
-                TypeOperation = TypeOperation.Create,
-            };
-            await _context.FieldHistories.AddAsync(fieldHistory);
+            await _context.Fields.AddAsync(field);
             await _context.SaveChangesAsync();
 
             var fieldDTO = _mapper.Map<Field, FieldDTO>(field);
@@ -107,10 +91,7 @@ namespace PRIO.Controllers
         [HttpPatch("{id:Guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateFieldViewModel body)
         {
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var user = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (user is null)
-                return Unauthorized(new ErrorResponseDTO { Message = "User not identified, please login first" });
+            var user = HttpContext.Items["User"] as User;
 
             var field = await _context.Fields.Include(x => x.User).Include(x => x.Installation).FirstOrDefaultAsync(x => x.Id == id);
             if (field is null)
@@ -118,28 +99,6 @@ namespace PRIO.Controllers
                 {
                     Message = "Field not found"
                 });
-
-            var fieldHistory = new FieldHistory
-            {
-                Name = body.Name is not null ? body.Name : field.Name,
-                NameOld = field.Name,
-                CodField = body.CodField is not null ? body.CodField : field.CodField,
-                CodFieldOld = field.CodField,
-                Basin = body.Basin is not null ? body.Basin : field.Basin,
-                BasinOld = field.Basin,
-                Location = body.Location is not null ? body.Location : field.Location,
-                LocationOld = field.Location,
-                State = body.State is not null ? body.State : field.State,
-                StateOld = field.State,
-                Description = body.Description is not null ? body.Description : field.Description,
-                DescriptionOld = field.Description,
-                IsActiveOld = true,
-                IsActive = field.IsActive,
-                User = user,
-                Field = field,
-                InstallationOld = field.Installation?.Id,
-                TypeOperation = TypeOperation.Update,
-            };
 
             if (body.InstallationId is not null)
             {
@@ -150,16 +109,12 @@ namespace PRIO.Controllers
                     {
                         Message = "Installation not found"
                     });
-                fieldHistory.Installation = installationInDatabase;
                 field.Installation = installationInDatabase;
             }
             else
             {
-                fieldHistory.Installation = field.Installation;
                 field.Installation = field.Installation;
             }
-
-            await _context.FieldHistories.AddAsync(fieldHistory);
 
             field.State = body.State is not null ? body.State : field.State;
             field.Name = body.Name is not null ? body.Name : field.Name;
@@ -188,30 +143,6 @@ namespace PRIO.Controllers
                     Message = "Field not found or inactive already"
                 });
 
-            var fieldHistory = new FieldHistory
-            {
-                Name = field.Name,
-                NameOld = field.Name,
-                CodField = field.CodField,
-                CodFieldOld = field.CodField,
-                Basin = field.Basin,
-                BasinOld = field.Basin,
-                Location = field.Location,
-                LocationOld = field.Location,
-                State = field.State,
-                StateOld = field.State,
-                Description = field.Description,
-                DescriptionOld = field.Description,
-                IsActiveOld = field.IsActive,
-                IsActive = false,
-                User = user,
-                Field = field,
-                Installation = field.Installation,
-                InstallationOld = field.Installation?.Id,
-                TypeOperation = TypeOperation.Delete,
-            };
-            _context.Update(fieldHistory);
-
             field.IsActive = false;
             field.DeletedAt = DateTime.UtcNow;
 
@@ -233,30 +164,6 @@ namespace PRIO.Controllers
                     Message = "Field not found or active already"
                 });
 
-            var fieldHistory = new FieldHistory
-            {
-                Name = field.Name,
-                NameOld = field.Name,
-                CodField = field.CodField,
-                CodFieldOld = field.CodField,
-                Basin = field.Basin,
-                BasinOld = field.Basin,
-                Location = field.Location,
-                LocationOld = field.Location,
-                State = field.State,
-                StateOld = field.State,
-                Description = field.Description,
-                DescriptionOld = field.Description,
-                IsActiveOld = field.IsActive,
-                IsActive = true,
-                User = user,
-                Field = field,
-                Installation = field.Installation,
-                InstallationOld = field.Installation?.Id,
-                TypeOperation = TypeOperation.Restore,
-            };
-            _context.Update(fieldHistory);
-
             field.IsActive = true;
             field.DeletedAt = null;
 
@@ -267,25 +174,25 @@ namespace PRIO.Controllers
             return Ok(fieldDTO);
         }
 
-        [HttpGet("{id:Guid}/history")]
-        public async Task<IActionResult> GetHistory([FromRoute] Guid id)
-        {
-            var fieldHistories = await _context.FieldHistories.Include(x => x.User)
-                                                      .Include(x => x.Field)
-                                                      .Where(x => x.Field.Id == id)
-                                                      .OrderByDescending(x => x.CreatedAt)
-                                                      .ToListAsync();
-            if (fieldHistories is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = "Field not found"
-                });
+        //[HttpGet("{id:Guid}/history")]
+        //public async Task<IActionResult> GetHistory([FromRoute] Guid id)
+        //{
+        //    var fieldHistories = await _context.FieldHistories.Include(x => x.User)
+        //                                              .Include(x => x.Field)
+        //                                              .Where(x => x.Field.Id == id)
+        //                                              .OrderByDescending(x => x.CreatedAt)
+        //                                              .ToListAsync();
+        //    if (fieldHistories is null)
+        //        return NotFound(new ErrorResponseDTO
+        //        {
+        //            Message = "Field not found"
+        //        });
 
 
-            var fieldHistoryDTO = _mapper.Map<List<FieldHistory>, List<FieldHistoryDTO>>(fieldHistories);
+        //    var fieldHistoryDTO = _mapper.Map<List<FieldHistory>, List<FieldHistoryDTO>>(fieldHistories);
 
-            return Ok(fieldHistoryDTO);
-        }
+        //    return Ok(fieldHistoryDTO);
+        //}
 
     }
 }

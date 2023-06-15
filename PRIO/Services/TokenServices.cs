@@ -1,7 +1,7 @@
 ﻿using dotenv.net;
 using Microsoft.IdentityModel.Tokens;
 using PRIO.Data;
-using PRIO.Models.Users;
+using PRIO.Models.UserControlAccessModels;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;

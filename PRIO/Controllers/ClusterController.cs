@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
-using PRIO.DTOS;
-using PRIO.DTOS.ClusterDTOS;
+using PRIO.DTOS.GlobalDTOS;
+using PRIO.DTOS.HierarchyDTOS.ClusterDTOS;
 using PRIO.Filters;
-using PRIO.Models.Clusters;
-using PRIO.Models.Users;
+using PRIO.Models.HierarchyModels;
+using PRIO.Models.UserControlAccessModels;
 using PRIO.Utils;
 using PRIO.ViewModels.Clusters;
 
@@ -41,32 +41,14 @@ namespace PRIO.Controllers
             var cluster = new Cluster
             {
                 Name = body.Name,
-                CodCluster = body.CodCluster,
                 Description = body.Description is not null ? body.Description : null,
                 User = user,
                 IsActive = body.IsActive is not null ? body.IsActive.Value : true,
+                CodCluster = body.CodCluster is not null ? body.CodCluster : GenerateCode.Generate(body.Name)
             };
 
             await _context.Clusters.AddAsync(cluster);
 
-            var clusterHistory = new ClusterHistory
-            {
-                Name = body.Name,
-                NameOld = null,
-                CodClusterOld = null,
-                CodCluster = body.CodCluster,
-                DescriptionOld = null,
-                Description = body.Description is not null ? body.Description : null,
-                User = user,
-                IsActiveOld = null,
-                IsActive = true,
-
-                TypeOperation = TypeOperation.Create,
-
-                Cluster = cluster,
-            };
-
-            await _context.ClustersHistories.AddAsync(clusterHistory);
             await _context.SaveChangesAsync();
 
             var clusterDTO = _mapper.Map<Cluster, ClusterDTO>(cluster);
@@ -108,33 +90,16 @@ namespace PRIO.Controllers
                     Message = "Cluster not found"
                 });
 
-            var clusterHistory = new ClusterHistory
-            {
-                Name = body.Name is not null ? body.Name : cluster.Name,
-                NameOld = cluster.Name,
-                CodCluster = body.CodCluster is not null ? body.CodCluster : cluster.CodCluster,
-                CodClusterOld = cluster.CodCluster,
-                Description = body.Description is not null ? body.Description : cluster.Description,
-                DescriptionOld = cluster.Description,
-                IsActive = true,
-                IsActiveOld = cluster.IsActive,
+            cluster.Name ??= body.Name;
+            cluster.Description ??= body.Description;
+            cluster.CodCluster ??= body.CodCluster;
 
-                TypeOperation = TypeOperation.Update,
-
-                User = user,
-                Cluster = cluster,
-            };
-            _context.Update(clusterHistory);
-
-            cluster.Name = body.Name is not null ? body.Name : cluster.Name;
-            cluster.Description = body.Description is not null ? body.Description : cluster.Description;
-            cluster.CodCluster = body.CodCluster is not null ? body.CodCluster : cluster.CodCluster;
-
-            _context.Update(cluster);
+            _context.UpdateRange(cluster);
             await _context.SaveChangesAsync();
 
-            var clusternDTO = _mapper.Map<Cluster, ClusterDTO>(cluster);
-            return Ok(clusternDTO);
+
+            var clusterDTO = _mapper.Map<Cluster, ClusterDTO>(cluster);
+            return Ok(clusterDTO);
         }
 
         [HttpPatch("{id:Guid}/restore")]
@@ -148,23 +113,6 @@ namespace PRIO.Controllers
                 {
                     Message = "Cluster not found or active already"
                 });
-
-            var clusterHistory = new ClusterHistory
-            {
-                Name = cluster.Name,
-                NameOld = cluster.Name,
-                CodCluster = cluster.CodCluster,
-                CodClusterOld = cluster.CodCluster,
-                Description = cluster.Description,
-                DescriptionOld = cluster.Description,
-                IsActive = true,
-                IsActiveOld = cluster.IsActive,
-                TypeOperation = TypeOperation.Restore,
-
-                User = user,
-                Cluster = cluster,
-            };
-            await _context.AddAsync(clusterHistory);
 
             cluster.IsActive = true;
             cluster.DeletedAt = null;
@@ -188,22 +136,6 @@ namespace PRIO.Controllers
                     Message = "Cluster not found or inactive already"
                 });
 
-            var clusterHistory = new ClusterHistory
-            {
-                Name = cluster.Name,
-                NameOld = cluster.Name,
-                CodCluster = cluster.CodCluster,
-                CodClusterOld = cluster.CodCluster,
-                Description = cluster.Description,
-                DescriptionOld = cluster.Description,
-                IsActive = false,
-                IsActiveOld = cluster.IsActive,
-                TypeOperation = TypeOperation.Delete,
-                User = user,
-                Cluster = cluster,
-            };
-            _context.Update(clusterHistory);
-
             cluster.IsActive = false;
             cluster.DeletedAt = DateTime.UtcNow;
 
@@ -213,26 +145,26 @@ namespace PRIO.Controllers
 
             return NoContent();
         }
-        [HttpGet("{id:Guid}/history")]
-        public async Task<IActionResult> GetHistory([FromRoute] Guid id)
-        {
-            var cluster = await _context.Clusters.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id);
-            if (cluster is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = "Cluster not found"
-                });
+        //[HttpGet("{id:Guid}/history")]
+        //public async Task<IActionResult> GetHistory([FromRoute] Guid id)
+        //{
+        //    var cluster = await _context.Clusters.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id);
+        //    if (cluster is null)
+        //        return NotFound(new ErrorResponseDTO
+        //        {
+        //            Message = "Cluster not found"
+        //        });
 
-            var clusterHistories = await _context.ClustersHistories
-                                                    .Include(x => x.User)
-                                                    .Include(x => x.Cluster)
-                                                    .Where(x => x.Cluster.Id == id)
-                                                    .OrderByDescending(x => x.CreatedAt)
-                                                    .ToListAsync();
+        //    var clusterHistories = await _context.ClustersHistories
+        //                                            .Include(x => x.User)
+        //                                            .Include(x => x.Cluster)
+        //                                            .Where(x => x.Cluster.Id == id)
+        //                                            .OrderByDescending(x => x.CreatedAt)
+        //                                            .ToListAsync();
 
-            var clusterHistoriesDTO = _mapper.Map<List<ClusterHistory>, List<ClusterHistoryDTO>>(clusterHistories);
+        //    var clusterHistoriesDTO = _mapper.Map<List<ClusterHistory>, List<ClusterHistoryDTO>>(clusterHistories);
 
-            return Ok(clusterHistoriesDTO);
-        }
+        //    return Ok(clusterHistoriesDTO);
+        //}
     }
 }

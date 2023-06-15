@@ -2,12 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
-using PRIO.DTOS;
-using PRIO.DTOS.InstallationDTOS;
+using PRIO.DTOS.GlobalDTOS;
+using PRIO.DTOS.HierarchyDTOS.InstallationDTOS;
 using PRIO.Filters;
-using PRIO.Models.Installations;
-using PRIO.Models.Users;
-using PRIO.Utils;
+using PRIO.Models.HierarchyModels;
+using PRIO.Models.UserControlAccessModels;
 using PRIO.ViewModels.Installations;
 
 namespace PRIO.Controllers
@@ -46,22 +45,6 @@ namespace PRIO.Controllers
 
             await _context.Installations.AddAsync(installation);
 
-            var installationHistory = new InstallationHistory
-            {
-                Cluster = clusterInDatabase,
-
-                Name = installation.Name,
-
-                CodInstallationUep = installation.CodInstallationUep,
-
-                Description = installation.Description,
-
-                User = user,
-                Installation = installation,
-                TypeOperation = TypeOperation.Create
-            };
-
-            await _context.InstallationHistories.AddAsync(installationHistory);
             await _context.SaveChangesAsync();
 
             var installationDTO = _mapper.Map<Installation, CreateUpdateInstallationDTO>(installation);
@@ -95,26 +78,26 @@ namespace PRIO.Controllers
             return Ok(installationDTO);
         }
 
-        [HttpGet("{id:Guid}/history")]
-        public async Task<IActionResult> GetHistoryById([FromRoute] Guid id)
-        {
-            var installationHistories = await _context.InstallationHistories
-                .Include(x => x.User)
-                .Include(x => x.Cluster)
-                .Include(x => x.Installation)
-                .Where(x => x.Installation.Id == id)
-                .OrderByDescending(x => x.CreatedAt)
-                .ToListAsync();
+        //[HttpGet("{id:Guid}/history")]
+        //public async Task<IActionResult> GetHistoryById([FromRoute] Guid id)
+        //{
+        //    var installationHistories = await _context.InstallationHistories
+        //        .Include(x => x.User)
+        //        .Include(x => x.Cluster)
+        //        .Include(x => x.Installation)
+        //        .Where(x => x.Installation.Id == id)
+        //        .OrderByDescending(x => x.CreatedAt)
+        //        .ToListAsync();
 
-            if (installationHistories is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = "Installation not found"
-                });
+        //    if (installationHistories is null)
+        //        return NotFound(new ErrorResponseDTO
+        //        {
+        //            Message = "Installation not found"
+        //        });
 
-            var installationHistoriesDTO = _mapper.Map<List<InstallationHistory>, List<InstallationHistoryDTO>>(installationHistories);
-            return Ok(installationHistoriesDTO);
-        }
+        //    var installationHistoriesDTO = _mapper.Map<List<InstallationHistory>, List<InstallationHistoryDTO>>(installationHistories);
+        //    return Ok(installationHistoriesDTO);
+        //}
 
 
         [HttpPatch("{id:Guid}")]
@@ -130,29 +113,6 @@ namespace PRIO.Controllers
                 });
 
             var clusterInDatabase = await _context.Clusters.FirstOrDefaultAsync(x => x.Id == body.ClusterId);
-
-            var installationHistory = new InstallationHistory
-            {
-                Name = body.Name is not null ? body.Name : installation.Name,
-                NameOld = installation.Name,
-
-                CodInstallationUep = body.CodInstallationUep is not null ? installation.CodInstallationUep : installation.CodInstallationUep,
-                CodInstallationUepOld = installation.CodInstallationUep,
-
-                Description = body.Description is not null ? body.Description : installation.Description,
-                DescriptionOld = installation.Description,
-
-                Cluster = clusterInDatabase is not null ? clusterInDatabase : installation.Cluster,
-                ClusterOldId = installation.Cluster?.Id,
-
-                User = user,
-
-                Installation = installation,
-
-                TypeOperation = TypeOperation.Update
-            };
-
-            await _context.InstallationHistories.AddAsync(installationHistory);
 
             if (body.ClusterId is not null && clusterInDatabase is null)
                 return NotFound(new ErrorResponseDTO
@@ -183,32 +143,6 @@ namespace PRIO.Controllers
                     Message = "Installation not found or inactive already"
                 });
 
-            var installationHistory = new InstallationHistory
-            {
-                Name = installation.Name,
-                NameOld = installation.Name,
-
-                Cluster = installation.Cluster,
-                ClusterOldId = installation.Cluster?.Id,
-
-                CodInstallationUep = installation.CodInstallationUep,
-                CodInstallationUepOld = installation.CodInstallationUep,
-
-                Description = installation.Description,
-                DescriptionOld = installation.Description,
-
-                User = user,
-
-                IsActive = false,
-                IsActiveOld = installation.IsActive,
-
-                Installation = installation,
-
-                TypeOperation = TypeOperation.Delete
-            };
-
-            await _context.InstallationHistories.AddAsync(installationHistory);
-
             installation.IsActive = false;
             installation.DeletedAt = DateTime.UtcNow;
 
@@ -229,32 +163,6 @@ namespace PRIO.Controllers
                 {
                     Message = "Installation not found or active already"
                 });
-
-            var installationHistory = new InstallationHistory
-            {
-                Name = installation.Name,
-                NameOld = installation.Name,
-
-                Cluster = installation.Cluster,
-                ClusterOldId = installation.Cluster?.Id,
-
-                CodInstallationUep = installation.CodInstallationUep,
-                CodInstallationUepOld = installation.CodInstallationUep,
-
-                Description = installation.Description,
-                DescriptionOld = installation.Description,
-
-                User = user,
-
-                Installation = installation,
-
-                IsActive = true,
-                IsActiveOld = installation.IsActive,
-
-                TypeOperation = TypeOperation.Restore
-            };
-
-            await _context.InstallationHistories.AddAsync(installationHistory);
 
             installation.IsActive = true;
             installation.DeletedAt = null;

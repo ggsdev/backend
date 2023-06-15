@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
-using PRIO.DTOS;
+using PRIO.DTOS.GlobalDTOS;
 using PRIO.DTOS.UserDTOS;
 using PRIO.Services;
 using PRIO.ViewModels.Users;

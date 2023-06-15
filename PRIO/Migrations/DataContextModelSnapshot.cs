@@ -22,7 +22,7 @@ namespace PRIO.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("PRIO.Models.Clusters.Cluster", b =>
+            modelBuilder.Entity("PRIO.Models.HierarchyModels.Cluster", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -62,65 +62,7 @@ namespace PRIO.Migrations
                     b.ToTable("Clusters", (string)null);
                 });
 
-            modelBuilder.Entity("PRIO.Models.Clusters.ClusterHistory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ClusterId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CodCluster")
-                        .HasMaxLength(60)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CodClusterOld")
-                        .HasMaxLength(60)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("DescriptionOld")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool?>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("IsActiveOld")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("NameOld")
-                        .HasMaxLength(256)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("TypeOperation")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClusterId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ClusterHistories", (string)null);
-                });
-
-            modelBuilder.Entity("PRIO.Models.Completions.Completion", b =>
+            modelBuilder.Entity("PRIO.Models.HierarchyModels.Completion", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -147,9 +89,6 @@ namespace PRIO.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("VARCHAR");
 
-                    b.Property<Guid?>("ReservoirHistoryId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid?>("ReservoirId")
                         .HasColumnType("uniqueidentifier");
 
@@ -159,100 +98,21 @@ namespace PRIO.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("WellHistoryId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("WellId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ReservoirHistoryId");
-
                     b.HasIndex("ReservoirId");
 
                     b.HasIndex("UserId");
-
-                    b.HasIndex("WellHistoryId");
 
                     b.HasIndex("WellId");
 
                     b.ToTable("Completions", (string)null);
                 });
 
-            modelBuilder.Entity("PRIO.Models.Completions.CompletionHistory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CodCompletion")
-                        .HasMaxLength(256)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CodCompletionOld")
-                        .HasMaxLength(256)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<Guid>("CompletionId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("DescriptionOld")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool?>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("IsActiveOld")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("NameOld")
-                        .HasMaxLength(256)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<Guid?>("ReservoirId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ReservoirOld")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("TypeOperation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("WellId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("WellOld")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CompletionId");
-
-                    b.HasIndex("ReservoirId");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("WellId");
-
-                    b.ToTable("CompletionHistories", (string)null);
-                });
-
-            modelBuilder.Entity("PRIO.Models.Fields.Field", b =>
+            modelBuilder.Entity("PRIO.Models.HierarchyModels.Field", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -310,192 +170,7 @@ namespace PRIO.Migrations
                     b.ToTable("Fields", (string)null);
                 });
 
-            modelBuilder.Entity("PRIO.Models.Fields.FieldHistory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Basin")
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("BasinOld")
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CodField")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CodFieldOld")
-                        .HasMaxLength(10)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("DescriptionOld")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("FieldId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("InstallationId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("InstallationOld")
-                        .HasMaxLength(120)
-                        .HasColumnType("UniqueIdentifier");
-
-                    b.Property<bool?>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("IsActiveOld")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Location")
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("LocationOld")
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("NameOld")
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("State")
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("StateOld")
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("TypeOperation")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FieldId");
-
-                    b.HasIndex("InstallationId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("FieldHistories", (string)null);
-                });
-
-            modelBuilder.Entity("PRIO.Models.FileTypes.FileType", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Acronym")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("FileTypes", (string)null);
-                });
-
-            modelBuilder.Entity("PRIO.Models.Groups.Group", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Groups", (string)null);
-                });
-
-            modelBuilder.Entity("PRIO.Models.Groups.GroupPermissions", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("GroupId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("MenuId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GroupId");
-
-                    b.HasIndex("MenuId");
-
-                    b.ToTable("GroupPermissions");
-                });
-
-            modelBuilder.Entity("PRIO.Models.Installations.Installation", b =>
+            modelBuilder.Entity("PRIO.Models.HierarchyModels.Installation", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -544,44 +219,124 @@ namespace PRIO.Migrations
                     b.ToTable("Installations", (string)null);
                 });
 
-            modelBuilder.Entity("PRIO.Models.Installations.InstallationHistory", b =>
+            modelBuilder.Entity("PRIO.Models.HierarchyModels.MeasuringEquipment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ClusterId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("ChannelNumber")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar");
 
-                    b.Property<Guid?>("ClusterOldId")
-                        .HasMaxLength(256)
-                        .HasColumnType("UNIQUEIDENTIFIER");
+                    b.Property<string>("CommunicationProtocol")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar");
 
-                    b.Property<string>("CodInstallationUep")
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Fluid")
                         .IsRequired()
                         .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("varchar");
 
-                    b.Property<string>("CodInstallationUepOld")
+                    b.Property<bool?>("HasSeal")
+                        .IsRequired()
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("InOperation")
+                        .IsRequired()
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("InstallationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("MVS")
+                        .IsRequired()
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar");
+
+                    b.Property<string>("SerieNumber")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar");
+
+                    b.Property<string>("TagEquipment")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar");
+
+                    b.Property<string>("TagMeasuringPoint")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar");
+
+                    b.Property<string>("TypeEquipment")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar");
+
+                    b.Property<string>("TypePoint")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InstallationId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("MeasuringEquipments", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.Models.HierarchyModels.Reservoir", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CodReservoir")
                         .HasMaxLength(120)
                         .HasColumnType("VARCHAR");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("DescriptionOld")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("InstallationId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool?>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("IsActiveOld")
+                    b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
@@ -589,27 +344,195 @@ namespace PRIO.Migrations
                         .HasMaxLength(120)
                         .HasColumnType("VARCHAR");
 
-                    b.Property<string>("NameOld")
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ZoneId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ZoneId");
+
+                    b.ToTable("Reservoirs", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.Models.HierarchyModels.Well", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ArtificialLift")
+                        .HasMaxLength(150)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<decimal?>("BaseOfPerforated")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal");
+
+                    b.Property<string>("CategoryAnp")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("CategoryOperator")
+                        .HasMaxLength(150)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("CategoryReclassificationAnp")
+                        .HasMaxLength(150)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("CodWell")
+                        .HasMaxLength(150)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("CodWellAnp")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("CoordX")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("CoordY")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("DATETIME");
+
+                    b.Property<string>("DatumHorizontal")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("DATETIME");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("FieldId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Latitude4C")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("LatitudeDD")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("Longitude4C")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("LongitudeDD")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<bool?>("StatusOperator")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal?>("TopOfPerforated")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("TypeBaseCoordinate")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("DATETIME");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal?>("WaterDepth")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal");
+
+                    b.Property<string>("WellOperatorName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("VARCHAR");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FieldId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Wells", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.Models.HierarchyModels.Zone", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CodZone")
+                        .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("VARCHAR");
 
-                    b.Property<string>("TypeOperation")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("VARCHAR");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("FieldId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClusterId");
-
-                    b.HasIndex("InstallationId");
+                    b.HasIndex("FieldId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("InstallationHistories", (string)null);
+                    b.ToTable("Zones", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.Models.Measurements.Bsw", b =>
@@ -702,6 +625,42 @@ namespace PRIO.Migrations
                     b.HasIndex("MeasurementId");
 
                     b.ToTable("Calibrations_039", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.Models.Measurements.FileType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Acronym")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FileTypes", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.Models.Measurements.Measurement", b =>
@@ -2086,21 +2045,25 @@ namespace PRIO.Migrations
                     b.ToTable("Volumes_039", (string)null);
                 });
 
-            modelBuilder.Entity("PRIO.Models.MeasuringEquipments.MeasuringEquipment", b =>
+            modelBuilder.Entity("PRIO.Models.Operations.GlobalOperation", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ChannelNumber")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar");
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CommunicationProtocol")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("varchar");
+                    b.HasKey("Id");
+
+                    b.ToTable("GlobalOperations");
+                });
+
+            modelBuilder.Entity("PRIO.Models.UserControlAccessModels.Group", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -2109,82 +2072,75 @@ namespace PRIO.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Fluid")
-                        .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("varchar");
-
-                    b.Property<bool?>("HasSeal")
-                        .IsRequired()
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("InOperation")
-                        .IsRequired()
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("InstallationId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<bool?>("MVS")
-                        .IsRequired()
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Model")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("varchar");
-
-                    b.Property<string>("SerieNumber")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("varchar");
-
-                    b.Property<string>("TagEquipment")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("varchar");
-
-                    b.Property<string>("TagMeasuringPoint")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("varchar");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar");
-
-                    b.Property<string>("TypeEquipment")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("varchar");
-
-                    b.Property<string>("TypePoint")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("varchar");
+                    b.Property<string>("Name")
+                        .HasMaxLength(120)
+                        .HasColumnType("VARCHAR");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("UserId")
+                    b.HasKey("Id");
+
+                    b.ToTable("Groups", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.Models.UserControlAccessModels.GroupOperation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("GlobalOperationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("GroupPermissionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("InstallationId");
+                    b.HasIndex("GlobalOperationId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("GroupPermissionId");
 
-                    b.ToTable("MeasuringEquipments", (string)null);
+                    b.ToTable("GroupOperations");
                 });
 
-            modelBuilder.Entity("PRIO.Models.Menus.Menu", b =>
+            modelBuilder.Entity("PRIO.Models.UserControlAccessModels.GroupPermission", b =>
+                {
+                    b.Property<Guid?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("GroupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("MenuId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("MenuId");
+
+                    b.ToTable("GroupPermissions");
+                });
+
+            modelBuilder.Entity("PRIO.Models.UserControlAccessModels.Menu", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2230,21 +2186,87 @@ namespace PRIO.Migrations
                     b.ToTable("Menus", (string)null);
                 });
 
-            modelBuilder.Entity("PRIO.Models.Operations.GlobalOperation", b =>
+            modelBuilder.Entity("PRIO.Models.UserControlAccessModels.Session", b =>
+                {
+                    b.Property<Guid?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ExpiresIn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("NVARCHAR");
+
+                    b.Property<string>("UserHttpAgent")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Sessions", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.Models.UserControlAccessModels.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(90)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("VARCHAR");
 
                     b.HasKey("Id");
 
-                    b.ToTable("GlobalOperation");
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("PRIO.Models.Operations.GroupOperations", b =>
+            modelBuilder.Entity("PRIO.Models.UserControlAccessModels.UserOperation", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2253,24 +2275,24 @@ namespace PRIO.Migrations
                     b.Property<Guid?>("GlobalOperationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("GroupPermissionId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("UserPermissionId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("GlobalOperationId");
 
-                    b.HasIndex("GroupPermissionId");
+                    b.HasIndex("UserPermissionId");
 
-                    b.ToTable("GroupOperations");
+                    b.ToTable("UserOperations");
                 });
 
-            modelBuilder.Entity("PRIO.Models.Permissions.UserPermissions", b =>
+            modelBuilder.Entity("PRIO.Models.UserControlAccessModels.UserPermission", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -2320,770 +2342,9 @@ namespace PRIO.Migrations
                     b.ToTable("UserPermissions", (string)null);
                 });
 
-            modelBuilder.Entity("PRIO.Models.Reservoirs.Reservoir", b =>
+            modelBuilder.Entity("PRIO.Models.HierarchyModels.Cluster", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CodReservoir")
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ZoneId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("ZoneId");
-
-                    b.ToTable("Reservoirs", (string)null);
-                });
-
-            modelBuilder.Entity("PRIO.Models.Reservoirs.ReservoirHistory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CodReservoir")
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CodReservoirOld")
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("DescriptionOld")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool?>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("IsActiveOld")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("NameOld")
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<Guid>("ReservoirId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("TypeOperation")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ZoneId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ZoneOldId")
-                        .HasMaxLength(120)
-                        .HasColumnType("UNIQUEIDENTIFIER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReservoirId");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("ZoneId");
-
-                    b.ToTable("ReservoirHistories", (string)null);
-                });
-
-            modelBuilder.Entity("PRIO.Models.Users.Session", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("ExpiresIn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("NVARCHAR");
-
-                    b.Property<string>("UserHttpAgent")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("Sessions", (string)null);
-                });
-
-            modelBuilder.Entity("PRIO.Models.Users.User", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasMaxLength(90)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
-
-                    b.ToTable("Users", (string)null);
-                });
-
-            modelBuilder.Entity("PRIO.Models.Users.UserHistory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("DescriptionOld")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("EmailOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<bool?>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("IsActiveOld")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("NameOld")
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasMaxLength(90)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("PasswordOld")
-                        .HasMaxLength(90)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(90)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("TypeOld")
-                        .HasMaxLength(90)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("TypeOperation")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("UserOperationId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("UsernameOld")
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserHistories", (string)null);
-                });
-
-            modelBuilder.Entity("PRIO.Models.Users.UserOperations", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("GlobalOperationId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("UserPermissionId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GlobalOperationId");
-
-                    b.HasIndex("UserPermissionId");
-
-                    b.ToTable("UserOperations");
-                });
-
-            modelBuilder.Entity("PRIO.Models.Wells.Well", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ArtificialLift")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<decimal?>("BaseOfPerforated")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal");
-
-                    b.Property<string>("CategoryAnp")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CategoryOperator")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CategoryReclassificationAnp")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CodWell")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CodWellAnp")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CoordX")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CoordY")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("DATETIME");
-
-                    b.Property<string>("DatumHorizontal")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("DATETIME");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("FieldId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Latitude4C")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("LatitudeDD")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("Longitude4C")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("LongitudeDD")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<bool?>("StatusOperator")
-                        .HasColumnType("bit");
-
-                    b.Property<decimal?>("TopOfPerforated")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("TypeBaseCoordinate")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("DATETIME");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal?>("WaterDepth")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal");
-
-                    b.Property<string>("WellOperatorName")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FieldId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Wells", (string)null);
-                });
-
-            modelBuilder.Entity("PRIO.Models.Wells.WellHistory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ArtificialLift")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("ArtificialLiftOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<decimal?>("BaseOfPerforated")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal");
-
-                    b.Property<decimal?>("BaseOfPerforatedOld")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal");
-
-                    b.Property<string>("CategoryAnp")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CategoryAnpOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CategoryOperator")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CategoryOperatorOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CategoryReclassificationAnp")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CategoryReclassificationAnpOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CodWell")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CodWellAnp")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CodWellAnpOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CodWellOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CoordX")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CoordXOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CoordY")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CoordYOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("DATETIME");
-
-                    b.Property<string>("DatumHorizontal")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DatumHorizontalOld")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("DescriptionOld")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("FieldId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("FieldOld")
-                        .HasMaxLength(120)
-                        .HasColumnType("UniqueIdentifier");
-
-                    b.Property<bool?>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("IsActiveOld")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Latitude4C")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("Latitude4COld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("LatitudeDD")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("LatitudeDDOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("Longitude4C")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("Longitude4COld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("LongitudeDD")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("LongitudeDDOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("NameOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<bool?>("StatusOperator")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("StatusOperatorOld")
-                        .HasColumnType("bit");
-
-                    b.Property<decimal?>("TopOfPerforated")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal");
-
-                    b.Property<decimal?>("TopOfPerforatedOld")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("TypeBaseCoordinate")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("TypeBaseCoordinateOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("TypeOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("TypeOperation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal?>("WaterDepth")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal");
-
-                    b.Property<decimal?>("WaterDepthOld")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal");
-
-                    b.Property<Guid>("WellId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("WellOperatorName")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("WellOperatorNameOld")
-                        .HasMaxLength(150)
-                        .HasColumnType("VARCHAR");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FieldId");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("WellId");
-
-                    b.ToTable("WellHistories", (string)null);
-                });
-
-            modelBuilder.Entity("PRIO.Models.Zones.Zone", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CodZone")
-                        .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("FieldId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FieldId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Zones", (string)null);
-                });
-
-            modelBuilder.Entity("PRIO.Models.Zones.ZoneHistory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CodZone")
-                        .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CodZoneOld")
-                        .HasMaxLength(120)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("DescriptionOld")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("FieldId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("FieldOldId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool?>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("IsActiveOld")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("TypeOperation")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ZoneId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FieldId");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("ZoneId");
-
-                    b.ToTable("ZoneHistories", (string)null);
-                });
-
-            modelBuilder.Entity("PRIO.Models.Clusters.Cluster", b =>
-                {
-                    b.HasOne("PRIO.Models.Users.User", "User")
+                    b.HasOne("PRIO.Models.UserControlAccessModels.User", "User")
                         .WithMany("Clusters")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -3092,47 +2353,20 @@ namespace PRIO.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("PRIO.Models.Clusters.ClusterHistory", b =>
+            modelBuilder.Entity("PRIO.Models.HierarchyModels.Completion", b =>
                 {
-                    b.HasOne("PRIO.Models.Clusters.Cluster", "Cluster")
-                        .WithMany("ClusterHistories")
-                        .HasForeignKey("ClusterId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PRIO.Models.Users.User", "User")
-                        .WithMany("ClusterHistories")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Cluster");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("PRIO.Models.Completions.Completion", b =>
-                {
-                    b.HasOne("PRIO.Models.Reservoirs.ReservoirHistory", null)
-                        .WithMany("Completions")
-                        .HasForeignKey("ReservoirHistoryId");
-
-                    b.HasOne("PRIO.Models.Reservoirs.Reservoir", "Reservoir")
+                    b.HasOne("PRIO.Models.HierarchyModels.Reservoir", "Reservoir")
                         .WithMany("Completions")
                         .HasForeignKey("ReservoirId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("PRIO.Models.Users.User", "User")
+                    b.HasOne("PRIO.Models.UserControlAccessModels.User", "User")
                         .WithMany("Completions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("PRIO.Models.Wells.WellHistory", null)
-                        .WithMany("Completions")
-                        .HasForeignKey("WellHistoryId");
-
-                    b.HasOne("PRIO.Models.Wells.Well", "Well")
+                    b.HasOne("PRIO.Models.HierarchyModels.Well", "Well")
                         .WithMany("Completions")
                         .HasForeignKey("WellId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -3145,49 +2379,15 @@ namespace PRIO.Migrations
                     b.Navigation("Well");
                 });
 
-            modelBuilder.Entity("PRIO.Models.Completions.CompletionHistory", b =>
+            modelBuilder.Entity("PRIO.Models.HierarchyModels.Field", b =>
                 {
-                    b.HasOne("PRIO.Models.Completions.Completion", "Completion")
-                        .WithMany("CompletionHistories")
-                        .HasForeignKey("CompletionId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PRIO.Models.Reservoirs.Reservoir", "Reservoir")
-                        .WithMany("CompletionHistories")
-                        .HasForeignKey("ReservoirId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("PRIO.Models.Users.User", "User")
-                        .WithMany("CompletionHistories")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PRIO.Models.Wells.Well", "Well")
-                        .WithMany("CompletionHistories")
-                        .HasForeignKey("WellId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Completion");
-
-                    b.Navigation("Reservoir");
-
-                    b.Navigation("User");
-
-                    b.Navigation("Well");
-                });
-
-            modelBuilder.Entity("PRIO.Models.Fields.Field", b =>
-                {
-                    b.HasOne("PRIO.Models.Installations.Installation", "Installation")
+                    b.HasOne("PRIO.Models.HierarchyModels.Installation", "Installation")
                         .WithMany("Fields")
                         .HasForeignKey("InstallationId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("PRIO.Models.Users.User", "User")
+                    b.HasOne("PRIO.Models.UserControlAccessModels.User", "User")
                         .WithMany("Fields")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -3198,90 +2398,97 @@ namespace PRIO.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("PRIO.Models.Fields.FieldHistory", b =>
+            modelBuilder.Entity("PRIO.Models.HierarchyModels.Installation", b =>
                 {
-                    b.HasOne("PRIO.Models.Fields.Field", "Field")
-                        .WithMany("FieldHistories")
+                    b.HasOne("PRIO.Models.HierarchyModels.Cluster", "Cluster")
+                        .WithMany("Installations")
+                        .HasForeignKey("ClusterId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.Models.UserControlAccessModels.User", "User")
+                        .WithMany("Installations")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Cluster");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PRIO.Models.HierarchyModels.MeasuringEquipment", b =>
+                {
+                    b.HasOne("PRIO.Models.HierarchyModels.Installation", "Installation")
+                        .WithMany("MeasuringEquipments")
+                        .HasForeignKey("InstallationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.Models.UserControlAccessModels.User", "User")
+                        .WithMany("MeasuringEquipments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Installation");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PRIO.Models.HierarchyModels.Reservoir", b =>
+                {
+                    b.HasOne("PRIO.Models.UserControlAccessModels.User", "User")
+                        .WithMany("Reservoirs")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.Models.HierarchyModels.Zone", "Zone")
+                        .WithMany("Reservoirs")
+                        .HasForeignKey("ZoneId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
+
+                    b.Navigation("Zone");
+                });
+
+            modelBuilder.Entity("PRIO.Models.HierarchyModels.Well", b =>
+                {
+                    b.HasOne("PRIO.Models.HierarchyModels.Field", "Field")
+                        .WithMany("Wells")
                         .HasForeignKey("FieldId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("PRIO.Models.Installations.Installation", "Installation")
-                        .WithMany("FieldHistories")
-                        .HasForeignKey("InstallationId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PRIO.Models.Users.User", "User")
-                        .WithMany("FieldHistories")
+                    b.HasOne("PRIO.Models.UserControlAccessModels.User", "User")
+                        .WithMany("Wells")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Field");
 
-                    b.Navigation("Installation");
-
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("PRIO.Models.Groups.GroupPermissions", b =>
+            modelBuilder.Entity("PRIO.Models.HierarchyModels.Zone", b =>
                 {
-                    b.HasOne("PRIO.Models.Groups.Group", "Group")
-                        .WithMany("GroupPermissions")
-                        .HasForeignKey("GroupId");
-
-                    b.HasOne("PRIO.Models.Menus.Menu", "Menu")
-                        .WithMany("GroupPermissions")
-                        .HasForeignKey("MenuId");
-
-                    b.Navigation("Group");
-
-                    b.Navigation("Menu");
-                });
-
-            modelBuilder.Entity("PRIO.Models.Installations.Installation", b =>
-                {
-                    b.HasOne("PRIO.Models.Clusters.Cluster", "Cluster")
-                        .WithMany("Installations")
-                        .HasForeignKey("ClusterId")
+                    b.HasOne("PRIO.Models.HierarchyModels.Field", "Field")
+                        .WithMany("Zones")
+                        .HasForeignKey("FieldId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("PRIO.Models.Users.User", "User")
-                        .WithMany("Installations")
+                    b.HasOne("PRIO.Models.UserControlAccessModels.User", "User")
+                        .WithMany("Zones")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Cluster");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("PRIO.Models.Installations.InstallationHistory", b =>
-                {
-                    b.HasOne("PRIO.Models.Clusters.Cluster", "Cluster")
-                        .WithMany("InstallationHistories")
-                        .HasForeignKey("ClusterId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PRIO.Models.Installations.Installation", "Installation")
-                        .WithMany("InstallationHistories")
-                        .HasForeignKey("InstallationId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PRIO.Models.Users.User", "User")
-                        .WithMany("InstallationHistories")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Cluster");
-
-                    b.Navigation("Installation");
+                    b.Navigation("Field");
 
                     b.Navigation("User");
                 });
@@ -3310,18 +2517,18 @@ namespace PRIO.Migrations
 
             modelBuilder.Entity("PRIO.Models.Measurements.Measurement", b =>
                 {
-                    b.HasOne("PRIO.Models.FileTypes.FileType", "FileType")
+                    b.HasOne("PRIO.Models.Measurements.FileType", "FileType")
                         .WithMany("Measurements")
                         .HasForeignKey("FileTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PRIO.Models.MeasuringEquipments.MeasuringEquipment", "MeasuringEquipment")
+                    b.HasOne("PRIO.Models.HierarchyModels.MeasuringEquipment", "MeasuringEquipment")
                         .WithMany("Measurements")
                         .HasForeignKey("MeasuringEquipmentId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PRIO.Models.Users.User", "User")
+                    b.HasOne("PRIO.Models.UserControlAccessModels.User", "User")
                         .WithMany("Measurements")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -3345,41 +2552,13 @@ namespace PRIO.Migrations
                     b.Navigation("Measurement");
                 });
 
-            modelBuilder.Entity("PRIO.Models.MeasuringEquipments.MeasuringEquipment", b =>
-                {
-                    b.HasOne("PRIO.Models.Installations.Installation", "Installation")
-                        .WithMany("MeasuringEquipments")
-                        .HasForeignKey("InstallationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PRIO.Models.Users.User", "User")
-                        .WithMany("MeasuringEquipments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Installation");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("PRIO.Models.Menus.Menu", b =>
-                {
-                    b.HasOne("PRIO.Models.Menus.Menu", "Parent")
-                        .WithMany("Children")
-                        .HasForeignKey("ParentId");
-
-                    b.Navigation("Parent");
-                });
-
-            modelBuilder.Entity("PRIO.Models.Operations.GroupOperations", b =>
+            modelBuilder.Entity("PRIO.Models.UserControlAccessModels.GroupOperation", b =>
                 {
                     b.HasOne("PRIO.Models.Operations.GlobalOperation", "GlobalOperation")
                         .WithMany("GroupOperations")
                         .HasForeignKey("GlobalOperationId");
 
-                    b.HasOne("PRIO.Models.Groups.GroupPermissions", "GroupPermission")
+                    b.HasOne("PRIO.Models.UserControlAccessModels.GroupPermission", "GroupPermission")
                         .WithMany("Operations")
                         .HasForeignKey("GroupPermissionId");
 
@@ -3388,15 +2567,65 @@ namespace PRIO.Migrations
                     b.Navigation("GroupPermission");
                 });
 
-            modelBuilder.Entity("PRIO.Models.Permissions.UserPermissions", b =>
+            modelBuilder.Entity("PRIO.Models.UserControlAccessModels.GroupPermission", b =>
                 {
-                    b.HasOne("PRIO.Models.Groups.GroupPermissions", "GroupMenu")
+                    b.HasOne("PRIO.Models.UserControlAccessModels.Group", "Group")
+                        .WithMany("GroupPermissions")
+                        .HasForeignKey("GroupId");
+
+                    b.HasOne("PRIO.Models.UserControlAccessModels.Menu", "Menu")
+                        .WithMany("GroupPermissions")
+                        .HasForeignKey("MenuId");
+
+                    b.Navigation("Group");
+
+                    b.Navigation("Menu");
+                });
+
+            modelBuilder.Entity("PRIO.Models.UserControlAccessModels.Menu", b =>
+                {
+                    b.HasOne("PRIO.Models.UserControlAccessModels.Menu", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId");
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("PRIO.Models.UserControlAccessModels.Session", b =>
+                {
+                    b.HasOne("PRIO.Models.UserControlAccessModels.User", "User")
+                        .WithOne("Session")
+                        .HasForeignKey("PRIO.Models.UserControlAccessModels.Session", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PRIO.Models.UserControlAccessModels.UserOperation", b =>
+                {
+                    b.HasOne("PRIO.Models.Operations.GlobalOperation", "GlobalOperation")
+                        .WithMany("UserOperations")
+                        .HasForeignKey("GlobalOperationId");
+
+                    b.HasOne("PRIO.Models.UserControlAccessModels.UserPermission", "UserPermission")
+                        .WithMany("UserOperation")
+                        .HasForeignKey("UserPermissionId");
+
+                    b.Navigation("GlobalOperation");
+
+                    b.Navigation("UserPermission");
+                });
+
+            modelBuilder.Entity("PRIO.Models.UserControlAccessModels.UserPermission", b =>
+                {
+                    b.HasOne("PRIO.Models.UserControlAccessModels.GroupPermission", "GroupMenu")
                         .WithMany("Permissions")
                         .HasForeignKey("GroupMenuId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("PRIO.Models.Users.User", "User")
+                    b.HasOne("PRIO.Models.UserControlAccessModels.User", "User")
                         .WithMany("UserPermissions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -3407,234 +2636,48 @@ namespace PRIO.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("PRIO.Models.Reservoirs.Reservoir", b =>
+            modelBuilder.Entity("PRIO.Models.HierarchyModels.Cluster", b =>
                 {
-                    b.HasOne("PRIO.Models.Users.User", "User")
-                        .WithMany("Reservoirs")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PRIO.Models.Zones.Zone", "Zone")
-                        .WithMany("Reservoirs")
-                        .HasForeignKey("ZoneId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("User");
-
-                    b.Navigation("Zone");
-                });
-
-            modelBuilder.Entity("PRIO.Models.Reservoirs.ReservoirHistory", b =>
-                {
-                    b.HasOne("PRIO.Models.Reservoirs.Reservoir", "Reservoir")
-                        .WithMany("ReservoirHistories")
-                        .HasForeignKey("ReservoirId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PRIO.Models.Users.User", "User")
-                        .WithMany("ReservoirHistories")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PRIO.Models.Zones.Zone", "Zone")
-                        .WithMany("ReservoirHistories")
-                        .HasForeignKey("ZoneId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Reservoir");
-
-                    b.Navigation("User");
-
-                    b.Navigation("Zone");
-                });
-
-            modelBuilder.Entity("PRIO.Models.Users.Session", b =>
-                {
-                    b.HasOne("PRIO.Models.Users.User", "User")
-                        .WithOne("Session")
-                        .HasForeignKey("PRIO.Models.Users.Session", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("PRIO.Models.Users.UserHistory", b =>
-                {
-                    b.HasOne("PRIO.Models.Users.User", "User")
-                        .WithMany("UserHistories")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("PRIO.Models.Users.UserOperations", b =>
-                {
-                    b.HasOne("PRIO.Models.Operations.GlobalOperation", "GlobalOperation")
-                        .WithMany("UserOperations")
-                        .HasForeignKey("GlobalOperationId");
-
-                    b.HasOne("PRIO.Models.Permissions.UserPermissions", "UserPermission")
-                        .WithMany("UserOperation")
-                        .HasForeignKey("UserPermissionId");
-
-                    b.Navigation("GlobalOperation");
-
-                    b.Navigation("UserPermission");
-                });
-
-            modelBuilder.Entity("PRIO.Models.Wells.Well", b =>
-                {
-                    b.HasOne("PRIO.Models.Fields.Field", "Field")
-                        .WithMany("Wells")
-                        .HasForeignKey("FieldId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PRIO.Models.Users.User", "User")
-                        .WithMany("Wells")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Field");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("PRIO.Models.Wells.WellHistory", b =>
-                {
-                    b.HasOne("PRIO.Models.Fields.Field", "Field")
-                        .WithMany("WellHistories")
-                        .HasForeignKey("FieldId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PRIO.Models.Users.User", "User")
-                        .WithMany("WellHistories")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PRIO.Models.Wells.Well", "Well")
-                        .WithMany("WellHistories")
-                        .HasForeignKey("WellId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Field");
-
-                    b.Navigation("User");
-
-                    b.Navigation("Well");
-                });
-
-            modelBuilder.Entity("PRIO.Models.Zones.Zone", b =>
-                {
-                    b.HasOne("PRIO.Models.Fields.Field", "Field")
-                        .WithMany("Zones")
-                        .HasForeignKey("FieldId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PRIO.Models.Users.User", "User")
-                        .WithMany("Zones")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Field");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("PRIO.Models.Zones.ZoneHistory", b =>
-                {
-                    b.HasOne("PRIO.Models.Fields.Field", "Field")
-                        .WithMany("ZoneHistories")
-                        .HasForeignKey("FieldId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PRIO.Models.Users.User", "User")
-                        .WithMany("ZoneHistories")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PRIO.Models.Zones.Zone", "Zone")
-                        .WithMany("ZoneHistories")
-                        .HasForeignKey("ZoneId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Field");
-
-                    b.Navigation("User");
-
-                    b.Navigation("Zone");
-                });
-
-            modelBuilder.Entity("PRIO.Models.Clusters.Cluster", b =>
-                {
-                    b.Navigation("ClusterHistories");
-
-                    b.Navigation("InstallationHistories");
-
                     b.Navigation("Installations");
                 });
 
-            modelBuilder.Entity("PRIO.Models.Completions.Completion", b =>
+            modelBuilder.Entity("PRIO.Models.HierarchyModels.Field", b =>
                 {
-                    b.Navigation("CompletionHistories");
-                });
-
-            modelBuilder.Entity("PRIO.Models.Fields.Field", b =>
-                {
-                    b.Navigation("FieldHistories");
-
-                    b.Navigation("WellHistories");
-
                     b.Navigation("Wells");
-
-                    b.Navigation("ZoneHistories");
 
                     b.Navigation("Zones");
                 });
 
-            modelBuilder.Entity("PRIO.Models.FileTypes.FileType", b =>
+            modelBuilder.Entity("PRIO.Models.HierarchyModels.Installation", b =>
+                {
+                    b.Navigation("Fields");
+
+                    b.Navigation("MeasuringEquipments");
+                });
+
+            modelBuilder.Entity("PRIO.Models.HierarchyModels.MeasuringEquipment", b =>
                 {
                     b.Navigation("Measurements");
                 });
 
-            modelBuilder.Entity("PRIO.Models.Groups.Group", b =>
+            modelBuilder.Entity("PRIO.Models.HierarchyModels.Reservoir", b =>
                 {
-                    b.Navigation("GroupPermissions");
+                    b.Navigation("Completions");
                 });
 
-            modelBuilder.Entity("PRIO.Models.Groups.GroupPermissions", b =>
+            modelBuilder.Entity("PRIO.Models.HierarchyModels.Well", b =>
                 {
-                    b.Navigation("Operations");
-
-                    b.Navigation("Permissions");
+                    b.Navigation("Completions");
                 });
 
-            modelBuilder.Entity("PRIO.Models.Installations.Installation", b =>
+            modelBuilder.Entity("PRIO.Models.HierarchyModels.Zone", b =>
                 {
-                    b.Navigation("FieldHistories");
+                    b.Navigation("Reservoirs");
+                });
 
-                    b.Navigation("Fields");
-
-                    b.Navigation("InstallationHistories");
-
-                    b.Navigation("MeasuringEquipments");
+            modelBuilder.Entity("PRIO.Models.Measurements.FileType", b =>
+                {
+                    b.Navigation("Measurements");
                 });
 
             modelBuilder.Entity("PRIO.Models.Measurements.Measurement", b =>
@@ -3646,18 +2689,6 @@ namespace PRIO.Migrations
                     b.Navigation("LISTA_VOLUME");
                 });
 
-            modelBuilder.Entity("PRIO.Models.MeasuringEquipments.MeasuringEquipment", b =>
-                {
-                    b.Navigation("Measurements");
-                });
-
-            modelBuilder.Entity("PRIO.Models.Menus.Menu", b =>
-                {
-                    b.Navigation("Children");
-
-                    b.Navigation("GroupPermissions");
-                });
-
             modelBuilder.Entity("PRIO.Models.Operations.GlobalOperation", b =>
                 {
                     b.Navigation("GroupOperations");
@@ -3665,40 +2696,32 @@ namespace PRIO.Migrations
                     b.Navigation("UserOperations");
                 });
 
-            modelBuilder.Entity("PRIO.Models.Permissions.UserPermissions", b =>
+            modelBuilder.Entity("PRIO.Models.UserControlAccessModels.Group", b =>
                 {
-                    b.Navigation("UserOperation");
+                    b.Navigation("GroupPermissions");
                 });
 
-            modelBuilder.Entity("PRIO.Models.Reservoirs.Reservoir", b =>
+            modelBuilder.Entity("PRIO.Models.UserControlAccessModels.GroupPermission", b =>
                 {
-                    b.Navigation("CompletionHistories");
+                    b.Navigation("Operations");
 
-                    b.Navigation("Completions");
-
-                    b.Navigation("ReservoirHistories");
+                    b.Navigation("Permissions");
                 });
 
-            modelBuilder.Entity("PRIO.Models.Reservoirs.ReservoirHistory", b =>
+            modelBuilder.Entity("PRIO.Models.UserControlAccessModels.Menu", b =>
                 {
-                    b.Navigation("Completions");
+                    b.Navigation("Children");
+
+                    b.Navigation("GroupPermissions");
                 });
 
-            modelBuilder.Entity("PRIO.Models.Users.User", b =>
+            modelBuilder.Entity("PRIO.Models.UserControlAccessModels.User", b =>
                 {
-                    b.Navigation("ClusterHistories");
-
                     b.Navigation("Clusters");
 
-                    b.Navigation("CompletionHistories");
-
                     b.Navigation("Completions");
 
-                    b.Navigation("FieldHistories");
-
                     b.Navigation("Fields");
-
-                    b.Navigation("InstallationHistories");
 
                     b.Navigation("Installations");
 
@@ -3706,46 +2729,20 @@ namespace PRIO.Migrations
 
                     b.Navigation("MeasuringEquipments");
 
-                    b.Navigation("ReservoirHistories");
-
                     b.Navigation("Reservoirs");
 
                     b.Navigation("Session");
 
-                    b.Navigation("UserHistories");
-
                     b.Navigation("UserPermissions");
 
-                    b.Navigation("WellHistories");
-
                     b.Navigation("Wells");
-
-                    b.Navigation("ZoneHistories");
 
                     b.Navigation("Zones");
                 });
 
-            modelBuilder.Entity("PRIO.Models.Wells.Well", b =>
+            modelBuilder.Entity("PRIO.Models.UserControlAccessModels.UserPermission", b =>
                 {
-                    b.Navigation("CompletionHistories");
-
-                    b.Navigation("Completions");
-
-                    b.Navigation("WellHistories");
-                });
-
-            modelBuilder.Entity("PRIO.Models.Wells.WellHistory", b =>
-                {
-                    b.Navigation("Completions");
-                });
-
-            modelBuilder.Entity("PRIO.Models.Zones.Zone", b =>
-                {
-                    b.Navigation("ReservoirHistories");
-
-                    b.Navigation("Reservoirs");
-
-                    b.Navigation("ZoneHistories");
+                    b.Navigation("UserOperation");
                 });
 #pragma warning restore 612, 618
         }

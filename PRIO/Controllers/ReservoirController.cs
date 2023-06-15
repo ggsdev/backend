@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
-using PRIO.DTOS;
-using PRIO.DTOS.ReservoirDTOS;
+using PRIO.DTOS.GlobalDTOS;
+using PRIO.DTOS.HierarchyDTOS.ReservoirDTOS;
 using PRIO.Filters;
-using PRIO.Models.Reservoirs;
-using PRIO.Models.Users;
+using PRIO.Models.HierarchyModels;
+using PRIO.Models.UserControlAccessModels;
 using PRIO.Utils;
 using PRIO.ViewModels.Reservoirs;
 
@@ -45,8 +45,7 @@ namespace PRIO.Controllers
             {
                 Name = body.Name,
                 Description = body.Description,
-                CodReservoir = body.CodReservoir,
-
+                CodReservoir = body.CodReservoir is not null ? body.CodReservoir : GenerateCode.Generate(body.Name),
                 Zone = zoneInDatabase,
                 User = user,
                 IsActive = body.IsActive is not null ? body.IsActive.Value : true,
@@ -54,20 +53,6 @@ namespace PRIO.Controllers
 
             await _context.Reservoirs.AddAsync(reservoir);
 
-            var reservoirHistory = new ReservoirHistory
-            {
-                CodReservoir = reservoir.CodReservoir,
-                Name = reservoir.Name,
-                Description = reservoir.Description,
-
-                User = user,
-                Reservoir = reservoir,
-
-                Zone = zoneInDatabase,
-
-                TypeOperation = TypeOperation.Create,
-            };
-            await _context.ReservoirHistories.AddAsync(reservoirHistory);
             await _context.SaveChangesAsync();
 
             var reservoirDTO = _mapper.Map<Reservoir, ReservoirDTO>(reservoir);
@@ -97,26 +82,26 @@ namespace PRIO.Controllers
             return Ok(reservoirDTO);
         }
 
-        [HttpGet("{id:Guid}/history")]
-        public async Task<IActionResult> GetBHistory([FromRoute] Guid id)
-        {
-            var reservoirHistories = await _context.ReservoirHistories
-                .Include(x => x.User)
-                .Include(x => x.Zone)
-                .Include(x => x.Reservoir)
-                .Where(x => x.Reservoir.Id == id)
-                .OrderByDescending(x => x.CreatedAt)
-                .ToListAsync();
+        //[HttpGet("{id:Guid}/history")]
+        //public async Task<IActionResult> GetBHistory([FromRoute] Guid id)
+        //{
+        //    var reservoirHistories = await _context.ReservoirHistories
+        //        .Include(x => x.User)
+        //        .Include(x => x.Zone)
+        //        .Include(x => x.Reservoir)
+        //        .Where(x => x.Reservoir.Id == id)
+        //        .OrderByDescending(x => x.CreatedAt)
+        //        .ToListAsync();
 
-            if (reservoirHistories is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = "Reservoir not found"
-                });
+        //    if (reservoirHistories is null)
+        //        return NotFound(new ErrorResponseDTO
+        //        {
+        //            Message = "Reservoir not found"
+        //        });
 
-            var reservoirHistoriesDTO = _mapper.Map<List<ReservoirHistory>, List<ReservoirHistoryDTO>>(reservoirHistories);
-            return Ok(reservoirHistoriesDTO);
-        }
+        //    var reservoirHistoriesDTO = _mapper.Map<List<ReservoirHistory>, List<ReservoirHistoryDTO>>(reservoirHistories);
+        //    return Ok(reservoirHistoriesDTO);
+        //}
 
         [HttpPatch("{id:Guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateReservoirViewModel body)
@@ -131,29 +116,6 @@ namespace PRIO.Controllers
                 });
 
             var zoneInDatabase = await _context.Zones.FirstOrDefaultAsync(x => x.Id == body.ZoneId);
-
-            var reservoirHistory = new ReservoirHistory
-            {
-                Name = reservoir.Name,
-                NameOld = reservoir.Name,
-
-                CodReservoir = body.CodReservoir is not null ? body.CodReservoir : reservoir.CodReservoir,
-                CodReservoirOld = reservoir.CodReservoir,
-
-                Description = body.Description is not null ? body.Description : reservoir.Description,
-                DescriptionOld = reservoir.Description,
-
-                Zone = zoneInDatabase is not null ? zoneInDatabase : reservoir.Zone,
-                ZoneOldId = reservoir.Zone?.Id,
-
-                User = user,
-
-                Reservoir = reservoir,
-
-                TypeOperation = TypeOperation.Update
-            };
-
-            await _context.ReservoirHistories.AddAsync(reservoirHistory);
 
             if (body.ZoneId is not null && zoneInDatabase is null)
                 return NotFound(new ErrorResponseDTO
@@ -185,32 +147,6 @@ namespace PRIO.Controllers
 
             var user = HttpContext.Items["User"] as User;
 
-            var reservoirHistory = new ReservoirHistory
-            {
-                Name = reservoir.Name,
-                NameOld = reservoir.Name,
-
-                CodReservoir = reservoir.Name,
-                CodReservoirOld = reservoir.Name,
-
-                Description = reservoir.Description,
-                DescriptionOld = reservoir.Description,
-
-                IsActive = false,
-                IsActiveOld = reservoir.IsActive,
-
-                Zone = reservoir.Zone,
-                ZoneOldId = reservoir.Zone?.Id,
-
-                User = user,
-
-                Reservoir = reservoir,
-
-                TypeOperation = TypeOperation.Delete
-            };
-
-            await _context.ReservoirHistories.AddAsync(reservoirHistory);
-
             reservoir.IsActive = false;
             reservoir.DeletedAt = DateTime.UtcNow;
 
@@ -231,31 +167,6 @@ namespace PRIO.Controllers
                 });
 
             var user = HttpContext.Items["User"] as User;
-
-            var reservoirHistory = new ReservoirHistory
-            {
-                Name = reservoir.Name,
-                NameOld = reservoir.Name,
-
-                CodReservoir = reservoir.Name,
-                CodReservoirOld = reservoir.Name,
-
-                Description = reservoir.Description,
-                DescriptionOld = reservoir.Description,
-
-                IsActive = true,
-                IsActiveOld = reservoir.IsActive,
-
-                Zone = reservoir.Zone,
-                ZoneOldId = reservoir.Zone?.Id,
-
-                User = user,
-
-                Reservoir = reservoir,
-                TypeOperation = TypeOperation.Restore
-            };
-
-            await _context.ReservoirHistories.AddAsync(reservoirHistory);
 
             reservoir.IsActive = true;
             reservoir.DeletedAt = null;
