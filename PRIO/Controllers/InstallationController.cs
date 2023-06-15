@@ -5,8 +5,10 @@ using PRIO.Data;
 using PRIO.DTOS.GlobalDTOS;
 using PRIO.DTOS.HierarchyDTOS.InstallationDTOS;
 using PRIO.Filters;
+using PRIO.Models;
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
+using PRIO.Utils;
 using PRIO.ViewModels.Installations;
 
 namespace PRIO.Controllers
@@ -33,8 +35,11 @@ namespace PRIO.Controllers
                     Message = $"Cluster not found"
                 });
 
+            var installationId = Guid.NewGuid();
+
             var installation = new Installation
             {
+                Id = installationId,
                 Name = body.Name,
                 Description = body.Description,
                 CodInstallationUep = body.CodInstallationUep,
@@ -44,6 +49,16 @@ namespace PRIO.Controllers
             };
 
             await _context.Installations.AddAsync(installation);
+
+            var history = new SystemHistory
+            {
+                Table = HistoryColumns.TableCluster,
+                CreatedBy = user?.Id,
+                TableItemId = installationId,
+                UpdatedData = installation,
+            };
+
+            await _context.SystemHistories.AddAsync(history);
 
             await _context.SaveChangesAsync();
 
@@ -99,7 +114,6 @@ namespace PRIO.Controllers
         //    return Ok(installationHistoriesDTO);
         //}
 
-
         [HttpPatch("{id:Guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateInstallationViewModel body)
         {
@@ -114,16 +128,20 @@ namespace PRIO.Controllers
 
             var clusterInDatabase = await _context.Clusters.FirstOrDefaultAsync(x => x.Id == body.ClusterId);
 
-            if (body.ClusterId is not null && clusterInDatabase is null)
+            var beforeInstallation = _mapper.Map<Installation>(installation);
+            var updatedProperties = ControllerUtils.CompareAndUpdateInstallation(installation, body);
+            if (body.ClusterId is not null && clusterInDatabase is null && body.ClusterId != clusterInDatabase?.Id)
+            {
+
+                installation.Cluster = clusterInDatabase;
+                updatedProperties[nameof(Installation.Cluster)] = clusterInDatabase;
+
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Cluster not found"
                 });
+            }
 
-            installation.CodInstallationUep = body.CodInstallationUep is not null ? body.CodInstallationUep : installation.CodInstallationUep;
-            installation.Name = body.Name is not null ? body.Name : installation.Name;
-            installation.Description = body.Description is not null ? body.Description : installation.Description;
-            installation.Cluster = clusterInDatabase is not null ? clusterInDatabase : installation.Cluster;
 
             _context.Installations.Update(installation);
             await _context.SaveChangesAsync();

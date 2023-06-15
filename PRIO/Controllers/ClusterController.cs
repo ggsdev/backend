@@ -39,7 +39,9 @@ namespace PRIO.Controllers
                 {
                     Message = $"Cluster with code: {body.CodCluster} already exists."
                 });
+
             var clusterId = Guid.NewGuid();
+
             var cluster = new Cluster
             {
                 Id = clusterId,
@@ -103,7 +105,7 @@ namespace PRIO.Controllers
                 });
 
             var beforeCluster = _mapper.Map<Cluster>(cluster);
-            var updatedProperties = ControllerUtils.CompareAndUpdateProperties(cluster, body);
+            var updatedProperties = ControllerUtils.CompareAndUpdateCluster(cluster, body);
 
             if (!updatedProperties.Any())
                 return BadRequest(new ErrorResponseDTO
