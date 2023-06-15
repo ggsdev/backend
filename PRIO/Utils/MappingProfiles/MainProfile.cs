@@ -83,7 +83,7 @@ namespace PRIO.Utils.MappingProfiles
             CreateMap<Completion, CompletionDTO>();
 
             CreateMap<User, UserDTO>();
-
+            CreateMap<Cluster, Cluster>();
             CreateMap<MeasuringEquipment, MeasuringEquipmentDTO>();
         }
 
