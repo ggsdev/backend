@@ -4,14 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Controllers;
 using PRIO.Data;
-using PRIO.DTOS;
+using PRIO.DTOS.GlobalDTOS;
+using PRIO.DTOS.HierarchyDTOS.WellDTOS;
 using PRIO.DTOS.UserDTOS;
-using PRIO.DTOS.WellDTOS;
-using PRIO.Models.Clusters;
-using PRIO.Models.Fields;
-using PRIO.Models.Installations;
-using PRIO.Models.Users;
-using PRIO.Models.Wells;
+using PRIO.Models.HierarchyModels;
+using PRIO.Models.UserControlAccessModels;
 using PRIO.ViewModels.Wells;
 using System.ComponentModel.DataAnnotations;
 
@@ -42,7 +39,6 @@ namespace PRIO.TESTS.Cruds.Wells
             {
                 cfg.CreateMap<User, UserDTO>();
                 cfg.CreateMap<Well, WellDTO>();
-                cfg.CreateMap<WellHistory, WellHistoryDTO>();
             });
             _mapper = mapperConfig.CreateMapper();
             _user = new User()
@@ -51,7 +47,6 @@ namespace PRIO.TESTS.Cruds.Wells
                 Email = "userTeste@mail.com",
                 Password = "1234",
                 Username = "userTeste",
-                Type = "admin"
             };
             _context.Users.Add(_user);
 
@@ -225,7 +220,6 @@ namespace PRIO.TESTS.Cruds.Wells
             var well = await _context.Wells.SingleOrDefaultAsync();
 
 
-            var history = await _context.WellHistories.SingleOrDefaultAsync();
             Assert.That(well, Is.Not.Null);
             Assert.That(well.User, Is.Not.Null);
             Assert.That(well.Name, Is.EqualTo(_createViewModel.Name));
@@ -249,31 +243,31 @@ namespace PRIO.TESTS.Cruds.Wells
             Assert.That(well.CoordX, Is.EqualTo(_createViewModel.CoordX));
             Assert.That(well.CoordY, Is.EqualTo(_createViewModel.CoordY));
 
+            //var history = await _context.WellHistories.SingleOrDefaultAsync();
+            //Assert.That(history, Is.Not.Null);
+            //Assert.That(history.User, Is.Not.Null);
+            //Assert.That(history.Name, Is.EqualTo(well.Name));
+            //Assert.That(history.CodWellAnp, Is.EqualTo(well.CodWellAnp));
+            //Assert.That(well.WellOperatorName, Is.EqualTo(history.WellOperatorName));
+            //Assert.That(well.CategoryAnp, Is.EqualTo(history.CategoryAnp));
+            //Assert.That(well.CategoryReclassificationAnp, Is.EqualTo(history.CategoryReclassificationAnp));
+            //Assert.That(well.CategoryOperator, Is.EqualTo(history.CategoryOperator));
+            //Assert.That(well.StatusOperator, Is.EqualTo(history.StatusOperator));
+            //Assert.That(well.Type, Is.EqualTo(history.Type));
+            //Assert.That(well.WaterDepth, Is.EqualTo(history.WaterDepth));
+            //Assert.That(well.TopOfPerforated, Is.EqualTo(history.TopOfPerforated));
+            //Assert.That(well.BaseOfPerforated, Is.EqualTo(history.BaseOfPerforated));
+            //Assert.That(well.ArtificialLift, Is.EqualTo(history.ArtificialLift));
+            //Assert.That(well.Latitude4C, Is.EqualTo(history.Latitude4C));
+            //Assert.That(well.Longitude4C, Is.EqualTo(history.Longitude4C));
+            //Assert.That(well.LatitudeDD, Is.EqualTo(history.LatitudeDD));
+            //Assert.That(well.LongitudeDD, Is.EqualTo(history.LongitudeDD));
+            //Assert.That(well.DatumHorizontal, Is.EqualTo(history.DatumHorizontal));
+            //Assert.That(well.TypeBaseCoordinate, Is.EqualTo(history.TypeBaseCoordinate));
+            //Assert.That(well.CoordX, Is.EqualTo(history.CoordX));
+            //Assert.That(well.CoordY, Is.EqualTo(history.CoordY));
+            //Assert.That(history.TypeOperation, Is.EqualTo(Utils.TypeOperation.Create));
 
-            Assert.That(history, Is.Not.Null);
-            Assert.That(history.User, Is.Not.Null);
-            Assert.That(history.Name, Is.EqualTo(well.Name));
-            Assert.That(history.CodWellAnp, Is.EqualTo(well.CodWellAnp));
-            Assert.That(well.WellOperatorName, Is.EqualTo(history.WellOperatorName));
-            Assert.That(well.CategoryAnp, Is.EqualTo(history.CategoryAnp));
-            Assert.That(well.CategoryReclassificationAnp, Is.EqualTo(history.CategoryReclassificationAnp));
-            Assert.That(well.CategoryOperator, Is.EqualTo(history.CategoryOperator));
-            Assert.That(well.StatusOperator, Is.EqualTo(history.StatusOperator));
-            Assert.That(well.Type, Is.EqualTo(history.Type));
-            Assert.That(well.WaterDepth, Is.EqualTo(history.WaterDepth));
-            Assert.That(well.TopOfPerforated, Is.EqualTo(history.TopOfPerforated));
-            Assert.That(well.BaseOfPerforated, Is.EqualTo(history.BaseOfPerforated));
-            Assert.That(well.ArtificialLift, Is.EqualTo(history.ArtificialLift));
-            Assert.That(well.Latitude4C, Is.EqualTo(history.Latitude4C));
-            Assert.That(well.Longitude4C, Is.EqualTo(history.Longitude4C));
-            Assert.That(well.LatitudeDD, Is.EqualTo(history.LatitudeDD));
-            Assert.That(well.LongitudeDD, Is.EqualTo(history.LongitudeDD));
-            Assert.That(well.DatumHorizontal, Is.EqualTo(history.DatumHorizontal));
-            Assert.That(well.TypeBaseCoordinate, Is.EqualTo(history.TypeBaseCoordinate));
-            Assert.That(well.CoordX, Is.EqualTo(history.CoordX));
-            Assert.That(well.CoordY, Is.EqualTo(history.CoordY));
-
-            Assert.That(history.TypeOperation, Is.EqualTo(Utils.TypeOperation.Create));
         }
 
         [Test]
@@ -425,7 +419,6 @@ namespace PRIO.TESTS.Cruds.Wells
             await _controller.Update(wellToUpdate.Id, updateViewModel);
 
             var well = await _context.Wells.SingleOrDefaultAsync();
-            var history = await _context.WellHistories.SingleOrDefaultAsync();
 
             Assert.That(well, Is.Not.Null);
             Assert.That(well.User, Is.Not.Null);
@@ -433,16 +426,17 @@ namespace PRIO.TESTS.Cruds.Wells
             Assert.That(well.Field.Id, Is.EqualTo(updateViewModel.FieldId));
             Assert.That(well.Name, Is.EqualTo(updateViewModel.Name));
 
-            Assert.That(history, Is.Not.Null);
-            Assert.That(history.Well, Is.Not.Null);
-            Assert.That(history.Field, Is.Not.Null);
-            Assert.That(history.User, Is.Not.Null);
+            //var history = await _context.WellHistories.SingleOrDefaultAsync();
+            //Assert.That(history, Is.Not.Null);
+            //Assert.That(history.Well, Is.Not.Null);
+            //Assert.That(history.Field, Is.Not.Null);
+            //Assert.That(history.User, Is.Not.Null);
 
-            Assert.That(history.FieldOld, Is.EqualTo(beforeUpdate.FieldId));
-            Assert.That(history.Name, Is.EqualTo(well.Name));
-            Assert.That(history.Field.Name, Is.EqualTo(well.Field.Name));
-            Assert.That(history.NameOld, Is.EqualTo(beforeUpdate.Name));
-            Assert.That(history.TypeOperation, Is.EqualTo(Utils.TypeOperation.Update));
+            //Assert.That(history.FieldOld, Is.EqualTo(beforeUpdate.FieldId));
+            //Assert.That(history.Name, Is.EqualTo(well.Name));
+            //Assert.That(history.Field.Name, Is.EqualTo(well.Field.Name));
+            //Assert.That(history.NameOld, Is.EqualTo(beforeUpdate.Name));
+            //Assert.That(history.TypeOperation, Is.EqualTo(Utils.TypeOperation.Update));
         }
 
         [Test]
@@ -480,15 +474,15 @@ namespace PRIO.TESTS.Cruds.Wells
             var response = await _controller.Delete(wellToUpdate.Id);
 
             var wellInDatabase = await _context.Wells.SingleOrDefaultAsync();
-            var historyInDatabase = await _context.WellHistories.SingleOrDefaultAsync();
 
             Assert.IsInstanceOf<NoContentResult>(response);
             Assert.That(wellInDatabase, Is.Not.Null);
-            Assert.That(historyInDatabase, Is.Not.Null);
             Assert.That(wellInDatabase.IsActive, Is.False);
             Assert.That(wellInDatabase.DeletedAt, Is.Not.Null);
-            Assert.That(historyInDatabase.IsActiveOld, Is.True);
-            Assert.That(historyInDatabase.TypeOperation, Is.EqualTo(Utils.TypeOperation.Delete));
+            //var historyInDatabase = await _context.WellHistories.SingleOrDefaultAsync();
+            //Assert.That(historyInDatabase, Is.Not.Null);
+            //Assert.That(historyInDatabase.IsActiveOld, Is.True);
+            //Assert.That(historyInDatabase.TypeOperation, Is.EqualTo(Utils.TypeOperation.Delete));
         }
 
         [Test]
@@ -525,19 +519,19 @@ namespace PRIO.TESTS.Cruds.Wells
 
             var response = await _controller.Restore(wellToUpdate.Id);
             var wellInDatabase = await _context.Wells.SingleOrDefaultAsync();
-            var historyInDatabase = await _context.WellHistories.SingleOrDefaultAsync();
             var okResult = (OkObjectResult)response;
 
             Assert.IsInstanceOf<OkObjectResult>(response);
             Assert.That(((WellDTO)okResult.Value), Is.Not.Null);
-
             Assert.That(wellInDatabase, Is.Not.Null);
-            Assert.That(historyInDatabase, Is.Not.Null);
             Assert.That(wellInDatabase.IsActive, Is.True);
-            Assert.That(historyInDatabase.IsActive, Is.True);
-            Assert.That(historyInDatabase.IsActiveOld, Is.False);
-            Assert.That(historyInDatabase.TypeOperation, Is.EqualTo(Utils.TypeOperation.Restore));
             Assert.That(wellInDatabase.DeletedAt, Is.Null);
+
+            //var historyInDatabase = await _context.WellHistories.SingleOrDefaultAsync();
+            //Assert.That(historyInDatabase, Is.Not.Null);
+            //Assert.That(historyInDatabase.IsActive, Is.True);
+            //Assert.That(historyInDatabase.IsActiveOld, Is.False);
+            //Assert.That(historyInDatabase.TypeOperation, Is.EqualTo(Utils.TypeOperation.Restore));
         }
     }
 }

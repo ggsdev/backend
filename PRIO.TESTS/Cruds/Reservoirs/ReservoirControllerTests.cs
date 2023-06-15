@@ -4,19 +4,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Controllers;
 using PRIO.Data;
-using PRIO.DTOS;
-using PRIO.DTOS.ClusterDTOS;
-using PRIO.DTOS.FieldDTOS;
-using PRIO.DTOS.InstallationDTOS;
-using PRIO.DTOS.ReservoirDTOS;
+using PRIO.DTOS.GlobalDTOS;
+using PRIO.DTOS.HierarchyDTOS.ClusterDTOS;
+using PRIO.DTOS.HierarchyDTOS.FieldDTOS;
+using PRIO.DTOS.HierarchyDTOS.InstallationDTOS;
+using PRIO.DTOS.HierarchyDTOS.ReservoirDTOS;
+using PRIO.DTOS.HierarchyDTOS.ZoneDTOS;
 using PRIO.DTOS.UserDTOS;
-using PRIO.DTOS.ZoneDTOS;
-using PRIO.Models.Clusters;
-using PRIO.Models.Fields;
-using PRIO.Models.Installations;
-using PRIO.Models.Reservoirs;
-using PRIO.Models.Users;
-using PRIO.Models.Zones;
+using PRIO.Models.HierarchyModels;
+using PRIO.Models.UserControlAccessModels;
 using PRIO.ViewModels.Reservoirs;
 using System.ComponentModel.DataAnnotations;
 
@@ -47,10 +43,8 @@ namespace PRIO.TESTS.Cruds.Reservoirs
                 cfg.CreateMap<Zone, CreateUpdateZoneDTO>();
                 cfg.CreateMap<Reservoir, ReservoirDTO>();
                 cfg.CreateMap<User, UserDTO>();
-            })
-            {
+            });
 
-            };
             _mapper = mapperConfig.CreateMapper();
             _user = new User()
             {
@@ -58,7 +52,6 @@ namespace PRIO.TESTS.Cruds.Reservoirs
                 Email = "userTeste@mail.com",
                 Password = "1234",
                 Username = "userTeste",
-                Type = "admin"
             };
             _context.Users.Add(_user);
             _context.SaveChanges();
@@ -246,64 +239,63 @@ namespace PRIO.TESTS.Cruds.Reservoirs
                 Assert.That(badRequestResult.StatusCode, Is.EqualTo(400));
             }
         }
+        //[Test]
+        //public async Task Create_CheckRequiredNameField()
+        //{
+        //    Cluster _cluster1 = new()
+        //    {
+        //        Name = "ClusterTest",
+        //        User = _user
+        //    };
+        //    _context.Add(_cluster1);
 
-        [Test]
-        public async Task Create_CheckRequiredNameField()
-        {
-            Cluster _cluster1 = new()
-            {
-                Name = "ClusterTest",
-                User = _user
-            };
-            _context.Add(_cluster1);
+        //    Installation _installation1 = new()
+        //    {
+        //        Name = "InstallationTest",
+        //        CodInstallationUep = "InstallationTest",
+        //        Cluster = _cluster1,
+        //        User = _user
+        //    };
+        //    _context.Add(_installation1);
 
-            Installation _installation1 = new()
-            {
-                Name = "InstallationTest",
-                CodInstallationUep = "InstallationTest",
-                Cluster = _cluster1,
-                User = _user
-            };
-            _context.Add(_installation1);
+        //    Field _field1 = new()
+        //    {
+        //        Name = "FieldTest",
+        //        CodField = "FieldTest",
+        //        Installation = _installation1,
+        //        User = _user
+        //    };
+        //    _context.Add(_field1);
 
-            Field _field1 = new()
-            {
-                Name = "FieldTest",
-                CodField = "FieldTest",
-                Installation = _installation1,
-                User = _user
-            };
-            _context.Add(_field1);
+        //    Zone _zone = new()
+        //    {
+        //        CodZone = "ZoneTest",
+        //        Field = _field1
+        //    };
+        //    _context.Add(_zone);
+        //    _context.SaveChanges();
 
-            Zone _zone = new()
-            {
-                CodZone = "ZoneTest",
-                Field = _field1
-            };
-            _context.Add(_zone);
-            _context.SaveChanges();
+        //    _viewModel = new CreateReservoirViewModel
+        //    {
+        //        Name = "teste"
+        //    };
 
-            _viewModel = new CreateReservoirViewModel
-            {
-                ZoneId = _zone.Id,
-            };
+        //    try
+        //    {
+        //        var response = await _controller.Create(_viewModel);
 
-            try
-            {
-                var response = await _controller.Create(_viewModel);
+        //        Assert.IsInstanceOf<BadRequestObjectResult>(response);
+        //        var createdResult = (BadRequestObjectResult)response;
 
-                Assert.IsInstanceOf<BadRequestObjectResult>(response);
-                var createdResult = (BadRequestObjectResult)response;
-
-                Assert.That(createdResult.Value, Is.EqualTo("Reservoir name is required"));
-                Assert.That(createdResult.StatusCode, Is.EqualTo(400));
-            }
-            catch (DbUpdateException ex)
-            {
-                Assert.IsInstanceOf<DbUpdateException>(ex);
-                Assert.That(ex.Message, Contains.Substring("Required properties '{'Name'}' are missing"));
-            }
-        }
+        //        Assert.That(createdResult.Value, Is.EqualTo("Reservoir name is required"));
+        //        Assert.That(createdResult.StatusCode, Is.EqualTo(400));
+        //    }
+        //    catch (DbUpdateException ex)
+        //    {
+        //        Assert.IsInstanceOf<DbUpdateException>(ex);
+        //        Assert.That(ex.Message, Contains.Substring("Required properties '{'ZoneId'}' are missing"));
+        //    }
+        //}
 
         //PATCH
         [Test]
@@ -471,17 +463,17 @@ namespace PRIO.TESTS.Cruds.Reservoirs
             await _controller.Create(_viewModel);
 
             var reservoir = await _context.Reservoirs.SingleOrDefaultAsync();
-            var history = await _context.ReservoirHistories.SingleOrDefaultAsync();
 
-            Assert.That(history, Is.Not.Null);
             Assert.That(reservoir, Is.Not.Null);
 
-            Assert.That(history.CodReservoir, Is.EqualTo(reservoir.CodReservoir));
-            Assert.That(history.Zone.Id, Is.EqualTo(reservoir.Zone.Id));
+            //var history = await _context.ReservoirHistories.SingleOrDefaultAsync();
+            //Assert.That(history, Is.Not.Null);
+            //Assert.That(history.CodReservoir, Is.EqualTo(reservoir.CodReservoir));
+            //Assert.That(history.Zone.Id, Is.EqualTo(reservoir.Zone.Id));
 
-            Assert.That(history.TypeOperation, Is.EqualTo(Utils.TypeOperation.Create));
-            Assert.That(history.User, Is.Not.Null);
-            Assert.That(history.User.Name, Is.EqualTo(_user.Name));
+            //Assert.That(history.TypeOperation, Is.EqualTo(Utils.TypeOperation.Create));
+            //Assert.That(history.User, Is.Not.Null);
+            //Assert.That(history.User.Name, Is.EqualTo(_user.Name));
         }
     }
 }

@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Controllers;
 using PRIO.Data;
-using PRIO.DTOS;
+using PRIO.DTOS.GlobalDTOS;
 using PRIO.DTOS.UserDTOS;
-using PRIO.Models.Users;
+using PRIO.Models.UserControlAccessModels;
 
 namespace PRIO.TESTS.Users
 {
@@ -47,7 +47,7 @@ namespace PRIO.TESTS.Users
         {
             var initialUserCount = _context.Users.Count();
             var existingUserId = Guid.NewGuid();
-            var existingUser = new User { Id = existingUserId, Name = "John Doe", Email = "sada@mail.com", Password = "1234", Username = "asdsad", Type = "admin" };
+            var existingUser = new User { Id = existingUserId, Name = "John Doe", Email = "sada@mail.com", Password = "1234", Username = "asdsad" };
             await _context.Users.AddAsync(existingUser);
             await _context.SaveChangesAsync();
 

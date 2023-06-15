@@ -90,9 +90,9 @@ namespace PRIO.Controllers
                     Message = "Cluster not found"
                 });
 
-            cluster.Name ??= body.Name;
-            cluster.Description ??= body.Description;
-            cluster.CodCluster ??= body.CodCluster;
+            cluster.Name = body.Name is not null ? body.Name : cluster.Name;
+            cluster.Description = body.Description is not null ? body.Description : cluster.Description;
+            cluster.CodCluster = body.CodCluster is not null ? body.CodCluster : cluster.CodCluster;
 
             _context.UpdateRange(cluster);
             await _context.SaveChangesAsync();

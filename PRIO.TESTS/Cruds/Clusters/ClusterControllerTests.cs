@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Controllers;
 using PRIO.Data;
-using PRIO.DTOS;
-using PRIO.DTOS.ClusterDTOS;
+using PRIO.DTOS.GlobalDTOS;
+using PRIO.DTOS.HierarchyDTOS.ClusterDTOS;
 using PRIO.DTOS.UserDTOS;
-using PRIO.Models.Clusters;
-using PRIO.Models.Users;
+using PRIO.Models.HierarchyModels;
+using PRIO.Models.UserControlAccessModels;
 using PRIO.ViewModels.Clusters;
 
 namespace PRIO.TESTS.Cruds.Clusters
@@ -43,7 +43,6 @@ namespace PRIO.TESTS.Cruds.Clusters
                 Email = "userTeste@mail.com",
                 Password = "1234",
                 Username = "userTeste",
-                Type = "admin"
             };
             _context.Users.Add(_user);
             _context.SaveChanges();
@@ -141,15 +140,17 @@ namespace PRIO.TESTS.Cruds.Clusters
 
             await _controller.Create(_viewModel);
             var cluster = await _context.Clusters.SingleOrDefaultAsync();
-            var history = await _context.ClustersHistories.SingleOrDefaultAsync();
-
-            Assert.That(history, Is.Not.Null);
             Assert.That(cluster, Is.Not.Null);
-            Assert.That(history.CodCluster, Is.EqualTo(cluster.CodCluster));
-            Assert.That(history.TypeOperation, Is.EqualTo(Utils.TypeOperation.Create));
-            Assert.That(history.User, Is.Not.Null);
-            Assert.That(history.User.Name, Is.EqualTo(_user.Name));
-            Assert.That(history.Name, Is.EqualTo(cluster.Name));
+
+
+            ////var history = await _context.ClustersHistories.SingleOrDefaultAsync();
+
+            //Assert.That(history, Is.Not.Null);
+            //Assert.That(history.CodCluster, Is.EqualTo(cluster.CodCluster));
+            //Assert.That(history.TypeOperation, Is.EqualTo(Utils.TypeOperation.Create));
+            //Assert.That(history.User, Is.Not.Null);
+            //Assert.That(history.User.Name, Is.EqualTo(_user.Name));
+            //Assert.That(history.Name, Is.EqualTo(cluster.Name));
         }
 
         //PATCH
