@@ -1,7 +1,8 @@
-﻿using PRIO.Models.BaseModels;
+﻿using Newtonsoft.Json;
+using PRIO.Models.BaseModels;
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.MeasurementModels;
-using System.Text.Json.Serialization;
+
 
 namespace PRIO.Models.UserControlAccessModels
 {

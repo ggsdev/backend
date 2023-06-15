@@ -8,13 +8,8 @@ namespace PRIO.Data.Mappings.HierarchyMappings
     {
         public void Configure(EntityTypeBuilder<Cluster> builder)
         {
-
             builder.ToTable
                     ("Clusters");
-
-            builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id)
-                .ValueGeneratedOnAdd();
 
             builder.Property(x => x.Name)
                 .HasColumnType("VARCHAR")

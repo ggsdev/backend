@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using PRIO.Models.BaseModels;
 using PRIO.Models.UserControlAccessModels;
 
@@ -7,6 +8,7 @@ namespace PRIO.Models.HierarchyModels
     {
         public string? Name { get; set; }
         public string? CodCluster { get; set; }
+        [JsonIgnore]
         public User? User { get; set; }
         public List<Installation>? Installations { get; set; }
     }

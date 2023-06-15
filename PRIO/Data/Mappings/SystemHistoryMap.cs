@@ -27,10 +27,9 @@ namespace PRIO.Data.Mappings
 
             builder.Property(x => x.PreviousData)
              .HasColumnType("varchar(max)")
-             .IsRequired()
              .HasConversion(
                  v => JsonConvert.SerializeObject(v),
-                 v => JsonConvert.DeserializeObject<string>(v)
+                 v => JsonConvert.DeserializeObject<object>(v)
              );
 
             builder.Property(x => x.UpdatedData)
@@ -38,21 +37,15 @@ namespace PRIO.Data.Mappings
                 .IsRequired()
                 .HasConversion(
                      v => JsonConvert.SerializeObject(v),
-                 v => JsonConvert.DeserializeObject<string>(v)
+                 v => JsonConvert.DeserializeObject<object>(v)
                 );
 
             builder.Property(x => x.FieldsChanged)
                 .HasColumnType("varchar(max)")
-                .IsRequired()
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v),
-                    v => JsonConvert.DeserializeObject<string>(v)
+                    v => JsonConvert.DeserializeObject<object>(v)
                 );
-
-            builder.HasOne(x => x.CreatedBy)
-                .WithMany(x => x.SystemHistories)
-                .IsRequired();
-
         }
     }
 }
