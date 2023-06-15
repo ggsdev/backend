@@ -47,24 +47,28 @@ namespace PRIO.Controllers
                 IsActive = body.IsActive is not null ? body.IsActive.Value : true,
                 CodCluster = body.CodCluster is not null ? body.CodCluster : GenerateCode.Generate(body.Name)
             };
-
             await _context.Clusters.AddAsync(cluster);
 
             var history = new SystemHistory
             {
                 Table = HistoryColumns.TableCluster,
-                CreatedBy = user.Id,
+                CreatedBy = user,
                 TableItemId = cluster.Id,
 
-
+                UpdatedData = cluster,
             };
 
+            Console.WriteLine(cluster.Name);
+            Console.WriteLine(history.Table);
+
+            await _context.SystemHistories.AddAsync(history);
 
             await _context.SaveChangesAsync();
 
-            var clusterDTO = _mapper.Map<Cluster, ClusterDTO>(cluster);
+            //var clusterDTO = _mapper.Map<Cluster, ClusterDTO>(cluster);
 
-            return Created($"clusters/{cluster.Id}", clusterDTO);
+            //return Created($"clusters/{cluster.Id}", clusterDTO);
+            return Ok();
         }
 
 

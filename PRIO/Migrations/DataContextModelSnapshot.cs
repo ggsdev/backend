@@ -2056,7 +2056,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GlobalOperations");
+                    b.ToTable("GlobalOperations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.Models.SystemHistory", b =>
@@ -2155,7 +2155,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("GroupPermissionId");
 
-                    b.ToTable("GroupOperations");
+                    b.ToTable("GroupOperations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.Models.UserControlAccessModels.GroupPermission", b =>
@@ -2182,7 +2182,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("MenuId");
 
-                    b.ToTable("GroupPermissions");
+                    b.ToTable("GroupPermissions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.Models.UserControlAccessModels.Menu", b =>
@@ -2332,7 +2332,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserPermissionId");
 
-                    b.ToTable("UserOperations");
+                    b.ToTable("UserOperations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.Models.UserControlAccessModels.UserPermission", b =>
