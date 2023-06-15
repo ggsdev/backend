@@ -15,6 +15,7 @@ namespace PRIO.Models.UserControlAccessModels
         #region Relationships
         public List<UserPermission>? UserPermissions { get; set; }
         public Session? Session { get; set; }
+        public Group? Group { get; set; }
         public List<Cluster>? Clusters { get; set; }
         public List<Field>? Fields { get; set; }
         public List<Installation>? Installations { get; set; }

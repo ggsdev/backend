@@ -6,5 +6,6 @@ namespace PRIO.Models.UserControlAccessModels
     {
         public string? Name { get; set; }
         public List<GroupPermission>? GroupPermissions { get; set; }
+        public List<User>? User { get; set; }
     }
 }
