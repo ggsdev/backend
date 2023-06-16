@@ -14,4 +14,14 @@
     {
         public string? Token { get; set; }
     }
+    public class ProfileDTO
+    {
+        public Guid Id { get; set; }
+        public string? Name { get; set; }
+        public string? Email { get; set; }
+        public string? Username { get; set; }
+        public List<UserPermissionParentDTO>? UserPermissions { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+    }
 }

@@ -6,6 +6,7 @@ using PRIO.Data;
 using PRIO.DTOS.GlobalDTOS;
 using PRIO.DTOS.HistoryDTOS;
 using PRIO.DTOS.UserDTOS;
+using PRIO.Filters;
 using PRIO.Models;
 using PRIO.Models.UserControlAccessModels;
 using PRIO.Utils;
@@ -89,6 +90,72 @@ namespace PRIO.Controllers
             }
         }
         #endregion
+
+        [HttpGet("profile")]
+        [ServiceFilter(typeof(AuthorizationFilter))]
+        public async Task<IActionResult> Profile([FromRoute] Guid id)
+        {
+            var userId = (Guid)HttpContext.Items["Id"];
+            var user = await _context.Users.Include(x => x.UserPermissions).ThenInclude(x => x.UserOperation).FirstOrDefaultAsync(x => x.Id == userId);
+
+            if (user is null)
+            {
+                var errorResponse = new ErrorResponseDTO
+                {
+                    Message = "User Not found."
+                };
+
+                return NotFound(errorResponse);
+            }
+
+            if (userId.ToString() != user.Id.ToString())
+            {
+                var errorResponse = new ErrorResponseDTO
+                {
+                    Message = "User don't have permission to do that."
+                };
+
+                return StatusCode(403, errorResponse);
+            }
+
+
+            user.UserPermissions = user.UserPermissions.OrderBy(x => x.MenuOrder).ToList();
+            var userDTO = _mapper.Map<User, ProfileDTO>(user);
+            var parentElements = new List<UserPermissionParentDTO>();
+            foreach (var permission in userDTO.UserPermissions)
+            {
+                var menuName = permission.MenuName;
+                var menuRoute = permission.MenuRoute;
+
+                if (permission.hasParent == false && permission.hasChildren == true)
+                {
+                    permission.Children = new List<UserPermissionChildrenDTO>();
+                    parentElements.Add(permission);
+                }
+                else if (permission.hasParent == true && permission.hasChildren == false)
+                {
+                    var parentOrder = permission.MenuOrder.Split('.')[0];
+                    var parentElement = parentElements.FirstOrDefault(x => x.MenuOrder.StartsWith(parentOrder));
+                    if (parentElement != null)
+                    {
+                        var childrenDTO = _mapper.Map<UserPermissionParentDTO, UserPermissionChildrenDTO>(permission);
+                        parentElement.Children.Add(childrenDTO);
+                        parentElements.Remove(permission);
+                    }
+                }
+
+                foreach (var operation in permission.UserOperation)
+                {
+                    var operationName = operation.OperationName;
+                }
+            }
+
+            userDTO.UserPermissions.RemoveAll(permission => permission.MenuOrder.Contains("."));
+
+
+            return Ok(userDTO);
+        }
+
 
         #region Get By Id
         [HttpGet("users/{id:Guid}")]
