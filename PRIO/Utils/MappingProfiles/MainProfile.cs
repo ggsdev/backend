@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using PRIO.DTOS.ControlAccessDTOS;
 using PRIO.DTOS.FileImportDTOS.XMLFilesDTOS;
 using PRIO.DTOS.HierarchyDTOS.ClusterDTOS;
 using PRIO.DTOS.HierarchyDTOS.CompletionDTOS;
@@ -96,6 +97,11 @@ namespace PRIO.Utils.MappingProfiles
             CreateMap<UserPermission, UserPermissionChildrenDTO>();
             CreateMap<UserOperation, UserOperationsDTO>();
             CreateMap<UserPermissionParentDTO, UserPermissionChildrenDTO>();
+            CreateMap<GroupPermission, GroupPermissionsDTO>();
+            CreateMap<Group, GroupDTO>();
+            CreateMap<Menu, MenuDTO>();
+            CreateMap<GroupOperation, UserGroupOperationDTO>();
+
         }
 
         private static decimal? TruncateTwoDecimals(decimal? value)

@@ -10,9 +10,6 @@ namespace PRIO.Data.Mappings.ControlAccessMappings
         {
             builder.ToTable("UserPermissions");
 
-            builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id)
-                .ValueGeneratedOnAdd();
 
             builder.Property(x => x.MenuName)
                 .HasColumnType("VARCHAR")
