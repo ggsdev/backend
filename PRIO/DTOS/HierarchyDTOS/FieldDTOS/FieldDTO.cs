@@ -1,4 +1,4 @@
-﻿using PRIO.DTOS.HierarchyDTOS.ZoneDTOS;
+﻿using PRIO.DTOS.HierarchyDTOS.InstallationDTOS;
 using PRIO.DTOS.UserDTOS;
 
 namespace PRIO.DTOS.HierarchyDTOS.FieldDTOS
@@ -13,6 +13,9 @@ namespace PRIO.DTOS.HierarchyDTOS.FieldDTOS
         public string? State { get; set; }
         public string? Location { get; set; }
         public UserDTO? User { get; set; }
-        public List<ZoneDTO>? Zones { get; set; }
+        public InstallationDTO? Installation { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public bool? IsActive { get; set; }
     }
 }

@@ -10,10 +10,6 @@ namespace PRIO.Data.Mappings.HierarchyMappings
         {
             builder.ToTable("Zones");
 
-            builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id)
-                .ValueGeneratedOnAdd();
-
             builder.Property(x => x.CodZone)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(120)

@@ -4,6 +4,7 @@ namespace PRIO.ViewModels.Completions
 {
     public class CreateCompletionViewModel
     {
+        [StringLength(10, ErrorMessage = "CodCluster cannot exceed 10 characters.")]
         public string? CodCompletion { get; set; }
         public string? Description { get; set; }
         [Required(ErrorMessage = "ReservoirId is required")]

@@ -15,29 +15,33 @@ namespace PRIO.Controllers
     [ApiController]
     [Route("completions")]
     [ServiceFilter(typeof(AuthorizationFilter))]
-    public class CompletionController : ControllerBase
+    public class CompletionController : BaseApiController
     {
-        private readonly DataContext _context;
-        private readonly IMapper _mapper;
-
         public CompletionController(DataContext context, IMapper mapper)
+            : base(context, mapper)
         {
-            _context = context;
-            _mapper = mapper;
         }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateCompletionViewModel body)
         {
             var user = HttpContext.Items["User"] as User;
 
-            var well = await _context.Wells.Include(x => x.Field).FirstOrDefaultAsync(x => x.Id == body.WellId);
+            var well = await _context.Wells
+                .Include(x => x.Field)
+                .FirstOrDefaultAsync(x => x.Id == body.WellId);
+
             if (well is null)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = $"Well with id: {body.WellId} not found"
                 });
 
-            var reservoir = await _context.Reservoirs.Include(x => x.Zone).ThenInclude(z => z.Field).FirstOrDefaultAsync(x => x.Id == body.ReservoirId);
+            var reservoir = await _context.Reservoirs
+                .Include(x => x.Zone)
+                .ThenInclude(z => z.Field)
+                .FirstOrDefaultAsync(x => x.Id == body.ReservoirId);
+
             if (reservoir is null)
                 return NotFound(new ErrorResponseDTO
                 {

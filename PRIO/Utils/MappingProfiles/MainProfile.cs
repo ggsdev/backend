@@ -70,20 +70,29 @@ namespace PRIO.Utils.MappingProfiles
 
             CreateMap<Installation, InstallationDTO>();
             CreateMap<Installation, CreateUpdateInstallationDTO>();
+            CreateMap<Installation, InstallationHistoryDTO>();
 
             CreateMap<Field, FieldDTO>();
+            CreateMap<Field, CreateUpdateFieldDTO>();
+            CreateMap<Field, FieldHistoryDTO>();
 
             CreateMap<Zone, ZoneDTO>();
             CreateMap<Zone, CreateUpdateZoneDTO>();
+            CreateMap<Zone, ZoneHistoryDTO>();
 
             CreateMap<Reservoir, ReservoirDTO>();
+            CreateMap<Reservoir, CreateUpdateReservoirDTO>();
+            CreateMap<Reservoir, ReservoirHistoryDTO>();
 
             CreateMap<Well, WellDTO>()
                 .ForMember(dest => dest.WaterDepth, opt => opt.MapFrom(src => TruncateTwoDecimals(src.WaterDepth)))
                 .ForMember(dest => dest.TopOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.TopOfPerforated)))
                 .ForMember(dest => dest.BaseOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.BaseOfPerforated)));
+            CreateMap<Well, WellHistoryDTO>();
+            CreateMap<Well, CreateUpdateWellDTO>();
 
             CreateMap<Completion, CompletionDTO>();
+            CreateMap<Completion, CompletionWithouWellDTO>();
 
             CreateMap<User, UserDTO>();
 

@@ -1,12 +1,16 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using PRIO.Data;
 using PRIO.DTOS.GlobalDTOS;
 using PRIO.DTOS.HierarchyDTOS.FieldDTOS;
+using PRIO.DTOS.HistoryDTOS;
 using PRIO.Filters;
+using PRIO.Models;
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
+using PRIO.Utils;
 using PRIO.ViewModels.Fields;
 
 namespace PRIO.Controllers
@@ -14,15 +18,11 @@ namespace PRIO.Controllers
     [ApiController]
     [Route("fields")]
     [ServiceFilter(typeof(AuthorizationFilter))]
-    public class FieldController : ControllerBase
+    public class FieldController : BaseApiController
     {
-        private readonly DataContext _context;
-        private readonly IMapper _mapper;
-
         public FieldController(DataContext context, IMapper mapper)
+            : base(context, mapper)
         {
-            _context = context;
-            _mapper = mapper;
         }
 
         [HttpPost]
@@ -30,22 +30,29 @@ namespace PRIO.Controllers
         {
             var user = HttpContext.Items["User"] as User;
 
-            var fieldInDatabase = await _context.Fields.FirstOrDefaultAsync(x => x.CodField == body.CodField);
-            if (fieldInDatabase is not null)
-                return Conflict(new ErrorResponseDTO
-                {
-                    Message = $"Field with code: {body.CodField} already exists."
-                });
+            //var fieldInDatabase = await _context.Fields
+            //    .FirstOrDefaultAsync(x => x.CodField == body.CodField);
 
-            var installationInDatabase = await _context.Installations.FirstOrDefaultAsync(x => x.Id == body.InstallationId);
+            //if (fieldInDatabase is not null)
+            //    return Conflict(new ErrorResponseDTO
+            //    {
+            //        Message = $"Field with code: {body.CodField} already exists."
+            //    });
+
+            var installationInDatabase = await _context.Installations
+                .FirstOrDefaultAsync(x => x.Id == body.InstallationId);
+
             if (installationInDatabase is null)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = $"Installation not found"
                 });
 
+            var fieldId = Guid.NewGuid();
+
             var field = new Field
             {
+                Id = fieldId,
                 Name = body.Name,
                 User = user,
                 Description = body.Description,
@@ -58,16 +65,38 @@ namespace PRIO.Controllers
             };
 
             await _context.Fields.AddAsync(field);
+
+            var currentData = _mapper.Map<Field, FieldHistoryDTO>(field);
+            currentData.createdAt = DateTime.UtcNow;
+            currentData.updatedAt = DateTime.UtcNow;
+
+            var history = new SystemHistory
+            {
+                Table = HistoryColumns.TableFields,
+                TypeOperation = HistoryColumns.Create,
+                CreatedBy = user?.Id,
+                TableItemId = fieldId,
+                CurrentData = currentData,
+            };
+
+            await _context.SystemHistories.AddAsync(history);
+
             await _context.SaveChangesAsync();
 
-            var fieldDTO = _mapper.Map<Field, FieldDTO>(field);
+            var fieldDTO = _mapper.Map<Field, CreateUpdateFieldDTO>(field);
+
             return Created($"fields/{field.Id}", fieldDTO);
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var fields = await _context.Fields.Include(x => x.Zones).Include(x => x.User).ToListAsync();
+            var fields = await _context.Fields
+                .Include(x => x.Installation)
+                .ThenInclude(i => i!.Cluster)
+                .Include(x => x.User)
+                .ToListAsync();
+
             var fieldsDTO = _mapper.Map<List<Field>, List<FieldDTO>>(fields);
 
             return Ok(fieldsDTO);
@@ -76,12 +105,17 @@ namespace PRIO.Controllers
         [HttpGet("{id:Guid}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var field = await _context.Fields.FirstOrDefaultAsync(x => x.Id == id);
+            var field = await _context.Fields
+                .Include(x => x.Installation)
+                .ThenInclude(i => i!.Cluster)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
             if (field is null)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Field not found"
                 });
+
             var fieldDTO = _mapper.Map<Field, FieldDTO>(field);
 
             return Ok(fieldDTO);
@@ -93,40 +127,71 @@ namespace PRIO.Controllers
         {
             var user = HttpContext.Items["User"] as User;
 
-            var field = await _context.Fields.Include(x => x.User).Include(x => x.Installation).FirstOrDefaultAsync(x => x.Id == id);
+            var field = await _context.Fields
+                .Include(x => x.User)
+                .Include(x => x.Installation)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
             if (field is null)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Field not found"
                 });
 
-            if (body.InstallationId is not null)
-            {
-                var installationInDatabase = await _context.Installations.FirstOrDefaultAsync(x => x.Id == body.InstallationId);
+            var beforeChangesField = _mapper.Map<FieldHistoryDTO>(field);
 
-                if (installationInDatabase is null)
-                    return NotFound(new ErrorResponseDTO
-                    {
-                        Message = "Installation not found"
-                    });
+            var updatedProperties = ControllerUtils.CompareAndUpdateField(field, body);
+
+            if (updatedProperties.Any() is false && field.Installation?.Id == body.InstallationId)
+                return BadRequest(new ErrorResponseDTO
+                {
+                    Message = "This field already has these values, try to update to other values."
+                });
+
+            var installationInDatabase = await _context.Installations
+               .FirstOrDefaultAsync(x => x.Id == body.InstallationId);
+
+            if (body.InstallationId is not null && installationInDatabase is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = "Installation not found"
+                });
+
+            if (body.InstallationId is not null && installationInDatabase is not null && field.Installation?.Id == body.InstallationId)
+            {
                 field.Installation = installationInDatabase;
+                updatedProperties[nameof(FieldHistoryDTO.installationId)] = installationInDatabase.Id;
             }
-            else
-            {
-                field.Installation = field.Installation;
-            }
-
-            field.State = body.State is not null ? body.State : field.State;
-            field.Name = body.Name is not null ? body.Name : field.Name;
-            field.CodField = body.CodField is not null ? body.CodField : field.CodField;
-            field.Basin = body.Basin is not null ? body.Basin : field.Basin;
-            field.Location = body.Location is not null ? body.Location : field.Location;
-            field.Description = body.Description is not null ? body.Description : field.Description;
 
             _context.Fields.Update(field);
+
+            var firstHistory = await _context.SystemHistories
+               .OrderBy(x => x.CreatedAt)
+               .Where(x => x.TableItemId == id)
+               .FirstOrDefaultAsync();
+
+            var changedFields = ControllerUtils.DictionaryToObject(updatedProperties);
+
+            var currentData = _mapper.Map<Field, FieldHistoryDTO>(field);
+            currentData.updatedAt = DateTime.UtcNow;
+
+            var history = new SystemHistory
+            {
+                Table = HistoryColumns.TableFields,
+                TypeOperation = HistoryColumns.Update,
+                CreatedBy = firstHistory?.CreatedBy,
+                UpdatedBy = user?.Id,
+                TableItemId = field.Id,
+                FieldsChanged = changedFields,
+                CurrentData = currentData,
+                PreviousData = beforeChangesField,
+            };
+
+            await _context.SystemHistories.AddAsync(history);
+
             await _context.SaveChangesAsync();
 
-            var fieldDTO = _mapper.Map<Field, FieldDTO>(field);
+            var fieldDTO = _mapper.Map<Field, CreateUpdateFieldDTO>(field);
 
             return Ok(fieldDTO);
         }
@@ -137,14 +202,41 @@ namespace PRIO.Controllers
             var user = HttpContext.Items["User"] as User;
 
             var field = await _context.Fields.Include(x => x.Installation).FirstOrDefaultAsync(x => x.Id == id);
-            if (field is null || !field.IsActive)
+            if (field is null || field.IsActive is false)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Field not found or inactive already"
                 });
 
+            var lastHistory = await _context.SystemHistories
+               .OrderBy(x => x.CreatedAt)
+               .Where(x => x.TableItemId == field.Id)
+               .LastOrDefaultAsync();
+
             field.IsActive = false;
             field.DeletedAt = DateTime.UtcNow;
+
+            var currentData = _mapper.Map<Field, FieldHistoryDTO>(field);
+            currentData.updatedAt = (DateTime)field.DeletedAt;
+            currentData.deletedAt = field.DeletedAt;
+
+            var history = new SystemHistory
+            {
+                Table = HistoryColumns.TableFields,
+                TypeOperation = HistoryColumns.Delete,
+                CreatedBy = field.User?.Id,
+                UpdatedBy = user?.Id,
+                TableItemId = field.Id,
+                CurrentData = currentData,
+                PreviousData = lastHistory?.CurrentData,
+                FieldsChanged = new
+                {
+                    field.IsActive,
+                    field.DeletedAt,
+                }
+            };
+
+            await _context.SystemHistories.AddAsync(history);
 
             _context.Update(field);
 
@@ -157,42 +249,77 @@ namespace PRIO.Controllers
         {
             var user = HttpContext.Items["User"] as User;
 
-            var field = await _context.Fields.Include(x => x.Installation).Include(x => x.User).FirstOrDefaultAsync(x => x.Id == fieldId);
+            var field = await _context.Fields
+                .Include(x => x.User)
+                .FirstOrDefaultAsync(x => x.Id == fieldId);
+
             if (field is null || field.IsActive is true)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Field not found or active already"
                 });
 
+            var lastHistory = await _context.SystemHistories
+              .Where(x => x.TableItemId == field.Id)
+              .OrderBy(x => x.CreatedAt)
+              .LastOrDefaultAsync();
+
             field.IsActive = true;
             field.DeletedAt = null;
+
+            var currentData = _mapper.Map<Field, FieldHistoryDTO>(field);
+            currentData.updatedAt = DateTime.UtcNow;
+
+            var history = new SystemHistory
+            {
+                Table = HistoryColumns.TableFields,
+                TypeOperation = HistoryColumns.Restore,
+                CreatedBy = field.User?.Id,
+                UpdatedBy = user?.Id,
+                TableItemId = field.Id,
+                CurrentData = currentData,
+                PreviousData = lastHistory?.CurrentData,
+                FieldsChanged = new
+                {
+                    field.IsActive,
+                    field.DeletedAt,
+                }
+            };
+
+            await _context.SystemHistories.AddAsync(history);
 
             _context.Update(field);
             await _context.SaveChangesAsync();
 
-            var fieldDTO = _mapper.Map<Field, FieldDTO>(field);
+            var fieldDTO = _mapper.Map<Field, CreateUpdateFieldDTO>(field);
             return Ok(fieldDTO);
         }
 
-        //[HttpGet("{id:Guid}/history")]
-        //public async Task<IActionResult> GetHistory([FromRoute] Guid id)
-        //{
-        //    var fieldHistories = await _context.FieldHistories.Include(x => x.User)
-        //                                              .Include(x => x.Field)
-        //                                              .Where(x => x.Field.Id == id)
-        //                                              .OrderByDescending(x => x.CreatedAt)
-        //                                              .ToListAsync();
-        //    if (fieldHistories is null)
-        //        return NotFound(new ErrorResponseDTO
-        //        {
-        //            Message = "Field not found"
-        //        });
+        [HttpGet("{id:Guid}/history")]
+        public async Task<IActionResult> GetHistory([FromRoute] Guid id)
+        {
+            var fieldHistories = await _context.SystemHistories
+                   .Where(x => x.TableItemId == id)
+                   .OrderByDescending(x => x.CreatedAt)
+                   .ToListAsync();
 
+            if (fieldHistories is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = "Field not found"
+                });
 
-        //    var fieldHistoryDTO = _mapper.Map<List<FieldHistory>, List<FieldHistoryDTO>>(fieldHistories);
+            foreach (var history in fieldHistories)
+            {
+                history.PreviousData = history.PreviousData is not null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(history.PreviousData.ToString()) : null;
 
-        //    return Ok(fieldHistoryDTO);
-        //}
+                history.CurrentData = history.CurrentData is not null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(history.CurrentData.ToString()) : null;
+
+                history.FieldsChanged = history.FieldsChanged is not null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(history.FieldsChanged.ToString()) : null;
+            }
+
+            return Ok(fieldHistories);
+        }
 
     }
 }
