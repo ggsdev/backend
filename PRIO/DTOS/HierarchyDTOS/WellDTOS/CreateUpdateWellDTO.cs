@@ -1,12 +1,10 @@
-﻿using PRIO.DTOS.HierarchyDTOS.FieldDTOS;
-using PRIO.DTOS.HierarchyDTOS.ReservoirDTOS;
-using PRIO.DTOS.UserDTOS;
+﻿using PRIO.DTOS.UserDTOS;
 
 namespace PRIO.DTOS.HierarchyDTOS.WellDTOS
 {
-    public class WellDTO
+    public class CreateUpdateWellDTO
     {
-        public Guid Id { get; set; }
+        public Guid? Id { get; set; }
         public string? CodWell { get; set; }
         public string? Name { get; set; }
         public string? WellOperatorName { get; set; }
@@ -33,20 +31,5 @@ namespace PRIO.DTOS.HierarchyDTOS.WellDTOS
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public UserDTO? User { get; set; }
-        public FieldDTO? Field { get; set; }
-        public List<CompletionWithouWellDTO>? Completions { get; set; }
-    }
-
-
-    public class CompletionWithouWellDTO
-    {
-        public Guid Id { get; set; }
-        public string? Name { get; set; }
-        public string? Description { get; set; }
-        public string? CodCompletion { get; set; }
-        public DateTime? CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
-        public UserDTO? User { get; set; }
-        public ReservoirDTO? Reservoir { get; set; }
     }
 }

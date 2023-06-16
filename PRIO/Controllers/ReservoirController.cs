@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using PRIO.Data;
 using PRIO.DTOS.GlobalDTOS;
 using PRIO.DTOS.HierarchyDTOS.ReservoirDTOS;
+using PRIO.DTOS.HistoryDTOS;
 using PRIO.Filters;
+using PRIO.Models;
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
 using PRIO.Utils;
@@ -27,22 +30,29 @@ namespace PRIO.Controllers
         {
             var user = HttpContext.Items["User"] as User;
 
-            var reservoirInDatabase = await _context.Reservoirs.FirstOrDefaultAsync(x => x.CodReservoir == body.CodReservoir);
-            if (reservoirInDatabase is not null)
-                return Conflict(new ErrorResponseDTO
-                {
-                    Message = $"Reservoir with code: {body.CodReservoir} already exists, try another code."
-                });
+            //var reservoirInDatabase = await _context.Reservoirs
+            //    .FirstOrDefaultAsync(x => x.CodReservoir == body.CodReservoir);
 
-            var zoneInDatabase = await _context.Zones.FirstOrDefaultAsync(x => x.Id == body.ZoneId);
+            //if (reservoirInDatabase is not null)
+            //    return Conflict(new ErrorResponseDTO
+            //    {
+            //        Message = $"Reservoir with code: {body.CodReservoir} already exists, try another code."
+            //    });
+
+            var zoneInDatabase = await _context.Zones
+                .FirstOrDefaultAsync(x => x.Id == body.ZoneId);
+
             if (zoneInDatabase is null)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = $"Zone not found"
                 });
 
+            var reservoirId = Guid.NewGuid();
+
             var reservoir = new Reservoir
             {
+                Id = reservoirId,
                 Name = body.Name,
                 Description = body.Description,
                 CodReservoir = body.CodReservoir is not null ? body.CodReservoir : GenerateCode.Generate(body.Name),
@@ -53,9 +63,24 @@ namespace PRIO.Controllers
 
             await _context.Reservoirs.AddAsync(reservoir);
 
+            var currentData = _mapper.Map<Reservoir, ReservoirHistoryDTO>(reservoir);
+            currentData.createdAt = DateTime.UtcNow;
+            currentData.updatedAt = DateTime.UtcNow;
+
+            var history = new SystemHistory
+            {
+                Table = HistoryColumns.TableReservoirs,
+                TypeOperation = HistoryColumns.Create,
+                CreatedBy = user?.Id,
+                TableItemId = reservoirId,
+                CurrentData = currentData,
+            };
+
+            await _context.SystemHistories.AddAsync(history);
+
             await _context.SaveChangesAsync();
 
-            var reservoirDTO = _mapper.Map<Reservoir, ReservoirDTO>(reservoir);
+            var reservoirDTO = _mapper.Map<Reservoir, CreateUpdateReservoirDTO>(reservoir);
 
             return Created($"reservoirs/{reservoir.Id}", reservoirDTO);
         }
@@ -63,7 +88,14 @@ namespace PRIO.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var reservoirs = await _context.Reservoirs.Include(x => x.Completions).Include(x => x.User).ToListAsync();
+            var reservoirs = await _context.Reservoirs
+                .Include(x => x.User)
+                .Include(x => x.Zone)
+                .ThenInclude(x => x!.Field)
+                .ThenInclude(x => x!.Installation)
+                .ThenInclude(x => x!.Cluster)
+                .ToListAsync();
+
             var reservoirsDTO = _mapper.Map<List<Reservoir>, List<ReservoirDTO>>(reservoirs);
             return Ok(reservoirsDTO);
         }
@@ -71,51 +103,53 @@ namespace PRIO.Controllers
         [HttpGet("{id:Guid}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var reservoir = await _context.Reservoirs.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id);
+            var reservoir = await _context.Reservoirs
+                .Include(x => x.User)
+                .Include(x => x.Zone)
+                .ThenInclude(x => x!.Field)
+                .ThenInclude(x => x!.Installation)
+                .ThenInclude(x => x!.Cluster)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
             if (reservoir is null)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Reservoir not found"
                 });
+
             var reservoirDTO = _mapper.Map<Reservoir, ReservoirDTO>(reservoir);
 
             return Ok(reservoirDTO);
         }
-
-        //[HttpGet("{id:Guid}/history")]
-        //public async Task<IActionResult> GetBHistory([FromRoute] Guid id)
-        //{
-        //    var reservoirHistories = await _context.ReservoirHistories
-        //        .Include(x => x.User)
-        //        .Include(x => x.Zone)
-        //        .Include(x => x.Reservoir)
-        //        .Where(x => x.Reservoir.Id == id)
-        //        .OrderByDescending(x => x.CreatedAt)
-        //        .ToListAsync();
-
-        //    if (reservoirHistories is null)
-        //        return NotFound(new ErrorResponseDTO
-        //        {
-        //            Message = "Reservoir not found"
-        //        });
-
-        //    var reservoirHistoriesDTO = _mapper.Map<List<ReservoirHistory>, List<ReservoirHistoryDTO>>(reservoirHistories);
-        //    return Ok(reservoirHistoriesDTO);
-        //}
 
         [HttpPatch("{id:Guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateReservoirViewModel body)
         {
             var user = HttpContext.Items["User"] as User;
 
-            var reservoir = await _context.Reservoirs.Include(x => x.User).Include(x => x.Zone).FirstOrDefaultAsync(x => x.Id == id);
+            var reservoir = await _context.Reservoirs
+                .Include(x => x.User)
+                .Include(x => x.Zone)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
             if (reservoir is null)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Reservoir not found"
                 });
 
-            var zoneInDatabase = await _context.Zones.FirstOrDefaultAsync(x => x.Id == body.ZoneId);
+            var beforeChangesReservoir = _mapper.Map<ReservoirHistoryDTO>(reservoir);
+
+            var updatedProperties = ControllerUtils.CompareAndUpdateReservoir(reservoir, body);
+
+            if (updatedProperties.Any() is false && reservoir.Zone?.Id == body.ZoneId)
+                return BadRequest(new ErrorResponseDTO
+                {
+                    Message = "This reservoir already has these values, try to update to other values."
+                });
+
+            var zoneInDatabase = await _context.Zones
+                .FirstOrDefaultAsync(x => x.Id == body.ZoneId);
 
             if (body.ZoneId is not null && zoneInDatabase is null)
                 return NotFound(new ErrorResponseDTO
@@ -123,32 +157,81 @@ namespace PRIO.Controllers
                     Message = "Zone not found"
                 });
 
-            reservoir.Name = body.Name is not null ? body.Name : reservoir.Name;
-            reservoir.Description = body.Description is not null ? body.Description : reservoir.Description;
-            reservoir.CodReservoir = body.CodReservoir is not null ? body.CodReservoir : reservoir.CodReservoir;
-            reservoir.Zone = zoneInDatabase is not null ? zoneInDatabase : reservoir.Zone;
-
             _context.Reservoirs.Update(reservoir);
+
+            var firstHistory = await _context.SystemHistories
+              .OrderBy(x => x.CreatedAt)
+              .Where(x => x.TableItemId == id)
+              .FirstOrDefaultAsync();
+
+            var changedFields = ControllerUtils.DictionaryToObject(updatedProperties);
+
+            var currentData = _mapper.Map<Reservoir, ReservoirHistoryDTO>(reservoir);
+            currentData.updatedAt = DateTime.UtcNow;
+
+            var history = new SystemHistory
+            {
+                Table = HistoryColumns.TableReservoirs,
+                TypeOperation = HistoryColumns.Update,
+                CreatedBy = firstHistory?.CreatedBy,
+                UpdatedBy = user?.Id,
+                TableItemId = reservoir.Id,
+                FieldsChanged = changedFields,
+                CurrentData = currentData,
+                PreviousData = beforeChangesReservoir,
+            };
+
+            await _context.SystemHistories.AddAsync(history);
+
             await _context.SaveChangesAsync();
 
-            var reservoirDTO = _mapper.Map<Reservoir, ReservoirDTO>(reservoir);
+            var reservoirDTO = _mapper.Map<Reservoir, CreateUpdateReservoirDTO>(reservoir);
             return Ok(reservoirDTO);
         }
 
         [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            var reservoir = await _context.Reservoirs.Include(x => x.Zone).FirstOrDefaultAsync(x => x.Id == id);
-            if (reservoir is null || !reservoir.IsActive)
+            var user = HttpContext.Items["User"] as User;
+
+            var reservoir = await _context.Reservoirs
+                .Include(x => x.Zone)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (reservoir is null || reservoir.IsActive is false)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Reservoir not found or inactive already"
                 });
 
-            var user = HttpContext.Items["User"] as User;
+            var lastHistory = await _context.SystemHistories
+                .OrderBy(x => x.CreatedAt)
+                .Where(x => x.TableItemId == reservoir.Id)
+                .LastOrDefaultAsync();
 
             reservoir.IsActive = false;
             reservoir.DeletedAt = DateTime.UtcNow;
+
+            var currentData = _mapper.Map<Reservoir, ReservoirHistoryDTO>(reservoir);
+            currentData.updatedAt = (DateTime)reservoir.DeletedAt;
+            currentData.deletedAt = reservoir.DeletedAt;
+
+            var history = new SystemHistory
+            {
+                Table = HistoryColumns.TableReservoirs,
+                TypeOperation = HistoryColumns.Delete,
+                CreatedBy = reservoir.User?.Id,
+                UpdatedBy = user?.Id,
+                TableItemId = reservoir.Id,
+                CurrentData = currentData,
+                PreviousData = lastHistory?.CurrentData,
+                FieldsChanged = new
+                {
+                    reservoir.IsActive,
+                    reservoir.DeletedAt,
+                }
+            };
+            await _context.SystemHistories.AddAsync(history);
 
             _context.Reservoirs.Update(reservoir);
             await _context.SaveChangesAsync();
@@ -159,24 +242,80 @@ namespace PRIO.Controllers
         [HttpPatch("{id:Guid}/restore")]
         public async Task<IActionResult> Restore([FromRoute] Guid id)
         {
-            var reservoir = await _context.Reservoirs.Include(x => x.Zone).FirstOrDefaultAsync(x => x.Id == id);
-            if (reservoir is null || reservoir.IsActive)
+            var user = HttpContext.Items["User"] as User;
+
+            var reservoir = await _context.Reservoirs
+                .Include(x => x.Zone)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (reservoir is null || reservoir.IsActive is true)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Reservoir not found or active already"
                 });
 
-            var user = HttpContext.Items["User"] as User;
+            var lastHistory = await _context.SystemHistories
+               .Where(x => x.TableItemId == reservoir.Id)
+               .OrderBy(x => x.CreatedAt)
+               .LastOrDefaultAsync();
 
             reservoir.IsActive = true;
             reservoir.DeletedAt = null;
 
+            var currentData = _mapper.Map<Reservoir, ReservoirHistoryDTO>(reservoir);
+            currentData.updatedAt = DateTime.UtcNow;
+
+            var history = new SystemHistory
+            {
+                Table = HistoryColumns.TableReservoirs,
+                TypeOperation = HistoryColumns.Restore,
+                CreatedBy = reservoir.User?.Id,
+                UpdatedBy = user?.Id,
+                TableItemId = reservoir.Id,
+                CurrentData = currentData,
+                PreviousData = lastHistory?.CurrentData,
+                FieldsChanged = new
+                {
+                    reservoir.IsActive,
+                    reservoir.DeletedAt,
+                }
+            };
+
+            await _context.SystemHistories.AddAsync(history);
+
             _context.Reservoirs.Update(reservoir);
+
             await _context.SaveChangesAsync();
 
-            var reservoirDTO = _mapper.Map<Reservoir, ReservoirDTO>(reservoir);
+            var reservoirDTO = _mapper.Map<Reservoir, CreateUpdateReservoirDTO>(reservoir);
 
             return Ok(reservoirDTO);
+        }
+
+        [HttpGet("{id:Guid}/history")]
+        public async Task<IActionResult> GetHistory([FromRoute] Guid id)
+        {
+            var reservoirHistories = await _context.SystemHistories
+                  .Where(x => x.TableItemId == id)
+                  .OrderByDescending(x => x.CreatedAt)
+                  .ToListAsync();
+
+            if (reservoirHistories is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = "Reservoir not found"
+                });
+
+            foreach (var history in reservoirHistories)
+            {
+                history.PreviousData = history.PreviousData is not null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(history.PreviousData.ToString()!) : null;
+
+                history.CurrentData = history.CurrentData is not null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(history.CurrentData.ToString()!) : null;
+
+                history.FieldsChanged = history.FieldsChanged is not null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(history.FieldsChanged.ToString()!) : null;
+            }
+
+            return Ok(reservoirHistories);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using PRIO.DTOS.HierarchyDTOS.FieldDTOS;
+﻿using PRIO.DTOS.HierarchyDTOS.ClusterDTOS;
 using PRIO.DTOS.UserDTOS;
 
 namespace PRIO.DTOS.HierarchyDTOS.InstallationDTOS
@@ -9,9 +9,10 @@ namespace PRIO.DTOS.HierarchyDTOS.InstallationDTOS
         public string? Name { get; set; }
         public string? CodInstallationUep { get; set; }
         public string? Description { get; set; }
+        public bool? IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public UserDTO? User { get; set; }
-        public List<FieldDTO>? Fields { get; set; }
+        public ClusterDTO? Cluster { get; set; }
     }
 }

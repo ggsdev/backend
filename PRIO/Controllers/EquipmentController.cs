@@ -13,15 +13,11 @@ namespace PRIO.Controllers
     [ApiController]
     [Route("equipments")]
     [ServiceFilter(typeof(AuthorizationFilter))]
-    public class EquipmentController : ControllerBase
+    public class EquipmentController : BaseApiController
     {
-        private readonly DataContext _context;
-        private readonly IMapper _mapper;
-
         public EquipmentController(DataContext context, IMapper mapper)
+            : base(context, mapper)
         {
-            _context = context;
-            _mapper = mapper;
         }
 
         [HttpPost("equipments")]

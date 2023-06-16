@@ -10,10 +10,6 @@ namespace PRIO.Data.Mappings.HierarchyMappings
         {
             builder.ToTable("Wells");
 
-            builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id)
-                .ValueGeneratedOnAdd();
-
             builder.Property(e => e.Name)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(150)

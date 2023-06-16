@@ -6,18 +6,28 @@ namespace PRIO.ViewModels.Wells
     public class CreateWellViewModel
     {
         public bool? IsActive { get; set; }
+        [StringLength(10, ErrorMessage = "Name cannot exceed 10 characters.")]
         public string? CodWell { get; set; }
         [Required(ErrorMessage = "Name ANP is required")]
+        [StringLength(120, ErrorMessage = "Name cannot exceed 120 characters.")]
         public string? Name { get; set; }
+
+        [Required(ErrorMessage = "Well Operator Name is required")]
+        [StringLength(120, ErrorMessage = "Well Operator Name cannot exceed 120 characters.")]
         public string? WellOperatorName { get; set; }
         [Required(ErrorMessage = "Code ANP is required")]
+        [StringLength(120, ErrorMessage = "CodWellAnp cannot exceed 120 characters.")]
         public string? CodWellAnp { get; set; }
         [Required(ErrorMessage = "Category ANP is required")]
+        [StringLength(120, ErrorMessage = "CategoryAnp cannot exceed 120 characters.")]
         public string? CategoryAnp { get; set; }
+        [StringLength(120, ErrorMessage = "CategoryReclassificationAnp cannot exceed 120 characters.")]
         public string? CategoryReclassificationAnp { get; set; }
+        [StringLength(120, ErrorMessage = "CategoryOperator cannot exceed 120 characters.")]
         public string? CategoryOperator { get; set; }
         public bool StatusOperator { get; set; }
         [Required(ErrorMessage = "Type is required")]
+        [StringLength(120, ErrorMessage = "Type cannot exceed 120 characters.")]
         public string? Type { get; set; }
         [DecimalPrecision(12)]
         public decimal WaterDepth { get; set; }
@@ -43,8 +53,10 @@ namespace PRIO.ViewModels.Wells
         ErrorMessage = "Invalid latitude. Please use the format 'dd,dddddddddd'.")]
         public string? LongitudeDD { get; set; }
         [Required(ErrorMessage = "DatumHorizontal is required")]
+        [StringLength(120, ErrorMessage = "DatumHorizontal cannot exceed 120 characters.")]
         public string? DatumHorizontal { get; set; }
         [Required(ErrorMessage = "TypeBaseCoordinate is required")]
+        [StringLength(120, ErrorMessage = "TypeBaseCoordinate cannot exceed 120 characters.")]
         public string? TypeBaseCoordinate { get; set; }
         [Required(ErrorMessage = "CoordX is required")]
         [RegularExpression(@"^-?\d{1,2},\d{10}$",

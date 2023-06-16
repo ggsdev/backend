@@ -13,6 +13,7 @@ namespace PRIO.ViewModels.Files
         [Required(ErrorMessage = "Base64 string is required")]
         public string? ContentBase64 { get; set; }
         [Required(ErrorMessage = "File name is required")]
+        [StringLength(3, ErrorMessage = "FileName cannot exceed 3 characters.")]
         public string? FileName { get; set; }
 
     }
