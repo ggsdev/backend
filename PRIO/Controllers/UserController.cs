@@ -144,6 +144,10 @@ namespace PRIO.Controllers
                 return NotFound(errorResponse);
             }
 
+            var beforeChangesUser = _mapper.Map<UserHistoryDTO>(user);
+
+            var updatedProperties = ControllerUtils.CompareAndUpdateUser(user, body);
+
             //var userId = (Guid)HttpContext.Items["Id"]!;
             //var userOperation = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
             //if (userOperation is null)

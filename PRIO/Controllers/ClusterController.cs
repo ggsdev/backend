@@ -18,15 +18,11 @@ namespace PRIO.Controllers
     [ApiController]
     [Route("clusters")]
     [ServiceFilter(typeof(AuthorizationFilter))]
-    public class ClusterController : ControllerBase
+    public class ClusterController : BaseApiController
     {
-        private readonly DataContext _context;
-        private readonly IMapper _mapper;
-
         public ClusterController(DataContext context, IMapper mapper)
+            : base(context, mapper)
         {
-            _context = context;
-            _mapper = mapper;
         }
 
         [HttpPost]
