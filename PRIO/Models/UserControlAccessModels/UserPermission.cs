@@ -10,7 +10,8 @@
         public string? MenuRoute { get; set; }
         public string? MenuIcon { get; set; }
         public string? MenuOrder { get; set; }
-        public bool? IsParent { get; set; }
+        public bool? hasChildren { get; set; }
+        public bool? hasParent { get; set; }
         public GroupPermission? GroupMenu { get; set; }
         public List<UserOperation>? UserOperation { get; set; }
         public User? User { get; set; }
