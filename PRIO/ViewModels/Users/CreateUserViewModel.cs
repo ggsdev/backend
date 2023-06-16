@@ -4,16 +4,16 @@ namespace PRIO.ViewModels.Users
 {
     public class CreateUserViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "E-mail is required")]
         [EmailAddress(ErrorMessage = "E-mail invalid")]
         public string? Email { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Name is required")]
         public string? Name { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Username is required")]
         public string? Username { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Password is required")]
         public string? Password { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Type is required")]
         public string? Type { get; set; }
         public string? Description { get; set; }
     }

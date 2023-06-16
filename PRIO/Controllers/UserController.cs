@@ -4,23 +4,22 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS.GlobalDTOS;
+using PRIO.DTOS.HistoryDTOS;
 using PRIO.DTOS.UserDTOS;
 using PRIO.Filters;
+using PRIO.Models;
 using PRIO.Models.UserControlAccessModels;
+using PRIO.Utils;
 using PRIO.ViewModels.Users;
 
 namespace PRIO.Controllers
 {
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : BaseApiController
     {
-        private DataContext _context;
-        private IMapper _mapper;
-
         public UserController(DataContext context, IMapper mapper)
+            : base(context, mapper)
         {
-            _context = context;
-            _mapper = mapper;
         }
 
         #region Get
@@ -49,8 +48,10 @@ namespace PRIO.Controllers
 
             try
             {
+                var userId = Guid.NewGuid();
                 var user = new User
                 {
+                    Id = userId,
                     Name = body.Name,
                     Username = body.Username,
                     Email = body.Email,
@@ -58,6 +59,21 @@ namespace PRIO.Controllers
                     Description = body.Description is not null ? body.Description : null,
                 };
                 await _context.AddAsync(user);
+
+                var currentData = _mapper.Map<User, UserHistoryDTO>(user);
+                currentData.createdAt = DateTime.UtcNow;
+                currentData.updatedAt = DateTime.UtcNow;
+
+                var history = new SystemHistory
+                {
+                    Table = HistoryColumns.TableUsers,
+                    TypeOperation = HistoryColumns.Create,
+                    CreatedBy = user?.Id,
+                    TableItemId = userId,
+                    CurrentData = currentData,
+                };
+
+                await _context.SystemHistories.AddAsync(history);
                 await _context.SaveChangesAsync();
 
                 var userDTO = _mapper.Map<User, UserDTO>(user);
@@ -182,9 +198,10 @@ namespace PRIO.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponseDTO))]
         public async Task<IActionResult> UpdatePartialAsync([FromRoute] Guid id, [FromBody] UpdateUserViewModel body)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
+            var user = await _context.Users
+                .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (user == null || !user.IsActive)
+            if (user is null || user.IsActive is false)
             {
                 var errorResponse = new ErrorResponseDTO
                 {
@@ -194,13 +211,17 @@ namespace PRIO.Controllers
                 return NotFound(errorResponse);
             }
 
-            var userId = (Guid)HttpContext.Items["Id"]!;
-            var userOperation = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
-            if (userOperation is null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = $"User is not found"
-                });
+            var beforeChangesUser = _mapper.Map<UserHistoryDTO>(user);
+
+            var updatedProperties = ControllerUtils.CompareAndUpdateUser(user, body);
+
+            //var userId = (Guid)HttpContext.Items["Id"]!;
+            //var userOperation = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            //if (userOperation is null)
+            //    return NotFound(new ErrorResponseDTO
+            //    {
+            //        Message = $"User is not found"
+            //    });
 
             try
             {

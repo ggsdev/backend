@@ -1,4 +1,6 @@
-﻿namespace PRIO.Models
+﻿using PRIO.Utils;
+
+namespace PRIO.Models
 {
     public class SystemHistory
     {
@@ -11,6 +13,6 @@
         public object? PreviousData { get; set; }
         public object? CurrentData { get; set; }
         public object? FieldsChanged { get; set; }
-        public string TypeOperation { get; set; } = Utils.HistoryColumns.Create;
+        public string TypeOperation { get; set; } = HistoryColumns.Create;
     }
 }

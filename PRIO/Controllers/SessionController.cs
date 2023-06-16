@@ -10,16 +10,13 @@ using PRIO.ViewModels.Users;
 
 namespace PRIO.Controllers
 {
-    public class SessionController : ControllerBase
+    public class SessionController : BaseApiController
     {
-        private DataContext _context;
-        private IMapper _mapper;
         private TokenServices _tokenServices;
 
         public SessionController(DataContext context, IMapper mapper, TokenServices tokenServices)
+    : base(context, mapper)
         {
-            _context = context;
-            _mapper = mapper;
             _tokenServices = tokenServices;
         }
 

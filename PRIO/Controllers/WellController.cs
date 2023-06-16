@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using PRIO.Data;
 using PRIO.DTOS.GlobalDTOS;
 using PRIO.DTOS.HierarchyDTOS.WellDTOS;
+using PRIO.DTOS.HistoryDTOS;
 using PRIO.Filters;
+using PRIO.Models;
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
 using PRIO.Utils;
@@ -15,37 +18,39 @@ namespace PRIO.Controllers
     [ApiController]
     [Route("wells")]
     [ServiceFilter(typeof(AuthorizationFilter))]
-    public class WellController : ControllerBase
+    public class WellController : BaseApiController
     {
-        private readonly DataContext _context;
-        private readonly IMapper _mapper;
-
         public WellController(DataContext context, IMapper mapper)
+            : base(context, mapper)
         {
-            _context = context;
-            _mapper = mapper;
         }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateWellViewModel body)
         {
             var user = HttpContext.Items["User"] as User;
 
-            var wellInDatabase = await _context.Wells.FirstOrDefaultAsync(x => x.CodWell == body.CodWell);
-            if (wellInDatabase is not null)
-                return Conflict(new ErrorResponseDTO
-                {
-                    Message = $"Well with code: {body.CodWell} already exists, try another code."
-                });
+            //var wellInDatabase = await _context.Wells.FirstOrDefaultAsync(x => x.CodWell == body.CodWell);
+            //if (wellInDatabase is not null)
+            //    return Conflict(new ErrorResponseDTO
+            //    {
+            //        Message = $"Well with code: {body.CodWell} already exists, try another code."
+            //    });
 
-            var fieldFound = await _context.Fields.FirstOrDefaultAsync(x => x.Id == body.FieldId);
-            if (fieldFound is null)
+            var field = await _context.Fields
+                .FirstOrDefaultAsync(x => x.Id == body.FieldId);
+
+            if (field is null)
                 return NotFound(new ErrorResponseDTO
                 {
-                    Message = $"Field is not found"
+                    Message = $"Field not found"
                 });
+
+            var wellId = Guid.NewGuid();
 
             var well = new Well
             {
+                Id = wellId,
                 CodWell = body.CodWell is not null ? body.CodWell : GenerateCode.Generate(body.Name),
                 Name = body.Name,
                 WellOperatorName = body.WellOperatorName,
@@ -68,16 +73,31 @@ namespace PRIO.Controllers
                 CoordX = body.CoordX,
                 CoordY = body.CoordY,
                 Description = body.Description,
-                Field = fieldFound,
+                Field = field,
                 User = user,
                 IsActive = body.IsActive is not null ? body.IsActive.Value : true,
             };
 
             await _context.Wells.AddAsync(well);
 
+            var currentData = _mapper.Map<Well, WellHistoryDTO>(well);
+            currentData.createdAt = DateTime.UtcNow;
+            currentData.updatedAt = DateTime.UtcNow;
+
+            var history = new SystemHistory
+            {
+                Table = HistoryColumns.TableWells,
+                TypeOperation = HistoryColumns.Create,
+                CreatedBy = user?.Id,
+                TableItemId = wellId,
+                CurrentData = currentData,
+            };
+
+            await _context.SystemHistories.AddAsync(history);
+
             await _context.SaveChangesAsync();
 
-            var wellDTO = _mapper.Map<Well, WellDTO>(well);
+            var wellDTO = _mapper.Map<Well, CreateUpdateWellDTO>(well);
 
             return Created($"wells/{well.Id}", wellDTO);
         }
@@ -85,7 +105,14 @@ namespace PRIO.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var wells = await _context.Wells.Include(x => x.Completions).Include(x => x.User).ToListAsync();
+            var wells = await _context.Wells
+                .Include(x => x.User)
+                .Include(x => x.Completions)
+                .Include(x => x.Field)
+                .ThenInclude(f => f.Installation)
+                .ThenInclude(i => i.Cluster)
+                .ToListAsync();
+
             var wellsDTO = _mapper.Map<List<Well>, List<WellDTO>>(wells);
             return Ok(wellsDTO);
         }
@@ -93,7 +120,14 @@ namespace PRIO.Controllers
         [HttpGet("{id:Guid}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var well = await _context.Wells.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id);
+            var well = await _context.Wells
+               .Include(x => x.User)
+                .Include(x => x.Completions)
+                .Include(x => x.Field)
+                .ThenInclude(f => f.Installation)
+                .ThenInclude(i => i.Cluster)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
             if (well is null)
                 return NotFound(new ErrorResponseDTO
                 {
@@ -109,57 +143,71 @@ namespace PRIO.Controllers
         {
             var user = HttpContext.Items["User"] as User;
 
-            var well = await _context.Wells.Include(x => x.Field).Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id);
+            var well = await _context.Wells
+                .Include(x => x.Field)
+                .Include(x => x.User)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
             if (well is null)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Well not found"
                 });
 
+            var beforeChangesWell = _mapper.Map<WellHistoryDTO>(well);
+
+            var updatedProperties = ControllerUtils.CompareAndUpdateWell(well, body);
+
+            if (updatedProperties.Any() is false && well.Field?.Id == body.FieldId)
+                return BadRequest(new ErrorResponseDTO
+                {
+                    Message = "This well already has these values, try to update to other values."
+                });
+
             if (body.FieldId is not null)
             {
-                var fieldInDatabase = await _context.Fields.FirstOrDefaultAsync(x => x.Id == body.FieldId);
+                var fieldInDatabase = await _context.Fields
+                    .FirstOrDefaultAsync(x => x.Id == body.FieldId);
 
                 if (fieldInDatabase is null)
                     return NotFound(new ErrorResponseDTO
                     {
                         Message = "Field not found"
                     });
-                well.Field = fieldInDatabase is not null ? fieldInDatabase : well.Field;
 
+                well.Field = fieldInDatabase;
+                updatedProperties[nameof(WellHistoryDTO.fieldId)] = fieldInDatabase.Id;
             }
-            else
+
+            var firstHistory = await _context.SystemHistories
+               .OrderBy(x => x.CreatedAt)
+               .Where(x => x.TableItemId == id)
+               .FirstOrDefaultAsync();
+
+            var changedFields = ControllerUtils.DictionaryToObject(updatedProperties);
+
+            var currentData = _mapper.Map<Well, WellHistoryDTO>(well);
+            currentData.updatedAt = DateTime.UtcNow;
+
+            var history = new SystemHistory
             {
-                well.Field = well.Field;
-            }
+                Table = HistoryColumns.TableWells,
+                TypeOperation = HistoryColumns.Update,
+                CreatedBy = firstHistory?.CreatedBy,
+                UpdatedBy = user?.Id,
+                TableItemId = well.Id,
+                FieldsChanged = changedFields,
+                CurrentData = currentData,
+                PreviousData = beforeChangesWell,
+            };
 
-            well.Name = body.Name is not null ? body.Name : well.Name;
-            well.CodWell = body.CodWell is not null ? body.CodWell : well.CodWell;
-            well.WellOperatorName = body.WellOperatorName is not null ? body.WellOperatorName : well.WellOperatorName;
-            well.CodWellAnp = body.CodWellAnp is not null ? body.CodWellAnp : well.CodWellAnp;
-            well.CategoryAnp = body.CategoryAnp is not null ? body.CategoryAnp : well.CategoryAnp;
-            well.CategoryReclassificationAnp = body.CategoryReclassificationAnp is not null ? body.CategoryReclassificationAnp : well.CategoryReclassificationAnp;
-            well.CategoryOperator = body.CategoryOperator is not null ? body.CategoryOperator : well.CategoryOperator;
-            well.StatusOperator = body.StatusOperator is not null ? body.StatusOperator : well.StatusOperator;
-            well.Type = body.Type is not null ? body.Type : well.Type;
-            well.WaterDepth = body.WaterDepth is not null ? body.WaterDepth : well.WaterDepth;
-            well.TopOfPerforated = body.TopOfPerforated is not null ? body.TopOfPerforated : well.TopOfPerforated;
-            well.BaseOfPerforated = body.BaseOfPerforated is not null ? body.BaseOfPerforated : well.BaseOfPerforated;
-            well.ArtificialLift = body.ArtificialLift is not null ? body.ArtificialLift : well.ArtificialLift;
-            well.Latitude4C = body.Latitude4C is not null ? body.Latitude4C : well.Latitude4C;
-            well.Longitude4C = body.Longitude4C is not null ? body.Longitude4C : well.Longitude4C;
-            well.LatitudeDD = body.LatitudeDD is not null ? body.LatitudeDD : well.LatitudeDD;
-            well.LongitudeDD = body.LongitudeDD is not null ? body.LongitudeDD : well.LongitudeDD;
-            well.DatumHorizontal = body.DatumHorizontal is not null ? body.DatumHorizontal : well.DatumHorizontal;
-            well.TypeBaseCoordinate = body.TypeBaseCoordinate is not null ? body.TypeBaseCoordinate : well.TypeBaseCoordinate;
-            well.CoordX = body.CoordX is not null ? body.CoordX : well.CoordX;
-            well.CoordY = body.CoordY is not null ? body.CoordY : well.CoordY;
-            well.Description = body.Description is not null ? body.Description : well.Description;
+            await _context.SystemHistories.AddAsync(history);
 
-            _context.Update(well);
+            _context.Wells.Update(well);
+
             await _context.SaveChangesAsync();
 
-            var wellDTO = _mapper.Map<Well, WellDTO>(well);
+            var wellDTO = _mapper.Map<Well, CreateUpdateWellDTO>(well);
             return Ok(wellDTO);
         }
 
@@ -168,18 +216,47 @@ namespace PRIO.Controllers
         {
             var user = HttpContext.Items["User"] as User;
 
-            var well = await _context.Wells.FirstOrDefaultAsync(x => x.Id == id);
-            if (well is null || !well.IsActive)
+            var well = await _context.Wells
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (well is null || well.IsActive is false)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Well not found or inactive already"
                 });
 
+            var lastHistory = await _context.SystemHistories
+                .OrderBy(x => x.CreatedAt)
+                .Where(x => x.TableItemId == well.Id)
+                .LastOrDefaultAsync();
+
             well.IsActive = false;
             well.DeletedAt = DateTime.UtcNow;
 
-            Console.WriteLine(well.WaterDepth);
-            _context.Update(well);
+            var currentData = _mapper.Map<Well, WellHistoryDTO>(well);
+            currentData.updatedAt = (DateTime)well.DeletedAt;
+            currentData.deletedAt = well.DeletedAt;
+
+            var history = new SystemHistory
+            {
+                Table = HistoryColumns.TableWells,
+                TypeOperation = HistoryColumns.Delete,
+                CreatedBy = well.User?.Id,
+                UpdatedBy = user?.Id,
+                TableItemId = well.Id,
+                CurrentData = currentData,
+                PreviousData = lastHistory?.CurrentData,
+                FieldsChanged = new
+                {
+                    well.IsActive,
+                    well.DeletedAt,
+                }
+            };
+
+            await _context.SystemHistories.AddAsync(history);
+
+            _context.Wells.Update(well);
+
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -190,44 +267,78 @@ namespace PRIO.Controllers
         {
             var user = HttpContext.Items["User"] as User;
 
-            var well = await _context.Wells.Include(x => x.Field).Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id);
+            var well = await _context.Wells
+                .Include(x => x.Field)
+                .Include(x => x.User)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
             if (well is null || well.IsActive is true)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Well not found or active already"
                 });
 
+            var lastHistory = await _context.SystemHistories
+               .Where(x => x.TableItemId == well.Id)
+               .OrderBy(x => x.CreatedAt)
+               .LastOrDefaultAsync();
 
             well.IsActive = true;
             well.DeletedAt = null;
 
-            _context.Update(well);
+            var currentData = _mapper.Map<Well, WellHistoryDTO>(well);
+            currentData.updatedAt = DateTime.UtcNow;
+
+            var history = new SystemHistory
+            {
+                Table = HistoryColumns.TableWells,
+                TypeOperation = HistoryColumns.Restore,
+                CreatedBy = well.User?.Id,
+                UpdatedBy = user?.Id,
+                TableItemId = well.Id,
+                CurrentData = currentData,
+                PreviousData = lastHistory?.CurrentData,
+                FieldsChanged = new
+                {
+                    well.IsActive,
+                    well.DeletedAt,
+                }
+            };
+
+            await _context.SystemHistories.AddAsync(history);
+
+            _context.Wells.Update(well);
+
             await _context.SaveChangesAsync();
 
-            var wellDTO = _mapper.Map<Well, WellDTO>(well);
+            var wellDTO = _mapper.Map<Well, CreateUpdateWellDTO>(well);
             return Ok(wellDTO);
         }
 
-        //[HttpGet("{id:Guid}/history")]
-        //public async Task<IActionResult> GetHistory([FromRoute] Guid id)
-        //{
-        //    var wellHistories = await _context.WellHistories.Include(x => x.User)
-        //                                              .Include(x => x.Field)
-        //                                              .Include(x => x.Well)
-        //                                              .Where(x => x.Well.Id == id)
-        //                                              .OrderByDescending(x => x.CreatedAt)
-        //                                              .ToListAsync();
+        [HttpGet("{id:Guid}/history")]
+        public async Task<IActionResult> GetHistory([FromRoute] Guid id)
+        {
+            var wellHistories = await _context.SystemHistories
+                   .Where(x => x.TableItemId == id)
+                   .OrderByDescending(x => x.CreatedAt)
+                   .ToListAsync();
 
-        //    if (wellHistories is null)
-        //        return NotFound(new ErrorResponseDTO
-        //        {
-        //            Message = "Well not found"
-        //        });
+            if (wellHistories is null)
+                return NotFound(new ErrorResponseDTO
+                {
+                    Message = "Well not found"
+                });
 
+            foreach (var history in wellHistories)
+            {
+                history.PreviousData = history.PreviousData is not null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(history.PreviousData.ToString()!) : null;
 
-        //    var wellHistoryDTO = _mapper.Map<List<WellHistory>, List<WellHistoryDTO>>(wellHistories);
+                history.CurrentData = history.CurrentData is not null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(history.CurrentData.ToString()!) : null;
 
-        //    return Ok(wellHistoryDTO);
-        //}
+                history.FieldsChanged = history.FieldsChanged is not null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(history.FieldsChanged.ToString()!) : null;
+            }
+
+            return Ok(wellHistories);
+        }
     }
 }
