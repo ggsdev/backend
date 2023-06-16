@@ -8,6 +8,7 @@ using PRIO.DTOS.HierarchyDTOS.MeasuringEquipment;
 using PRIO.DTOS.HierarchyDTOS.ReservoirDTOS;
 using PRIO.DTOS.HierarchyDTOS.WellDTOS;
 using PRIO.DTOS.HierarchyDTOS.ZoneDTOS;
+using PRIO.DTOS.HistoryDTOS;
 using PRIO.DTOS.UserDTOS;
 using PRIO.Files.XML._001;
 using PRIO.Files.XML._002;
@@ -64,6 +65,8 @@ namespace PRIO.Utils.MappingProfiles
             #endregion
 
             CreateMap<Cluster, ClusterDTO>();
+            CreateMap<Cluster, Cluster>();
+            CreateMap<Cluster, ClusterHistoryDTO>();
 
             CreateMap<Installation, InstallationDTO>();
             CreateMap<Installation, CreateUpdateInstallationDTO>();
@@ -83,7 +86,7 @@ namespace PRIO.Utils.MappingProfiles
             CreateMap<Completion, CompletionDTO>();
 
             CreateMap<User, UserDTO>();
-            CreateMap<Cluster, Cluster>();
+
             CreateMap<MeasuringEquipment, MeasuringEquipmentDTO>();
         }
 

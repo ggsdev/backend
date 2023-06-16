@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using PRIO.Data;
 using PRIO.DTOS.GlobalDTOS;
 using PRIO.DTOS.HierarchyDTOS.ClusterDTOS;
+using PRIO.DTOS.HistoryDTOS;
 using PRIO.Filters;
 using PRIO.Models;
 using PRIO.Models.HierarchyModels;
@@ -56,9 +57,10 @@ namespace PRIO.Controllers
             var history = new SystemHistory
             {
                 Table = HistoryColumns.TableCluster,
+                TypeOperation = HistoryColumns.Create,
                 CreatedBy = user?.Id,
                 TableItemId = clusterId,
-                UpdatedData = cluster,
+                CurrentData = cluster,
             };
 
             await _context.SystemHistories.AddAsync(history);
@@ -74,7 +76,7 @@ namespace PRIO.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var clusters = await _context.Clusters.Include(x => x.Installations).Include(x => x.User).ToListAsync();
+            var clusters = await _context.Clusters.Include(x => x.User).ToListAsync();
             var clustersDTO = _mapper.Map<List<Cluster>, List<ClusterDTO>>(clusters);
             return Ok(clustersDTO);
         }
@@ -104,30 +106,35 @@ namespace PRIO.Controllers
                     Message = "Cluster not found"
                 });
 
-            var beforeCluster = _mapper.Map<Cluster>(cluster);
+            var beforeChangesCluster = _mapper.Map<ClusterHistoryDTO>(cluster);
+
             var updatedProperties = ControllerUtils.CompareAndUpdateCluster(cluster, body);
 
-            if (!updatedProperties.Any())
+            if (updatedProperties.Any() is false)
                 return BadRequest(new ErrorResponseDTO
                 {
-                    Message = $"{cluster.Name} already has these values, try to other values."
+                    Message = "This cluster already has these values, try to update to other values."
                 });
 
-            var changedFieldsToObject = ControllerUtils.DictionaryToObject(updatedProperties);
-
             _context.Clusters.Update(cluster);
-            var firstHistory = await _context.SystemHistories.OrderBy(x => x.CreatedAt).FirstOrDefaultAsync();
+
+            var firstHistory = await _context.SystemHistories
+                .OrderBy(x => x.CreatedAt)
+                .Where(x => x.TableItemId == id)
+                .FirstOrDefaultAsync();
+
+            var changedFields = ControllerUtils.DictionaryToObject(updatedProperties);
 
             var history = new SystemHistory
             {
                 Table = HistoryColumns.TableCluster,
+                TypeOperation = HistoryColumns.Update,
                 CreatedBy = firstHistory?.CreatedBy,
                 UpdatedBy = user?.Id,
                 TableItemId = cluster.Id,
-                TypeOperation = HistoryColumns.Update,
-                FieldsChanged = changedFieldsToObject,
-                UpdatedData = cluster,
-                PreviousData = beforeCluster,
+                FieldsChanged = changedFields,
+                CurrentData = _mapper.Map<Cluster, ClusterHistoryDTO>(cluster),
+                PreviousData = beforeChangesCluster,
             };
 
             await _context.SystemHistories.AddAsync(history);
@@ -146,11 +153,13 @@ namespace PRIO.Controllers
             if (cluster is null || cluster.IsActive is true)
                 return NotFound(new ErrorResponseDTO
                 {
-                    Message = "Cluster not found or active already"
+                    Message = "Cluster not found or already active"
                 });
 
-            var firstHistory = await _context.SystemHistories.OrderBy(x => x.CreatedAt).FirstOrDefaultAsync();
-            var lastHistory = await _context.SystemHistories.OrderByDescending(x => x.CreatedAt).FirstOrDefaultAsync();
+            var lastHistory = await _context.SystemHistories
+                .Where(x => x.TableItemId == cluster.Id)
+                .OrderBy(x => x.CreatedAt)
+                .LastOrDefaultAsync();
 
             cluster.IsActive = true;
             cluster.DeletedAt = null;
@@ -158,11 +167,11 @@ namespace PRIO.Controllers
             var history = new SystemHistory
             {
                 Table = HistoryColumns.TableCluster,
-                CreatedBy = firstHistory?.CreatedBy,
+                TypeOperation = HistoryColumns.Restore,
+                CreatedBy = cluster.User?.Id,
                 UpdatedBy = user?.Id,
                 TableItemId = cluster.Id,
-                TypeOperation = HistoryColumns.Restore,
-                UpdatedData = cluster,
+                CurrentData = _mapper.Map<Cluster, ClusterHistoryDTO>(cluster),
                 PreviousData = lastHistory?.PreviousData,
                 FieldsChanged = new
                 {
@@ -185,15 +194,17 @@ namespace PRIO.Controllers
         {
             var user = HttpContext.Items["User"] as User;
 
-            var cluster = await _context.Clusters.FirstOrDefaultAsync(x => x.Id == id);
-            if (cluster is null || !cluster.IsActive)
+            var cluster = await _context.Clusters.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id);
+            if (cluster is null || cluster.IsActive is false)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Cluster not found or inactive already"
                 });
 
-            var firstHistory = await _context.SystemHistories.OrderBy(x => x.CreatedAt).FirstOrDefaultAsync();
-            var lastHistory = await _context.SystemHistories.OrderByDescending(x => x.CreatedAt).FirstOrDefaultAsync();
+            var lastHistory = await _context.SystemHistories
+                .OrderBy(x => x.CreatedAt)
+                .Where(x => x.TableItemId == cluster.Id)
+                .LastOrDefaultAsync();
 
             cluster.IsActive = false;
             cluster.DeletedAt = DateTime.UtcNow;
@@ -201,11 +212,11 @@ namespace PRIO.Controllers
             var history = new SystemHistory
             {
                 Table = HistoryColumns.TableCluster,
-                CreatedBy = firstHistory?.CreatedBy,
+                CreatedBy = cluster.User?.Id,
                 UpdatedBy = user?.Id,
                 TableItemId = cluster.Id,
                 TypeOperation = HistoryColumns.Delete,
-                UpdatedData = cluster,
+                CurrentData = _mapper.Map<Cluster, ClusterHistoryDTO>(cluster),
                 PreviousData = lastHistory?.PreviousData,
                 FieldsChanged = new
                 {
@@ -242,7 +253,7 @@ namespace PRIO.Controllers
             {
                 history.PreviousData = history.PreviousData is not null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(history.PreviousData.ToString()) : null;
 
-                history.UpdatedData = JsonConvert.DeserializeObject<Dictionary<string, object>>(history.UpdatedData.ToString());
+                history.CurrentData = history.CurrentData is not null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(history.CurrentData.ToString()) : null;
 
                 history.FieldsChanged = history.FieldsChanged is not null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(history.FieldsChanged.ToString()) : null;
             }

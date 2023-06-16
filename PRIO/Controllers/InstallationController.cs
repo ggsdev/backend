@@ -55,7 +55,7 @@ namespace PRIO.Controllers
                 Table = HistoryColumns.TableCluster,
                 CreatedBy = user?.Id,
                 TableItemId = installationId,
-                UpdatedData = installation,
+                CurrentData = installation,
             };
 
             await _context.SystemHistories.AddAsync(history);
@@ -130,18 +130,24 @@ namespace PRIO.Controllers
 
             var beforeInstallation = _mapper.Map<Installation>(installation);
             var updatedProperties = ControllerUtils.CompareAndUpdateInstallation(installation, body);
-            if (body.ClusterId is not null && clusterInDatabase is null && body.ClusterId != clusterInDatabase?.Id)
-            {
 
-                installation.Cluster = clusterInDatabase;
-                updatedProperties[nameof(Installation.Cluster)] = clusterInDatabase;
+            if (!updatedProperties.Any() || installation.Cluster?.Id == body.ClusterId)
+                return BadRequest(new ErrorResponseDTO
+                {
+                    Message = $"{installation.Name} already has these values, try other values."
+                });
 
+            if (body.ClusterId is not null && clusterInDatabase is null)
                 return NotFound(new ErrorResponseDTO
                 {
                     Message = "Cluster not found"
                 });
-            }
 
+            if (body.ClusterId is not null && clusterInDatabase is not null)
+            {
+                installation.Cluster = clusterInDatabase;
+                updatedProperties[nameof(Installation.Cluster)] = clusterInDatabase;
+            }
 
             _context.Installations.Update(installation);
             await _context.SaveChangesAsync();

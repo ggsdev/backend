@@ -32,7 +32,7 @@ namespace PRIO.Data.Mappings
                  v => JsonConvert.DeserializeObject<object>(v)
              );
 
-            builder.Property(x => x.UpdatedData)
+            builder.Property(x => x.CurrentData)
                 .HasColumnType("varchar(max)")
                 .IsRequired()
                 .HasConversion(
