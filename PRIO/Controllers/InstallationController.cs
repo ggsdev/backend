@@ -124,7 +124,7 @@ namespace PRIO.Controllers
 
             var beforeChangesInstallation = _mapper.Map<InstallationHistoryDTO>(installation);
 
-            var updatedProperties = ControllerUtils.CompareAndUpdateInstallation(installation, body);
+            var updatedProperties = UpdateFields.CompareAndUpdateInstallation(installation, body);
 
             if (updatedProperties.Any() is false && installation.Cluster?.Id == body.ClusterId)
                 return BadRequest(new ErrorResponseDTO
@@ -154,7 +154,7 @@ namespace PRIO.Controllers
                .Where(x => x.TableItemId == id)
                .FirstOrDefaultAsync();
 
-            var changedFields = ControllerUtils.DictionaryToObject(updatedProperties);
+            var changedFields = UpdateFields.DictionaryToObject(updatedProperties);
 
             var currentData = _mapper.Map<Installation, InstallationHistoryDTO>(installation);
             currentData.updatedAt = DateTime.UtcNow;

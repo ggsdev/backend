@@ -156,7 +156,7 @@ namespace PRIO.Controllers
 
             var beforeChangesWell = _mapper.Map<WellHistoryDTO>(well);
 
-            var updatedProperties = ControllerUtils.CompareAndUpdateWell(well, body);
+            var updatedProperties = UpdateFields.CompareAndUpdateWell(well, body);
 
             if (updatedProperties.Any() is false && well.Field?.Id == body.FieldId)
                 return BadRequest(new ErrorResponseDTO
@@ -184,7 +184,7 @@ namespace PRIO.Controllers
                .Where(x => x.TableItemId == id)
                .FirstOrDefaultAsync();
 
-            var changedFields = ControllerUtils.DictionaryToObject(updatedProperties);
+            var changedFields = UpdateFields.DictionaryToObject(updatedProperties);
 
             var currentData = _mapper.Map<Well, WellHistoryDTO>(well);
             currentData.updatedAt = DateTime.UtcNow;

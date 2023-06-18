@@ -12,7 +12,7 @@ using System.Dynamic;
 
 namespace PRIO.Utils
 {
-    public static class ControllerUtils
+    public static class UpdateFields
     {
         public static Dictionary<string, object> CompareAndUpdateCluster(Cluster cluster, UpdateClusterViewModel body)
         {

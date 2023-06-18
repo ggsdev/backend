@@ -140,7 +140,7 @@ namespace PRIO.Controllers
 
             var beforeChangesField = _mapper.Map<FieldHistoryDTO>(field);
 
-            var updatedProperties = ControllerUtils.CompareAndUpdateField(field, body);
+            var updatedProperties = UpdateFields.CompareAndUpdateField(field, body);
 
             if (updatedProperties.Any() is false && field.Installation?.Id == body.InstallationId)
                 return BadRequest(new ErrorResponseDTO
@@ -170,7 +170,7 @@ namespace PRIO.Controllers
                .Where(x => x.TableItemId == id)
                .FirstOrDefaultAsync();
 
-            var changedFields = ControllerUtils.DictionaryToObject(updatedProperties);
+            var changedFields = UpdateFields.DictionaryToObject(updatedProperties);
 
             var currentData = _mapper.Map<Field, FieldHistoryDTO>(field);
             currentData.updatedAt = DateTime.UtcNow;

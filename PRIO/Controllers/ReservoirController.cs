@@ -140,7 +140,7 @@ namespace PRIO.Controllers
 
             var beforeChangesReservoir = _mapper.Map<ReservoirHistoryDTO>(reservoir);
 
-            var updatedProperties = ControllerUtils.CompareAndUpdateReservoir(reservoir, body);
+            var updatedProperties = UpdateFields.CompareAndUpdateReservoir(reservoir, body);
 
             if (updatedProperties.Any() is false && reservoir.Zone?.Id == body.ZoneId)
                 return BadRequest(new ErrorResponseDTO
@@ -164,7 +164,7 @@ namespace PRIO.Controllers
               .Where(x => x.TableItemId == id)
               .FirstOrDefaultAsync();
 
-            var changedFields = ControllerUtils.DictionaryToObject(updatedProperties);
+            var changedFields = UpdateFields.DictionaryToObject(updatedProperties);
 
             var currentData = _mapper.Map<Reservoir, ReservoirHistoryDTO>(reservoir);
             currentData.updatedAt = DateTime.UtcNow;

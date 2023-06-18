@@ -98,7 +98,7 @@ namespace PRIO.Services
 
             var beforeChangesCluster = _mapper.Map<ClusterHistoryDTO>(cluster);
 
-            var updatedProperties = ControllerUtils.CompareAndUpdateCluster(cluster, body);
+            var updatedProperties = UpdateFields.CompareAndUpdateCluster(cluster, body);
 
             if (updatedProperties.Any() is false)
                 throw new BadRequestException("This cluster already has these values, try to update to other values.");
@@ -110,7 +110,7 @@ namespace PRIO.Services
                 .Where(x => x.TableItemId == id)
                 .FirstOrDefaultAsync();
 
-            var changedFields = ControllerUtils.DictionaryToObject(updatedProperties);
+            var changedFields = UpdateFields.DictionaryToObject(updatedProperties);
 
             var currentData = _mapper.Map<Cluster, ClusterHistoryDTO>(cluster);
             currentData.updatedAt = DateTime.UtcNow;
