@@ -25,7 +25,7 @@ namespace PRIO.Services
         }
 
 
-        public async Task<ClusterDTO> Create(CreateClusterViewModel body, User user)
+        public async Task<ClusterDTO> CreateCluster(CreateClusterViewModel body, User user)
         {
             var clusterId = Guid.NewGuid();
 
@@ -64,7 +64,7 @@ namespace PRIO.Services
             return clusterDTO;
         }
 
-        public async Task<List<ClusterDTO>> Get()
+        public async Task<List<ClusterDTO>> GetClusters()
         {
             var clusters = await _context.Clusters
                 .Include(x => x.User)
@@ -74,7 +74,7 @@ namespace PRIO.Services
             return clustersDTO;
         }
 
-        public async Task<ClusterDTO> GetById(Guid id)
+        public async Task<ClusterDTO> GetClusterById(Guid id)
         {
             var cluster = await _context.Clusters
                 .Include(x => x.User)
@@ -87,7 +87,7 @@ namespace PRIO.Services
             return clusterDTO;
         }
 
-        public async Task<ClusterDTO> Update(Guid id, UpdateClusterViewModel body, User user)
+        public async Task<ClusterDTO> UpdateCluster(Guid id, UpdateClusterViewModel body, User user)
         {
             var cluster = await _context.Clusters
                 .Include(x => x.User)
@@ -135,7 +135,7 @@ namespace PRIO.Services
             return clusterDTO;
         }
 
-        public async Task Delete(Guid id, User user)
+        public async Task DeleteCluster(Guid id, User user)
         {
             var cluster = await _context.Clusters
                 .Include(x => x.User)
@@ -179,7 +179,7 @@ namespace PRIO.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<ClusterDTO> Restore(Guid id, User user)
+        public async Task<ClusterDTO> RestoreCluster(Guid id, User user)
         {
             var cluster = await _context.Clusters
                .Include(x => x.User)
@@ -225,7 +225,7 @@ namespace PRIO.Services
             return clusterDTO;
         }
 
-        public async Task<List<SystemHistory>> GetHistory(Guid id)
+        public async Task<List<SystemHistory>> GetClusterHistory(Guid id)
         {
             var clusterHistories = await _context.SystemHistories
                    .Where(x => x.TableItemId == id)

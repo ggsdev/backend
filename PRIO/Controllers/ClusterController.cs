@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PRIO.DTOS.GlobalDTOS;
 using PRIO.Filters;
 using PRIO.Models.UserControlAccessModels;
 using PRIO.Services;
@@ -22,18 +23,21 @@ namespace PRIO.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateClusterViewModel body)
         {
-            var user = HttpContext.Items["User"] as User;
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
 
-            var clusterDTO = await _clusterServices.Create(body, user);
+            var clusterDTO = await _clusterServices.CreateCluster(body, user);
 
             return Created($"clusters/{clusterDTO.Id}", clusterDTO);
         }
 
-
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var clustersDTO = await _clusterServices.Get();
+            var clustersDTO = await _clusterServices.GetClusters();
 
             return Ok(clustersDTO);
         }
@@ -41,7 +45,7 @@ namespace PRIO.Controllers
         [HttpGet("{id:Guid}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var clusterDTO = await _clusterServices.GetById(id);
+            var clusterDTO = await _clusterServices.GetClusterById(id);
 
             return Ok(clusterDTO);
         }
@@ -49,9 +53,13 @@ namespace PRIO.Controllers
         [HttpPatch("{id:Guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateClusterViewModel body)
         {
-            var user = HttpContext.Items["User"] as User;
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
 
-            var clusterDTO = await _clusterServices.Update(id, body, user);
+            var clusterDTO = await _clusterServices.UpdateCluster(id, body, user);
 
             return Ok(clusterDTO);
         }
@@ -59,20 +67,27 @@ namespace PRIO.Controllers
         [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            var user = HttpContext.Items["User"] as User;
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
 
-            await _clusterServices.Delete(id, user);
+            await _clusterServices.DeleteCluster(id, user);
 
             return NoContent();
         }
 
-
         [HttpPatch("{id:Guid}/restore")]
         public async Task<IActionResult> Restore([FromRoute] Guid id)
         {
-            var user = HttpContext.Items["User"] as User;
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
 
-            var clusterDTO = await _clusterServices.Restore(id, user);
+            var clusterDTO = await _clusterServices.RestoreCluster(id, user);
 
             return Ok(clusterDTO);
         }
@@ -80,7 +95,7 @@ namespace PRIO.Controllers
         [HttpGet("{id:Guid}/history")]
         public async Task<IActionResult> GetHistory([FromRoute] Guid id)
         {
-            var clusterHistories = await _clusterServices.GetHistory(id);
+            var clusterHistories = await _clusterServices.GetClusterHistory(id);
 
             return Ok(clusterHistories);
         }
