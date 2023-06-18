@@ -47,7 +47,6 @@ static void ConfigureServices(IServiceCollection services)
         config.Filters.Add(new AuthorizeFilter(policy));
     });
 
-    services.AddScoped<AuthorizationFilter>();
 
     var mapperConfig = new MapperConfiguration(cfg =>
     {
@@ -55,11 +54,13 @@ static void ConfigureServices(IServiceCollection services)
     });
 
     IMapper mapper = mapperConfig.CreateMapper();
-    services.AddSingleton(mapper);
 
+    services.AddSingleton(mapper);
     services.AddEndpointsApiExplorer();
     services.AddDbContext<DataContext>();
+    services.AddScoped<AuthorizationFilter>();
     services.AddScoped<TokenServices>();
+    services.AddScoped<ClusterServices>();
 
     services.AddAuthentication(x =>
     {

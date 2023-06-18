@@ -13,8 +13,6 @@ namespace PRIO.ViewModels.Users
         public string? Username { get; set; }
         [Required(ErrorMessage = "Password is required")]
         public string? Password { get; set; }
-        [Required(ErrorMessage = "Type is required")]
-        public string? Type { get; set; }
         public string? Description { get; set; }
     }
 }
