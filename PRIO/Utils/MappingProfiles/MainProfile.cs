@@ -94,11 +94,14 @@ namespace PRIO.Utils.MappingProfiles
             CreateMap<Well, CreateUpdateWellDTO>();
 
             CreateMap<Completion, CompletionDTO>();
+            CreateMap<Completion, CompletionHistoryDTO>();
             CreateMap<Completion, CompletionWithouWellDTO>();
 
             CreateMap<User, UserDTO>();
 
             CreateMap<MeasuringEquipment, MeasuringEquipmentDTO>();
+            CreateMap<MeasuringEquipment, MeasuringEquipmentHistoryDTO>();
+
             CreateMap<Menu, MenuParentDTO>();
             CreateMap<Menu, MenuChildrenDTO>();
             CreateMap<User, ProfileDTO>();

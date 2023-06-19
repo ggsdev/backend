@@ -21,7 +21,8 @@ namespace PRIO.Filters
 
             if (userId is not null)
             {
-                var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+                var user = await _context.Users
+                    .FirstOrDefaultAsync(x => x.Id == userId);
 
                 if (user is null)
                 {

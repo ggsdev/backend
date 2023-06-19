@@ -2,8 +2,10 @@
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
 using PRIO.ViewModels.Clusters;
+using PRIO.ViewModels.Completions;
 using PRIO.ViewModels.Fields;
 using PRIO.ViewModels.Installations;
+using PRIO.ViewModels.MeasuringEquipment;
 using PRIO.ViewModels.Reservoirs;
 using PRIO.ViewModels.Users;
 using PRIO.ViewModels.Wells;
@@ -12,7 +14,7 @@ using System.Dynamic;
 
 namespace PRIO.Utils
 {
-    public static class ControllerUtils
+    public static class UpdateFields
     {
         public static Dictionary<string, object> CompareAndUpdateCluster(Cluster cluster, UpdateClusterViewModel body)
         {
@@ -215,6 +217,54 @@ namespace PRIO.Utils
             {
                 user.Password = BCrypt.Net.BCrypt.HashPassword(body.Password);
                 updatedProperties[nameof(UserHistoryDTO.password)] = BCrypt.Net.BCrypt.HashPassword(body.Password);
+            }
+
+            return updatedProperties;
+        }
+
+        public static Dictionary<string, object> CompareAndUpdateCompletion(Completion user, UpdateCompletionViewModel body)
+        {
+            var updatedProperties = new Dictionary<string, object>();
+
+            if (body.Description is not null && body.Description != user.Description)
+            {
+                user.Description = body.Description;
+                updatedProperties[nameof(CompletionHistoryDTO.description)] = body.Description;
+            }
+
+            if (body.CodCompletion is not null && body.CodCompletion != user.CodCompletion)
+            {
+                user.CodCompletion = body.CodCompletion;
+                updatedProperties[nameof(CompletionHistoryDTO.codCompletion)] = body.CodCompletion;
+            }
+
+            return updatedProperties;
+        }
+
+        public static Dictionary<string, object> CompareAndUpdateEquipment(MeasuringEquipment equipment, UpdateEquipmentViewModel body)
+        {
+            var updatedProperties = new Dictionary<string, object>();
+
+            var equipmentType = typeof(MeasuringEquipment);
+            var bodyType = typeof(UpdateEquipmentViewModel);
+
+            var properties = bodyType.GetProperties();
+
+            foreach (var property in properties)
+            {
+                var equipmentProperty = equipmentType.GetProperty(property.Name);
+
+                if (equipmentProperty != null)
+                {
+                    var equipmentValue = equipmentProperty.GetValue(equipment);
+                    var bodyValue = property.GetValue(body);
+
+                    if (bodyValue != null && !bodyValue.Equals(equipmentValue) && equipmentValue is not null)
+                    {
+                        equipmentProperty.SetValue(equipment, bodyValue);
+                        updatedProperties[property.Name.ToLower()] = bodyValue;
+                    }
+                }
             }
 
             return updatedProperties;

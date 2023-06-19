@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using PRIO.DTOS.GlobalDTOS;
+using PRIO.Exceptions;
 
 namespace PRIO.Middlewares
 {
@@ -14,17 +15,66 @@ namespace PRIO.Middlewares
 
         public async Task InvokeAsync(HttpContext context)
         {
+            //try
+            //{
+            //    await _next(context);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine(ex);
+            //    context.Response.StatusCode = 500;
+            //    context.Response.ContentType = "application/json";
+            //    await context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorResponseDTO { Message = "Internal Server Error" }));
+            //}
+
             try
             {
                 await _next(context);
             }
+            catch (NotFoundException ex)
+            {
+                await HandleNotFoundExceptionAsync(context, ex);
+            }
+            catch (BadRequestException ex)
+            {
+                await HandleBadRequestExceptionAsync(context, ex);
+            }
+
+            catch (ConflictException ex)
+            {
+                await HandleConflictExceptionErrorAsync(context, ex);
+            }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
-                context.Response.StatusCode = 500;
-                context.Response.ContentType = "application/json";
-                await context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorResponseDTO { Message = "Internal Server Error" }));
+                Console.WriteLine(ex.Message);
+                await HandleInternalServerErrorAsync(context, ex);
             }
+        }
+
+        private async Task HandleNotFoundExceptionAsync(HttpContext context, NotFoundException ex)
+        {
+            context.Response.StatusCode = 404;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorResponseDTO { Message = ex.Message }));
+        }
+
+        private async Task HandleBadRequestExceptionAsync(HttpContext context, BadRequestException ex)
+        {
+            context.Response.StatusCode = 400;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorResponseDTO { Message = ex.Message }));
+        }
+        private async Task HandleConflictExceptionErrorAsync(HttpContext context, Exception ex)
+        {
+            context.Response.StatusCode = 409;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorResponseDTO { Message = ex.Message }));
+        }
+        private async Task HandleInternalServerErrorAsync(HttpContext context, Exception ex)
+        {
+            context.Response.StatusCode = 500;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorResponseDTO { Message = "Internal Server Error" }));
         }
     }
 }

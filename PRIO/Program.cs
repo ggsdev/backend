@@ -9,6 +9,7 @@ using PRIO.Data;
 using PRIO.Filters;
 using PRIO.Middlewares;
 using PRIO.Services;
+using PRIO.Services.HierarchyServices;
 using PRIO.Utils.MappingProfiles;
 using System.Text;
 
@@ -47,7 +48,6 @@ static void ConfigureServices(IServiceCollection services)
         config.Filters.Add(new AuthorizeFilter(policy));
     });
 
-    services.AddScoped<AuthorizationFilter>();
 
     var mapperConfig = new MapperConfiguration(cfg =>
     {
@@ -55,11 +55,24 @@ static void ConfigureServices(IServiceCollection services)
     });
 
     IMapper mapper = mapperConfig.CreateMapper();
-    services.AddSingleton(mapper);
 
+    services.AddSingleton(mapper);
     services.AddEndpointsApiExplorer();
     services.AddDbContext<DataContext>();
+    services.AddScoped<AuthorizationFilter>();
+
     services.AddScoped<TokenServices>();
+
+    #region Hierarchy Services
+    services.AddScoped<ClusterService>();
+    services.AddScoped<InstallationService>();
+    services.AddScoped<FieldService>();
+    services.AddScoped<ZoneService>();
+    services.AddScoped<ReservoirService>();
+    services.AddScoped<WellService>();
+    services.AddScoped<CompletionService>();
+    services.AddScoped<EquipmentService>();
+    #endregion
 
     services.AddAuthentication(x =>
     {

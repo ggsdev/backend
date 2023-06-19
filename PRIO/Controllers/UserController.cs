@@ -213,7 +213,7 @@ namespace PRIO.Controllers
 
             var beforeChangesUser = _mapper.Map<UserHistoryDTO>(user);
 
-            var updatedProperties = ControllerUtils.CompareAndUpdateUser(user, body);
+            var updatedProperties = UpdateFields.CompareAndUpdateUser(user, body);
 
             //var userId = (Guid)HttpContext.Items["Id"]!;
             //var userOperation = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
