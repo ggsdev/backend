@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PRIO.ViewModels.Reservoirs
+namespace PRIO.ViewModels.HierarchyViewModels.Reservoirs
 {
     public class UpdateReservoirViewModel
     {

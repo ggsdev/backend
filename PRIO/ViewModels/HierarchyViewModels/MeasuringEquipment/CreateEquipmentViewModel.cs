@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PRIO.ViewModels.MeasuringEquipment
+namespace PRIO.ViewModels.HierarchyViewModels.MeasuringEquipment
 {
     public class CreateEquipmentViewModel
     {

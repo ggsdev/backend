@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PRIO.ViewModels.Zones
+namespace PRIO.ViewModels.HierarchyViewModels.Zones
 {
     public class UpdateZoneViewModel
     {

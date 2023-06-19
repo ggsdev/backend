@@ -1,7 +1,7 @@
 ﻿using PRIO.Validators;
 using System.ComponentModel.DataAnnotations;
 
-namespace PRIO.ViewModels.Wells
+namespace PRIO.ViewModels.HierarchyViewModels.Wells
 {
     public class CreateWellViewModel
     {

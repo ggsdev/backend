@@ -9,7 +9,7 @@ using PRIO.Models;
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
 using PRIO.Utils;
-using PRIO.ViewModels.MeasuringEquipment;
+using PRIO.ViewModels.HierarchyViewModels.MeasuringEquipment;
 
 namespace PRIO.Services.HierarchyServices
 {
@@ -30,7 +30,6 @@ namespace PRIO.Services.HierarchyServices
 
         public async Task<MeasuringEquipmentDTO> CreateEquipment(CreateEquipmentViewModel body, User user)
         {
-
             if (body.Fluid is not null && !_fluidsAllowed.Contains(body.Fluid.ToLower()))
                 throw new BadRequestException("Fluids allowed are: gás, óleo, água");
 

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PRIO.ViewModels.Fields
+namespace PRIO.ViewModels.HierarchyViewModels.Fields
 {
     public class UpdateFieldViewModel
     {

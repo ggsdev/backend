@@ -37,7 +37,8 @@ namespace PRIO.Controllers
                 getInstanceName ??= _consolidationInstance;
 
                 var workbook = package.Workbook;
-                var worksheetTab = workbook.Worksheets.FirstOrDefault(x => x.Name.ToLower().Trim() == "informações gerais poços");
+                var worksheetTab = workbook.Worksheets
+                    .FirstOrDefault(x => x.Name.ToLower().Trim() == "informações gerais poços");
                 worksheetTab ??= workbook.Worksheets[0];
 
                 var dimension = worksheetTab.Dimension;

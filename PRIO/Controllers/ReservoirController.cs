@@ -3,7 +3,7 @@ using PRIO.DTOS.GlobalDTOS;
 using PRIO.Filters;
 using PRIO.Models.UserControlAccessModels;
 using PRIO.Services.HierarchyServices;
-using PRIO.ViewModels.Reservoirs;
+using PRIO.ViewModels.HierarchyViewModels.Reservoirs;
 
 namespace PRIO.Controllers
 {

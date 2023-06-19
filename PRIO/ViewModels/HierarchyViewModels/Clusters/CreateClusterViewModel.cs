@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PRIO.ViewModels.Clusters
+namespace PRIO.ViewModels.HierarchyViewModels.Clusters
 {
-    public class UpdateClusterViewModel
+    public class CreateClusterViewModel
     {
+        [Required(ErrorMessage = "Cluster name is a required field.")]
         [StringLength(120, ErrorMessage = "Name cannot exceed 120 characters.")]
         public string? Name { get; set; }
         [StringLength(10, ErrorMessage = "CodCluster cannot exceed 10 characters.")]

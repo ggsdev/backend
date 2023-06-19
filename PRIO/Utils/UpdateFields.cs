@@ -1,15 +1,15 @@
 ﻿using PRIO.DTOS.HistoryDTOS;
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
-using PRIO.ViewModels.Clusters;
-using PRIO.ViewModels.Completions;
-using PRIO.ViewModels.Fields;
-using PRIO.ViewModels.Installations;
-using PRIO.ViewModels.MeasuringEquipment;
-using PRIO.ViewModels.Reservoirs;
+using PRIO.ViewModels.HierarchyViewModels.Clusters;
+using PRIO.ViewModels.HierarchyViewModels.Completions;
+using PRIO.ViewModels.HierarchyViewModels.Fields;
+using PRIO.ViewModels.HierarchyViewModels.Installations;
+using PRIO.ViewModels.HierarchyViewModels.MeasuringEquipment;
+using PRIO.ViewModels.HierarchyViewModels.Reservoirs;
+using PRIO.ViewModels.HierarchyViewModels.Wells;
+using PRIO.ViewModels.HierarchyViewModels.Zones;
 using PRIO.ViewModels.Users;
-using PRIO.ViewModels.Wells;
-using PRIO.ViewModels.Zones;
 using System.Dynamic;
 
 namespace PRIO.Utils

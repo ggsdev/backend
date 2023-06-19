@@ -9,7 +9,7 @@ using PRIO.Models;
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
 using PRIO.Utils;
-using PRIO.ViewModels.Wells;
+using PRIO.ViewModels.HierarchyViewModels.Wells;
 
 namespace PRIO.Services.HierarchyServices
 {
