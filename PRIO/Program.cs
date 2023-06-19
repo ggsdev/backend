@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PRIO.Binders;
 using PRIO.Data;
 using PRIO.Filters;
 using PRIO.Middlewares;
@@ -26,10 +27,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+ConfigureMiddlewares(app);
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
-ConfigureMiddlewares(app);
 app.UseAuthorization();
 
 app.MapControllers();
@@ -46,14 +47,13 @@ static void ConfigureServices(IServiceCollection services)
                         .RequireAuthenticatedUser()
                         .Build();
         config.Filters.Add(new AuthorizeFilter(policy));
+        config.ModelBinderProviders.Insert(0, new GuidBinderProvider());
     });
-
 
     var mapperConfig = new MapperConfiguration(cfg =>
     {
         cfg.AddProfile<MainProfile>();
     });
-
     IMapper mapper = mapperConfig.CreateMapper();
 
     services.AddSingleton(mapper);

@@ -42,7 +42,7 @@ namespace PRIO.Controllers
             return Ok(clustersDTO);
         }
 
-        [HttpGet("{id:Guid}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var clusterDTO = await _clusterService.GetClusterById(id);
@@ -50,7 +50,7 @@ namespace PRIO.Controllers
             return Ok(clusterDTO);
         }
 
-        [HttpPatch("{id:Guid}")]
+        [HttpPatch("{id}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateClusterViewModel body)
         {
             if (HttpContext.Items["User"] is not User user)
@@ -64,7 +64,7 @@ namespace PRIO.Controllers
             return Ok(clusterDTO);
         }
 
-        [HttpDelete("{id:Guid}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             if (HttpContext.Items["User"] is not User user)
@@ -78,7 +78,7 @@ namespace PRIO.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{id:Guid}/restore")]
+        [HttpPatch("{id}/restore")]
         public async Task<IActionResult> Restore([FromRoute] Guid id)
         {
             if (HttpContext.Items["User"] is not User user)
@@ -92,7 +92,7 @@ namespace PRIO.Controllers
             return Ok(clusterDTO);
         }
 
-        [HttpGet("{id:Guid}/history")]
+        [HttpGet("{id}/history")]
         public async Task<IActionResult> GetHistory([FromRoute] Guid id)
         {
             var clusterHistories = await _clusterService.GetClusterHistory(id);

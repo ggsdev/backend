@@ -158,7 +158,7 @@ namespace PRIO.Controllers
 
 
         #region Get By Id
-        [HttpGet("users/{id:Guid}")]
+        [HttpGet("users/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponseDTO))]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
@@ -193,7 +193,7 @@ namespace PRIO.Controllers
         #endregion
 
         #region Update
-        [HttpPatch("users/{id:Guid}")]
+        [HttpPatch("users/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponseDTO))]
         public async Task<IActionResult> UpdatePartialAsync([FromRoute] Guid id, [FromBody] UpdateUserViewModel body)
@@ -246,7 +246,7 @@ namespace PRIO.Controllers
         #endregion
 
         #region Soft Delete
-        [HttpDelete("users/{id:Guid}")]
+        [HttpDelete("users/{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponseDTO))]
         public async Task<IActionResult> DeleteAsync([FromRoute] Guid id)
