@@ -86,10 +86,12 @@ namespace PRIO.Controllers
             return Ok(equipmentDTO);
         }
 
-        //[HttpGet("{id}/history")]
-        //public async Task<IActionResult> GetHistory([FromRoute] Guid id)
-        //{
+        [HttpGet("{id:Guid}/history")]
+        public async Task<IActionResult> GetHistory([FromRoute] Guid id)
+        {
+            var equipmentHistories = await _equipmentService.GetEquipmentHistory(id);
 
-        //}
+            return Ok(equipmentHistories);
+        }
     }
 }

@@ -100,6 +100,8 @@ namespace PRIO.Utils.MappingProfiles
             CreateMap<User, UserDTO>();
 
             CreateMap<MeasuringEquipment, MeasuringEquipmentDTO>();
+            CreateMap<MeasuringEquipment, MeasuringEquipmentHistoryDTO>();
+
             CreateMap<Menu, MenuParentDTO>();
             CreateMap<Menu, MenuChildrenDTO>();
             CreateMap<User, ProfileDTO>();

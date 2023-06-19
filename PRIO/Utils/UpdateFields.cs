@@ -5,6 +5,7 @@ using PRIO.ViewModels.Clusters;
 using PRIO.ViewModels.Completions;
 using PRIO.ViewModels.Fields;
 using PRIO.ViewModels.Installations;
+using PRIO.ViewModels.MeasuringEquipment;
 using PRIO.ViewModels.Reservoirs;
 using PRIO.ViewModels.Users;
 using PRIO.ViewModels.Wells;
@@ -240,6 +241,34 @@ namespace PRIO.Utils
             return updatedProperties;
         }
 
+        public static Dictionary<string, object> CompareAndUpdateEquipment(MeasuringEquipment equipment, UpdateEquipmentViewModel body)
+        {
+            var updatedProperties = new Dictionary<string, object>();
+
+            var equipmentType = typeof(MeasuringEquipment);
+            var bodyType = typeof(UpdateEquipmentViewModel);
+
+            var properties = bodyType.GetProperties();
+
+            foreach (var property in properties)
+            {
+                var equipmentProperty = equipmentType.GetProperty(property.Name);
+
+                if (equipmentProperty != null)
+                {
+                    var equipmentValue = equipmentProperty.GetValue(equipment);
+                    var bodyValue = property.GetValue(body);
+
+                    if (bodyValue != null && !bodyValue.Equals(equipmentValue) && equipmentValue is not null)
+                    {
+                        equipmentProperty.SetValue(equipment, bodyValue);
+                        updatedProperties[property.Name.ToLower()] = bodyValue;
+                    }
+                }
+            }
+
+            return updatedProperties;
+        }
 
         public static dynamic DictionaryToObject(Dictionary<string, object> dict)
         {

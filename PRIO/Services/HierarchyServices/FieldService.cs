@@ -121,7 +121,7 @@ namespace PRIO.Services.HierarchyServices
             if (body.InstallationId is not null && installationInDatabase is null)
                 throw new NotFoundException("Installation not found");
 
-            if (body.InstallationId is not null && installationInDatabase is not null && field.Installation?.Id == body.InstallationId)
+            if (installationInDatabase is not null)
             {
                 field.Installation = installationInDatabase;
                 updatedProperties[nameof(FieldHistoryDTO.installationId)] = installationInDatabase.Id;
