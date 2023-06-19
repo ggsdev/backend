@@ -24,7 +24,6 @@ namespace PRIO.Services.HierarchyServices
             _mapper = mapper;
         }
 
-
         public async Task<ClusterDTO> CreateCluster(CreateClusterViewModel body, User user)
         {
             var clusterId = Guid.NewGuid();
