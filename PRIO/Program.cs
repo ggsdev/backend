@@ -9,6 +9,7 @@ using PRIO.Data;
 using PRIO.Filters;
 using PRIO.Middlewares;
 using PRIO.Services;
+using PRIO.Services.HierarchyServices;
 using PRIO.Utils.MappingProfiles;
 using System.Text;
 
@@ -60,7 +61,7 @@ static void ConfigureServices(IServiceCollection services)
     services.AddDbContext<DataContext>();
     services.AddScoped<AuthorizationFilter>();
     services.AddScoped<TokenServices>();
-    services.AddScoped<ClusterServices>();
+    services.AddScoped<ClusterService>();
 
     services.AddAuthentication(x =>
     {

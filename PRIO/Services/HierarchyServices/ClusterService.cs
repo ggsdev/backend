@@ -11,14 +11,14 @@ using PRIO.Models.UserControlAccessModels;
 using PRIO.Utils;
 using PRIO.ViewModels.Clusters;
 
-namespace PRIO.Services
+namespace PRIO.Services.HierarchyServices
 {
-    public class ClusterServices
+    public class ClusterService
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
 
-        public ClusterServices(DataContext context, IMapper mapper)
+        public ClusterService(DataContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
