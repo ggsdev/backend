@@ -60,8 +60,16 @@ static void ConfigureServices(IServiceCollection services)
     services.AddEndpointsApiExplorer();
     services.AddDbContext<DataContext>();
     services.AddScoped<AuthorizationFilter>();
+
     services.AddScoped<TokenServices>();
+
+    #region Hierarchy Services
     services.AddScoped<ClusterService>();
+    services.AddScoped<InstallationService>();
+    services.AddScoped<FieldService>();
+    services.AddScoped<ZoneService>();
+    services.AddScoped<ReservoirService>();
+    #endregion
 
     services.AddAuthentication(x =>
     {
