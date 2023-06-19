@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using PRIO.Data;
 using PRIO.DTOS.HierarchyDTOS.CompletionDTOS;
+using PRIO.DTOS.HistoryDTOS;
 using PRIO.Exceptions;
+using PRIO.Models;
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
 using PRIO.Utils;
@@ -47,9 +50,11 @@ namespace PRIO.Services.HierarchyServices
                 throw new ConflictException($"Completion with name: {well.Name}_{reservoir.Zone?.CodZone} already exists.");
 
             var completionName = $"{well.Name}_{reservoir.Zone?.CodZone}";
+            var completionId = Guid.NewGuid();
 
             completion = new Completion
             {
+                Id = completionId,
                 Name = completionName,
                 CodCompletion = body.CodCompletion is not null ? body.CodCompletion : GenerateCode.Generate(completionName),
                 Description = body.Description,
@@ -58,6 +63,22 @@ namespace PRIO.Services.HierarchyServices
                 Reservoir = reservoir,
                 IsActive = body.IsActive is not null ? body.IsActive.Value : true,
             };
+
+            var currentData = _mapper.Map<Completion, CompletionHistoryDTO>(completion);
+            currentData.createdAt = DateTime.UtcNow;
+            currentData.updatedAt = DateTime.UtcNow;
+
+            var history = new SystemHistory
+            {
+                Table = HistoryColumns.TableFields,
+                TypeOperation = HistoryColumns.Create,
+                CreatedBy = user?.Id,
+                TableItemId = completionId,
+                CurrentData = currentData,
+            };
+
+            await _context.SystemHistories.AddAsync(history);
+
             await _context.Completions.AddAsync(completion);
 
             await _context.SaveChangesAsync();
@@ -115,6 +136,10 @@ namespace PRIO.Services.HierarchyServices
                     .ThenInclude(z => z.Field)
                     .FirstOrDefaultAsync(z => z.Id == body.ReservoirId);
 
+            var beforeChangesCompletion = _mapper.Map<CompletionHistoryDTO>(completion);
+
+            var updatedProperties = UpdateFields.CompareAndUpdateCompletion(completion, body);
+
             if (body.WellId is not null)
             {
                 if (well is null)
@@ -128,12 +153,13 @@ namespace PRIO.Services.HierarchyServices
 
                 completion.Name = $"{well.Name}_{completion.Reservoir?.Zone?.CodZone}";
                 completion.Well = well;
+                updatedProperties[nameof(CompletionHistoryDTO.wellId)] = well.Id;
+                updatedProperties[nameof(CompletionHistoryDTO.name)] = completion.Name;
             }
 
             if (body.ReservoirId is not null)
             {
                 if (reservoir is null)
-
                     throw new NotFoundException("Reservoir not found");
 
 
@@ -145,13 +171,35 @@ namespace PRIO.Services.HierarchyServices
 
                 completion.Name = $"{completion.Well?.Name}_{reservoir.Zone?.CodZone}";
                 completion.Reservoir = reservoir;
+                updatedProperties[nameof(CompletionHistoryDTO.reservoirId)] = reservoir.Id;
+                updatedProperties[nameof(CompletionHistoryDTO.name)] = completion.Name;
             }
 
-
-            completion.Description = body.Description is not null ? body.Description : completion.Description;
-            completion.CodCompletion = body.CodCompletion is not null ? body.CodCompletion : completion.CodCompletion;
-
             _context.Completions.Update(completion);
+
+            var firstHistory = await _context.SystemHistories
+               .OrderBy(x => x.CreatedAt)
+               .Where(x => x.TableItemId == id)
+               .FirstOrDefaultAsync();
+
+            var changedFields = UpdateFields.DictionaryToObject(updatedProperties);
+
+            var currentData = _mapper.Map<Completion, CompletionHistoryDTO>(completion);
+            currentData.updatedAt = DateTime.UtcNow;
+
+            var history = new SystemHistory
+            {
+                Table = HistoryColumns.TableCompletions,
+                TypeOperation = HistoryColumns.Update,
+                CreatedBy = firstHistory?.CreatedBy,
+                UpdatedBy = user?.Id,
+                TableItemId = completion.Id,
+                FieldsChanged = changedFields,
+                CurrentData = currentData,
+                PreviousData = beforeChangesCompletion,
+            };
+
+            await _context.SystemHistories.AddAsync(history);
 
             await _context.SaveChangesAsync();
 
@@ -169,8 +217,35 @@ namespace PRIO.Services.HierarchyServices
             if (completion is null || !completion.IsActive)
                 throw new NotFoundException("Completion not found or inactive already");
 
+            var lastHistory = await _context.SystemHistories
+              .OrderBy(x => x.CreatedAt)
+              .Where(x => x.TableItemId == completion.Id)
+              .LastOrDefaultAsync();
+
             completion.IsActive = false;
             completion.DeletedAt = DateTime.UtcNow;
+
+            var currentData = _mapper.Map<Completion, CompletionHistoryDTO>(completion);
+            currentData.updatedAt = (DateTime)completion.DeletedAt;
+            currentData.deletedAt = completion.DeletedAt;
+
+            var history = new SystemHistory
+            {
+                Table = HistoryColumns.TableCompletions,
+                TypeOperation = HistoryColumns.Delete,
+                CreatedBy = completion.User?.Id,
+                UpdatedBy = user?.Id,
+                TableItemId = completion.Id,
+                CurrentData = currentData,
+                PreviousData = lastHistory?.CurrentData,
+                FieldsChanged = new
+                {
+                    completion.IsActive,
+                    completion.DeletedAt,
+                }
+            };
+
+            await _context.SystemHistories.AddAsync(history);
 
             _context.Completions.Update(completion);
             await _context.SaveChangesAsync();
@@ -186,14 +261,62 @@ namespace PRIO.Services.HierarchyServices
             if (completion is null || completion.IsActive is true)
                 throw new NotFoundException("Completion not found or inactive already");
 
+            var lastHistory = await _context.SystemHistories
+             .Where(x => x.TableItemId == completion.Id)
+             .OrderBy(x => x.CreatedAt)
+             .LastOrDefaultAsync();
+
             completion.IsActive = true;
             completion.DeletedAt = null;
 
+            var currentData = _mapper.Map<Completion, CompletionHistoryDTO>(completion);
+            currentData.updatedAt = DateTime.UtcNow;
+
+            var history = new SystemHistory
+            {
+                Table = HistoryColumns.TableCompletions,
+                TypeOperation = HistoryColumns.Restore,
+                CreatedBy = completion.User?.Id,
+                UpdatedBy = user?.Id,
+                TableItemId = completion.Id,
+                CurrentData = currentData,
+                PreviousData = lastHistory?.CurrentData,
+                FieldsChanged = new
+                {
+                    completion.IsActive,
+                    completion.DeletedAt,
+                }
+            };
+
+            await _context.SystemHistories.AddAsync(history);
             _context.Completions.Update(completion);
+
             await _context.SaveChangesAsync();
 
             var completionDTO = _mapper.Map<Completion, CompletionDTO>(completion);
             return completionDTO;
+        }
+
+        public async Task<List<SystemHistory>> GetCompletionHistory(Guid id)
+        {
+            var fieldHistories = await _context.SystemHistories
+                  .Where(x => x.TableItemId == id)
+                  .OrderByDescending(x => x.CreatedAt)
+                  .ToListAsync();
+
+            if (fieldHistories is null)
+                throw new NotFoundException("Completion not found");
+
+            foreach (var history in fieldHistories)
+            {
+                history.PreviousData = history.PreviousData is not null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(history.PreviousData.ToString()!) : null;
+
+                history.CurrentData = history.CurrentData is not null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(history.CurrentData.ToString()!) : null;
+
+                history.FieldsChanged = history.FieldsChanged is not null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(history.FieldsChanged.ToString()!) : null;
+            }
+
+            return fieldHistories;
         }
     }
 }

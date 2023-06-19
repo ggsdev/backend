@@ -83,28 +83,15 @@ namespace PRIO.Controllers
                 });
 
             var completionDTO = await _completionService.RestoreCompletion(id, user);
+
             return Ok(completionDTO);
         }
 
-        //[HttpGet("{id:Guid}/history")]
-        //public async Task<IActionResult> GetHistory([FromRoute] Guid id)
-        //{
-        //    var completionHistories = await _context.CompletionHistories.Include(x => x.User)
-        //                                              .Include(x => x.Reservoir)
-        //                                              .Include(x => x.Well)
-        //                                              .Where(x => x.Completion.Id == id)
-        //                                              .OrderByDescending(x => x.CreatedAt)
-        //                                              .ToListAsync();
-
-        //    if (completionHistories is null)
-        //        return NotFound(new ErrorResponseDTO
-        //        {
-        //            Message = "Well not found"
-        //        });
-
-        //    var wellHistoryDTO = _mapper.Map<List<CompletionHistory>, List<CompletionHistoryDTO>>(completionHistories);
-
-        //    return Ok(wellHistoryDTO);
-        //}
+        [HttpGet("{id:Guid}/history")]
+        public async Task<IActionResult> GetHistory([FromRoute] Guid id)
+        {
+            var completionHistories = await _completionService.GetCompletionHistory(id);
+            return Ok(completionHistories);
+        }
     }
 }

@@ -2,6 +2,7 @@
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
 using PRIO.ViewModels.Clusters;
+using PRIO.ViewModels.Completions;
 using PRIO.ViewModels.Fields;
 using PRIO.ViewModels.Installations;
 using PRIO.ViewModels.Reservoirs;
@@ -219,6 +220,26 @@ namespace PRIO.Utils
 
             return updatedProperties;
         }
+
+        public static Dictionary<string, object> CompareAndUpdateCompletion(Completion user, UpdateCompletionViewModel body)
+        {
+            var updatedProperties = new Dictionary<string, object>();
+
+            if (body.Description is not null && body.Description != user.Description)
+            {
+                user.Description = body.Description;
+                updatedProperties[nameof(CompletionHistoryDTO.description)] = body.Description;
+            }
+
+            if (body.CodCompletion is not null && body.CodCompletion != user.CodCompletion)
+            {
+                user.CodCompletion = body.CodCompletion;
+                updatedProperties[nameof(CompletionHistoryDTO.codCompletion)] = body.CodCompletion;
+            }
+
+            return updatedProperties;
+        }
+
 
         public static dynamic DictionaryToObject(Dictionary<string, object> dict)
         {
