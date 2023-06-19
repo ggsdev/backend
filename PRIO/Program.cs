@@ -69,6 +69,7 @@ static void ConfigureServices(IServiceCollection services)
     services.AddScoped<FieldService>();
     services.AddScoped<ZoneService>();
     services.AddScoped<ReservoirService>();
+    services.AddScoped<WellService>();
     #endregion
 
     services.AddAuthentication(x =>
