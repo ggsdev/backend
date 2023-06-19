@@ -13,7 +13,7 @@
         public bool? hasChildren { get; set; }
         public bool? hasParent { get; set; }
         public List<UserPermission>? Permissions { get; set; }
-        public List<GroupOperation>? Operations { get; set; }
+        public List<GroupOperation?>? Operations { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }

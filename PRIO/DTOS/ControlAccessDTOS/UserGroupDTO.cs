@@ -9,7 +9,7 @@ namespace PRIO.DTOS.ControlAccessDTOS
         public string? Email { get; set; }
         public string? Password { get; set; }
         public string? Username { get; set; }
-        public List<UserPermissionChildrenDTO>? UserPermissions { get; set; }
+        public List<UserPermissionParentDTO>? UserPermissions { get; set; }
         public Session? Session { get; set; }
         public GroupDTO? Group { get; set; }
     }
