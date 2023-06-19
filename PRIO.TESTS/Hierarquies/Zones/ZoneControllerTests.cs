@@ -9,10 +9,12 @@ using PRIO.DTOS.HierarchyDTOS.ClusterDTOS;
 using PRIO.DTOS.HierarchyDTOS.FieldDTOS;
 using PRIO.DTOS.HierarchyDTOS.InstallationDTOS;
 using PRIO.DTOS.HierarchyDTOS.ZoneDTOS;
+using PRIO.DTOS.HistoryDTOS;
 using PRIO.DTOS.UserDTOS;
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
-using PRIO.ViewModels.Zones;
+using PRIO.Services.HierarchyServices;
+using PRIO.ViewModels.HierarchyViewModels.Zones;
 using System.ComponentModel.DataAnnotations;
 
 namespace PRIO.TESTS.Hierarquies.Zones
@@ -23,6 +25,7 @@ namespace PRIO.TESTS.Hierarquies.Zones
         private IMapper _mapper;
         private DataContext _context;
         private CreateZoneViewModel _viewModel;
+        private ZoneService _service;
         private User _user;
         [SetUp]
         public void Setup()
@@ -39,6 +42,7 @@ namespace PRIO.TESTS.Hierarquies.Zones
                 cfg.CreateMap<Installation, CreateUpdateInstallationDTO>();
                 cfg.CreateMap<Field, FieldDTO>();
                 cfg.CreateMap<Zone, CreateUpdateZoneDTO>();
+                cfg.CreateMap<Zone, ZoneHistoryDTO>();
                 cfg.CreateMap<User, UserDTO>();
             })
             {
@@ -59,7 +63,8 @@ namespace PRIO.TESTS.Hierarquies.Zones
             httpContext.Items["Id"] = _user.Id;
             httpContext.Items["User"] = _user;
 
-            _controller = new ZoneController(_context, _mapper);
+            _service = new ZoneService(_context, _mapper);
+            _controller = new ZoneController(_service);
             _controller.ControllerContext.HttpContext = httpContext;
         }
         [TearDown]

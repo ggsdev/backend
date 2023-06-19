@@ -7,10 +7,12 @@ using PRIO.Data;
 using PRIO.DTOS.GlobalDTOS;
 using PRIO.DTOS.HierarchyDTOS.ClusterDTOS;
 using PRIO.DTOS.HierarchyDTOS.InstallationDTOS;
+using PRIO.DTOS.HistoryDTOS;
 using PRIO.DTOS.UserDTOS;
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
-using PRIO.ViewModels.Installations;
+using PRIO.Services.HierarchyServices;
+using PRIO.ViewModels.HierarchyViewModels.Installations;
 using System.ComponentModel.DataAnnotations;
 
 namespace PRIO.TESTS.Hierarquies.Installations
@@ -21,6 +23,7 @@ namespace PRIO.TESTS.Hierarquies.Installations
         private IMapper _mapper;
         private DataContext _context;
         private CreateInstallationViewModel _viewModel;
+        private InstallationService _service;
         private User _user;
         [SetUp]
         public void Setup()
@@ -35,6 +38,8 @@ namespace PRIO.TESTS.Hierarquies.Installations
             {
                 cfg.CreateMap<Cluster, ClusterDTO>();
                 cfg.CreateMap<Installation, CreateUpdateInstallationDTO>();
+                cfg.CreateMap<Installation, InstallationHistoryDTO>();
+
                 cfg.CreateMap<User, UserDTO>();
             });
 
@@ -52,8 +57,8 @@ namespace PRIO.TESTS.Hierarquies.Installations
             var httpContext = new DefaultHttpContext();
             httpContext.Items["Id"] = _user.Id;
             httpContext.Items["User"] = _user;
-
-            _controller = new InstallationController(_context, _mapper);
+            _service = new InstallationService(_context, _mapper);
+            _controller = new InstallationController(_service);
             _controller.ControllerContext.HttpContext = httpContext;
         }
         [TearDown]

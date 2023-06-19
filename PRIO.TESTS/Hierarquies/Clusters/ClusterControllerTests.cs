@@ -4,12 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.Controllers;
 using PRIO.Data;
-using PRIO.DTOS.GlobalDTOS;
 using PRIO.DTOS.HierarchyDTOS.ClusterDTOS;
+using PRIO.DTOS.HistoryDTOS;
 using PRIO.DTOS.UserDTOS;
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
-using PRIO.ViewModels.Clusters;
+using PRIO.Services.HierarchyServices;
+using PRIO.ViewModels.HierarchyViewModels.Clusters;
 
 namespace PRIO.TESTS.Hierarquies.Clusters
 {
@@ -18,6 +19,7 @@ namespace PRIO.TESTS.Hierarquies.Clusters
         private ClusterController _controller;
         private IMapper _mapper;
         private DataContext _context;
+        private ClusterService _service;
         private CreateClusterViewModel _viewModel;
         private User _user;
 
@@ -34,6 +36,7 @@ namespace PRIO.TESTS.Hierarquies.Clusters
             {
                 cfg.CreateMap<Cluster, ClusterDTO>();
                 cfg.CreateMap<User, UserDTO>();
+                cfg.CreateMap<Cluster, ClusterHistoryDTO>();
             });
 
             _mapper = mapperConfig.CreateMapper();
@@ -51,7 +54,8 @@ namespace PRIO.TESTS.Hierarquies.Clusters
             httpContext.Items["Id"] = _user.Id;
             httpContext.Items["User"] = _user;
 
-            _controller = new ClusterController(_context, _mapper);
+            _service = new ClusterService(_context, _mapper);
+            _controller = new ClusterController(_service);
             _controller.ControllerContext.HttpContext = httpContext;
         }
 
@@ -70,7 +74,6 @@ namespace PRIO.TESTS.Hierarquies.Clusters
             {
                 Name = "ClusterTest",
                 CodCluster = "12312",
-                UepCode = "12332",
             };
 
             var response = await _controller.Create(_viewModel);
@@ -83,32 +86,11 @@ namespace PRIO.TESTS.Hierarquies.Clusters
         }
 
         [Test]
-        public async Task Create_ClusterIsAlreadyExists()
-        {
-            _viewModel = new CreateClusterViewModel
-            {
-                Name = "ClusterTest",
-                CodCluster = "12312",
-                UepCode = "12332",
-            };
-            await _controller.Create(_viewModel);
-            var response = await _controller.Create(_viewModel);
-
-            var createdResult = (ConflictObjectResult)response;
-
-
-            Assert.IsInstanceOf<ConflictObjectResult>(response);
-            Assert.That(((ErrorResponseDTO)createdResult.Value).Message, Is.EqualTo($"Cluster with code: {_viewModel.CodCluster} already exists."));
-            Assert.That(createdResult.StatusCode, Is.EqualTo(409));
-        }
-
-        [Test]
         public async Task Create_CheckRequiredField()
         {
             _viewModel = new CreateClusterViewModel
             {
                 CodCluster = "12312",
-                UepCode = "12332",
             };
 
             try
@@ -135,7 +117,6 @@ namespace PRIO.TESTS.Hierarquies.Clusters
             {
                 Name = "ClusterTest",
                 CodCluster = "12312",
-                UepCode = "12332",
             };
 
             await _controller.Create(_viewModel);
