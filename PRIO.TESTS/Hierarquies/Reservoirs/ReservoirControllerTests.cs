@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PRIO.Controllers;
 using PRIO.Data;
 using PRIO.DTOS.GlobalDTOS;
 using PRIO.DTOS.HierarchyDTOS.ClusterDTOS;
@@ -15,6 +14,7 @@ using PRIO.DTOS.UserDTOS;
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
 using PRIO.Services.HierarchyServices;
+using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Controllers;
 using PRIO.ViewModels.HierarchyViewModels.Reservoirs;
 using System.ComponentModel.DataAnnotations;
 

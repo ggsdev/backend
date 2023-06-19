@@ -13,13 +13,14 @@ namespace PRIO.Data.Mappings.HierarchyMappings
                     ("Completions");
 
             builder.Property(x => x.Name)
-                .HasColumnType("VARCHAR")
-                .HasMaxLength(256)
-                .IsRequired();
+               .HasColumnType("VARCHAR")
+               .HasMaxLength(120)
+               .IsRequired();
 
             builder.Property(x => x.CodCompletion)
-                .HasColumnType("VARCHAR")
-                .HasMaxLength(256);
+               .HasColumnType("VARCHAR")
+               .HasMaxLength(8)
+               .HasDefaultValueSql("PRIO.Utils.GenerateCode.Generate(Name)");
 
             builder.Property(x => x.Description)
                 .HasColumnType("TEXT");

@@ -1,4 +1,4 @@
-﻿using PRIO.Utils;
+﻿using PRIO.src.Shared.Utils;
 
 namespace PRIO.Models
 {

@@ -11,17 +11,18 @@ namespace PRIO.Data.Mappings.HierarchyMappings
             builder.ToTable
                     ("Clusters");
 
-            builder.Property(x => x.Name)
-                .HasColumnType("VARCHAR")
-                .HasMaxLength(256)
-                .IsRequired();
-
             builder.Property(x => x.Description)
                 .HasColumnType("TEXT");
 
+            builder.Property(x => x.Name)
+               .HasColumnType("VARCHAR")
+               .HasMaxLength(120)
+               .IsRequired();
+
             builder.Property(x => x.CodCluster)
-                .HasColumnType("VARCHAR")
-                .HasMaxLength(60);
+               .HasColumnType("VARCHAR")
+               .HasMaxLength(8)
+               .HasDefaultValueSql("PRIO.Utils.GenerateCode.Generate(Name)");
 
             builder.Property(x => x.CreatedAt);
 

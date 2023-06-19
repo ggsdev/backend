@@ -8,10 +8,12 @@ using Microsoft.OpenApi.Models;
 using PRIO.Binders;
 using PRIO.Data;
 using PRIO.Filters;
-using PRIO.Middlewares;
 using PRIO.Services;
 using PRIO.Services.HierarchyServices;
-using PRIO.Utils.MappingProfiles;
+using PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services;
+using PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services;
+using PRIO.src.Shared.Infra.Http.Middlewares;
+using PRIO.src.Shared.Utils.MappingProfiles;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);

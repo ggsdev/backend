@@ -10,19 +10,20 @@ namespace PRIO.Data.Mappings.HierarchyMappings
         {
             builder.ToTable("Wells");
 
-            builder.Property(e => e.Name)
-                .HasColumnType("VARCHAR")
-                .HasMaxLength(150)
-                .IsRequired();
+            builder.Property(x => x.Name)
+              .HasColumnType("VARCHAR")
+              .HasMaxLength(120)
+              .IsRequired();
+
+            builder.Property(x => x.CodWell)
+               .HasColumnType("VARCHAR")
+               .HasMaxLength(8)
+               .HasDefaultValueSql("PRIO.Utils.GenerateCode.Generate(Name)");
 
             builder.Property(e => e.WellOperatorName)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(150)
                 .IsRequired();
-
-            builder.Property(e => e.CodWell)
-                .HasColumnType("VARCHAR")
-                .HasMaxLength(150);
 
             builder.Property(e => e.CodWellAnp)
                 .HasColumnType("VARCHAR")

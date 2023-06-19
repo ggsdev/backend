@@ -11,13 +11,15 @@ namespace PRIO.Data.Mappings.HierarchyMappings
             builder.ToTable("Reservoirs");
 
             builder.Property(x => x.Name)
-                .HasColumnType("VARCHAR")
-                .HasMaxLength(120)
-                .IsRequired();
+              .HasColumnType("VARCHAR")
+              .HasMaxLength(120)
+              .IsRequired();
 
             builder.Property(x => x.CodReservoir)
-                .HasColumnType("VARCHAR")
-                .HasMaxLength(120);
+               .HasColumnType("VARCHAR")
+               .HasMaxLength(8)
+               .HasDefaultValueSql("PRIO.Utils.GenerateCode.Generate(Name)");
+
 
             builder.Property(x => x.Description)
                 .HasColumnType("TEXT");

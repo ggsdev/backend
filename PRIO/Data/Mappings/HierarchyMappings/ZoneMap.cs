@@ -36,6 +36,5 @@ namespace PRIO.Data.Mappings.HierarchyMappings
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
         }
-
     }
 }
