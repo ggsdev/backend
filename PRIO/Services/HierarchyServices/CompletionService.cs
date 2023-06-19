@@ -44,7 +44,8 @@ namespace PRIO.Services.HierarchyServices
             if (reservoir.Zone?.Field?.Id != well.Field?.Id)
                 throw new ConflictException($"Reservoir: {reservoir.Name} and Well: {well.Name} doesn't belong to the same Field");
 
-            var completion = await _context.Completions.FirstOrDefaultAsync(x => x.Name == $"{well.Name}_{reservoir.Zone.CodZone}");
+            var completion = await _context.Completions
+                .FirstOrDefaultAsync(x => x.Well.Id == well.Id && x.Reservoir.Id == reservoir.Id);
 
             if (completion is not null)
                 throw new ConflictException($"Completion with name: {well.Name}_{reservoir.Zone?.CodZone} already exists.");
@@ -70,7 +71,7 @@ namespace PRIO.Services.HierarchyServices
 
             var history = new SystemHistory
             {
-                Table = HistoryColumns.TableFields,
+                Table = HistoryColumns.TableCompletions,
                 TypeOperation = HistoryColumns.Create,
                 CreatedBy = user?.Id,
                 TableItemId = completionId,

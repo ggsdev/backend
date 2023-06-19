@@ -39,8 +39,14 @@ namespace PRIO.Middlewares
             {
                 await HandleBadRequestExceptionAsync(context, ex);
             }
+
+            catch (ConflictException ex)
+            {
+                await HandleConflictExceptionErrorAsync(context, ex);
+            }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 await HandleInternalServerErrorAsync(context, ex);
             }
         }
@@ -58,7 +64,12 @@ namespace PRIO.Middlewares
             context.Response.ContentType = "application/json";
             await context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorResponseDTO { Message = ex.Message }));
         }
-
+        private async Task HandleConflictExceptionErrorAsync(HttpContext context, Exception ex)
+        {
+            context.Response.StatusCode = 409;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorResponseDTO { Message = ex.Message }));
+        }
         private async Task HandleInternalServerErrorAsync(HttpContext context, Exception ex)
         {
             context.Response.StatusCode = 500;
