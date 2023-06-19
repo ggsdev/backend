@@ -11,7 +11,7 @@ using PRIO.Models.UserControlAccessModels;
 using PRIO.src.Shared.Utils;
 using PRIO.ViewModels.HierarchyViewModels.Reservoirs;
 
-namespace PRIO.Services.HierarchyServices
+namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
 {
 
     public class ReservoirService

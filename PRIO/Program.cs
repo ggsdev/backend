@@ -8,11 +8,16 @@ using Microsoft.OpenApi.Models;
 using PRIO.Binders;
 using PRIO.Data;
 using PRIO.Filters;
-using PRIO.Services;
-using PRIO.Services.HierarchyServices;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services;
+using PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services;
+using PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services;
+using PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services;
+using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services;
+using PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services;
+using PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services;
 using PRIO.src.Shared.Infra.Http.Middlewares;
+using PRIO.src.Shared.Infra.Http.Services;
 using PRIO.src.Shared.Utils.MappingProfiles;
 using System.Text;
 

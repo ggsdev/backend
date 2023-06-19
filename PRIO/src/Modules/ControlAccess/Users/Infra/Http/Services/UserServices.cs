@@ -5,7 +5,7 @@ using PRIO.DTOS.UserDTOS;
 using PRIO.Models.UserControlAccessModels;
 using PRIO.ViewModels.Users;
 
-namespace PRIO.Services
+namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
 {
     public class UserServices
     {

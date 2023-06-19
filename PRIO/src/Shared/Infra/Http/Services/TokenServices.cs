@@ -6,7 +6,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace PRIO.Services
+namespace PRIO.src.Shared.Infra.Http.Services
 {
     public class TokenServices
     {
@@ -43,7 +43,7 @@ namespace PRIO.Services
 
         public async Task<string> CreateSessionAndToken(User user, string userHttpAgent)
         {
-            if (user.Session is not null && (user.Session.ExpiresIn > DateTime.UtcNow && user.Session.UserHttpAgent == userHttpAgent))
+            if (user.Session is not null && user.Session.ExpiresIn > DateTime.UtcNow && user.Session.UserHttpAgent == userHttpAgent)
                 return user.Session.Token;
 
             var token = GenerateToken(user);

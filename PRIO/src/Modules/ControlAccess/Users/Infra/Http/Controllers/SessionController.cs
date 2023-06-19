@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using PRIO.Data;
 using PRIO.DTOS.GlobalDTOS;
 using PRIO.DTOS.UserDTOS;
-using PRIO.Services;
 using PRIO.src.Shared;
+using PRIO.src.Shared.Infra.Http.Services;
 using PRIO.ViewModels.Users;
 
 namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers

@@ -13,8 +13,8 @@ using PRIO.DTOS.HistoryDTOS;
 using PRIO.DTOS.UserDTOS;
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
-using PRIO.Services.HierarchyServices;
 using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Controllers;
+using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services;
 using PRIO.ViewModels.HierarchyViewModels.Reservoirs;
 using System.ComponentModel.DataAnnotations;
 

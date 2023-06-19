@@ -11,7 +11,7 @@ using PRIO.Models.UserControlAccessModels;
 using PRIO.src.Shared.Utils;
 using PRIO.ViewModels.HierarchyViewModels.Wells;
 
-namespace PRIO.Services.HierarchyServices
+namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
 {
     public class WellService
     {

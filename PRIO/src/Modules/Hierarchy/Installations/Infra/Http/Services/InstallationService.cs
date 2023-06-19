@@ -11,7 +11,7 @@ using PRIO.Models.UserControlAccessModels;
 using PRIO.src.Shared.Utils;
 using PRIO.ViewModels.HierarchyViewModels.Installations;
 
-namespace PRIO.Services.HierarchyServices
+namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
 {
     public class InstallationService
     {

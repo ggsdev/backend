@@ -16,8 +16,8 @@ using PRIO.DTOS.UserDTOS;
 using PRIO.Exceptions;
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
-using PRIO.Services.HierarchyServices;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Controllers;
+using PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services;
 using PRIO.ViewModels.HierarchyViewModels.Completions;
 using System.ComponentModel.DataAnnotations;
 

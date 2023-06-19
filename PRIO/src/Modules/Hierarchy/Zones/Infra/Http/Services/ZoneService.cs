@@ -11,7 +11,7 @@ using PRIO.Models.UserControlAccessModels;
 using PRIO.src.Shared.Utils;
 using PRIO.ViewModels.HierarchyViewModels.Zones;
 
-namespace PRIO.Services.HierarchyServices
+namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
 {
     public class ZoneService
     {

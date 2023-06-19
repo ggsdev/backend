@@ -2,7 +2,7 @@
 using PRIO.DTOS.GlobalDTOS;
 using PRIO.Filters;
 using PRIO.Models.UserControlAccessModels;
-using PRIO.Services.HierarchyServices;
+using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services;
 using PRIO.ViewModels.HierarchyViewModels.Reservoirs;
 
 namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Controllers
