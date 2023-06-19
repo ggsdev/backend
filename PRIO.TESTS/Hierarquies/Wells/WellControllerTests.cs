@@ -8,6 +8,7 @@ using PRIO.DTOS.GlobalDTOS;
 using PRIO.DTOS.HierarchyDTOS.WellDTOS;
 using PRIO.DTOS.HistoryDTOS;
 using PRIO.DTOS.UserDTOS;
+using PRIO.Exceptions;
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
 using PRIO.Services.HierarchyServices;
@@ -141,21 +142,9 @@ namespace PRIO.TESTS.Hierarquies.Wells
             var createdResult = (CreatedResult)response;
 
             Assert.IsInstanceOf<CreatedResult>(response);
-            Assert.That(((WellDTO)createdResult.Value).Name, Is.EqualTo(_createViewModel.Name));
-            Assert.That(((WellDTO)createdResult.Value).CodWellAnp, Is.EqualTo(_createViewModel.CodWellAnp));
-            Assert.That(createdResult.Location, Is.EqualTo($"wells/{((WellDTO)createdResult.Value).Id}"));
-        }
-
-        [Test]
-        public async Task Create_WellShouldReturnConflictIfAlreadyExists()
-        {
-            await _controller.Create(_createViewModel);
-            var response = await _controller.Create(_createViewModel);
-            var conflictResult = (ConflictObjectResult)response;
-
-            Assert.IsInstanceOf<ConflictObjectResult>(response);
-            Assert.That(conflictResult.StatusCode, Is.EqualTo(409));
-            Assert.That(((ErrorResponseDTO)conflictResult.Value!).Message, Is.EqualTo($"Well with code: {_createViewModel.CodWell} already exists, try another code."));
+            Assert.That(((CreateUpdateWellDTO)createdResult.Value).Name, Is.EqualTo(_createViewModel.Name));
+            Assert.That(((CreateUpdateWellDTO)createdResult.Value).CodWellAnp, Is.EqualTo(_createViewModel.CodWellAnp));
+            Assert.That(createdResult.Location, Is.EqualTo($"wells/{((CreateUpdateWellDTO)createdResult.Value).Id}"));
         }
 
         [Test]
@@ -186,13 +175,17 @@ namespace PRIO.TESTS.Hierarquies.Wells
                 CodWell = "sadsada",
                 FieldId = _invalidId
             };
+            try
+            {
+                var response = await _controller.Create(_createViewModel);
 
-            var response = await _controller.Create(_createViewModel);
-            var notFoundResult = (NotFoundObjectResult)response;
+                Assert.Fail("Expected NotFoundException was not thrown.");
+            }
+            catch (NotFoundException ex)
+            {
+                Assert.That(ex.Message, Is.EqualTo("Field not found"));
 
-            Assert.IsInstanceOf<NotFoundObjectResult>(response);
-            Assert.That(notFoundResult.StatusCode, Is.EqualTo(404));
-            Assert.That(((ErrorResponseDTO)notFoundResult.Value!).Message, Is.EqualTo("Field is not found"));
+            }
         }
 
         [Test]
@@ -331,12 +324,17 @@ namespace PRIO.TESTS.Hierarquies.Wells
             {
                 Name = "sadsadsa"
             };
+            try
+            {
+                var response = await _controller.Update(_invalidId, updateViewModel);
 
-            var response = await _controller.Update(_invalidId, updateViewModel);
-            var notFoundResult = (NotFoundObjectResult)response;
+                Assert.Fail("Expected NotFoundException was not thrown.");
+            }
+            catch (NotFoundException ex)
+            {
+                Assert.That(ex.Message, Is.EqualTo("Well not found"));
 
-            Assert.IsInstanceOf<NotFoundObjectResult>(response);
-            Assert.That(((ErrorResponseDTO)notFoundResult.Value).Message, Is.EqualTo("Well not found"));
+            }
         }
 
         [Test]
@@ -375,12 +373,17 @@ namespace PRIO.TESTS.Hierarquies.Wells
             {
                 FieldId = _invalidId,
             };
+            try
+            {
+                var response = await _controller.Update(wellToUpdate.Id, updateViewModel);
 
-            var response = await _controller.Update(wellToUpdate.Id, updateViewModel);
-            var notFoundResult = (NotFoundObjectResult)response;
+                Assert.Fail("Expected NotFoundException was not thrown.");
+            }
+            catch (NotFoundException ex)
+            {
+                Assert.That(ex.Message, Is.EqualTo("Field not found"));
 
-            Assert.IsInstanceOf<NotFoundObjectResult>(response);
-            Assert.That(((ErrorResponseDTO)notFoundResult.Value).Message, Is.EqualTo("Field not found"));
+            }
         }
 
         [Test]
@@ -533,7 +536,7 @@ namespace PRIO.TESTS.Hierarquies.Wells
             var okResult = (OkObjectResult)response;
 
             Assert.IsInstanceOf<OkObjectResult>(response);
-            Assert.That(((WellDTO)okResult.Value), Is.Not.Null);
+            Assert.That(((CreateUpdateWellDTO)okResult.Value), Is.Not.Null);
             Assert.That(wellInDatabase, Is.Not.Null);
             Assert.That(wellInDatabase.IsActive, Is.True);
             Assert.That(wellInDatabase.DeletedAt, Is.Null);

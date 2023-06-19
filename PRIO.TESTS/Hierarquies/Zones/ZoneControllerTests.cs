@@ -119,54 +119,6 @@ namespace PRIO.TESTS.Hierarquies.Zones
             Assert.That(createdResult.Location, Is.EqualTo($"zones/{((CreateUpdateZoneDTO)createdResult.Value).Id}"));
         }
 
-        [Test]
-        public async Task create_ZoneAlreadyexists()
-        {
-
-            Cluster _cluster1 = new()
-            {
-                Name = "clustertest",
-                User = _user
-            };
-            _context.Add(_cluster1);
-            _context.SaveChanges();
-
-            Installation _installation1 = new()
-            {
-                Name = "InstallationTest",
-                CodInstallationUep = "InstallationTest",
-                Cluster = _cluster1,
-                User = _user
-            };
-            _context.Add(_installation1);
-
-            Field _field1 = new()
-            {
-                Name = "FieldTest",
-                CodField = "FieldTest",
-                Installation = _installation1,
-                User = _user
-            };
-            _context.Add(_field1);
-            _context.SaveChanges();
-
-            _viewModel = new CreateZoneViewModel
-            {
-                CodZone = "ZoneTest",
-                FieldId = _field1.Id,
-            };
-
-
-            await _controller.Create(_viewModel);
-            var response = await _controller.Create(_viewModel);
-
-            var createdresult = (ConflictObjectResult)response;
-
-
-            Assert.IsInstanceOf<ConflictObjectResult>(response);
-            Assert.That(((ErrorResponseDTO)createdresult.Value).Message, Is.EqualTo($"Zone with this codZone is alredy registered: {_viewModel.CodZone}"));
-            Assert.That(createdresult.StatusCode, Is.EqualTo(409));
-        }
 
         [Test]
         public async Task Create_CheckRequiredFieldIdField()

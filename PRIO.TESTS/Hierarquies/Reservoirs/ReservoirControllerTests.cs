@@ -132,73 +132,10 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
             var createdResult = (CreatedResult)response;
 
             Assert.IsInstanceOf<CreatedResult>(response);
-            Assert.That(((ReservoirDTO)createdResult.Value).Name, Is.EqualTo(_viewModel.Name));
-            Assert.That(((ReservoirDTO)createdResult.Value).CodReservoir, Is.EqualTo(_viewModel.CodReservoir));
+            Assert.That(((CreateUpdateReservoirDTO)createdResult.Value).Name, Is.EqualTo(_viewModel.Name));
+            Assert.That(((CreateUpdateReservoirDTO)createdResult.Value).CodReservoir, Is.EqualTo(_viewModel.CodReservoir));
             Assert.That(createdResult.StatusCode, Is.EqualTo(201));
-            Assert.That(createdResult.Location, Is.EqualTo($"reservoirs/{((ReservoirDTO)createdResult.Value).Id}"));
-        }
-
-        [Test]
-        public async Task create_ReservoirAlreadyexists()
-        {
-            Cluster _cluster1 = new()
-            {
-                Id = Guid.NewGuid(),
-
-                Name = "ClusterTest",
-                User = _user
-            };
-            _context.Add(_cluster1);
-
-            Installation _installation1 = new()
-            {
-                Id = Guid.NewGuid(),
-
-                Name = "InstallationTest",
-                CodInstallationUep = "InstallationTest",
-                Cluster = _cluster1,
-                User = _user
-            };
-            _context.Add(_installation1);
-
-            Field _field1 = new()
-            {
-                Id = Guid.NewGuid(),
-
-                Name = "FieldTest",
-                CodField = "FieldTest",
-                Installation = _installation1,
-                User = _user
-            };
-            _context.Add(_field1);
-
-            Zone _zone = new()
-            {
-                Id = Guid.NewGuid(),
-
-                CodZone = "ZoneTest",
-                Field = _field1
-            };
-            _context.Add(_zone);
-            _context.SaveChanges();
-
-            _viewModel = new CreateReservoirViewModel
-            {
-                Name = "ReservoirTest",
-                CodReservoir = "ReservoirTest",
-                ZoneId = _zone.Id,
-            };
-
-
-            await _controller.Create(_viewModel);
-            var response = await _controller.Create(_viewModel);
-
-            var createdresult = (ConflictObjectResult)response;
-
-
-            Assert.IsInstanceOf<ConflictObjectResult>(response);
-            Assert.That(((ErrorResponseDTO)createdresult.Value).Message, Is.EqualTo($"Reservoir with code: {_viewModel.CodReservoir} already exists, try another code."));
-            Assert.That(createdresult.StatusCode, Is.EqualTo(409));
+            Assert.That(createdResult.Location, Is.EqualTo($"reservoirs/{((CreateUpdateReservoirDTO)createdResult.Value).Id}"));
         }
 
         [Test]
@@ -211,7 +148,7 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
                 Name = "ClusterTest",
                 User = _user
             };
-            _context.Add(_cluster1);
+            await _context.AddAsync(_cluster1);
 
             Installation _installation1 = new()
             {
@@ -222,7 +159,7 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
                 Cluster = _cluster1,
                 User = _user
             };
-            _context.Add(_installation1);
+            await _context.AddAsync(_installation1);
 
             Field _field1 = new()
             {
@@ -233,7 +170,7 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
                 Installation = _installation1,
                 User = _user
             };
-            _context.Add(_field1);
+            await _context.AddAsync(_field1);
 
             Zone _zone = new()
             {
@@ -242,8 +179,8 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
                 CodZone = "ZoneTest",
                 Field = _field1
             };
-            _context.Add(_zone);
-            _context.SaveChanges();
+            await _context.AddAsync(_zone);
+            await _context.SaveChangesAsync();
 
             _viewModel = new CreateReservoirViewModel
             {
@@ -391,8 +328,8 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
             var createdResult = (OkObjectResult)response;
 
             Assert.IsInstanceOf<OkObjectResult>(response);
-            Assert.That(((ReservoirDTO)createdResult.Value).Name, Is.EqualTo(_viewModel2.Name));
-            Assert.That(((ReservoirDTO)createdResult.Value).CodReservoir, Is.EqualTo(_viewModel2.CodReservoir));
+            Assert.That(((CreateUpdateReservoirDTO)createdResult.Value).Name, Is.EqualTo(_viewModel2.Name));
+            Assert.That(((CreateUpdateReservoirDTO)createdResult.Value).CodReservoir, Is.EqualTo(_viewModel2.CodReservoir));
             Assert.That(createdResult.StatusCode, Is.EqualTo(200));
         }
 

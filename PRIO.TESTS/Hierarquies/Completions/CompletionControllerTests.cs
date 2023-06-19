@@ -299,12 +299,16 @@ namespace PRIO.TESTS.Hierarquies.Completions
                 CodCompletion = "updatedMock",
             };
 
-            var response = await _controller.Update(Guid.NewGuid(), _updateViewModel);
-            var notFoundResult = (NotFoundObjectResult)response;
+            try
+            {
+                var response = await _controller.Update(Guid.NewGuid(), _updateViewModel);
 
-            Assert.IsInstanceOf<NotFoundObjectResult>(response);
-            Assert.That(notFoundResult.StatusCode, Is.EqualTo(404));
-            Assert.That(((ErrorResponseDTO)notFoundResult.Value).Message, Is.EqualTo("Completion not found"));
+                Assert.Fail("Expected NotFoundException was not thrown.");
+            }
+            catch (NotFoundException ex)
+            {
+                Assert.That(ex.Message, Is.EqualTo("Completion not found"));
+            }
         }
 
         [Test]
@@ -319,12 +323,18 @@ namespace PRIO.TESTS.Hierarquies.Completions
                 CodCompletion = "updatedMock",
             };
 
-            var response = await _controller.Update(completionToUpdate.Id, _updateViewModel);
-            var notFoundResult = (NotFoundObjectResult)response;
+            try
+            {
+                var response = await _controller.Update(completionToUpdate.Id, _updateViewModel);
+                Assert.Fail("Expected NotFoundException was not thrown.");
 
-            Assert.IsInstanceOf<NotFoundObjectResult>(response);
-            Assert.That(notFoundResult.StatusCode, Is.EqualTo(404));
-            Assert.That(((ErrorResponseDTO)notFoundResult.Value).Message, Is.EqualTo("Well not found"));
+            }
+            catch (NotFoundException ex)
+            {
+                Assert.That(ex.Message, Is.EqualTo("Well not found"));
+
+            }
+
         }
 
         [Test]
@@ -339,12 +349,18 @@ namespace PRIO.TESTS.Hierarquies.Completions
                 CodCompletion = "updatedMock",
             };
 
-            var response = await _controller.Update(completionToUpdate.Id, _updateViewModel);
-            var notFoundResult = (NotFoundObjectResult)response;
+            try
+            {
+                var response = await _controller.Update(completionToUpdate.Id, _updateViewModel);
 
-            Assert.IsInstanceOf<NotFoundObjectResult>(response);
-            Assert.That(notFoundResult.StatusCode, Is.EqualTo(404));
-            Assert.That(((ErrorResponseDTO)notFoundResult.Value).Message, Is.EqualTo("Reservoir not found"));
+                Assert.Fail("Expected NotFoundException was not thrown.");
+
+            }
+            catch (NotFoundException ex)
+            {
+                Assert.That(ex.Message, Is.EqualTo("Reservoir not found"));
+
+            }
         }
 
         [Test]
@@ -359,12 +375,18 @@ namespace PRIO.TESTS.Hierarquies.Completions
                 CodCompletion = "updatedMock",
             };
 
-            var response = await _controller.Update(completionToUpdate.Id, _updateViewModel);
-            var conflictResult = (ConflictObjectResult)response;
+            try
+            {
+                var response = await _controller.Update(completionToUpdate.Id, _updateViewModel);
 
-            Assert.IsInstanceOf<ConflictObjectResult>(response);
-            Assert.That(conflictResult.StatusCode, Is.EqualTo(409));
-            Assert.That(((ErrorResponseDTO)conflictResult.Value).Message, Is.EqualTo($"Well: {_well1.Name} and Reservoir: {_reservoir2.Name} doesn't belong to the same Field"));
+                Assert.Fail("Expected ConflictException was not thrown.");
+
+            }
+            catch (ConflictException ex)
+            {
+                Assert.That(ex.Message, Is.EqualTo($"Well: {_well1.Name} and Reservoir: {_reservoir2.Name} doesn't belong to the same Field"));
+
+            }
         }
 
         [Test]

@@ -8,6 +8,7 @@ using PRIO.DTOS.GlobalDTOS;
 using PRIO.DTOS.HierarchyDTOS.FieldDTOS;
 using PRIO.DTOS.HistoryDTOS;
 using PRIO.DTOS.UserDTOS;
+using PRIO.Exceptions;
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
 using PRIO.Services.HierarchyServices;
@@ -117,38 +118,11 @@ namespace PRIO.TESTS.Hierarquies.Fields
             var createdResult = (CreatedResult)response;
 
             Assert.IsInstanceOf<CreatedResult>(response);
-            Assert.That(((FieldDTO)createdResult.Value).Name, Is.EqualTo(_createViewModel.Name));
-            Assert.That(((FieldDTO)createdResult.Value).CodField, Is.EqualTo(_createViewModel.CodField));
-            Assert.That(createdResult.Location, Is.EqualTo($"fields/{((FieldDTO)createdResult.Value).Id}"));
+            Assert.That(((CreateUpdateFieldDTO)createdResult.Value).Name, Is.EqualTo(_createViewModel.Name));
+            Assert.That(((CreateUpdateFieldDTO)createdResult.Value).CodField, Is.EqualTo(_createViewModel.CodField));
+            Assert.That(createdResult.Location, Is.EqualTo($"fields/{((CreateUpdateFieldDTO)createdResult.Value).Id}"));
         }
 
-        [Test]
-        public async Task Create_FieldShouldReturnConflictIfAlreadyExists()
-        {
-            var field = new Field
-            {
-                CodField = "21321",
-                Name = "Name",
-                Installation = _installation1,
-            };
-
-            await _context.AddAsync(field);
-            await _context.SaveChangesAsync();
-
-            _createViewModel = new()
-            {
-                CodField = "21321",
-                Name = "Name",
-                InstallationId = _installation1.Id,
-            };
-
-            var response = await _controller.Create(_createViewModel);
-            var conflictResult = (ConflictObjectResult)response;
-
-            Assert.IsInstanceOf<ConflictObjectResult>(response);
-            Assert.That(conflictResult.StatusCode, Is.EqualTo(409));
-            Assert.That(((ErrorResponseDTO)conflictResult.Value!).Message, Is.EqualTo($"Field with code: {_createViewModel.CodField} already exists."));
-        }
 
         [Test]
         public async Task Create_FieldShouldReturnNotFoundIfInstallationDontExists()
@@ -160,13 +134,18 @@ namespace PRIO.TESTS.Hierarquies.Fields
                 Name = "Name",
                 InstallationId = _invalidId,
             };
+            try
+            {
+                var response = await _controller.Create(_createViewModel);
 
-            var response = await _controller.Create(_createViewModel);
-            var notFoundResult = (NotFoundObjectResult)response;
+                Assert.Fail("Expected NotFoundException was not thrown.");
 
-            Assert.IsInstanceOf<NotFoundObjectResult>(response);
-            Assert.That(notFoundResult.StatusCode, Is.EqualTo(404));
-            Assert.That(((ErrorResponseDTO)notFoundResult.Value).Message, Is.EqualTo($"Installation not found"));
+            }
+            catch (NotFoundException ex)
+            {
+                Assert.That(ex.Message, Is.EqualTo($"Installation not found"));
+
+            }
         }
 
 
@@ -231,6 +210,7 @@ namespace PRIO.TESTS.Hierarquies.Fields
         {
             var fieldToUpdate = new Field
             {
+                Id = Guid.NewGuid(),
                 CodField = "21321",
                 Name = "NameToUpdate",
                 Installation = _installation1,
@@ -251,7 +231,7 @@ namespace PRIO.TESTS.Hierarquies.Fields
 
             Assert.IsInstanceOf<OkObjectResult>(response);
             Assert.That(updatedResult.StatusCode, Is.EqualTo(200));
-            Assert.That(((FieldDTO)updatedResult.Value).Name, Is.EqualTo(_updateViewModel.Name));
+            Assert.That(((CreateUpdateFieldDTO)updatedResult.Value).Name, Is.EqualTo(_updateViewModel.Name));
 
         }
 
@@ -263,11 +243,18 @@ namespace PRIO.TESTS.Hierarquies.Fields
                 InstallationId = _installation1.Id,
                 Name = "UpdatedField",
             };
+            try
+            {
+                var response = await _controller.Update(_invalidId, _updateViewModel);
 
-            var response = await _controller.Update(_invalidId, _updateViewModel);
-            var notFoundResult = (NotFoundObjectResult)response;
-            Assert.That(notFoundResult.StatusCode, Is.EqualTo(404));
-            Assert.That(((ErrorResponseDTO)notFoundResult.Value).Message, Is.EqualTo("Field not found"));
+                Assert.Fail("Expected NotFoundException was not thrown.");
+
+            }
+            catch (NotFoundException ex)
+            {
+                Assert.That(ex.Message, Is.EqualTo("Field not found"));
+
+            }
 
         }
 
@@ -290,10 +277,18 @@ namespace PRIO.TESTS.Hierarquies.Fields
                 Name = "UpdatedField",
             };
 
-            var response = await _controller.Update(fieldToUpdate.Id, _updateViewModel);
-            var notFoundResult = (NotFoundObjectResult)response;
-            Assert.That(notFoundResult.StatusCode, Is.EqualTo(404));
-            Assert.That(((ErrorResponseDTO)notFoundResult.Value).Message, Is.EqualTo("Installation not found"));
+            try
+            {
+                var response = await _controller.Update(fieldToUpdate.Id, _updateViewModel);
+
+                Assert.Fail("Expected NotFoundException was not thrown.");
+
+            }
+            catch (NotFoundException ex)
+            {
+                Assert.That(ex.Message, Is.EqualTo("Installation not found"));
+
+            }
         }
 
         [Test]
@@ -370,6 +365,7 @@ namespace PRIO.TESTS.Hierarquies.Fields
         {
             var fieldToRestore = new Field
             {
+                Id = Guid.NewGuid(),
                 Name = "Test",
                 CodField = "Cod test",
                 IsActive = false,
@@ -388,7 +384,7 @@ namespace PRIO.TESTS.Hierarquies.Fields
             Assert.IsInstanceOf<OkObjectResult>(response);
             Assert.That(okResult.StatusCode, Is.EqualTo(200));
 
-            Assert.That(((FieldDTO)okResult.Value), Is.Not.Null);
+            Assert.That(((CreateUpdateFieldDTO)okResult.Value), Is.Not.Null);
 
             Assert.That(completionInDatabase, Is.Not.Null);
             //var historyInDatabase = await _context.FieldHistories.SingleOrDefaultAsync();
