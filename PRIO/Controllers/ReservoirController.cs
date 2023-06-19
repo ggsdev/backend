@@ -38,14 +38,14 @@ namespace PRIO.Controllers
             return Ok(reservoirsDTO);
         }
 
-        [HttpGet("{id:Guid}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var reservoirDTO = await _reservoirService.GetReservoirById(id);
             return Ok(reservoirDTO);
         }
 
-        [HttpPatch("{id:Guid}")]
+        [HttpPatch("{id}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateReservoirViewModel body)
         {
             if (HttpContext.Items["User"] is not User user)
@@ -58,7 +58,7 @@ namespace PRIO.Controllers
             return Ok(reservoirDTO);
         }
 
-        [HttpDelete("{id:Guid}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             if (HttpContext.Items["User"] is not User user)
@@ -71,7 +71,7 @@ namespace PRIO.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{id:Guid}/restore")]
+        [HttpPatch("{id}/restore")]
         public async Task<IActionResult> Restore([FromRoute] Guid id)
         {
             if (HttpContext.Items["User"] is not User user)
@@ -83,7 +83,7 @@ namespace PRIO.Controllers
             return Ok(reservoirDTO);
         }
 
-        [HttpGet("{id:Guid}/history")]
+        [HttpGet("{id}/history")]
         public async Task<IActionResult> GetHistory([FromRoute] Guid id)
         {
             var reservoirHistories = await _reservoirService.GetReservoirHistory(id);

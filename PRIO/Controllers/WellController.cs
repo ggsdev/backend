@@ -39,14 +39,14 @@ namespace PRIO.Controllers
             return Ok(wellsDTO);
         }
 
-        [HttpGet("{id:Guid}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var wellDTO = await _wellService.GetWellById(id);
             return Ok(wellDTO);
         }
 
-        [HttpPatch("{id:Guid}")]
+        [HttpPatch("{id}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateWellViewModel body)
         {
             if (HttpContext.Items["User"] is not User user)
@@ -59,7 +59,7 @@ namespace PRIO.Controllers
             return Ok(wellDTO);
         }
 
-        [HttpDelete("{id:Guid}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             if (HttpContext.Items["User"] is not User user)
@@ -72,7 +72,7 @@ namespace PRIO.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{id:Guid}/restore")]
+        [HttpPatch("{id}/restore")]
         public async Task<IActionResult> Restore([FromRoute] Guid id)
         {
             if (HttpContext.Items["User"] is not User user)
@@ -85,7 +85,7 @@ namespace PRIO.Controllers
             return Ok(wellDTO);
         }
 
-        [HttpGet("{id:Guid}/history")]
+        [HttpGet("{id}/history")]
         public async Task<IActionResult> GetHistory([FromRoute] Guid id)
         {
             var wellHistories = await _wellService.GetWellHistory(id);

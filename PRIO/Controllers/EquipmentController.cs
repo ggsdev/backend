@@ -39,14 +39,14 @@ namespace PRIO.Controllers
 
         }
 
-        [HttpGet("{id:Guid}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var equipmentDTO = await _equipmentService.GetEquipmentById(id);
             return Ok(equipmentDTO);
         }
 
-        [HttpPatch("{id:Guid}")]
+        [HttpPatch("{id}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateEquipmentViewModel body)
         {
             if (HttpContext.Items["User"] is not User user)
@@ -59,7 +59,7 @@ namespace PRIO.Controllers
             return Ok(equipmentDTO);
         }
 
-        [HttpDelete("{id:Guid}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             if (HttpContext.Items["User"] is not User user)
@@ -73,7 +73,7 @@ namespace PRIO.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{id:Guid}/restore")]
+        [HttpPatch("{id}/restore")]
         public async Task<IActionResult> Restore([FromRoute] Guid id)
         {
             if (HttpContext.Items["User"] is not User user)
@@ -86,7 +86,7 @@ namespace PRIO.Controllers
             return Ok(equipmentDTO);
         }
 
-        [HttpGet("{id:Guid}/history")]
+        [HttpGet("{id}/history")]
         public async Task<IActionResult> GetHistory([FromRoute] Guid id)
         {
             var equipmentHistories = await _equipmentService.GetEquipmentHistory(id);

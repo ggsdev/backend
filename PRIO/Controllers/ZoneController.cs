@@ -38,14 +38,14 @@ namespace PRIO.Controllers
             return Ok(zonesDTO);
         }
 
-        [HttpGet("{id:Guid}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var zoneDTO = await _zoneService.GetZoneById(id);
             return Ok(zoneDTO);
         }
 
-        [HttpPatch("{id:Guid}")]
+        [HttpPatch("{id}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateZoneViewModel body)
         {
             if (HttpContext.Items["User"] is not User user)
@@ -58,7 +58,7 @@ namespace PRIO.Controllers
             return Ok(zoneDTO);
         }
 
-        [HttpDelete("{id:Guid}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             if (HttpContext.Items["User"] is not User user)
@@ -72,7 +72,7 @@ namespace PRIO.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{id:Guid}/restore")]
+        [HttpPatch("{id}/restore")]
         public async Task<IActionResult> Restore([FromRoute] Guid id)
         {
             if (HttpContext.Items["User"] is not User user)
@@ -85,7 +85,7 @@ namespace PRIO.Controllers
             return Ok(zoneDTO);
         }
 
-        [HttpGet("{id:Guid}/history")]
+        [HttpGet("{id}/history")]
         public async Task<IActionResult> GetHistoryById([FromRoute] Guid id)
         {
             var zoneHistories = await _zoneService.GetZoneHistory(id);

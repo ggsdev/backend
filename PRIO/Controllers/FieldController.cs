@@ -39,14 +39,14 @@ namespace PRIO.Controllers
             return Ok(fieldsDTO);
         }
 
-        [HttpGet("{id:Guid}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var fieldDTO = await _fieldService.GetFieldById(id);
             return Ok(fieldDTO);
         }
 
-        [HttpPatch("{id:Guid}")]
+        [HttpPatch("{id}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateFieldViewModel body)
         {
             if (HttpContext.Items["User"] is not User user)
@@ -59,7 +59,7 @@ namespace PRIO.Controllers
             return Ok(fieldDTO);
         }
 
-        [HttpDelete("{id:Guid}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             if (HttpContext.Items["User"] is not User user)
@@ -73,7 +73,7 @@ namespace PRIO.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{id:Guid}/restore")]
+        [HttpPatch("{id}/restore")]
         public async Task<IActionResult> Restore([FromRoute] Guid id)
         {
             if (HttpContext.Items["User"] is not User user)
@@ -86,7 +86,7 @@ namespace PRIO.Controllers
             return Ok(fieldDTO);
         }
 
-        [HttpGet("{id:Guid}/history")]
+        [HttpGet("{id}/history")]
         public async Task<IActionResult> GetHistory([FromRoute] Guid id)
         {
             var fieldHistories = await _fieldService.GetFieldHistory(id);
