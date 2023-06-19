@@ -156,7 +156,7 @@ namespace PRIO.Services.HierarchyServices
             return installationDTO;
         }
 
-        public async Task DeleteInstallation(Guid id)
+        public async Task DeleteInstallation(Guid id, User user)
         {
             var installation = await _context.Installations
                 .Include(x => x.Cluster)

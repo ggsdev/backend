@@ -68,7 +68,7 @@ namespace PRIO.Controllers
                     Message = "User not identified, please login first"
                 });
 
-            await _installationService.DeleteInstallation(id);
+            await _installationService.DeleteInstallation(id, user);
 
             return NoContent();
         }
