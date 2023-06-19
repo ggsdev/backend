@@ -6,10 +6,12 @@ using PRIO.Controllers;
 using PRIO.Data;
 using PRIO.DTOS.GlobalDTOS;
 using PRIO.DTOS.HierarchyDTOS.FieldDTOS;
+using PRIO.DTOS.HistoryDTOS;
 using PRIO.DTOS.UserDTOS;
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
-using PRIO.ViewModels.Fields;
+using PRIO.Services.HierarchyServices;
+using PRIO.ViewModels.HierarchyViewModels.Fields;
 using System.ComponentModel.DataAnnotations;
 
 namespace PRIO.TESTS.Hierarquies.Fields
@@ -22,6 +24,7 @@ namespace PRIO.TESTS.Hierarquies.Fields
         private DataContext _context;
         private CreateFieldViewModel _createViewModel;
         private UpdateFieldViewModel _updateViewModel;
+        private FieldService _service;
         private User _user;
         private Installation _installation1;
         private Installation _installation2;
@@ -40,6 +43,8 @@ namespace PRIO.TESTS.Hierarquies.Fields
             {
                 cfg.CreateMap<User, UserDTO>();
                 cfg.CreateMap<Field, FieldDTO>();
+                cfg.CreateMap<Field, CreateUpdateFieldDTO>();
+                cfg.CreateMap<Field, FieldHistoryDTO>();
             });
 
             _mapper = mapperConfig.CreateMapper();
@@ -86,7 +91,8 @@ namespace PRIO.TESTS.Hierarquies.Fields
             httpContext.Items["Id"] = _user.Id;
             httpContext.Items["User"] = _user;
 
-            _controller = new FieldController(_context, _mapper);
+            _service = new FieldService(_context, _mapper);
+            _controller = new FieldController(_service);
             _controller.ControllerContext.HttpContext = httpContext;
         }
 

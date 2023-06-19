@@ -6,10 +6,12 @@ using PRIO.Controllers;
 using PRIO.Data;
 using PRIO.DTOS.GlobalDTOS;
 using PRIO.DTOS.HierarchyDTOS.WellDTOS;
+using PRIO.DTOS.HistoryDTOS;
 using PRIO.DTOS.UserDTOS;
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
-using PRIO.ViewModels.Wells;
+using PRIO.Services.HierarchyServices;
+using PRIO.ViewModels.HierarchyViewModels.Wells;
 using System.ComponentModel.DataAnnotations;
 
 namespace PRIO.TESTS.Hierarquies.Wells
@@ -24,6 +26,7 @@ namespace PRIO.TESTS.Hierarquies.Wells
         private Field _field1;
         private Field _field2;
         private CreateWellViewModel _createViewModel;
+        private WellService _service;
         private Guid _invalidId = Guid.NewGuid();
 
         [SetUp]
@@ -39,6 +42,8 @@ namespace PRIO.TESTS.Hierarquies.Wells
             {
                 cfg.CreateMap<User, UserDTO>();
                 cfg.CreateMap<Well, WellDTO>();
+                cfg.CreateMap<Well, CreateUpdateWellDTO>();
+                cfg.CreateMap<Well, WellHistoryDTO>();
             });
             _mapper = mapperConfig.CreateMapper();
             _user = new User()
@@ -117,7 +122,8 @@ namespace PRIO.TESTS.Hierarquies.Wells
             httpContext.Items["Id"] = _user.Id;
             httpContext.Items["User"] = _user;
 
-            _controller = new WellController(_context, _mapper);
+            _service = new WellService(_context, _mapper);
+            _controller = new WellController(_service);
             _controller.ControllerContext.HttpContext = httpContext;
         }
 
@@ -282,6 +288,7 @@ namespace PRIO.TESTS.Hierarquies.Wells
 
             var wellToUpdate = new Well()
             {
+                Id = Guid.NewGuid(),
                 Name = "1233a3",
                 WellOperatorName = "1233aa3",
                 CodWellAnp = "1233aa3",
@@ -312,8 +319,8 @@ namespace PRIO.TESTS.Hierarquies.Wells
             var updatedResult = (OkObjectResult)response;
 
             Assert.IsInstanceOf<OkObjectResult>(response);
-            Assert.That(((WellDTO)updatedResult.Value).Name, Is.EqualTo(wellToUpdate.Name));
-            Assert.That(((WellDTO)updatedResult.Value).CodWellAnp, Is.EqualTo(wellToUpdate.CodWellAnp));
+            Assert.That(((CreateUpdateWellDTO)updatedResult.Value).Name, Is.EqualTo(wellToUpdate.Name));
+            Assert.That(((CreateUpdateWellDTO)updatedResult.Value).CodWellAnp, Is.EqualTo(wellToUpdate.CodWellAnp));
         }
 
         [Test]
@@ -337,6 +344,7 @@ namespace PRIO.TESTS.Hierarquies.Wells
         {
             var wellToUpdate = new Well()
             {
+                Id = Guid.NewGuid(),
                 Name = "1233a3",
                 WellOperatorName = "1233aa3",
                 CodWellAnp = "1233aa3",
@@ -380,6 +388,7 @@ namespace PRIO.TESTS.Hierarquies.Wells
         {
             var wellToUpdate = new Well()
             {
+                Id = Guid.NewGuid(),
                 Name = "1233a3",
                 WellOperatorName = "1233aa3",
                 CodWellAnp = "1233aa3",
@@ -444,6 +453,7 @@ namespace PRIO.TESTS.Hierarquies.Wells
         {
             var wellToUpdate = new Well()
             {
+                Id = Guid.NewGuid(),
                 Name = "1233a3",
                 WellOperatorName = "1233aa3",
                 CodWellAnp = "1233aa3",
@@ -490,6 +500,7 @@ namespace PRIO.TESTS.Hierarquies.Wells
         {
             var wellToUpdate = new Well()
             {
+                Id = Guid.NewGuid(),
                 Name = "1233a3",
                 WellOperatorName = "1233aa3",
                 CodWellAnp = "1233aa3",

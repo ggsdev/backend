@@ -5,13 +5,20 @@ using Microsoft.EntityFrameworkCore;
 using PRIO.Controllers;
 using PRIO.Data;
 using PRIO.DTOS.GlobalDTOS;
+using PRIO.DTOS.HierarchyDTOS.ClusterDTOS;
 using PRIO.DTOS.HierarchyDTOS.CompletionDTOS;
+using PRIO.DTOS.HierarchyDTOS.FieldDTOS;
+using PRIO.DTOS.HierarchyDTOS.InstallationDTOS;
 using PRIO.DTOS.HierarchyDTOS.ReservoirDTOS;
 using PRIO.DTOS.HierarchyDTOS.WellDTOS;
+using PRIO.DTOS.HierarchyDTOS.ZoneDTOS;
+using PRIO.DTOS.HistoryDTOS;
 using PRIO.DTOS.UserDTOS;
+using PRIO.Exceptions;
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
-using PRIO.ViewModels.Completions;
+using PRIO.Services.HierarchyServices;
+using PRIO.ViewModels.HierarchyViewModels.Completions;
 using System.ComponentModel.DataAnnotations;
 
 namespace PRIO.TESTS.Hierarquies.Completions
@@ -22,6 +29,7 @@ namespace PRIO.TESTS.Hierarquies.Completions
         private CompletionController _controller;
         private IMapper _mapper;
         private DataContext _context;
+        private CompletionService _service;
         private CreateCompletionViewModel _createViewModel;
         private UpdateCompletionViewModel _updateViewModel;
         private User _user;
@@ -43,8 +51,14 @@ namespace PRIO.TESTS.Hierarquies.Completions
             var mapperConfig = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Completion, CompletionDTO>();
+                cfg.CreateMap<Completion, CompletionWithouWellDTO>();
+                cfg.CreateMap<Completion, CompletionHistoryDTO>();
                 cfg.CreateMap<User, UserDTO>();
                 cfg.CreateMap<Reservoir, ReservoirDTO>();
+                cfg.CreateMap<Zone, ZoneDTO>();
+                cfg.CreateMap<Field, FieldDTO>();
+                cfg.CreateMap<Installation, InstallationDTO>();
+                cfg.CreateMap<Cluster, ClusterDTO>();
                 cfg.CreateMap<Well, WellDTO>();
             });
 
@@ -69,7 +83,8 @@ namespace PRIO.TESTS.Hierarquies.Completions
             httpContext.Items["Id"] = _user.Id;
             httpContext.Items["User"] = _user;
 
-            _controller = new CompletionController(_context, _mapper);
+            _service = new CompletionService(_context, _mapper);
+            _controller = new CompletionController(_service);
             _controller.ControllerContext.HttpContext = httpContext;
         }
 
@@ -108,12 +123,15 @@ namespace PRIO.TESTS.Hierarquies.Completions
                 CodCompletion = "Different Fields",
             };
 
-            var response = await _controller.Create(_createViewModel);
-            var conflictResult = (ConflictObjectResult)response;
-
-            Assert.IsInstanceOf<ConflictObjectResult>(response);
-            Assert.That(conflictResult.StatusCode, Is.EqualTo(409));
-            Assert.That(((ErrorResponseDTO)conflictResult.Value).Message, Is.EqualTo($"Reservoir: {_reservoir1.Name} and Well: {_well2.Name} doesn't belong to the same Field"));
+            try
+            {
+                await _controller.Create(_createViewModel);
+                Assert.Fail("Expected ConflictException was not thrown.");
+            }
+            catch (ConflictException ex)
+            {
+                Assert.That(ex.Message, Is.EqualTo($"Reservoir: {_reservoir1.Name} and Well: {_well2.Name} doesn't belong to the same Field"));
+            }
         }
 
         [Test]
@@ -127,12 +145,16 @@ namespace PRIO.TESTS.Hierarquies.Completions
                 CodCompletion = "Invalid well",
             };
 
-            var response = await _controller.Create(_createViewModel);
-            var notFoundResult = (NotFoundObjectResult)response;
+            try
+            {
+                var response = await _controller.Create(_createViewModel);
 
-            Assert.IsInstanceOf<NotFoundObjectResult>(response);
-            Assert.That(notFoundResult.StatusCode, Is.EqualTo(404));
-            Assert.That(((ErrorResponseDTO)notFoundResult.Value).Message, Is.EqualTo($"Well with id: {wellInvalidId} not found"));
+                Assert.Fail("Expected NotFoundException was not thrown.");
+            }
+            catch (NotFoundException ex)
+            {
+                Assert.That(ex.Message, Is.EqualTo($"Well with id: {wellInvalidId} not found"));
+            }
         }
 
         [Test]
@@ -146,12 +168,17 @@ namespace PRIO.TESTS.Hierarquies.Completions
                 CodCompletion = "Invalid reservoir",
             };
 
-            var response = await _controller.Create(_createViewModel);
-            var notFoundResult = (NotFoundObjectResult)response;
+            try
+            {
+                var response = await _controller.Create(_createViewModel);
 
-            Assert.IsInstanceOf<NotFoundObjectResult>(response);
-            Assert.That(notFoundResult.StatusCode, Is.EqualTo(404));
-            Assert.That(((ErrorResponseDTO)notFoundResult.Value).Message, Is.EqualTo($"Reservoir with id: {Mock._invalidId} not found"));
+                Assert.Fail("Expected NotFoundException was not thrown.");
+            }
+            catch (NotFoundException ex)
+            {
+                Assert.That(ex.Message, Is.EqualTo($"Reservoir with id: {Mock._invalidId} not found"));
+
+            }
         }
 
         [Test]
@@ -173,12 +200,15 @@ namespace PRIO.TESTS.Hierarquies.Completions
                 CodCompletion = "Already exists",
             };
 
-            var response = await _controller.Create(viewModelDuplicated);
-            var conflictResult = (ConflictObjectResult)response;
-
-            Assert.IsInstanceOf<ConflictObjectResult>(response);
-            Assert.That(conflictResult.StatusCode, Is.EqualTo(409));
-            Assert.That(((ErrorResponseDTO)conflictResult.Value!).Message, Is.EqualTo($"Completion with name: {_well1.Name}_{_reservoir1.Zone?.CodZone} already exists."));
+            try
+            {
+                var response = await _controller.Create(viewModelDuplicated);
+                Assert.Fail("Expected ConflictException was not thrown.");
+            }
+            catch (ConflictException ex)
+            {
+                Assert.That(ex.Message, Is.EqualTo($"Completion with name: {_well1.Name}_{_reservoir1.Zone?.CodZone} already exists."));
+            }
         }
 
         [Test]
@@ -427,12 +457,14 @@ namespace PRIO.TESTS.Hierarquies.Completions
         {
             Cluster _cluster1 = new()
             {
+                Id = Guid.NewGuid(),
                 Name = "ClusterTest",
                 User = _user
             };
 
             Installation _installation1 = new()
             {
+                Id = Guid.NewGuid(),
                 Name = "InstallationTest",
                 User = _user,
                 Cluster = _cluster1,
@@ -441,6 +473,8 @@ namespace PRIO.TESTS.Hierarquies.Completions
 
             Field _field1 = new()
             {
+                Id = Guid.NewGuid(),
+
                 Name = "FieldTest",
                 Installation = _installation1,
                 User = _user,
@@ -449,6 +483,8 @@ namespace PRIO.TESTS.Hierarquies.Completions
 
             Zone _zone1 = new()
             {
+                Id = Guid.NewGuid(),
+
                 Field = _field1,
                 User = _user,
                 CodZone = "933213",
@@ -456,6 +492,8 @@ namespace PRIO.TESTS.Hierarquies.Completions
 
             Reservoir _reservoir1 = new()
             {
+                Id = Guid.NewGuid(),
+
                 Zone = _zone1,
                 User = _user,
                 Name = "ReservoirTest"
@@ -463,6 +501,8 @@ namespace PRIO.TESTS.Hierarquies.Completions
 
             Well _well1 = new()
             {
+                Id = Guid.NewGuid(),
+
                 Name = "1233a3",
                 WellOperatorName = "1233aa3",
                 CodWellAnp = "1233aa3",
@@ -489,12 +529,16 @@ namespace PRIO.TESTS.Hierarquies.Completions
 
             Cluster _cluster2 = new()
             {
+                Id = Guid.NewGuid(),
+
                 Name = "ClusterTest2",
                 User = _user
             };
 
             Installation _installation2 = new()
             {
+                Id = Guid.NewGuid(),
+
                 Name = "InstallationTest2",
                 User = _user,
                 Cluster = _cluster2,
@@ -503,6 +547,8 @@ namespace PRIO.TESTS.Hierarquies.Completions
 
             Field _field2 = new()
             {
+                Id = Guid.NewGuid(),
+
                 Name = "FieldTest2",
                 Installation = _installation2,
                 User = _user,
@@ -511,6 +557,8 @@ namespace PRIO.TESTS.Hierarquies.Completions
 
             Zone _zone2 = new()
             {
+                Id = Guid.NewGuid(),
+
                 Field = _field2,
                 User = _user,
                 CodZone = "933223",
@@ -518,6 +566,8 @@ namespace PRIO.TESTS.Hierarquies.Completions
 
             Reservoir _reservoir2 = new()
             {
+                Id = Guid.NewGuid(),
+
                 Zone = _zone2,
                 User = _user,
                 Name = "ReservoirTest2"
@@ -525,6 +575,8 @@ namespace PRIO.TESTS.Hierarquies.Completions
 
             Well _well2 = new()
             {
+                Id = Guid.NewGuid(),
+
                 Name = "1233a3",
                 WellOperatorName = "1233aa3",
                 CodWellAnp = "1233aa3",
@@ -577,6 +629,7 @@ namespace PRIO.TESTS.Hierarquies.Completions
         {
             var _completionToUpdate = new Completion
             {
+                Id = Guid.NewGuid(),
                 Name = "Test",
                 CodCompletion = "Cod test",
                 Well = _well1,

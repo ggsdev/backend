@@ -10,10 +10,12 @@ using PRIO.DTOS.HierarchyDTOS.FieldDTOS;
 using PRIO.DTOS.HierarchyDTOS.InstallationDTOS;
 using PRIO.DTOS.HierarchyDTOS.ReservoirDTOS;
 using PRIO.DTOS.HierarchyDTOS.ZoneDTOS;
+using PRIO.DTOS.HistoryDTOS;
 using PRIO.DTOS.UserDTOS;
 using PRIO.Models.HierarchyModels;
 using PRIO.Models.UserControlAccessModels;
-using PRIO.ViewModels.Reservoirs;
+using PRIO.Services.HierarchyServices;
+using PRIO.ViewModels.HierarchyViewModels.Reservoirs;
 using System.ComponentModel.DataAnnotations;
 
 namespace PRIO.TESTS.Hierarquies.Reservoirs
@@ -24,6 +26,7 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
         private IMapper _mapper;
         private DataContext _context;
         private CreateReservoirViewModel _viewModel;
+        private ReservoirService _service;
         private User _user;
 
         [SetUp]
@@ -42,6 +45,8 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
                 cfg.CreateMap<Field, FieldDTO>();
                 cfg.CreateMap<Zone, CreateUpdateZoneDTO>();
                 cfg.CreateMap<Reservoir, ReservoirDTO>();
+                cfg.CreateMap<Reservoir, CreateUpdateReservoirDTO>();
+                cfg.CreateMap<Reservoir, ReservoirHistoryDTO>();
                 cfg.CreateMap<User, UserDTO>();
             });
 
@@ -60,7 +65,8 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
             httpContext.Items["Id"] = _user.Id;
             httpContext.Items["User"] = _user;
 
-            _controller = new ReservoirController(_context, _mapper);
+            _service = new ReservoirService(_context, _mapper);
+            _controller = new ReservoirController(_service);
             _controller.ControllerContext.HttpContext = httpContext;
         }
         [TearDown]
@@ -76,6 +82,7 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
             Cluster _cluster1 = new()
             {
+                Id = Guid.NewGuid(),
                 Name = "ClusterTest",
                 User = _user
             };
@@ -83,6 +90,8 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
             Installation _installation1 = new()
             {
+                Id = Guid.NewGuid(),
+
                 Name = "InstallationTest",
                 CodInstallationUep = "InstallationTest",
                 Cluster = _cluster1,
@@ -92,6 +101,8 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
             Field _field1 = new()
             {
+                Id = Guid.NewGuid(),
+
                 Name = "FieldTest",
                 CodField = "FieldTest",
                 Installation = _installation1,
@@ -101,6 +112,8 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
             Zone _zone = new()
             {
+                Id = Guid.NewGuid(),
+
                 CodZone = "ZoneTest",
                 Field = _field1
             };
@@ -109,6 +122,7 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
             _viewModel = new CreateReservoirViewModel
             {
+
                 Name = "ReservoirTest",
                 CodReservoir = "ReservoirTest",
                 ZoneId = _zone.Id,
@@ -129,6 +143,8 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
         {
             Cluster _cluster1 = new()
             {
+                Id = Guid.NewGuid(),
+
                 Name = "ClusterTest",
                 User = _user
             };
@@ -136,6 +152,8 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
             Installation _installation1 = new()
             {
+                Id = Guid.NewGuid(),
+
                 Name = "InstallationTest",
                 CodInstallationUep = "InstallationTest",
                 Cluster = _cluster1,
@@ -145,6 +163,8 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
             Field _field1 = new()
             {
+                Id = Guid.NewGuid(),
+
                 Name = "FieldTest",
                 CodField = "FieldTest",
                 Installation = _installation1,
@@ -154,6 +174,8 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
             Zone _zone = new()
             {
+                Id = Guid.NewGuid(),
+
                 CodZone = "ZoneTest",
                 Field = _field1
             };
@@ -184,6 +206,8 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
         {
             Cluster _cluster1 = new()
             {
+                Id = Guid.NewGuid(),
+
                 Name = "ClusterTest",
                 User = _user
             };
@@ -191,6 +215,8 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
             Installation _installation1 = new()
             {
+                Id = Guid.NewGuid(),
+
                 Name = "InstallationTest",
                 CodInstallationUep = "InstallationTest",
                 Cluster = _cluster1,
@@ -200,6 +226,8 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
             Field _field1 = new()
             {
+                Id = Guid.NewGuid(),
+
                 Name = "FieldTest",
                 CodField = "FieldTest",
                 Installation = _installation1,
@@ -209,6 +237,8 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
             Zone _zone = new()
             {
+                Id = Guid.NewGuid(),
+
                 CodZone = "ZoneTest",
                 Field = _field1
             };
@@ -303,6 +333,8 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
         {
             Cluster _cluster1 = new()
             {
+                Id = Guid.NewGuid(),
+
                 Name = "clustertest",
                 User = _user
             };
@@ -311,6 +343,7 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
             Installation _installation1 = new()
             {
+                Id = Guid.NewGuid(),
                 Name = "InstallationTest",
                 CodInstallationUep = "InstallationTest",
                 Cluster = _cluster1,
@@ -320,6 +353,7 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
             Field _field1 = new()
             {
+                Id = Guid.NewGuid(),
                 Name = "FieldTest",
                 CodField = "FieldTest",
                 Installation = _installation1,
@@ -329,6 +363,7 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
             Zone _zone = new()
             {
+                Id = Guid.NewGuid(),
                 CodZone = "ZoneTest",
                 Field = _field1
             };
@@ -336,6 +371,7 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
             Reservoir _reservoir = new()
             {
+                Id = Guid.NewGuid(),
                 Name = "ReservoirTest",
                 Zone = _zone,
                 CodReservoir = "ReservoirTest",
@@ -366,6 +402,7 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
         {
             Cluster _cluster1 = new()
             {
+                Id = Guid.NewGuid(),
                 Name = "clustertest",
                 User = _user
             };
@@ -373,6 +410,7 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
             Installation _installation1 = new()
             {
+                Id = Guid.NewGuid(),
                 Name = "InstallationTest",
                 CodInstallationUep = "InstallationTest",
                 Cluster = _cluster1,
@@ -382,6 +420,7 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
             Field _field1 = new()
             {
+                Id = Guid.NewGuid(),
                 Name = "FieldTest",
                 CodField = "FieldTest",
                 Installation = _installation1,
@@ -392,6 +431,7 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
             Zone _zone = new()
             {
+                Id = Guid.NewGuid(),
                 CodZone = "ZoneTest",
                 Field = _field1
             };
@@ -399,6 +439,7 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
             Reservoir _reservoir = new()
             {
+                Id = Guid.NewGuid(),
                 Name = "ReservoirTest",
                 Zone = _zone,
                 CodReservoir = "ReservoirTest",
@@ -423,6 +464,7 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
         {
             Cluster _cluster1 = new()
             {
+                Id = Guid.NewGuid(),
                 Name = "ClusterTest",
                 User = _user
             };
@@ -430,6 +472,7 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
             Installation _installation1 = new()
             {
+                Id = Guid.NewGuid(),
                 Name = "InstallationTest",
                 CodInstallationUep = "InstallationTest",
                 Cluster = _cluster1,
@@ -439,6 +482,7 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
             Field _field1 = new()
             {
+                Id = Guid.NewGuid(),
                 Name = "FieldTest",
                 CodField = "FieldTest",
                 Installation = _installation1,
@@ -448,6 +492,7 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
             Zone _zone = new()
             {
+                Id = Guid.NewGuid(),
                 CodZone = "ZoneTest",
                 Field = _field1
             };
