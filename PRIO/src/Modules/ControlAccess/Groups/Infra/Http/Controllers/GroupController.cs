@@ -158,7 +158,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Controllers
                             var foundMenuChildren = await _context.Menus.Where(x => x.Id == menuChildren.ChildrenId).FirstOrDefaultAsync();
 
                             var addDotInOrderChildren = foundMenuChildren.Order + ".";
-                            var foundMenusChildrensInChildren = await _context.Menus.Where(x => x.Order.Contains(addDotInOrder)).ToListAsync();
+                            var foundMenusChildrensInChildren = await _context.Menus.Where(x => x.Order.Contains(addDotInOrderChildren)).ToListAsync();
 
                             var createGroupPermissionChildren = new GroupPermission
                             {
@@ -296,5 +296,15 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Controllers
                 throw;
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            var groups = await _context.Groups.ToListAsync();
+            var groupsDTO = _mapper.Map<List<Group>, List<GroupDTO>>(groups);
+
+            return Ok(groupsDTO);
+        }
+
     }
 }

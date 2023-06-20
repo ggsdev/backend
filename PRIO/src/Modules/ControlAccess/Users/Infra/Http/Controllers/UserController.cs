@@ -129,9 +129,10 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
             var parentElements = new List<UserPermissionParentDTO>();
             foreach (var permission in userDTO.UserPermissions)
             {
-                var menuName = permission.MenuName;
-                var menuRoute = permission.MenuRoute;
-
+                Console.WriteLine(permission.MenuName);
+                Console.WriteLine(permission.MenuOrder);
+                Console.WriteLine(permission.hasParent);
+                Console.WriteLine(permission.hasChildren);
                 if (permission.hasParent == false && permission.hasChildren == true)
                 {
                     permission.Children = new List<UserPermissionChildrenDTO>();
