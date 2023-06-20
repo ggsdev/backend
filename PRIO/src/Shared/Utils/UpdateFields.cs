@@ -1,4 +1,6 @@
-﻿using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+﻿using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Groups.ViewModels;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.ViewModels;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Clusters.ViewModels;
@@ -278,6 +280,35 @@ namespace PRIO.src.Shared.Utils
             return updatedProperties;
         }
 
+        public static Dictionary<string, object> CompareAndUpdateGroup(Group group, UpdateGroupViewModel body)
+        {
+            var updatedProperties = new Dictionary<string, object>();
+
+            var groupType = typeof(Group);
+            var bodyType = typeof(UpdateGroupViewModel);
+
+            var properties = bodyType.GetProperties();
+
+            foreach (var property in properties)
+            {
+                var groupProperty = groupType.GetProperty(property.Name);
+
+                if (groupProperty != null)
+                {
+                    var groupValue = groupProperty.GetValue(group);
+                    var bodyValue = property.GetValue(body);
+
+                    if (bodyValue != null && !bodyValue.Equals(groupValue) && groupValue is not null)
+                    {
+                        groupProperty.SetValue(group, bodyValue);
+                        updatedProperties[property.Name.ToLower()] = bodyValue;
+                    }
+                }
+            }
+
+            return updatedProperties;
+        }
+
         public static dynamic DictionaryToObject(Dictionary<string, object> dict)
         {
             var eo = new ExpandoObject();
@@ -292,5 +323,8 @@ namespace PRIO.src.Shared.Utils
 
             return eoDynamic;
         }
+
+
+
     }
 }

@@ -101,7 +101,11 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
         public async Task<IActionResult> Profile([FromRoute] Guid id)
         {
             var userId = (Guid)HttpContext.Items["Id"];
-            var user = await _context.Users.Include(x => x.UserPermissions).ThenInclude(x => x.UserOperation).FirstOrDefaultAsync(x => x.Id == userId);
+            var user = await _context.Users
+                .Include(x => x.Group)
+                .Include(x => x.UserPermissions)
+                .ThenInclude(x => x.UserOperation)
+                .FirstOrDefaultAsync(x => x.Id == userId);
 
             if (user is null)
             {
@@ -129,10 +133,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
             var parentElements = new List<UserPermissionParentDTO>();
             foreach (var permission in userDTO.UserPermissions)
             {
-                Console.WriteLine(permission.MenuName);
-                Console.WriteLine(permission.MenuOrder);
-                Console.WriteLine(permission.hasParent);
-                Console.WriteLine(permission.hasChildren);
                 if (permission.hasParent == false && permission.hasChildren == true)
                 {
                     permission.Children = new List<UserPermissionChildrenDTO>();

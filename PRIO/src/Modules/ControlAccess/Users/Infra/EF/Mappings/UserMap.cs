@@ -13,22 +13,21 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Mappings
                     ("Users");
 
             builder.Property(x => x.Name)
-                .IsRequired()
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(120);
 
             builder.Property(x => x.Username)
-                .IsRequired().HasColumnType("VARCHAR")
+                .IsRequired()
+                .HasColumnType("VARCHAR")
                 .HasMaxLength(120);
 
             builder.Property(x => x.Password)
-                .IsRequired()
-                .HasColumnType("VARCHAR").HasMaxLength(90);
+                .HasColumnType("VARCHAR")
+                .HasMaxLength(90);
 
             builder.Property(x => x.Email)
                 .HasColumnType("VARCHAR")
-                .HasMaxLength(150)
-                .IsRequired();
+                .HasMaxLength(150);
 
             builder.Property(x => x.Description)
                 .HasColumnType("TEXT");
@@ -41,7 +40,8 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Mappings
             builder.HasIndex(x => x.Email)
                 .IsUnique();
 
-
+            builder.HasIndex(x => x.Username)
+                .IsUnique();
         }
     }
 }

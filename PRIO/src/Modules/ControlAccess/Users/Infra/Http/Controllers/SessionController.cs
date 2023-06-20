@@ -2,10 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.ViewModels;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.Infra.Http.Services;
+using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
+using PRIO.src.Shared.Utils;
 
 namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
 {
@@ -58,12 +61,70 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
             var userHttpAgent = Request.Headers["User-Agent"].ToString();
             var token = await _tokenServices.CreateSessionAndToken(user, userHttpAgent);
 
+            return Ok(new LoginDTO
+            {
+                Token = token,
+            });
+        }
+
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginDTO))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponseDTO))]
+        [HttpPost("loginAd")]
+        public async Task<IActionResult> LoginAD([FromBody] LoginAdViewModel body)
+        {
+            var credentialsValid = ActiveDirectory
+                .VerifyCredentialsWithActiveDirectory(body.Username, body.Password);
+
+            if (credentialsValid is false)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "Username or password invalid"
+                });
+
+            var user = await _context
+                .Users
+                .Include(u => u.Session)
+                .FirstOrDefaultAsync(x => x.Username == body.Username);
+
+            string token;
+            var userHttpAgent = Request.Headers["User-Agent"].ToString();
+
+            if (user is null)
+            {
+                var userId = Guid.NewGuid();
+                var createUser = new User
+                {
+                    Id = userId,
+                    Username = body.Username,
+                };
+
+                await _context.Users.AddAsync(createUser);
+
+                var history = new SystemHistory
+                {
+                    TypeOperation = HistoryColumns.Create,
+                    Table = HistoryColumns.TableUsers,
+                    TableItemId = userId,
+                    CurrentData = createUser,
+                    CreatedBy = userId,
+                };
+                await _context.SystemHistories.AddAsync(history);
+                await _context.SaveChangesAsync();
+
+                token = await _tokenServices.CreateSessionAndToken(createUser, userHttpAgent);
+            }
+            else
+            {
+                token = await _tokenServices.CreateSessionAndToken(user, userHttpAgent);
+
+            }
 
             return Ok(new LoginDTO
             {
                 Token = token,
             });
         }
-        #endregion
     }
+    #endregion
 }

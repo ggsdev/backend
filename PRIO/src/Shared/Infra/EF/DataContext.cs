@@ -72,7 +72,8 @@ namespace PRIO.src.Shared.Infra.EF
                 envVars.ContainsKey("USER_ID") &&
                 envVars.ContainsKey("PASSWORD") &&
                 envVars.ContainsKey("ENCRYPT") &&
-                envVars.ContainsKey("PORT"))
+                envVars.ContainsKey("PORT") &&
+                envVars.ContainsKey("INSTANCE"))
             {
                 var server = envVars["SERVER"];
                 var database = envVars["DATABASE"];
@@ -80,8 +81,9 @@ namespace PRIO.src.Shared.Infra.EF
                 var password = envVars["PASSWORD"];
                 var encrypt = envVars["ENCRYPT"];
                 var port = envVars["PORT"];
+                var instance = envVars["INSTANCE"];
 
-                optionsBuilder.UseSqlServer($"Server={server},{port};Database={database};User ID={userId};Password={password};Encrypt={encrypt};");
+                optionsBuilder.UseSqlServer($"Server={server}\\{instance},{port};Database={database};User ID={userId};Password={password};Encrypt={encrypt};");
             }
         }
         public override int SaveChanges()

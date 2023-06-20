@@ -1,4 +1,6 @@
-﻿namespace PRIO.src.Modules.ControlAccess.Users.Dtos
+﻿using PRIO.src.Modules.ControlAccess.Groups.Dtos;
+
+namespace PRIO.src.Modules.ControlAccess.Users.Dtos
 {
     public class UserDTO
     {
@@ -21,6 +23,7 @@
         public string? Email { get; set; }
         public string? Username { get; set; }
         public List<UserPermissionParentDTO>? UserPermissions { get; set; }
+        public GroupDTO? Group { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }
