@@ -326,6 +326,8 @@ namespace PRIO.src.Shared.Utils
                 {
                     var modelValue = modelProperty.GetValue(model);
                     var viewModelValue = property.GetValue(viewModel);
+                    if (property.PropertyType == typeof(Guid))
+                        continue;
 
                     if (viewModelValue != null && !viewModelValue.Equals(modelValue) && modelValue is not null)
                     {
