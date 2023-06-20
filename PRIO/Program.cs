@@ -62,9 +62,11 @@ static void ConfigureServices(IServiceCollection services)
         options.AddPolicy("CorsPolicy", builder =>
         {
             builder
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader();
+                .SetIsOriginAllowed(origin => true) // allow any origin
+          .AllowAnyHeader()
+          .AllowCredentials()
+          .WithMethods("GET", "PUT", "POST", "DELETE", "OPTIONS")
+          .SetPreflightMaxAge(TimeSpan.FromSeconds(3600));
         });
     });
 
