@@ -27,6 +27,7 @@ using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Dtos;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
+using PRIO.src.Shared.SystemHistories.Dtos.UserDtos;
 using System.Globalization;
 
 namespace PRIO.src.Shared.Utils.MappingProfiles
@@ -106,6 +107,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<Completion, CompletionWithouWellDTO>();
 
             CreateMap<User, UserDTO>();
+            CreateMap<User, UserHistoryDTO>();
 
             CreateMap<MeasuringEquipment, MeasuringEquipmentDTO>();
             CreateMap<MeasuringEquipment, MeasuringEquipmentHistoryDTO>();
