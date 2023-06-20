@@ -1,24 +1,24 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.ViewModels;
-using PRIO.src.Shared;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.Infra.Http.Services;
 
 namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
 {
-    public class SessionController : BaseApiController
+    public class SessionController : ControllerBase
     {
-        private TokenServices _tokenServices;
+        private readonly TokenServices _tokenServices;
+        private readonly DataContext _context;
 
-        public SessionController(DataContext context, IMapper mapper, TokenServices tokenServices)
-    : base(context, mapper)
+        public SessionController(DataContext context, TokenServices tokenServices)
+
         {
             _tokenServices = tokenServices;
+            _context = context;
         }
 
         #region Login

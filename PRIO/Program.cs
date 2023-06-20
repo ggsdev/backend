@@ -57,6 +57,17 @@ static void ConfigureServices(IServiceCollection services)
         config.ModelBinderProviders.Insert(0, new GuidBinderProvider());
     });
 
+    services.AddCors(options =>
+    {
+        options.AddPolicy("CorsPolicy", builder =>
+        {
+            builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        });
+    });
+
     var mapperConfig = new MapperConfiguration(cfg =>
     {
         cfg.AddProfile<MainProfile>();
@@ -130,5 +141,6 @@ static void ConfigureMiddlewares(IApplicationBuilder app)
 {
     app.UseMiddleware<UnauthorizedCaptureMiddleware>();
     app.UseMiddleware<ErrorHandlingMiddleware>();
+    app.UseCors("CorsPolicy")
     app.UseRouting();
 }

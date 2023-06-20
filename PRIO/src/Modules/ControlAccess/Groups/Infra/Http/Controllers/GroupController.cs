@@ -15,7 +15,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Controllers
     [ApiController]
     [Route("groups")]
     [ServiceFilter(typeof(AuthorizationFilter))]
-    public class GroupController : Controller
+    public class GroupController : ControllerBase
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
@@ -30,8 +30,8 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Controllers
         public async Task<IActionResult> Create([FromBody] CreateGroupViewModel body)
         {
 
-
             if (body.Menus is null)
+
             {
                 return NotFound(new ErrorResponseDTO
                 {
