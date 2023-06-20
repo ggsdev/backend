@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.ViewModels;
-using PRIO.src.Shared;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.Infra.Http.Filters;
@@ -16,11 +15,16 @@ using PRIO.src.Shared.Utils;
 namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
 {
     [ApiController]
-    public class UserController : BaseApiController
+    public class UserController : ControllerBase
     {
+        private readonly IMapper _mapper;
+        private readonly DataContext _context;
+
         public UserController(DataContext context, IMapper mapper)
-            : base(context, mapper)
+
         {
+            _context = context;
+            _mapper = mapper;
         }
 
         #region Get
