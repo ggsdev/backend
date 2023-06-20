@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.ViewModels;
@@ -161,7 +162,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
 
             return Ok(userDTO);
         }
-
 
         #region Get By Id
         [HttpGet("users/{id}")]
@@ -346,5 +346,69 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
         //    return Ok(userHistoriesDTO);
         //}
         #endregion
+
+        [HttpPatch("permissions/{userId}")]
+        public async Task<IActionResult> EditPermission([FromBody] InsertUserPermissionViewModel body, [FromRoute] Guid userId)
+        {
+            var userWithPermissions = await _context
+                .Users
+                .Where(x => x.Id == userId)
+                .Include(x => x.Group)
+                .Include(x => x.UserPermissions!)
+                .ThenInclude(x => x.UserOperation)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            var newPermissions = new List<GroupPermission>();
+
+            foreach (var menu in body.Menus)
+            {
+                if (menu.Childrens is null)
+                {
+                    var permissionGroup = await _context.GroupPermissions
+                        .Include(x => x.Menu)
+                        .Include(x => x.Group)
+                        .Include(x => x.Operations)
+                        .Where(x => x.Menu.Id == menu.MenuId)
+                        .Where(x => x.Group.Id == userWithPermissions.Group.Id)
+                        .FirstOrDefaultAsync();
+
+                    if (permissionGroup is null)
+                    {
+                        var permissionGroupAdm = await _context.GroupPermissions
+                          .Include(x => x.Menu)
+                          .Include(x => x.Group)
+                          .Include(x => x.Operations)
+                          .Where(x => x.Menu.Id == menu.MenuId)
+                          .Where(x => x.Group.Name == "Master")
+                          .FirstOrDefaultAsync();
+
+                        newPermissions.Add(permissionGroupAdm);
+                    }
+                    else
+                    {
+                        newPermissions.Add(permissionGroup);
+                    }
+                }
+                else if (menu.Childrens.Count != 0)
+                {
+                    foreach (var children in menu.Childrens)
+                    {
+                        var permissionGroup = await _context.GroupPermissions
+                        .Include(x => x.Menu)
+                        .Include(x => x.Group)
+                        .Include(x => x.Operations)
+                        .Where(x => x.Menu.Id == children.ChildrenId)
+                        .Where(x => x.Group.Id == userWithPermissions.Group.Id)
+                        .FirstOrDefaultAsync();
+
+                        newPermissions.Add(permissionGroup);
+                    }
+                }
+            }
+
+            var userDTO = _mapper.Map<User, ProfileDTO>(userWithPermissions);
+            return Ok(userDTO);
+        }
+
     }
 }
