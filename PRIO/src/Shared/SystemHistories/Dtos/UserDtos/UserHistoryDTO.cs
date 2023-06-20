@@ -11,5 +11,6 @@
         public DateTime? deletedAt { get; set; }
         public string? description { get; set; }
         public bool? isActive { get; set; }
+        public Guid? groupId { get; set; }
     }
 }
