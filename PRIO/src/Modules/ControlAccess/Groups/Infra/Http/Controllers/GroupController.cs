@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PRIO.Data;
-using PRIO.DTOS.ControlAccessDTOS;
-using PRIO.DTOS.GlobalDTOS;
-using PRIO.Filters;
-using PRIO.Models.UserControlAccessModels;
-using PRIO.ViewModels.Groups;
+using PRIO.src.Modules.ControlAccess.Groups.Dtos;
+using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Groups.ViewModels;
+using PRIO.src.Modules.ControlAccess.Users.Dtos;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Shared.Errors;
+using PRIO.src.Shared.Infra.EF;
+using PRIO.src.Shared.Infra.Http.Filters;
 
 namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Controllers
 {

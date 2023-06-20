@@ -2,17 +2,18 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PRIO.Data;
-using PRIO.DTOS.GlobalDTOS;
-using PRIO.DTOS.HierarchyDTOS.ClusterDTOS;
-using PRIO.DTOS.HierarchyDTOS.InstallationDTOS;
-using PRIO.DTOS.HistoryDTOS;
-using PRIO.DTOS.UserDTOS;
-using PRIO.Models.HierarchyModels;
-using PRIO.Models.UserControlAccessModels;
+using PRIO.src.Modules.ControlAccess.Users.Dtos;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Clusters.Dtos;
+using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Installations.Dtos;
+using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Controllers;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services;
-using PRIO.ViewModels.HierarchyViewModels.Installations;
+using PRIO.src.Modules.Hierarchy.Installations.ViewModels;
+using PRIO.src.Shared.Errors;
+using PRIO.src.Shared.Infra.EF;
+using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using System.ComponentModel.DataAnnotations;
 
 namespace PRIO.TESTS.Hierarquies.Installations
@@ -184,7 +185,6 @@ namespace PRIO.TESTS.Hierarquies.Installations
             }
         }
 
-        //PATCH
         [Test]
         public async Task Update_InstallationReturnsACreatedStatusWithDTO()
         {

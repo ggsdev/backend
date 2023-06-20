@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using PRIO.Data;
+using PRIO.src.Shared.Infra.EF;
 
 namespace PRIO.src.Shared
 {

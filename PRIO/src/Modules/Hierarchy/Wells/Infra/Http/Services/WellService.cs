@@ -1,15 +1,15 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using PRIO.Data;
-using PRIO.DTOS.HierarchyDTOS.WellDTOS;
-using PRIO.DTOS.HistoryDTOS;
-using PRIO.Exceptions;
-using PRIO.Models;
-using PRIO.Models.HierarchyModels;
-using PRIO.Models.UserControlAccessModels;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Wells.Dtos;
+using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Wells.ViewModels;
+using PRIO.src.Shared.Errors;
+using PRIO.src.Shared.Infra.EF;
+using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
+using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
 using PRIO.src.Shared.Utils;
-using PRIO.ViewModels.HierarchyViewModels.Wells;
 
 namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
 {

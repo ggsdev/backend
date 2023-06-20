@@ -2,12 +2,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PRIO.Data;
-using PRIO.DTOS.GlobalDTOS;
-using PRIO.DTOS.UserDTOS;
+using PRIO.src.Modules.ControlAccess.Users.Dtos;
+using PRIO.src.Modules.ControlAccess.Users.ViewModels;
 using PRIO.src.Shared;
+using PRIO.src.Shared.Errors;
+using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.Infra.Http.Services;
-using PRIO.ViewModels.Users;
 
 namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
 {

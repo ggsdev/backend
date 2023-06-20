@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using PRIO.Data;
-using PRIO.DTOS.UserDTOS;
-using PRIO.Models.UserControlAccessModels;
-using PRIO.ViewModels.Users;
+using PRIO.src.Modules.ControlAccess.Users.Dtos;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Users.ViewModels;
+using PRIO.src.Shared.Infra.EF;
 
 namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
 {

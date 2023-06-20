@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PRIO.DTOS.GlobalDTOS;
-using PRIO.Filters;
-using PRIO.Models.UserControlAccessModels;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services;
-using PRIO.ViewModels.HierarchyViewModels.Installations;
+using PRIO.src.Modules.Hierarchy.Installations.ViewModels;
+using PRIO.src.Shared.Errors;
+using PRIO.src.Shared.Infra.Http.Filters;
 
 namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Controllers
 {

@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PRIO.Data;
-using PRIO.DTOS.MenuDTOS;
-using PRIO.Filters;
-using PRIO.Models.UserControlAccessModels;
+using PRIO.src.Modules.ControlAccess.Menus.Dtos;
+using PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Models;
+using PRIO.src.Shared.Infra.EF;
+using PRIO.src.Shared.Infra.Http.Filters;
 
 namespace PRIO.src.Modules.ControlAccess.Menus.Infra.Http.Controllers
 {

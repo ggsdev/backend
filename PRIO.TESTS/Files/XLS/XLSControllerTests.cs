@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PRIO.Data;
-using PRIO.DTOS.FileImportDTOS.XLSDTOS;
-using PRIO.Models.UserControlAccessModels;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.FileImport.XLSX.Dtos;
 using PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers;
-using PRIO.ViewModels.Files;
+using PRIO.src.Modules.FileImport.XLSX.ViewModels;
+using PRIO.src.Shared.Infra.EF;
 
 namespace PRIO.TESTS.Files.XLS
 {

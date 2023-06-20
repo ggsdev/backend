@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
-using PRIO.DTOS.GlobalDTOS;
-using PRIO.Exceptions;
+using PRIO.src.Shared.Errors;
 
 namespace PRIO.src.Shared.Infra.Http.Middlewares
 {
