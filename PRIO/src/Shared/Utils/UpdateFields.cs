@@ -309,6 +309,34 @@ namespace PRIO.src.Shared.Utils
             return updatedProperties;
         }
 
+        public static Dictionary<string, object> CompareUpdateReturnOnlyUpdated<TModel, TViewModel>(TModel model, TViewModel viewModel)
+        {
+            var updatedProperties = new Dictionary<string, object>();
+
+            var modelType = typeof(TModel);
+            var viewModelType = typeof(TViewModel);
+
+            var properties = viewModelType.GetProperties();
+
+            foreach (var property in properties)
+            {
+                var modelProperty = modelType.GetProperty(property.Name);
+
+                if (modelProperty != null)
+                {
+                    var modelValue = modelProperty.GetValue(model);
+                    var viewModelValue = property.GetValue(viewModel);
+
+                    if (viewModelValue != null && !viewModelValue.Equals(modelValue) && modelValue is not null)
+                    {
+                        modelProperty.SetValue(model, viewModelValue);
+                        updatedProperties[property.Name.ToLower()] = viewModelValue;
+                    }
+                }
+            }
+
+            return updatedProperties;
+        }
         public static dynamic DictionaryToObject(Dictionary<string, object> dict)
         {
             var eo = new ExpandoObject();
