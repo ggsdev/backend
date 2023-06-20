@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="Properties\launchSettings.json" />
+  </ItemGroup>
+
+	<ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
@@ -25,6 +29,30 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="System.DirectoryServices.AccountManagement" Version="7.0.0" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="src\Configs\" />
+    <Folder Include="src\Modules\ControlAccess\Groups\Infra\Http\Services\" />
+    <Folder Include="src\Modules\ControlAccess\Menus\Infra\Http\Services\" />
+    <Folder Include="src\Modules\ControlAccess\Menus\ViewModels\" />
+    <Folder Include="src\Modules\ControlAccess\Operations\Dtos\" />
+    <Folder Include="src\Modules\ControlAccess\Operations\Infra\Http\Controllers\" />
+    <Folder Include="src\Modules\ControlAccess\Operations\Infra\Http\Services\" />
+    <Folder Include="src\Modules\ControlAccess\Operations\ViewModels\" />
+    <Folder Include="src\Modules\FileImport\XLSX\Infra\EF\Entities\" />
+    <Folder Include="src\Modules\FileImport\XLSX\Infra\EF\Mappings\" />
+    <Folder Include="src\Modules\FileImport\XLSX\Infra\Http\Services\" />
+    <Folder Include="src\Modules\FileImport\XML\Infra\EF\Models\" />
+    <Folder Include="src\Modules\FileImport\XML\Infra\EF\Mappings\" />
+    <Folder Include="src\Modules\FileImport\XML\Infra\Http\Services\" />
+    <Folder Include="src\Modules\Measuring\Measurements\Dtos\" />
+    <Folder Include="src\Modules\Measuring\Measurements\Infra\Http\Controllers\" />
+    <Folder Include="src\Modules\Measuring\Measurements\Infra\Http\Services\" />
+    <Folder Include="src\Modules\Measuring\Measurements\ViewModels\" />
+    <Folder Include="src\Shared\Infra\EF\Mappings\" />
+    <Folder Include="src\Shared\Infra\Http\Controllers\" />
+    <Folder Include="src\Shared\SystemHistories\Infra\Http\" />
   </ItemGroup>
 
 </Project>
