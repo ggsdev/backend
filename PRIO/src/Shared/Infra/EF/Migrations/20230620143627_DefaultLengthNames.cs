@@ -5,7 +5,7 @@
 namespace PRIO.Migrations
 {
     /// <inheritdoc />
-    public partial class StandardNameLengths : Migration
+    public partial class DefaultLengthNames : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -26,7 +26,6 @@ namespace PRIO.Migrations
                 type: "VARCHAR(8)",
                 maxLength: 8,
                 nullable: true,
-                defaultValueSql: "PRIO.Utils.GenerateCode.Generate(Name)",
                 oldClrType: typeof(string),
                 oldType: "VARCHAR(150)",
                 oldMaxLength: 150,
@@ -38,7 +37,6 @@ namespace PRIO.Migrations
                 type: "VARCHAR(8)",
                 maxLength: 8,
                 nullable: true,
-                defaultValueSql: "PRIO.Utils.GenerateCode.Generate(Name)",
                 oldClrType: typeof(string),
                 oldType: "VARCHAR(120)",
                 oldMaxLength: 120,
@@ -60,7 +58,6 @@ namespace PRIO.Migrations
                 type: "VARCHAR(8)",
                 maxLength: 8,
                 nullable: true,
-                defaultValueSql: "PRIO.Utils.GenerateCode.Generate(Name)",
                 oldClrType: typeof(string),
                 oldType: "VARCHAR(256)",
                 oldMaxLength: 256,
@@ -82,7 +79,6 @@ namespace PRIO.Migrations
                 type: "VARCHAR(8)",
                 maxLength: 8,
                 nullable: true,
-                defaultValueSql: "PRIO.Utils.GenerateCode.Generate(Name)",
                 oldClrType: typeof(string),
                 oldType: "VARCHAR(60)",
                 oldMaxLength: 60,
@@ -111,8 +107,7 @@ namespace PRIO.Migrations
                 oldClrType: typeof(string),
                 oldType: "VARCHAR(8)",
                 oldMaxLength: 8,
-                oldNullable: true,
-                oldDefaultValueSql: "PRIO.Utils.GenerateCode.Generate(Name)");
+                oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(
                 name: "CodReservoir",
@@ -123,8 +118,7 @@ namespace PRIO.Migrations
                 oldClrType: typeof(string),
                 oldType: "VARCHAR(8)",
                 oldMaxLength: 8,
-                oldNullable: true,
-                oldDefaultValueSql: "PRIO.Utils.GenerateCode.Generate(Name)");
+                oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(
                 name: "Name",
@@ -145,8 +139,7 @@ namespace PRIO.Migrations
                 oldClrType: typeof(string),
                 oldType: "VARCHAR(8)",
                 oldMaxLength: 8,
-                oldNullable: true,
-                oldDefaultValueSql: "PRIO.Utils.GenerateCode.Generate(Name)");
+                oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(
                 name: "Name",
@@ -167,8 +160,7 @@ namespace PRIO.Migrations
                 oldClrType: typeof(string),
                 oldType: "VARCHAR(8)",
                 oldMaxLength: 8,
-                oldNullable: true,
-                oldDefaultValueSql: "PRIO.Utils.GenerateCode.Generate(Name)");
+                oldNullable: true);
         }
     }
 }

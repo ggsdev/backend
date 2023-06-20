@@ -17,8 +17,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Mappings
 
             builder.Property(x => x.CodWell)
                .HasColumnType("VARCHAR")
-               .HasMaxLength(8)
-               .HasDefaultValueSql("PRIO.Utils.GenerateCode.Generate(Name)");
+               .HasMaxLength(8);
 
             builder.Property(e => e.WellOperatorName)
                 .HasColumnType("VARCHAR")

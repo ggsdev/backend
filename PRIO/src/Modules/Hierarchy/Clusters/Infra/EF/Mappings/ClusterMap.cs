@@ -21,8 +21,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Mappings
 
             builder.Property(x => x.CodCluster)
                .HasColumnType("VARCHAR")
-               .HasMaxLength(8)
-               .HasDefaultValueSql("PRIO.Utils.GenerateCode.Generate(Name)");
+               .HasMaxLength(8);
 
             builder.Property(x => x.CreatedAt);
 

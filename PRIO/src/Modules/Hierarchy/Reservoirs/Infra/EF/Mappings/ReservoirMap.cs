@@ -17,9 +17,7 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Mappings
 
             builder.Property(x => x.CodReservoir)
                .HasColumnType("VARCHAR")
-               .HasMaxLength(8)
-               .HasDefaultValueSql("PRIO.Utils.GenerateCode.Generate(Name)");
-
+               .HasMaxLength(8);
 
             builder.Property(x => x.Description)
                 .HasColumnType("TEXT");

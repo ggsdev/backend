@@ -380,10 +380,8 @@ namespace PRIO.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CodCluster")
-                        .ValueGeneratedOnAdd()
                         .HasMaxLength(8)
-                        .HasColumnType("VARCHAR")
-                        .HasDefaultValueSql("PRIO.Utils.GenerateCode.Generate(Name)");
+                        .HasColumnType("VARCHAR");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -422,10 +420,8 @@ namespace PRIO.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CodCompletion")
-                        .ValueGeneratedOnAdd()
                         .HasMaxLength(8)
-                        .HasColumnType("VARCHAR")
-                        .HasDefaultValueSql("PRIO.Utils.GenerateCode.Generate(Name)");
+                        .HasColumnType("VARCHAR");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -581,10 +577,8 @@ namespace PRIO.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CodReservoir")
-                        .ValueGeneratedOnAdd()
                         .HasMaxLength(8)
-                        .HasColumnType("VARCHAR")
-                        .HasDefaultValueSql("PRIO.Utils.GenerateCode.Generate(Name)");
+                        .HasColumnType("VARCHAR");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -649,10 +643,8 @@ namespace PRIO.Migrations
                         .HasColumnType("VARCHAR");
 
                     b.Property<string>("CodWell")
-                        .ValueGeneratedOnAdd()
                         .HasMaxLength(8)
-                        .HasColumnType("VARCHAR")
-                        .HasDefaultValueSql("PRIO.Utils.GenerateCode.Generate(Name)");
+                        .HasColumnType("VARCHAR");
 
                     b.Property<string>("CodWellAnp")
                         .IsRequired()
