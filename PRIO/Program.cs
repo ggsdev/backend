@@ -66,7 +66,7 @@ static void ConfigureServices(IServiceCollection services)
                 .SetIsOriginAllowed(origin => true) // allow any origin
           .AllowAnyHeader()
           .AllowCredentials()
-          .WithMethods("GET", "PUT", "POST", "DELETE", "OPTIONS")
+          .WithMethods("GET", "PATCH", "POST", "DELETE", "OPTIONS")
           .SetPreflightMaxAge(TimeSpan.FromSeconds(3600));
         });
     });
