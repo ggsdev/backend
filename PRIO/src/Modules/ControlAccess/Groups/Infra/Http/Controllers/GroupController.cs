@@ -35,6 +35,14 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Controllers
             return Ok(userDTO);
         }
 
+        [HttpDelete("{groupId}/user/{userId}")]
+        public async Task<IActionResult> RemoveUser([FromRoute] Guid groupId, [FromRoute] Guid userId)
+        {
+            var userLoggedIn = HttpContext.Items["User"] as User;
+
+            await _service.RemoveUserInGroup(groupId, userId, userLoggedIn);
+            return NoContent();
+        }
         [HttpGet]
         public async Task<IActionResult> Get()
         {
