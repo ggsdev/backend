@@ -9,9 +9,9 @@ namespace PRIO.src.Modules.Hierarchy.Installations.ViewModels
         public string? Name { get; set; }
         [Required(ErrorMessage = "ClusterId is required.")]
         public Guid? ClusterId { get; set; }
-        [Required(ErrorMessage = "UepCode is required")]
-        [StringLength(120, ErrorMessage = "UepCode cannot exceed 120 characters.")]
-        public string? UepCode { get; set; }
+        [Required(ErrorMessage = "UepCod is required")]
+        [StringLength(120, ErrorMessage = "UepCod cannot exceed 120 characters.")]
+        public string? UepCod { get; set; }
         [Required(ErrorMessage = "CodInstallation is required")]
         [StringLength(120, ErrorMessage = "CodInstallation cannot exceed 120 characters.")]
         public string? CodInstallation { get; set; }

@@ -97,7 +97,8 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
                 Id = Guid.NewGuid(),
 
                 Name = "InstallationTest",
-                CodInstallationUep = "InstallationTest",
+                UepCod = "InstallationTest",
+                CodInstallation = "asdsadsa",
                 Cluster = _cluster1,
                 User = _user
             };
@@ -159,7 +160,8 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
                 Id = Guid.NewGuid(),
 
                 Name = "InstallationTest",
-                CodInstallationUep = "InstallationTest",
+                UepCod = "InstallationTest",
+                CodInstallation = "asoidjadisa",
                 Cluster = _cluster1,
                 User = _user
             };
@@ -223,7 +225,7 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
         //    Installation _installation1 = new()
         //    {
         //        Name = "InstallationTest",
-        //        CodInstallationUep = "InstallationTest",
+        //        UepCod = "InstallationTest",
         //        Cluster = _cluster1,
         //        User = _user
         //    };
@@ -286,7 +288,8 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
             {
                 Id = Guid.NewGuid(),
                 Name = "InstallationTest",
-                CodInstallationUep = "InstallationTest",
+                UepCod = "InstallationTest",
+                CodInstallation = "asoidjadisa",
                 Cluster = _cluster1,
                 User = _user
             };
@@ -353,7 +356,8 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
             {
                 Id = Guid.NewGuid(),
                 Name = "InstallationTest",
-                CodInstallationUep = "InstallationTest",
+                UepCod = "InstallationTest",
+                CodInstallation = "asoidjadisa",
                 Cluster = _cluster1,
                 User = _user
             };
@@ -415,7 +419,8 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
             {
                 Id = Guid.NewGuid(),
                 Name = "InstallationTest",
-                CodInstallationUep = "InstallationTest",
+                UepCod = "InstallationTest",
+                CodInstallation = "asoidjadisa",
                 Cluster = _cluster1,
                 User = _user
             };

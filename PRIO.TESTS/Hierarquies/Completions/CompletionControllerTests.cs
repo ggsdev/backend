@@ -495,7 +495,8 @@ namespace PRIO.TESTS.Hierarquies.Completions
                 Name = "InstallationTest",
                 User = _user,
                 Cluster = _cluster1,
-                CodInstallationUep = "unique1"
+                UepCod = "unique1",
+                CodInstallation = "unique1"
             };
 
             Field _field1 = new()
@@ -569,7 +570,8 @@ namespace PRIO.TESTS.Hierarquies.Completions
                 Name = "InstallationTest2",
                 User = _user,
                 Cluster = _cluster2,
-                CodInstallationUep = "unique2"
+                UepCod = "unique2",
+                CodInstallation = "unique2"
             };
 
             Field _field2 = new()

@@ -68,7 +68,8 @@ namespace PRIO.TESTS.Hierarquies.Wells
             var installation = new Installation()
             {
                 Name = "testeInst",
-                CodInstallationUep = "codmocked",
+                UepCod = "codmocked",
+                CodInstallation = "asdsad",
                 User = _user,
                 Cluster = cluster,
             };

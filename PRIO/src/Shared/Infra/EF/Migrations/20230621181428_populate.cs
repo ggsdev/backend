@@ -121,7 +121,6 @@ namespace PRIO.Migrations
                     }
 
                     var parentId = FindParentId(menuData, orderMenu);
-                    Console.WriteLine(parentId);
                     migrationBuilder.InsertData(
                       table: "Menus",
                       columns: new[] { "Name", "Icon", "Order", "Route", "ParentId", "IsActive", "Id", "CreatedAt", "UpdatedAt" },

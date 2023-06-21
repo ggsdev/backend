@@ -1,4 +1,5 @@
-﻿using dotenv.net;
+﻿using AutoMapper;
+using dotenv.net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
@@ -16,6 +17,7 @@ using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.Infra.EF.Models;
 using PRIO.src.Shared.Infra.Http.Filters;
+using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
 using PRIO.src.Shared.Utils;
 using System.Globalization;
@@ -28,6 +30,13 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
     public class XLSXController : ControllerBase
     {
         private readonly string _consolidationInstance = "consolidador";
+        private readonly IMapper _mapper;
+
+        public XLSXController(IMapper mapper)
+        {
+            _mapper = mapper;
+        }
+
         [HttpPost]
         public async Task<IActionResult> PostBase64File([FromBody] RequestXslxViewModel data, [FromServices] DataContext context)
         {
@@ -53,6 +62,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
                 var entityHistoriesDictionary = new Dictionary<string, SystemHistory>();
 
                 var columnPositions = XlsUtils.GetColumnPositions(worksheetTab);
+                var dateCurrent = DateTime.UtcNow;
 
                 for (int row = 2; row <= dimension.End.Row; ++row)
                 {
@@ -108,16 +118,31 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
                         cluster = await context.Clusters.FirstOrDefaultAsync(x => x.Name.ToLower() == columnCluster.ToLower());
                         if (cluster is null)
                         {
+                            var clusterId = Guid.NewGuid();
                             cluster = new Cluster
                             {
-                                Id = Guid.NewGuid(),
+                                Id = clusterId,
                                 Name = columnCluster,
                                 User = user,
                                 IsActive = true,
                                 CodCluster = GenerateCode.Generate(columnCluster),
                             };
 
+                            var currentData = _mapper.Map<Cluster, ClusterHistoryDTO>((Cluster)cluster);
+                            currentData.createdAt = dateCurrent;
+                            currentData.updatedAt = dateCurrent;
+
+                            var history = new SystemHistory
+                            {
+                                Table = HistoryColumns.TableClusters,
+                                TypeOperation = HistoryColumns.Import,
+                                CreatedBy = user?.Id,
+                                TableItemId = clusterId,
+                                CurrentData = currentData,
+                            };
+
                             entityDictionary[columnCluster.ToLower()] = cluster;
+                            entityHistoriesDictionary[columnCluster.ToLower()] = history;
                         }
                     }
 
@@ -127,9 +152,10 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
 
                         if (installation is null)
                         {
+                            var installationId = Guid.NewGuid();
                             installation = new Installation
                             {
-                                Id = Guid.NewGuid(),
+                                Id = installationId,
                                 Name = columnInstallation,
                                 UepCod = columnInstallationCodUep,
                                 CodInstallation = columnInstallationCod,
@@ -138,6 +164,20 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
                                 Cluster = columnCluster is not null ? (Cluster)entityDictionary.GetValueOrDefault(columnCluster.ToLower())! : null,
                             };
 
+                            var currentData = _mapper.Map<Installation, InstallationHistoryDTO>((Installation)installation);
+                            currentData.createdAt = dateCurrent;
+                            currentData.updatedAt = dateCurrent;
+
+                            var history = new SystemHistory
+                            {
+                                Table = HistoryColumns.TableInstallations,
+                                TypeOperation = HistoryColumns.Import,
+                                CreatedBy = user?.Id,
+                                TableItemId = installationId,
+                                CurrentData = currentData,
+                            };
+
+                            entityHistoriesDictionary[columnInstallation.ToLower()] = history;
                             entityDictionary[columnInstallation.ToLower()] = installation;
                         }
                     }
@@ -148,9 +188,10 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
 
                         if (field is null)
                         {
+                            var fieldId = Guid.NewGuid();
                             field = new Field
                             {
-                                Id = Guid.NewGuid(),
+                                Id = fieldId,
                                 Name = columnField,
                                 User = user,
                                 Installation = columnInstallation is not null ? (Installation)entityDictionary.GetValueOrDefault(columnInstallation.ToLower())! : null,
@@ -158,6 +199,20 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
                                 IsActive = true,
                             };
 
+                            var currentData = _mapper.Map<Field, FieldHistoryDTO>((Field)field);
+                            currentData.createdAt = dateCurrent;
+                            currentData.updatedAt = dateCurrent;
+
+                            var history = new SystemHistory
+                            {
+                                Table = HistoryColumns.TableFields,
+                                TypeOperation = HistoryColumns.Import,
+                                CreatedBy = user?.Id,
+                                TableItemId = fieldId,
+                                CurrentData = currentData,
+                            };
+
+                            entityHistoriesDictionary[columnField.ToLower()] = history;
                             entityDictionary[columnField.ToLower()] = field;
                         }
 
@@ -168,15 +223,30 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
                         zone = await context.Zones.FirstOrDefaultAsync(x => x.CodZone.ToLower() == columnZone.ToLower());
                         if (zone is null)
                         {
+                            var zoneId = Guid.NewGuid();
                             zone = new Zone
                             {
-                                Id = Guid.NewGuid(),
+                                Id = zoneId,
                                 CodZone = columnZone,
                                 User = user,
                                 IsActive = true,
                                 Field = columnField is not null ? (Field)entityDictionary.GetValueOrDefault(columnField.ToLower())! : null,
                             };
 
+                            var currentData = _mapper.Map<Zone, ZoneHistoryDTO>((Zone)zone);
+                            currentData.createdAt = dateCurrent;
+                            currentData.updatedAt = dateCurrent;
+
+                            var history = new SystemHistory
+                            {
+                                Table = HistoryColumns.TableZones,
+                                TypeOperation = HistoryColumns.Import,
+                                CreatedBy = user?.Id,
+                                TableItemId = zoneId,
+                                CurrentData = currentData,
+                            };
+
+                            entityHistoriesDictionary[columnZone.ToLower()] = history;
                             entityDictionary[columnZone.ToLower()] = zone;
                         }
                     }
@@ -186,9 +256,10 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
                         reservoir = await context.Reservoirs.FirstOrDefaultAsync(x => x.Name.ToLower() == columnReservoir.ToLower());
                         if (reservoir is null)
                         {
+                            var reservoirId = Guid.NewGuid();
                             reservoir = new Reservoir
                             {
-                                Id = Guid.NewGuid(),
+                                Id = reservoirId,
                                 Name = columnReservoir,
                                 User = user,
                                 CodReservoir = GenerateCode.Generate(columnReservoir),
@@ -196,6 +267,20 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
                                 IsActive = true,
                             };
 
+                            var currentData = _mapper.Map<Reservoir, ReservoirHistoryDTO>((Reservoir)reservoir);
+                            currentData.createdAt = dateCurrent;
+                            currentData.updatedAt = dateCurrent;
+
+                            var history = new SystemHistory
+                            {
+                                Table = HistoryColumns.TableReservoirs,
+                                TypeOperation = HistoryColumns.Import,
+                                CreatedBy = user?.Id,
+                                TableItemId = reservoirId,
+                                CurrentData = currentData,
+                            };
+
+                            entityHistoriesDictionary[columnReservoir.ToLower()] = history;
                             entityDictionary[columnReservoir.ToLower()] = reservoir;
                         }
                     }
@@ -205,10 +290,10 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
                         well = await context.Wells.FirstOrDefaultAsync(x => x.CodWellAnp.ToLower() == columnWellCodeAnp.ToLower());
                         if (well is null)
                         {
-
+                            var wellId = Guid.NewGuid();
                             well = new Well
                             {
-                                Id = Guid.NewGuid(),
+                                Id = wellId,
                                 Name = columnWellNameAnp,
                                 WellOperatorName = columnWellOperatorName,
                                 CodWellAnp = columnWellCodeAnp,
@@ -234,6 +319,20 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
                                 Field = (Field)entityDictionary.GetValueOrDefault(columnField.ToLower()),
                             };
 
+                            var currentData = _mapper.Map<Well, WellHistoryDTO>((Well)well);
+                            currentData.createdAt = dateCurrent;
+                            currentData.updatedAt = dateCurrent;
+
+                            var history = new SystemHistory
+                            {
+                                Table = HistoryColumns.TableWells,
+                                TypeOperation = HistoryColumns.Import,
+                                CreatedBy = user?.Id,
+                                TableItemId = wellId,
+                                CurrentData = currentData,
+                            };
+
+                            entityHistoriesDictionary[columnWellCodeAnp.ToLower()] = history;
                             entityDictionary[columnWellCodeAnp.ToLower()] = well;
                         }
                     }
@@ -243,9 +342,10 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
                         completion = await context.Completions.FirstOrDefaultAsync(x => x.Name.ToLower() == columnCompletion.ToLower());
                         if (completion is null)
                         {
+                            var completionId = Guid.NewGuid();
                             completion = new Completion
                             {
-                                Id = Guid.NewGuid(),
+                                Id = completionId,
                                 Name = columnCompletion,
                                 User = user,
                                 CodCompletion = GenerateCode.Generate(columnCompletion),
@@ -254,6 +354,20 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
                                 IsActive = true
                             };
 
+                            var currentData = _mapper.Map<Completion, CompletionHistoryDTO>((Completion)completion);
+                            currentData.createdAt = dateCurrent;
+                            currentData.updatedAt = dateCurrent;
+
+                            var history = new SystemHistory
+                            {
+                                Table = HistoryColumns.TableCompletions,
+                                TypeOperation = HistoryColumns.Import,
+                                CreatedBy = user?.Id,
+                                TableItemId = completionId,
+                                CurrentData = currentData,
+                            };
+
+                            entityHistoriesDictionary[columnCompletion.ToLower()] = history;
                             entityDictionary[columnCompletion.ToLower()] = completion;
                         }
                     }

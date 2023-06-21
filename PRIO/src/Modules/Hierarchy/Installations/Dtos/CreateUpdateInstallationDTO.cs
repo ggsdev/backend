@@ -6,7 +6,8 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Dtos
     {
         public Guid? Id { get; set; }
         public string? Name { get; set; }
-        public string? CodInstallationUep { get; set; }
+        public string? UepCod { get; set; }
+        public string? CodInstallation { get; set; }
         public string? Description { get; set; }
         public UserDTO? User { get; set; }
         public DateTime? CreatedAt { get; set; }

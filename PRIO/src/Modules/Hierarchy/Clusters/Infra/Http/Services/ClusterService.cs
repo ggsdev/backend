@@ -62,7 +62,6 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
 
             return clusterDTO;
         }
-
         public async Task<List<ClusterDTO>> GetClusters()
         {
             var clusters = await _context.Clusters
