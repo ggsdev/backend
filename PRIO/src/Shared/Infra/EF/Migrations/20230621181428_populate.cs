@@ -139,8 +139,8 @@ namespace PRIO.Migrations
 
                 migrationBuilder.InsertData(
                     table: "GroupPermissions",
-                    columns: new[] { "Id", "GroupId", "GroupName", "MenuId", "MenuName", "MenuOrder", "MenuIcon", "MenuRoute", "CreatedAt", "UpdatedAt", "hasParent", "hasChildren" },
-                    values: new object[] { idGroupPermission, idGroup, nameGroup, idMenu, nameMenu, orderMenu, iconMenu, routeMenu, DateTime.UtcNow, DateTime.UtcNow, hasParent, hasChildren });
+                    columns: new[] { "Id", "GroupId", "GroupName", "MenuId", "MenuName", "MenuOrder", "MenuIcon", "MenuRoute", "CreatedAt", "UpdatedAt", "hasParent", "hasChildren", "IsActive" },
+                    values: new object[] { idGroupPermission, idGroup, nameGroup, idMenu, nameMenu, orderMenu, iconMenu, routeMenu, DateTime.UtcNow, DateTime.UtcNow, hasParent, hasChildren, true });
 
                 migrationBuilder.InsertData(
                     table: "UserPermissions",
@@ -156,13 +156,13 @@ namespace PRIO.Migrations
 
                         migrationBuilder.InsertData(
                             table: "GroupOperations",
-                            columns: new[] { "Id", "OperationName", "GlobalOperationId", "GroupPermissionId" },
-                            values: new object[] { Guid.NewGuid(), methodOperation, idOperation, idGroupPermission });
+                            columns: new[] { "Id", "OperationName", "GlobalOperationId", "GroupPermissionId", "GroupName" },
+                            values: new object[] { Guid.NewGuid(), methodOperation, idOperation, idGroupPermission, nameGroup });
 
                         migrationBuilder.InsertData(
                             table: "UserOperations",
-                            columns: new[] { "Id", "OperationName", "GlobalOperationId", "UserPermissionId" },
-                            values: new object[] { Guid.NewGuid(), methodOperation, idOperation, idUserPermission });
+                            columns: new[] { "Id", "OperationName", "GlobalOperationId", "UserPermissionId", "GroupName" },
+                            values: new object[] { Guid.NewGuid(), methodOperation, idOperation, idUserPermission, nameGroup });
                     }
                 }
             }
