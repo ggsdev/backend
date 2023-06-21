@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PRIO.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class initialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,7 +34,12 @@ namespace PRIO.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Method = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -85,14 +90,36 @@ namespace PRIO.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SystemHistories",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Table = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    TableItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    PreviousData = table.Column<string>(type: "varchar(max)", nullable: true),
+                    CurrentData = table.Column<string>(type: "varchar(max)", nullable: false),
+                    FieldsChanged = table.Column<string>(type: "varchar(max)", nullable: true),
+                    TypeOperation = table.Column<string>(type: "varchar(15)", maxLength: 15, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SystemHistories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
-                    Email = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
-                    Password = table.Column<string>(type: "VARCHAR(90)", maxLength: 90, nullable: false),
+                    Name = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: true),
+                    Email = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
+                    Password = table.Column<string>(type: "VARCHAR(90)", maxLength: 90, nullable: true),
                     Username = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
+                    LastGroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -102,6 +129,11 @@ namespace PRIO.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_Groups_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "Groups",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -110,9 +142,18 @@ namespace PRIO.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    GroupName = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
                     MenuId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    MenuName = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
+                    MenuRoute = table.Column<string>(type: "VARCHAR(90)", maxLength: 90, nullable: false),
+                    MenuIcon = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
+                    MenuOrder = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
+                    hasChildren = table.Column<bool>(type: "bit", nullable: true),
+                    hasParent = table.Column<bool>(type: "bit", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -134,8 +175,8 @@ namespace PRIO.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "VARCHAR(256)", maxLength: 256, nullable: false),
-                    CodCluster = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: true),
+                    Name = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
+                    CodCluster = table.Column<string>(type: "VARCHAR(8)", maxLength: 8, nullable: true),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -180,7 +221,8 @@ namespace PRIO.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OperationName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    GroupName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     GroupPermissionId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     GlobalOperationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
@@ -205,13 +247,14 @@ namespace PRIO.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    MenuId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     GroupName = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: true),
+                    MenuId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     MenuName = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: true),
                     MenuRoute = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: true),
                     MenuIcon = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: true),
                     MenuOrder = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsParent = table.Column<bool>(type: "bit", nullable: true),
+                    hasChildren = table.Column<bool>(type: "bit", nullable: true),
+                    hasParent = table.Column<bool>(type: "bit", nullable: true),
                     GroupMenuId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -267,7 +310,8 @@ namespace PRIO.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OperationName = table.Column<string>(type: "varchar(120)", maxLength: 120, nullable: true),
+                    GroupName = table.Column<string>(type: "varchar(120)", maxLength: 120, nullable: true),
                     UserPermissionId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     GlobalOperationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
@@ -283,7 +327,8 @@ namespace PRIO.Migrations
                         name: "FK_UserOperations_UserPermissions_UserPermissionId",
                         column: x => x.UserPermissionId,
                         principalTable: "UserPermissions",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -366,10 +411,10 @@ namespace PRIO.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
+                    Name = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
                     WellOperatorName = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
                     CodWellAnp = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
-                    CodWell = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
+                    CodWell = table.Column<string>(type: "VARCHAR(8)", maxLength: 8, nullable: true),
                     CategoryAnp = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
                     CategoryReclassificationAnp = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
                     CategoryOperator = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
@@ -810,7 +855,7 @@ namespace PRIO.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
-                    CodReservoir = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: true),
+                    CodReservoir = table.Column<string>(type: "VARCHAR(8)", maxLength: 8, nullable: true),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ZoneId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -919,8 +964,8 @@ namespace PRIO.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "VARCHAR(256)", maxLength: 256, nullable: false),
-                    CodCompletion = table.Column<string>(type: "VARCHAR(256)", maxLength: 256, nullable: true),
+                    Name = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
+                    CodCompletion = table.Column<string>(type: "VARCHAR(8)", maxLength: 8, nullable: true),
                     ReservoirId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     WellId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -1090,6 +1135,18 @@ namespace PRIO.Migrations
                 name: "IX_Users_Email",
                 table: "Users",
                 column: "Email",
+                unique: true,
+                filter: "[Email] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_GroupId",
+                table: "Users",
+                column: "GroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Username",
+                table: "Users",
+                column: "Username",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -1137,6 +1194,9 @@ namespace PRIO.Migrations
                 name: "Sessions");
 
             migrationBuilder.DropTable(
+                name: "SystemHistories");
+
+            migrationBuilder.DropTable(
                 name: "UserOperations");
 
             migrationBuilder.DropTable(
@@ -1173,9 +1233,6 @@ namespace PRIO.Migrations
                 name: "Fields");
 
             migrationBuilder.DropTable(
-                name: "Groups");
-
-            migrationBuilder.DropTable(
                 name: "Menus");
 
             migrationBuilder.DropTable(
@@ -1186,6 +1243,9 @@ namespace PRIO.Migrations
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Groups");
         }
     }
 }

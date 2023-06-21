@@ -12,8 +12,8 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230620143627_DefaultLengthNames")]
-    partial class DefaultLengthNames
+    [Migration("20230621181428_populate")]
+    partial class populate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -64,6 +64,9 @@ namespace PRIO.Migrations
                     b.Property<Guid?>("GlobalOperationId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("GroupName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid?>("GroupPermissionId")
                         .HasColumnType("uniqueidentifier");
 
@@ -88,6 +91,9 @@ namespace PRIO.Migrations
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<Guid?>("GroupId")
                         .HasColumnType("uniqueidentifier");
 
@@ -95,6 +101,9 @@ namespace PRIO.Migrations
                         .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("VARCHAR");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("MenuIcon")
                         .IsRequired()
@@ -259,7 +268,6 @@ namespace PRIO.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("VARCHAR");
 
@@ -269,13 +277,14 @@ namespace PRIO.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<Guid?>("LastGroupId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("VARCHAR");
 
                     b.Property<string>("Password")
-                        .IsRequired()
                         .HasMaxLength(90)
                         .HasColumnType("VARCHAR");
 
@@ -290,9 +299,13 @@ namespace PRIO.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
 
                     b.HasIndex("GroupId");
+
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("Users", (string)null);
                 });
@@ -306,8 +319,13 @@ namespace PRIO.Migrations
                     b.Property<Guid?>("GlobalOperationId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("GroupName")
+                        .HasMaxLength(120)
+                        .HasColumnType("varchar");
+
                     b.Property<string>("OperationName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(120)
+                        .HasColumnType("varchar");
 
                     b.Property<Guid?>("UserPermissionId")
                         .HasColumnType("uniqueidentifier");
@@ -318,7 +336,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserPermissionId");
 
-                    b.ToTable("UserOperations");
+                    b.ToTable("UserOperations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.UserPermission", b =>
@@ -2505,11 +2523,13 @@ namespace PRIO.Migrations
                 {
                     b.HasOne("PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Models.GlobalOperation", "GlobalOperation")
                         .WithMany("UserOperations")
-                        .HasForeignKey("GlobalOperationId");
+                        .HasForeignKey("GlobalOperationId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.UserPermission", "UserPermission")
                         .WithMany("UserOperation")
-                        .HasForeignKey("UserPermissionId");
+                        .HasForeignKey("UserPermissionId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("GlobalOperation");
 
