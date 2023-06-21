@@ -162,6 +162,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
                                     Id = groupOperationChildrenId,
                                     GlobalOperation = foundOperation,
                                     GroupPermission = createGroupPermissionChildren,
+                                    GroupName = body.GroupName,
                                     OperationName = foundOperation.Method
                                 };
                                 await _context.GroupOperations.AddAsync(createGroupOperationChildren);
@@ -180,6 +181,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
                             Id = groupOperationParentId,
                             GlobalOperation = foundOperation,
                             GroupPermission = createGroupPermissionParent,
+                            GroupName = body.GroupName,
                             OperationName = foundOperation.Method
                         };
                         await _context.GroupOperations.AddAsync(createGroupOperationParent);
@@ -253,7 +255,8 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
                             Id = Guid.NewGuid(),
                             OperationName = operation.OperationName,
                             UserPermission = userPermission,
-                            GlobalOperation = foundOperation
+                            GlobalOperation = foundOperation,
+                            GroupName = group.Name
                         };
                         await _context.UserOperations.AddAsync(userOperation);
                     }
@@ -340,8 +343,27 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
                 for (int i = 0; i < groupPermissions.Count; ++i)
                     groupPermissions[i].GroupName = groupName.ToString();
 
+                var groupOperations = await _context.GroupOperations
+                    .Include(x => x.GroupPermission)
+                    .ThenInclude(x => x.Group)
+                    .Where(x => x.GroupPermission.Group.Id == id)
+                    .ToListAsync();
+
+                for (int i = 0; i < groupOperations.Count; ++i)
+                    groupOperations[i].GroupName = groupName.ToString();
+
+                var userOperations = await _context.UserOperations
+                    .Include(x => x.UserPermission)
+                    .Where(x => x.UserPermission.GroupId == id)
+                    .ToListAsync();
+
+                for (int i = 0; i < userOperations.Count; ++i)
+                    userOperations[i].GroupName = groupName.ToString();
+
                 _context.UserPermissions.UpdateRange(userPermissions);
                 _context.GroupPermissions.UpdateRange(groupPermissions);
+                _context.GroupOperations.UpdateRange(groupOperations);
+                _context.UserOperations.UpdateRange(userOperations);
             }
 
             _context.Groups.Update(group);

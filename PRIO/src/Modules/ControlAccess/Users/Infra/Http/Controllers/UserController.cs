@@ -540,6 +540,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
                                                 OperationName = verifyRelationMenuChildrenWithOperations.OperationName,
                                                 UserPermission = createMenuChildren,
                                                 GlobalOperation = verifyRelationMenuChildrenWithOperations.GlobalOperation,
+                                                GroupName = verifyRelationMenuChildrenWithOperations.GroupName,
                                                 Id = Guid.NewGuid(),
                                             };
                                             await _context.UserOperations.AddAsync(createGroupOperationsInUser);
@@ -558,6 +559,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
                                                 OperationName = verifyRelationMenuChildrenWithOperationsInMaster.OperationName,
                                                 UserPermission = createMenuChildren,
                                                 GlobalOperation = verifyRelationMenuChildrenWithOperationsInMaster.GlobalOperation,
+                                                GroupName = verifyRelationMenuChildrenWithOperationsInMaster.GroupName,
                                                 Id = Guid.NewGuid(),
                                             };
                                             await _context.UserOperations.AddAsync(createGroupOperationsInUser);
@@ -610,6 +612,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
                                             OperationName = verifyRelationMenuChildrenWithOperationsInMaster.OperationName,
                                             UserPermission = createMenuChildren,
                                             GlobalOperation = verifyRelationMenuChildrenWithOperationsInMaster.GlobalOperation,
+                                            GroupName = verifyRelationMenuChildrenWithOperationsInMaster.GroupName,
                                             Id = Guid.NewGuid(),
                                         };
                                         await _context.UserOperations.AddAsync(createGroupOperationsInUser);
@@ -641,6 +644,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
                                         OperationName = verifyRelationMenuParentWithOperations.OperationName,
                                         UserPermission = createMenuParent,
                                         GlobalOperation = verifyRelationMenuParentWithOperations.GlobalOperation,
+                                        GroupName = verifyRelationMenuParentWithOperations.GroupName,
                                         Id = Guid.NewGuid(),
                                     };
                                     await _context.UserOperations.AddAsync(createGroupOperationsInUser);
@@ -659,6 +663,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
                                         OperationName = verifyRelationMenuChildrenWithOperationsInMaster.OperationName,
                                         UserPermission = createMenuParent,
                                         GlobalOperation = verifyRelationMenuChildrenWithOperationsInMaster.GlobalOperation,
+                                        GroupName = verifyRelationMenuChildrenWithOperationsInMaster.GroupName,
                                         Id = Guid.NewGuid(),
                                     };
                                     await _context.UserOperations.AddAsync(createGroupOperationsInUser);
@@ -741,6 +746,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
                                         OperationName = verifyRelationMenuParentWithOperationsInMaster.OperationName,
                                         UserPermission = createMenuChildren,
                                         GlobalOperation = verifyRelationMenuParentWithOperationsInMaster.GlobalOperation,
+                                        GroupName = verifyRelationMenuParentWithOperationsInMaster.GroupName,
                                         Id = Guid.NewGuid(),
                                     };
                                     await _context.UserOperations.AddAsync(createGroupOperationsInUser);

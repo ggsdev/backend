@@ -154,7 +154,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
                                 Name = columnField,
                                 User = user,
                                 Installation = columnInstallation is not null ? (Installation)entityDictionary.GetValueOrDefault(columnInstallation.ToLower())! : null,
-                                CodField = !string.IsNullOrWhiteSpace(columnCodeField) ? columnCodeField : ,
+                                CodField = columnCodeField,
                                 IsActive = true,
                             };
 
