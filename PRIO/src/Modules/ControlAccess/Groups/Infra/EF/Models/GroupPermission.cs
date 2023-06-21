@@ -19,5 +19,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models
         public List<GroupOperation?>? Operations { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 }
