@@ -329,7 +329,7 @@ namespace PRIO.src.Shared.Utils
                     if (property.PropertyType == typeof(Guid))
                         continue;
 
-                    if (viewModelValue != null && !viewModelValue.Equals(modelValue) && modelValue is not null)
+                    if (viewModelValue is not null && !viewModelValue.Equals(modelValue) && modelValue is not null)
                     {
                         modelProperty.SetValue(model, viewModelValue);
                         updatedProperties[property.Name.ToLower()] = viewModelValue;

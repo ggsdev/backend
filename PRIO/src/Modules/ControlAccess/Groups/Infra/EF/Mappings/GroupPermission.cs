@@ -38,7 +38,8 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Mappings
             builder.Property(x => x.CreatedAt);
 
             builder.Property(x => x.UpdatedAt);
-
+            builder.Property(x => x.DeletedAt);
+            builder.Property(x => x.IsActive);
         }
     }
 }

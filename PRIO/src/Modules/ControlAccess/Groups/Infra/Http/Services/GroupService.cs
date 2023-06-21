@@ -241,7 +241,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
                         MenuId = Guid.Parse(permission.Menu.Id),
                         User = userHasGroup,
                         GroupMenu = groupPermission,
-                        CreatedAt = DateTime.Now,
+                        CreatedAt = DateTime.UtcNow,
                     };
                     await _context.UserPermissions.AddAsync(userPermission);
 
@@ -261,13 +261,15 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
                 var beforeChangesUser = _mapper.Map<UserHistoryDTO>(userHasGroup);
 
                 userHasGroup.Group = group;
+                userHasGroup.LastGroupId = null;
+                _context.Update(userHasGroup);
 
                 var currentData = _mapper.Map<User, UserHistoryDTO>(userHasGroup);
                 currentData.updatedAt = DateTime.UtcNow;
 
                 var history = new SystemHistory
                 {
-                    Table = HistoryColumns.TableUsers,
+                    Table = HistoryColumns.TableGroups,
                     TypeOperation = HistoryColumns.Update,
                     CreatedBy = userHasGroup?.Id,
                     TableItemId = userId,
@@ -316,7 +318,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
             if (group is null)
                 throw new NotFoundException("Group not found");
 
-            var updatedProperties = UpdateFields.CompareAndUpdateGroup(group, body);
+            var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(group, body);
 
             if (updatedProperties.Any() is false)
                 throw new BadRequestException("No properties were updated, try other values");
@@ -338,11 +340,8 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
                 for (int i = 0; i < groupPermissions.Count; ++i)
                     groupPermissions[i].GroupName = groupName.ToString();
 
-                if (userPermissions is not null)
-                    _context.UserPermissions.UpdateRange(userPermissions);
-
-                if (groupPermissions is not null)
-                    _context.GroupPermissions.UpdateRange(groupPermissions);
+                _context.UserPermissions.UpdateRange(userPermissions);
+                _context.GroupPermissions.UpdateRange(groupPermissions);
             }
 
             _context.Groups.Update(group);
@@ -353,35 +352,121 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
             return groupDTO;
         }
 
-
         public async Task DeleteGroup(Guid id)
         {
             var group = await _context.Groups
                 .Include(x => x.User)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (group is null)
-                throw new NotFoundException("Group not found");
+            if (group is null || group.IsActive is false)
+                throw new NotFoundException("Group not found or inactive already");
 
             group.IsActive = false;
             group.DeletedAt = DateTime.UtcNow;
             _context.Update(group);
 
             for (int i = 0; i < group.User?.Count; ++i)
+            {
+                group.User[i].LastGroupId = group.Id;
                 group.User[i].Group = null;
+            }
 
             var userPermissions = await _context.UserPermissions
                     .Where(x => x.GroupId == id)
                     .ToListAsync();
 
+            var groupPermissions = await _context.GroupPermissions
+               .Include(x => x.Group)
+               .Where(x => x.Group.Id == id)
+               .ToListAsync();
+
+            var changedDate = DateTime.UtcNow;
+            for (int i = 0; i < groupPermissions.Count; ++i)
+            {
+                groupPermissions[i].IsActive = false;
+                groupPermissions[i].DeletedAt = changedDate;
+                groupPermissions[i].UpdatedAt = changedDate;
+            }
+
+            _context.UpdateRange(groupPermissions);
             _context.RemoveRange(userPermissions);
 
-            var groupPermissions = await _context.GroupPermissions
-                .Include(x => x.Group)
-                .Where(x => x.Group.Id == id)
-                .ToListAsync();
+            await _context.SaveChangesAsync();
+        }
 
-            _context.RemoveRange(groupPermissions);
+        public async Task RestoreGroup(Guid id)
+        {
+            var group = await _context.Groups
+                .Include(x => x.User)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (group is null || group.IsActive is true)
+                throw new NotFoundException("Group not found or active already");
+
+            group.IsActive = true;
+            group.DeletedAt = null;
+            _context.Update(group);
+
+            var groupPermissions = await _context.GroupPermissions
+               .Include(x => x.Group)
+               .Include(x => x.Menu)
+               .Include(x => x.Operations)
+               .Where(x => x.Group.Id == id)
+               .ToListAsync();
+
+            var users = await _context.Users
+                   .Where(x => x.LastGroupId == id)
+                   .ToListAsync();
+
+            var changedDate = DateTime.UtcNow;
+
+            foreach (var user in users)
+            {
+                user.Group = group;
+
+                for (int i = 0; i < groupPermissions.Count; ++i)
+                {
+                    groupPermissions[i].IsActive = true;
+                    groupPermissions[i].DeletedAt = null;
+                    groupPermissions[i].UpdatedAt = changedDate;
+
+                    _context.Update(groupPermissions[i]);
+
+                    var userPermission = new UserPermission
+                    {
+                        Id = Guid.NewGuid(),
+                        CreatedAt = DateTime.UtcNow,
+                        GroupId = group.Id,
+                        GroupName = group.Name,
+                        GroupMenu = groupPermissions[i],
+                        MenuIcon = groupPermissions[i].MenuIcon,
+                        MenuId = groupPermissions[i].Menu?.Id,
+                        MenuName = groupPermissions[i].Menu?.Name,
+                        MenuOrder = groupPermissions[i].Menu?.Order,
+                        MenuRoute = groupPermissions[i].Menu?.Route,
+                        hasChildren = groupPermissions[i].hasChildren,
+                        hasParent = groupPermissions[i].hasParent,
+                        User = user,
+                    };
+
+                    foreach (var operation in groupPermissions[i].Operations)
+                    {
+                        var userOperation = new UserOperation
+                        {
+                            Id = Guid.NewGuid(),
+                            OperationName = operation?.OperationName,
+                            GlobalOperation = operation?.GlobalOperation,
+                            UserPermission = userPermission,
+                        };
+
+                        await _context.AddAsync(userOperation);
+                    }
+
+                    await _context.AddAsync(userPermission);
+                }
+            }
+            _context.UpdateRange(users);
+
 
             await _context.SaveChangesAsync();
         }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230621124909_UserOperationMapping")]
+    partial class UserOperationMapping
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,9 +64,6 @@ namespace PRIO.Migrations
                     b.Property<Guid?>("GlobalOperationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("GroupName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid?>("GroupPermissionId")
                         .HasColumnType("uniqueidentifier");
 
@@ -88,9 +88,6 @@ namespace PRIO.Migrations
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<Guid?>("GroupId")
                         .HasColumnType("uniqueidentifier");
 
@@ -98,9 +95,6 @@ namespace PRIO.Migrations
                         .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("VARCHAR");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
 
                     b.Property<string>("MenuIcon")
                         .IsRequired()
@@ -274,9 +268,6 @@ namespace PRIO.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<Guid?>("LastGroupId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Name")
                         .HasMaxLength(120)
                         .HasColumnType("VARCHAR");
@@ -315,10 +306,6 @@ namespace PRIO.Migrations
 
                     b.Property<Guid?>("GlobalOperationId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("GroupName")
-                        .HasMaxLength(120)
-                        .HasColumnType("varchar");
 
                     b.Property<string>("OperationName")
                         .HasMaxLength(120)

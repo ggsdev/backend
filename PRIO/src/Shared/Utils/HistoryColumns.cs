@@ -16,6 +16,7 @@
         public readonly static string TableWells = "WELLS";
         public readonly static string TableCompletions = "COMPLETIONS";
         public readonly static string TableUsers = "USERS";
+        public readonly static string TableGroups = "GROUPS";
         public readonly static string TableEquipments = "MEASURING EQUIPMENTS";
     }
 }

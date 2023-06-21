@@ -160,6 +160,7 @@ namespace PRIO.src.Shared.Infra.EF
             modelBuilder.ApplyConfiguration(new MenuMap());
             modelBuilder.ApplyConfiguration(new UserPermissionMap());
             modelBuilder.ApplyConfiguration(new GroupPermissionMap());
+            modelBuilder.ApplyConfiguration(new UserOperationMap());
 
             #region Measurement & Relations
             modelBuilder.ApplyConfiguration(new MeasurementMap());
