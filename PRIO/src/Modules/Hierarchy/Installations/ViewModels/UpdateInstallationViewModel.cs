@@ -7,8 +7,10 @@ namespace PRIO.src.Modules.Hierarchy.Installations.ViewModels
         [StringLength(120, ErrorMessage = "Name cannot exceed 120 characters.")]
         public string? Name { get; set; }
         public Guid? ClusterId { get; set; }
-        [StringLength(120, ErrorMessage = "CodInstallationUep cannot exceed 120 characters.")]
-        public string? CodInstallationUep { get; set; }
+        [StringLength(120, ErrorMessage = "UepCode cannot exceed 120 characters.")]
+        public string? UepCod { get; set; }
+        [StringLength(120, ErrorMessage = "CodInstallation cannot exceed 120 characters.")]
+        public string? CodInstallation { get; set; }
         public string? Description { get; set; }
         public bool? IsActive { get; set; }
     }

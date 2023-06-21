@@ -67,10 +67,16 @@ namespace PRIO.src.Shared.Utils
                 updatedProperties[nameof(InstallationHistoryDTO.description)] = body.Description;
             }
 
-            if (body.CodInstallationUep is not null && body.CodInstallationUep != installation.CodInstallationUep)
+            if (body.UepCod is not null && body.UepCod != installation.UepCod)
             {
-                installation.CodInstallationUep = body.CodInstallationUep;
-                updatedProperties[nameof(InstallationHistoryDTO.codInstallationUep)] = body.CodInstallationUep;
+                installation.UepCod = body.UepCod;
+                updatedProperties[nameof(InstallationHistoryDTO.uepCod)] = body.UepCod;
+            }
+
+            if (body.CodInstallation is not null && body.CodInstallation != installation.CodInstallation)
+            {
+                installation.UepCod = body.CodInstallation;
+                updatedProperties[nameof(InstallationHistoryDTO.codInstallation)] = body.CodInstallation;
             }
 
             return updatedProperties;

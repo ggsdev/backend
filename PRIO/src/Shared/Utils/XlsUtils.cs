@@ -5,24 +5,31 @@ namespace PRIO.src.Shared.Utils
     internal static class XlsUtils
     {
         internal static readonly string ClusterColumnName = "CLUSTER";
-        internal static readonly string InstallationCodUepColumnName = "UEP_CODE";
         internal static readonly string FieldColumnName = "FIELD";
-        internal static readonly string InstallationColumnName = "PLATFORM";
+        internal static readonly string InstallationCodColumnName = "INSTALAÇÃO [CÓDIGO]";
+        internal static readonly string InstallationColumnName = "INSTALAÇÃO [NOME]";
+        internal static readonly string InstallationCodUepColumnName = "INSTALAÇÃO DE PROCESSAMENTO [CÓDIGO]";
+
         internal static readonly string FieldCodeColumnName = "FIELD_CODE";
         internal static readonly string ReservoirColumnName = "RESERVOIR";
         internal static readonly string ZoneCodeColumnName = "ZONE_CODE";
+        internal static readonly string AllocationByReservoirColumnName = "ALLOCATION_BY_RESERVOIR (FRACTION)";
+
         internal static readonly string CompletionColumnName = "COMPLETION";
         internal static readonly string WellNameColumnName = "WELL_NAME_ANP";
         internal static readonly string WellNameOperatorColumnName = "WELL_NAME_OPERATOR";
+
         internal static readonly string WellCodeAnpColumnName = "WELL_CODE_ANP";
         internal static readonly string WellCategoryAnpColumnName = "CATEGORY_ANP";
         internal static readonly string WellCategoryReclassificationColumnName = "CATEGORY_RECLASSIFICATION_ANP";
+
         internal static readonly string WellCategoryOperatorColumnName = "CATEGORY_OPERATOR";
         internal static readonly string WellStatusOperatorColumnName = "STATUS_OPERATOR";
         internal static readonly string WellProfileColumnName = "WELL_PROFILE";
         internal static readonly string WellWaterDepthColumnName = "WATER_DEPTH (M)";
         internal static readonly string WellPerforationTopMdColumnName = "PERFORATION_TOP_MD (M)";
         internal static readonly string WellBottomPerforationColumnName = "BOTTOM_PERFORATION_MD (M)";
+
         internal static readonly string WellArtificialLiftColumnName = "ARTIFICIAL_LIFT";
         internal static readonly string WellLatitude4cColumnName = "LATITUDE_BASE_4C";
         internal static readonly string WellLongitude4cColumnName = "LONGITUDE_BASE_4C";
@@ -46,12 +53,15 @@ namespace PRIO.src.Shared.Utils
                 {
                     cellValue = cellValue.ToUpper();
                     if (cellValue == ClusterColumnName ||
-                        cellValue == InstallationCodUepColumnName ||
                         cellValue == FieldColumnName ||
+                        cellValue == InstallationCodColumnName ||
+                        cellValue == InstallationColumnName ||
+                        cellValue == InstallationCodUepColumnName ||
                         cellValue == InstallationColumnName ||
                         cellValue == FieldCodeColumnName ||
                         cellValue == ReservoirColumnName ||
                         cellValue == ZoneCodeColumnName ||
+                        cellValue == AllocationByReservoirColumnName ||
                         cellValue == CompletionColumnName ||
                         cellValue == WellNameColumnName ||
                         cellValue == WellNameOperatorColumnName ||
@@ -73,6 +83,7 @@ namespace PRIO.src.Shared.Utils
                         cellValue == WellTypeCoordinateColumnName ||
                         cellValue == WellCoordXColumnName ||
                         cellValue == WellCoordYColumnName)
+
                     {
                         columnPositions.Add(cellValue, column);
                     }

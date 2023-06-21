@@ -9,8 +9,8 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models
     public class Installation : BaseModel
     {
         public string? Name { get; set; }
-        public string? CodInstallationUep { get; set; }
-        public string? Cod { get; set; }
+        public string? UepCod { get; set; }
+        public string? CodInstallation { get; set; }
         public User? User { get; set; }
         public Cluster? Cluster { get; set; }
         public List<MeasuringEquipment>? MeasuringEquipments { get; set; }

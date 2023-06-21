@@ -61,44 +61,45 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
                     if (!(columnCluster?.ToLower() == getInstanceName || getInstanceName.ToLower() == _consolidationInstance))
                         continue;
 
-                    var columnInstallation = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationColumnName]].Value?.ToString();
-                    var columnInstallationCodUep = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationCodUepColumnName]].Value?.ToString();
+                    var columnInstallation = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationColumnName]].Value?.ToString()?.Trim();
+                    var columnInstallationCod = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationCodColumnName]].Value?.ToString()?.Trim();
+                    var columnInstallationCodUep = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationCodUepColumnName]].Value?.ToString()?.Trim();
 
-                    var columnField = worksheetTab.Cells[row, columnPositions[XlsUtils.FieldColumnName]].Value?.ToString();
-                    var columnCodeField = worksheetTab.Cells[row, columnPositions[XlsUtils.FieldCodeColumnName]].Value?.ToString();
+                    var columnField = worksheetTab.Cells[row, columnPositions[XlsUtils.FieldColumnName]].Value?.ToString()?.Trim();
+                    var columnCodeField = worksheetTab.Cells[row, columnPositions[XlsUtils.FieldCodeColumnName]].Value?.ToString()?.Trim();
 
-                    var columnReservoir = worksheetTab.Cells[row, columnPositions[XlsUtils.ReservoirColumnName]].Value?.ToString();
+                    var columnReservoir = worksheetTab.Cells[row, columnPositions[XlsUtils.ReservoirColumnName]].Value?.ToString()?.Trim();
 
-                    var columnZone = worksheetTab.Cells[row, columnPositions[XlsUtils.ZoneCodeColumnName]].Value?.ToString();
+                    var columnZone = worksheetTab.Cells[row, columnPositions[XlsUtils.ZoneCodeColumnName]].Value?.ToString()?.Trim();
 
-                    var columnCompletion = worksheetTab.Cells[row, columnPositions[XlsUtils.CompletionColumnName]].Value?.ToString();
+                    var columnCompletion = worksheetTab.Cells[row, columnPositions[XlsUtils.CompletionColumnName]].Value?.ToString()?.Trim();
 
                     #region Well rows
-                    var columnWellNameAnp = worksheetTab.Cells[row, columnPositions[XlsUtils.WellNameColumnName]].Value?.ToString();
-                    var columnWellOperatorName = worksheetTab.Cells[row, columnPositions[XlsUtils.WellNameOperatorColumnName]].Value?.ToString();
-                    var columnWellCodeAnp = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCodeAnpColumnName]].Value?.ToString();
-                    var columnWellCategoryAnp = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCategoryAnpColumnName]].Value?.ToString();
-                    var columnWellCategoryReclassification = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCategoryReclassificationColumnName]].Value?.ToString();
-                    var columnWellCategoryOperator = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCategoryOperatorColumnName]].Value?.ToString();
-                    var columnWellStatusOperator = worksheetTab.Cells[row, columnPositions[XlsUtils.WellStatusOperatorColumnName]].Value?.ToString()?.ToLower();
+                    var columnWellNameAnp = worksheetTab.Cells[row, columnPositions[XlsUtils.WellNameColumnName]].Value?.ToString()?.Trim();
+                    var columnWellOperatorName = worksheetTab.Cells[row, columnPositions[XlsUtils.WellNameOperatorColumnName]].Value?.ToString()?.Trim();
+                    var columnWellCodeAnp = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCodeAnpColumnName]].Value?.ToString()?.Trim();
+                    var columnWellCategoryAnp = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCategoryAnpColumnName]].Value?.ToString()?.Trim();
+                    var columnWellCategoryReclassification = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCategoryReclassificationColumnName]].Value?.ToString()?.Trim();
+                    var columnWellCategoryOperator = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCategoryOperatorColumnName]].Value?.ToString()?.Trim();
+                    var columnWellStatusOperator = worksheetTab.Cells[row, columnPositions[XlsUtils.WellStatusOperatorColumnName]].Value?.ToString()?.ToLower()?.Trim();
                     bool? columnWellStatusOperatorBoolean = null;
                     if (columnWellStatusOperator is not null && columnWellStatusOperator.Contains("ativo"))
                         columnWellStatusOperatorBoolean = true;
                     if (columnWellStatusOperator is not null && columnWellStatusOperator.Contains("inativo"))
                         columnWellStatusOperatorBoolean = false;
-                    var columnWellProfile = worksheetTab.Cells[row, columnPositions[XlsUtils.WellProfileColumnName]].Value?.ToString();
-                    var columnWellWaterDepth = worksheetTab.Cells[row, columnPositions[XlsUtils.WellWaterDepthColumnName]].Value?.ToString();
-                    var columnWellPerforationTopMd = worksheetTab.Cells[row, columnPositions[XlsUtils.WellPerforationTopMdColumnName]].Value?.ToString();
-                    var columnWellBottomPerforationMd = worksheetTab.Cells[row, columnPositions[XlsUtils.WellBottomPerforationColumnName]].Value?.ToString();
-                    var columnWellArtificialLift = worksheetTab.Cells[row, columnPositions[XlsUtils.WellArtificialLiftColumnName]].Value?.ToString();
-                    var columnWellLatitude4c = worksheetTab.Cells[row, columnPositions[XlsUtils.WellLatitude4cColumnName]].Value?.ToString();
-                    var columnWellLongitude4c = worksheetTab.Cells[row, columnPositions[XlsUtils.WellLongitude4cColumnName]].Value?.ToString();
-                    var columnWellLatitudeDD = worksheetTab.Cells[row, columnPositions[XlsUtils.WellLatitudeDDColumnName]].Value?.ToString();
-                    var columnWellLongitudeDD = worksheetTab.Cells[row, columnPositions[XlsUtils.WellLongitudeDDColumnName]].Value?.ToString();
-                    var columnWellDatumHorizontal = worksheetTab.Cells[row, columnPositions[XlsUtils.WellDatumHorizontalColumnName]].Value?.ToString();
-                    var columnWellTypeCoordinate = worksheetTab.Cells[row, columnPositions[XlsUtils.WellTypeCoordinateColumnName]].Value?.ToString();
-                    var columnWellCoordX = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCoordXColumnName]].Value?.ToString();
-                    var columnWellCoordY = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCoordYColumnName]].Value?.ToString();
+                    var columnWellProfile = worksheetTab.Cells[row, columnPositions[XlsUtils.WellProfileColumnName]].Value?.ToString()?.Trim();
+                    var columnWellWaterDepth = worksheetTab.Cells[row, columnPositions[XlsUtils.WellWaterDepthColumnName]].Value?.ToString()?.Trim();
+                    var columnWellPerforationTopMd = worksheetTab.Cells[row, columnPositions[XlsUtils.WellPerforationTopMdColumnName]].Value?.ToString()?.Trim();
+                    var columnWellBottomPerforationMd = worksheetTab.Cells[row, columnPositions[XlsUtils.WellBottomPerforationColumnName]].Value?.ToString()?.Trim();
+                    var columnWellArtificialLift = worksheetTab.Cells[row, columnPositions[XlsUtils.WellArtificialLiftColumnName]].Value?.ToString()?.Trim();
+                    var columnWellLatitude4c = worksheetTab.Cells[row, columnPositions[XlsUtils.WellLatitude4cColumnName]].Value?.ToString()?.Trim();
+                    var columnWellLongitude4c = worksheetTab.Cells[row, columnPositions[XlsUtils.WellLongitude4cColumnName]].Value?.ToString()?.Trim();
+                    var columnWellLatitudeDD = worksheetTab.Cells[row, columnPositions[XlsUtils.WellLatitudeDDColumnName]].Value?.ToString()?.Trim();
+                    var columnWellLongitudeDD = worksheetTab.Cells[row, columnPositions[XlsUtils.WellLongitudeDDColumnName]].Value?.ToString()?.Trim();
+                    var columnWellDatumHorizontal = worksheetTab.Cells[row, columnPositions[XlsUtils.WellDatumHorizontalColumnName]].Value?.ToString()?.Trim();
+                    var columnWellTypeCoordinate = worksheetTab.Cells[row, columnPositions[XlsUtils.WellTypeCoordinateColumnName]].Value?.ToString()?.Trim();
+                    var columnWellCoordX = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCoordXColumnName]].Value?.ToString()?.Trim();
+                    var columnWellCoordY = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCoordYColumnName]].Value?.ToString()?.Trim();
                     #endregion
 
 
@@ -109,6 +110,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
                         {
                             cluster = new Cluster
                             {
+                                Id = Guid.NewGuid(),
                                 Name = columnCluster,
                                 User = user,
                                 IsActive = true,
@@ -127,15 +129,16 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
                         {
                             installation = new Installation
                             {
+                                Id = Guid.NewGuid(),
                                 Name = columnInstallation,
-                                CodInstallationUep = columnInstallationCodUep,
+                                UepCod = columnInstallationCodUep,
+                                CodInstallation = columnInstallationCod,
                                 User = user,
                                 IsActive = true,
                                 Cluster = columnCluster is not null ? (Cluster)entityDictionary.GetValueOrDefault(columnCluster.ToLower())! : null,
                             };
 
                             entityDictionary[columnInstallation.ToLower()] = installation;
-
                         }
                     }
 
@@ -147,16 +150,17 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
                         {
                             field = new Field
                             {
+                                Id = Guid.NewGuid(),
                                 Name = columnField,
                                 User = user,
                                 Installation = columnInstallation is not null ? (Installation)entityDictionary.GetValueOrDefault(columnInstallation.ToLower())! : null,
-                                CodField = columnCodeField,
+                                CodField = !string.IsNullOrWhiteSpace(columnCodeField) ? columnCodeField : ,
                                 IsActive = true,
                             };
 
                             entityDictionary[columnField.ToLower()] = field;
-
                         }
+
                     }
 
                     if (!string.IsNullOrWhiteSpace(columnZone) && !entityDictionary.TryGetValue(columnZone.ToLower(), out var zone))
@@ -166,6 +170,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
                         {
                             zone = new Zone
                             {
+                                Id = Guid.NewGuid(),
                                 CodZone = columnZone,
                                 User = user,
                                 IsActive = true,
@@ -183,6 +188,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
                         {
                             reservoir = new Reservoir
                             {
+                                Id = Guid.NewGuid(),
                                 Name = columnReservoir,
                                 User = user,
                                 CodReservoir = GenerateCode.Generate(columnReservoir),
@@ -199,8 +205,10 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
                         well = await context.Wells.FirstOrDefaultAsync(x => x.CodWellAnp.ToLower() == columnWellCodeAnp.ToLower());
                         if (well is null)
                         {
+
                             well = new Well
                             {
+                                Id = Guid.NewGuid(),
                                 Name = columnWellNameAnp,
                                 WellOperatorName = columnWellOperatorName,
                                 CodWellAnp = columnWellCodeAnp,
@@ -223,7 +231,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
                                 CoordY = columnWellCoordY,
                                 User = user,
                                 IsActive = true,
-                                Field = columnField is not null ? (Field)entityDictionary.GetValueOrDefault(columnField.ToLower())! : null,
+                                Field = (Field)entityDictionary.GetValueOrDefault(columnField.ToLower()),
                             };
 
                             entityDictionary[columnWellCodeAnp.ToLower()] = well;
@@ -237,6 +245,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
                         {
                             completion = new Completion
                             {
+                                Id = Guid.NewGuid(),
                                 Name = columnCompletion,
                                 User = user,
                                 CodCompletion = GenerateCode.Generate(columnCompletion),
