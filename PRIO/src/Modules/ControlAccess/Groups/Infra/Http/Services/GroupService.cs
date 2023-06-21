@@ -294,6 +294,51 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
             }
         }
 
+
+        public async Task RemoveUserInGroup(Guid groupId, Guid userId, User userLoggedIn)
+        {
+            var group = await _context.Groups
+               .Where(x => x.Id == groupId)
+               .FirstOrDefaultAsync();
+            if (group == null)
+                throw new NotFoundException("Group is not found.");
+
+            var userHasGroup = await _context.Users
+                .Where(x => x.Id == userId)
+                .Include(x => x.Group)
+                .Include(x => x.UserPermissions)
+                .FirstOrDefaultAsync();
+
+            if (userHasGroup == null)
+                throw new NotFoundException("User is not found.");
+
+            if (userHasGroup.Group == null)
+                throw new ConflictException("User no have a group");
+
+            var permissionsUser = await _context.UserPermissions.Include(x => x.User).Where(x => x.User.Id == userId).ToListAsync();
+            _context.RemoveRange(permissionsUser);
+
+            var operationsUser = await _context.UserOperations.Include(x => x.UserPermission).ThenInclude(x => x.User).Where(x => x.UserPermission.User.Id == userId).ToListAsync();
+            _context.RemoveRange(operationsUser);
+
+            userHasGroup.Group = null;
+            userHasGroup.LastGroupId = group.Id;
+
+            //var history = new SystemHistory
+            //{
+            //    Table = HistoryColumns.TableGroups,
+            //    TypeOperation = HistoryColumns.Delete,
+            //    CreatedBy = userHasGroup?.Id,
+            //    TableItemId = userId,
+            //    CurrentData = DateTime.UtcNow,
+            //    PreviousData = beforeChangesUser,
+            //    UpdatedBy = userLoggedIn?.Id,
+            //};
+
+            _context.Update(userHasGroup);
+            await _context.SaveChangesAsync();
+
+        }
         public async Task<List<GroupDTO>> GetGroups()
         {
             var groups = await _context.Groups.ToListAsync();
