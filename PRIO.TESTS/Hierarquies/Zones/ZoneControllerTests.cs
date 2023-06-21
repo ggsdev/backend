@@ -91,7 +91,8 @@ namespace PRIO.TESTS.Hierarquies.Zones
             Installation _installation1 = new()
             {
                 Name = "InstallationTest",
-                CodInstallationUep = "InstallationTest",
+                UepCod = "InstallationTest",
+                CodInstallation = "asdsa",
                 Cluster = _cluster1,
                 User = _user
             };
@@ -137,7 +138,8 @@ namespace PRIO.TESTS.Hierarquies.Zones
             Installation _installation1 = new()
             {
                 Name = "InstallationTest",
-                CodInstallationUep = "InstallationTest",
+                UepCod = "InstallationTest",
+                CodInstallation = "asdsa",
                 Cluster = _cluster1,
                 User = _user
             };
@@ -191,7 +193,8 @@ namespace PRIO.TESTS.Hierarquies.Zones
             Installation _installation1 = new()
             {
                 Name = "InstallationTest",
-                CodInstallationUep = "InstallationTest",
+                UepCod = "InstallationTest",
+                CodInstallation = "asdsa",
                 Cluster = _cluster1,
                 User = _user
             };
@@ -244,7 +247,8 @@ namespace PRIO.TESTS.Hierarquies.Zones
             Installation _installation1 = new()
             {
                 Name = "InstallationTest",
-                CodInstallationUep = "InstallationTest",
+                UepCod = "InstallationTest",
+                CodInstallation = "asdsa",
                 Cluster = _cluster1,
                 User = _user
             };
@@ -295,7 +299,8 @@ namespace PRIO.TESTS.Hierarquies.Zones
             Installation _installation1 = new()
             {
                 Name = "InstallationTest",
-                CodInstallationUep = "InstallationTest",
+                UepCod = "InstallationTest",
+                CodInstallation = "asdsa",
                 Cluster = _cluster1,
                 User = _user
             };
@@ -342,7 +347,8 @@ namespace PRIO.TESTS.Hierarquies.Zones
             Installation _installation1 = new()
             {
                 Name = "InstallationTest",
-                CodInstallationUep = "InstallationTest",
+                UepCod = "InstallationTest",
+                CodInstallation = "asdsa",
                 Cluster = _cluster1,
                 User = _user
             };

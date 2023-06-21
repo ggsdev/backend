@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,7 @@ namespace PRIO.TESTS.Files.XLS
         private string _pathXLS;
         private RequestXslxViewModel _viewModel;
         private User _user;
+        private IMapper _mapper;
 
         [SetUp]
         public void Setup()
@@ -30,6 +32,11 @@ namespace PRIO.TESTS.Files.XLS
             var projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\.."));
             var relativePath = Path.Combine("Files", "XLS", "base64Mock.txt");
             _pathXLS = Path.GetFullPath(Path.Combine(projectRoot, relativePath));
+
+            var mapperConfig = new MapperConfiguration(cfg =>
+            {
+            });
+            _mapper = mapperConfig.CreateMapper();
 
             _user = new User()
             {
@@ -46,7 +53,7 @@ namespace PRIO.TESTS.Files.XLS
             httpContext.Items["INSTANCE"] = "bravo";
             httpContext.Items["User"] = _user;
 
-            _controller = new XLSXController();
+            _controller = new XLSXController(_mapper);
             _controller.ControllerContext.HttpContext = httpContext;
             _viewModel = new RequestXslxViewModel
             {

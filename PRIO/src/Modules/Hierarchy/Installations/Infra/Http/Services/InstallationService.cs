@@ -39,7 +39,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                 Id = installationId,
                 Name = body.Name,
                 Description = body.Description,
-                UepCod = body.UepCode,
+                UepCod = body.UepCod,
                 CodInstallation = body.CodInstallation,
                 Cluster = clusterInDatabase,
                 User = user,

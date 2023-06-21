@@ -71,7 +71,8 @@ namespace PRIO.TESTS.Hierarquies.Fields
             _installation1 = new()
             {
                 Name = "testeInst",
-                CodInstallationUep = "codmocked",
+                UepCod = "codmocked",
+                CodInstallation = "asdsadsads",
                 User = _user,
                 Cluster = cluster,
             };
@@ -79,7 +80,8 @@ namespace PRIO.TESTS.Hierarquies.Fields
             _installation2 = new()
             {
                 Name = "testeInst2",
-                CodInstallationUep = "codmasdocked2",
+                UepCod = "codmasdocked2",
+                CodInstallation = "asdsadsads",
                 User = _user,
                 Cluster = cluster,
             };

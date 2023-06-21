@@ -87,6 +87,52 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             return wellDTO;
         }
 
+        //public async Task<PaginatedDataDTO<WellDTO>> GetWells(int pageNumber, int pageSize, string requestUrl)
+        //{
+        //    var totalCount = await _context.Wells.CountAsync();
+
+        //    var wells = await _context.Wells
+        //            .Include(x => x.User)
+        //            .Include(x => x.Completions)
+        //            .Include(x => x.Field)
+        //            .ThenInclude(f => f.Installation)
+        //            .ThenInclude(i => i.Cluster)
+        //            .OrderBy(x => x.Id)
+        //            .Skip((pageNumber - 1) * pageSize)
+        //            .Take(pageSize)
+        //            .ToListAsync();
+
+        //    var wellsDTO = _mapper.Map<List<Well>, List<WellDTO>>(wells);
+
+        //    var paginatedData = new PaginatedDataDTO<WellDTO>
+        //    {
+        //        Count = wellsDTO.Count,
+        //        Data = wellsDTO
+        //    };
+
+        //    var previousPageNumber = pageNumber > 1 ? pageNumber - 1 : 0;
+        //    var nextPageNumber = pageNumber * pageSize < totalCount ? pageNumber + 1 : 0;
+
+        //    var uriBuilder = new UriBuilder(requestUrl);
+        //    var queryParams = System.Web.HttpUtility.ParseQueryString(uriBuilder.Query);
+
+        //    if (previousPageNumber > 0)
+        //    {
+        //        queryParams.Set("pageNumber", previousPageNumber.ToString());
+        //        uriBuilder.Query = queryParams.ToString();
+        //        paginatedData.PreviousPage = uriBuilder.ToString();
+        //    }
+
+        //    if (nextPageNumber > 0)
+        //    {
+        //        queryParams.Set("pageNumber", nextPageNumber.ToString());
+        //        uriBuilder.Query = queryParams.ToString();
+        //        paginatedData.NextPage = uriBuilder.ToString();
+        //    }
+
+        //    return paginatedData;
+        //}
+
         public async Task<List<WellDTO>> GetWells()
         {
             var wells = await _context.Wells
@@ -117,7 +163,6 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             var wellDTO = _mapper.Map<Well, WellDTO>(well);
             return wellDTO;
         }
-
         public async Task<CreateUpdateWellDTO> UpdateWell(UpdateWellViewModel body, Guid id, User user)
         {
 

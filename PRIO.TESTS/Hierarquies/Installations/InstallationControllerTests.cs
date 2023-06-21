@@ -83,7 +83,8 @@ namespace PRIO.TESTS.Hierarquies.Installations
             _viewModel = new CreateInstallationViewModel
             {
                 Name = "InstallationTest",
-                CodInstallationUep = "InstallationTest",
+                UepCod = "InstallationTest",
+                CodInstallation = "asdsadsa",
                 ClusterId = _cluster1.Id,
             };
 
@@ -109,7 +110,7 @@ namespace PRIO.TESTS.Hierarquies.Installations
         //    _viewModel = new CreateInstallationViewModel
         //    {
         //        Name = "InstallationTest",
-        //        CodInstallationUep = "InstallationTest",
+        //        UepCod = "InstallationTest",
         //        ClusterId = _cluster1.Id,
         //    };
         //    await _controller.Create(_viewModel);
@@ -119,7 +120,7 @@ namespace PRIO.TESTS.Hierarquies.Installations
 
 
         //    Assert.IsInstanceOf<ConflictObjectResult>(response);
-        //    Assert.That(((ErrorResponseDTO)createdResult.Value).Message, Is.EqualTo($"Installation with code: {_viewModel.CodInstallationUep} already exists, try another code."));
+        //    Assert.That(((ErrorResponseDTO)createdResult.Value).Message, Is.EqualTo($"Installation with code: {_viewModel.UepCod} already exists, try another code."));
         //    Assert.That(createdResult.StatusCode, Is.EqualTo(409));
         //}
 
@@ -129,7 +130,8 @@ namespace PRIO.TESTS.Hierarquies.Installations
             _viewModel = new CreateInstallationViewModel
             {
                 Name = "InstallationTest",
-                CodInstallationUep = "InstallationTest",
+                UepCod = "InstallationTest",
+                CodInstallation = "asdsadsa",
             };
 
             var validationResults = new List<ValidationResult>();
@@ -164,7 +166,8 @@ namespace PRIO.TESTS.Hierarquies.Installations
 
             _viewModel = new CreateInstallationViewModel
             {
-                CodInstallationUep = "12312",
+                UepCod = "12312",
+                CodInstallation = "asdsadsa",
                 ClusterId = _cluster1.Id,
             };
 
@@ -198,7 +201,8 @@ namespace PRIO.TESTS.Hierarquies.Installations
             Installation _installation = new()
             {
                 Name = "InstallationTest",
-                CodInstallationUep = "InstallationTest",
+                UepCod = "InstallationTest",
+                CodInstallation = "asdsadsa",
                 Cluster = _cluster1
             };
             _context.Add(_installation);
@@ -207,7 +211,8 @@ namespace PRIO.TESTS.Hierarquies.Installations
             var _viewModel2 = new UpdateInstallationViewModel
             {
                 Name = "InstallationTest2",
-                CodInstallationUep = "InstallationTest2",
+                UepCod = "InstallationTest2",
+                CodInstallation = "asdsadsa",
                 ClusterId = _cluster1.Id,
             };
 
@@ -216,7 +221,7 @@ namespace PRIO.TESTS.Hierarquies.Installations
 
             Assert.IsInstanceOf<OkObjectResult>(response);
             Assert.That(((CreateUpdateInstallationDTO)createdResult.Value).Name, Is.EqualTo(_viewModel2.Name));
-            Assert.That(((CreateUpdateInstallationDTO)createdResult.Value).CodInstallationUep, Is.EqualTo(_viewModel2.CodInstallationUep));
+            Assert.That(((CreateUpdateInstallationDTO)createdResult.Value).UepCod, Is.EqualTo(_viewModel2.UepCod));
             Assert.That(createdResult.StatusCode, Is.EqualTo(200));
         }
 
@@ -234,7 +239,8 @@ namespace PRIO.TESTS.Hierarquies.Installations
             Installation _installation = new()
             {
                 Name = "InstallationTest",
-                CodInstallationUep = "InstallationTest",
+                UepCod = "InstallationTest",
+                CodInstallation = "asdsadsa",
                 Cluster = _cluster1
             };
             _context.Add(_installation);
@@ -265,7 +271,8 @@ namespace PRIO.TESTS.Hierarquies.Installations
             _viewModel = new CreateInstallationViewModel
             {
                 Name = "InstallationTest",
-                CodInstallationUep = "InstallationTest",
+                UepCod = "InstallationTest",
+                CodInstallation = "asdsadsa",
                 ClusterId = _cluster1.Id,
             };
 
@@ -278,7 +285,7 @@ namespace PRIO.TESTS.Hierarquies.Installations
             //Assert.That(history, Is.Not.Null);
             //Assert.That(history.Name, Is.EqualTo(installation.Name));
             //Assert.That(history.Cluster.Id, Is.EqualTo(installation.Cluster.Id));
-            //Assert.That(history.CodInstallationUep, Is.EqualTo(installation.CodInstallationUep));
+            //Assert.That(history.UepCod, Is.EqualTo(installation.UepCod));
 
             //Assert.That(history.TypeOperation, Is.EqualTo(Utils.TypeOperation.Create));
             //Assert.That(history.User, Is.Not.Null);
