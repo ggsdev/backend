@@ -4,6 +4,9 @@ namespace PRIO.src.Shared.SystemHistories.Interfaces
 {
     public interface ISystemHistoryRepository
     {
-        Task AddSystemHistory(SystemHistory history);
+        Task AddAsync(SystemHistory history);
+        Task<SystemHistory?> GetFirst(Guid id);
+        Task<SystemHistory?> GetLast(Guid id);
+        Task<List<SystemHistory>> GetAll(Guid id);
     }
 }

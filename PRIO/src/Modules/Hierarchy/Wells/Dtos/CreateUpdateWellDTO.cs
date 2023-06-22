@@ -1,6 +1,4 @@
-﻿using PRIO.src.Modules.ControlAccess.Users.Dtos;
-
-namespace PRIO.src.Modules.Hierarchy.Wells.Dtos
+﻿namespace PRIO.src.Modules.Hierarchy.Wells.Dtos
 {
     public class CreateUpdateWellDTO
     {
@@ -30,6 +28,5 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Dtos
         public string? Description { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public UserDTO? User { get; set; }
     }
 }

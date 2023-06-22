@@ -7,18 +7,33 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services;
+using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services;
+using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Repositories;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services;
+using PRIO.src.Modules.Hierarchy.Completions.Interfaces;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services;
+using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services;
+using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
+using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Repositories;
 using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services;
+using PRIO.src.Modules.Hierarchy.Reservoirs.Interfaces;
+using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories;
 using PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services;
+using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
+using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Repositories;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services;
+using PRIO.src.Modules.Hierarchy.Zones.Interfaces;
+using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services;
+using PRIO.src.Modules.Measuring.Equipments.Interfaces;
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.Infra.Http.Filters;
 using PRIO.src.Shared.Infra.Http.Middlewares;
 using PRIO.src.Shared.Infra.Http.Services;
+using PRIO.src.Shared.SystemHistories.Infra.EF.Repositories;
+using PRIO.src.Shared.SystemHistories.Interfaces;
 using PRIO.src.Shared.Utils.Binders;
 using PRIO.src.Shared.Utils.MappingProfiles;
 using System.Text;
@@ -84,6 +99,29 @@ static void ConfigureServices(IServiceCollection services)
     services.AddScoped<AuthorizationFilter>();
 
     services.AddScoped<TokenServices>();
+
+    #region Hierarchy Repositories
+    services.AddScoped<IFieldRepository, FieldRepository>();
+
+    services.AddScoped<ISystemHistoryRepository, SystemHistoryRepository>();
+
+    services.AddScoped<IClusterRepository, ClusterRepository>();
+
+    services.AddScoped<IInstallationRepository, InstallationRepository>();
+
+    services.AddScoped<IFieldRepository, FieldRepository>();
+
+    services.AddScoped<IZoneRepository, ZoneRepository>();
+
+    services.AddScoped<IReservoirRepository, ReservoirRepository>();
+
+    services.AddScoped<IWellRepository, WellRepository>();
+
+    services.AddScoped<IEquipmentRepository, EquipmentRepository>();
+
+    services.AddScoped<ICompletionRepository, CompletionRepository>();
+
+    #endregion
 
     #region Hierarchy Services
     services.AddScoped<ClusterService>();

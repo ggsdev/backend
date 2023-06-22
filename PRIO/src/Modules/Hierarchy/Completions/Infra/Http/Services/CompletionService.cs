@@ -1,42 +1,45 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Completions.Dtos;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Completions.Interfaces;
 using PRIO.src.Modules.Hierarchy.Completions.ViewModels;
+using PRIO.src.Modules.Hierarchy.Reservoirs.Interfaces;
+using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Shared.Errors;
-using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
+using PRIO.src.Shared.SystemHistories.Interfaces;
 using PRIO.src.Shared.Utils;
 
 namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
 {
     public class CompletionService
     {
-        private readonly DataContext _context;
         private readonly IMapper _mapper;
+        private readonly ICompletionRepository _completionRepository;
+        private readonly IWellRepository _wellRepository;
+        private readonly IReservoirRepository _reservoirRepository;
+        private readonly ISystemHistoryRepository _systemHistoryRepository;
 
-        public CompletionService(DataContext context, IMapper mapper)
+        public CompletionService(IMapper mapper, ICompletionRepository completionRepository, IWellRepository wellRepository, IReservoirRepository reservoirRepository, ISystemHistoryRepository systemHistoryRepository)
         {
-            _context = context;
             _mapper = mapper;
+            _completionRepository = completionRepository;
+            _wellRepository = wellRepository;
+            _reservoirRepository = reservoirRepository;
+            _systemHistoryRepository = systemHistoryRepository;
         }
 
         public async Task<CompletionDTO> CreateCompletion(CreateCompletionViewModel body, User user)
         {
-            var well = await _context.Wells
-              .Include(x => x.Field)
-              .FirstOrDefaultAsync(x => x.Id == body.WellId);
+            var well = await _wellRepository.GetWithFieldAsync(body.WellId);
 
             if (well is null)
                 throw new NotFoundException($"Well with id: {body.WellId} not found");
 
-            var reservoir = await _context.Reservoirs
-                .Include(x => x.Zone)
-                .ThenInclude(z => z.Field)
-                .FirstOrDefaultAsync(x => x.Id == body.ReservoirId);
+            var reservoir = await _reservoirRepository.GetWithZoneFieldAsync(body.ReservoirId);
 
             if (reservoir is null)
                 throw new NotFoundException($"Reservoir with id: {body.ReservoirId} not found");
@@ -44,8 +47,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             if (reservoir.Zone?.Field?.Id != well.Field?.Id)
                 throw new ConflictException($"Reservoir: {reservoir.Name} and Well: {well.Name} doesn't belong to the same Field");
 
-            var completion = await _context.Completions
-                .FirstOrDefaultAsync(x => x.Well.Id == well.Id && x.Reservoir.Id == reservoir.Id);
+            var completion = await _completionRepository.GetExistingCompletionAsync(well.Id, reservoir.Id);
 
             if (completion is not null)
                 throw new ConflictException($"Completion with name: {well.Name}_{reservoir.Zone?.CodZone} already exists.");
@@ -78,11 +80,11 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
                 CurrentData = currentData,
             };
 
-            await _context.SystemHistories.AddAsync(history);
+            await _systemHistoryRepository.AddAsync(history);
 
-            await _context.Completions.AddAsync(completion);
+            await _completionRepository.AddAsync(completion);
 
-            await _context.SaveChangesAsync();
+            await _completionRepository.SaveChangesAsync();
 
             var completionDTO = _mapper.Map<Completion, CompletionDTO>(completion);
 
@@ -91,11 +93,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
 
         public async Task<List<CompletionDTO>> GetCompletions()
         {
-            var completions = await _context.Completions
-                .Include(x => x.Well)
-                .Include(x => x.Reservoir)
-                .Include(x => x.User)
-                .ToListAsync();
+            var completions = await _completionRepository.GetAsync();
 
             var completionsDTO = _mapper.Map<List<Completion>, List<CompletionDTO>>(completions);
 
@@ -104,11 +102,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
 
         public async Task<CompletionDTO> GetCompletionById(Guid id)
         {
-            var completion = await _context.Completions
-                .Include(x => x.Well)
-                .Include(x => x.Reservoir)
-                .Include(x => x.User)
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var completion = await _completionRepository.GetByIdAsync(id);
 
             if (completion is null)
                 throw new NotFoundException("Completion not found");
@@ -119,23 +113,14 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
 
         public async Task<CompletionDTO> UpdateCompletion(UpdateCompletionViewModel body, Guid id, User user)
         {
-            var completion = await _context.Completions
-               .Include(x => x.Well)
-               .Include(x => x.Reservoir)
-               .ThenInclude(x => x.Zone)
-               .FirstOrDefaultAsync(x => x.Id == id);
+            var completion = await _completionRepository.GetWithWellReservoirZoneAsync(id);
 
             if (completion is null)
                 throw new NotFoundException("Completion not found");
 
-            var well = await _context.Wells
-                .Include(x => x.Field)
-                .FirstOrDefaultAsync(x => x.Id == body.WellId);
+            var well = await _wellRepository.GetWithFieldAsync(body.WellId);
 
-            var reservoir = await _context.Reservoirs
-                    .Include(x => x.Zone)
-                    .ThenInclude(z => z.Field)
-                    .FirstOrDefaultAsync(z => z.Id == body.ReservoirId);
+            var reservoir = await _reservoirRepository.GetWithZoneFieldAsync(body.ReservoirId);
 
             var beforeChangesCompletion = _mapper.Map<CompletionHistoryDTO>(completion);
 
@@ -185,12 +170,9 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
                 }
             }
 
-            _context.Completions.Update(completion);
+            _completionRepository.Update(completion);
 
-            var firstHistory = await _context.SystemHistories
-               .OrderBy(x => x.CreatedAt)
-               .Where(x => x.TableItemId == id)
-               .FirstOrDefaultAsync();
+            var firstHistory = await _systemHistoryRepository.GetFirst(id);
 
             var changedFields = UpdateFields.DictionaryToObject(updatedProperties);
 
@@ -209,9 +191,9 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
                 PreviousData = beforeChangesCompletion,
             };
 
-            await _context.SystemHistories.AddAsync(history);
+            await _systemHistoryRepository.AddAsync(history);
 
-            await _context.SaveChangesAsync();
+            await _completionRepository.SaveChangesAsync();
 
             var completionDTO = _mapper.Map<Completion, CompletionDTO>(completion);
             return completionDTO;
@@ -219,18 +201,12 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
 
         public async Task DeleteCompletion(Guid id, User user)
         {
-            var completion = await _context.Completions
-                .Include(x => x.Well)
-                .Include(x => x.Reservoir)
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var completion = await _completionRepository.GetOnlyCompletion(id);
 
             if (completion is null || !completion.IsActive)
                 throw new NotFoundException("Completion not found or inactive already");
 
-            var lastHistory = await _context.SystemHistories
-              .OrderBy(x => x.CreatedAt)
-              .Where(x => x.TableItemId == completion.Id)
-              .LastOrDefaultAsync();
+            var lastHistory = await _systemHistoryRepository.GetLast(id);
 
             completion.IsActive = false;
             completion.DeletedAt = DateTime.UtcNow;
@@ -255,26 +231,20 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
                 }
             };
 
-            await _context.SystemHistories.AddAsync(history);
+            await _systemHistoryRepository.AddAsync(history);
 
-            _context.Completions.Update(completion);
-            await _context.SaveChangesAsync();
+            _completionRepository.Update(completion);
+            await _completionRepository.SaveChangesAsync();
         }
 
         public async Task<CompletionDTO> RestoreCompletion(Guid id, User user)
         {
-            var completion = await _context.Completions
-                .Include(x => x.Well)
-                .Include(x => x.Reservoir)
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var completion = await _completionRepository.GetByIdAsync(id);
 
             if (completion is null || completion.IsActive is true)
                 throw new NotFoundException("Completion not found or inactive already");
 
-            var lastHistory = await _context.SystemHistories
-             .Where(x => x.TableItemId == completion.Id)
-             .OrderBy(x => x.CreatedAt)
-             .LastOrDefaultAsync();
+            var lastHistory = await _systemHistoryRepository.GetLast(id);
 
             completion.IsActive = true;
             completion.DeletedAt = null;
@@ -298,10 +268,10 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
                 }
             };
 
-            await _context.SystemHistories.AddAsync(history);
-            _context.Completions.Update(completion);
+            await _systemHistoryRepository.AddAsync(history);
+            _completionRepository.Update(completion);
 
-            await _context.SaveChangesAsync();
+            await _completionRepository.SaveChangesAsync();
 
             var completionDTO = _mapper.Map<Completion, CompletionDTO>(completion);
             return completionDTO;
@@ -309,10 +279,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
 
         public async Task<List<SystemHistory>> GetCompletionHistory(Guid id)
         {
-            var fieldHistories = await _context.SystemHistories
-                  .Where(x => x.TableItemId == id)
-                  .OrderByDescending(x => x.CreatedAt)
-                  .ToListAsync();
+            var fieldHistories = await _systemHistoryRepository.GetAll(id);
 
             if (fieldHistories is null)
                 throw new NotFoundException("Completion not found");

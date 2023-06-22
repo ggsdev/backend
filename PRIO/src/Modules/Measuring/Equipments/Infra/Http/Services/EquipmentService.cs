@@ -1,31 +1,37 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Measuring.Equipments.Dtos;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.Equipments.Interfaces;
 using PRIO.src.Modules.Measuring.Equipments.ViewModels;
 using PRIO.src.Shared.Errors;
-using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
+using PRIO.src.Shared.SystemHistories.Interfaces;
 using PRIO.src.Shared.Utils;
 
 namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
 {
     public class EquipmentService
     {
-        private readonly DataContext _context;
         private readonly IMapper _mapper;
+        private readonly IEquipmentRepository _equipmentRepository;
+        private readonly IInstallationRepository _installationRepository;
+        private readonly ISystemHistoryRepository _systemHistoryRepository;
+
         private readonly List<string> _fluidsAllowed = new()
         {
-                "gás","óleo","água"
-            };
+            "gás","óleo","água"
+        };
 
-        public EquipmentService(DataContext context, IMapper mapper)
+        public EquipmentService(IMapper mapper, IEquipmentRepository equipmentRepository, IInstallationRepository installationRepository, ISystemHistoryRepository systemHistoryRepository)
         {
-            _context = context;
             _mapper = mapper;
+            _equipmentRepository = equipmentRepository;
+            _installationRepository = installationRepository;
+            _systemHistoryRepository = systemHistoryRepository;
         }
 
         public async Task<MeasuringEquipmentDTO> CreateEquipment(CreateEquipmentViewModel body, User user)
@@ -33,8 +39,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
             if (body.Fluid is not null && !_fluidsAllowed.Contains(body.Fluid.ToLower()))
                 throw new BadRequestException("Fluids allowed are: gás, óleo, água");
 
-            var installationInDatabase = await _context.Installations
-                .FirstOrDefaultAsync(x => x.Id == body.InstallationId);
+            var installationInDatabase = await _installationRepository.GetByIdAsync(body.InstallationId);
 
             if (installationInDatabase is null)
                 throw new NotFoundException("Installation not found");
@@ -63,8 +68,9 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
             };
 
             var currentData = _mapper.Map<MeasuringEquipment, MeasuringEquipmentHistoryDTO>(equipment);
-            currentData.createdAt = DateTime.UtcNow;
-            currentData.updatedAt = DateTime.UtcNow;
+            var currentDate = DateTime.UtcNow;
+            currentData.createdAt = currentDate;
+            currentData.updatedAt = currentDate;
 
             var history = new SystemHistory
             {
@@ -75,10 +81,10 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
                 CurrentData = currentData,
             };
 
-            await _context.SystemHistories.AddAsync(history);
+            await _systemHistoryRepository.AddAsync(history);
 
-            await _context.MeasuringEquipments.AddAsync(equipment);
-            await _context.SaveChangesAsync();
+            await _equipmentRepository.AddAsync(equipment);
+            await _equipmentRepository.SaveChangesAsync();
 
             var equipmentDTO = _mapper.Map<MeasuringEquipment, MeasuringEquipmentDTO>(equipment);
             return equipmentDTO;
@@ -86,8 +92,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
 
         public async Task<List<MeasuringEquipmentDTO>> GetEquipments()
         {
-            var equipments = await _context.MeasuringEquipments
-                .ToListAsync();
+            var equipments = await _equipmentRepository.GetAsync();
 
             var equipmentsDTO = _mapper.Map<List<MeasuringEquipment>, List<MeasuringEquipmentDTO>>(equipments);
             return equipmentsDTO;
@@ -95,8 +100,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
 
         public async Task<MeasuringEquipmentDTO> GetEquipmentById(Guid id)
         {
-            var equipment = await _context.MeasuringEquipments
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var equipment = await _equipmentRepository.GetByIdAsync(id);
 
             if (equipment is null)
                 throw new NotFoundException("Equipment not found");
@@ -108,9 +112,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
 
         public async Task<MeasuringEquipmentDTO> UpdateEquipment(UpdateEquipmentViewModel body, Guid id, User user)
         {
-            var equipment = _context.MeasuringEquipments
-                .Include(x => x.Installation)
-                .FirstOrDefault(x => x.Id == id);
+            var equipment = await _equipmentRepository.GetByIdAsync(id);
 
             if (equipment is null)
                 throw new NotFoundException("Equipment not found");
@@ -127,8 +129,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
 
             if (body.InstallationId is not null)
             {
-                var installationInDatabase = await _context.Installations
-                .FirstOrDefaultAsync(x => x.Id == body.InstallationId);
+                var installationInDatabase = await _installationRepository.GetByIdAsync(body.InstallationId);
 
                 if (installationInDatabase is null)
                     throw new NotFoundException("Installation not found");
@@ -137,12 +138,9 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
                 updatedProperties[nameof(MeasuringEquipmentHistoryDTO.installationId)] = installationInDatabase.Id;
             }
 
-            _context.MeasuringEquipments.Update(equipment);
+            _equipmentRepository.Update(equipment);
 
-            var firstHistory = await _context.SystemHistories
-              .OrderBy(x => x.CreatedAt)
-              .Where(x => x.TableItemId == id)
-              .FirstOrDefaultAsync();
+            var firstHistory = await _systemHistoryRepository.GetFirst(id);
 
             var changedFields = UpdateFields.DictionaryToObject(updatedProperties);
 
@@ -161,9 +159,9 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
                 PreviousData = beforeChangesEquipment,
             };
 
-            await _context.SystemHistories.AddAsync(history);
+            await _systemHistoryRepository.AddAsync(history);
 
-            await _context.SaveChangesAsync();
+            await _equipmentRepository.SaveChangesAsync();
 
             var equipmentDTO = _mapper.Map<MeasuringEquipment, MeasuringEquipmentDTO>(equipment);
 
@@ -172,14 +170,12 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
 
         public async Task DeleteEquipment(Guid id, User user)
         {
-            var equipment = _context.MeasuringEquipments.FirstOrDefault(x => x.Id == id);
+            var equipment = await _equipmentRepository.GetByIdAsync(id);
+
             if (equipment is null || equipment.IsActive is false)
                 throw new NotFoundException("Equipment not found or inactive already");
 
-            var lastHistory = await _context.SystemHistories
-               .OrderBy(x => x.CreatedAt)
-               .Where(x => x.TableItemId == equipment.Id)
-               .LastOrDefaultAsync();
+            var lastHistory = await _systemHistoryRepository.GetLast(id);
 
             equipment.IsActive = false;
             equipment.DeletedAt = DateTime.UtcNow;
@@ -204,21 +200,20 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
                 }
             };
 
-            await _context.SystemHistories.AddAsync(history);
-            _context.MeasuringEquipments.Update(equipment);
-            await _context.SaveChangesAsync();
+            await _systemHistoryRepository.AddAsync(history);
+            _equipmentRepository.Update(equipment);
+
+            await _equipmentRepository.SaveChangesAsync();
         }
 
         public async Task<MeasuringEquipmentDTO> RestoreEquipment(Guid id, User user)
         {
-            var equipment = _context.MeasuringEquipments.FirstOrDefault(x => x.Id == id);
-            if (equipment is null || equipment.IsActive)
+            var equipment = await _equipmentRepository.GetByIdAsync(id);
+
+            if (equipment is null || equipment.IsActive is true)
                 throw new NotFoundException("Equipment not found or active already");
 
-            var lastHistory = await _context.SystemHistories
-              .Where(x => x.TableItemId == equipment.Id)
-              .OrderBy(x => x.CreatedAt)
-              .LastOrDefaultAsync();
+            var lastHistory = await _systemHistoryRepository.GetLast(id);
 
             equipment.IsActive = true;
             equipment.DeletedAt = null;
@@ -242,10 +237,10 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
                 }
             };
 
-            await _context.SystemHistories.AddAsync(history);
+            await _systemHistoryRepository.AddAsync(history);
 
-            _context.MeasuringEquipments.Update(equipment);
-            await _context.SaveChangesAsync();
+            _equipmentRepository.Update(equipment);
+            await _equipmentRepository.SaveChangesAsync();
 
             var equipmentDTO = _mapper.Map<MeasuringEquipment, MeasuringEquipmentDTO>(equipment);
             return equipmentDTO;
@@ -253,10 +248,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
 
         public async Task<List<SystemHistory>> GetEquipmentHistory(Guid id)
         {
-            var equipmentHistories = await _context.SystemHistories
-                  .Where(x => x.TableItemId == id)
-                  .OrderByDescending(x => x.CreatedAt)
-                  .ToListAsync();
+            var equipmentHistories = await _systemHistoryRepository.GetAll(id);
 
             if (equipmentHistories is null)
                 throw new NotFoundException("Measuring Equipment not found");

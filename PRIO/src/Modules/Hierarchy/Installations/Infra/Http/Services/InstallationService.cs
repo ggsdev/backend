@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces;
 using PRIO.src.Modules.Hierarchy.Installations.Dtos;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
@@ -19,18 +19,20 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
         private readonly IMapper _mapper;
         private readonly IInstallationRepository _installationRepository;
         private readonly ISystemHistoryRepository _systemHistoryRepository;
+        private readonly IClusterRepository _clusterRespository;
 
-        public InstallationService(IMapper mapper, IInstallationRepository installationRepository, ISystemHistoryRepository systemHistoryRepository)
+        public InstallationService(IMapper mapper, IInstallationRepository installationRepository, ISystemHistoryRepository systemHistoryRepository, IClusterRepository clusterRepository)
         {
             _mapper = mapper;
             _installationRepository = installationRepository;
             _systemHistoryRepository = systemHistoryRepository;
+            _clusterRespository = clusterRepository;
         }
 
         public async Task<CreateUpdateInstallationDTO> CreateInstallation(CreateInstallationViewModel body, User user)
         {
-            var clusterInDatabase = await _context.Clusters
-               .FirstOrDefaultAsync(x => x.Id == body.ClusterId);
+            var clusterInDatabase = await _clusterRespository
+               .GetClusterByIdAsync(body.ClusterId);
 
             if (clusterInDatabase is null)
                 throw new NotFoundException("Cluster not found");
@@ -49,7 +51,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                 IsActive = body.IsActive is not null ? body.IsActive.Value : true,
             };
 
-            await _context.Installations.AddAsync(installation);
+            await _installationRepository.AddAsync(installation);
 
             var currentData = _mapper.Map<Installation, InstallationHistoryDTO>(installation);
             currentData.createdAt = DateTime.UtcNow;
@@ -64,9 +66,9 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                 CurrentData = currentData,
             };
 
-            await _context.SystemHistories.AddAsync(history);
+            await _systemHistoryRepository.AddAsync(history);
 
-            await _context.SaveChangesAsync();
+            await _installationRepository.SaveChangesAsync();
 
             var installationDTO = _mapper.Map<Installation, CreateUpdateInstallationDTO>(installation);
 
@@ -75,10 +77,8 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
 
         public async Task<List<InstallationDTO>> GetInstallations()
         {
-            var installations = await _context.Installations
-                .Include(x => x.Cluster)
-                .Include(x => x.User)
-                .ToListAsync();
+            var installations = await _installationRepository
+                .GetAsync();
 
             var installationsDTO = _mapper.Map<List<Installation>, List<InstallationDTO>>(installations);
             return installationsDTO;
@@ -86,10 +86,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
 
         public async Task<InstallationDTO> GetInstallationById(Guid id)
         {
-            var installation = await _context.Installations
-                 .Include(x => x.User)
-                 .Include(x => x.Cluster)
-                 .FirstOrDefaultAsync(x => x.Id == id);
+            var installation = await _installationRepository.GetByIdAsync(id);
 
             if (installation is null)
                 throw new NotFoundException("Installation not found");
@@ -101,9 +98,8 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
 
         public async Task<CreateUpdateInstallationDTO> UpdateInstallation(UpdateInstallationViewModel body, Guid id, User user)
         {
-            var installation = await _context.Installations
-                .Include(x => x.Cluster)
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var installation = await _installationRepository
+                .GetByIdAsync(id);
 
             if (installation is null)
                 throw new NotFoundException("Installation not found");
@@ -117,8 +113,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
 
             if (body?.ClusterId is not null)
             {
-                var clusterInDatabase = await _context.Clusters
-              .FirstOrDefaultAsync(x => x.Id == body.ClusterId);
+                var clusterInDatabase = await _clusterRespository.GetClusterByIdAsync(body.ClusterId);
 
                 if (clusterInDatabase is null)
                     throw new NotFoundException("Cluster not found");
@@ -127,12 +122,9 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                 updatedProperties[nameof(InstallationHistoryDTO.clusterId)] = clusterInDatabase.Id;
             }
 
-            _context.Installations.Update(installation);
+            _installationRepository.Update(installation);
 
-            var firstHistory = await _context.SystemHistories
-               .OrderBy(x => x.CreatedAt)
-               .Where(x => x.TableItemId == id)
-               .FirstOrDefaultAsync();
+            var firstHistory = await _systemHistoryRepository.GetFirst(id);
 
             var changedFields = UpdateFields.DictionaryToObject(updatedProperties);
 
@@ -151,9 +143,9 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                 PreviousData = beforeChangesInstallation,
             };
 
-            await _context.SystemHistories.AddAsync(history);
+            await _systemHistoryRepository.AddAsync(history);
 
-            await _context.SaveChangesAsync();
+            await _installationRepository.SaveChangesAsync();
 
             var installationDTO = _mapper.Map<Installation, CreateUpdateInstallationDTO>(installation);
 
@@ -162,17 +154,13 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
 
         public async Task DeleteInstallation(Guid id, User user)
         {
-            var installation = await _context.Installations
-                .Include(x => x.Cluster)
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var installation = await _installationRepository
+                .GetByIdAsync(id);
 
             if (installation is null || installation.IsActive is false)
                 throw new NotFoundException("Installation not found or inactive already");
 
-            var lastHistory = await _context.SystemHistories
-                .OrderBy(x => x.CreatedAt)
-                .Where(x => x.TableItemId == installation.Id)
-                .LastOrDefaultAsync();
+            var lastHistory = await _systemHistoryRepository.GetLast(id);
 
             installation.IsActive = false;
             installation.DeletedAt = DateTime.UtcNow;
@@ -196,26 +184,22 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                     installation.DeletedAt,
                 }
             };
-            await _context.SystemHistories.AddAsync(history);
 
-            _context.Installations.Update(installation);
+            await _systemHistoryRepository.AddAsync(history);
 
-            await _context.SaveChangesAsync();
+            _installationRepository.Update(installation);
+
+            await _installationRepository.SaveChangesAsync();
         }
 
         public async Task<CreateUpdateInstallationDTO> RestoreInstallation(Guid id, User user)
         {
-            var installation = await _context.Installations
-               .Include(x => x.User)
-               .FirstOrDefaultAsync(x => x.Id == id);
+            var installation = await _installationRepository.GetByIdAsync(id);
 
             if (installation is null || installation.IsActive is true)
                 throw new NotFoundException("Installation not found or active already");
 
-            var lastHistory = await _context.SystemHistories
-               .Where(x => x.TableItemId == installation.Id)
-               .OrderBy(x => x.CreatedAt)
-               .LastOrDefaultAsync();
+            var lastHistory = await _systemHistoryRepository.GetLast(id);
 
             installation.IsActive = true;
             installation.DeletedAt = null;
@@ -239,11 +223,11 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                 }
             };
 
-            await _context.SystemHistories.AddAsync(history);
+            await _systemHistoryRepository.AddAsync(history);
 
-            _context.Installations.Update(installation);
+            _installationRepository.Update(installation);
 
-            await _context.SaveChangesAsync();
+            await _installationRepository.SaveChangesAsync();
 
             var installationDTO = _mapper.Map<Installation, CreateUpdateInstallationDTO>(installation);
 
@@ -252,10 +236,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
 
         public async Task<List<SystemHistory>> GetInstallationHistory(Guid id, User user)
         {
-            var installationHistories = await _context.SystemHistories
-                 .Where(x => x.TableItemId == id)
-                 .OrderByDescending(x => x.CreatedAt)
-                 .ToListAsync();
+            var installationHistories = await _systemHistoryRepository.GetAll(id);
 
             if (installationHistories is null)
                 throw new NotFoundException("Installation not found");

@@ -1,13 +1,15 @@
 ﻿using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
-using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Hierarchy.Installations.Interfaces
 {
     public interface IInstallationRepository
     {
-        Task AddInstallationAsync(Installation installation);
-        Task<Installation?> GetInstallationByIdAsync(Guid id);
-        Task AddSystemHistoryAsync(SystemHistory history);
+        Task AddAsync(Installation installation);
+        void Update(Installation installation);
+        void Delete(Installation installation);
+        void Restore(Installation installation);
+        Task<Installation?> GetByIdAsync(Guid? id);
+        Task<List<Installation>> GetAsync();
         Task SaveChangesAsync();
     }
 }

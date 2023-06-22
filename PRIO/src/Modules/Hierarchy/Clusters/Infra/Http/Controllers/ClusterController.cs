@@ -87,12 +87,12 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Controllers
             return Ok(clusterDTO);
         }
 
-        [HttpGet("{id}/history")]
-        public async Task<IActionResult> GetHistory([FromRoute] Guid id)
-        {
-            var clusterHistories = await _clusterService.GetClusterHistory(id);
+        //[HttpGet("{id}/history")]
+        //public async Task<IActionResult> GetHistory([FromRoute] Guid id)
+        //{
+        //    var clusterHistories = await _clusterService.GetClusterHistory(id);
 
-            return Ok(clusterHistories);
-        }
+        //    return Ok(clusterHistories);
+        //}
     }
 }
