@@ -39,7 +39,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                 CodCluster = body.CodCluster is not null ? body.CodCluster : GenerateCode.Generate(body.Name)
             };
 
-            await _clusterRepository.AddAsync(cluster);
+            await _clusterRepository.AddClusterAsync(cluster);
 
             //var currentData = _mapper.Map<Cluster, ClusterHistoryDTO>(cluster);
             //currentData.createdAt = DateTime.UtcNow;
