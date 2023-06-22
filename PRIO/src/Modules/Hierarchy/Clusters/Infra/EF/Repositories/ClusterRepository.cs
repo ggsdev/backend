@@ -25,19 +25,17 @@ public class ClusterRepository : IClusterRepository
     {
         return await _context.Clusters.Include(x => x.User).ToListAsync();
     }
-    public async Task UpdateClusterAsync(Cluster cluster)
-    {
-        _context.Clusters.Update(cluster);
-        await _context.SaveChangesAsync();
-    }
-    public async Task DeleteClusterAsync(Cluster cluster)
+    public void UpdateCluster(Cluster cluster)
     {
         _context.Clusters.Update(cluster);
     }
-    public async Task RestoreClusterAsync(Cluster cluster)
+    public void DeleteCluster(Cluster cluster)
     {
         _context.Clusters.Update(cluster);
-        await _context.SaveChangesAsync();
+    }
+    public void RestoreCluster(Cluster cluster)
+    {
+        _context.Clusters.Update(cluster);
     }
     public async Task SaveChangesAsync()
     {

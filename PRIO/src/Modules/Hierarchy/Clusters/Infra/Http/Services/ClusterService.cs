@@ -90,12 +90,12 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
 
             var beforeChangesCluster = _mapper.Map<ClusterHistoryDTO>(cluster);
 
-            var updatedProperties = UpdateFields.CompareAndUpdateCluster(cluster, body);
+            var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(cluster, body);
 
             if (updatedProperties.Any() is false)
                 throw new BadRequestException("This cluster already has these values, try to update to other values.");
 
-            await _clusterRepository.UpdateClusterAsync(cluster);
+            _clusterRepository.UpdateCluster(cluster);
 
             //var firstHistory = await _context.SystemHistories
             //    .OrderBy(x => x.CreatedAt)
@@ -164,7 +164,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
 
             //await _context.SystemHistories.AddAsync(history);
 
-            await _clusterRepository.DeleteClusterAsync(cluster);
+            _clusterRepository.DeleteCluster(cluster);
 
             await _clusterRepository.SaveChangesAsync();
         }
@@ -205,7 +205,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
 
             //await _context.SystemHistories.AddAsync(history);
 
-            await _clusterRepository.RestoreClusterAsync(cluster);
+            _clusterRepository.RestoreCluster(cluster);
             await _clusterRepository.SaveChangesAsync();
 
             var clusterDTO = _mapper.Map<Cluster, ClusterDTO>(cluster);

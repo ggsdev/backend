@@ -7,10 +7,9 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces
         Task AddClusterAsync(Cluster cluster);
         Task<Cluster?> GetClusterByIdAsync(Guid id);
         Task<List<Cluster>> GetAllClustersAsync();
-        Task UpdateClusterAsync(Cluster cluster);
-        Task DeleteClusterAsync(Cluster cluster);
-        Task RestoreClusterAsync(Cluster cluster);
+        void UpdateCluster(Cluster cluster);
+        void DeleteCluster(Cluster cluster);
+        void RestoreCluster(Cluster cluster);
         Task SaveChangesAsync();
-
     }
 }

@@ -5,8 +5,24 @@ using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.Dtos;
 using PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers;
+using PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XLSX.ViewModels;
+using PRIO.src.Modules.Hierarchy.Clusters.Dtos;
+using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Completions.Dtos;
+using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Fields.Dtos;
+using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Installations.Dtos;
+using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Reservoirs.Dtos;
+using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Wells.Dtos;
+using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Zones.Dtos;
+using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF;
+using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 
 namespace PRIO.TESTS.Files.XLS
 {
@@ -19,6 +35,7 @@ namespace PRIO.TESTS.Files.XLS
         private RequestXslxViewModel _viewModel;
         private User _user;
         private IMapper _mapper;
+        private XLSXService _service;
 
         [SetUp]
         public void Setup()
@@ -35,6 +52,28 @@ namespace PRIO.TESTS.Files.XLS
 
             var mapperConfig = new MapperConfiguration(cfg =>
             {
+                cfg.CreateMap<Cluster, ClusterHistoryDTO>();
+                cfg.CreateMap<Cluster, ClusterDTO>();
+
+                cfg.CreateMap<Installation, InstallationHistoryDTO>();
+                cfg.CreateMap<Installation, InstallationDTO>();
+
+                cfg.CreateMap<Field, FieldHistoryDTO>();
+                cfg.CreateMap<Field, FieldDTO>();
+
+                cfg.CreateMap<Well, WellHistoryDTO>();
+                cfg.CreateMap<Well, WellDTO>();
+
+                cfg.CreateMap<Reservoir, ReservoirHistoryDTO>();
+                cfg.CreateMap<Reservoir, ReservoirDTO>();
+
+                cfg.CreateMap<Zone, ZoneHistoryDTO>();
+                cfg.CreateMap<Zone, ZoneDTO>();
+
+                cfg.CreateMap<Completion, CompletionHistoryDTO>();
+                cfg.CreateMap<Completion, CompletionDTO>();
+
+
             });
             _mapper = mapperConfig.CreateMapper();
 
@@ -53,7 +92,9 @@ namespace PRIO.TESTS.Files.XLS
             httpContext.Items["INSTANCE"] = "bravo";
             httpContext.Items["User"] = _user;
 
-            _controller = new XLSXController(_mapper);
+            _service = new XLSXService(_mapper, _context);
+
+            _controller = new XLSXController(_service);
             _controller.ControllerContext.HttpContext = httpContext;
             _viewModel = new RequestXslxViewModel
             {
@@ -71,7 +112,7 @@ namespace PRIO.TESTS.Files.XLS
         [Test]
         public async Task FilesReturnCreatedAndMessageWhenSuccesfully()
         {
-            var result = await _controller.PostBase64File(_viewModel, _context);
+            var result = await _controller.PostBase64File(_viewModel);
             var createdResult = (CreatedResult)result;
 
             Assert.IsInstanceOf<CreatedResult>(result);
@@ -105,7 +146,8 @@ namespace PRIO.TESTS.Files.XLS
         [Test]
         public async Task ClustersSuccesfullyCreated()
         {
-            await _controller.PostBase64File(_viewModel, _context);
+            var result = await _controller.PostBase64File(_viewModel);
+
 
             var clusters = await _context.Clusters.Include(x => x.User).ToListAsync();
 
@@ -126,7 +168,8 @@ namespace PRIO.TESTS.Files.XLS
         [Test]
         public async Task InstallationsSuccesfullyCreated()
         {
-            await _controller.PostBase64File(_viewModel, _context);
+            var result = await _controller.PostBase64File(_viewModel);
+
 
             var installations = await _context.Installations.Include(x => x.Cluster).Include(x => x.User).ToListAsync();
 
@@ -159,7 +202,8 @@ namespace PRIO.TESTS.Files.XLS
         [Test]
         public async Task FieldsSuccesfullyCreated()
         {
-            await _controller.PostBase64File(_viewModel, _context);
+            var result = await _controller.PostBase64File(_viewModel);
+
 
             var fields = await _context.Fields.Include(x => x.Installation).Include(x => x.User).ToListAsync();
 
@@ -198,7 +242,8 @@ namespace PRIO.TESTS.Files.XLS
         [Test]
         public async Task ZonesSuccesfullyCreated()
         {
-            await _controller.PostBase64File(_viewModel, _context);
+            var result = await _controller.PostBase64File(_viewModel);
+
 
             var zones = await _context.Zones.Include(x => x.Field).Include(x => x.User).ToListAsync();
 
@@ -231,7 +276,8 @@ namespace PRIO.TESTS.Files.XLS
         [Test]
         public async Task ReservoirsSuccesfullyCreated()
         {
-            await _controller.PostBase64File(_viewModel, _context);
+            var result = await _controller.PostBase64File(_viewModel);
+
 
             var reservoirs = await _context.Reservoirs.Include(x => x.Zone).Include(x => x.User).ToListAsync();
 
@@ -264,7 +310,8 @@ namespace PRIO.TESTS.Files.XLS
         [Test]
         public async Task WellsSuccesfullyCreated()
         {
-            await _controller.PostBase64File(_viewModel, _context);
+            var result = await _controller.PostBase64File(_viewModel);
+
 
             var wells = await _context.Wells.Include(x => x.Field).Include(x => x.User).ToListAsync();
 
@@ -439,29 +486,26 @@ namespace PRIO.TESTS.Files.XLS
             Assert.That(well74281029209.Field.Name?.ToUpper(), Is.EqualTo(Mock._fieldPolvo));
 
             Assert.That(well74281029222, Is.Not.Null);
-            Assert.Multiple(() =>
-            {
-                Assert.That(well74281029222.Name, Is.EqualTo(Mock._well74281029222.Name));
-                Assert.That(well74281029222.WellOperatorName, Is.EqualTo(Mock._well74281029222.WellOperatorName));
-                Assert.That(well74281029222.CodWellAnp, Is.EqualTo(Mock._well74281029222.CodWellAnp));
-                Assert.That(well74281029222.CategoryAnp, Is.EqualTo(Mock._well74281029222.CategoryAnp));
-                Assert.That(well74281029222.CategoryReclassificationAnp, Is.EqualTo(Mock._well74281029222.CategoryReclassificationAnp));
-                Assert.That(well74281029222.CategoryOperator, Is.EqualTo(Mock._well74281029222.CategoryOperator));
-                Assert.That(well74281029222.StatusOperator, Is.EqualTo(Mock._well74281029222.StatusOperator));
-                Assert.That(well74281029222.Type, Is.EqualTo(Mock._well74281029222.Type));
-                Assert.That(well74281029222.WaterDepth, Is.EqualTo(Mock._well74281029222.WaterDepth));
-                Assert.That(well74281029222.TopOfPerforated, Is.EqualTo(Mock._well74281029222.TopOfPerforated));
-                Assert.That(well74281029222.BaseOfPerforated, Is.EqualTo(Mock._well74281029222.BaseOfPerforated));
-                Assert.That(well74281029222.ArtificialLift, Is.EqualTo(Mock._well74281029222.ArtificialLift));
-                Assert.That(well74281029222.Latitude4C, Is.EqualTo(Mock._well74281029222.Latitude4C));
-                Assert.That(well74281029222.Longitude4C, Is.EqualTo(Mock._well74281029222.Longitude4C));
-                Assert.That(well74281029222.LatitudeDD, Is.EqualTo(Mock._well74281029222.LatitudeDD));
-                Assert.That(well74281029222.LongitudeDD, Is.EqualTo(Mock._well74281029222.LongitudeDD));
-                Assert.That(well74281029222.DatumHorizontal, Is.EqualTo(Mock._well74281029222.DatumHorizontal));
-                Assert.That(well74281029222.TypeBaseCoordinate, Is.EqualTo(Mock._well74281029222.TypeBaseCoordinate));
-                Assert.That(well74281029222.CoordX, Is.EqualTo(Mock._well74281029222.CoordX));
-                Assert.That(well74281029222.CoordY, Is.EqualTo(Mock._well74281029222.CoordY));
-            });
+            Assert.That(well74281029222.Name, Is.EqualTo(Mock._well74281029222.Name));
+            Assert.That(well74281029222.WellOperatorName, Is.EqualTo(Mock._well74281029222.WellOperatorName));
+            Assert.That(well74281029222.CodWellAnp, Is.EqualTo(Mock._well74281029222.CodWellAnp));
+            Assert.That(well74281029222.CategoryAnp, Is.EqualTo(Mock._well74281029222.CategoryAnp));
+            Assert.That(well74281029222.CategoryReclassificationAnp, Is.EqualTo(Mock._well74281029222.CategoryReclassificationAnp));
+            Assert.That(well74281029222.CategoryOperator, Is.EqualTo(Mock._well74281029222.CategoryOperator));
+            Assert.That(well74281029222.StatusOperator, Is.EqualTo(Mock._well74281029222.StatusOperator));
+            Assert.That(well74281029222.Type, Is.EqualTo(Mock._well74281029222.Type));
+            Assert.That(well74281029222.WaterDepth, Is.EqualTo(Mock._well74281029222.WaterDepth));
+            Assert.That(well74281029222.TopOfPerforated, Is.EqualTo(Mock._well74281029222.TopOfPerforated));
+            Assert.That(well74281029222.BaseOfPerforated, Is.EqualTo(Mock._well74281029222.BaseOfPerforated));
+            Assert.That(well74281029222.ArtificialLift, Is.EqualTo(Mock._well74281029222.ArtificialLift));
+            Assert.That(well74281029222.Latitude4C, Is.EqualTo(Mock._well74281029222.Latitude4C));
+            Assert.That(well74281029222.Longitude4C, Is.EqualTo(Mock._well74281029222.Longitude4C));
+            Assert.That(well74281029222.LatitudeDD, Is.EqualTo(Mock._well74281029222.LatitudeDD));
+            Assert.That(well74281029222.LongitudeDD, Is.EqualTo(Mock._well74281029222.LongitudeDD));
+            Assert.That(well74281029222.DatumHorizontal, Is.EqualTo(Mock._well74281029222.DatumHorizontal));
+            Assert.That(well74281029222.TypeBaseCoordinate, Is.EqualTo(Mock._well74281029222.TypeBaseCoordinate));
+            Assert.That(well74281029222.CoordX, Is.EqualTo(Mock._well74281029222.CoordX));
+            Assert.That(well74281029222.CoordY, Is.EqualTo(Mock._well74281029222.CoordY));
             Assert.That(well74281029222.User, Is.Not.Null);
             Assert.That(well74281029222.User.Name, Is.EqualTo(_user.Name));
             Assert.That(well74281029222.Field, Is.Not.Null);
@@ -617,7 +661,7 @@ namespace PRIO.TESTS.Files.XLS
         [Test]
         public async Task CompletionsSuccesfullyCreated()
         {
-            await _controller.PostBase64File(_viewModel, _context);
+            await _controller.PostBase64File(_viewModel);
 
             var completions = await _context.Completions.Include(x => x.Well).Include(x => x.Reservoir).Include(x => x.User).ToListAsync();
 

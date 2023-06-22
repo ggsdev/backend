@@ -100,7 +100,10 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
                 .ForMember(dest => dest.TopOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.TopOfPerforated)))
                 .ForMember(dest => dest.BaseOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.BaseOfPerforated)));
             CreateMap<Well, WellHistoryDTO>();
-            CreateMap<Well, CreateUpdateWellDTO>();
+            CreateMap<Well, CreateUpdateWellDTO>()
+                .ForMember(dest => dest.WaterDepth, opt => opt.MapFrom(src => TruncateTwoDecimals(src.WaterDepth)))
+                .ForMember(dest => dest.TopOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.TopOfPerforated)))
+                .ForMember(dest => dest.BaseOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.BaseOfPerforated)));
 
             CreateMap<Completion, CompletionDTO>();
             CreateMap<Completion, CompletionHistoryDTO>();

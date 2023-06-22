@@ -1,33 +1,37 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Hierarchy.Wells.Dtos;
 using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Modules.Hierarchy.Wells.ViewModels;
 using PRIO.src.Shared.Errors;
-using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
+using PRIO.src.Shared.SystemHistories.Interfaces;
 using PRIO.src.Shared.Utils;
 
 namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
 {
     public class WellService
     {
-        private readonly DataContext _context;
         private readonly IMapper _mapper;
+        private readonly IFieldRepository _fieldRepository;
+        private readonly ISystemHistoryRepository _systemRepository;
+        private readonly IWellRepository _wellRepository;
 
-        public WellService(DataContext context, IMapper mapper)
+        public WellService(IMapper mapper, IFieldRepository fieldRepository, ISystemHistoryRepository systemHistoryRepository, IWellRepository wellRepository)
         {
-            _context = context;
             _mapper = mapper;
+            _fieldRepository = fieldRepository;
+            _systemRepository = systemHistoryRepository;
+            _wellRepository = wellRepository;
         }
 
         public async Task<CreateUpdateWellDTO> CreateWell(CreateWellViewModel body, User user)
         {
-            var field = await _context.Fields
-               .FirstOrDefaultAsync(x => x.Id == body.FieldId);
+            var field = await _fieldRepository.GetOnlyField(body.FieldId);
 
             if (field is null)
                 throw new NotFoundException("Field not found");
@@ -64,11 +68,12 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
                 IsActive = body.IsActive is not null ? body.IsActive.Value : true,
             };
 
-            await _context.Wells.AddAsync(well);
+            await _wellRepository.AddAsync(well);
 
             var currentData = _mapper.Map<Well, WellHistoryDTO>(well);
-            currentData.createdAt = DateTime.UtcNow;
-            currentData.updatedAt = DateTime.UtcNow;
+            var dataCurrent = DateTime.UtcNow;
+            currentData.createdAt = dataCurrent;
+            currentData.updatedAt = dataCurrent;
 
             var history = new SystemHistory
             {
@@ -79,9 +84,9 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
                 CurrentData = currentData,
             };
 
-            await _context.SystemHistories.AddAsync(history);
+            await _systemRepository.AddAsync(history);
 
-            await _context.SaveChangesAsync();
+            await _wellRepository.SaveChangesAsync();
 
             var wellDTO = _mapper.Map<Well, CreateUpdateWellDTO>(well);
             return wellDTO;
@@ -135,13 +140,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
 
         public async Task<List<WellDTO>> GetWells()
         {
-            var wells = await _context.Wells
-                    .Include(x => x.User)
-                    .Include(x => x.Completions)
-                    .Include(x => x.Field)
-                    .ThenInclude(f => f.Installation)
-                    .ThenInclude(i => i.Cluster)
-                    .ToListAsync();
+            var wells = await _wellRepository.GetAsync();
 
             var wellsDTO = _mapper.Map<List<Well>, List<WellDTO>>(wells);
             return wellsDTO;
@@ -149,13 +148,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
 
         public async Task<WellDTO> GetWellById(Guid id)
         {
-            var well = await _context.Wells
-               .Include(x => x.User)
-                .Include(x => x.Completions)
-                .Include(x => x.Field)
-                .ThenInclude(f => f.Installation)
-                .ThenInclude(i => i.Cluster)
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var well = await _wellRepository.GetByIdAsync(id);
 
             if (well is null)
                 throw new NotFoundException("Well not found");
@@ -165,26 +158,21 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
         }
         public async Task<CreateUpdateWellDTO> UpdateWell(UpdateWellViewModel body, Guid id, User user)
         {
-
-            var well = await _context.Wells
-                .Include(x => x.Field)
-                .Include(x => x.User)
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var well = await _wellRepository.GetWithFieldAsync(id);
 
             if (well is null)
                 throw new NotFoundException("Well not found");
 
             var beforeChangesWell = _mapper.Map<WellHistoryDTO>(well);
 
-            var updatedProperties = UpdateFields.CompareAndUpdateWell(well, body);
+            var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(well, body);
 
             if (updatedProperties.Any() is false && well.Field?.Id == body.FieldId)
                 throw new BadRequestException("This well already has these values, try to update to other values.");
 
             if (body.FieldId is not null)
             {
-                var fieldInDatabase = await _context.Fields
-                    .FirstOrDefaultAsync(x => x.Id == body.FieldId);
+                var fieldInDatabase = await _fieldRepository.GetOnlyField(body.FieldId);
 
                 if (fieldInDatabase is null)
                     throw new NotFoundException("Field not found");
@@ -193,10 +181,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
                 updatedProperties[nameof(WellHistoryDTO.fieldId)] = fieldInDatabase.Id;
             }
 
-            var firstHistory = await _context.SystemHistories
-               .OrderBy(x => x.CreatedAt)
-               .Where(x => x.TableItemId == id)
-               .FirstOrDefaultAsync();
+            var firstHistory = await _systemRepository.GetFirst(id);
 
             var changedFields = UpdateFields.DictionaryToObject(updatedProperties);
 
@@ -215,11 +200,11 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
                 PreviousData = beforeChangesWell,
             };
 
-            await _context.SystemHistories.AddAsync(history);
+            await _systemRepository.AddAsync(history);
 
-            _context.Wells.Update(well);
+            _wellRepository.Update(well);
 
-            await _context.SaveChangesAsync();
+            await _wellRepository.SaveChangesAsync();
 
             var wellDTO = _mapper.Map<Well, CreateUpdateWellDTO>(well);
             return wellDTO;
@@ -227,16 +212,12 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
 
         public async Task DeleteWell(Guid id, User user)
         {
-            var well = await _context.Wells
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var well = await _wellRepository.GetOnlyWellAsync(id);
 
             if (well is null || well.IsActive is false)
                 throw new NotFoundException("Well not found or inactive already");
 
-            var lastHistory = await _context.SystemHistories
-                .OrderBy(x => x.CreatedAt)
-                .Where(x => x.TableItemId == well.Id)
-                .LastOrDefaultAsync();
+            var lastHistory = await _systemRepository.GetLast(id);
 
             well.IsActive = false;
             well.DeletedAt = DateTime.UtcNow;
@@ -261,27 +242,21 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
                 }
             };
 
-            await _context.SystemHistories.AddAsync(history);
+            await _systemRepository.AddAsync(history);
 
-            _context.Wells.Update(well);
+            _wellRepository.Update(well);
 
-            await _context.SaveChangesAsync();
+            await _wellRepository.SaveChangesAsync();
         }
 
         public async Task<CreateUpdateWellDTO> RestoreWell(Guid id, User user)
         {
-            var well = await _context.Wells
-                .Include(x => x.Field)
-                .Include(x => x.User)
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var well = await _wellRepository.GetWithUserAsync(id);
 
             if (well is null || well.IsActive is true)
                 throw new NotFoundException("Well not found or active already");
 
-            var lastHistory = await _context.SystemHistories
-               .Where(x => x.TableItemId == well.Id)
-               .OrderBy(x => x.CreatedAt)
-               .LastOrDefaultAsync();
+            var lastHistory = await _systemRepository.GetLast(id);
 
             well.IsActive = true;
             well.DeletedAt = null;
@@ -305,11 +280,11 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
                 }
             };
 
-            await _context.SystemHistories.AddAsync(history);
+            await _systemRepository.AddAsync(history);
 
-            _context.Wells.Update(well);
+            _wellRepository.Update(well);
 
-            await _context.SaveChangesAsync();
+            await _wellRepository.SaveChangesAsync();
 
             var wellDTO = _mapper.Map<Well, CreateUpdateWellDTO>(well);
             return wellDTO;
@@ -318,10 +293,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
 
         public async Task<List<SystemHistory>> GetWellHistory(Guid id)
         {
-            var wellHistories = await _context.SystemHistories
-                   .Where(x => x.TableItemId == id)
-                   .OrderByDescending(x => x.CreatedAt)
-                   .ToListAsync();
+            var wellHistories = await _systemRepository.GetAll(id);
 
             if (wellHistories is null)
                 throw new NotFoundException("Well not found");

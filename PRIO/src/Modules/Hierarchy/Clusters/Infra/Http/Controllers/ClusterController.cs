@@ -53,12 +53,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Controllers
         [HttpPatch("{id}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateClusterViewModel body)
         {
-            if (HttpContext.Items["User"] is not User user)
-                return Unauthorized(new ErrorResponseDTO
-                {
-                    Message = "User not identified, please login first"
-                });
-
+            var user = HttpContext.Items["User"] as User;
             var clusterDTO = await _clusterService.UpdateCluster(id, body, user);
 
             return Ok(clusterDTO);
