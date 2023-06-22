@@ -139,14 +139,17 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
 
             var beforeChangesCompletion = _mapper.Map<CompletionHistoryDTO>(completion);
 
-            var updatedProperties = UpdateFields.CompareAndUpdateCompletion(completion, body);
+            var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(completion, body);
 
-            if (body.WellId is not null)
+            if (updatedProperties.Any() is false && body?.WellId == completion.Well?.Id && body?.ReservoirId == completion.Reservoir?.Id)
+                throw new BadRequestException("This completion already has these values, try to update to other values.");
+
+            if (body?.WellId is not null)
             {
                 if (well is null)
                     throw new NotFoundException("Well not found");
 
-                if (reservoir is null && body.ReservoirId is not null)
+                if (reservoir is null && body?.ReservoirId is not null)
                     throw new NotFoundException("Reservoir not found");
 
                 if (reservoir is not null && well.Field?.Id != reservoir.Zone?.Field?.Id)
@@ -154,15 +157,18 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
 
                 completion.Name = $"{well.Name}_{completion.Reservoir?.Zone?.CodZone}";
                 completion.Well = well;
-                updatedProperties[nameof(CompletionHistoryDTO.wellId)] = well.Id;
-                updatedProperties[nameof(CompletionHistoryDTO.name)] = completion.Name;
+
+                if (completion.Well.Id != body?.WellId)
+                {
+                    updatedProperties[nameof(CompletionHistoryDTO.wellId)] = completion.Well.Id;
+                    updatedProperties[nameof(CompletionHistoryDTO.name)] = completion.Name;
+                }
             }
 
-            if (body.ReservoirId is not null)
+            if (body?.ReservoirId is not null)
             {
                 if (reservoir is null)
                     throw new NotFoundException("Reservoir not found");
-
 
                 if (well is null && body.WellId is not null)
                     throw new NotFoundException("Well not found");
@@ -172,8 +178,11 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
 
                 completion.Name = $"{completion.Well?.Name}_{reservoir.Zone?.CodZone}";
                 completion.Reservoir = reservoir;
-                updatedProperties[nameof(CompletionHistoryDTO.reservoirId)] = reservoir.Id;
-                updatedProperties[nameof(CompletionHistoryDTO.name)] = completion.Name;
+                if (completion.Reservoir.Id != body?.ReservoirId)
+                {
+                    updatedProperties[nameof(CompletionHistoryDTO.reservoirId)] = completion.Reservoir.Id;
+                    updatedProperties[nameof(CompletionHistoryDTO.name)] = completion.Name;
+                }
             }
 
             _context.Completions.Update(completion);

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using dotenv.net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
@@ -73,8 +74,14 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
         [HttpPost("loginAd")]
         public async Task<IActionResult> LoginAD([FromBody] LoginAdViewModel body)
         {
+            var envVars = DotEnv.Read();
+            var secretKey = envVars["SECRET_KEY"];
+
+            var username = Decrypt.DecryptAes(body.Username, secretKey);
+            var password = Decrypt.DecryptAes(body.Password, secretKey);
+
             var credentialsValid = ActiveDirectory
-                .VerifyCredentialsWithActiveDirectory(body.Username, body.Password);
+                .VerifyCredentialsWithActiveDirectory(username, password);
 
             if (credentialsValid is false)
                 return Unauthorized(new ErrorResponseDTO

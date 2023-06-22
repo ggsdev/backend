@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services;
+using PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services;
@@ -96,6 +97,7 @@ static void ConfigureServices(IServiceCollection services)
     #endregion
 
     services.AddScoped<GroupService>();
+    services.AddScoped<XLSXService>();
 
     services.AddAuthentication(x =>
     {

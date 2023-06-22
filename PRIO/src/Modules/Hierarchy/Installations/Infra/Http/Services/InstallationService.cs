@@ -4,24 +4,27 @@ using Newtonsoft.Json;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Dtos;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Hierarchy.Installations.ViewModels;
 using PRIO.src.Shared.Errors;
-using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
+using PRIO.src.Shared.SystemHistories.Interfaces;
 using PRIO.src.Shared.Utils;
 
 namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
 {
     public class InstallationService
     {
-        private readonly DataContext _context;
         private readonly IMapper _mapper;
+        private readonly IInstallationRepository _installationRepository;
+        private readonly ISystemHistoryRepository _systemHistoryRepository;
 
-        public InstallationService(DataContext context, IMapper mapper)
+        public InstallationService(IMapper mapper, IInstallationRepository installationRepository, ISystemHistoryRepository systemHistoryRepository)
         {
-            _context = context;
             _mapper = mapper;
+            _installationRepository = installationRepository;
+            _systemHistoryRepository = systemHistoryRepository;
         }
 
         public async Task<CreateUpdateInstallationDTO> CreateInstallation(CreateInstallationViewModel body, User user)
@@ -107,12 +110,12 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
 
             var beforeChangesInstallation = _mapper.Map<InstallationHistoryDTO>(installation);
 
-            var updatedProperties = UpdateFields.CompareAndUpdateInstallation(installation, body);
+            var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(installation, body);
 
             if (updatedProperties.Any() is false && installation.Cluster?.Id == body.ClusterId)
                 throw new BadRequestException("This installation already has these values, try to update to other values.");
 
-            if (body.ClusterId is not null)
+            if (body?.ClusterId is not null)
             {
                 var clusterInDatabase = await _context.Clusters
               .FirstOrDefaultAsync(x => x.Id == body.ClusterId);

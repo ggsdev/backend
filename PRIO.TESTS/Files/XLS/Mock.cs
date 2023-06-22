@@ -34,8 +34,8 @@
         public static readonly string _reservoirTuroniano = "TURONIANO";
         public static readonly string _reservoirN545D = "N545D";
         public static readonly string _reservoirN560D = "N560D";
-        public static readonly string _reservoirQuissama_Tmbt = "QUISSAMÃ_TMBT";
-        public static readonly string _reservoirQuissama_Pol = "QUISSAMÃ_POL";
+        public static readonly string _reservoirQuissama_Tmbt = "QUISSAMÃ";
+        public static readonly string _reservoirQuissama_Pol = "QUISSAMÃ";
 
         public static readonly WellMock _well74281026496 = new()
         {
@@ -160,7 +160,7 @@
             CategoryAnp = "Especial",
             CategoryReclassificationAnp = "INDEFINIDO",
             CategoryOperator = null,
-            StatusOperator = null,
+            StatusOperator = false,
             Type = "Direcional",
             WaterDepth = 103,
             TopOfPerforated = 0,
@@ -206,7 +206,7 @@
             CategoryAnp = "Injeção",
             CategoryReclassificationAnp = "ABANDONADO POR PERDA CIRCULAÇÃO",
             CategoryOperator = null,
-            StatusOperator = null,
+            StatusOperator = false,
             Type = "Horizontal",
             WaterDepth = 1078,
             TopOfPerforated = 0,
@@ -252,7 +252,7 @@
             CategoryAnp = "Pioneiro",
             CategoryReclassificationAnp = "DESCOBRIDOR DE CAMPO COM PETRÓLEO",
             CategoryOperator = null,
-            StatusOperator = null,
+            StatusOperator = false,
             Type = "Vertical",
             WaterDepth = 1155.00,
             TopOfPerforated = 0,

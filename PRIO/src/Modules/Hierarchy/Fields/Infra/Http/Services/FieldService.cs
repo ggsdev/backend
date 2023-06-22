@@ -110,19 +110,19 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
 
             var beforeChangesField = _mapper.Map<FieldHistoryDTO>(field);
 
-            var updatedProperties = UpdateFields.CompareAndUpdateField(field, body);
+            var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(field, body);
 
             if (updatedProperties.Any() is false && field.Installation?.Id == body.InstallationId)
                 throw new BadRequestException("This field already has these values, try to update to other values.");
 
-            var installationInDatabase = await _context.Installations
-               .FirstOrDefaultAsync(x => x.Id == body.InstallationId);
-
-            if (body.InstallationId is not null && installationInDatabase is null)
-                throw new NotFoundException("Installation not found");
-
-            if (installationInDatabase is not null)
+            if (body.InstallationId is not null)
             {
+                var installationInDatabase = await _context.Installations
+              .FirstOrDefaultAsync(x => x.Id == body.InstallationId);
+
+                if (installationInDatabase is null)
+                    throw new NotFoundException("Installation not found");
+
                 field.Installation = installationInDatabase;
                 updatedProperties[nameof(FieldHistoryDTO.installationId)] = installationInDatabase.Id;
             }

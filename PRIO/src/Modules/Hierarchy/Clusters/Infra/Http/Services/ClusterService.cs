@@ -96,7 +96,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
 
             var beforeChangesCluster = _mapper.Map<ClusterHistoryDTO>(cluster);
 
-            var updatedProperties = UpdateFields.CompareAndUpdateCluster(cluster, body);
+            var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(cluster, body);
 
             if (updatedProperties.Any() is false)
                 throw new BadRequestException("This cluster already has these values, try to update to other values.");

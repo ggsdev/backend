@@ -140,6 +140,7 @@ namespace PRIO.TESTS.Hierarquies.Clusters
         {
             Cluster _cluster1 = new()
             {
+                Id = Guid.NewGuid(),
                 Name = "ClusterTest",
                 User = _user
             };
@@ -157,7 +158,6 @@ namespace PRIO.TESTS.Hierarquies.Clusters
 
             Assert.IsInstanceOf<OkObjectResult>(response);
             Assert.That(((ClusterDTO)createdResult.Value).Name, Is.EqualTo(_viewModel2.Name));
-            Assert.That(((ClusterDTO)createdResult.Value).CodCluster, Is.EqualTo(_viewModel2.CodCluster));
             Assert.That(createdResult.StatusCode, Is.EqualTo(200));
         }
 

@@ -116,19 +116,19 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
 
             var beforeChangesZone = _mapper.Map<ZoneHistoryDTO>(zone);
 
-            var updatedProperties = UpdateFields.CompareAndUpdateZone(zone, body);
+            var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(zone, body);
 
             if (updatedProperties.Any() is false && zone.Field?.Id == body.FieldId)
                 throw new BadRequestException("This zone already has these values, try to update to other values.");
 
-            var field = await _context.Fields
+            if (body.FieldId is not null)
+            {
+                var field = await _context.Fields
                 .FirstOrDefaultAsync(x => x.Id == body.FieldId);
 
-            if (body.FieldId is not null && field is null)
-                throw new NotFoundException("Field not found");
+                if (field is null)
+                    throw new NotFoundException("Field not found");
 
-            if (body.FieldId is not null && field is not null && zone.Field?.Id != body.FieldId)
-            {
                 zone.Field = field;
                 updatedProperties[nameof(ZoneHistoryDTO.fieldId)] = field.Id;
             }

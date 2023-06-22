@@ -108,21 +108,15 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
 
         public async Task<MeasuringEquipmentDTO> UpdateEquipment(UpdateEquipmentViewModel body, Guid id, User user)
         {
-
             var equipment = _context.MeasuringEquipments
                 .Include(x => x.Installation)
                 .FirstOrDefault(x => x.Id == id);
+
             if (equipment is null)
                 throw new NotFoundException("Equipment not found");
 
             if (body.Fluid is not null && !_fluidsAllowed.Contains(body.Fluid.ToLower()))
                 throw new BadRequestException("Fluids allowed are: gás, óleo, água");
-
-            var installationInDatabase = await _context.Installations
-                .FirstOrDefaultAsync(x => x.Id == body.InstallationId);
-
-            if (body.InstallationId is not null && installationInDatabase is null)
-                throw new NotFoundException("Installation not found");
 
             var beforeChangesEquipment = _mapper.Map<MeasuringEquipmentHistoryDTO>(equipment);
 
@@ -131,8 +125,14 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
             if (updatedProperties.Any() is false && equipment.Installation?.Id == body.InstallationId)
                 throw new BadRequestException("This equipment already has these values, try to update to other values.");
 
-            if (installationInDatabase is not null)
+            if (body.InstallationId is not null)
             {
+                var installationInDatabase = await _context.Installations
+                .FirstOrDefaultAsync(x => x.Id == body.InstallationId);
+
+                if (installationInDatabase is null)
+                    throw new NotFoundException("Installation not found");
+
                 equipment.Installation = installationInDatabase;
                 updatedProperties[nameof(MeasuringEquipmentHistoryDTO.installationId)] = installationInDatabase.Id;
             }

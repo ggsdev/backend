@@ -114,16 +114,22 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
 
             var beforeChangesReservoir = _mapper.Map<ReservoirHistoryDTO>(reservoir);
 
-            var updatedProperties = UpdateFields.CompareAndUpdateReservoir(reservoir, body);
+            var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(reservoir, body);
 
             if (updatedProperties.Any() is false && reservoir.Zone?.Id == body.ZoneId)
                 throw new BadRequestException("This reservoir already has these values, try to update to other values.");
 
-            var zoneInDatabase = await _context.Zones
+            if (body?.ZoneId is not null)
+            {
+                var zoneInDatabase = await _context.Zones
                 .FirstOrDefaultAsync(x => x.Id == body.ZoneId);
 
-            if (body.ZoneId is not null && zoneInDatabase is null)
-                throw new NotFoundException("Zone not found");
+                if (zoneInDatabase is null)
+                    throw new NotFoundException("Zone not found");
+
+                reservoir.Zone = zoneInDatabase;
+                updatedProperties[nameof(ReservoirHistoryDTO.zoneId)] = zoneInDatabase.Id;
+            }
 
             _context.Reservoirs.Update(reservoir);
 
@@ -155,7 +161,6 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
 
             var reservoirDTO = _mapper.Map<Reservoir, CreateUpdateReservoirDTO>(reservoir);
             return reservoirDTO;
-
         }
 
         public async Task DeleteReservoir(Guid id, User user)

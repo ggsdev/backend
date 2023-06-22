@@ -176,7 +176,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
 
             var beforeChangesWell = _mapper.Map<WellHistoryDTO>(well);
 
-            var updatedProperties = UpdateFields.CompareAndUpdateWell(well, body);
+            var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(well, body);
 
             if (updatedProperties.Any() is false && well.Field?.Id == body.FieldId)
                 throw new BadRequestException("This well already has these values, try to update to other values.");
