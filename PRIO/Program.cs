@@ -5,7 +5,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Interfaces;
+using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services;
+using PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Interfaces;
+using PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Repositories;
+using PRIO.src.Modules.ControlAccess.Menus.Infra.Http.Services;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Interfaces;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories;
 using PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services;
@@ -132,6 +139,14 @@ static void ConfigureServices(IServiceCollection services)
     services.AddScoped<WellService>();
     services.AddScoped<CompletionService>();
     services.AddScoped<EquipmentService>();
+    services.AddScoped<MenuService>();
+    services.AddScoped<IMenuRepository, MenuRepository>();
+    services.AddScoped<IGroupRepository, GroupRepository>();
+    services.AddScoped<IGroupPermissionRepository, GroupPermissionRepository>();
+    services.AddScoped<IGroupOperationRepository, GroupOperationRepository>();
+    services.AddScoped<IUserRepository, UserRepository>();
+    services.AddScoped<IUserPermissionRepository, UserPermissionRepository>();
+    services.AddScoped<IUserOperationRepository, UserOperationRepository>();
     #endregion
 
     services.AddScoped<GroupService>();
