@@ -359,71 +359,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
                 });
             }
 
-            foreach (var menuParent in body.Menus)
-            {
-                var foundMenuParent = await _context.Menus.Where(x => x.Id == menuParent.MenuId).FirstOrDefaultAsync();
-                if (foundMenuParent is null)
-                {
-                    return NotFound(new ErrorResponseDTO
-                    {
-                        Message = $"Menu Parent is not found"
-                    });
-                }
-                if (menuParent.Childrens is not null)
-                {
-                    foreach (var menuChildren in menuParent.Childrens)
-                    {
-                        var foundMenuChildren = await _context.Menus.Where(x => x.Id == menuChildren.ChildrenId).Include(x => x.Parent).FirstOrDefaultAsync();
-                        if (foundMenuChildren is null)
-                        {
-                            return NotFound(new ErrorResponseDTO
-                            {
-                                Message = $"Menu Children is not found"
-                            });
-                        }
-                        if (foundMenuChildren.Parent is null)
-                        {
-                            return NotFound(new ErrorResponseDTO
-                            {
-                                Message = $"Relation Menu Children is not found"
-                            });
-                        }
-                        string[] parts = foundMenuChildren.Order.Split('.');
-                        string numberBeforeDot = parts[0];
-
-                        if (numberBeforeDot != foundMenuParent.Order)
-                        {
-                            return Conflict(new ErrorResponseDTO
-                            {
-                                Message = $"This child menu does not belong to the parent menu"
-                            });
-                        }
-
-                        foreach (var operationsChildrens in menuChildren.Operations)
-                        {
-                            var foundOperationChildren = await _context.GlobalOperations.Where(x => x.Id == operationsChildrens.OperationId).FirstOrDefaultAsync();
-                            if (foundOperationChildren is null)
-                            {
-                                return NotFound(new ErrorResponseDTO
-                                {
-                                    Message = $"Operation Children is not found"
-                                });
-                            }
-                        }
-                    }
-                }
-                foreach (var operationsParent in menuParent.Operations)
-                {
-                    var foundOperationParent = await _context.GlobalOperations.Where(x => x.Id == operationsParent.OperationId).FirstOrDefaultAsync();
-                    if (foundOperationParent is null)
-                    {
-                        return NotFound(new ErrorResponseDTO
-                        {
-                            Message = $"Operation Parent is not found"
-                        });
-                    }
-                }
-            }
+            await MenuErrors.ValidateMenu(_context, body);
 
             var userWithPermissions = await _context
                 .Users

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services;
+using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services;
@@ -85,6 +86,7 @@ static void ConfigureServices(IServiceCollection services)
     services.AddScoped<TokenServices>();
 
     #region Hierarchy Services
+    services.AddScoped<IClusterRepository, ClusterRepository>();
     services.AddScoped<ClusterService>();
     services.AddScoped<InstallationService>();
     services.AddScoped<FieldService>();

@@ -26,8 +26,6 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
 
         public async Task<GroupWithMenusDTO> CreateGroup(CreateGroupViewModel body)
         {
-            if (body.Menus is null)
-                throw new NotFoundException("Menus not found");
 
             var foundGroup = await _context.Groups
                 .Where(x => x.Name == body.GroupName)
@@ -36,54 +34,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
             if (foundGroup != null)
                 throw new ConflictException("Group Name is already exists.");
 
-            foreach (var menuParent in body.Menus)
-            {
-                var foundMenuParent = await _context.Menus
-                    .Where(x => x.Id == menuParent.MenuId)
-                    .FirstOrDefaultAsync();
-
-                if (foundMenuParent is null)
-                    throw new NotFoundException("Menu Parent is not found");
-
-                if (menuParent.Childrens is not null)
-                {
-                    foreach (var menuChildren in menuParent.Childrens)
-                    {
-                        var foundMenuChildren = await _context.Menus
-                            .Where(x => x.Id == menuChildren.ChildrenId)
-                            .Include(x => x.Parent)
-                            .FirstOrDefaultAsync();
-
-                        if (foundMenuChildren is null)
-                            throw new NotFoundException("Menu Children is not found");
-
-                        if (foundMenuChildren.Parent is null)
-                            throw new NotFoundException("Relation Menu Children is not found");
-
-                        string[] parts = foundMenuChildren.Order.Split('.');
-                        string numberBeforeDot = parts[0];
-
-                        if (numberBeforeDot != foundMenuParent.Order)
-                            throw new ConflictException("This child menu does not belong to the parent menu");
-
-                        foreach (var operationsChildrens in menuChildren.Operations)
-                        {
-                            var foundOperationChildren = await _context.GlobalOperations.Where(x => x.Id == operationsChildrens.OperationId).FirstOrDefaultAsync();
-                            if (foundOperationChildren is null)
-                                throw new NotFoundException("Operation Children is not found");
-                        }
-                    }
-                }
-                foreach (var operationsParent in menuParent.Operations)
-                {
-                    var foundOperationParent = await _context.GlobalOperations
-                        .Where(x => x.Id == operationsParent.OperationId)
-                        .FirstOrDefaultAsync();
-
-                    if (foundOperationParent is null)
-                        throw new NotFoundException("Operation Parent is not found");
-                }
-            }
+            await MenuErrors.ValidateMenu(_context, body);
 
             var groupId = Guid.NewGuid();
             var group = new Group
