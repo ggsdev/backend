@@ -112,7 +112,8 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
             var updatedProperties = UpdateFields
                 .CompareUpdateReturnOnlyUpdated(cluster, propertiesUpdated);
 
-            await _systemHistoryService.Delete(TableName, user, )
+            await _systemHistoryService
+                .Delete<Cluster,ClusterHistoryDTO>(TableName, user, updatedProperties, cluster.Id, cluster);
 
             _clusterRepository.DeleteCluster(cluster);
 
@@ -126,31 +127,17 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
             if (cluster is null || cluster.IsActive is true)
                 throw new NotFoundException("Cluster not found or active already");
 
-            var lastHistory = await _systemHistoryRepository.GetLast(id);
-
-            cluster.IsActive = true;
-            cluster.DeletedAt = null;
-
-            var currentData = _mapper.Map<Cluster, ClusterHistoryDTO>(cluster);
-            currentData.updatedAt = DateTime.UtcNow;
-
-            var history = new SystemHistory
+            var propertiesUpdated = new
             {
-                Table = HistoryColumns.TableClusters,
-                TypeOperation = HistoryColumns.Restore,
-                CreatedBy = cluster.User?.Id,
-                UpdatedBy = user?.Id,
-                TableItemId = cluster.Id,
-                CurrentData = currentData,
-                PreviousData = lastHistory?.CurrentData,
-                FieldsChanged = new
-                {
-                    cluster.IsActive,
-                    cluster.DeletedAt,
-                }
+                IsActive = true,
+                DeletedAt = (DateTime?) null,
             };
 
-            await _systemHistoryRepository.AddAsync(history);
+            var updatedProperties = UpdateFields
+                .CompareUpdateReturnOnlyUpdated(cluster, propertiesUpdated);
+
+            await _systemHistoryService
+                .Restore<Cluster, ClusterHistoryDTO>(TableName, user, updatedProperties, cluster.Id, cluster);
 
             _clusterRepository.RestoreCluster(cluster);
             await _clusterRepository.SaveChangesAsync();
@@ -162,7 +149,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
 
         public async Task<List<SystemHistory>> GetClusterHistory(Guid id)
         {
-            var clusterHistories = await _systemHistoryRepository.GetAll(id);
+            var clusterHistories = await _systemHistoryService.GetAll(id);
 
             if (clusterHistories is null)
                 throw new NotFoundException("Cluster not found");
