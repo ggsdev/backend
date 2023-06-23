@@ -72,9 +72,9 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
 
                 //var beforeChangesUser = _mapper.Map<UserHistoryDTO>(userHasGroup);
 
-                //userHasGroup.Group = group;
-                //userHasGroup.LastGroupId = null;
-                //_context.Update(userHasGroup);
+                userHasGroup.Group = group;
+                userHasGroup.LastGroupId = null;
+                await _userRepository.UpdateUser(userHasGroup);
 
                 //var currentData = _mapper.Map<User, UserHistoryDTO>(userHasGroup);
                 //currentData.updatedAt = DateTime.UtcNow;
