@@ -71,11 +71,6 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
                 await _groupRepository.InsertUserInGroupAsync(group, userHasGroup, groupPermissionsDTO);
 
                 //var beforeChangesUser = _mapper.Map<UserHistoryDTO>(userHasGroup);
-
-                userHasGroup.Group = group;
-                userHasGroup.LastGroupId = null;
-                await _userRepository.UpdateUser(userHasGroup);
-
                 //var currentData = _mapper.Map<User, UserHistoryDTO>(userHasGroup);
                 //currentData.updatedAt = DateTime.UtcNow;
 
@@ -93,6 +88,9 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
                 //await _context.SystemHistories.AddAsync(history);
 
                 await _groupRepository.SaveChangesAsync();
+                userHasGroup.IsPermissionDefault = true;
+                userHasGroup.Group = group;
+                await _userRepository.UpdateUser(userHasGroup);
                 var userDTO = _mapper.Map<User, UserGroupDTO>(userHasGroup);
                 return userDTO;
             }

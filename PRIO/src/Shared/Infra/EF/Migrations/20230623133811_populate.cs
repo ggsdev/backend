@@ -32,9 +32,8 @@ namespace PRIO.Migrations
 
             migrationBuilder.InsertData(
              table: "Users",
-             columns: new[] { "Name", "Email", "Password", "Username", "IsActive", "Id", "CreatedAt", "UpdatedAt", "GroupId" },
-             values: new object[] { nameUser, emailUser, BCrypt.Net.BCrypt.HashPassword(passwordUser), usernameUser, true, idUser, DateTime.UtcNow, DateTime.UtcNow, idGroup });
-
+             columns: new[] { "Name", "Email", "Password", "Username", "IsActive", "Id", "CreatedAt", "UpdatedAt", "GroupId", "Type", "IsPermissionDefault" },
+             values: new object[] { nameUser, emailUser, BCrypt.Net.BCrypt.HashPassword(passwordUser), usernameUser, true, idUser, DateTime.UtcNow, DateTime.UtcNow, idGroup, nameGroup, true });
 
             //criação das operacoes
             var idGetOperation = Guid.NewGuid();
@@ -61,7 +60,6 @@ namespace PRIO.Migrations
                     columns: new[] { "Method", "IsActive", "Id", "CreatedAt", "UpdatedAt" },
                     values: new object[] { methodOperation, true, idOperation, DateTime.UtcNow, DateTime.UtcNow });
             }
-
 
             //criação do menu (1 - hasChildren, 2 - hasParent)
             var menuData = new List<object[]>
@@ -90,9 +88,6 @@ namespace PRIO.Migrations
                 var hasParent = (bool)menu[6];
                 var idGroupPermission = Guid.NewGuid();
                 var idUserPermission = Guid.NewGuid();
-
-
-
 
                 if (hasParent == true)
                 {
@@ -128,12 +123,10 @@ namespace PRIO.Migrations
                 }
                 else
                 {
-
                     migrationBuilder.InsertData(
                         table: "Menus",
                         columns: new[] { "Name", "Icon", "Order", "Route", "ParentId", "IsActive", "Id", "CreatedAt", "UpdatedAt" },
                         values: new object[] { nameMenu, iconMenu, orderMenu, routeMenu, null, true, idMenu, DateTime.UtcNow, DateTime.UtcNow });
-
                 }
 
                 migrationBuilder.InsertData(
@@ -165,9 +158,6 @@ namespace PRIO.Migrations
                     }
                 }
             }
-
-
-
         }
         protected override void Down(MigrationBuilder migrationBuilder)
         {

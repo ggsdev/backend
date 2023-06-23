@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PRIO.Migrations
 {
     /// <inheritdoc />
-    public partial class initialMigration : Migration
+    public partial class initialMigrations : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -118,6 +118,8 @@ namespace PRIO.Migrations
                     Email = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
                     Password = table.Column<string>(type: "VARCHAR(90)", maxLength: 90, nullable: true),
                     Username = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsPermissionDefault = table.Column<bool>(type: "bit", nullable: true),
                     LastGroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -280,8 +282,8 @@ namespace PRIO.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
-                    CodInstallationUep = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
-                    Cod = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UepCod = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
+                    CodInstallation = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ClusterId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),

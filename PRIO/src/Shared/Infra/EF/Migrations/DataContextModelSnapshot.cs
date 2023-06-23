@@ -274,6 +274,9 @@ namespace PRIO.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<bool?>("IsPermissionDefault")
+                        .HasColumnType("bit");
+
                     b.Property<Guid?>("LastGroupId")
                         .HasColumnType("uniqueidentifier");
 
@@ -284,6 +287,9 @@ namespace PRIO.Migrations
                     b.Property<string>("Password")
                         .HasMaxLength(90)
                         .HasColumnType("VARCHAR");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");

@@ -12,8 +12,8 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230621181226_initialMigration")]
-    partial class initialMigration
+    [Migration("20230623133811_populate")]
+    partial class populate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -277,6 +277,9 @@ namespace PRIO.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<bool?>("IsPermissionDefault")
+                        .HasColumnType("bit");
+
                     b.Property<Guid?>("LastGroupId")
                         .HasColumnType("uniqueidentifier");
 
@@ -287,6 +290,9 @@ namespace PRIO.Migrations
                     b.Property<string>("Password")
                         .HasMaxLength(90)
                         .HasColumnType("VARCHAR");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -551,10 +557,7 @@ namespace PRIO.Migrations
                     b.Property<Guid>("ClusterId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Cod")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CodInstallationUep")
+                    b.Property<string>("CodInstallation")
                         .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("VARCHAR");
@@ -572,6 +575,11 @@ namespace PRIO.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("UepCod")
                         .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("VARCHAR");
