@@ -77,11 +77,11 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
             var envVars = DotEnv.Read();
             var secretKey = envVars["SECRET_KEY"];
 
-            var username = Decrypt.DecryptAes(body.Username, secretKey);
-            var password = Decrypt.DecryptAes(body.Password, secretKey);
+            var decryptedCredentials = Decrypt
+                .DecryptAes(body.Username, body.Password, secretKey);
 
             var credentialsValid = ActiveDirectory
-                .VerifyCredentialsWithActiveDirectory(username, password);
+                .VerifyCredentialsWithActiveDirectory(decryptedCredentials.Username, decryptedCredentials.Password);
 
             if (credentialsValid is false)
                 return Unauthorized(new ErrorResponseDTO
