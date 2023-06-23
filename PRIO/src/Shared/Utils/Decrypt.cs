@@ -81,11 +81,14 @@ namespace PRIO.src.Shared.Utils
         //    return srDecrypt.ReadToEnd();
         //}
 
-        public static string DecryptAes(string encryptedString, string passphrase)
+        public static DecryptedCredentials DecryptAes(string encryptedUsername, string encryptedPassword, string passphrase)
         {
-            var base64Bytes = Convert.FromBase64String(encryptedString);
-            var saltBytes = base64Bytes[8..16];
-            var cipherTextBytes = base64Bytes[16..];
+            var base64UsernameBytes = Convert.FromBase64String(encryptedUsername);
+            var base64PasswordBytes = Convert.FromBase64String(encryptedPassword);
+
+            var saltBytes = base64UsernameBytes[8..16];
+            var usernameCipherTextBytes = base64UsernameBytes[16..];
+            var passwordCipherTextBytes = base64PasswordBytes[16..];
 
             var passphraseBytes = Encoding.UTF8.GetBytes(passphrase);
 
@@ -98,21 +101,26 @@ namespace PRIO.src.Shared.Utils
             aes.KeySize = 256;
             aes.Padding = PaddingMode.PKCS7;
             aes.Mode = CipherMode.CBC;
-            var decryptor = aes.CreateDecryptor(keyBytes, ivBytes);
 
-            using var msDecrypt = new MemoryStream(cipherTextBytes);
-            using var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read);
-            using var srDecrypt = new StreamReader(csDecrypt);
+            var usernameDecryptor = aes.CreateDecryptor(keyBytes, ivBytes);
+            var passwordDecryptor = aes.CreateDecryptor(keyBytes, ivBytes);
 
-            var decryptedTextBuilder = new StringBuilder();
-            char[] buffer = new char[4096];
-            int bytesRead;
-            while ((bytesRead = srDecrypt.Read(buffer, 0, buffer.Length)) > 0)
+            using var msUsernameDecrypt = new MemoryStream(usernameCipherTextBytes);
+            using var msPasswordDecrypt = new MemoryStream(passwordCipherTextBytes);
+
+            using var csUsernameDecrypt = new CryptoStream(msUsernameDecrypt, usernameDecryptor, CryptoStreamMode.Read);
+            using var csPasswordDecrypt = new CryptoStream(msPasswordDecrypt, passwordDecryptor, CryptoStreamMode.Read);
+
+            using var srUsernameDecrypt = new StreamReader(csUsernameDecrypt);
+            using var srPasswordDecrypt = new StreamReader(csPasswordDecrypt);
+
+            var decryptedCredentials = new DecryptedCredentials
             {
-                decryptedTextBuilder.Append(buffer, 0, bytesRead);
-            }
+                Username = srUsernameDecrypt.ReadToEnd(),
+                Password = srPasswordDecrypt.ReadToEnd()
+            };
 
-            return decryptedTextBuilder.ToString();
+            return decryptedCredentials;
         }
 
         private static Aes GetAesInstance()
@@ -134,16 +142,16 @@ namespace PRIO.src.Shared.Utils
 
             using (var hash = MD5.Create())
             {
-                var currentHash = hash.ComputeHash(preHash);
+                var currentHash = MD5.HashData(preHash);
 
                 for (var i = 1; i < iterations; i++)
                 {
-                    currentHash = hash.ComputeHash(currentHash);
+                    currentHash = MD5.HashData(currentHash);
                 }
 
                 hashList.AddRange(currentHash);
 
-                while (hashList.Count < 48) // for 32-byte key and 16-byte iv
+                while (hashList.Count < 48)
                 {
                     preHashLength = currentHash.Length + passphrase.Length + (salt?.Length ?? 0);
                     preHash = new byte[preHashLength];
@@ -153,11 +161,11 @@ namespace PRIO.src.Shared.Utils
                     if (salt != null)
                         Buffer.BlockCopy(salt, 0, preHash, currentHash.Length + passphrase.Length, salt.Length);
 
-                    currentHash = hash.ComputeHash(preHash);
+                    currentHash = MD5.HashData(preHash);
 
                     Parallel.For(1, iterations, i =>
                     {
-                        currentHash = hash.ComputeHash(currentHash);
+                        currentHash = MD5.HashData(currentHash);
                     });
 
                     hashList.AddRange(currentHash);
@@ -168,6 +176,12 @@ namespace PRIO.src.Shared.Utils
             iv = new byte[16];
             hashList.CopyTo(0, key, 0, 32);
             hashList.CopyTo(32, iv, 0, 16);
+        }
+
+        public class DecryptedCredentials
+        {
+            public string Username { get; set; }
+            public string Password { get; set; }
         }
     }
 }
