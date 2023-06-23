@@ -8,8 +8,10 @@ using PRIO.src.Modules.Hierarchy.Clusters.Dtos;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Completions.Dtos;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Repositories;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Controllers;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services;
+using PRIO.src.Modules.Hierarchy.Completions.Interfaces;
 using PRIO.src.Modules.Hierarchy.Completions.ViewModels;
 using PRIO.src.Modules.Hierarchy.Fields.Dtos;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
@@ -17,13 +19,19 @@ using PRIO.src.Modules.Hierarchy.Installations.Dtos;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Reservoirs.Dtos;
 using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Repositories;
+using PRIO.src.Modules.Hierarchy.Reservoirs.Interfaces;
 using PRIO.src.Modules.Hierarchy.Wells.Dtos;
 using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories;
+using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Modules.Hierarchy.Zones.Dtos;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
+using PRIO.src.Shared.SystemHistories.Infra.EF.Repositories;
+using PRIO.src.Shared.SystemHistories.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
 namespace PRIO.TESTS.Hierarquies.Completions
@@ -35,6 +43,12 @@ namespace PRIO.TESTS.Hierarquies.Completions
         private IMapper _mapper;
         private DataContext _context;
         private CompletionService _service;
+
+        private ISystemHistoryRepository _systemHistoryRepository;
+        private ICompletionRepository _completionRepository;
+        private IWellRepository _wellRepository;
+        private IReservoirRepository _reservoirRepository;
+
         private CreateCompletionViewModel _createViewModel;
         private UpdateCompletionViewModel _updateViewModel;
         private User _user;
@@ -88,7 +102,15 @@ namespace PRIO.TESTS.Hierarquies.Completions
             httpContext.Items["Id"] = _user.Id;
             httpContext.Items["User"] = _user;
 
-            _service = new CompletionService(_context, _mapper);
+            _systemHistoryRepository = new SystemHistoryRepository(_context);
+            _completionRepository = new CompletionRepository(_context);
+            _wellRepository = new WellRepository(_context);
+            _reservoirRepository = new ReservoirRepository(_context);
+
+            _service = new CompletionService(_mapper, _completionRepository,
+                _wellRepository, _reservoirRepository,
+                _systemHistoryRepository);
+
             _controller = new CompletionController(_service);
             _controller.ControllerContext.HttpContext = httpContext;
         }

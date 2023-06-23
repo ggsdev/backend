@@ -50,7 +50,6 @@
     <Folder Include="src\Modules\Measuring\Measurements\ViewModels\" />
     <Folder Include="src\Shared\Infra\EF\Mappings\" />
     <Folder Include="src\Shared\Infra\Http\Controllers\" />
-    <Folder Include="src\Shared\SystemHistories\Infra\Http\" />
   </ItemGroup>
 
 </Project>

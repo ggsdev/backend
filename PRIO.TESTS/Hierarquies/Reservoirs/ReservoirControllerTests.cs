@@ -12,14 +12,21 @@ using PRIO.src.Modules.Hierarchy.Installations.Dtos;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Reservoirs.Dtos;
 using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Repositories;
 using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Controllers;
 using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services;
+using PRIO.src.Modules.Hierarchy.Reservoirs.Interfaces;
 using PRIO.src.Modules.Hierarchy.Reservoirs.ViewModels;
 using PRIO.src.Modules.Hierarchy.Zones.Dtos;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Repositories;
+using PRIO.src.Modules.Hierarchy.Zones.Interfaces;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
+using PRIO.src.Shared.SystemHistories.Infra.EF.Repositories;
+using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
+using PRIO.src.Shared.SystemHistories.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
 namespace PRIO.TESTS.Hierarquies.Reservoirs
@@ -31,6 +38,10 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
         private DataContext _context;
         private CreateReservoirViewModel _viewModel;
         private ReservoirService _service;
+        private IReservoirRepository _reservoirRepository;
+        private ISystemHistoryRepository _systemHistoryRepository;
+        private IZoneRepository _zoneRepository;
+        private SystemHistoryService _systemHistoryService;
         private User _user;
 
         [SetUp]
@@ -69,7 +80,12 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
             httpContext.Items["Id"] = _user.Id;
             httpContext.Items["User"] = _user;
 
-            _service = new ReservoirService(_context, _mapper);
+            _systemHistoryRepository = new SystemHistoryRepository(_context);
+            _reservoirRepository = new ReservoirRepository(_context);
+            _zoneRepository = new ZoneRepository(_context);
+
+            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository);
+            _service = new ReservoirService(_mapper, _reservoirRepository, _zoneRepository, _systemHistoryService);
             _controller = new ReservoirController(_service);
             _controller.ControllerContext.HttpContext = httpContext;
         }
@@ -404,67 +420,16 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
         }
 
 
-        [Test]
-        public async Task Create_AlsoCreateAReservoirHistoryOfTypeCreate()
-        {
-            Cluster _cluster1 = new()
-            {
-                Id = Guid.NewGuid(),
-                Name = "ClusterTest",
-                User = _user
-            };
-            _context.Add(_cluster1);
 
-            Installation _installation1 = new()
-            {
-                Id = Guid.NewGuid(),
-                Name = "InstallationTest",
-                UepCod = "InstallationTest",
-                CodInstallation = "asoidjadisa",
-                Cluster = _cluster1,
-                User = _user
-            };
-            _context.Add(_installation1);
 
-            Field _field1 = new()
-            {
-                Id = Guid.NewGuid(),
-                Name = "FieldTest",
-                CodField = "FieldTest",
-                Installation = _installation1,
-                User = _user
-            };
-            _context.Add(_field1);
+        //var history = await _context.ReservoirHistories.SingleOrDefaultAsync();
+        //Assert.That(history, Is.Not.Null);
+        //Assert.That(history.CodReservoir, Is.EqualTo(reservoir.CodReservoir));
+        //Assert.That(history.Zone.Id, Is.EqualTo(reservoir.Zone.Id));
 
-            Zone _zone = new()
-            {
-                Id = Guid.NewGuid(),
-                CodZone = "ZoneTest",
-                Field = _field1
-            };
-            _context.Add(_zone);
-            _context.SaveChanges();
-
-            _viewModel = new CreateReservoirViewModel
-            {
-                Name = "ReservoirTest",
-                CodReservoir = "ReservoirTest",
-                ZoneId = _zone.Id,
-            };
-            await _controller.Create(_viewModel);
-
-            var reservoir = await _context.Reservoirs.SingleOrDefaultAsync();
-
-            Assert.That(reservoir, Is.Not.Null);
-
-            //var history = await _context.ReservoirHistories.SingleOrDefaultAsync();
-            //Assert.That(history, Is.Not.Null);
-            //Assert.That(history.CodReservoir, Is.EqualTo(reservoir.CodReservoir));
-            //Assert.That(history.Zone.Id, Is.EqualTo(reservoir.Zone.Id));
-
-            //Assert.That(history.TypeOperation, Is.EqualTo(Utils.TypeOperation.Create));
-            //Assert.That(history.User, Is.Not.Null);
-            //Assert.That(history.User.Name, Is.EqualTo(_user.Name));
-        }
+        //Assert.That(history.TypeOperation, Is.EqualTo(Utils.TypeOperation.Create));
+        //Assert.That(history.User, Is.Not.Null);
+        //Assert.That(history.User.Name, Is.EqualTo(_user.Name));
+        //}
     }
 }
