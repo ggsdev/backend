@@ -8,7 +8,7 @@ using PRIO.src.Modules.Hierarchy.Clusters.ViewModels;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
-using PRIO.src.Shared.SystemHistories.Interfaces;
+using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
 using PRIO.src.Shared.Utils;
 
 namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
@@ -17,13 +17,14 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
     {
         private readonly IMapper _mapper;
         private readonly IClusterRepository _clusterRepository;
-        private readonly ISystemHistoryRepository _systemHistoryRepository;
+        private readonly SystemHistoryService _systemHistoryService;
+        private readonly string TableName = HistoryColumns.TableClusters;
 
-        public ClusterService(IMapper mapper, IClusterRepository clusterRepository, ISystemHistoryRepository systemHistoryRepository)
+        public ClusterService(IMapper mapper, IClusterRepository clusterRepository, SystemHistoryService systemHistoryService)
         {
             _mapper = mapper;
             _clusterRepository = clusterRepository;
-            _systemHistoryRepository = systemHistoryRepository;
+            _systemHistoryService = systemHistoryService;
         }
 
         public async Task<ClusterDTO> CreateCluster(CreateClusterViewModel body, User user)
@@ -42,22 +43,8 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
 
             await _clusterRepository.AddClusterAsync(cluster);
 
-            var currentData = _mapper.Map<Cluster, ClusterHistoryDTO>(cluster);
-            var currentDate = DateTime.UtcNow;
-            currentData.createdAt = currentDate;
-            currentData.updatedAt = currentDate;
-
-            var history = new SystemHistory
-            {
-                Table = HistoryColumns.TableClusters,
-                TypeOperation = HistoryColumns.Create,
-                CreatedBy = user?.Id,
-                TableItemId = clusterId,
-
-                CurrentData = currentData,
-            };
-
-            await _systemHistoryRepository.AddAsync(history);
+            await _systemHistoryService
+                .Create<Cluster, ClusterHistoryDTO>(TableName, user, clusterId, cluster);
 
             await _clusterRepository.SaveChangesAsync();
 
@@ -99,26 +86,9 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
 
             _clusterRepository.UpdateCluster(cluster);
 
-            var firstHistory = await _systemHistoryRepository.GetFirst(id);
+            await _systemHistoryService
+                .Update(TableName, user, updatedProperties, cluster.Id, cluster, beforeChangesCluster);
 
-            var changedFields = UpdateFields.DictionaryToObject(updatedProperties);
-
-            var currentData = _mapper.Map<Cluster, ClusterHistoryDTO>(cluster);
-            currentData.updatedAt = DateTime.UtcNow;
-
-            var history = new SystemHistory
-            {
-                Table = HistoryColumns.TableClusters,
-                TypeOperation = HistoryColumns.Update,
-                CreatedBy = firstHistory?.CreatedBy,
-                UpdatedBy = user?.Id,
-                TableItemId = cluster.Id,
-                FieldsChanged = changedFields,
-                CurrentData = currentData,
-                PreviousData = beforeChangesCluster,
-            };
-
-            await _systemHistoryRepository.AddAsync(history);
             await _clusterRepository.SaveChangesAsync();
 
             var clusterDTO = _mapper.Map<Cluster, ClusterDTO>(cluster);
@@ -133,32 +103,16 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
             if (cluster is null || cluster.IsActive is false)
                 throw new NotFoundException("Cluster not found or inactive already");
 
-            var lastHistory = await _systemHistoryRepository.GetLast(id);
-
-            cluster.IsActive = false;
-            cluster.DeletedAt = DateTime.UtcNow;
-
-            var currentData = _mapper.Map<Cluster, ClusterHistoryDTO>(cluster);
-            currentData.updatedAt = DateTime.UtcNow;
-            currentData.deletedAt = cluster.DeletedAt;
-
-            var history = new SystemHistory
+            var propertiesUpdated = new
             {
-                Table = HistoryColumns.TableClusters,
-                TypeOperation = HistoryColumns.Delete,
-                CreatedBy = cluster.User?.Id,
-                UpdatedBy = user?.Id,
-                TableItemId = cluster.Id,
-                CurrentData = currentData,
-                PreviousData = lastHistory?.CurrentData,
-                FieldsChanged = new
-                {
-                    cluster.IsActive,
-                    cluster.DeletedAt,
-                }
+                IsActive = false,
+                DeletedAt = DateTime.UtcNow,
             };
 
-            await _systemHistoryRepository.AddAsync(history);
+            var updatedProperties = UpdateFields
+                .CompareUpdateReturnOnlyUpdated(cluster, propertiesUpdated);
+
+            await _systemHistoryService.Delete(TableName, user, )
 
             _clusterRepository.DeleteCluster(cluster);
 

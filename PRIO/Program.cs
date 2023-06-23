@@ -40,6 +40,7 @@ using PRIO.src.Shared.Infra.Http.Filters;
 using PRIO.src.Shared.Infra.Http.Middlewares;
 using PRIO.src.Shared.Infra.Http.Services;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Repositories;
+using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
 using PRIO.src.Shared.SystemHistories.Interfaces;
 using PRIO.src.Shared.Utils.Binders;
 using PRIO.src.Shared.Utils.MappingProfiles;
@@ -140,6 +141,8 @@ static void ConfigureServices(IServiceCollection services)
     services.AddScoped<CompletionService>();
     services.AddScoped<EquipmentService>();
     services.AddScoped<MenuService>();
+    services.AddScoped<SystemHistoryService>();
+
     services.AddScoped<IMenuRepository, MenuRepository>();
     services.AddScoped<IGroupRepository, GroupRepository>();
     services.AddScoped<IGroupPermissionRepository, GroupPermissionRepository>();

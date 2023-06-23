@@ -5,12 +5,15 @@ using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Clusters.Dtos;
+using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Controllers;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Clusters.ViewModels;
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
+using PRIO.src.Shared.SystemHistories.Infra.EF.Repositories;
+using PRIO.src.Shared.SystemHistories.Interfaces;
 
 namespace PRIO.TESTS.Hierarquies.Clusters
 {
@@ -19,6 +22,8 @@ namespace PRIO.TESTS.Hierarquies.Clusters
         private ClusterController _controller;
         private IMapper _mapper;
         private DataContext _context;
+        private IClusterRepository _clusterRepository;
+        private ISystemHistoryRepository _systemHistoryRepository;
         private ClusterService _service;
         private CreateClusterViewModel _viewModel;
         private User _user;
@@ -54,7 +59,10 @@ namespace PRIO.TESTS.Hierarquies.Clusters
             httpContext.Items["Id"] = _user.Id;
             httpContext.Items["User"] = _user;
 
-            _service = new ClusterService(_context, _mapper);
+            _systemHistoryRepository = new SystemHistoryRepository(_context);
+            _clusterRepository = new ClusterRepository(_context);
+
+            _service = new ClusterService(_mapper, _clusterRepository, _systemHistoryRepository);
             _controller = new ClusterController(_service);
             _controller.ControllerContext.HttpContext = httpContext;
         }

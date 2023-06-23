@@ -122,7 +122,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
 
             var beforeChangesEquipment = _mapper.Map<MeasuringEquipmentHistoryDTO>(equipment);
 
-            var updatedProperties = UpdateFields.CompareAndUpdateEquipment(equipment, body);
+            var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(equipment, body);
 
             if (updatedProperties.Any() is false && equipment.Installation?.Id == body.InstallationId)
                 throw new BadRequestException("This equipment already has these values, try to update to other values.");
