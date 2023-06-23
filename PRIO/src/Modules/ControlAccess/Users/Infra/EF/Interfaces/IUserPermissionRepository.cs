@@ -4,9 +4,12 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Interfaces
 {
     public interface IUserPermissionRepository
     {
+        Task AddUserPermission(UserPermission userPermission);
         Task<List<UserPermission>> GetUserPermissionsByUserId(Guid userId);
         Task<List<UserPermission>> GetUserPermissionsByGroupId();
         void UpdateUserPermissions(List<UserPermission> userPermissions);
         Task RemoveUserPermissions(List<UserPermission> userPermissions);
+        Task<List<UserPermission>> GetUserPermissionsByGroupId(Guid groupId);
+
     }
 }

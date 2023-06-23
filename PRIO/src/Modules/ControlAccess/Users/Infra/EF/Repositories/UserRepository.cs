@@ -13,6 +13,16 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
         {
             _context = context;
         }
+        public async Task UpdateUsers(List<User> users)
+        {
+            _context.UpdateRange(users);
+            await _context.SaveChangesAsync();
+        }
+        public async Task AddUserPermission(UserPermission userPermission)
+        {
+            await _context.AddAsync(userPermission);
+            await _context.SaveChangesAsync();
+        }
 
         public async Task<User?> GetUserWithGroupAndPermissionsAsync(Guid userId)
         {
@@ -24,5 +34,13 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
 
             return userHasGroup;
         }
+
+        public async Task<List<User>> GetUsersByLastGroupId(Guid groupId)
+        {
+            return await _context.Users
+                .Where(x => x.LastGroupId == groupId)
+                .ToListAsync();
+        }
+
     }
 }

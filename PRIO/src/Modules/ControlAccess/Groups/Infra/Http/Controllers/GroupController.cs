@@ -65,18 +65,18 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Controllers
             return Ok(groupDTO);
         }
 
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> Delete([FromRoute] Guid id)
-        //{
-        //    await _service.DeleteGroup(id);
-        //    return NoContent();
-        //}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        {
+            await _service.DeleteGroup(id);
+            return NoContent();
+        }
 
-        //[HttpPatch("{id}/restore")]
-        //public async Task<IActionResult> Restore([FromRoute] Guid id)
-        //{
-        //    await _service.RestoreGroup(id);
-        //    return NoContent();
-        //}
+        [HttpPatch("{id}/restore")]
+        public async Task<IActionResult> Restore([FromRoute] Guid id)
+        {
+            await _service.RestoreGroup(id);
+            return NoContent();
+        }
     }
 }

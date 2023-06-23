@@ -27,5 +27,17 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
         {
             _context.GroupPermissions.UpdateRange(groupPermissions);
         }
+        public void UpdateGroupPermission(GroupPermission groupPermissions)
+        {
+            _context.GroupPermissions.UpdateRange(groupPermissions);
+        }
+        public async Task<List<GroupPermission>> GetBasicGroupPermissionsByGroupId(Guid groupId)
+        {
+            return await _context.GroupPermissions
+                .Include(x => x.Group)
+                .Where(x => x.Group.Id == groupId)
+                .ToListAsync();
+        }
+
     }
 }

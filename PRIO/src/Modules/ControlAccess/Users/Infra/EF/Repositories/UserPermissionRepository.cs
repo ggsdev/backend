@@ -13,6 +13,11 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
         {
             _context = context;
         }
+        public async Task AddUserPermission(UserPermission userPermission)
+        {
+            await _context.AddAsync(userPermission);
+            await _context.SaveChangesAsync();
+        }
 
         public async Task<List<UserPermission>> GetUserPermissionsByUserId(Guid userId)
         {
@@ -35,6 +40,12 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
         {
             _context.RemoveRange(userPermissions);
             await _context.SaveChangesAsync();
+        }
+        public async Task<List<UserPermission>> GetUserPermissionsByGroupId(Guid groupId)
+        {
+            return await _context.UserPermissions
+                .Where(x => x.GroupId == groupId)
+                .ToListAsync();
         }
     }
 }
