@@ -9,7 +9,7 @@ using PRIO.src.Modules.Hierarchy.Zones.ViewModels;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
-using PRIO.src.Shared.SystemHistories.Interfaces;
+using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
 using PRIO.src.Shared.Utils;
 
 namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
@@ -18,15 +18,16 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
     {
         private readonly IZoneRepository _zoneRepository;
         private readonly IFieldRepository _fieldRepository;
-        private readonly ISystemHistoryRepository _systemHistoryRepository;
+        private readonly SystemHistoryService _systemHistoryService;
         private readonly IMapper _mapper;
+        private readonly string _tableName = HistoryColumns.TableZones;
 
-        public ZoneService(IMapper mapper, ISystemHistoryRepository systemHistory, IFieldRepository fieldRepository, IZoneRepository zoneRepository)
+        public ZoneService(IMapper mapper, SystemHistoryService systemHistoryService, IFieldRepository fieldRepository, IZoneRepository zoneRepository)
         {
             _mapper = mapper;
-            _systemHistoryRepository = systemHistory;
             _fieldRepository = fieldRepository;
             _zoneRepository = zoneRepository;
+            _systemHistoryService = systemHistoryService;
         }
 
         public async Task<CreateUpdateZoneDTO> CreateZone(CreateZoneViewModel body, User user)
@@ -55,27 +56,14 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
 
             await _zoneRepository.AddAsync(zone);
 
-            var currentData = _mapper.Map<Zone, ZoneHistoryDTO>(zone);
-            currentData.createdAt = DateTime.UtcNow;
-            currentData.updatedAt = DateTime.UtcNow;
-
-            var history = new SystemHistory
-            {
-                Table = HistoryColumns.TableZones,
-                TypeOperation = HistoryColumns.Create,
-                CreatedBy = user?.Id,
-                TableItemId = zoneId,
-                CurrentData = currentData,
-            };
-
-            await _systemHistoryRepository.AddAsync(history);
+            await _systemHistoryService
+                .Create<Zone, ZoneHistoryDTO>(_tableName, user, zoneId, zone);
 
             await _zoneRepository.SaveChangesAsync();
 
             var zoneDTO = _mapper.Map<Zone, CreateUpdateZoneDTO>(zone);
 
             return zoneDTO;
-
         }
 
         public async Task<List<ZoneDTO>> GetZones()
@@ -122,29 +110,11 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
                 updatedProperties[nameof(ZoneHistoryDTO.fieldId)] = field.Id;
             }
 
+
+            await _systemHistoryService
+                .Update(_tableName, user, updatedProperties, zone.Id, zone, beforeChangesZone);
+
             _zoneRepository.Update(zone);
-
-            var firstHistory = await _systemHistoryRepository.GetFirst(id);
-
-            var changedFields = UpdateFields.DictionaryToObject(updatedProperties);
-
-            var currentData = _mapper.Map<Zone, ZoneHistoryDTO>(zone);
-            currentData.updatedAt = DateTime.UtcNow;
-
-            var history = new SystemHistory
-            {
-                Table = HistoryColumns.TableZones,
-                TypeOperation = HistoryColumns.Update,
-                CreatedBy = firstHistory?.CreatedBy,
-                UpdatedBy = user?.Id,
-                TableItemId = zone.Id,
-                FieldsChanged = changedFields,
-                CurrentData = currentData,
-                PreviousData = beforeChangesZone,
-            };
-
-            await _systemHistoryRepository.AddAsync(history);
-
             await _zoneRepository.SaveChangesAsync();
 
             var zoneDTO = _mapper.Map<Zone, CreateUpdateZoneDTO>(zone);
@@ -158,31 +128,17 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
             if (zone is null || zone.IsActive is false)
                 throw new NotFoundException("Zone not found or inactive already");
 
-            var lastHistory = await _systemHistoryRepository.GetLast(id);
-
-            zone.IsActive = false;
-            zone.DeletedAt = DateTime.UtcNow;
-
-            var currentData = _mapper.Map<Zone, ZoneHistoryDTO>(zone);
-            currentData.updatedAt = (DateTime)zone.DeletedAt;
-            currentData.deletedAt = zone.DeletedAt;
-
-            var history = new SystemHistory
+            var propertiesUpdated = new
             {
-                Table = HistoryColumns.TableZones,
-                TypeOperation = HistoryColumns.Delete,
-                CreatedBy = zone.User?.Id,
-                UpdatedBy = user?.Id,
-                TableItemId = zone.Id,
-                CurrentData = currentData,
-                PreviousData = lastHistory?.CurrentData,
-                FieldsChanged = new
-                {
-                    zone.IsActive,
-                    zone.DeletedAt,
-                }
+                IsActive = false,
+                DeletedAt = DateTime.UtcNow,
             };
-            await _systemHistoryRepository.AddAsync(history);
+
+            var updatedProperties = UpdateFields
+                .CompareUpdateReturnOnlyUpdated(zone, propertiesUpdated);
+
+            await _systemHistoryService
+                .Delete<Zone, ZoneHistoryDTO>(_tableName, user, updatedProperties, zone.Id, zone);
 
             _zoneRepository.Update(zone);
 
@@ -197,31 +153,16 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
             if (zone is null || zone.IsActive is true)
                 throw new NotFoundException("Zone not found or is active already");
 
-            var lastHistory = await _systemHistoryRepository.GetLast(id);
-
-            zone.IsActive = true;
-            zone.DeletedAt = null;
-
-            var currentData = _mapper.Map<Zone, ZoneHistoryDTO>(zone);
-            currentData.updatedAt = DateTime.UtcNow;
-
-            var history = new SystemHistory
+            var propertiesUpdated = new
             {
-                Table = HistoryColumns.TableZones,
-                TypeOperation = HistoryColumns.Restore,
-                CreatedBy = zone.User?.Id,
-                UpdatedBy = user?.Id,
-                TableItemId = zone.Id,
-                CurrentData = currentData,
-                PreviousData = lastHistory?.CurrentData,
-                FieldsChanged = new
-                {
-                    zone.IsActive,
-                    zone.DeletedAt,
-                }
+                IsActive = true,
+                DeletedAt = (DateTime?)null,
             };
+            var updatedProperties = UpdateFields
+                .CompareUpdateReturnOnlyUpdated(zone, propertiesUpdated);
 
-            await _systemHistoryRepository.AddAsync(history);
+            await _systemHistoryService
+                .Restore<Zone, ZoneHistoryDTO>(_tableName, user, updatedProperties, zone.Id, zone);
 
             _zoneRepository.Update(zone);
 
@@ -233,7 +174,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
 
         public async Task<List<SystemHistory>> GetZoneHistory(Guid id)
         {
-            var zoneHistories = await _systemHistoryRepository.GetAll(id);
+            var zoneHistories = await _systemHistoryService.GetAll(id);
 
             if (zoneHistories is null)
                 throw new NotFoundException("Zone not found");

@@ -8,7 +8,7 @@ using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
-using PRIO.src.Shared.SystemHistories.Interfaces;
+using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
 using PRIO.src.Shared.Utils;
 
 namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
@@ -18,23 +18,21 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
         private readonly IMapper _mapper;
         private readonly IFieldRepository _fieldRepository;
         private readonly IInstallationRepository _installationRepository;
-        private readonly ISystemHistoryRepository _systemHistoryRepository;
+        private readonly SystemHistoryService _systemHistoryService;
+        private readonly string _tableName = HistoryColumns.TableFields;
 
-        public FieldService(IMapper mapper, IFieldRepository fieldRepository, ISystemHistoryRepository systemRepository, IInstallationRepository installationRepository)
+        public FieldService(IMapper mapper, IFieldRepository fieldRepository, SystemHistoryService systemHistoryService, IInstallationRepository installationRepository)
         {
             _mapper = mapper;
             _fieldRepository = fieldRepository;
-            _systemHistoryRepository = systemRepository;
             _installationRepository = installationRepository;
+            _systemHistoryService = systemHistoryService;
         }
 
         public async Task<CreateUpdateFieldDTO> CreateField(CreateFieldViewModel body, User user)
         {
             var installationInDatabase = await _installationRepository
-                .GetByIdAsync(body.InstallationId);
-
-            if (installationInDatabase is null)
-                throw new NotFoundException("Installation not found");
+                .GetByIdAsync(body.InstallationId) ?? throw new NotFoundException("Installation not found");
 
             var fieldId = Guid.NewGuid();
 
@@ -54,20 +52,8 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
 
             await _fieldRepository.AddAsync(field);
 
-            var currentData = _mapper.Map<Field, FieldHistoryDTO>(field);
-            currentData.createdAt = DateTime.UtcNow;
-            currentData.updatedAt = DateTime.UtcNow;
-
-            var history = new SystemHistory
-            {
-                Table = HistoryColumns.TableFields,
-                TypeOperation = HistoryColumns.Create,
-                CreatedBy = user?.Id,
-                TableItemId = fieldId,
-                CurrentData = currentData,
-            };
-
-            await _systemHistoryRepository.AddAsync(history);
+            await _systemHistoryService
+                .Create<Field, FieldHistoryDTO>(_tableName, user, fieldId, field);
 
             await _fieldRepository.SaveChangesAsync();
 
@@ -121,26 +107,8 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
 
             _fieldRepository.Update(field);
 
-            var firstHistory = await _systemHistoryRepository.GetFirst(id);
-
-            var changedFields = UpdateFields.DictionaryToObject(updatedProperties);
-
-            var currentData = _mapper.Map<Field, FieldHistoryDTO>(field);
-            currentData.updatedAt = DateTime.UtcNow;
-
-            var history = new SystemHistory
-            {
-                Table = HistoryColumns.TableFields,
-                TypeOperation = HistoryColumns.Update,
-                CreatedBy = firstHistory?.CreatedBy,
-                UpdatedBy = user?.Id,
-                TableItemId = field.Id,
-                FieldsChanged = changedFields,
-                CurrentData = currentData,
-                PreviousData = beforeChangesField,
-            };
-
-            await _systemHistoryRepository.AddAsync(history);
+            await _systemHistoryService
+                .Update(_tableName, user, updatedProperties, field.Id, field, beforeChangesField);
 
             await _fieldRepository.SaveChangesAsync();
 
@@ -156,32 +124,17 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
             if (field is null || field.IsActive is false)
                 throw new NotFoundException("Field not found or inactive already");
 
-            var lastHistory = await _systemHistoryRepository.GetLast(id);
-
-            field.IsActive = false;
-            field.DeletedAt = DateTime.UtcNow;
-
-            var currentData = _mapper.Map<Field, FieldHistoryDTO>(field);
-            currentData.updatedAt = (DateTime)field.DeletedAt;
-            currentData.deletedAt = field.DeletedAt;
-
-            var history = new SystemHistory
+            var propertiesUpdated = new
             {
-                Table = HistoryColumns.TableFields,
-                TypeOperation = HistoryColumns.Delete,
-                CreatedBy = field.User?.Id,
-                UpdatedBy = user?.Id,
-                TableItemId = field.Id,
-                CurrentData = currentData,
-                PreviousData = lastHistory?.CurrentData,
-                FieldsChanged = new
-                {
-                    field.IsActive,
-                    field.DeletedAt,
-                }
+                IsActive = false,
+                DeletedAt = DateTime.UtcNow,
             };
 
-            await _systemHistoryRepository.AddAsync(history);
+            var updatedProperties = UpdateFields
+                .CompareUpdateReturnOnlyUpdated(field, propertiesUpdated);
+
+            await _systemHistoryService
+                .Delete<Field, FieldHistoryDTO>(_tableName, user, updatedProperties, field.Id, field);
 
             _fieldRepository.Update(field);
 
@@ -195,31 +148,17 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
             if (field is null || field.IsActive is true)
                 throw new NotFoundException("Field not found or active already");
 
-            var lastHistory = await _systemHistoryRepository.GetLast(id);
-
-            field.IsActive = true;
-            field.DeletedAt = null;
-
-            var currentData = _mapper.Map<Field, FieldHistoryDTO>(field);
-            currentData.updatedAt = DateTime.UtcNow;
-
-            var history = new SystemHistory
+            var propertiesUpdated = new
             {
-                Table = HistoryColumns.TableFields,
-                TypeOperation = HistoryColumns.Restore,
-                CreatedBy = field.User?.Id,
-                UpdatedBy = user?.Id,
-                TableItemId = field.Id,
-                CurrentData = currentData,
-                PreviousData = lastHistory?.CurrentData,
-                FieldsChanged = new
-                {
-                    field.IsActive,
-                    field.DeletedAt,
-                }
+                IsActive = true,
+                DeletedAt = (DateTime?)null,
             };
 
-            await _systemHistoryRepository.AddAsync(history);
+            var updatedProperties = UpdateFields
+                .CompareUpdateReturnOnlyUpdated(field, propertiesUpdated);
+
+            await _systemHistoryService
+                .Restore<Field, FieldHistoryDTO>(_tableName, user, updatedProperties, field.Id, field);
 
             _fieldRepository.Update(field);
             await _fieldRepository.SaveChangesAsync();
@@ -230,7 +169,8 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
 
         public async Task<List<SystemHistory>> GetFieldHistory(Guid id)
         {
-            var fieldHistories = await _systemHistoryRepository.GetAll(id);
+            var fieldHistories = await _systemHistoryService
+                .GetAll(id);
 
             if (fieldHistories is null)
                 throw new NotFoundException("Field not found");

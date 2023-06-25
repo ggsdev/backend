@@ -18,7 +18,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
         private readonly IMapper _mapper;
         private readonly IClusterRepository _clusterRepository;
         private readonly SystemHistoryService _systemHistoryService;
-        private readonly string TableName = HistoryColumns.TableClusters;
+        private readonly string _tableName = HistoryColumns.TableClusters;
 
         public ClusterService(IMapper mapper, IClusterRepository clusterRepository, SystemHistoryService systemHistoryService)
         {
@@ -44,7 +44,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
             await _clusterRepository.AddClusterAsync(cluster);
 
             await _systemHistoryService
-                .Create<Cluster, ClusterHistoryDTO>(TableName, user, clusterId, cluster);
+                .Create<Cluster, ClusterHistoryDTO>(_tableName, user, clusterId, cluster);
 
             await _clusterRepository.SaveChangesAsync();
 
@@ -87,7 +87,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
             _clusterRepository.UpdateCluster(cluster);
 
             await _systemHistoryService
-                .Update(TableName, user, updatedProperties, cluster.Id, cluster, beforeChangesCluster);
+                .Update(_tableName, user, updatedProperties, cluster.Id, cluster, beforeChangesCluster);
 
             await _clusterRepository.SaveChangesAsync();
 
@@ -113,7 +113,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                 .CompareUpdateReturnOnlyUpdated(cluster, propertiesUpdated);
 
             await _systemHistoryService
-                .Delete<Cluster,ClusterHistoryDTO>(TableName, user, updatedProperties, cluster.Id, cluster);
+                .Delete<Cluster, ClusterHistoryDTO>(_tableName, user, updatedProperties, cluster.Id, cluster);
 
             _clusterRepository.DeleteCluster(cluster);
 
@@ -130,14 +130,14 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
             var propertiesUpdated = new
             {
                 IsActive = true,
-                DeletedAt = (DateTime?) null,
+                DeletedAt = (DateTime?)null,
             };
 
             var updatedProperties = UpdateFields
                 .CompareUpdateReturnOnlyUpdated(cluster, propertiesUpdated);
 
             await _systemHistoryService
-                .Restore<Cluster, ClusterHistoryDTO>(TableName, user, updatedProperties, cluster.Id, cluster);
+                .Restore<Cluster, ClusterHistoryDTO>(_tableName, user, updatedProperties, cluster.Id, cluster);
 
             _clusterRepository.RestoreCluster(cluster);
             await _clusterRepository.SaveChangesAsync();
@@ -149,10 +149,8 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
 
         public async Task<List<SystemHistory>> GetClusterHistory(Guid id)
         {
-            var clusterHistories = await _systemHistoryService.GetAll(id);
-
-            if (clusterHistories is null)
-                throw new NotFoundException("Cluster not found");
+            var clusterHistories = await _systemHistoryService
+                .GetAll(id) ?? throw new NotFoundException("Cluster not found");
 
             foreach (var history in clusterHistories)
             {

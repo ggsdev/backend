@@ -95,7 +95,8 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Controllers
                     Message = "User not identified, please login first"
                 });
 
-            var installationHistories = await _installationService.GetInstallationHistory(id, user);
+            var installationHistories = await _installationService
+                .GetInstallationHistory(id);
 
             return Ok(installationHistories);
         }
