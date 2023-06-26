@@ -8,6 +8,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Dtos
         public string? Name { get; set; }
         public string? UepCod { get; set; }
         public string? CodInstallation { get; set; }
+        public double? GasSafetyBurnVolume { get; set; }
         public string? Description { get; set; }
         public UserDTO? User { get; set; }
         public DateTime? CreatedAt { get; set; }

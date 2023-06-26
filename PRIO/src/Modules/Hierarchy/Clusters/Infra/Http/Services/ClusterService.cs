@@ -113,7 +113,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                 .CompareUpdateReturnOnlyUpdated(cluster, propertiesUpdated);
 
             await _systemHistoryService
-                .Delete<Cluster,ClusterHistoryDTO>(TableName, user, updatedProperties, cluster.Id, cluster);
+                .Delete<Cluster, ClusterHistoryDTO>(TableName, user, updatedProperties, cluster.Id, cluster);
 
             _clusterRepository.DeleteCluster(cluster);
 
@@ -130,7 +130,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
             var propertiesUpdated = new
             {
                 IsActive = true,
-                DeletedAt = (DateTime?) null,
+                DeletedAt = (DateTime?)null,
             };
 
             var updatedProperties = UpdateFields
