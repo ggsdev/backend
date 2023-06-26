@@ -74,14 +74,14 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
             return installationsDTO;
         }
 
-        public async Task<InstallationWithFieldsDTO> GetInstallationById(Guid id)
+        public async Task<InstallationWithFieldsEquipmentsDTO> GetInstallationById(Guid id)
         {
-            var installation = await _installationRepository.GetByIdWithFieldsAsync(id);
+            var installation = await _installationRepository.GetByIdWithFieldsEquipmentsAsync(id);
 
             if (installation is null)
                 throw new NotFoundException("Installation not found");
 
-            var installationDTO = _mapper.Map<Installation, InstallationWithFieldsDTO>(installation);
+            var installationDTO = _mapper.Map<Installation, InstallationWithFieldsEquipmentsDTO>(installation);
 
             return installationDTO;
         }

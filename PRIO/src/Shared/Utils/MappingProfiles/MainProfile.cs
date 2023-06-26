@@ -84,7 +84,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<Installation, CreateUpdateInstallationDTO>();
             CreateMap<Installation, InstallationHistoryDTO>();
             CreateMap<Installation, InstallationWithoutClusterDTO>();
-            CreateMap<Installation, InstallationWithFieldsDTO>();
+            CreateMap<Installation, InstallationWithFieldsEquipmentsDTO>();
 
             CreateMap<Field, FieldDTO>();
             CreateMap<Field, CreateUpdateFieldDTO>();
@@ -136,6 +136,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
 
             CreateMap<MeasuringEquipment, MeasuringEquipmentDTO>();
             CreateMap<MeasuringEquipment, MeasuringEquipmentHistoryDTO>();
+            CreateMap<MeasuringEquipment, MeasuringEquipmentWithoutInstallationDTO>();
 
             CreateMap<Menu, MenuParentDTO>();
             CreateMap<Menu, MenuChildrenDTO>();
