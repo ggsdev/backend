@@ -96,7 +96,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
 
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(zone, body);
 
-            if (updatedProperties.Any() is false && zone.Field?.Id == body.FieldId)
+            if (updatedProperties.Any() is false && (zone.Field?.Id == body.FieldId || body.FieldId is null))
                 throw new BadRequestException("This zone already has these values, try to update to other values.");
 
             if (body.FieldId is not null)
