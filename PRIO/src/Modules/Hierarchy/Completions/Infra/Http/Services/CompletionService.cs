@@ -114,7 +114,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
 
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(completion, body);
 
-            if (updatedProperties.Any() is false && body?.WellId == completion.Well?.Id && body?.ReservoirId == completion.Reservoir?.Id)
+            if (updatedProperties.Any() is false && (body?.WellId == completion.Well?.Id || body?.WellId is null) && (body?.ReservoirId == completion.Reservoir?.Id || body?.ReservoirId is null))
                 throw new BadRequestException("This completion already has these values, try to update to other values.");
 
             if (body?.WellId is not null)

@@ -114,7 +114,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
 
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(equipment, body);
 
-            if (updatedProperties.Any() is false && equipment.Installation?.Id == body.InstallationId)
+            if (updatedProperties.Any() is false && (equipment.Installation?.Id == body.InstallationId || body.InstallationId is null))
                 throw new BadRequestException("This equipment already has these values, try to update to other values.");
 
             if (body.InstallationId is not null)
