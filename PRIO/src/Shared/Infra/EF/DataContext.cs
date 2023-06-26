@@ -83,7 +83,7 @@ namespace PRIO.src.Shared.Infra.EF
                 var port = envVars["PORT"];
                 var instance = envVars["SERVER_INSTANCE"];
 
-                optionsBuilder.UseSqlServer($"Server={server}\\{instance},{port};Database={database};User ID={userId};Password={password};Encrypt={encrypt};");
+                optionsBuilder.UseSqlServer($"Server={server},{port};Database={database};User ID={userId};Password={password};Encrypt={encrypt};");
             }
         }
         public override int SaveChanges()

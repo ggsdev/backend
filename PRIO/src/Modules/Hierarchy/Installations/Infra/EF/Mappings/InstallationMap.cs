@@ -28,6 +28,9 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Mappings
             builder.Property(x => x.Description)
                 .HasColumnType("TEXT");
 
+            builder.Property(x => x.GasSafetyBurnVolume)
+                .HasColumnType("decimal");
+
             builder.Property(x => x.CreatedAt);
 
             builder.Property(x => x.UpdatedAt);

@@ -47,6 +47,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                 Description = body.Description,
                 UepCod = body.UepCod,
                 CodInstallation = body.CodInstallation,
+                GasSafetyBurnVolume = body.GasSafetyBurnVolume,
                 Cluster = clusterInDatabase,
                 User = user,
                 IsActive = body.IsActive is not null ? body.IsActive.Value : true,

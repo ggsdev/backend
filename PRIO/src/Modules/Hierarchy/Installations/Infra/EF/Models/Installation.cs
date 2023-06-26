@@ -11,6 +11,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models
         public string? Name { get; set; }
         public string? UepCod { get; set; }
         public string? CodInstallation { get; set; }
+        public double? GasSafetyBurnVolume { get; set; }
         public User? User { get; set; }
         public Cluster? Cluster { get; set; }
         public List<MeasuringEquipment>? MeasuringEquipments { get; set; }

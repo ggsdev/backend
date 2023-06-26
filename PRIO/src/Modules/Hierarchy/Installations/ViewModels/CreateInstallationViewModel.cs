@@ -15,6 +15,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.ViewModels
         [Required(ErrorMessage = "CodInstallation is required")]
         [StringLength(120, ErrorMessage = "CodInstallation cannot exceed 120 characters.")]
         public string? CodInstallation { get; set; }
+        public double? GasSafetyBurnVolume { get; set; }
         public string? Description { get; set; }
         public bool? IsActive { get; set; }
     }
