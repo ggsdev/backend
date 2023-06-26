@@ -9,7 +9,7 @@ using PRIO.src.Modules.Hierarchy.Wells.ViewModels;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
-using PRIO.src.Shared.SystemHistories.Interfaces;
+using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
 using PRIO.src.Shared.Utils;
 
 namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
@@ -18,15 +18,16 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
     {
         private readonly IMapper _mapper;
         private readonly IFieldRepository _fieldRepository;
-        private readonly ISystemHistoryRepository _systemRepository;
         private readonly IWellRepository _wellRepository;
+        private readonly SystemHistoryService _systemHistoryService;
+        private readonly string _tableName = HistoryColumns.TableWells;
 
-        public WellService(IMapper mapper, IFieldRepository fieldRepository, ISystemHistoryRepository systemHistoryRepository, IWellRepository wellRepository)
+        public WellService(IMapper mapper, IFieldRepository fieldRepository, SystemHistoryService systemHistoryService, IWellRepository wellRepository)
         {
             _mapper = mapper;
             _fieldRepository = fieldRepository;
-            _systemRepository = systemHistoryRepository;
             _wellRepository = wellRepository;
+            _systemHistoryService = systemHistoryService;
         }
 
         public async Task<CreateUpdateWellDTO> CreateWell(CreateWellViewModel body, User user)
@@ -70,27 +71,138 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
 
             await _wellRepository.AddAsync(well);
 
-            var currentData = _mapper.Map<Well, WellHistoryDTO>(well);
-            var dataCurrent = DateTime.UtcNow;
-            currentData.createdAt = dataCurrent;
-            currentData.updatedAt = dataCurrent;
-
-            var history = new SystemHistory
-            {
-                Table = HistoryColumns.TableWells,
-                TypeOperation = HistoryColumns.Create,
-                CreatedBy = user?.Id,
-                TableItemId = wellId,
-                CurrentData = currentData,
-            };
-
-            await _systemRepository.AddAsync(history);
+            await _systemHistoryService
+                .Create<Well, WellHistoryDTO>(_tableName, user, wellId, well);
 
             await _wellRepository.SaveChangesAsync();
 
             var wellDTO = _mapper.Map<Well, CreateUpdateWellDTO>(well);
             return wellDTO;
         }
+
+        public async Task<List<WellDTO>> GetWells()
+        {
+            var wells = await _wellRepository.GetAsync();
+
+            var wellsDTO = _mapper.Map<List<Well>, List<WellDTO>>(wells);
+            return wellsDTO;
+        }
+
+        public async Task<WellDTO> GetWellById(Guid id)
+        {
+            var well = await _wellRepository.GetByIdAsync(id);
+
+            if (well is null)
+                throw new NotFoundException("Well not found");
+
+            var wellDTO = _mapper.Map<Well, WellDTO>(well);
+            return wellDTO;
+        }
+        public async Task<CreateUpdateWellDTO> UpdateWell(UpdateWellViewModel body, Guid id, User user)
+        {
+            var well = await _wellRepository.GetWithFieldAsync(id);
+
+            if (well is null)
+                throw new NotFoundException("Well not found");
+
+            var beforeChangesWell = _mapper.Map<WellHistoryDTO>(well);
+
+            var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(well, body);
+
+            if (updatedProperties.Any() is false && well.Field?.Id == body.FieldId)
+                throw new BadRequestException("This well already has these values, try to update to other values.");
+
+            if (body.FieldId is not null)
+            {
+                var fieldInDatabase = await _fieldRepository.GetOnlyField(body.FieldId);
+
+                if (fieldInDatabase is null)
+                    throw new NotFoundException("Field not found");
+
+                well.Field = fieldInDatabase;
+                updatedProperties[nameof(WellHistoryDTO.fieldId)] = fieldInDatabase.Id;
+            }
+
+            await _systemHistoryService
+                .Update(_tableName, user, updatedProperties, well.Id, well, beforeChangesWell);
+
+            _wellRepository.Update(well);
+
+            await _wellRepository.SaveChangesAsync();
+
+            var wellDTO = _mapper.Map<Well, CreateUpdateWellDTO>(well);
+            return wellDTO;
+        }
+
+        public async Task DeleteWell(Guid id, User user)
+        {
+            var well = await _wellRepository.GetOnlyWellAsync(id);
+
+            if (well is null || well.IsActive is false)
+                throw new NotFoundException("Well not found or inactive already");
+
+            var propertiesUpdated = new
+            {
+                IsActive = false,
+                DeletedAt = DateTime.UtcNow,
+            };
+            var updatedProperties = UpdateFields
+                .CompareUpdateReturnOnlyUpdated(well, propertiesUpdated);
+
+            await _systemHistoryService
+                .Delete<Well, WellHistoryDTO>(_tableName, user, updatedProperties, well.Id, well);
+
+            _wellRepository.Update(well);
+
+            await _wellRepository.SaveChangesAsync();
+        }
+
+        public async Task<CreateUpdateWellDTO> RestoreWell(Guid id, User user)
+        {
+            var well = await _wellRepository.GetWithUserAsync(id);
+
+            if (well is null || well.IsActive is true)
+                throw new NotFoundException("Well not found or active already");
+
+            var propertiesUpdated = new
+            {
+                IsActive = true,
+                DeletedAt = (DateTime?)null,
+            };
+            var updatedProperties = UpdateFields
+                .CompareUpdateReturnOnlyUpdated(well, propertiesUpdated);
+
+            await _systemHistoryService
+                .Restore<Well, WellHistoryDTO>(_tableName, user, updatedProperties, well.Id, well);
+
+            _wellRepository.Update(well);
+
+            await _wellRepository.SaveChangesAsync();
+
+            var wellDTO = _mapper.Map<Well, CreateUpdateWellDTO>(well);
+            return wellDTO;
+        }
+
+
+        public async Task<List<SystemHistory>> GetWellHistory(Guid id)
+        {
+            var wellHistories = await _systemHistoryService.GetAll(id);
+
+            if (wellHistories is null)
+                throw new NotFoundException("Well not found");
+
+            foreach (var history in wellHistories)
+            {
+                history.PreviousData = history.PreviousData is not null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(history.PreviousData.ToString()!) : null;
+
+                history.CurrentData = history.CurrentData is not null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(history.CurrentData.ToString()!) : null;
+
+                history.FieldsChanged = history.FieldsChanged is not null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(history.FieldsChanged.ToString()!) : null;
+            }
+
+            return wellHistories;
+        }
+
 
         //public async Task<PaginatedDataDTO<WellDTO>> GetWells(int pageNumber, int pageSize, string requestUrl)
         //{
@@ -138,176 +250,5 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
         //    return paginatedData;
         //}
 
-        public async Task<List<WellDTO>> GetWells()
-        {
-            var wells = await _wellRepository.GetAsync();
-
-            var wellsDTO = _mapper.Map<List<Well>, List<WellDTO>>(wells);
-            return wellsDTO;
-        }
-
-        public async Task<WellDTO> GetWellById(Guid id)
-        {
-            var well = await _wellRepository.GetByIdAsync(id);
-
-            if (well is null)
-                throw new NotFoundException("Well not found");
-
-            var wellDTO = _mapper.Map<Well, WellDTO>(well);
-            return wellDTO;
-        }
-        public async Task<CreateUpdateWellDTO> UpdateWell(UpdateWellViewModel body, Guid id, User user)
-        {
-            var well = await _wellRepository.GetWithFieldAsync(id);
-
-            if (well is null)
-                throw new NotFoundException("Well not found");
-
-            var beforeChangesWell = _mapper.Map<WellHistoryDTO>(well);
-
-            var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(well, body);
-
-            if (updatedProperties.Any() is false && well.Field?.Id == body.FieldId)
-                throw new BadRequestException("This well already has these values, try to update to other values.");
-
-            if (body.FieldId is not null)
-            {
-                var fieldInDatabase = await _fieldRepository.GetOnlyField(body.FieldId);
-
-                if (fieldInDatabase is null)
-                    throw new NotFoundException("Field not found");
-
-                well.Field = fieldInDatabase;
-                updatedProperties[nameof(WellHistoryDTO.fieldId)] = fieldInDatabase.Id;
-            }
-
-            var firstHistory = await _systemRepository.GetFirst(id);
-
-            var changedFields = UpdateFields.DictionaryToObject(updatedProperties);
-
-            var currentData = _mapper.Map<Well, WellHistoryDTO>(well);
-            currentData.updatedAt = DateTime.UtcNow;
-
-            var history = new SystemHistory
-            {
-                Table = HistoryColumns.TableWells,
-                TypeOperation = HistoryColumns.Update,
-                CreatedBy = firstHistory?.CreatedBy,
-                UpdatedBy = user?.Id,
-                TableItemId = well.Id,
-                FieldsChanged = changedFields,
-                CurrentData = currentData,
-                PreviousData = beforeChangesWell,
-            };
-
-            await _systemRepository.AddAsync(history);
-
-            _wellRepository.Update(well);
-
-            await _wellRepository.SaveChangesAsync();
-
-            var wellDTO = _mapper.Map<Well, CreateUpdateWellDTO>(well);
-            return wellDTO;
-        }
-
-        public async Task DeleteWell(Guid id, User user)
-        {
-            var well = await _wellRepository.GetOnlyWellAsync(id);
-
-            if (well is null || well.IsActive is false)
-                throw new NotFoundException("Well not found or inactive already");
-
-            var lastHistory = await _systemRepository.GetLast(id);
-
-            well.IsActive = false;
-            well.DeletedAt = DateTime.UtcNow;
-
-            var currentData = _mapper.Map<Well, WellHistoryDTO>(well);
-            currentData.updatedAt = (DateTime)well.DeletedAt;
-            currentData.deletedAt = well.DeletedAt;
-
-            var history = new SystemHistory
-            {
-                Table = HistoryColumns.TableWells,
-                TypeOperation = HistoryColumns.Delete,
-                CreatedBy = well.User?.Id,
-                UpdatedBy = user?.Id,
-                TableItemId = well.Id,
-                CurrentData = currentData,
-                PreviousData = lastHistory?.CurrentData,
-                FieldsChanged = new
-                {
-                    well.IsActive,
-                    well.DeletedAt,
-                }
-            };
-
-            await _systemRepository.AddAsync(history);
-
-            _wellRepository.Update(well);
-
-            await _wellRepository.SaveChangesAsync();
-        }
-
-        public async Task<CreateUpdateWellDTO> RestoreWell(Guid id, User user)
-        {
-            var well = await _wellRepository.GetWithUserAsync(id);
-
-            if (well is null || well.IsActive is true)
-                throw new NotFoundException("Well not found or active already");
-
-            var lastHistory = await _systemRepository.GetLast(id);
-
-            well.IsActive = true;
-            well.DeletedAt = null;
-
-            var currentData = _mapper.Map<Well, WellHistoryDTO>(well);
-            currentData.updatedAt = DateTime.UtcNow;
-
-            var history = new SystemHistory
-            {
-                Table = HistoryColumns.TableWells,
-                TypeOperation = HistoryColumns.Restore,
-                CreatedBy = well.User?.Id,
-                UpdatedBy = user?.Id,
-                TableItemId = well.Id,
-                CurrentData = currentData,
-                PreviousData = lastHistory?.CurrentData,
-                FieldsChanged = new
-                {
-                    well.IsActive,
-                    well.DeletedAt,
-                }
-            };
-
-            await _systemRepository.AddAsync(history);
-
-            _wellRepository.Update(well);
-
-            await _wellRepository.SaveChangesAsync();
-
-            var wellDTO = _mapper.Map<Well, CreateUpdateWellDTO>(well);
-            return wellDTO;
-        }
-
-
-        public async Task<List<SystemHistory>> GetWellHistory(Guid id)
-        {
-            var wellHistories = await _systemRepository.GetAll(id);
-
-            if (wellHistories is null)
-                throw new NotFoundException("Well not found");
-
-            foreach (var history in wellHistories)
-            {
-                history.PreviousData = history.PreviousData is not null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(history.PreviousData.ToString()!) : null;
-
-                history.CurrentData = history.CurrentData is not null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(history.CurrentData.ToString()!) : null;
-
-                history.FieldsChanged = history.FieldsChanged is not null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(history.FieldsChanged.ToString()!) : null;
-            }
-
-            return wellHistories;
-        }
     }
 }
