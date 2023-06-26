@@ -89,7 +89,8 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
 
         public async Task<MeasuringEquipmentDTO> GetEquipmentById(Guid id)
         {
-            var equipment = await _equipmentRepository.GetByIdAsync(id);
+            var equipment = await _equipmentRepository
+                .GetWithInstallationAsync(id);
 
             if (equipment is null)
                 throw new NotFoundException("Equipment not found");

@@ -23,6 +23,6 @@ namespace PRIO.src.Modules.Measuring.Equipments.Dtos
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public UserDTO? User { get; set; }
-        public InstallationDTO? Installation { get; set; }
+        public InstallationWithoutClusterDTO? Installation { get; set; }
     }
 }

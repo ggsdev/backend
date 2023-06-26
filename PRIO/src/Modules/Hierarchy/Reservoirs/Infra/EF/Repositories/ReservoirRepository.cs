@@ -42,6 +42,7 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Repositories
         {
             return await _context.Reservoirs
                 .Include(x => x.User)
+                .Include(x => x.Zone)
                 .Include(x => x.Completions)
                 .ThenInclude(c => c.Well)
                   .FirstOrDefaultAsync(x => x.Id == id);

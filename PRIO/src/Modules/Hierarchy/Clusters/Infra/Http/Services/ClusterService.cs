@@ -149,12 +149,8 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
 
         public async Task<List<SystemHistory>> GetClusterHistory(Guid id)
         {
-            Console.WriteLine("asdsads");
-
             var clusterHistories = await _systemHistoryService
                 .GetAll(id);
-
-            Console.WriteLine(clusterHistories.Count);
 
             foreach (var history in clusterHistories)
             {

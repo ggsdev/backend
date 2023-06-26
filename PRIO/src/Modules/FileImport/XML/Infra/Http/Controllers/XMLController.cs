@@ -120,9 +120,12 @@ namespace PRIO.Controllers
                                 #region elementos XML
                                 var dadosBasicos = dadosBasicosElement is not null ? Functions.DeserializeXml<DADOS_BASICOS_039>(dadosBasicosElement) : null;
                                 #endregion
-
                                 try
                                 {
+                                    var installation = await context.Installations
+                                        .Where(x => x.CodInstallation == dadosBasicos.DHA_COD_INSTALACAO_039)
+                                        .FirstOrDefaultAsync();
+
                                     var measurement = _mapper.Map<Measurement>(dadosBasicos);
                                     measurement.FileType = new FileType
                                     {

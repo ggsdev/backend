@@ -88,14 +88,14 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             return wellsDTO;
         }
 
-        public async Task<WellDTO> GetWellById(Guid id)
+        public async Task<WellWithFieldAndCompletionsDTO> GetWellById(Guid id)
         {
-            var well = await _wellRepository.GetByIdAsync(id);
+            var well = await _wellRepository.GetByIdWithFieldAndCompletions(id);
 
             if (well is null)
                 throw new NotFoundException("Well not found");
 
-            var wellDTO = _mapper.Map<Well, WellDTO>(well);
+            var wellDTO = _mapper.Map<Well, WellWithFieldAndCompletionsDTO>(well);
             return wellDTO;
         }
         public async Task<CreateUpdateWellDTO> UpdateWell(UpdateWellViewModel body, Guid id, User user)
