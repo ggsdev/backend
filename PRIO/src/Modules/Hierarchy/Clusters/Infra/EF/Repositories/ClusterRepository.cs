@@ -17,12 +17,12 @@ public class ClusterRepository : IClusterRepository
         await _context.Clusters.AddAsync(cluster);
     }
 
-    public async Task<Cluster?> GetClusterByIdAsync(Guid id)
+    public async Task<Cluster?> GetClusterByIdAsync(Guid? id)
     {
         return await _context.Clusters.FirstOrDefaultAsync(c => c.Id == id);
     }
 
-    public async Task<Cluster?> GetClusterWithInstallationsAsync(Guid id)
+    public async Task<Cluster?> GetClusterWithInstallationsAsync(Guid? id)
     {
         return await _context.Clusters
             .Include(x => x.Installations)
