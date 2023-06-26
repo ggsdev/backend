@@ -1,4 +1,5 @@
-﻿using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
+﻿using PRIO.src.Modules.Hierarchy.Installations.Dtos;
+using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 
 namespace PRIO.src.Modules.FileImport.XML.Dtos
 {
@@ -24,5 +25,7 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public List<Bsw>? LISTA_BSW { get; set; }
         public List<Volume>? LISTA_VOLUME { get; set; }
         public FileType? FileType { get; set; }
+        public InstallationWithoutClusterDTO? Installation { get; set; }
+
     }
 }
