@@ -42,7 +42,6 @@ using PRIO.src.Shared.Infra.Http.Services;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Repositories;
 using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
 using PRIO.src.Shared.SystemHistories.Interfaces;
-using PRIO.src.Shared.Utils.Binders;
 using PRIO.src.Shared.Utils.MappingProfiles;
 using System.Text;
 
@@ -79,7 +78,7 @@ static void ConfigureServices(IServiceCollection services)
                         .RequireAuthenticatedUser()
                         .Build();
         config.Filters.Add(new AuthorizeFilter(policy));
-        config.ModelBinderProviders.Insert(0, new GuidBinderProvider());
+        //config.ModelBinderProviders.Insert(0, new GuidBinderProvider());
     });
 
     services.AddCors(options =>

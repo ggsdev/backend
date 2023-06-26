@@ -46,9 +46,14 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Controllers
             return Ok(installationDTO);
         }
 
-        [HttpPatch("{id}")]
+        [HttpPatch("{id:guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateInstallationViewModel body)
         {
+            if (!Guid.TryParse(id.ToString(), out var guidValue))
+            {
+                return BadRequest("Invalid GUID format in route param");
+            }
+
             if (HttpContext.Items["User"] is not User user)
                 return Unauthorized(new ErrorResponseDTO
                 {

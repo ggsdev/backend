@@ -101,7 +101,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
             if (updatedProperties.Any() is false && installation.Cluster?.Id == body.ClusterId)
                 throw new BadRequestException("This installation already has these values, try to update to other values.");
 
-            if (body?.ClusterId is not null)
+            if (body.ClusterId is not null)
             {
                 var clusterInDatabase = await _clusterRespository.GetClusterByIdAsync(body.ClusterId);
 

@@ -13,7 +13,7 @@ namespace PRIO.src.Shared.Utils.Binders
                 return Task.CompletedTask;
             }
 
-            var value = valueProviderResult.FirstValue;
+            var value = valueProviderResult.FirstValue?.ToUpperInvariant();
 
             if (!Guid.TryParse(value, out var guidValue))
             {
