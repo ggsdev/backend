@@ -10,7 +10,7 @@ using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
-using PRIO.src.Shared.SystemHistories.Interfaces;
+using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
 using PRIO.src.Shared.Utils;
 
 namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
@@ -21,15 +21,15 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
         private readonly ICompletionRepository _completionRepository;
         private readonly IWellRepository _wellRepository;
         private readonly IReservoirRepository _reservoirRepository;
-        private readonly ISystemHistoryRepository _systemHistoryRepository;
-
-        public CompletionService(IMapper mapper, ICompletionRepository completionRepository, IWellRepository wellRepository, IReservoirRepository reservoirRepository, ISystemHistoryRepository systemHistoryRepository)
+        private readonly SystemHistoryService _systemHistoryService;
+        private readonly string _tableName = HistoryColumns.TableCompletions;
+        public CompletionService(IMapper mapper, ICompletionRepository completionRepository, IWellRepository wellRepository, IReservoirRepository reservoirRepository, SystemHistoryService systemHistoryService)
         {
             _mapper = mapper;
             _completionRepository = completionRepository;
             _wellRepository = wellRepository;
             _reservoirRepository = reservoirRepository;
-            _systemHistoryRepository = systemHistoryRepository;
+            _systemHistoryService = systemHistoryService;
         }
 
         public async Task<CreateUpdateCompletionDTO> CreateCompletion(CreateCompletionViewModel body, User user)
@@ -67,20 +67,8 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
                 IsActive = body.IsActive is not null ? body.IsActive.Value : true,
             };
 
-            var currentData = _mapper.Map<Completion, CompletionHistoryDTO>(completion);
-            currentData.createdAt = DateTime.UtcNow;
-            currentData.updatedAt = DateTime.UtcNow;
-
-            var history = new SystemHistory
-            {
-                Table = HistoryColumns.TableCompletions,
-                TypeOperation = HistoryColumns.Create,
-                CreatedBy = user?.Id,
-                TableItemId = completionId,
-                CurrentData = currentData,
-            };
-
-            await _systemHistoryRepository.AddAsync(history);
+            await _systemHistoryService
+                .Create<Completion, CompletionHistoryDTO>(_tableName, user, completionId, completion);
 
             await _completionRepository.AddAsync(completion);
 
@@ -172,26 +160,8 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
 
             _completionRepository.Update(completion);
 
-            var firstHistory = await _systemHistoryRepository.GetFirst(id);
-
-            var changedFields = UpdateFields.DictionaryToObject(updatedProperties);
-
-            var currentData = _mapper.Map<Completion, CompletionHistoryDTO>(completion);
-            currentData.updatedAt = DateTime.UtcNow;
-
-            var history = new SystemHistory
-            {
-                Table = HistoryColumns.TableCompletions,
-                TypeOperation = HistoryColumns.Update,
-                CreatedBy = firstHistory?.CreatedBy,
-                UpdatedBy = user?.Id,
-                TableItemId = completion.Id,
-                FieldsChanged = changedFields,
-                CurrentData = currentData,
-                PreviousData = beforeChangesCompletion,
-            };
-
-            await _systemHistoryRepository.AddAsync(history);
+            await _systemHistoryService
+                .Update(_tableName, user, updatedProperties, completion.Id, completion, beforeChangesCompletion);
 
             await _completionRepository.SaveChangesAsync();
 
@@ -206,32 +176,17 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             if (completion is null || !completion.IsActive)
                 throw new NotFoundException("Completion not found or inactive already");
 
-            var lastHistory = await _systemHistoryRepository.GetLast(id);
-
-            completion.IsActive = false;
-            completion.DeletedAt = DateTime.UtcNow;
-
-            var currentData = _mapper.Map<Completion, CompletionHistoryDTO>(completion);
-            currentData.updatedAt = (DateTime)completion.DeletedAt;
-            currentData.deletedAt = completion.DeletedAt;
-
-            var history = new SystemHistory
+            var propertiesUpdated = new
             {
-                Table = HistoryColumns.TableCompletions,
-                TypeOperation = HistoryColumns.Delete,
-                CreatedBy = completion.User?.Id,
-                UpdatedBy = user?.Id,
-                TableItemId = completion.Id,
-                CurrentData = currentData,
-                PreviousData = lastHistory?.CurrentData,
-                FieldsChanged = new
-                {
-                    completion.IsActive,
-                    completion.DeletedAt,
-                }
+                IsActive = false,
+                DeletedAt = DateTime.UtcNow,
             };
 
-            await _systemHistoryRepository.AddAsync(history);
+            var updatedProperties = UpdateFields
+                .CompareUpdateReturnOnlyUpdated(completion, propertiesUpdated);
+
+            await _systemHistoryService
+                .Delete<Completion, CompletionHistoryDTO>(_tableName, user, updatedProperties, completion.Id, completion);
 
             _completionRepository.Update(completion);
             await _completionRepository.SaveChangesAsync();
@@ -244,31 +199,18 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             if (completion is null || completion.IsActive is true)
                 throw new NotFoundException("Completion not found or inactive already");
 
-            var lastHistory = await _systemHistoryRepository.GetLast(id);
-
-            completion.IsActive = true;
-            completion.DeletedAt = null;
-
-            var currentData = _mapper.Map<Completion, CompletionHistoryDTO>(completion);
-            currentData.updatedAt = DateTime.UtcNow;
-
-            var history = new SystemHistory
+            var propertiesUpdated = new
             {
-                Table = HistoryColumns.TableCompletions,
-                TypeOperation = HistoryColumns.Restore,
-                CreatedBy = completion.User?.Id,
-                UpdatedBy = user?.Id,
-                TableItemId = completion.Id,
-                CurrentData = currentData,
-                PreviousData = lastHistory?.CurrentData,
-                FieldsChanged = new
-                {
-                    completion.IsActive,
-                    completion.DeletedAt,
-                }
+                IsActive = true,
+                DeletedAt = (DateTime?)null,
             };
 
-            await _systemHistoryRepository.AddAsync(history);
+            var updatedProperties = UpdateFields
+                .CompareUpdateReturnOnlyUpdated(completion, propertiesUpdated);
+
+            await _systemHistoryService
+                .Restore<Completion, CompletionHistoryDTO>(_tableName, user, updatedProperties, completion.Id, completion);
+
             _completionRepository.Update(completion);
 
             await _completionRepository.SaveChangesAsync();
@@ -279,7 +221,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
 
         public async Task<List<SystemHistory>> GetCompletionHistory(Guid id)
         {
-            var fieldHistories = await _systemHistoryRepository.GetAll(id);
+            var fieldHistories = await _systemHistoryService.GetAll(id);
 
             if (fieldHistories is null)
                 throw new NotFoundException("Completion not found");
