@@ -78,22 +78,31 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<Cluster, ClusterDTO>();
             CreateMap<Cluster, Cluster>();
             CreateMap<Cluster, ClusterHistoryDTO>();
+            CreateMap<Cluster, ClusterWithInstallationsDTO>();
 
             CreateMap<Installation, InstallationDTO>();
             CreateMap<Installation, CreateUpdateInstallationDTO>();
             CreateMap<Installation, InstallationHistoryDTO>();
+            CreateMap<Installation, InstallationWithoutClusterDTO>();
+            CreateMap<Installation, InstallationWithFieldsDTO>();
 
             CreateMap<Field, FieldDTO>();
             CreateMap<Field, CreateUpdateFieldDTO>();
             CreateMap<Field, FieldHistoryDTO>();
+            CreateMap<Field, FieldWithoutInstallationDTO>();
+            CreateMap<Field, FieldWithZonesAndWellsDTO>();
 
             CreateMap<Zone, ZoneDTO>();
             CreateMap<Zone, CreateUpdateZoneDTO>();
             CreateMap<Zone, ZoneHistoryDTO>();
+            CreateMap<Zone, ZoneWithoutFieldDTO>();
+            CreateMap<Zone, ZoneWithReservoirsDTO>();
 
             CreateMap<Reservoir, ReservoirDTO>();
             CreateMap<Reservoir, CreateUpdateReservoirDTO>();
             CreateMap<Reservoir, ReservoirHistoryDTO>();
+            CreateMap<Reservoir, ReservoirWithoutZoneDTO>();
+            CreateMap<Reservoir, ReservoirWithCompletionsDTO>();
 
             CreateMap<Well, WellDTO>()
                 .ForMember(dest => dest.WaterDepth, opt => opt.MapFrom(src => TruncateTwoDecimals(src.WaterDepth)))
@@ -105,9 +114,22 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
                 .ForMember(dest => dest.TopOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.TopOfPerforated)))
                 .ForMember(dest => dest.BaseOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.BaseOfPerforated)));
 
+            CreateMap<Well, WellWithoutFieldDTO>()
+                .ForMember(dest => dest.WaterDepth, opt => opt.MapFrom(src => TruncateTwoDecimals(src.WaterDepth)))
+                .ForMember(dest => dest.TopOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.TopOfPerforated)))
+                .ForMember(dest => dest.BaseOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.BaseOfPerforated)));
+
+            CreateMap<Well, WellWithoutCompletionDTO>()
+                .ForMember(dest => dest.WaterDepth, opt => opt.MapFrom(src => TruncateTwoDecimals(src.WaterDepth)))
+                .ForMember(dest => dest.TopOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.TopOfPerforated)))
+                .ForMember(dest => dest.BaseOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.BaseOfPerforated)));
+
             CreateMap<Completion, CompletionDTO>();
             CreateMap<Completion, CompletionHistoryDTO>();
             CreateMap<Completion, CompletionWithouWellDTO>();
+            CreateMap<Completion, CompletionWithoutReservoirDTO>();
+            CreateMap<Completion, CreateUpdateCompletionDTO>();
+            CreateMap<Completion, CompletionWithWellAndReservoirDTO>();
 
             CreateMap<User, UserDTO>();
             CreateMap<User, UserHistoryDTO>();

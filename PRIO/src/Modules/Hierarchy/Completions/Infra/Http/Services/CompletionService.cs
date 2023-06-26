@@ -32,7 +32,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             _systemHistoryRepository = systemHistoryRepository;
         }
 
-        public async Task<CompletionDTO> CreateCompletion(CreateCompletionViewModel body, User user)
+        public async Task<CreateUpdateCompletionDTO> CreateCompletion(CreateCompletionViewModel body, User user)
         {
             var well = await _wellRepository.GetWithFieldAsync(body.WellId);
 
@@ -86,7 +86,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
 
             await _completionRepository.SaveChangesAsync();
 
-            var completionDTO = _mapper.Map<Completion, CompletionDTO>(completion);
+            var completionDTO = _mapper.Map<Completion, CreateUpdateCompletionDTO>(completion);
 
             return completionDTO;
         }
@@ -100,14 +100,14 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             return completionsDTO;
         }
 
-        public async Task<CompletionDTO> GetCompletionById(Guid id)
+        public async Task<CompletionWithWellAndReservoirDTO> GetCompletionById(Guid id)
         {
             var completion = await _completionRepository.GetByIdAsync(id);
 
             if (completion is null)
                 throw new NotFoundException("Completion not found");
 
-            var completionDTO = _mapper.Map<Completion, CompletionDTO>(completion);
+            var completionDTO = _mapper.Map<Completion, CompletionWithWellAndReservoirDTO>(completion);
             return completionDTO;
         }
 

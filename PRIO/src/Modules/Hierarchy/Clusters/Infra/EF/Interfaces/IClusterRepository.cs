@@ -10,6 +10,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces
         void UpdateCluster(Cluster cluster);
         void DeleteCluster(Cluster cluster);
         void RestoreCluster(Cluster cluster);
+        Task<Cluster?> GetClusterWithInstallationsAsync(Guid id);
         Task SaveChangesAsync();
     }
 }

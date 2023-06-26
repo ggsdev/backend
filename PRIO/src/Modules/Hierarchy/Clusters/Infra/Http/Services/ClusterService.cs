@@ -59,14 +59,15 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
             return clustersDTO;
         }
 
-        public async Task<ClusterDTO> GetClusterById(Guid id)
+        public async Task<ClusterWithInstallationsDTO> GetClusterById(Guid id)
         {
-            var cluster = await _clusterRepository.GetClusterByIdAsync(id);
+            var cluster = await _clusterRepository
+                .GetClusterWithInstallationsAsync(id);
 
             if (cluster is null)
                 throw new NotFoundException("Cluster not found");
 
-            var clusterDTO = _mapper.Map<Cluster, ClusterDTO>(cluster);
+            var clusterDTO = _mapper.Map<Cluster, ClusterWithInstallationsDTO>(cluster);
             return clusterDTO;
         }
 

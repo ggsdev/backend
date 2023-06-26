@@ -36,6 +36,13 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Repositories
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
+        public async Task<Zone?> GetByIdWithReservoirsAsync(Guid? id)
+        {
+            return await _context.Zones
+                .Include(x => x.User)
+                .Include(x => x.Reservoirs)
+                    .FirstOrDefaultAsync(x => x.Id == id);
+        }
         public async Task<Zone?> GetOnlyZone(Guid? id)
         {
             return await _context.Zones

@@ -21,6 +21,13 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
+        public async Task<Installation?> GetByIdWithFieldsAsync(Guid? id)
+        {
+            return await _context.Installations
+                .Include(x => x.Fields)
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public async Task AddAsync(Installation installation)
         {
             await _context.Installations.AddAsync(installation);
