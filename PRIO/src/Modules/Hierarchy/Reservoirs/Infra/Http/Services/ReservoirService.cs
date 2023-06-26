@@ -70,14 +70,14 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
             return reservoirsDTO;
         }
 
-        public async Task<ReservoirWithCompletionsDTO> GetReservoirById(Guid id)
+        public async Task<ReservoirDTO> GetReservoirById(Guid id)
         {
-            var reservoir = await _reservoirRepository.GetByIdWithCompletionsAsync(id);
+            var reservoir = await _reservoirRepository.GetByIdAsync(id);
 
             if (reservoir is null)
                 throw new NotFoundException("Reservoir not found");
 
-            var reservoirDTO = _mapper.Map<Reservoir, ReservoirWithCompletionsDTO>(reservoir);
+            var reservoirDTO = _mapper.Map<Reservoir, ReservoirDTO>(reservoir);
 
             return reservoirDTO;
         }
