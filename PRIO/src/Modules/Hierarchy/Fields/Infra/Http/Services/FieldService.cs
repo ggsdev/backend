@@ -92,7 +92,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
 
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(field, body);
 
-            if (updatedProperties.Any() is false && (body.InstallationId is not null && field.Installation?.Id == body.InstallationId))
+            if (updatedProperties.Any() is false && field.Installation?.Id == body.InstallationId)
                 throw new BadRequestException("This field already has these values, try to update to other values.");
 
             if (body.InstallationId is not null)

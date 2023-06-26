@@ -28,6 +28,10 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Repositories
             return await _context.Completions
                 .Include(x => x.Well)
                 .Include(x => x.Reservoir)
+                .ThenInclude(r => r.Zone)
+                .ThenInclude(z => z.Field)
+                .ThenInclude(z => z.Installation)
+                .ThenInclude(z => z.Cluster)
                 .Include(x => x.User)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
