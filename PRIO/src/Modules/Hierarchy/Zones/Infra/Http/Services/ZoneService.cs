@@ -74,14 +74,14 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
             return zonesDTO;
         }
 
-        public async Task<ZoneDTO> GetZoneById(Guid id)
+        public async Task<ZoneWithReservoirsDTO> GetZoneById(Guid id)
         {
-            var zone = await _zoneRepository.GetByIdAsync(id);
+            var zone = await _zoneRepository.GetByIdWithReservoirsAsync(id);
 
             if (zone is null)
                 throw new NotFoundException("Zone not found");
 
-            var zoneDTO = _mapper.Map<Zone, ZoneDTO>(zone);
+            var zoneDTO = _mapper.Map<Zone, ZoneWithReservoirsDTO>(zone);
             return zoneDTO;
         }
 

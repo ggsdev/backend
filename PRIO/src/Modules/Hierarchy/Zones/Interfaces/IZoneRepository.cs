@@ -12,6 +12,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Interfaces
         Task<List<Zone>> GetAsync();
         Task<Zone?> GetByCode(string code);
         Task<Zone?> GetOnlyZone(Guid? id);
+        Task<Zone?> GetByIdWithReservoirsAsync(Guid? id);
         Task<Zone?> GetWithField(Guid? id);
         Task<Zone?> GetWithUser(Guid? id);
         Task SaveChangesAsync();

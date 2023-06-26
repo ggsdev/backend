@@ -38,7 +38,14 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Repositories
                 .ThenInclude(z => z.Field)
                   .FirstOrDefaultAsync(x => x.Id == id);
         }
-
+        public async Task<Reservoir?> GetByIdWithCompletionsAsync(Guid? id)
+        {
+            return await _context.Reservoirs
+                .Include(x => x.User)
+                .Include(x => x.Completions)
+                .ThenInclude(c => c.Well)
+                  .FirstOrDefaultAsync(x => x.Id == id);
+        }
         public async Task<Reservoir?> GetOnlyReservoirAsync(Guid? id)
         {
             return await _context.Reservoirs

@@ -69,14 +69,15 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
             return fieldsDTO;
         }
 
-        public async Task<FieldDTO> GetFieldById(Guid id)
+        public async Task<FieldWithZonesAndWellsDTO> GetFieldById(Guid id)
         {
-            var field = await _fieldRepository.GetByIdAsync(id);
+            var field = await _fieldRepository
+                .GetByIdWithWellsAndZonesAsync(id);
 
             if (field is null)
                 throw new NotFoundException("Field not found");
 
-            var fieldDTO = _mapper.Map<Field, FieldDTO>(field);
+            var fieldDTO = _mapper.Map<Field, FieldWithZonesAndWellsDTO>(field);
             return fieldDTO;
         }
 
