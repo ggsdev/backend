@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33627.172
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PRIO", "PRIO\PRIO.csproj", "{89C86BF8-2649-432E-B20A-10D02AFF29D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PRIO", "PRIO\PRIO.csproj", "{89C86BF8-2649-432E-B20A-10D02AFF29D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PRIO.TESTS", "PRIO.TESTS\PRIO.TESTS.csproj", "{D27FD55A-C244-4B93-8455-EEAD9BE1E91E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{89C86BF8-2649-432E-B20A-10D02AFF29D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{89C86BF8-2649-432E-B20A-10D02AFF29D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{89C86BF8-2649-432E-B20A-10D02AFF29D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D27FD55A-C244-4B93-8455-EEAD9BE1E91E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D27FD55A-C244-4B93-8455-EEAD9BE1E91E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D27FD55A-C244-4B93-8455-EEAD9BE1E91E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D27FD55A-C244-4B93-8455-EEAD9BE1E91E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
