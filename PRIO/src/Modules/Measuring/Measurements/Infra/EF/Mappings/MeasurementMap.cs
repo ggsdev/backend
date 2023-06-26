@@ -1484,9 +1484,10 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
 
-            builder.HasOne(x => x.MeasuringEquipment)
+            builder.HasOne(x => x.Installation)
                 .WithMany(x => x.Measurements)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired();
 
             builder.HasOne(x => x.User)
                 .WithMany(x => x.Measurements)

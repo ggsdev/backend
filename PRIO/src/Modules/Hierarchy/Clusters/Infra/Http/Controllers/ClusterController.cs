@@ -4,6 +4,7 @@ using PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Clusters.ViewModels;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.Http.Filters;
+using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
 
 namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Controllers
 {
@@ -13,11 +14,13 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Controllers
     public class ClusterController : ControllerBase
     {
         private readonly ClusterService _clusterService;
+        private readonly SystemHistoryService _systemHistoryService;
 
-        public ClusterController(ClusterService service)
+        public ClusterController(ClusterService service, SystemHistoryService systemHistoryService)
 
         {
             _clusterService = service;
+            _systemHistoryService = systemHistoryService;
         }
 
         [HttpPost]
@@ -87,12 +90,12 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Controllers
             return Ok(clusterDTO);
         }
 
-        //[HttpGet("{id}/history")]
-        //public async Task<IActionResult> GetHistory([FromRoute] Guid id)
-        //{
-        //    var clusterHistories = await _clusterService.GetClusterHistory(id);
+        [HttpGet("{id}/history")]
+        public async Task<IActionResult> GetHistory([FromRoute] Guid id)
+        {
+            var clusterHistories = await _clusterService.GetClusterHistory(id);
 
-        //    return Ok(clusterHistories);
-        //}
+            return Ok(clusterHistories);
+        }
     }
 }

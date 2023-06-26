@@ -89,11 +89,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Controllers
         [HttpGet("{id}/history")]
         public async Task<IActionResult> GetHistory([FromRoute] Guid id)
         {
-            if (HttpContext.Items["User"] is not User user)
-                return Unauthorized(new ErrorResponseDTO
-                {
-                    Message = "User not identified, please login first"
-                });
 
             var installationHistories = await _installationService
                 .GetInstallationHistory(id);

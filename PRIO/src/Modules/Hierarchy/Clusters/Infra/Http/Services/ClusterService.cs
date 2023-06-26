@@ -59,15 +59,14 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
             return clustersDTO;
         }
 
-        public async Task<ClusterWithInstallationsDTO> GetClusterById(Guid id)
+        public async Task<ClusterDTO> GetClusterById(Guid id)
         {
-            var cluster = await _clusterRepository
-                .GetClusterWithInstallationsAsync(id);
+            var cluster = await _clusterRepository.GetClusterByIdAsync(id);
 
             if (cluster is null)
                 throw new NotFoundException("Cluster not found");
 
-            var clusterDTO = _mapper.Map<Cluster, ClusterWithInstallationsDTO>(cluster);
+            var clusterDTO = _mapper.Map<Cluster, ClusterDTO>(cluster);
             return clusterDTO;
         }
 
@@ -150,8 +149,12 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
 
         public async Task<List<SystemHistory>> GetClusterHistory(Guid id)
         {
+            Console.WriteLine("asdsads");
+
             var clusterHistories = await _systemHistoryService
-                .GetAll(id) ?? throw new NotFoundException("Cluster not found");
+                .GetAll(id);
+
+            Console.WriteLine(clusterHistories.Count);
 
             foreach (var history in clusterHistories)
             {

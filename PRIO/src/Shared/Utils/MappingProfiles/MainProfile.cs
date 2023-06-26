@@ -76,7 +76,6 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             #endregion
 
             CreateMap<Cluster, ClusterDTO>();
-            CreateMap<Cluster, Cluster>();
             CreateMap<Cluster, ClusterHistoryDTO>();
             CreateMap<Cluster, ClusterWithInstallationsDTO>();
 

@@ -8,7 +8,8 @@ using PRIO.src.Modules.ControlAccess.Users.ViewModels;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.Infra.Http.Services;
-using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
+using PRIO.src.Shared.SystemHistories.Dtos.UserDtos;
+using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
 using PRIO.src.Shared.Utils;
 
 namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
@@ -17,12 +18,14 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
     {
         private readonly TokenServices _tokenServices;
         private readonly DataContext _context;
+        private readonly SystemHistoryService _systemHistoryService;
 
-        public SessionController(DataContext context, TokenServices tokenServices)
+        public SessionController(DataContext context, TokenServices tokenServices, SystemHistoryService systemHistoryService)
 
         {
             _tokenServices = tokenServices;
             _context = context;
+            _systemHistoryService = systemHistoryService;
         }
 
         #region Login
@@ -68,6 +71,10 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
             });
         }
 
+        #endregion
+
+        #region Login Active Directory
+
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginDTO))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponseDTO))]
@@ -108,15 +115,9 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
 
                 await _context.Users.AddAsync(createUser);
 
-                var history = new SystemHistory
-                {
-                    TypeOperation = HistoryColumns.Create,
-                    Table = HistoryColumns.TableUsers,
-                    TableItemId = userId,
-                    CurrentData = createUser,
-                    CreatedBy = userId,
-                };
-                await _context.SystemHistories.AddAsync(history);
+                await _systemHistoryService
+                    .Create<User, UserHistoryDTO>(HistoryColumns.TableUsers, createUser, userId, createUser);
+
                 await _context.SaveChangesAsync();
 
                 token = await _tokenServices.CreateSessionAndToken(createUser, userHttpAgent);

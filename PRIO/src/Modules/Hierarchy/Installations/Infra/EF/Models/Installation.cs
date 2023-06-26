@@ -16,5 +16,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models
         public Cluster? Cluster { get; set; }
         public List<MeasuringEquipment>? MeasuringEquipments { get; set; }
         public List<Field>? Fields { get; set; }
+        public List<Measurement>? Measurements { get; set; }
     }
 }

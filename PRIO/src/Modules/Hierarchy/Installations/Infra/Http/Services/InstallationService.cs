@@ -188,7 +188,8 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
 
                 history.CurrentData = history.CurrentData is not null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(history.CurrentData.ToString()!) : null;
 
-                history.FieldsChanged = history.FieldsChanged is not null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(history.FieldsChanged.ToString()!) : null;
+                history.FieldsChanged = history.FieldsChanged is not null ?
+                    JsonConvert.DeserializeObject<Dictionary<string, object>>(history.FieldsChanged.ToString()!) : null;
             }
 
             return installationHistories;

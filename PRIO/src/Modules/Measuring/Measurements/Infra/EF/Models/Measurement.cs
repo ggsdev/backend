@@ -1,4 +1,5 @@
 ﻿using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models
@@ -403,10 +404,9 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models
         public List<Volume>? LISTA_VOLUME { get; set; }
         #endregion
 
-        public FileType FileType { get; set; }
+        public FileType? FileType { get; set; }
         public User? User { get; set; }
 
-        public MeasuringEquipment? MeasuringEquipment { get; set; }
-
+        public Installation? Installation { get; set; }
     }
 }
