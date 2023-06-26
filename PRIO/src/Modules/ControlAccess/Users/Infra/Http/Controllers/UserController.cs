@@ -1,7 +1,9 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PRIO.src.Modules.ControlAccess.Groups.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.ViewModels;
@@ -346,7 +348,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
         //}
         #endregion
 
-        [HttpPatch("permissions/{userId}")]
+        [HttpPatch("users/{userId}/permissions")]
         public async Task<IActionResult> EditPermission([FromBody] InsertUserPermissionViewModel body, [FromRoute] Guid userId)
         {
 
@@ -693,7 +695,179 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
                 }
                 await _context.SaveChangesAsync();
             }
+
+            var gPermissions = await _context.GroupPermissions.Include(x => x.Group).Where(x => x.Group.Id == userWithPermissions.Group.Id).ToListAsync();
+            var uPermissions = await _context.UserPermissions.Include(x => x.User).Where(x => x.User.Id == userId).ToListAsync();
+            var gPermissionsCount = gPermissions.Count();
+            var uPermissionsCount = uPermissions.Count();
+            if (uPermissionsCount != gPermissionsCount)
+            {
+                userWithPermissions.IsPermissionDefault = false;
+            }
+            else {
+                int? verifyCount = 0;
+                foreach (var gPermission in gPermissions)
+                {
+                    var verifyPermission = await _context
+                        .UserPermissions.Include(x => x.User)
+                        .Where(x => x.MenuName == gPermission.MenuName)
+                        .Where(x => x.User.Id == userWithPermissions.Id)
+                        .FirstOrDefaultAsync();
+                    if (verifyPermission is null) 
+                    {
+                        userWithPermissions.IsPermissionDefault = false;
+                    } else
+                    { 
+                        verifyCount ++;
+                    }
+                }
+                if (verifyCount != uPermissionsCount)
+                {
+                    userWithPermissions.IsPermissionDefault = false;
+                }
+                else {
+                    userWithPermissions.IsPermissionDefault = true;
+                }
+            }
+
+            var gOperations = await _context.GroupOperations
+                .Include(x => x.GroupPermission)
+                .ThenInclude(x => x.Group)
+                .Where(x => x.GroupPermission.Group.Id == userWithPermissions.Group.Id)
+                .ToListAsync();
+            var uOperations = await _context.UserOperations
+                .Include(x => x.UserPermission)
+                .ThenInclude(x => x.User)
+                .Where(x => x.UserPermission.User.Id == userId)
+                .ToListAsync();
+
+            var gOperationsCount = gOperations.Count();
+            var uOperationsCount = uOperations.Count();
+            if (uOperationsCount != gOperationsCount)
+            {
+                userWithPermissions.IsPermissionDefault = false;
+            }
+            else
+            {
+                int? verifyCount = 0;
+                foreach (var gOperation in gOperations) // PAREI AQUI !
+                {
+                    var verifyPermission = await _context
+                        .UserOperations.Include(x => x.UserPermission)
+                        .Where(x => x.OperationName == gOperation.OperationName)
+                        .Where(x => x.UserPermission.MenuName == gOperation.GroupPermission.MenuName)
+                        .Where(x => x.UserPermission.User.Id == userWithPermissions.Id)
+                        .FirstOrDefaultAsync();
+                   
+                    if (verifyPermission is null)
+                    {
+                        userWithPermissions.IsPermissionDefault = false;
+                    }
+                    else
+                    {
+                        verifyCount++;
+                    }
+                }
+                if (verifyCount != uOperationsCount)
+                {
+                    userWithPermissions.IsPermissionDefault = false;
+                }
+                else
+                {
+                    userWithPermissions.IsPermissionDefault = true;
+                }
+            }
+
+            await _context.SaveChangesAsync();
             var userDTO = _mapper.Map<User, ProfileDTO>(userWithPermissions);
+            return Ok(userDTO);
+        }
+
+
+        [HttpPatch("users/{userId}/permissions/refresh")]
+        public async Task<IActionResult> RefreshPermission([FromRoute] Guid userId)
+        {
+            var user = await _context.Users
+                .Include(x => x.UserPermissions)
+                .Include(x => x.Group)
+                .Where(x => x.Id == userId)
+                .FirstOrDefaultAsync();
+
+            if (user == null)
+                throw new NotFoundException("User is not found.");   
+            
+            if (user.Group == null)
+                throw new NotFoundException("User's group is not found.");
+
+            var permissionsUser = await _context.UserPermissions
+                .Include(x => x.User)
+                .Where(x => x.User.Id == userId)
+                .ToListAsync();
+            _context.RemoveRange(permissionsUser);
+
+            var operationsUser = await _context.UserOperations
+                .Include(x => x.UserPermission)
+                .ThenInclude(x => x.User)
+                .Where(x => x.UserPermission.User.Id == userId)
+                .ToListAsync();
+            _context.RemoveRange(operationsUser);
+            await _context.SaveChangesAsync();
+
+
+            var gPermissions = await _context.GroupPermissions
+                .Include(x => x.Operations)
+                .Include(x => x.Menu)
+                .Include(x => x.Group)
+                .Where(x => x.Group.Id == user.Group.Id)
+                .ToListAsync();
+            foreach (var permission in gPermissions)
+            {
+                var groupPermission = await _context.GroupPermissions
+                    .Where(x => x.Id == permission.Id)
+                    .FirstOrDefaultAsync();
+
+                var userPermission = new UserPermission
+                {
+                    Id = Guid.NewGuid(),
+                    hasChildren = permission.hasChildren,
+                    hasParent = permission.hasParent,
+                    MenuIcon = permission.MenuIcon,
+                    MenuName = permission.MenuName,
+                    MenuOrder = permission.MenuOrder,
+                    MenuRoute = permission.MenuRoute,
+                    GroupId = permission.Group.Id,
+                    GroupName = permission.Group.Name,
+                    MenuId = permission.Menu.Id,
+                    User = user,
+                    GroupMenu = groupPermission,
+                    CreatedAt = DateTime.UtcNow,
+                };
+
+                await _context.UserPermissions.AddAsync(userPermission);
+
+                foreach (var operation in permission.Operations)
+                {
+                    var foundOperation = await _context.GlobalOperations
+                        .Where(x => x.Method == operation.OperationName)
+                        .FirstOrDefaultAsync();
+
+                    var userOperation = new UserOperation
+                    {
+                        Id = Guid.NewGuid(),
+                        OperationName = operation.OperationName,
+                        UserPermission = userPermission,
+                        GlobalOperation = foundOperation,
+                        GroupName = user.Group.Name
+                    };
+
+                    await _context.UserOperations.AddAsync(userOperation);
+                }
+            }
+            user.IsPermissionDefault = true;
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            var userDTO = _mapper.Map<User, UserGroupDTO>(user);
+
             return Ok(userDTO);
         }
     }
