@@ -7,6 +7,7 @@
         public readonly static string Create = "CREATE";
         public readonly static string Restore = "RESTORE";
         public readonly static string Import = "IMPORT";
+        public readonly static string ImportUpdate = "IMPORT_UPDATE";
 
         public readonly static string TableClusters = "CLUSTERS";
         public readonly static string TableInstallations = "INSTALLATIONS";

@@ -126,5 +126,53 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
 
             await _systemHistoryRepository.AddAsync(history);
         }
+
+
+        public SystemHistory Import<T, U>(string tableName, User user, Guid tableItemId, T objectCreated) where T : class where U : class
+        {
+
+            dynamic currentData = _mapper.Map<T, U>(objectCreated);
+            var dateCurrent = DateTime.UtcNow;
+
+            currentData.createdAt = dateCurrent;
+            currentData.updatedAt = dateCurrent;
+
+            return new SystemHistory
+            {
+                Table = tableName,
+                TypeOperation = HistoryColumns.Import,
+                CreatedBy = user?.Id,
+                TableItemId = tableItemId,
+                CurrentData = currentData,
+            };
+        }
+
+        public async Task<SystemHistory> ImportUpdate<T, U>(string tableName, User user, Dictionary<string, object> updatedProperties, Guid tableItemId, T objectUpdated, U objectBeforeChanges)
+        where T : class where U : class
+        {
+            var firstHistory = await _systemHistoryRepository.GetFirst(tableItemId);
+
+            var changedFields = UpdateFields.DictionaryToObject(updatedProperties);
+
+            dynamic currentData = _mapper.Map<T, U>(objectUpdated);
+
+            var dateCurrent = DateTime.UtcNow;
+
+            currentData.createdAt = dateCurrent;
+            currentData.updatedAt = dateCurrent;
+
+            return new SystemHistory
+            {
+                Table = tableName,
+                TypeOperation = HistoryColumns.ImportUpdate,
+                CreatedBy = firstHistory?.CreatedBy,
+                UpdatedBy = user?.Id,
+                TableItemId = tableItemId,
+                FieldsChanged = changedFields,
+                CurrentData = currentData,
+                PreviousData = objectBeforeChanges,
+            };
+        }
+
     }
 }
