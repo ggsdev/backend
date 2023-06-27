@@ -28,6 +28,12 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Repositories
             return await _context.MeasuringEquipments
                 .ToListAsync();
         }
+        public async Task<MeasuringEquipment?> GetWithInstallationAsync(Guid? id)
+        {
+            return await _context.MeasuringEquipments
+                .Include(x => x.Installation)
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
 
         public void Update(MeasuringEquipment installation)
         {

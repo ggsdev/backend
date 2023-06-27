@@ -78,6 +78,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<Cluster, ClusterDTO>();
             CreateMap<Cluster, ClusterHistoryDTO>();
             CreateMap<Cluster, ClusterWithInstallationsDTO>();
+            CreateMap<Cluster, ClusterWithoutInstallationsDTO>();
 
             CreateMap<Installation, InstallationDTO>();
             CreateMap<Installation, CreateUpdateInstallationDTO>();
@@ -120,6 +121,10 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
 
             CreateMap<Well, WellWithoutCompletionDTO>()
                 .ForMember(dest => dest.WaterDepth, opt => opt.MapFrom(src => TruncateTwoDecimals(src.WaterDepth)))
+                .ForMember(dest => dest.TopOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.TopOfPerforated)))
+                .ForMember(dest => dest.BaseOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.BaseOfPerforated)));
+
+            CreateMap<Well, WellWithFieldAndCompletionsDTO>().ForMember(dest => dest.WaterDepth, opt => opt.MapFrom(src => TruncateTwoDecimals(src.WaterDepth)))
                 .ForMember(dest => dest.TopOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.TopOfPerforated)))
                 .ForMember(dest => dest.BaseOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.BaseOfPerforated)));
 

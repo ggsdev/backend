@@ -89,7 +89,8 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
 
         public async Task<MeasuringEquipmentDTO> GetEquipmentById(Guid id)
         {
-            var equipment = await _equipmentRepository.GetByIdAsync(id);
+            var equipment = await _equipmentRepository
+                .GetWithInstallationAsync(id);
 
             if (equipment is null)
                 throw new NotFoundException("Equipment not found");
@@ -113,7 +114,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
 
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(equipment, body);
 
-            if (updatedProperties.Any() is false && equipment.Installation?.Id == body.InstallationId)
+            if (updatedProperties.Any() is false && (equipment.Installation?.Id == body.InstallationId || body.InstallationId is null))
                 throw new BadRequestException("This equipment already has these values, try to update to other values.");
 
             if (body.InstallationId is not null)

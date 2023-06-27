@@ -13,7 +13,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Dtos
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public UserDTO? User { get; set; }
-        public ReservoirWithoutZoneDTO? Reservoir { get; set; }
-        public WellWithoutCompletionDTO? Well { get; set; }
+        public ReservoirDTO? Reservoir { get; set; }
+        public WellWithoutFieldDTO? Well { get; set; }
     }
 }

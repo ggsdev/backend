@@ -74,14 +74,14 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
             return zonesDTO;
         }
 
-        public async Task<ZoneWithReservoirsDTO> GetZoneById(Guid id)
+        public async Task<ZoneDTO> GetZoneById(Guid id)
         {
-            var zone = await _zoneRepository.GetByIdWithReservoirsAsync(id);
+            var zone = await _zoneRepository.GetByIdAsync(id);
 
             if (zone is null)
                 throw new NotFoundException("Zone not found");
 
-            var zoneDTO = _mapper.Map<Zone, ZoneWithReservoirsDTO>(zone);
+            var zoneDTO = _mapper.Map<Zone, ZoneDTO>(zone);
             return zoneDTO;
         }
 
@@ -96,7 +96,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
 
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(zone, body);
 
-            if (updatedProperties.Any() is false && zone.Field?.Id == body.FieldId)
+            if (updatedProperties.Any() is false && (zone.Field?.Id == body.FieldId || body.FieldId is null))
                 throw new BadRequestException("This zone already has these values, try to update to other values.");
 
             if (body.FieldId is not null)

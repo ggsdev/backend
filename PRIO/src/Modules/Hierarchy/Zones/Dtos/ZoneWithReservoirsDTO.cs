@@ -1,4 +1,5 @@
 ﻿using PRIO.src.Modules.ControlAccess.Users.Dtos;
+using PRIO.src.Modules.Hierarchy.Fields.Dtos;
 using PRIO.src.Modules.Hierarchy.Reservoirs.Dtos;
 
 namespace PRIO.src.Modules.Hierarchy.Zones.Dtos
@@ -13,5 +14,6 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Dtos
         public bool? IsActive { get; set; }
         public UserDTO? User { get; set; }
         public List<ReservoirWithoutZoneDTO>? Reservoirs { get; set; }
+        public FieldWithoutInstallationDTO? Field { get; set; }
     }
 }

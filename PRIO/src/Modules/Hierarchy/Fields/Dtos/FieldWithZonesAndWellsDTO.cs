@@ -1,4 +1,5 @@
 ﻿using PRIO.src.Modules.ControlAccess.Users.Dtos;
+using PRIO.src.Modules.Hierarchy.Installations.Dtos;
 using PRIO.src.Modules.Hierarchy.Wells.Dtos;
 using PRIO.src.Modules.Hierarchy.Zones.Dtos;
 
@@ -19,5 +20,6 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Dtos
         public UserDTO? User { get; set; }
         public List<WellWithoutFieldDTO>? Wells { get; set; }
         public List<ZoneWithoutFieldDTO>? Zones { get; set; }
+        public InstallationWithoutClusterDTO? Installation { get; set; }
     }
 }

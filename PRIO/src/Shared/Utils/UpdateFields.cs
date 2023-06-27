@@ -315,7 +315,7 @@ namespace PRIO.src.Shared.Utils
 
                     var loweringFirstLetter = property.Name[0].ToString().ToLower() + property.Name[1..];
 
-                    if (viewModelValue is not null && !viewModelValue.Equals(modelValue) && modelValue is not null)
+                    if (viewModelValue is not null && !viewModelValue.Equals(modelValue))
                     {
                         modelProperty.SetValue(model, viewModelValue);
                         updatedProperties[loweringFirstLetter] = viewModelValue;

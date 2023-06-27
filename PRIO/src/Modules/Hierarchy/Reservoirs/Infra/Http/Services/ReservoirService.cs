@@ -70,14 +70,14 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
             return reservoirsDTO;
         }
 
-        public async Task<ReservoirWithCompletionsDTO> GetReservoirById(Guid id)
+        public async Task<ReservoirDTO> GetReservoirById(Guid id)
         {
-            var reservoir = await _reservoirRepository.GetByIdWithCompletionsAsync(id);
+            var reservoir = await _reservoirRepository.GetByIdAsync(id);
 
             if (reservoir is null)
                 throw new NotFoundException("Reservoir not found");
 
-            var reservoirDTO = _mapper.Map<Reservoir, ReservoirWithCompletionsDTO>(reservoir);
+            var reservoirDTO = _mapper.Map<Reservoir, ReservoirDTO>(reservoir);
 
             return reservoirDTO;
         }
@@ -95,10 +95,10 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
             var updatedProperties = UpdateFields
                 .CompareUpdateReturnOnlyUpdated(reservoir, body);
 
-            if (updatedProperties.Any() is false && reservoir.Zone?.Id == body.ZoneId)
+            if (updatedProperties.Any() is false && (body.ZoneId is null || body.ZoneId == reservoir.Zone?.Id))
                 throw new BadRequestException("This reservoir already has these values, try to update to other values.");
 
-            if (body?.ZoneId is not null)
+            if (body.ZoneId is not null)
             {
                 var zoneInDatabase = await _zoneRepository.GetOnlyZone(body.ZoneId);
 

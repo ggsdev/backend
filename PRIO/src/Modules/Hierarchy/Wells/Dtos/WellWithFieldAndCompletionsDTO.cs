@@ -1,10 +1,9 @@
 ﻿using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.Hierarchy.Fields.Dtos;
-using PRIO.src.Modules.Hierarchy.Reservoirs.Dtos;
 
 namespace PRIO.src.Modules.Hierarchy.Wells.Dtos
 {
-    public class WellDTO
+    public class WellWithFieldAndCompletionsDTO
     {
         public Guid Id { get; set; }
         public string? CodWell { get; set; }
@@ -33,19 +32,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Dtos
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public UserDTO? User { get; set; }
-        public FieldDTO? Field { get; set; }
+        public FieldWithoutInstallationDTO? Field { get; set; }
         public List<CompletionWithouWellDTO>? Completions { get; set; }
-    }
-
-
-    public class CompletionWithouWellDTO
-    {
-        public Guid Id { get; set; }
-        public string? Name { get; set; }
-        public string? Description { get; set; }
-        public string? CodCompletion { get; set; }
-        public DateTime? CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
-        public ReservoirWithoutZoneDTO? Reservoir { get; set; }
     }
 }

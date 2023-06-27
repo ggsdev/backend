@@ -1,5 +1,6 @@
 ﻿using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.Hierarchy.Completions.Dtos;
+using PRIO.src.Modules.Hierarchy.Zones.Dtos;
 
 namespace PRIO.src.Modules.Hierarchy.Reservoirs.Dtos
 {
@@ -14,5 +15,6 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Dtos
         public bool? IsActive { get; set; }
         public UserDTO? User { get; set; }
         public List<CompletionWithoutReservoirDTO>? Completions { get; set; }
+        public ZoneWithoutFieldDTO? Zone { get; set; }
     }
 }

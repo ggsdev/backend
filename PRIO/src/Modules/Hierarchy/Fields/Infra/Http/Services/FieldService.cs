@@ -69,15 +69,15 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
             return fieldsDTO;
         }
 
-        public async Task<FieldWithZonesAndWellsDTO> GetFieldById(Guid id)
+        public async Task<FieldDTO> GetFieldById(Guid id)
         {
             var field = await _fieldRepository
-                .GetByIdWithWellsAndZonesAsync(id);
+                .GetByIdAsync(id);
 
             if (field is null)
                 throw new NotFoundException("Field not found");
 
-            var fieldDTO = _mapper.Map<Field, FieldWithZonesAndWellsDTO>(field);
+            var fieldDTO = _mapper.Map<Field, FieldDTO>(field);
             return fieldDTO;
         }
 
@@ -92,7 +92,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
 
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(field, body);
 
-            if (updatedProperties.Any() is false && field.Installation?.Id == body.InstallationId)
+            if (updatedProperties.Any() is false && (body.InstallationId is null || field.Installation?.Id == body.InstallationId))
                 throw new BadRequestException("This field already has these values, try to update to other values.");
 
             if (body.InstallationId is not null)
