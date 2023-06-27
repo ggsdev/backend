@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.ViewModels;
-using PRIO.src.Modules.FileImport.XML.ViewModels;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
@@ -135,7 +134,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
 
                 if (!string.IsNullOrWhiteSpace(columnInstallationCod) && !entityDictionary.TryGetValue(columnInstallationCod, out var installation))
                 {
-                    installation = await _context.Installations.FirstOrDefaultAsync(x => x.CodInstallation == columnInstallationCod);
+                    installation = await _context.Installations.FirstOrDefaultAsync(x => x.CodInstallationAnp == columnInstallationCod);
 
                     if (installation is null)
                     {
