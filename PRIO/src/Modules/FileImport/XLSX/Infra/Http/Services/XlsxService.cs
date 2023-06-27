@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.ViewModels;
+using PRIO.src.Modules.FileImport.XML.ViewModels;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
@@ -15,6 +16,7 @@ using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.Infra.EF.Models;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
+using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
 using PRIO.src.Shared.Utils;
 using System.Globalization;
 
@@ -23,13 +25,15 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
     public class XLSXService
     {
         private readonly string _consolidationInstance = "consolidador";
-        private readonly IMapper _mapper;
         private readonly DataContext _context;
+        private readonly SystemHistoryService _systemHistoryService;
+        private readonly IMapper _mapper;
 
-        public XLSXService(IMapper mapper, DataContext context)
+        public XLSXService(DataContext context, SystemHistoryService systemHistoryService, IMapper mapper)
         {
-            _mapper = mapper;
             _context = context;
+            _systemHistoryService = systemHistoryService;
+            _mapper = mapper;
         }
 
         public async Task ImportFiles(RequestXslxViewModel data, User user)
@@ -50,6 +54,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
             var dimension = worksheetTab.Dimension;
 
             var entityDictionary = new Dictionary<string, BaseModel>();
+            var fieldDictionary = new Dictionary<string, Field>();
             var entityHistoriesDictionary = new Dictionary<string, SystemHistory>();
 
             var columnPositions = XlsUtils.GetColumnPositions(worksheetTab);
@@ -119,27 +124,18 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             CodCluster = GenerateCode.Generate(columnCluster),
                         };
 
-                        var currentData = _mapper.Map<Cluster, ClusterHistoryDTO>((Cluster)cluster);
-                        currentData.createdAt = dateCurrent;
-                        currentData.updatedAt = dateCurrent;
-
-                        var history = new SystemHistory
-                        {
-                            Table = HistoryColumns.TableClusters,
-                            TypeOperation = HistoryColumns.Import,
-                            CreatedBy = user?.Id,
-                            TableItemId = clusterId,
-                            CurrentData = currentData,
-                        };
+                        var history = _systemHistoryService
+                            .Import<Cluster, ClusterHistoryDTO>(HistoryColumns.TableClusters, user, clusterId, cluster as Cluster);
 
                         entityDictionary[columnCluster.ToLower()] = cluster;
                         entityHistoriesDictionary[columnCluster.ToLower()] = history;
                     }
+
                 }
 
-                if (!string.IsNullOrWhiteSpace(columnInstallation) && !entityDictionary.TryGetValue(columnInstallation.ToLower(), out var installation))
+                if (!string.IsNullOrWhiteSpace(columnInstallationCod) && !entityDictionary.TryGetValue(columnInstallationCod, out var installation))
                 {
-                    installation = await _context.Installations.FirstOrDefaultAsync(x => x.Name.ToLower() == columnInstallation.ToLower());
+                    installation = await _context.Installations.FirstOrDefaultAsync(x => x.CodInstallation == columnInstallationCod);
 
                     if (installation is null)
                     {
@@ -155,18 +151,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             Cluster = columnCluster is not null ? (Cluster)entityDictionary.GetValueOrDefault(columnCluster.ToLower())! : null,
                         };
 
-                        var currentData = _mapper.Map<Installation, InstallationHistoryDTO>((Installation)installation);
-                        currentData.createdAt = dateCurrent;
-                        currentData.updatedAt = dateCurrent;
-
-                        var history = new SystemHistory
-                        {
-                            Table = HistoryColumns.TableInstallations,
-                            TypeOperation = HistoryColumns.Import,
-                            CreatedBy = user?.Id,
-                            TableItemId = installationId,
-                            CurrentData = currentData,
-                        };
+                        var history = _systemHistoryService
+                            .Import<Installation, InstallationHistoryDTO>(HistoryColumns.TableInstallations, user, installationId, installation as Installation);
 
                         entityHistoriesDictionary[columnInstallation.ToLower()] = history;
                         entityDictionary[columnInstallation.ToLower()] = installation;
@@ -190,23 +176,14 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             IsActive = true,
                         };
 
-                        var currentData = _mapper.Map<Field, FieldHistoryDTO>((Field)field);
-                        currentData.createdAt = dateCurrent;
-                        currentData.updatedAt = dateCurrent;
+                        var history = _systemHistoryService
+                            .Import<Field, FieldHistoryDTO>(HistoryColumns.TableFields, user, fieldId, field as Field);
 
-                        var history = new SystemHistory
-                        {
-                            Table = HistoryColumns.TableFields,
-                            TypeOperation = HistoryColumns.Import,
-                            CreatedBy = user?.Id,
-                            TableItemId = fieldId,
-                            CurrentData = currentData,
-                        };
-
-                        entityHistoriesDictionary[columnField.ToLower()] = history;
                         entityDictionary[columnField.ToLower()] = field;
+                        entityHistoriesDictionary[columnField.ToLower()] = history;
                     }
 
+                    fieldDictionary[columnField.ToLower()] = (Field)field;
                 }
 
                 if (!string.IsNullOrWhiteSpace(columnZone) && !entityDictionary.TryGetValue(columnZone.ToLower(), out var zone))
@@ -224,18 +201,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             Field = columnField is not null ? (Field)entityDictionary.GetValueOrDefault(columnField.ToLower())! : null,
                         };
 
-                        var currentData = _mapper.Map<Zone, ZoneHistoryDTO>((Zone)zone);
-                        currentData.createdAt = dateCurrent;
-                        currentData.updatedAt = dateCurrent;
-
-                        var history = new SystemHistory
-                        {
-                            Table = HistoryColumns.TableZones,
-                            TypeOperation = HistoryColumns.Import,
-                            CreatedBy = user?.Id,
-                            TableItemId = zoneId,
-                            CurrentData = currentData,
-                        };
+                        var history = _systemHistoryService
+                           .Import<Zone, ZoneHistoryDTO>(HistoryColumns.TableZones, user, zoneId, zone as Zone);
 
                         entityHistoriesDictionary[columnZone.ToLower()] = history;
                         entityDictionary[columnZone.ToLower()] = zone;
@@ -258,18 +225,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             IsActive = true,
                         };
 
-                        var currentData = _mapper.Map<Reservoir, ReservoirHistoryDTO>((Reservoir)reservoir);
-                        currentData.createdAt = dateCurrent;
-                        currentData.updatedAt = dateCurrent;
-
-                        var history = new SystemHistory
-                        {
-                            Table = HistoryColumns.TableReservoirs,
-                            TypeOperation = HistoryColumns.Import,
-                            CreatedBy = user?.Id,
-                            TableItemId = reservoirId,
-                            CurrentData = currentData,
-                        };
+                        var history = _systemHistoryService
+                           .Import<Reservoir, ReservoirHistoryDTO>(HistoryColumns.TableReservoirs, user, reservoirId, reservoir as Reservoir);
 
                         entityHistoriesDictionary[columnReservoir.ToLower()] = history;
                         entityDictionary[columnReservoir.ToLower()] = reservoir;
@@ -278,7 +235,9 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
 
                 if (!string.IsNullOrWhiteSpace(columnWellCodeAnp) && !entityDictionary.TryGetValue(columnWellCodeAnp.ToLower(), out var well))
                 {
-                    well = await _context.Wells.FirstOrDefaultAsync(x => x.CodWellAnp.ToLower() == columnWellCodeAnp.ToLower());
+                    well = await _context.Wells
+                        .FirstOrDefaultAsync(x => x.CodWellAnp.ToLower() == columnWellCodeAnp.ToLower());
+
                     if (well is null)
                     {
                         var wellId = Guid.NewGuid();
@@ -310,21 +269,61 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             Field = (Field)entityDictionary.GetValueOrDefault(columnField.ToLower()),
                         };
 
-                        var currentData = _mapper.Map<Well, WellHistoryDTO>((Well)well);
-                        currentData.createdAt = dateCurrent;
-                        currentData.updatedAt = dateCurrent;
-
-                        var history = new SystemHistory
-                        {
-                            Table = HistoryColumns.TableWells,
-                            TypeOperation = HistoryColumns.Import,
-                            CreatedBy = user?.Id,
-                            TableItemId = wellId,
-                            CurrentData = currentData,
-                        };
+                        var history = _systemHistoryService
+                           .Import<Well, WellHistoryDTO>(HistoryColumns.TableWells, user, wellId, well as Well);
 
                         entityHistoriesDictionary[columnWellCodeAnp.ToLower()] = history;
                         entityDictionary[columnWellCodeAnp.ToLower()] = well;
+                    }
+
+                    else
+                    {
+                        var beforeChangesWell = _mapper.Map<WellHistoryDTO>(well);
+
+                        var propertiesToUpdate = new WellUpdateImportViewModel
+                        {
+                            Name = columnWellNameAnp,
+                            WellOperatorName = columnWellOperatorName,
+                            CategoryAnp = columnWellCategoryAnp,
+                            CategoryReclassificationAnp = columnWellCategoryReclassification,
+                            CategoryOperator = columnWellCategoryOperator,
+                            StatusOperator = columnWellStatusOperatorBoolean,
+                            Type = columnWellProfile,
+                            WaterDepth = decimal.TryParse(columnWellWaterDepth?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var columnWellWaterDepthDouble) ? columnWellWaterDepthDouble : 0,
+                            TopOfPerforated = decimal.TryParse(columnWellPerforationTopMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var topOfPerforated) ? topOfPerforated : 0,
+                            BaseOfPerforated = decimal.TryParse(columnWellBottomPerforationMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var baseOfPerforated) ? baseOfPerforated : 0,
+                            ArtificialLift = columnWellArtificialLift,
+                            Latitude4C = columnWellLatitude4c,
+                            Longitude4C = columnWellLongitude4c,
+                            LatitudeDD = columnWellLatitudeDD,
+                            LongitudeDD = columnWellLongitudeDD,
+                            DatumHorizontal = columnWellDatumHorizontal,
+                            TypeBaseCoordinate = columnWellTypeCoordinate,
+                            CoordX = columnWellCoordX,
+                            CoordY = columnWellCoordY,
+                        };
+
+                        var wellConverted = (Well)well;
+                        var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(wellConverted, propertiesToUpdate);
+
+                        var fieldToUpdate = fieldDictionary.GetValueOrDefault(columnField.ToLower());
+
+                        if (updatedProperties.Any() is true ||
+                            (fieldToUpdate?.Id is not null && wellConverted.Field?.Id != fieldToUpdate?.Id))
+                        {
+                            if (wellConverted.Field?.Id != fieldToUpdate?.Id && fieldToUpdate is not null)
+                            {
+                                wellConverted.Field = fieldToUpdate;
+                                updatedProperties[nameof(WellHistoryDTO.fieldId)] = fieldToUpdate.Id;
+                            }
+
+                            _context.Wells.Update(wellConverted);
+
+                            var history = await _systemHistoryService
+                                .ImportUpdate(HistoryColumns.TableWells, user, updatedProperties, wellConverted.Id, wellConverted, beforeChangesWell);
+
+                            entityHistoriesDictionary[columnWellCodeAnp.ToLower()] = history;
+                        }
                     }
                 }
 
@@ -345,18 +344,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             IsActive = true
                         };
 
-                        var currentData = _mapper.Map<Completion, CompletionHistoryDTO>((Completion)completion);
-                        currentData.createdAt = dateCurrent;
-                        currentData.updatedAt = dateCurrent;
-
-                        var history = new SystemHistory
-                        {
-                            Table = HistoryColumns.TableCompletions,
-                            TypeOperation = HistoryColumns.Import,
-                            CreatedBy = user?.Id,
-                            TableItemId = completionId,
-                            CurrentData = currentData,
-                        };
+                        var history = _systemHistoryService
+                            .Import<Completion, CompletionHistoryDTO>(HistoryColumns.TableCompletions, user, completionId, completion as Completion);
 
                         entityHistoriesDictionary[columnCompletion.ToLower()] = history;
                         entityDictionary[columnCompletion.ToLower()] = completion;
