@@ -128,7 +128,7 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
         }
 
 
-        public SystemHistory Import<T, U>(string tableName, User user, Guid tableItemId, T objectCreated) where T : class where U : class
+        public async Task Import<T, U>(string tableName, User user, Guid tableItemId, T objectCreated) where T : class where U : class
         {
 
             dynamic currentData = _mapper.Map<T, U>(objectCreated);
@@ -137,7 +137,7 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
             currentData.createdAt = dateCurrent;
             currentData.updatedAt = dateCurrent;
 
-            return new SystemHistory
+            var history = new SystemHistory
             {
                 Table = tableName,
                 TypeOperation = HistoryColumns.Import,
@@ -145,9 +145,11 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
                 TableItemId = tableItemId,
                 CurrentData = currentData,
             };
+
+            await _systemHistoryRepository.AddAsync(history);
         }
 
-        public async Task<SystemHistory> ImportUpdate<T, U>(string tableName, User user, Dictionary<string, object> updatedProperties, Guid tableItemId, T objectUpdated, U objectBeforeChanges)
+        public async Task ImportUpdate<T, U>(string tableName, User user, Dictionary<string, object> updatedProperties, Guid tableItemId, T objectUpdated, U objectBeforeChanges)
         where T : class where U : class
         {
             var firstHistory = await _systemHistoryRepository.GetFirst(tableItemId);
@@ -161,7 +163,7 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
             currentData.createdAt = dateCurrent;
             currentData.updatedAt = dateCurrent;
 
-            return new SystemHistory
+            var history = new SystemHistory
             {
                 Table = tableName,
                 TypeOperation = HistoryColumns.ImportUpdate,
@@ -172,6 +174,9 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
                 CurrentData = currentData,
                 PreviousData = objectBeforeChanges,
             };
+
+            await _systemHistoryRepository.AddAsync(history);
+
         }
 
     }
