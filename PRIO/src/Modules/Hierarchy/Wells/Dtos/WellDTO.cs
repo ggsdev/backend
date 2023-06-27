@@ -46,6 +46,6 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Dtos
         public string? CodCompletion { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public ReservoirWithoutZoneDTO? Reservoir { get; set; }
+        public ReservoirWithZoneDTO? Reservoir { get; set; }
     }
 }
