@@ -64,6 +64,8 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
             return await _context.Wells
                     .Include(x => x.User)
                     .Include(x => x.Completions)
+                    .ThenInclude(x => x.Reservoir)
+                    .ThenInclude(x => x.Zone)
                     .Include(x => x.Field)
                     .ThenInclude(f => f.Installation)
                     .ThenInclude(i => i.Cluster)
