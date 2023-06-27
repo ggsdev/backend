@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
 {
@@ -79,7 +80,14 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
             builder.Property(x => x.DeletedAt);
 
             builder.Property(x => x.IsActive);
-
+            
+            builder.HasOne(x => x.DOR)
+                .WithOne(d => d.Equipment);
+            
+            
+            builder.HasOne(x => x.DrainVolume)
+                .WithOne(d => d.Equipment);
+            
             builder.HasOne(x => x.Installation)
                 .WithMany(d => d.MeasuringEquipments)
                 .OnDelete(DeleteBehavior.Cascade)
