@@ -1,4 +1,5 @@
-﻿using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
+﻿using PRIO.src.Modules.Hierarchy.Installations.Dtos;
+using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 
 namespace PRIO.src.Modules.FileImport.XML.Dtos
 {
@@ -126,6 +127,8 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public double? MED_BRUTO_MOVIMENTADO_002 { get; set; }
         public double? MED_CORRIGIDO_MVMDO_002 { get; set; }
         public FileType? FileType { get; set; }
+        public InstallationWithoutClusterDTO? Installation { get; set; }
+
 
     }
 }
