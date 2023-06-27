@@ -1,4 +1,5 @@
-﻿using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
+﻿using PRIO.src.Modules.Hierarchy.Installations.Dtos;
+using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 
 namespace PRIO.src.Modules.FileImport.XML.Dtos
 {
@@ -118,5 +119,7 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public double? MED_VOLUME_TTLZO_FIM_PRDO_001 { get; set; }
         public double? MED_VOLUME_TTLZO_INCO_PRDO_001 { get; set; }
         public FileType? FileType { get; set; }
+        public InstallationWithoutClusterDTO? Installation { get; set; }
+
     }
 }

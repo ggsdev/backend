@@ -17,8 +17,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Mappings
 
             builder.Property(x => x.CodField)
                 .HasColumnType("VARCHAR")
-                .HasMaxLength(10)
-                .IsRequired();
+                .HasMaxLength(10);
 
             builder.Property(x => x.State)
                .HasColumnType("VARCHAR")
