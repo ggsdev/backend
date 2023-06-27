@@ -3,8 +3,9 @@
     public class InstallationHistoryDTO
     {
         public string? name { get; set; }
-        public string? codInstallation { get; set; }
+        public string? codInstallationAnp { get; set; }
         public string? uepCod { get; set; }
+        public string? uepName { get; set; }
         public string? description { get; set; }
         public DateTime createdAt { get; set; }
         public Guid clusterId { get; set; }

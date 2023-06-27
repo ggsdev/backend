@@ -24,6 +24,8 @@ using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Mappings;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Mappings;
+using PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF.Models;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Mappings;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
@@ -54,6 +56,11 @@ namespace PRIO.src.Shared.Infra.EF
 
         #region Measurement & Relations
         public DbSet<Measurement> Measurements { get; set; }
+        public DbSet<OilVolumeCalculation> OilVolumeCalculations { get; set; }
+        public DbSet<Section> Sections { get; set; }
+        public DbSet<TOGRecoveredOil> TOGRecoveredOils { get; set; }
+        public DbSet<DrainVolume> DrainVolumes { get; set; }
+        public DbSet<DOR> DORs { get; set; }
         public DbSet<FileType> FileTypes { get; set; }
         public DbSet<Volume> Volume { get; set; }
         public DbSet<Calibration> Calibrations { get; set; }
@@ -164,6 +171,10 @@ namespace PRIO.src.Shared.Infra.EF
 
             #region Measurement & Relations
             modelBuilder.ApplyConfiguration(new MeasurementMap());
+            modelBuilder.ApplyConfiguration(new SectionMap());
+            modelBuilder.ApplyConfiguration(new TOGRecoveredOilMap());
+            modelBuilder.ApplyConfiguration(new DORMap());
+            modelBuilder.ApplyConfiguration(new DrainVolumeMap());
             modelBuilder.ApplyConfiguration(new FileTypeMap());
             modelBuilder.ApplyConfiguration(new VolumeMap());
             modelBuilder.ApplyConfiguration(new CalibrationMap());

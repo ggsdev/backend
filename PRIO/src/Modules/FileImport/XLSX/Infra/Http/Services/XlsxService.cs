@@ -149,7 +149,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             Id = installationId,
                             Name = columnInstallation,
                             UepCod = columnInstallationCodUep,
-                            CodInstallation = columnInstallationCod,
+                            CodInstallationAnp = columnInstallationCod,
                             User = user,
                             IsActive = true,
                             Cluster = columnCluster is not null ? (Cluster)entityDictionary.GetValueOrDefault(columnCluster.ToLower())! : null,

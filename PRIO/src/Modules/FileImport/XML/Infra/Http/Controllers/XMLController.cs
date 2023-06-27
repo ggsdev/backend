@@ -123,7 +123,7 @@ namespace PRIO.Controllers
                                 try
                                 {
                                     var installation = await context.Installations
-                                            .FirstOrDefaultAsync(x => x.UepCod == dadosBasicos.DHA_COD_INSTALACAO_039 && x.CodInstallation == dadosBasicos.DHA_COD_INSTALACAO_039);
+                                            .FirstOrDefaultAsync(x => x.UepCod == dadosBasicos.DHA_COD_INSTALACAO_039 && x.CodInstallationAnp == dadosBasicos.DHA_COD_INSTALACAO_039);
 
                                     var measurement = _mapper.Map<Measurement>(dadosBasicos);
                                     measurement.FileType = new FileType
@@ -176,7 +176,7 @@ namespace PRIO.Controllers
                                 #endregion
 
                                 var installation = await context.Installations
-                                       .FirstOrDefaultAsync(x => x.UepCod == dadosBasicos.COD_INSTALACAO_001 && x.CodInstallation == dadosBasicos.COD_INSTALACAO_001);
+                                       .FirstOrDefaultAsync(x => x.UepCod == dadosBasicos.COD_INSTALACAO_001 && x.CodInstallationAnp == dadosBasicos.COD_INSTALACAO_001);
                                 try
                                 {
                                     var measurement = new Measurement
@@ -367,7 +367,7 @@ namespace PRIO.Controllers
                                 #endregion
 
                                 var installation = await context.Installations
-                                      .FirstOrDefaultAsync(x => x.UepCod == dadosBasicos.COD_INSTALACAO_002 && x.CodInstallation == dadosBasicos.COD_INSTALACAO_002);
+                                      .FirstOrDefaultAsync(x => x.UepCod == dadosBasicos.COD_INSTALACAO_002 && x.CodInstallationAnp == dadosBasicos.COD_INSTALACAO_002);
                                 try
                                 {
 
@@ -596,7 +596,7 @@ namespace PRIO.Controllers
                                 #endregion
 
                                 var installation = await context.Installations
-                                      .FirstOrDefaultAsync(x => x.UepCod == dadosBasicos.COD_INSTALACAO_003 && x.CodInstallation == dadosBasicos.COD_INSTALACAO_003);
+                                      .FirstOrDefaultAsync(x => x.UepCod == dadosBasicos.COD_INSTALACAO_003 && x.CodInstallationAnp == dadosBasicos.COD_INSTALACAO_003);
 
                                 try
                                 {

@@ -98,6 +98,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
         }
         #endregion
 
+        #region Profile
         [HttpGet("profile")]
         [ServiceFilter(typeof(AuthorizationFilter))]
         public async Task<IActionResult> Profile([FromRoute] Guid id)
@@ -163,6 +164,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
 
             return Ok(userDTO);
         }
+        #endregion
 
         #region Get By Id
         [HttpGet("users/{id}")]
@@ -348,6 +350,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
         //}
         #endregion
 
+        #region Edit Permission User
         [HttpPatch("users/{userId}/permissions")]
         public async Task<IActionResult> EditPermission([FromBody] InsertUserPermissionViewModel body, [FromRoute] Guid userId)
         {
@@ -782,8 +785,9 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
             var userDTO = _mapper.Map<User, ProfileDTO>(userWithPermissions);
             return Ok(userDTO);
         }
+        #endregion
 
-
+        #region Refresh Permission User
         [HttpPatch("users/{userId}/permissions/refresh")]
         public async Task<IActionResult> RefreshPermission([FromRoute] Guid userId)
         {
@@ -870,5 +874,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
 
             return Ok(userDTO);
         }
+        #endregion
     }
 }
