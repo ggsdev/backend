@@ -9,6 +9,7 @@ namespace PRIO.src.Shared.Utils
         internal static readonly string InstallationCodColumnName = "INSTALAÇÃO [CÓDIGO]";
         internal static readonly string InstallationColumnName = "INSTALAÇÃO [NOME]";
         internal static readonly string InstallationCodUepColumnName = "INSTALAÇÃO DE PROCESSAMENTO [CÓDIGO]";
+        internal static readonly string InstallationNameUepColumnName = "INSTALAÇÃO DE PROCESSAMENTO [NOME]";
 
         internal static readonly string FieldCodeColumnName = "FIELD_CODE";
         internal static readonly string ReservoirColumnName = "RESERVOIR";
@@ -57,6 +58,7 @@ namespace PRIO.src.Shared.Utils
                         cellValue == InstallationCodColumnName ||
                         cellValue == InstallationColumnName ||
                         cellValue == InstallationCodUepColumnName ||
+                        cellValue == InstallationNameUepColumnName ||
                         cellValue == InstallationColumnName ||
                         cellValue == FieldCodeColumnName ||
                         cellValue == ReservoirColumnName ||
