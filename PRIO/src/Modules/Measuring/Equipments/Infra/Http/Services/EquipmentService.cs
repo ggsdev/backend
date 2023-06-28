@@ -117,7 +117,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
             if (updatedProperties.Any() is false && (equipment.Installation?.Id == body.InstallationId || body.InstallationId is null))
                 throw new BadRequestException("This equipment already has these values, try to update to other values.");
 
-            if (body.InstallationId is not null)
+            if (body.InstallationId is not null && equipment.Installation?.Id != body.InstallationId)
             {
                 var installationInDatabase = await _installationRepository.GetByIdAsync(body.InstallationId);
 

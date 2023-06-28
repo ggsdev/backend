@@ -19,12 +19,10 @@ namespace PRIO.src.Modules.ControlAccess.Menus.Infra.Http.Services
         public async Task<List<MenuParentDTO>> Get()
         {
             var menus = await _menuRepository.GetMenusAsync();
-            Console.WriteLine("oi");
             foreach (var menu in menus)
             {
                 menu.Children = menu.Children.OrderBy(x => x.Order).ToList();
             }
-            Console.WriteLine("oi");
             var menusDTO = _mapper.Map<List<Menu>, List<MenuParentDTO>>(menus);
 
             return menusDTO;

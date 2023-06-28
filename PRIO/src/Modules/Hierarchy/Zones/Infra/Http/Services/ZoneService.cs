@@ -99,7 +99,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
             if (updatedProperties.Any() is false && (zone.Field?.Id == body.FieldId || body.FieldId is null))
                 throw new BadRequestException("This zone already has these values, try to update to other values.");
 
-            if (body.FieldId is not null)
+            if (body.FieldId is not null && zone.Field?.Id != body.FieldId)
             {
                 var field = await _fieldRepository.GetOnlyField(body.FieldId);
 
@@ -123,9 +123,8 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
 
         public async Task DeleteZone(Guid id, User user)
         {
-            var zone = await _zoneRepository.GetWithUser(id);
-            Console.WriteLine(zone?.IsActive + "asndsaiudsaiuds");
-            Console.WriteLine(zone?.Id);
+            var zone = await _zoneRepository
+                .GetWithUser(id);
 
             if (zone is null || zone.IsActive is false)
                 throw new NotFoundException("Zone not found or inactive already");
