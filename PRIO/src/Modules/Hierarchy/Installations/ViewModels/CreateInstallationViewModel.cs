@@ -15,8 +15,8 @@ namespace PRIO.src.Modules.Hierarchy.Installations.ViewModels
         [Required(ErrorMessage = "UepName is required")]
         [StringLength(120, ErrorMessage = "UepName cannot exceed 120 characters.")]
         public string? UepName { get; set; }
-        [Required(ErrorMessage = "CodInstallation is required")]
-        [StringLength(120, ErrorMessage = "CodInstallation cannot exceed 120 characters.")]
+        [Required(ErrorMessage = "CodInstallationAnp is required")]
+        [StringLength(120, ErrorMessage = "CodInstallationAnp cannot exceed 120 characters.")]
         public string? CodInstallationAnp { get; set; }
         public double? GasSafetyBurnVolume { get; set; }
         public string? Description { get; set; }
