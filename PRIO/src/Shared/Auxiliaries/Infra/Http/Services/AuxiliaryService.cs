@@ -34,6 +34,7 @@ namespace PRIO.src.Shared.Auxiliaries.Infra.Http.Services
 
             var selectOptions = await _context.Auxiliaries
                 .Where(x => x.Table == table && x.Route == route)
+                .OrderBy(x => x.Select)
                 .ToListAsync();
 
             return selectOptions;
