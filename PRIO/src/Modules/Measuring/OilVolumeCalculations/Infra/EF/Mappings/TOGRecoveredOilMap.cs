@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
 
-namespace PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Mappings
+namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Mappings
 {
     public class TOGRecoveredOilMap : IEntityTypeConfiguration<TOGRecoveredOil>
     {
@@ -15,9 +15,9 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Mappings
              .HasMaxLength(60)
              .IsRequired();
 
-        builder.HasOne(x => x.Equipment)
-               .WithOne(d => d.TOGRecoveredOil)
-               .HasForeignKey<TOGRecoveredOil>("EquipmentId"); 
+            builder.HasOne(x => x.Equipment)
+                   .WithOne(d => d.TOGRecoveredOil)
+                   .HasForeignKey<TOGRecoveredOil>("EquipmentId");
 
             builder.HasOne(x => x.OilVolumeCalculation)
                .WithMany(d => d.TOGRecoveredOils);

@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
 
-namespace PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Mappings
+namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Mappings
 {
     public class DrainVolumeMap : IEntityTypeConfiguration<DrainVolume>
     {

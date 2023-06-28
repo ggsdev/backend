@@ -1,8 +1,8 @@
 ﻿using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 
-namespace PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models
+namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models
 {
-    public class DOR
+    public class Section
     {
         public Guid Id { get; set; }
         public string? Name { get; set; }

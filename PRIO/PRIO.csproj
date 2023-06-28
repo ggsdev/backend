@@ -58,9 +58,7 @@
     <Folder Include="src\Modules\Measuring\OilVolumeCalculation\Dtos\" />
     <Folder Include="src\Modules\Measuring\OilVolumeCalculation\Infra\EF\Interfaces\" />
     <Folder Include="src\Modules\Measuring\OilVolumeCalculation\Infra\EF\Repositories\" />
-    <Folder Include="src\Modules\Measuring\OilVolumeCalculation\Infra\Http\Controllers\" />
     <Folder Include="src\Modules\Measuring\OilVolumeCalculation\Infra\Http\Services\" />
-    <Folder Include="src\Modules\Measuring\OilVolumeCalculation\ViewModels\" />
     <Folder Include="src\Shared\Infra\EF\Mappings\" />
     <Folder Include="src\Shared\Infra\Http\Controllers\" />
   </ItemGroup>

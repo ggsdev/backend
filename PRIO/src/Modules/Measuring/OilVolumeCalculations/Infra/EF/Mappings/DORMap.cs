@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
-using PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
 
-namespace PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Mappings
-{ 
+namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Mappings
+{
     public class DORMap : IEntityTypeConfiguration<DOR>
     {
         public void Configure(EntityTypeBuilder<DOR> builder)
@@ -23,5 +23,5 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Mappings
                 .WithMany(d => d.DORs);
         }
     }
-    
+
 }

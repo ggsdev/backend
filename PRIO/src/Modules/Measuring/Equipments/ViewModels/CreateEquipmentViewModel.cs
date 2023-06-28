@@ -16,24 +16,19 @@ namespace PRIO.src.Modules.Measuring.Equipments.ViewModels
         [Required(ErrorMessage = "Type is a required field.")]
         [StringLength(10, ErrorMessage = "Type cannot exceed 10 characters.")]
         public string? Type { get; set; }
-        [Required(ErrorMessage = "TypeEquipment is a required field.")]
-        [StringLength(120, ErrorMessage = "TypeEquipment cannot exceed 120 characters.")]
+
         public string? TypeEquipment { get; set; }
-        [Required(ErrorMessage = "Model is a required field.")]
-        [StringLength(120, ErrorMessage = "Model cannot exceed 120 characters.")]
+
         public string? Model { get; set; }
         [Required(ErrorMessage = "HasSeal is a required field.")]
         public bool? HasSeal { get; set; }
-        [Required(ErrorMessage = "MVS is a required field.")]
+
         public bool? MVS { get; set; }
-        [Required(ErrorMessage = "CommunicationProtocol is a required field.")]
-        [StringLength(120, ErrorMessage = "CommunicationProtocol cannot exceed 120 characters.")]
+
         public string? CommunicationProtocol { get; set; }
-        [Required(ErrorMessage = "TypePoint is a required field.")]
-        [StringLength(120, ErrorMessage = "TypePoint cannot exceed 120 characters.")]
+
         public string? TypePoint { get; set; }
-        [Required(ErrorMessage = "ChannelNumber is a required field.")]
-        [StringLength(10, ErrorMessage = "ChannelNumber cannot exceed 10 characters.")]
+
         public string? ChannelNumber { get; set; }
         [Required(ErrorMessage = "InOperation is a required field.")]
         public bool? InOperation { get; set; }

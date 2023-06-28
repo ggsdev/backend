@@ -2,7 +2,7 @@
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
-using PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models
