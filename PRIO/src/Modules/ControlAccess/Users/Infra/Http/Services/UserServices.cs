@@ -1,65 +1,721 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.ViewModels;
+using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
+using PRIO.src.Shared.SystemHistories.Dtos.UserDtos;
+using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
+using PRIO.src.Shared.Utils;
 
 namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
 {
-    public class UserServices
+    public class UserService
     {
 
         private DataContext _context;
         private IMapper _mapper;
 
-        public UserServices(DataContext context, IMapper mapper)
+        public UserService(DataContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
         }
 
-        public async Task<User?> GetUserByIdAsync(Guid id)
-        {
-            return await _context.Users
-                .Include(x => x.Session)
-                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive);
-        }
 
-        public async Task<List<UserDTO>> RetrieveAllUsersAndMap()
+        public async Task<List<UserDTO>> GetUsers()
         {
-
             var users = await _context.Users.ToListAsync();
-            var userDTOs = new List<UserDTO>();
+            var userDTOS = _mapper.Map<List<User>, List<UserDTO>>(users);
 
-            foreach (var user in users)
-            {
-                if (!user.IsActive)
-                    continue;
-
-                var userDTO = _mapper.Map<User, UserDTO>(user);
-                userDTOs.Add(userDTO);
-            }
-
-            return userDTOs;
+            return userDTOS;
         }
 
         public async Task<UserDTO> CreateUserAsync(CreateUserViewModel body)
         {
+            var userInDatabase = await _context.Users.FirstOrDefaultAsync((x) => x.Email == body.Email || x.Username == body.Username);
+            if (userInDatabase != null)
+                throw new ConflictException("User is already exists");
+
+            var userId = Guid.NewGuid();
             var user = new User
             {
+                Id = userId,
                 Name = body.Name,
                 Username = body.Username,
                 Email = body.Email,
                 Password = BCrypt.Net.BCrypt.HashPassword(body.Password),
+                Description = body.Description is not null ? body.Description : null,
             };
-
             await _context.AddAsync(user);
+            var currentData = _mapper.Map<User, UserHistoryDTO>(user);
+            currentData.createdAt = DateTime.UtcNow;
+            currentData.updatedAt = DateTime.UtcNow;
+
+            var history = new SystemHistory
+            {
+                Table = HistoryColumns.TableUsers,
+                TypeOperation = HistoryColumns.Create,
+                CreatedBy = user?.Id,
+                TableItemId = userId,
+                CurrentData = currentData,
+            };
+            await _context.SystemHistories.AddAsync(history);
+
             await _context.SaveChangesAsync();
+            var userDTO = _mapper.Map<User, UserDTO>(user);
+            return userDTO;
+
+        }
+
+        public async Task<ProfileDTO?> ProfileAsync(Guid userId)
+        {            
+            var user = await _context.Users
+                .Include(x => x.Group)
+                .Include(x => x.UserPermissions)
+                .ThenInclude(x => x.UserOperation)
+                .FirstOrDefaultAsync(x => x.Id == userId);
+            if (user is null)
+                throw new NotFoundException("User is not found");
+
+            if (userId.ToString() != user.Id.ToString())
+                throw new ConflictException("User don't have permission to do that.");
+
+
+            user.UserPermissions = user.UserPermissions.OrderBy(x => x.MenuOrder).ToList();
+            var userDTO = _mapper.Map<User, ProfileDTO>(user);
+            var parentElements = new List<UserPermissionParentDTO>();
+            foreach (var permission in userDTO.UserPermissions)
+            {
+                if (permission.hasParent == false && permission.hasChildren == true)
+                {
+                    permission.Children = new List<UserPermissionChildrenDTO>();
+                    parentElements.Add(permission);
+                }
+                else if (permission.hasParent == true && permission.hasChildren == false)
+                {
+                    var parentOrder = permission.MenuOrder.Split('.')[0];
+                    var parentElement = parentElements.FirstOrDefault(x => x.MenuOrder.StartsWith(parentOrder));
+                    if (parentElement != null)
+                    {
+                        var childrenDTO = _mapper.Map<UserPermissionParentDTO, UserPermissionChildrenDTO>(permission);
+                        parentElement.Children.Add(childrenDTO);
+                        parentElements.Remove(permission);
+                    }
+                }
+
+                foreach (var operation in permission.UserOperation)
+                {
+                    var operationName = operation.OperationName;
+                }
+            }
+
+            userDTO.UserPermissions.RemoveAll(permission => permission.MenuOrder.Contains("."));
+            return userDTO;
+        }
+
+        public async Task<UserDTO?> GetUserByIdAsync(Guid id)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
+            if (user is null)
+                throw new NotFoundException("User is not found");
 
             var userDTO = _mapper.Map<User, UserDTO>(user);
             return userDTO;
         }
+
+        public async Task<UserDTO?> UpdateUserByIdAsync(Guid id, UpdateUserViewModel body)
+        {
+            var user = await _context.Users
+                  .FirstOrDefaultAsync(x => x.Id == id);
+            if (user is null || user.IsActive is false)
+                throw new NotFoundException("User is not found");
+
+            var beforeChangesUser = _mapper.Map<UserHistoryDTO>(user);
+            var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(user, body);
+
+            //var userId = (Guid)HttpContext.Items["Id"]!;
+            //var userOperation = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userId);
+            //if (userOperation is null)
+            //    return NotFound(new ErrorResponseDTO
+            //    {
+            //        Message = $"User is not found"
+            //    });            
+
+            user.Name = body.Name is not null ? body.Name : user.Name;
+            user.Password = body.Password is not null ? BCrypt.Net.BCrypt.HashPassword(body.Password) : user.Password;
+            user.Email = body.Email is not null ? body.Email : user.Email;
+            user.Username = body.Username is not null ? body.Username : user.Username;
+
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            var userDTO = _mapper.Map<User, UserDTO>(user);
+            return userDTO;         
+        }
+
+        public async Task DeleteUserByIdAsync(Guid id, Guid userOperationId)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
+            if (user is null || user.IsActive is false)
+                throw new NotFoundException("User is not found");
+
+            var userOperation = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userOperationId);
+            if (userOperation is null)
+                throw new NotFoundException("User is not found");
+
+            user.DeletedAt = DateTime.UtcNow;
+            user.IsActive = false;
+
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+        }    
+        
+        public async Task<UserDTO?> RestoreUserByIdAsync(Guid id, Guid userOperationId)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (user is null || user.IsActive is true)
+                throw new NotFoundException("User is already active.");
+
+            var userOperation = await _context.Users.FirstOrDefaultAsync((x) => x.Id == userOperationId);
+            if (userOperation is null)
+                throw new NotFoundException("User is not found");
+
+            user.IsActive = true;
+            user.DeletedAt = null;
+
+            _context.Update(user);
+            await _context.SaveChangesAsync();
+
+            var UserDTO = _mapper.Map<User, UserDTO>(user);
+            return UserDTO;
+        }
+
+        public async Task<ProfileDTO?> EditPermissionUserByIdAsync(InsertUserPermissionViewModel body, Guid id)
+        {
+            if (body.Menus is null)
+                throw new NotFoundException("Menus is not found");
+
+            await MenuErrors.ValidateMenu(_context, body);
+
+            var userWithPermissions = await _context
+                .Users
+                .Where(x => x.Id == id)
+                .Include(x => x.Group)
+                .Include(x => x.UserPermissions!)
+                .ThenInclude(x => x.UserOperation)
+                .FirstOrDefaultAsync(u => u.Id == id);
+            if (userWithPermissions is null)
+                throw new NotFoundException("User is not found");
+            if (userWithPermissions.Group is null)
+                throw new NotFoundException("User no have found");
+
+            var permissionsUser = await _context.UserPermissions.Include(x => x.User).Where(x => x.User.Id == id).ToListAsync();
+            _context.RemoveRange(permissionsUser);
+
+            var operationsUser = await _context.UserOperations.Include(x => x.UserPermission).ThenInclude(x => x.User).Where(x => x.UserPermission.User.Id == id).ToListAsync();
+            _context.RemoveRange(operationsUser);
+
+            foreach (var menu in body.Menus)
+            {
+                //PROCURANDO PERMISSAO NO GRUPO
+                var verifyRelationMenuParent = await _context.GroupPermissions
+                    .Include(x => x.Menu)
+                    .Include(x => x.Group)
+                    .Where(x => x.Menu.Id == menu.MenuId)
+                    .Where(x => x.Group.Id == userWithPermissions.Group.Id)
+                    .FirstOrDefaultAsync();
+
+                // EXISTE A PERMISSAO NO GRUPO
+                if (verifyRelationMenuParent is not null)
+                {
+                    var createMenuParent = new UserPermission
+                    {
+                        GroupId = userWithPermissions.Group.Id,
+                        GroupName = userWithPermissions.Group.Name,
+                        hasParent = false,
+                        hasChildren = true,
+                        Id = Guid.NewGuid(),
+                        MenuIcon = verifyRelationMenuParent.MenuIcon,
+                        MenuName = verifyRelationMenuParent.MenuName,
+                        MenuOrder = verifyRelationMenuParent.MenuOrder,
+                        MenuRoute = verifyRelationMenuParent.MenuRoute,
+                        CreatedAt = DateTime.UtcNow,
+                        MenuId = verifyRelationMenuParent.Menu.Id,
+                        User = userWithPermissions,
+                        GroupMenu = verifyRelationMenuParent,
+                    };
+                    await _context.UserPermissions.AddAsync(createMenuParent);
+                    // EXISTE A PERMISSAO NO GRUPO E TEM LISTA DE FILHO
+                    if (menu.Childrens is not null && menu.Childrens.Count != 0)
+                    {
+
+                        foreach (var children in menu.Childrens)
+                        {
+                            //PROCURANDO PERMISSAO DO FILHO
+                            var verifyRelationMenuChildren = await _context.GroupPermissions
+                              .Include(x => x.Menu)
+                              .Include(x => x.Group)
+                              .Where(x => x.Menu.Id == children.ChildrenId)
+                              .Where(x => x.Group.Id == userWithPermissions.Group.Id)
+                              .FirstOrDefaultAsync();
+
+                            // EXISTE PERMISSAO DO FILHO NO GRUPO 
+                            if (verifyRelationMenuChildren is not null)
+                            {
+                                // EXISTE PERMISSAO DO FILHO NO GRUPO E TEM LISTA DE OPERAÇÕES
+                                if (children.Operations is not null && children.Operations.Count != 0)
+                                {
+                                    var createMenuChildren = new UserPermission
+                                    {
+                                        GroupId = userWithPermissions.Group.Id,
+                                        GroupName = userWithPermissions.Group.Name,
+                                        hasParent = true,
+                                        hasChildren = false,
+                                        Id = Guid.NewGuid(),
+                                        MenuIcon = verifyRelationMenuChildren.MenuIcon,
+                                        MenuName = verifyRelationMenuChildren.MenuName,
+                                        MenuOrder = verifyRelationMenuChildren.MenuOrder,
+                                        MenuRoute = verifyRelationMenuChildren.MenuRoute,
+                                        CreatedAt = DateTime.UtcNow,
+                                        MenuId = verifyRelationMenuChildren.Menu.Id,
+                                        User = userWithPermissions,
+                                        GroupMenu = verifyRelationMenuChildren,
+                                    };
+                                    await _context.UserPermissions.AddAsync(createMenuChildren);
+
+                                    foreach (var operation in children.Operations)
+                                    {
+                                        //PROCURANDO PERMISSAO DA OPERACAO NO GRUPO
+                                        var verifyRelationMenuChildrenWithOperations = await _context.GroupOperations
+                                          .Include(x => x.GlobalOperation)
+                                          .Include(x => x.GroupPermission)
+                                          .Where(x => x.GlobalOperation.Id == operation.OperationId)
+                                          .Where(x => x.GroupPermission.Id == verifyRelationMenuChildren.Id)
+                                          .FirstOrDefaultAsync();
+
+                                        //EXISTE PERMISSAO DA OPERACAO
+                                        if (verifyRelationMenuChildrenWithOperations is not null)
+                                        {
+                                            var createGroupOperationsInUser = new UserOperation
+                                            {
+                                                OperationName = verifyRelationMenuChildrenWithOperations.OperationName,
+                                                UserPermission = createMenuChildren,
+                                                GlobalOperation = verifyRelationMenuChildrenWithOperations.GlobalOperation,
+                                                GroupName = verifyRelationMenuChildrenWithOperations.GroupName,
+                                                Id = Guid.NewGuid(),
+                                            };
+                                            await _context.UserOperations.AddAsync(createGroupOperationsInUser);
+                                        }
+                                        else // NAO EXISTE PERMISSAO DA OPERACAO
+                                        {
+                                            var verifyRelationMenuChildrenWithOperationsInMaster = await _context.GroupOperations
+                                              .Include(x => x.GlobalOperation)
+                                              .Include(x => x.GroupPermission)
+                                              .Where(x => x.GlobalOperation.Id == operation.OperationId)
+                                              .Where(x => x.GroupPermission.GroupName == "Master")
+                                              .FirstOrDefaultAsync();
+
+                                            var createGroupOperationsInUser = new UserOperation
+                                            {
+                                                OperationName = verifyRelationMenuChildrenWithOperationsInMaster.OperationName,
+                                                UserPermission = createMenuChildren,
+                                                GlobalOperation = verifyRelationMenuChildrenWithOperationsInMaster.GlobalOperation,
+                                                GroupName = verifyRelationMenuChildrenWithOperationsInMaster.GroupName,
+                                                Id = Guid.NewGuid(),
+                                            };
+                                            await _context.UserOperations.AddAsync(createGroupOperationsInUser);
+                                        }
+                                    }
+                                }
+                            }
+                            else // NÃO EXISTE PERMISSAO DO FILHO NO GRUPO 
+                            {
+                                if (children.Operations is not null && children.Operations.Count != 0)
+                                {
+                                    //PROCURANDO PERMISSAO PELO MASTER
+                                    var verifyRelationMenuChildrenInMaster = await _context.GroupPermissions
+                                          .Include(x => x.Menu)
+                                          .Include(x => x.Group)
+                                          .Where(x => x.Menu.Id == children.ChildrenId)
+                                          .Where(x => x.Group.Name == "Master")
+                                          .FirstOrDefaultAsync();
+
+                                    var createMenuChildren = new UserPermission
+                                    {
+                                        GroupId = verifyRelationMenuChildrenInMaster.Group.Id,
+                                        GroupName = verifyRelationMenuChildrenInMaster.Group.Name,
+                                        hasParent = true,
+                                        hasChildren = false,
+                                        Id = Guid.NewGuid(),
+                                        MenuIcon = verifyRelationMenuChildrenInMaster.MenuIcon,
+                                        MenuName = verifyRelationMenuChildrenInMaster.MenuName,
+                                        MenuOrder = verifyRelationMenuChildrenInMaster.MenuOrder,
+                                        MenuRoute = verifyRelationMenuChildrenInMaster.MenuRoute,
+                                        CreatedAt = DateTime.UtcNow,
+                                        MenuId = verifyRelationMenuChildrenInMaster.Menu.Id,
+                                        User = userWithPermissions,
+                                        GroupMenu = verifyRelationMenuChildrenInMaster,
+                                    };
+                                    await _context.UserPermissions.AddAsync(createMenuChildren);
+
+                                    foreach (var operation in children.Operations)
+                                    {
+                                        //PROCURANDO PERMISSAO DA OPERACAO PELO MASTER
+                                        var verifyRelationMenuChildrenWithOperationsInMaster = await _context.GroupOperations
+                                          .Include(x => x.GlobalOperation)
+                                          .Include(x => x.GroupPermission)
+                                          .Where(x => x.GlobalOperation.Id == operation.OperationId)
+                                          .Where(x => x.GroupPermission.GroupName == "Master")
+                                          .FirstOrDefaultAsync();
+
+                                        var createGroupOperationsInUser = new UserOperation
+                                        {
+                                            OperationName = verifyRelationMenuChildrenWithOperationsInMaster.OperationName,
+                                            UserPermission = createMenuChildren,
+                                            GlobalOperation = verifyRelationMenuChildrenWithOperationsInMaster.GlobalOperation,
+                                            GroupName = verifyRelationMenuChildrenWithOperationsInMaster.GroupName,
+                                            Id = Guid.NewGuid(),
+                                        };
+                                        await _context.UserOperations.AddAsync(createGroupOperationsInUser);
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                    else // EXISTE A PERMISSAO NO GRUPO E NÃO TEM LISTA DE FILHO
+                    {
+                        if (menu.Operations is not null && menu.Operations.Count != 0)
+                        {
+                            foreach (var operation in menu.Operations)
+                            {
+                                //PROCURANDO PERMISSAO DA OPERACAO NO GRUPO
+                                var verifyRelationMenuParentWithOperations = await _context.GroupOperations
+                                  .Include(x => x.GlobalOperation)
+                                  .Include(x => x.GroupPermission)
+                                  .Where(x => x.GlobalOperation.Id == operation.OperationId)
+                                  .Where(x => x.GroupPermission.Id == verifyRelationMenuParent.Id)
+                                  .FirstOrDefaultAsync();
+
+                                //EXISTE PERMISSAO DA OPERACAO
+                                if (verifyRelationMenuParentWithOperations is not null)
+                                {
+                                    var createGroupOperationsInUser = new UserOperation
+                                    {
+                                        OperationName = verifyRelationMenuParentWithOperations.OperationName,
+                                        UserPermission = createMenuParent,
+                                        GlobalOperation = verifyRelationMenuParentWithOperations.GlobalOperation,
+                                        GroupName = verifyRelationMenuParentWithOperations.GroupName,
+                                        Id = Guid.NewGuid(),
+                                    };
+                                    await _context.UserOperations.AddAsync(createGroupOperationsInUser);
+                                }
+                                else // NAO EXISTE PERMISSAO DA OPERACAO
+                                {
+                                    var verifyRelationMenuChildrenWithOperationsInMaster = await _context.GroupOperations
+                                      .Include(x => x.GlobalOperation)
+                                      .Include(x => x.GroupPermission)
+                                      .Where(x => x.GlobalOperation.Id == operation.OperationId)
+                                      .Where(x => x.GroupPermission.GroupName == "Master")
+                                      .FirstOrDefaultAsync();
+
+                                    var createGroupOperationsInUser = new UserOperation
+                                    {
+                                        OperationName = verifyRelationMenuChildrenWithOperationsInMaster.OperationName,
+                                        UserPermission = createMenuParent,
+                                        GlobalOperation = verifyRelationMenuChildrenWithOperationsInMaster.GlobalOperation,
+                                        GroupName = verifyRelationMenuChildrenWithOperationsInMaster.GroupName,
+                                        Id = Guid.NewGuid(),
+                                    };
+                                    await _context.UserOperations.AddAsync(createGroupOperationsInUser);
+                                }
+                            }
+                        }
+                    }
+                }
+                else // NÃO EXISTE A PERMISSAO NO GRUPO
+                {
+                    var verifyRelationMenuParentInMaster = await _context.GroupPermissions
+                                          .Include(x => x.Menu)
+                                          .Include(x => x.Group)
+                                          .Where(x => x.Menu.Id == menu.MenuId)
+                                          .Where(x => x.Group.Name == "Master")
+                                          .FirstOrDefaultAsync();
+
+                    var createMenuParent = new UserPermission
+                    {
+                        GroupId = verifyRelationMenuParentInMaster.Group.Id,
+                        GroupName = verifyRelationMenuParentInMaster.Group.Name,
+                        hasParent = false,
+                        hasChildren = true,
+                        Id = Guid.NewGuid(),
+                        MenuIcon = verifyRelationMenuParentInMaster.MenuIcon,
+                        MenuName = verifyRelationMenuParentInMaster.MenuName,
+                        MenuOrder = verifyRelationMenuParentInMaster.MenuOrder,
+                        MenuRoute = verifyRelationMenuParentInMaster.MenuRoute,
+                        CreatedAt = DateTime.UtcNow,
+                        MenuId = verifyRelationMenuParentInMaster.Menu.Id,
+                        User = userWithPermissions,
+                        GroupMenu = verifyRelationMenuParentInMaster,
+                    };
+                    await _context.UserPermissions.AddAsync(createMenuParent);
+
+                    if (menu.Childrens is not null && menu.Childrens.Count != 0)
+                    {
+                        foreach (var children in menu.Childrens)
+                        {
+                            if (children.Operations is not null && children.Operations.Count != 0)
+                            {
+
+                                var verifyRelationMenuChildrenInMaster = await _context.GroupPermissions
+                                          .Include(x => x.Menu)
+                                          .Include(x => x.Group)
+                                          .Where(x => x.Menu.Id == children.ChildrenId)
+                                          .Where(x => x.Group.Name == "Master")
+                                          .FirstOrDefaultAsync();
+
+                                var createMenuChildren = new UserPermission
+                                {
+                                    GroupId = verifyRelationMenuChildrenInMaster.Group.Id,
+                                    GroupName = verifyRelationMenuChildrenInMaster.Group.Name,
+                                    hasParent = true,
+                                    hasChildren = false,
+                                    Id = Guid.NewGuid(),
+                                    MenuIcon = verifyRelationMenuChildrenInMaster.MenuIcon,
+                                    MenuName = verifyRelationMenuChildrenInMaster.MenuName,
+                                    MenuOrder = verifyRelationMenuChildrenInMaster.MenuOrder,
+                                    MenuRoute = verifyRelationMenuChildrenInMaster.MenuRoute,
+                                    CreatedAt = DateTime.UtcNow,
+                                    MenuId = verifyRelationMenuChildrenInMaster.Menu.Id,
+                                    User = userWithPermissions,
+                                    GroupMenu = verifyRelationMenuChildrenInMaster,
+                                };
+                                await _context.UserPermissions.AddAsync(createMenuChildren);
+
+                                foreach (var operation in children.Operations)
+                                {
+                                    //PROCURANDO PERMISSAO DA OPERACAO PELO MASTER
+                                    var verifyRelationMenuParentWithOperationsInMaster = await _context.GroupOperations
+                                      .Include(x => x.GlobalOperation)
+                                      .Include(x => x.GroupPermission)
+                                      .Where(x => x.GlobalOperation.Id == operation.OperationId)
+                                      .Where(x => x.GroupPermission.GroupName == "Master")
+                                      .FirstOrDefaultAsync();
+
+                                    var createGroupOperationsInUser = new UserOperation
+                                    {
+                                        OperationName = verifyRelationMenuParentWithOperationsInMaster.OperationName,
+                                        UserPermission = createMenuChildren,
+                                        GlobalOperation = verifyRelationMenuParentWithOperationsInMaster.GlobalOperation,
+                                        GroupName = verifyRelationMenuParentWithOperationsInMaster.GroupName,
+                                        Id = Guid.NewGuid(),
+                                    };
+                                    await _context.UserOperations.AddAsync(createGroupOperationsInUser);
+                                }
+                            }
+                        }
+                    }
+                }
+                await _context.SaveChangesAsync();
+            }
+
+            var gPermissions = await _context.GroupPermissions.Include(x => x.Group).Where(x => x.Group.Id == userWithPermissions.Group.Id).ToListAsync();
+            var uPermissions = await _context.UserPermissions.Include(x => x.User).Where(x => x.User.Id == id).ToListAsync();
+            var gPermissionsCount = gPermissions.Count();
+            var uPermissionsCount = uPermissions.Count();
+            if (uPermissionsCount != gPermissionsCount)
+            {
+                userWithPermissions.IsPermissionDefault = false;
+            }
+            else
+            {
+                int? verifyCount = 0;
+                foreach (var gPermission in gPermissions)
+                {
+                    var verifyPermission = await _context
+                        .UserPermissions.Include(x => x.User)
+                        .Where(x => x.MenuName == gPermission.MenuName)
+                        .Where(x => x.User.Id == userWithPermissions.Id)
+                        .FirstOrDefaultAsync();
+                    if (verifyPermission is null)
+                    {
+                        userWithPermissions.IsPermissionDefault = false;
+                    }
+                    else
+                    {
+                        verifyCount++;
+                    }
+                }
+                if (verifyCount != uPermissionsCount)
+                {
+                    userWithPermissions.IsPermissionDefault = false;
+                }
+                else
+                {
+                    userWithPermissions.IsPermissionDefault = true;
+                }
+            }
+
+            var gOperations = await _context.GroupOperations
+                .Include(x => x.GroupPermission)
+                .ThenInclude(x => x.Group)
+                .Where(x => x.GroupPermission.Group.Id == userWithPermissions.Group.Id)
+                .ToListAsync();
+            var uOperations = await _context.UserOperations
+                .Include(x => x.UserPermission)
+                .ThenInclude(x => x.User)
+                .Where(x => x.UserPermission.User.Id == id)
+                .ToListAsync();
+
+            var gOperationsCount = gOperations.Count();
+            var uOperationsCount = uOperations.Count();
+            if (uOperationsCount != gOperationsCount)
+            {
+                userWithPermissions.IsPermissionDefault = false;
+            }
+            else
+            {
+                int? verifyCount = 0;
+                foreach (var gOperation in gOperations) // PAREI AQUI !
+                {
+                    var verifyPermission = await _context
+                        .UserOperations.Include(x => x.UserPermission)
+                        .Where(x => x.OperationName == gOperation.OperationName)
+                        .Where(x => x.UserPermission.MenuName == gOperation.GroupPermission.MenuName)
+                        .Where(x => x.UserPermission.User.Id == userWithPermissions.Id)
+                        .FirstOrDefaultAsync();
+
+                    if (verifyPermission is null)
+                    {
+                        userWithPermissions.IsPermissionDefault = false;
+                    }
+                    else
+                    {
+                        verifyCount++;
+                    }
+                }
+                if (verifyCount != uOperationsCount)
+                {
+                    userWithPermissions.IsPermissionDefault = false;
+                }
+                else
+                {
+                    userWithPermissions.IsPermissionDefault = true;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            var userDTO = _mapper.Map<User, ProfileDTO>(userWithPermissions);
+            return userDTO;
+        }
+
+        public async Task<UserGroupDTO> RefreshPermissionUserByIdAsync(Guid id)
+        {
+            var user = await _context.Users
+                .Include(x => x.UserPermissions)
+                .Include(x => x.Group)
+                .Where(x => x.Id == id)
+                .FirstOrDefaultAsync();
+            if (user == null)
+                throw new NotFoundException("User is not found.");
+
+            if (user.Group == null)
+                throw new NotFoundException("User's group is not found.");
+
+            var permissionsUser = await _context.UserPermissions
+                .Include(x => x.User)
+                .Where(x => x.User.Id == id)
+                .ToListAsync();
+            _context.RemoveRange(permissionsUser);
+
+            var operationsUser = await _context.UserOperations
+                .Include(x => x.UserPermission)
+                .ThenInclude(x => x.User)
+                .Where(x => x.UserPermission.User.Id == id)
+                .ToListAsync();
+            _context.RemoveRange(operationsUser);
+            await _context.SaveChangesAsync();
+
+
+            var gPermissions = await _context.GroupPermissions
+                .Include(x => x.Operations)
+                .Include(x => x.Menu)
+                .Include(x => x.Group)
+                .Where(x => x.Group.Id == user.Group.Id)
+                .ToListAsync();
+            foreach (var permission in gPermissions)
+            {
+                var groupPermission = await _context.GroupPermissions
+                    .Where(x => x.Id == permission.Id)
+                    .FirstOrDefaultAsync();
+
+                var userPermission = new UserPermission
+                {
+                    Id = Guid.NewGuid(),
+                    hasChildren = permission.hasChildren,
+                    hasParent = permission.hasParent,
+                    MenuIcon = permission.MenuIcon,
+                    MenuName = permission.MenuName,
+                    MenuOrder = permission.MenuOrder,
+                    MenuRoute = permission.MenuRoute,
+                    GroupId = permission.Group.Id,
+                    GroupName = permission.Group.Name,
+                    MenuId = permission.Menu.Id,
+                    User = user,
+                    GroupMenu = groupPermission,
+                    CreatedAt = DateTime.UtcNow,
+                };
+
+                await _context.UserPermissions.AddAsync(userPermission);
+
+                foreach (var operation in permission.Operations)
+                {
+                    var foundOperation = await _context.GlobalOperations
+                        .Where(x => x.Method == operation.OperationName)
+                        .FirstOrDefaultAsync();
+
+                    var userOperation = new UserOperation
+                    {
+                        Id = Guid.NewGuid(),
+                        OperationName = operation.OperationName,
+                        UserPermission = userPermission,
+                        GlobalOperation = foundOperation,
+                        GroupName = user.Group.Name
+                    };
+
+                    await _context.UserOperations.AddAsync(userOperation);
+                }
+            }
+            user.IsPermissionDefault = true;
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            var userDTO = _mapper.Map<User, UserGroupDTO>(user);
+
+            return userDTO;
+
+        }
+        //public async Task<List<UserDTO>> RetrieveAllUsersAndMap()
+        //{
+
+        //    var users = await _context.Users.ToListAsync();
+        //    var userDTOs = new List<UserDTO>();
+
+        //    foreach (var user in users)
+        //    {
+        //        if (!user.IsActive)
+        //            continue;
+
+        //        var userDTO = _mapper.Map<User, UserDTO>(user);
+        //        userDTOs.Add(userDTO);
+        //    }
+
+        //    return userDTOs;
+        //}
+
 
     }
 }
