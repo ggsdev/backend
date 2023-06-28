@@ -19,7 +19,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
         public UserController(UserService service)
 
         {
-           _service = service;
+            _service = service;
         }
 
         #region Get
@@ -39,7 +39,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponseDTO))]
         public async Task<IActionResult> Post([FromBody] CreateUserViewModel body)
-        {        
+        {
             var userDTO = await _service.CreateUserAsync(body);
             return Created($"users/{userDTO.Id}", userDTO);
         }
@@ -62,7 +62,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponseDTO))]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            Console.WriteLine(id);
             var userDTO = await _service.GetUserByIdAsync(id);
             return Ok(userDTO);
         }
@@ -73,10 +72,10 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponseDTO))]
         public async Task<IActionResult> UpdatePartialAsync([FromRoute] Guid id, [FromBody] UpdateUserViewModel body)
-        {            
+        {
             try
             {
-                var userDTO = await _service.UpdateUserByIdAsync(id, body);         
+                var userDTO = await _service.UpdateUserByIdAsync(id, body);
                 return Ok(userDTO);
             }
             catch (DbUpdateException e)

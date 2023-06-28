@@ -99,7 +99,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
             if (updatedProperties.Any() is false && (zone.Field?.Id == body.FieldId || body.FieldId is null))
                 throw new BadRequestException("This zone already has these values, try to update to other values.");
 
-            if (body.FieldId is not null)
+            if (body.FieldId is not null && zone.Field?.Id != body.FieldId)
             {
                 var field = await _fieldRepository.GetOnlyField(body.FieldId);
 

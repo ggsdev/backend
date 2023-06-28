@@ -148,7 +148,6 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
 
         public async Task<GroupDTO> GetGroupById(Guid id)
         {
-            Console.WriteLine("oi");
             var group = await _groupRepository.GetGroupByIdAsync(id);
 
             if (group is null)

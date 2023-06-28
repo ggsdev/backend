@@ -98,7 +98,7 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
             if (updatedProperties.Any() is false && (body.ZoneId is null || body.ZoneId == reservoir.Zone?.Id))
                 throw new BadRequestException("This reservoir already has these values, try to update to other values.");
 
-            if (body.ZoneId is not null)
+            if (body.ZoneId is not null && reservoir.Zone?.Id != body.ZoneId)
             {
                 var zoneInDatabase = await _zoneRepository.GetOnlyZone(body.ZoneId);
 
