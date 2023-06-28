@@ -10,7 +10,8 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Dtos
         public Guid Id { get; set; }
         public string? Name { get; set; }
         public string? UepCod { get; set; }
-        public string? CodInstallation { get; set; }
+        public string? UepName { get; set; }
+        public string? CodInstallationAnp { get; set; }
         public double? GasSafetyBurnVolume { get; set; }
         public string? Description { get; set; }
         public bool? IsActive { get; set; }
