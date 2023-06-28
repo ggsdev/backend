@@ -85,7 +85,9 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
             _zoneRepository = new ZoneRepository(_context);
 
             _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository);
+
             _service = new ReservoirService(_mapper, _reservoirRepository, _zoneRepository, _systemHistoryService);
+
             _controller = new ReservoirController(_service);
             _controller.ControllerContext.HttpContext = httpContext;
         }
@@ -114,7 +116,9 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
                 Name = "InstallationTest",
                 UepCod = "InstallationTest",
-                CodInstallation = "asdsadsa",
+                CodInstallationAnp = "asdsadsa",
+                UepName = "asdsadsads",
+
                 Cluster = _cluster1,
                 User = _user
             };
@@ -177,7 +181,9 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
                 Name = "InstallationTest",
                 UepCod = "InstallationTest",
-                CodInstallation = "asoidjadisa",
+                CodInstallationAnp = "asoidjadisa",
+                UepName = "asdsadsads",
+
                 Cluster = _cluster1,
                 User = _user
             };
@@ -305,7 +311,9 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
                 Id = Guid.NewGuid(),
                 Name = "InstallationTest",
                 UepCod = "InstallationTest",
-                CodInstallation = "asoidjadisa",
+                CodInstallationAnp = "asoidjadisa",
+                UepName = "asdsadsads",
+
                 Cluster = _cluster1,
                 User = _user
             };
@@ -373,7 +381,9 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
                 Id = Guid.NewGuid(),
                 Name = "InstallationTest",
                 UepCod = "InstallationTest",
-                CodInstallation = "asoidjadisa",
+                CodInstallationAnp = "asoidjadisa",
+                UepName = "asdsadsads",
+
                 Cluster = _cluster1,
                 User = _user
             };

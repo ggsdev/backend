@@ -53,7 +53,7 @@ namespace PRIO.Controllers
 
                     });
 
-                var fileContent = data.Files[i].ContentBase64.Replace("data:@file/xml;base64,", "");
+                var fileContent = data.Files[i].ContentBase64?.Replace("data:@file/xml;base64,", "");
 
                 var isValidFileName = new List<string>()
                     {
