@@ -15,7 +15,12 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Mappings
                 .HasMaxLength(120)
                 .IsRequired();
 
-            builder.Property(x => x.CodInstallation)
+            builder.Property(x => x.CodInstallationAnp)
+                .HasColumnType("VARCHAR")
+                .HasMaxLength(120)
+                .IsRequired();  
+            
+            builder.Property(x => x.UepName)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(120)
                 .IsRequired();

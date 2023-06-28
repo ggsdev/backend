@@ -13,6 +13,7 @@ using PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Menus.Infra.Http.Services;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Interfaces;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories;
+using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services;
@@ -35,6 +36,7 @@ using PRIO.src.Modules.Hierarchy.Zones.Interfaces;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Equipments.Interfaces;
+using PRIO.src.Shared.Auxiliaries.Infra.Http.Services;
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.Infra.Http.Filters;
 using PRIO.src.Shared.Infra.Http.Middlewares;
@@ -42,7 +44,6 @@ using PRIO.src.Shared.Infra.Http.Services;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Repositories;
 using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
 using PRIO.src.Shared.SystemHistories.Interfaces;
-using PRIO.src.Shared.Utils.Binders;
 using PRIO.src.Shared.Utils.MappingProfiles;
 using System.Text;
 
@@ -60,7 +61,6 @@ if (app.Environment.IsDevelopment())
 }
 
 ConfigureMiddlewares(app);
-//app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -79,7 +79,7 @@ static void ConfigureServices(IServiceCollection services)
                         .RequireAuthenticatedUser()
                         .Build();
         config.Filters.Add(new AuthorizeFilter(policy));
-        config.ModelBinderProviders.Insert(0, new GuidBinderProvider());
+        //config.ModelBinderProviders.Insert(0, new GuidBinderProvider());
     });
 
     services.AddCors(options =>
@@ -140,8 +140,8 @@ static void ConfigureServices(IServiceCollection services)
     services.AddScoped<WellService>();
     services.AddScoped<CompletionService>();
     services.AddScoped<EquipmentService>();
-    services.AddScoped<MenuService>();
     services.AddScoped<SystemHistoryService>();
+    services.AddScoped<AuxiliaryService>();
 
     services.AddScoped<IMenuRepository, MenuRepository>();
     services.AddScoped<IGroupRepository, GroupRepository>();
@@ -152,7 +152,12 @@ static void ConfigureServices(IServiceCollection services)
     services.AddScoped<IUserOperationRepository, UserOperationRepository>();
     #endregion
 
+    #region Control Access Services
+    services.AddScoped<MenuService>();
+    services.AddScoped<UserService>();
     services.AddScoped<GroupService>();
+    #endregion
+
     services.AddScoped<XLSXService>();
 
     services.AddAuthentication(x =>

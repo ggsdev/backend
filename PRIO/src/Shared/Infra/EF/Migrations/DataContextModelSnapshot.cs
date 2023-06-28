@@ -498,7 +498,6 @@ namespace PRIO.Migrations
                         .HasColumnType("VARCHAR");
 
                     b.Property<string>("CodField")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("VARCHAR");
 
@@ -554,7 +553,7 @@ namespace PRIO.Migrations
                     b.Property<Guid>("ClusterId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CodInstallation")
+                    b.Property<string>("CodInstallationAnp")
                         .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("VARCHAR");
@@ -579,7 +578,15 @@ namespace PRIO.Migrations
                         .HasMaxLength(120)
                         .HasColumnType("VARCHAR");
 
+                    b.Property<Guid?>("OilVolumeCalculationId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("UepCod")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("UepName")
                         .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("VARCHAR");
@@ -593,6 +600,8 @@ namespace PRIO.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ClusterId");
+
+                    b.HasIndex("OilVolumeCalculationId");
 
                     b.HasIndex("UserId");
 
@@ -1505,6 +1514,9 @@ namespace PRIO.Migrations
                         .HasMaxLength(1)
                         .HasColumnType("char");
 
+                    b.Property<Guid>("InstallationId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -2278,6 +2290,8 @@ namespace PRIO.Migrations
 
                     b.HasIndex("FileTypeId");
 
+                    b.HasIndex("InstallationId");
+
                     b.HasIndex("MeasuringEquipmentId");
 
                     b.HasIndex("UserId");
@@ -2423,6 +2437,170 @@ namespace PRIO.Migrations
                     b.HasIndex("MeasurementId");
 
                     b.ToTable("Volumes_039", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models.DOR", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("EquipmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar");
+
+                    b.Property<Guid?>("OilVolumeCalculationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EquipmentId")
+                        .IsUnique()
+                        .HasFilter("[EquipmentId] IS NOT NULL");
+
+                    b.HasIndex("OilVolumeCalculationId");
+
+                    b.ToTable("DORs", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models.DrainVolume", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("EquipmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar");
+
+                    b.Property<Guid?>("OilVolumeCalculationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EquipmentId")
+                        .IsUnique()
+                        .HasFilter("[EquipmentId] IS NOT NULL");
+
+                    b.HasIndex("OilVolumeCalculationId");
+
+                    b.ToTable("DrainVolumes", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models.OilVolumeCalculation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OilVolumeCalculations");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models.Section", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("EquipmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar");
+
+                    b.Property<Guid?>("OilVolumeCalculationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EquipmentId")
+                        .IsUnique()
+                        .HasFilter("[EquipmentId] IS NOT NULL");
+
+                    b.HasIndex("OilVolumeCalculationId");
+
+                    b.ToTable("Sections", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models.TOGRecoveredOil", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("EquipmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar");
+
+                    b.Property<Guid?>("OilVolumeCalculationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EquipmentId")
+                        .IsUnique()
+                        .HasFilter("[EquipmentId] IS NOT NULL");
+
+                    b.HasIndex("OilVolumeCalculationId");
+
+                    b.ToTable("TOGRecoveredOils", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Shared.Auxiliaries.Infra.EF.Models.Auxiliary", b =>
+                {
+                    b.Property<Guid?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Option")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Route")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Select")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Table")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Auxiliaries");
                 });
 
             modelBuilder.Entity("PRIO.src.Shared.SystemHistories.Infra.EF.Models.SystemHistory", b =>
@@ -2627,6 +2805,10 @@ namespace PRIO.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models.OilVolumeCalculation", "OilVolumeCalculation")
+                        .WithMany()
+                        .HasForeignKey("OilVolumeCalculationId");
+
                     b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
                         .WithMany("Installations")
                         .HasForeignKey("UserId")
@@ -2634,6 +2816,8 @@ namespace PRIO.Migrations
                         .IsRequired();
 
                     b.Navigation("Cluster");
+
+                    b.Navigation("OilVolumeCalculation");
 
                     b.Navigation("User");
                 });
@@ -2725,10 +2909,15 @@ namespace PRIO.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.MeasuringEquipment", "MeasuringEquipment")
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
                         .WithMany("Measurements")
-                        .HasForeignKey("MeasuringEquipmentId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("InstallationId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.MeasuringEquipment", null)
+                        .WithMany("Measurements")
+                        .HasForeignKey("MeasuringEquipmentId");
 
                     b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
                         .WithMany("Measurements")
@@ -2738,7 +2927,7 @@ namespace PRIO.Migrations
 
                     b.Navigation("FileType");
 
-                    b.Navigation("MeasuringEquipment");
+                    b.Navigation("Installation");
 
                     b.Navigation("User");
                 });
@@ -2771,6 +2960,66 @@ namespace PRIO.Migrations
                         .IsRequired();
 
                     b.Navigation("Measurement");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models.DOR", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.MeasuringEquipment", "Equipment")
+                        .WithOne("DOR")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models.DOR", "EquipmentId");
+
+                    b.HasOne("PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models.OilVolumeCalculation", "OilVolumeCalculation")
+                        .WithMany("DORs")
+                        .HasForeignKey("OilVolumeCalculationId");
+
+                    b.Navigation("Equipment");
+
+                    b.Navigation("OilVolumeCalculation");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models.DrainVolume", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.MeasuringEquipment", "Equipment")
+                        .WithOne("DrainVolume")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models.DrainVolume", "EquipmentId");
+
+                    b.HasOne("PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models.OilVolumeCalculation", "OilVolumeCalculation")
+                        .WithMany("DrainVolumes")
+                        .HasForeignKey("OilVolumeCalculationId");
+
+                    b.Navigation("Equipment");
+
+                    b.Navigation("OilVolumeCalculation");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models.Section", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.MeasuringEquipment", "Equipment")
+                        .WithOne("Section")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models.Section", "EquipmentId");
+
+                    b.HasOne("PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models.OilVolumeCalculation", "OilVolumeCalculation")
+                        .WithMany("Sections")
+                        .HasForeignKey("OilVolumeCalculationId");
+
+                    b.Navigation("Equipment");
+
+                    b.Navigation("OilVolumeCalculation");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models.TOGRecoveredOil", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.MeasuringEquipment", "Equipment")
+                        .WithOne("TOGRecoveredOil")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models.TOGRecoveredOil", "EquipmentId");
+
+                    b.HasOne("PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models.OilVolumeCalculation", "OilVolumeCalculation")
+                        .WithMany("TOGRecoveredOils")
+                        .HasForeignKey("OilVolumeCalculationId");
+
+                    b.Navigation("Equipment");
+
+                    b.Navigation("OilVolumeCalculation");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.Group", b =>
@@ -2847,6 +3096,8 @@ namespace PRIO.Migrations
                 {
                     b.Navigation("Fields");
 
+                    b.Navigation("Measurements");
+
                     b.Navigation("MeasuringEquipments");
                 });
 
@@ -2881,7 +3132,26 @@ namespace PRIO.Migrations
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.MeasuringEquipment", b =>
                 {
+                    b.Navigation("DOR");
+
+                    b.Navigation("DrainVolume");
+
                     b.Navigation("Measurements");
+
+                    b.Navigation("Section");
+
+                    b.Navigation("TOGRecoveredOil");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models.OilVolumeCalculation", b =>
+                {
+                    b.Navigation("DORs");
+
+                    b.Navigation("DrainVolumes");
+
+                    b.Navigation("Sections");
+
+                    b.Navigation("TOGRecoveredOils");
                 });
 #pragma warning restore 612, 618
         }

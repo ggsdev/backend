@@ -72,7 +72,7 @@ namespace PRIO.Controllers
 
                 #region pathing
                 var projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\.."));
-                var relativeSchemaPath = Path.Combine("Files", "XML", $"_{data.Files[i].FileName}\\Schema.xsd");
+                var relativeSchemaPath = Path.Combine("src", "Modules", "FileImport", "XML", "FileContent", $"_{data.Files[i].FileName}\\Schema.xsd");
                 var pathXml = Path.GetTempPath() + "xmlImports.xml";
                 var pathSchema = Path.GetFullPath(Path.Combine(projectRoot, relativeSchemaPath));
                 #endregion
@@ -123,8 +123,7 @@ namespace PRIO.Controllers
                                 try
                                 {
                                     var installation = await context.Installations
-                                        .Where(x => x.CodInstallation == dadosBasicos.DHA_COD_INSTALACAO_039)
-                                        .FirstOrDefaultAsync();
+                                            .FirstOrDefaultAsync(x => x.UepCod == dadosBasicos.DHA_COD_INSTALACAO_039 && x.CodInstallationAnp == dadosBasicos.DHA_COD_INSTALACAO_039);
 
                                     var measurement = _mapper.Map<Measurement>(dadosBasicos);
                                     measurement.FileType = new FileType
@@ -134,6 +133,8 @@ namespace PRIO.Controllers
 
                                     };
                                     measurement.User = user;
+                                    if (installation is not null)
+                                        measurement.Installation = installation;
                                     await context.Measurements.AddAsync(measurement);
 
                                     var measurement039DTO = _mapper.Map<Measurement, _039DTO>(measurement);
@@ -174,7 +175,8 @@ namespace PRIO.Controllers
                                 var producao = producaoElement is not null ? Functions.DeserializeXml<PRODUCAO_001>(producaoElement) : null;
                                 #endregion
 
-
+                                var installation = await context.Installations
+                                       .FirstOrDefaultAsync(x => x.UepCod == dadosBasicos.COD_INSTALACAO_001 && x.CodInstallationAnp == dadosBasicos.COD_INSTALACAO_001);
                                 try
                                 {
                                     var measurement = new Measurement
@@ -319,6 +321,9 @@ namespace PRIO.Controllers
                                         #endregion
 
                                     };
+                                    if (installation is not null)
+                                        measurement.Installation = installation;
+
                                     await context.Measurements.AddAsync(measurement);
 
                                     var measurement001DTO = _mapper.Map<Measurement, _001DTO>(measurement);
@@ -361,6 +366,8 @@ namespace PRIO.Controllers
 
                                 #endregion
 
+                                var installation = await context.Installations
+                                      .FirstOrDefaultAsync(x => x.UepCod == dadosBasicos.COD_INSTALACAO_002 && x.CodInstallationAnp == dadosBasicos.COD_INSTALACAO_002);
                                 try
                                 {
 
@@ -527,6 +534,9 @@ namespace PRIO.Controllers
 
 
                                     };
+                                    if (installation is not null)
+                                        measurement.Installation = installation;
+
                                     await context.AddAsync(measurement);
                                     var measurement002DTO = _mapper.Map<Measurement, _002DTO>(measurement);
                                     _responseResult._002File ??= new List<_002DTO>();
@@ -584,6 +594,9 @@ namespace PRIO.Controllers
                                 var producaoElement = dadosBasicosElement?.Element("LISTA_PRODUCAO")?.Element("PRODUCAO");
                                 var producao = producaoElement is not null ? Functions.DeserializeXml<PRODUCAO_003>(producaoElement) : null;
                                 #endregion
+
+                                var installation = await context.Installations
+                                      .FirstOrDefaultAsync(x => x.UepCod == dadosBasicos.COD_INSTALACAO_003 && x.CodInstallationAnp == dadosBasicos.COD_INSTALACAO_003);
 
                                 try
                                 {
@@ -728,6 +741,9 @@ namespace PRIO.Controllers
                                         #endregion
 
                                     };
+
+                                    if (installation is not null)
+                                        measurement.Installation = installation;
 
                                     await context.Measurements.AddAsync(measurement);
                                     var measurement003DTO = _mapper.Map<Measurement, _003DTO>(measurement);

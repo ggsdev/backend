@@ -64,18 +64,18 @@ namespace PRIO.Migrations
             //criação do menu (1 - hasChildren, 2 - hasParent)
             var menuData = new List<object[]>
             {
-                new object[] { "Administração", "icon_administracao", "1", "/administracao", Guid.NewGuid(), true, false },
-                new object[] { "Cadastro básico", "icon_cadastro", "1.1", "/cadastro-basico", Guid.NewGuid(), false, true },
-                new object[] { "Grupo", "icon_grupo", "1.2", "/grupo", Guid.NewGuid(), false, true  },
-                new object[] { "Usuário", "icon_usuario", "1.3", "/usuario", Guid.NewGuid(), false, true },
-                new object[] { "Configurar cálculos", "icon_configuracao", "1.4", "/configurar-calculos", Guid.NewGuid(), false, true  },
-                new object[] { "Dados de produção", "icon_dados_producao", "2", "/dados-producao", Guid.NewGuid(), false, false  },
-                new object[] { "Gestão da produção", "icon_gestao_producao", "3", "/gestao-producao", Guid.NewGuid(), false, false   },
-                new object[] { "Identificação de falhas", "icon_falhas", "4", "/identificacao-falhas", Guid.NewGuid(), false, false   },
-                new object[] { "Teste de poços", "icon_teste_pocos", "5", "/teste-pocos", Guid.NewGuid(), true, false  },
-                new object[] { "Importar dados teste de Poço", "icon_importar_dados", "5.1", "/importar-dados", Guid.NewGuid(), false, true  },
-                new object[] { "Geração de arquivos", "icon_geracao_arquivos", "6", "/geracao-arquivos", Guid.NewGuid(), false, false  },
-                new object[] { "Relatórios", "icon_relatorios", "7", "/relatorios", Guid.NewGuid(), false, false }
+                new object[] { "Administração", "User", "1", "/administracao", Guid.NewGuid(), true, false },
+                new object[] { "Cadastros Básicos", "icon_cadastro", "1.1", "/cadastrosBasicos", Guid.NewGuid(), false, true },
+                new object[] { "Grupos", "icon_grupo", "1.2", "/grupos", Guid.NewGuid(), false, true  },
+                new object[] { "Usuários", "icon_usuario", "1.3", "/usuarios", Guid.NewGuid(), false, true },
+                new object[] { "Configurar Cálculos", "icon_configuracao", "1.4", "/configurarCalculos", Guid.NewGuid(), false, true  },
+                new object[] { "Dados de Produção", "FileArrowUp", "2", "/dadosProducao", Guid.NewGuid(), false, false  },
+                new object[] { "Gestão da Produção", "Gear", "3", "/gestaoProducao", Guid.NewGuid(), false, false   },
+                new object[] { "Notificação de Falhas", "WarningOctagon", "4", "/notificacaoFalhas", Guid.NewGuid(), false, false   },
+                new object[] { "Testes de Poços", "ClipboardText", "5", "/testePocos", Guid.NewGuid(), true, false  },
+                new object[] { "Importar Dados Teste de Poço", "icon_importar_dados", "5.1", "/importarDadosTestePoco", Guid.NewGuid(), false, true  },
+                new object[] { "Geração de Arquivos", "File", "6", "/geracaoArquivos", Guid.NewGuid(), false, false  },
+                new object[] { "Relatórios", "Files", "7", "/relatorios", Guid.NewGuid(), false, false }
             };
             foreach (var menu in menuData)
             {

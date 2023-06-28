@@ -46,7 +46,8 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                 Name = body.Name,
                 Description = body.Description,
                 UepCod = body.UepCod,
-                CodInstallation = body.CodInstallation,
+                UepName = body.UepName,
+                CodInstallationAnp = body.CodInstallationAnp,
                 GasSafetyBurnVolume = body.GasSafetyBurnVolume,
                 Cluster = clusterInDatabase,
                 User = user,
@@ -98,10 +99,10 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
 
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(installation, body);
 
-            if (updatedProperties.Any() is false && installation.Cluster?.Id == body.ClusterId)
+            if (updatedProperties.Any() is false && (body.ClusterId is null || body.ClusterId == installation.Cluster?.Id))
                 throw new BadRequestException("This installation already has these values, try to update to other values.");
 
-            if (body?.ClusterId is not null)
+            if (body.ClusterId is not null)
             {
                 var clusterInDatabase = await _clusterRespository.GetClusterByIdAsync(body.ClusterId);
 

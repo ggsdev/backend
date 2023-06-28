@@ -15,6 +15,7 @@ using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.Infra.EF.Models;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
+using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
 using PRIO.src.Shared.Utils;
 using System.Globalization;
 
@@ -25,11 +26,13 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
         private readonly string _consolidationInstance = "consolidador";
         private readonly IMapper _mapper;
         private readonly DataContext _context;
+        private readonly SystemHistoryService _systemHistoryService;
 
-        public XLSXService(IMapper mapper, DataContext context)
+        public XLSXService(IMapper mapper, DataContext context, SystemHistoryService systemHistoryService)
         {
             _mapper = mapper;
             _context = context;
+            _systemHistoryService = systemHistoryService;
         }
 
         public async Task ImportFiles(RequestXslxViewModel data, User user)
@@ -65,6 +68,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                 var columnInstallation = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationColumnName]].Value?.ToString()?.Trim();
                 var columnInstallationCod = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationCodColumnName]].Value?.ToString()?.Trim();
                 var columnInstallationCodUep = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationCodUepColumnName]].Value?.ToString()?.Trim();
+                var columnInstallationNameUep = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationNameUepColumnName]].Value?.ToString()?.Trim();
 
                 var columnField = worksheetTab.Cells[row, columnPositions[XlsUtils.FieldColumnName]].Value?.ToString()?.Trim();
                 var columnCodeField = worksheetTab.Cells[row, columnPositions[XlsUtils.FieldCodeColumnName]].Value?.ToString()?.Trim();
@@ -119,27 +123,17 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             CodCluster = GenerateCode.Generate(columnCluster),
                         };
 
-                        var currentData = _mapper.Map<Cluster, ClusterHistoryDTO>((Cluster)cluster);
-                        currentData.createdAt = dateCurrent;
-                        currentData.updatedAt = dateCurrent;
-
-                        var history = new SystemHistory
-                        {
-                            Table = HistoryColumns.TableClusters,
-                            TypeOperation = HistoryColumns.Import,
-                            CreatedBy = user?.Id,
-                            TableItemId = clusterId,
-                            CurrentData = currentData,
-                        };
+                        await _systemHistoryService
+                            .Import<Cluster, ClusterHistoryDTO>(HistoryColumns.TableClusters, user, cluster.Id, (Cluster)cluster);
 
                         entityDictionary[columnCluster.ToLower()] = cluster;
-                        entityHistoriesDictionary[columnCluster.ToLower()] = history;
                     }
                 }
 
                 if (!string.IsNullOrWhiteSpace(columnInstallation) && !entityDictionary.TryGetValue(columnInstallation.ToLower(), out var installation))
                 {
-                    installation = await _context.Installations.FirstOrDefaultAsync(x => x.Name.ToLower() == columnInstallation.ToLower());
+                    installation = await _context.Installations
+                        .FirstOrDefaultAsync(x => x.Name.ToLower() == columnInstallation.ToLower());
 
                     if (installation is null)
                     {
@@ -149,33 +143,25 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             Id = installationId,
                             Name = columnInstallation,
                             UepCod = columnInstallationCodUep,
-                            CodInstallation = columnInstallationCod,
+                            CodInstallationAnp = columnInstallationCod,
+                            UepName = columnInstallationNameUep,
                             User = user,
                             IsActive = true,
                             Cluster = columnCluster is not null ? (Cluster)entityDictionary.GetValueOrDefault(columnCluster.ToLower())! : null,
                         };
 
-                        var currentData = _mapper.Map<Installation, InstallationHistoryDTO>((Installation)installation);
-                        currentData.createdAt = dateCurrent;
-                        currentData.updatedAt = dateCurrent;
+                        await _systemHistoryService
+                            .Import<Installation, InstallationHistoryDTO>(HistoryColumns.TableInstallations, user, installation.Id, (Installation)installation);
 
-                        var history = new SystemHistory
-                        {
-                            Table = HistoryColumns.TableInstallations,
-                            TypeOperation = HistoryColumns.Import,
-                            CreatedBy = user?.Id,
-                            TableItemId = installationId,
-                            CurrentData = currentData,
-                        };
-
-                        entityHistoriesDictionary[columnInstallation.ToLower()] = history;
                         entityDictionary[columnInstallation.ToLower()] = installation;
                     }
                 }
 
                 if (!string.IsNullOrWhiteSpace(columnField) && !entityDictionary.TryGetValue(columnField.ToLower(), out var field))
                 {
-                    field = await _context.Fields.FirstOrDefaultAsync(x => x.Name.ToLower().Trim() == columnField.ToLower().Trim());
+                    field = await _context.Fields
+                        .Include(x => x.Installation)
+                        .FirstOrDefaultAsync(x => x.Name.ToLower().Trim() == columnField.ToLower().Trim());
 
                     if (field is null)
                     {
@@ -190,28 +176,46 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             IsActive = true,
                         };
 
-                        var currentData = _mapper.Map<Field, FieldHistoryDTO>((Field)field);
-                        currentData.createdAt = dateCurrent;
-                        currentData.updatedAt = dateCurrent;
+                        await _systemHistoryService
+                             .Import<Field, FieldHistoryDTO>(HistoryColumns.TableFields, user, field.Id, (Field)field);
 
-                        var history = new SystemHistory
-                        {
-                            Table = HistoryColumns.TableFields,
-                            TypeOperation = HistoryColumns.Import,
-                            CreatedBy = user?.Id,
-                            TableItemId = fieldId,
-                            CurrentData = currentData,
-                        };
-
-                        entityHistoriesDictionary[columnField.ToLower()] = history;
                         entityDictionary[columnField.ToLower()] = field;
                     }
 
+                    else
+                    {
+                        var fieldConverted = (Field)field;
+
+                        if (fieldConverted.Installation is not null && columnInstallation.ToLower() != fieldConverted.Installation.Name.ToLower())
+                        {
+
+                            var beforeChangesField = _mapper.Map<FieldHistoryDTO>(fieldConverted);
+
+                            Dictionary<string, object> updatedProperties = new();
+
+                            var installationToUpdate = await _context.Installations
+                                .FirstOrDefaultAsync(x => x.CodInstallationAnp == columnInstallationCod);
+
+                            if (installationToUpdate is not null && fieldConverted.Installation?.Name != installationToUpdate?.Name)
+                            {
+                                fieldConverted.Installation = installationToUpdate;
+                                updatedProperties[nameof(FieldHistoryDTO.installationId)] = installationToUpdate.Id;
+
+                                _context.Fields.Update(fieldConverted);
+
+                                await _systemHistoryService
+                                    .ImportUpdate(HistoryColumns.TableFields, user, updatedProperties, fieldConverted.Id, fieldConverted, beforeChangesField);
+                            }
+                        }
+                    }
                 }
 
                 if (!string.IsNullOrWhiteSpace(columnZone) && !entityDictionary.TryGetValue(columnZone.ToLower(), out var zone))
                 {
-                    zone = await _context.Zones.FirstOrDefaultAsync(x => x.CodZone.ToLower() == columnZone.ToLower());
+                    zone = await _context.Zones
+                        .Include(x => x.Field)
+                        .FirstOrDefaultAsync(x => x.CodZone.ToLower() == columnZone.ToLower());
+
                     if (zone is null)
                     {
                         var zoneId = Guid.NewGuid();
@@ -224,27 +228,44 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             Field = columnField is not null ? (Field)entityDictionary.GetValueOrDefault(columnField.ToLower())! : null,
                         };
 
-                        var currentData = _mapper.Map<Zone, ZoneHistoryDTO>((Zone)zone);
-                        currentData.createdAt = dateCurrent;
-                        currentData.updatedAt = dateCurrent;
+                        await _systemHistoryService
+                            .Import<Zone, ZoneHistoryDTO>(HistoryColumns.TableZones, user, zone.Id, (Zone)zone);
 
-                        var history = new SystemHistory
-                        {
-                            Table = HistoryColumns.TableZones,
-                            TypeOperation = HistoryColumns.Import,
-                            CreatedBy = user?.Id,
-                            TableItemId = zoneId,
-                            CurrentData = currentData,
-                        };
-
-                        entityHistoriesDictionary[columnZone.ToLower()] = history;
                         entityDictionary[columnZone.ToLower()] = zone;
+                    }
+                    else
+                    {
+                        var zoneConverted = (Zone)zone;
+
+                        if (zoneConverted.Field is not null && columnField.ToLower() != zoneConverted.Field.Name.ToLower())
+                        {
+                            var beforeChangesZone = _mapper.Map<ZoneHistoryDTO>(zoneConverted);
+
+                            Dictionary<string, object> updatedProperties = new();
+
+                            var fieldToUpdate = await _context.Fields
+                                .FirstOrDefaultAsync(x => x.Name == columnField);
+
+                            if (fieldToUpdate is not null && zoneConverted.Field?.Name != fieldToUpdate?.Name)
+                            {
+                                zoneConverted.Field = fieldToUpdate;
+                                updatedProperties[nameof(ZoneHistoryDTO.fieldId)] = fieldToUpdate.Id;
+
+                                _context.Zones.Update(zoneConverted);
+
+                                await _systemHistoryService
+                                    .ImportUpdate(HistoryColumns.TableZones, user, updatedProperties, zoneConverted.Id, zoneConverted, beforeChangesZone);
+                            }
+                        }
                     }
                 }
 
                 if (!string.IsNullOrWhiteSpace(columnReservoir) && !entityDictionary.TryGetValue(columnReservoir.ToLower(), out var reservoir))
                 {
-                    reservoir = await _context.Reservoirs.FirstOrDefaultAsync(x => x.Name.ToLower() == columnReservoir.ToLower());
+                    reservoir = await _context.Reservoirs
+                        .Include(x => x.Zone)
+                        .FirstOrDefaultAsync(x => x.Name.ToLower() == columnReservoir.ToLower());
+
                     if (reservoir is null)
                     {
                         var reservoirId = Guid.NewGuid();
@@ -258,21 +279,35 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             IsActive = true,
                         };
 
-                        var currentData = _mapper.Map<Reservoir, ReservoirHistoryDTO>((Reservoir)reservoir);
-                        currentData.createdAt = dateCurrent;
-                        currentData.updatedAt = dateCurrent;
+                        await _systemHistoryService
+                            .Import<Reservoir, ReservoirHistoryDTO>(HistoryColumns.TableReservoirs, user, reservoir.Id, (Reservoir)reservoir);
 
-                        var history = new SystemHistory
-                        {
-                            Table = HistoryColumns.TableReservoirs,
-                            TypeOperation = HistoryColumns.Import,
-                            CreatedBy = user?.Id,
-                            TableItemId = reservoirId,
-                            CurrentData = currentData,
-                        };
-
-                        entityHistoriesDictionary[columnReservoir.ToLower()] = history;
                         entityDictionary[columnReservoir.ToLower()] = reservoir;
+                    }
+                    else
+                    {
+                        var reservoirConverted = (Reservoir)reservoir;
+
+                        if (reservoirConverted.Zone is not null && columnZone.ToLower() != reservoirConverted.Zone.CodZone.ToLower())
+                        {
+                            var beforeChangesReservoir = _mapper.Map<ReservoirHistoryDTO>(reservoirConverted);
+
+                            Dictionary<string, object> updatedProperties = new();
+
+                            var zoneToUpdate = await _context.Zones
+                                .FirstOrDefaultAsync(x => x.CodZone == columnZone);
+
+                            if (zoneToUpdate is not null && reservoirConverted.Zone?.CodZone != zoneToUpdate?.CodZone)
+                            {
+                                reservoirConverted.Zone = zoneToUpdate;
+                                updatedProperties[nameof(ReservoirHistoryDTO.zoneId)] = zoneToUpdate.Id;
+
+                                _context.Reservoirs.Update(reservoirConverted);
+
+                                await _systemHistoryService
+                                    .ImportUpdate(HistoryColumns.TableReservoirs, user, updatedProperties, reservoirConverted.Id, reservoirConverted, beforeChangesReservoir);
+                            }
+                        }
                     }
                 }
 
@@ -310,27 +345,70 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             Field = (Field)entityDictionary.GetValueOrDefault(columnField.ToLower()),
                         };
 
-                        var currentData = _mapper.Map<Well, WellHistoryDTO>((Well)well);
-                        currentData.createdAt = dateCurrent;
-                        currentData.updatedAt = dateCurrent;
+                        await _systemHistoryService
+                             .Import<Well, WellHistoryDTO>(HistoryColumns.TableWells, user, well.Id, (Well)well);
 
-                        var history = new SystemHistory
+                        entityDictionary[columnWellCodeAnp.ToLower()] = well;
+                    }
+
+                    else
+                    {
+                        var wellConverted = (Well)well;
+
+                        var beforeChangesWell = _mapper.Map<WellHistoryDTO>(wellConverted);
+
+                        var propertiesToUpdate = new WellUpdateImportViewModel
                         {
-                            Table = HistoryColumns.TableWells,
-                            TypeOperation = HistoryColumns.Import,
-                            CreatedBy = user?.Id,
-                            TableItemId = wellId,
-                            CurrentData = currentData,
+                            Name = columnWellNameAnp,
+                            WellOperatorName = columnWellOperatorName,
+                            CategoryAnp = columnWellCategoryAnp,
+                            CategoryReclassificationAnp = columnWellCategoryReclassification,
+                            CategoryOperator = columnWellCategoryOperator,
+                            StatusOperator = columnWellStatusOperatorBoolean,
+                            Type = columnWellProfile,
+                            WaterDepth = decimal.TryParse(columnWellWaterDepth?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var columnWellWaterDepthDouble) ? columnWellWaterDepthDouble : 0,
+                            TopOfPerforated = decimal.TryParse(columnWellPerforationTopMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var topOfPerforated) ? topOfPerforated : 0,
+                            BaseOfPerforated = decimal.TryParse(columnWellBottomPerforationMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var baseOfPerforated) ? baseOfPerforated : 0,
+                            ArtificialLift = columnWellArtificialLift,
+                            Latitude4C = columnWellLatitude4c,
+                            Longitude4C = columnWellLongitude4c,
+                            LatitudeDD = columnWellLatitudeDD,
+                            LongitudeDD = columnWellLongitudeDD,
+                            DatumHorizontal = columnWellDatumHorizontal,
+                            TypeBaseCoordinate = columnWellTypeCoordinate,
+                            CoordX = columnWellCoordX,
+                            CoordY = columnWellCoordY,
                         };
 
-                        entityHistoriesDictionary[columnWellCodeAnp.ToLower()] = history;
-                        entityDictionary[columnWellCodeAnp.ToLower()] = well;
+                        var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(wellConverted, propertiesToUpdate);
+
+                        if (updatedProperties.Any() is true ||
+                            (wellConverted.Field is not null && wellConverted.Field.Name.ToLower() != columnField.ToLower()))
+                        {
+                            if (wellConverted.Field is not null && wellConverted.Field?.Name.ToLower() != columnField.ToLower())
+                            {
+                                var fieldToUpdate = await _context.Fields
+                                    .FirstOrDefaultAsync(x => x.Name.ToLower() == columnField.ToLower());
+
+                                wellConverted.Field = fieldToUpdate;
+                                updatedProperties[nameof(WellHistoryDTO.fieldId)] = fieldToUpdate.Id;
+                            }
+
+                            _context.Wells.Update(wellConverted);
+
+                            await _systemHistoryService
+                                .ImportUpdate(HistoryColumns.TableWells, user, updatedProperties, wellConverted.Id, wellConverted, beforeChangesWell);
+                        }
                     }
                 }
 
                 if (!string.IsNullOrWhiteSpace(columnCompletion) && !entityDictionary.TryGetValue(columnCompletion.ToLower(), out var completion))
                 {
-                    completion = await _context.Completions.FirstOrDefaultAsync(x => x.Name.ToLower() == columnCompletion.ToLower());
+                    completion = await _context.Completions
+                        .Include(x => x.Reservoir)
+                        .Include(x => x.Well)
+                        .FirstOrDefaultAsync(x => x.Name.ToLower() == columnCompletion.ToLower());
+
                     if (completion is null)
                     {
                         var completionId = Guid.NewGuid();
@@ -345,26 +423,61 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             IsActive = true
                         };
 
-                        var currentData = _mapper.Map<Completion, CompletionHistoryDTO>((Completion)completion);
-                        currentData.createdAt = dateCurrent;
-                        currentData.updatedAt = dateCurrent;
+                        await _systemHistoryService
+                             .Import<Completion, CompletionHistoryDTO>(HistoryColumns.TableCompletions, user, completion.Id, (Completion)completion);
 
-                        var history = new SystemHistory
-                        {
-                            Table = HistoryColumns.TableCompletions,
-                            TypeOperation = HistoryColumns.Import,
-                            CreatedBy = user?.Id,
-                            TableItemId = completionId,
-                            CurrentData = currentData,
-                        };
-
-                        entityHistoriesDictionary[columnCompletion.ToLower()] = history;
                         entityDictionary[columnCompletion.ToLower()] = completion;
                     }
+                    //else
+                    //{
+                    //    var completionConverted = (Completion)completion;
+                    //    var beforeChangesCompletion = _mapper.Map<CompletionHistoryDTO>(completionConverted);
+
+                    //    var propertiesToUpdate = new
+                    //    {
+                    //        Name = columnCompletion
+                    //    };
+
+                    //    var updatedProperties = UpdateFields
+                    //        .CompareUpdateReturnOnlyUpdated(completionConverted, propertiesToUpdate);
+
+                    //    if (updatedProperties.Any() is true || (completionConverted.Well is not null && columnWellCodeAnp != completionConverted.Well.CodWellAnp) ||
+                    //        (completionConverted.Reservoir is not null && columnReservoir != completionConverted.Reservoir.Name))
+                    //    {
+                    //        if (completionConverted.Well is not null && completionConverted.Well.CodWellAnp.ToLower() != columnWellCodeAnp.ToLower())
+                    //        {
+                    //            var wellToUpdate = await _context.Wells
+                    //            .FirstOrDefaultAsync(x => x.CodWellAnp.ToLower().Trim() == columnWellCodeAnp.ToLower().Trim());
+
+                    //            if (wellToUpdate is not null && completionConverted.Well?.Id != wellToUpdate?.Id)
+                    //            {
+                    //                completionConverted.Well = wellToUpdate;
+                    //                updatedProperties[nameof(CompletionHistoryDTO.wellId)] = wellToUpdate.Id;
+                    //            }
+
+                    //        }
+                    //        if (completionConverted.Reservoir is not null && completionConverted.Reservoir.Name.ToLower() != columnReservoir.ToLower())
+                    //        {
+                    //            var reservoirToUpdate = await _context.Reservoirs
+                    //            .FirstOrDefaultAsync(x => x.Name.ToLower().Trim() == columnReservoir.ToLower().Trim());
+
+                    //            if (reservoirToUpdate is not null && completionConverted.Reservoir?.Id != reservoirToUpdate.Id)
+                    //            {
+                    //                completionConverted.Reservoir = reservoirToUpdate;
+                    //                updatedProperties[nameof(CompletionHistoryDTO.reservoirId)] = reservoirToUpdate.Id;
+                    //            }
+                    //        }
+
+                    //        _context.Completions.Update(completionConverted);
+
+                    //        await _systemHistoryService
+                    //             .ImportUpdate(HistoryColumns.TableCompletions, user, updatedProperties, completionConverted.Id, completionConverted, beforeChangesCompletion);
+                    //    }
+                    //}
                 }
             }
+
             await _context.AddRangeAsync(entityDictionary.Values);
-            await _context.AddRangeAsync(entityHistoriesDictionary.Values);
             await _context.SaveChangesAsync();
         }
     }
