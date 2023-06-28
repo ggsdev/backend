@@ -60,7 +60,7 @@ if (app.Environment.IsDevelopment())
 }
 
 ConfigureMiddlewares(app);
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
