@@ -13,6 +13,7 @@ using PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Menus.Infra.Http.Services;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Interfaces;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories;
+using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services;
@@ -138,7 +139,6 @@ static void ConfigureServices(IServiceCollection services)
     services.AddScoped<WellService>();
     services.AddScoped<CompletionService>();
     services.AddScoped<EquipmentService>();
-    services.AddScoped<MenuService>();
     services.AddScoped<SystemHistoryService>();
 
     services.AddScoped<IMenuRepository, MenuRepository>();
@@ -150,7 +150,12 @@ static void ConfigureServices(IServiceCollection services)
     services.AddScoped<IUserOperationRepository, UserOperationRepository>();
     #endregion
 
+    #region Control Access Services
+    services.AddScoped<MenuService>();
+    services.AddScoped<UserService>();
     services.AddScoped<GroupService>();
+    #endregion
+
     services.AddScoped<XLSXService>();
 
     services.AddAuthentication(x =>
