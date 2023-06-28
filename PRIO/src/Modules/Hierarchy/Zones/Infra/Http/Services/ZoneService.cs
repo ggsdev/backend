@@ -124,6 +124,8 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
         public async Task DeleteZone(Guid id, User user)
         {
             var zone = await _zoneRepository.GetWithUser(id);
+            Console.WriteLine(zone?.IsActive + "asndsaiudsaiuds");
+            Console.WriteLine(zone?.Id);
 
             if (zone is null || zone.IsActive is false)
                 throw new NotFoundException("Zone not found or inactive already");
