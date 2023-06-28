@@ -26,6 +26,7 @@ using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models;
+using PRIO.src.Shared.Auxiliaries.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF.Models;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Mappings;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
@@ -46,6 +47,7 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<Well> Wells { get; set; }
         public DbSet<MeasuringEquipment> MeasuringEquipments { get; set; }
         public DbSet<SystemHistory> SystemHistories { get; set; }
+        public DbSet<Auxiliary> Auxiliaries { get; set; }
 
         public DbSet<Group> Groups { get; set; }
         public DbSet<GroupOperation> GroupOperations { get; set; }
@@ -90,7 +92,7 @@ namespace PRIO.src.Shared.Infra.EF
                 var port = envVars["PORT"];
                 var instance = envVars["SERVER_INSTANCE"];
 
-                optionsBuilder.UseSqlServer($"Server={server}\\{instance},{port};Database={database};User ID={userId};Password={password};Encrypt={encrypt};");
+                optionsBuilder.UseSqlServer($"Server={server},{port};Database={database};User ID={userId};Password={password};Encrypt={encrypt};");
             }
         }
         public override int SaveChanges()
