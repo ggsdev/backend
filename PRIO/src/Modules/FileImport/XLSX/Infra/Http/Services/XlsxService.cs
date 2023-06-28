@@ -428,53 +428,52 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
 
                         entityDictionary[columnCompletion.ToLower()] = completion;
                     }
-                    else
-                    {
-                        var completionConverted = (Completion)completion;
-                        var beforeChangesCompletion = _mapper.Map<CompletionHistoryDTO>(completionConverted);
+                    //else
+                    //{
+                    //    var completionConverted = (Completion)completion;
+                    //    var beforeChangesCompletion = _mapper.Map<CompletionHistoryDTO>(completionConverted);
 
-                        var propertiesToUpdate = new
-                        {
-                            Name = columnCompletion
-                        };
+                    //    var propertiesToUpdate = new
+                    //    {
+                    //        Name = columnCompletion
+                    //    };
 
-                        var updatedProperties = UpdateFields
-                            .CompareUpdateReturnOnlyUpdated(completionConverted, propertiesToUpdate);
+                    //    var updatedProperties = UpdateFields
+                    //        .CompareUpdateReturnOnlyUpdated(completionConverted, propertiesToUpdate);
 
-                        if (updatedProperties.Any() is true || (completionConverted.Well is not null && columnWellCodeAnp != completionConverted.Well.CodWellAnp) ||
-                            (completionConverted.Reservoir is not null && columnReservoir != completionConverted.Reservoir.Name))
-                        {
-                            if (completionConverted.Well is not null && completionConverted.Well.CodWellAnp.ToLower() != columnWellCodeAnp.ToLower())
-                            {
-                                var wellToUpdate = await _context.Wells
-                                .FirstOrDefaultAsync(x => x.CodWellAnp.ToLower().Trim() == columnWellCodeAnp.ToLower().Trim());
+                    //    if (updatedProperties.Any() is true || (completionConverted.Well is not null && columnWellCodeAnp != completionConverted.Well.CodWellAnp) ||
+                    //        (completionConverted.Reservoir is not null && columnReservoir != completionConverted.Reservoir.Name))
+                    //    {
+                    //        if (completionConverted.Well is not null && completionConverted.Well.CodWellAnp.ToLower() != columnWellCodeAnp.ToLower())
+                    //        {
+                    //            var wellToUpdate = await _context.Wells
+                    //            .FirstOrDefaultAsync(x => x.CodWellAnp.ToLower().Trim() == columnWellCodeAnp.ToLower().Trim());
 
-                                if (wellToUpdate is not null && completionConverted.Well?.Id != wellToUpdate?.Id)
-                                {
-                                    completionConverted.Well = wellToUpdate;
-                                    updatedProperties[nameof(CompletionHistoryDTO.wellId)] = wellToUpdate.Id;
-                                }
+                    //            if (wellToUpdate is not null && completionConverted.Well?.Id != wellToUpdate?.Id)
+                    //            {
+                    //                completionConverted.Well = wellToUpdate;
+                    //                updatedProperties[nameof(CompletionHistoryDTO.wellId)] = wellToUpdate.Id;
+                    //            }
 
-                            }
-                            if (completionConverted.Reservoir is not null && completionConverted.Reservoir.Name.ToLower() != columnReservoir.ToLower())
-                            {
-                                var reservoirToUpdate = await _context.Reservoirs
-                                .FirstOrDefaultAsync(x => x.Name.ToLower().Trim() == columnReservoir.ToLower().Trim());
+                    //        }
+                    //        if (completionConverted.Reservoir is not null && completionConverted.Reservoir.Name.ToLower() != columnReservoir.ToLower())
+                    //        {
+                    //            var reservoirToUpdate = await _context.Reservoirs
+                    //            .FirstOrDefaultAsync(x => x.Name.ToLower().Trim() == columnReservoir.ToLower().Trim());
 
-                                if (reservoirToUpdate is not null && completionConverted.Reservoir?.Id != reservoirToUpdate.Id)
-                                {
-                                    completionConverted.Reservoir = reservoirToUpdate;
-                                    updatedProperties[nameof(CompletionHistoryDTO.reservoirId)] = reservoirToUpdate.Id;
-                                }
-                            }
+                    //            if (reservoirToUpdate is not null && completionConverted.Reservoir?.Id != reservoirToUpdate.Id)
+                    //            {
+                    //                completionConverted.Reservoir = reservoirToUpdate;
+                    //                updatedProperties[nameof(CompletionHistoryDTO.reservoirId)] = reservoirToUpdate.Id;
+                    //            }
+                    //        }
 
-                            _context.Completions.Update(completionConverted);
+                    //        _context.Completions.Update(completionConverted);
 
-                            await _systemHistoryService
-                                 .ImportUpdate(HistoryColumns.TableCompletions, user, updatedProperties, completionConverted.Id, completionConverted, beforeChangesCompletion);
-                        }
-
-                    }
+                    //        await _systemHistoryService
+                    //             .ImportUpdate(HistoryColumns.TableCompletions, user, updatedProperties, completionConverted.Id, completionConverted, beforeChangesCompletion);
+                    //    }
+                    //}
                 }
             }
 
