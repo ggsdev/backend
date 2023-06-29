@@ -133,8 +133,8 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
 
                 updatedProperties[nameof(CompletionHistoryDTO.wellId)] = completion.Well.Id;
                 updatedProperties[nameof(CompletionHistoryDTO.name)] = completion.Name;
-            }
 
+            }
             if (body?.ReservoirId is not null && completion.Reservoir?.Id != body.ReservoirId)
             {
                 if (reservoir is null)
