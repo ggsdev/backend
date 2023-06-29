@@ -32,31 +32,26 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
 
             builder.Property(x => x.TypeEquipment)
                 .HasColumnType("varchar")
-                .HasMaxLength(60)
-                .IsRequired();
+                .HasMaxLength(60);
 
             builder.Property(x => x.Model)
                 .HasColumnType("varchar")
-                .HasMaxLength(60)
-                .IsRequired();
+                .HasMaxLength(60);
 
             builder.Property(x => x.HasSeal)
                 .IsRequired();
 
-            builder.Property(x => x.MVS)
-                .IsRequired();
+            builder.Property(x => x.MVS);
 
             builder.Property(x => x.CommunicationProtocol)
                 .HasColumnType("varchar")
-                .HasMaxLength(60)
-                .IsRequired();
-
-            builder.Property(x => x.TypePoint)
-                .HasColumnType("varchar")
-                .HasMaxLength(60)
-                .IsRequired();
+                .HasMaxLength(60);
 
             builder.Property(x => x.ChannelNumber)
+                .HasColumnType("varchar")
+                .HasMaxLength(10);
+
+            builder.Property(x => x.TypePoint)
                 .HasColumnType("varchar")
                 .HasMaxLength(60)
                 .IsRequired();
@@ -80,17 +75,9 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
 
             builder.Property(x => x.IsActive);
 
-            builder.HasOne(x => x.DOR)
-                .WithOne(d => d.Equipment);
+            builder.HasOne(x => x.MeasuringPoint)
+                .WithMany(d => d.MeasuringEquipments);
 
-
-            builder.HasOne(x => x.DrainVolume)
-                .WithOne(d => d.Equipment);
-
-            builder.HasOne(x => x.Installation)
-                .WithMany(d => d.MeasuringEquipments)
-                .OnDelete(DeleteBehavior.Cascade)
-                .IsRequired();
 
             builder.HasOne(x => x.User)
                 .WithMany(d => d.MeasuringEquipments)

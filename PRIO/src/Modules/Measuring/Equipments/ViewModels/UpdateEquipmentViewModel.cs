@@ -27,7 +27,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.ViewModels
         public bool? InOperation { get; set; }
         [StringLength(60, ErrorMessage = "Fluid cannot exceed 60 characters.")]
         public string? Fluid { get; set; }
-        public Guid? InstallationId { get; set; }
+        public Guid? MeasuringId { get; set; }
         public string? Description { get; set; }
     }
 }

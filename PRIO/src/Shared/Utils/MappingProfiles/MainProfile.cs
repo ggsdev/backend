@@ -26,6 +26,10 @@ using PRIO.src.Modules.Hierarchy.Zones.Dtos;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Dtos;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.MeasuringPoints.Dtos;
+using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.OilVolumeCalculations.Dtos;
+using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Dtos.UserDtos;
 using System.Globalization;
@@ -75,6 +79,26 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<Measurement, _003DTO>();
             #endregion
 
+            #region Control Access
+            CreateMap<User, UserDTO>();
+            CreateMap<User, UserHistoryDTO>();
+            CreateMap<Menu, MenuParentDTO>();
+            CreateMap<Menu, MenuChildrenDTO>();
+            CreateMap<User, ProfileDTO>();
+            CreateMap<UserPermission, UserPermissionParentDTO>();
+            CreateMap<UserPermission, UserPermissionChildrenDTO>();
+            CreateMap<UserOperation, UserOperationsDTO>();
+            CreateMap<UserPermissionParentDTO, UserPermissionChildrenDTO>();
+            CreateMap<GroupPermission, GroupPermissionsDTO>();
+            CreateMap<Group, GroupDTO>();
+            CreateMap<Menu, MenuDTO>();
+            CreateMap<GroupOperation, UserGroupOperationDTO>();
+            CreateMap<User, UserGroupDTO>();
+            CreateMap<Group, GroupWithMenusDTO>();
+            CreateMap<Reservoir, ReservoirWithZoneDTO>();
+            #endregion
+
+            #region Hierachy
             CreateMap<Cluster, ClusterDTO>();
             CreateMap<Cluster, ClusterHistoryDTO>();
             CreateMap<Cluster, ClusterWithInstallationsDTO>();
@@ -134,28 +158,19 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<Completion, CompletionWithoutReservoirDTO>();
             CreateMap<Completion, CreateUpdateCompletionDTO>();
             CreateMap<Completion, CompletionWithWellAndReservoirDTO>();
+            #endregion
 
-            CreateMap<User, UserDTO>();
-            CreateMap<User, UserHistoryDTO>();
-
+            #region Measuring
             CreateMap<MeasuringEquipment, MeasuringEquipmentDTO>();
             CreateMap<MeasuringEquipment, MeasuringEquipmentHistoryDTO>();
             CreateMap<MeasuringEquipment, MeasuringEquipmentWithoutInstallationDTO>();
-
-            CreateMap<Menu, MenuParentDTO>();
-            CreateMap<Menu, MenuChildrenDTO>();
-            CreateMap<User, ProfileDTO>();
-            CreateMap<UserPermission, UserPermissionParentDTO>();
-            CreateMap<UserPermission, UserPermissionChildrenDTO>();
-            CreateMap<UserOperation, UserOperationsDTO>();
-            CreateMap<UserPermissionParentDTO, UserPermissionChildrenDTO>();
-            CreateMap<GroupPermission, GroupPermissionsDTO>();
-            CreateMap<Group, GroupDTO>();
-            CreateMap<Menu, MenuDTO>();
-            CreateMap<GroupOperation, UserGroupOperationDTO>();
-            CreateMap<User, UserGroupDTO>();
-            CreateMap<Group, GroupWithMenusDTO>();
-            CreateMap<Reservoir, ReservoirWithZoneDTO>();
+            CreateMap<MeasuringPoint, MeasuringPointDTO>();
+            CreateMap<OilVolumeCalculation, OilVolumeCalculationDTO>();
+            CreateMap<Section, SectionWithEquipmentDTO>();
+            CreateMap<DrainVolume, DrainVolumeWithEquipmentDTO>();
+            CreateMap<TOGRecoveredOil, TOGRecoveredOilWithEquipmentDTO>();
+            CreateMap<DOR, DORWithEquipmentDTO>();
+            #endregion
 
         }
 
