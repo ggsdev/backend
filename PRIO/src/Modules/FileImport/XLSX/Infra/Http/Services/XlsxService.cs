@@ -107,7 +107,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                 var columnWellCoordY = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCoordYColumnName]].Value?.ToString()?.Trim();
                 #endregion
 
-
                 if (!string.IsNullOrWhiteSpace(columnCluster) && !entityDictionary.TryGetValue(columnCluster.ToLower(), out var cluster))
                 {
                     cluster = await _context.Clusters.FirstOrDefaultAsync(x => x.Name.ToLower() == columnCluster.ToLower());
@@ -402,11 +401,11 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                     }
                 }
 
-                if (!string.IsNullOrWhiteSpace(columnCompletion) && !entityDictionary.TryGetValue(columnCompletion.ToLower(), out var completion))
+                if (!string.IsNullOrWhiteSpace(columnCompletion) && !string.IsNullOrWhiteSpace(columnWellCodeAnp) && !entityDictionary.TryGetValue(columnCompletion.ToLower(), out var completion))
                 {
                     completion = await _context.Completions
-                        .Include(x => x.Reservoir)
-                        .Include(x => x.Well)
+                        //.Include(x => x.Reservoir)
+                        //.Include(x => x.Well)
                         .FirstOrDefaultAsync(x => x.Name.ToLower() == columnCompletion.ToLower());
 
                     if (completion is null)
@@ -418,8 +417,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             Name = columnCompletion,
                             User = user,
                             CodCompletion = GenerateCode.Generate(columnCompletion),
-                            Reservoir = columnReservoir is not null ? (Reservoir)entityDictionary.GetValueOrDefault(columnReservoir?.ToLower())! : null,
-                            Well = columnWellCodeAnp is not null ? (Well)entityDictionary.GetValueOrDefault(columnWellCodeAnp?.ToLower())! : null,
+                            Reservoir = columnReservoir is not null ? (Reservoir)entityDictionary.GetValueOrDefault(columnReservoir?.ToLower()) : null,
+                            Well = columnWellCodeAnp is not null ? (Well)entityDictionary.GetValueOrDefault(columnWellCodeAnp?.ToLower()) : null,
                             IsActive = true
                         };
 
@@ -442,12 +441,12 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                     //        .CompareUpdateReturnOnlyUpdated(completionConverted, propertiesToUpdate);
 
                     //    if (updatedProperties.Any() is true || (completionConverted.Well is not null && columnWellCodeAnp != completionConverted.Well.CodWellAnp) ||
-                    //        (completionConverted.Reservoir is not null && columnReservoir != completionConverted.Reservoir.Name))
+                    //            (completionConverted.Reservoir is not null && columnReservoir != completionConverted.Reservoir.Name))
                     //    {
-                    //        if (completionConverted.Well is not null && completionConverted.Well.CodWellAnp.ToLower() != columnWellCodeAnp.ToLower())
+                    //        if (columnWellCodeAnp is not null && completionConverted.Well is not null && completionConverted.Well.CodWellAnp.ToLower() != columnWellCodeAnp.ToLower())
                     //        {
                     //            var wellToUpdate = await _context.Wells
-                    //            .FirstOrDefaultAsync(x => x.CodWellAnp.ToLower().Trim() == columnWellCodeAnp.ToLower().Trim());
+                    //                .FirstOrDefaultAsync(x => x.CodWellAnp.ToLower().Trim() == columnWellCodeAnp.ToLower().Trim());
 
                     //            if (wellToUpdate is not null && completionConverted.Well?.Id != wellToUpdate?.Id)
                     //            {
@@ -456,22 +455,24 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                     //            }
 
                     //        }
-                    //        if (completionConverted.Reservoir is not null && completionConverted.Reservoir.Name.ToLower() != columnReservoir.ToLower())
+                    //        if (columnReservoir is not null && completionConverted.Reservoir?.Name?.ToLower() != columnReservoir?.ToLower())
                     //        {
                     //            var reservoirToUpdate = await _context.Reservoirs
-                    //            .FirstOrDefaultAsync(x => x.Name.ToLower().Trim() == columnReservoir.ToLower().Trim());
+                    //                .FirstOrDefaultAsync(x => x.Name.ToLower().Trim() == columnReservoir.ToLower().Trim());
 
                     //            if (reservoirToUpdate is not null && completionConverted.Reservoir?.Id != reservoirToUpdate.Id)
                     //            {
                     //                completionConverted.Reservoir = reservoirToUpdate;
                     //                updatedProperties[nameof(CompletionHistoryDTO.reservoirId)] = reservoirToUpdate.Id;
+
                     //            }
                     //        }
 
-                    //        _context.Completions.Update(completionConverted);
 
                     //        await _systemHistoryService
-                    //             .ImportUpdate(HistoryColumns.TableCompletions, user, updatedProperties, completionConverted.Id, completionConverted, beforeChangesCompletion);
+                    //            .ImportUpdate(HistoryColumns.TableCompletions, user, updatedProperties, completion.Id, completionConverted, beforeChangesCompletion);
+
+                    //        _context.Completions.Update(completionConverted);
                     //    }
                     //}
                 }

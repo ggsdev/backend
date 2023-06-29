@@ -23,6 +23,9 @@ using PRIO.src.Modules.Hierarchy.Zones.Dtos;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
+using PRIO.src.Shared.SystemHistories.Infra.EF.Repositories;
+using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
+using PRIO.src.Shared.SystemHistories.Interfaces;
 
 namespace PRIO.TESTS.Files.XLS
 {
@@ -36,6 +39,8 @@ namespace PRIO.TESTS.Files.XLS
         private User _user;
         private IMapper _mapper;
         private XLSXService _service;
+        private ISystemHistoryRepository _systemHistoryRepository;
+        private SystemHistoryService _systemHistoryService;
 
         [SetUp]
         public void Setup()
@@ -92,7 +97,10 @@ namespace PRIO.TESTS.Files.XLS
             httpContext.Items["INSTANCE"] = "bravo";
             httpContext.Items["User"] = _user;
 
-            _service = new XLSXService(_mapper, _context);
+            _systemHistoryRepository = new SystemHistoryRepository(_context);
+
+            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository);
+            _service = new XLSXService(_mapper, _context, _systemHistoryService);
 
             _controller = new XLSXController(_service);
             _controller.ControllerContext.HttpContext = httpContext;

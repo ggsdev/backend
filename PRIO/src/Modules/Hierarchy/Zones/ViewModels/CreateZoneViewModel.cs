@@ -5,7 +5,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.ViewModels
     public class CreateZoneViewModel
     {
         [Required(ErrorMessage = "Zone code is required")]
-        [StringLength(120, ErrorMessage = "CodZone cannot exceed 120 characters.")]
+        [StringLength(60, ErrorMessage = "CodZone cannot exceed 60 characters.")]
         public string? CodZone { get; set; }
 
         [Required(ErrorMessage = "Field id is required")]

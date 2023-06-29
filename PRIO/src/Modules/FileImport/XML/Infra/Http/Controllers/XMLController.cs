@@ -53,7 +53,7 @@ namespace PRIO.Controllers
 
                     });
 
-                var fileContent = data.Files[i].ContentBase64.Replace("data:@file/xml;base64,", "");
+                var fileContent = data.Files[i].ContentBase64?.Replace("data:@file/xml;base64,", "");
 
                 var isValidFileName = new List<string>()
                     {
@@ -177,6 +177,10 @@ namespace PRIO.Controllers
 
                                 var installation = await context.Installations
                                        .FirstOrDefaultAsync(x => x.UepCod == dadosBasicos.COD_INSTALACAO_001 && x.CodInstallationAnp == dadosBasicos.COD_INSTALACAO_001);
+
+                                //var equipment = await context.MeasuringEquipments
+                                //       .FirstOrDefaultAsync(x => x.TagMeasuringPoint == dadosBasicos.COD_TAG_PONTO_MEDICAO_001);
+
                                 try
                                 {
                                     var measurement = new Measurement

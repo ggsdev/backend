@@ -40,7 +40,6 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
         }
         public async Task<Group> CreateGroupAsync(CreateGroupViewModel body)
         {
-            Console.WriteLine("oi");
             await MenuErrors.ValidateMenu(_context, body);
 
             var groupId = Guid.NewGuid();

@@ -12,7 +12,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Mappings
 
             builder.Property(x => x.CodZone)
                 .HasColumnType("VARCHAR")
-                .HasMaxLength(120)
+                .HasMaxLength(60)
                 .IsRequired();
 
             builder.Property(x => x.Description)

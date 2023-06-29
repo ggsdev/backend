@@ -4,7 +4,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.ViewModels
 {
     public class UpdateCompletionViewModel
     {
-        [StringLength(8, ErrorMessage = "CodCluster cannot exceed 8 characters.")]
+        [StringLength(60, ErrorMessage = "CodCompletion cannot exceed 60 characters.")]
         public string? CodCompletion { get; set; }
         public string? Description { get; set; }
         public Guid? ReservoirId { get; set; }
