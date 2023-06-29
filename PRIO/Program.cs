@@ -36,6 +36,8 @@ using PRIO.src.Modules.Hierarchy.Zones.Interfaces;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Equipments.Interfaces;
+using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Repositories;
+using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
 using PRIO.src.Shared.Auxiliaries.Infra.Http.Services;
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.Infra.Http.Filters;
@@ -144,6 +146,7 @@ static void ConfigureServices(IServiceCollection services)
     services.AddScoped<AuxiliaryService>();
 
     services.AddScoped<IMenuRepository, MenuRepository>();
+    services.AddScoped<IMeasuringPointRepository, MeasuringPointRepository>();
     services.AddScoped<IGroupRepository, GroupRepository>();
     services.AddScoped<IGroupPermissionRepository, GroupPermissionRepository>();
     services.AddScoped<IGroupOperationRepository, GroupOperationRepository>();

@@ -10,6 +10,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.ViewModels
         [Required(ErrorMessage = "TagMeasuringPoint is a required field.")]
         [StringLength(120, ErrorMessage = "TagMeasuringPoint cannot exceed 120 characters.")]
         public string? TagMeasuringPoint { get; set; }
+        public string? MeasuringPointName { get; set; }
         [Required(ErrorMessage = "SerieNumber is a required field.")]
         [StringLength(120, ErrorMessage = "SerieNumber cannot exceed 120 characters.")]
         public string? SerieNumber { get; set; }

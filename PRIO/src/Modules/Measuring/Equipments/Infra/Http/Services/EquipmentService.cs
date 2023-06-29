@@ -6,6 +6,8 @@ using PRIO.src.Modules.Measuring.Equipments.Dtos;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Interfaces;
 using PRIO.src.Modules.Measuring.Equipments.ViewModels;
+using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
@@ -19,6 +21,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
         private readonly IMapper _mapper;
         private readonly IEquipmentRepository _equipmentRepository;
         private readonly IInstallationRepository _installationRepository;
+        private readonly IMeasuringPointRepository _measuringPointRepository;
         private readonly SystemHistoryService _systemHistoryService;
         private readonly string _tableName = HistoryColumns.TableEquipments;
 
@@ -27,9 +30,10 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
             "gás","óleo","água"
         };
 
-        public EquipmentService(IMapper mapper, IEquipmentRepository equipmentRepository, IInstallationRepository installationRepository, SystemHistoryService systemHistoryService)
+        public EquipmentService(IMapper mapper, IEquipmentRepository equipmentRepository, IInstallationRepository installationRepository, SystemHistoryService systemHistoryService, IMeasuringPointRepository measuringPoint)
         {
             _mapper = mapper;
+            _measuringPointRepository = measuringPoint;
             _equipmentRepository = equipmentRepository;
             _installationRepository = installationRepository;
             _systemHistoryService = systemHistoryService;
@@ -40,43 +44,96 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
             if (body.Fluid is not null && !_fluidsAllowed.Contains(body.Fluid.ToLower()))
                 throw new BadRequestException("Fluids allowed are: gás, óleo, água");
 
-            var installationInDatabase = await _installationRepository.GetByIdAsync(body.InstallationId);
+            var measuringPointInDatabase = await _measuringPointRepository.GetByTagMeasuringPoint(body.TagMeasuringPoint);
 
-            if (installationInDatabase is null)
-                throw new NotFoundException("Installation not found");
-
-            var equipmentId = Guid.NewGuid();
-            var equipment = new MeasuringEquipment
+            if (measuringPointInDatabase is null)
             {
-                Id = equipmentId,
-                TagEquipment = body.TagEquipment,
-                TagMeasuringPoint = body.TagMeasuringPoint,
-                SerieNumber = body.SerieNumber,
-                Type = body.Type,
-                TypeEquipment = body.TypeEquipment,
-                Model = body.Model,
-                HasSeal = body.HasSeal,
-                MVS = body.MVS,
-                CommunicationProtocol = body.CommunicationProtocol,
-                TypePoint = body.TypePoint,
-                ChannelNumber = body.ChannelNumber,
-                InOperation = body.InOperation,
-                Fluid = body.Fluid.ToLower(),
-                Installation = installationInDatabase,
-                Description = body.Description is not null ? body.Description : null,
-                User = user,
-                IsActive = body.IsActive is not null ? body.IsActive.Value : true,
-            };
+                if (body.TagMeasuringPoint is not null && body.MeasuringPointName is not null)
+                {
 
-            await _equipmentRepository.AddAsync(equipment);
+                    var installationInDatabase = await _installationRepository.GetByIdAsync(body.InstallationId) ?? throw new NotFoundException("Installation is not found.");
+                    var createMeasuringPoint = new MeasuringPoint
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = body.MeasuringPointName,
+                        TagPointMeasuring = body.TagMeasuringPoint,
+                        Installation = installationInDatabase
+                    };
+                    await _measuringPointRepository.AddAsync(createMeasuringPoint);
 
-            await _systemHistoryService
-                .Create<MeasuringEquipment, MeasuringEquipmentHistoryDTO>(_tableName, user, equipmentId, equipment);
+                    var equipmentId = Guid.NewGuid();
+                    var equipment = new MeasuringEquipment
+                    {
+                        Id = equipmentId,
+                        TagEquipment = body.TagEquipment,
+                        TagMeasuringPoint = body.TagMeasuringPoint,
+                        SerieNumber = body.SerieNumber,
+                        Type = body.Type,
+                        TypeEquipment = body.TypeEquipment,
+                        Model = body.Model,
+                        HasSeal = body.HasSeal,
+                        MVS = body.MVS,
+                        CommunicationProtocol = body.CommunicationProtocol,
+                        TypePoint = body.TypePoint,
+                        ChannelNumber = body.ChannelNumber,
+                        InOperation = body.InOperation,
+                        Fluid = body.Fluid.ToLower(),
+                        MeasuringPoint = createMeasuringPoint,
+                        Description = body.Description is not null ? body.Description : null,
+                        User = user,
+                        IsActive = body.IsActive is not null ? body.IsActive.Value : true,
+                    };
+                    await _equipmentRepository.AddAsync(equipment);
 
-            await _equipmentRepository.SaveChangesAsync();
+                    await _systemHistoryService
+                        .Create<MeasuringEquipment, MeasuringEquipmentHistoryDTO>(_tableName, user, equipmentId, equipment);
+                    await _equipmentRepository.SaveChangesAsync();
 
-            var equipmentDTO = _mapper.Map<MeasuringEquipment, MeasuringEquipmentDTO>(equipment);
-            return equipmentDTO;
+                    var equipmentDTO = _mapper.Map<MeasuringEquipment, MeasuringEquipmentDTO>(equipment);
+                    return equipmentDTO;
+                }
+                else
+                {
+                    throw new BadRequestException("Measurement point not found or data for registration of measurement point not found");
+                }
+            }
+            else
+            {
+                var checkEquipment = await _equipmentRepository.getByTagsSerialChannel(body.TagMeasuringPoint, body.TagEquipment, body.SerieNumber, body.ChannelNumber);
+                if (checkEquipment != null)
+                    throw new ConflictException("This device is already registered");
+
+                var equipmentId = Guid.NewGuid();
+                var equipment = new MeasuringEquipment
+                {
+                    Id = equipmentId,
+                    TagEquipment = body.TagEquipment,
+                    TagMeasuringPoint = body.TagMeasuringPoint,
+                    SerieNumber = body.SerieNumber,
+                    Type = body.Type,
+                    TypeEquipment = body.TypeEquipment,
+                    Model = body.Model,
+                    HasSeal = body.HasSeal,
+                    MVS = body.MVS,
+                    CommunicationProtocol = body.CommunicationProtocol,
+                    TypePoint = body.TypePoint,
+                    ChannelNumber = body.ChannelNumber,
+                    InOperation = body.InOperation,
+                    Fluid = body.Fluid.ToLower(),
+                    MeasuringPoint = measuringPointInDatabase,
+                    Description = body.Description is not null ? body.Description : null,
+                    User = user,
+                    IsActive = body.IsActive is not null ? body.IsActive.Value : true,
+                };
+                await _equipmentRepository.AddAsync(equipment);
+                await _systemHistoryService
+                    .Create<MeasuringEquipment, MeasuringEquipmentHistoryDTO>(_tableName, user, equipmentId, equipment);
+
+                await _equipmentRepository.SaveChangesAsync();
+
+                var equipmentDTO = _mapper.Map<MeasuringEquipment, MeasuringEquipmentDTO>(equipment);
+                return equipmentDTO;
+            }
         }
 
         public async Task<List<MeasuringEquipmentDTO>> GetEquipments()
@@ -114,18 +171,18 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
 
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(equipment, body);
 
-            if (updatedProperties.Any() is false && (equipment.Installation?.Id == body.InstallationId || body.InstallationId is null))
+            if (updatedProperties.Any() is false && (equipment.MeasuringPoint?.Id == body.MeasuringId || body.MeasuringId is null))
                 throw new BadRequestException("This equipment already has these values, try to update to other values.");
 
-            if (body.InstallationId is not null)
+            if (body.MeasuringId is not null)
             {
-                var installationInDatabase = await _installationRepository.GetByIdAsync(body.InstallationId);
+                var measuringPointInDatabase = await _measuringPointRepository.GetByIdAsync(body.MeasuringId);
 
-                if (installationInDatabase is null)
+                if (measuringPointInDatabase is null)
                     throw new NotFoundException("Installation not found");
 
-                equipment.Installation = installationInDatabase;
-                updatedProperties[nameof(MeasuringEquipmentHistoryDTO.installationId)] = installationInDatabase.Id;
+                equipment.MeasuringPoint = measuringPointInDatabase;
+                updatedProperties[nameof(MeasuringEquipmentHistoryDTO.installationId)] = measuringPointInDatabase.Id;
             }
 
             _equipmentRepository.Update(equipment);

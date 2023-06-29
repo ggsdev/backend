@@ -3,6 +3,5 @@
     public class CreateDorViewModel
     {
         public Guid EquipmentId { get; set; }
-        public string? Name { get; set; }
     }
 }

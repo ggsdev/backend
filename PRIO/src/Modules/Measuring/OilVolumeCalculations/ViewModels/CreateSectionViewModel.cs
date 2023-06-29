@@ -2,7 +2,6 @@
 {
     public class CreateSectionViewModel
     {
-        public Guid EquipmentId { get; set; }
-        public string? Name { get; set; }
+        public Guid MeasuringPointId { get; set; }
     }
 }

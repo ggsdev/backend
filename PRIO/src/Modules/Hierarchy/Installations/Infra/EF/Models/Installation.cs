@@ -2,6 +2,7 @@
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF.Models;
 
@@ -17,7 +18,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models
         public User? User { get; set; }
         public Cluster? Cluster { get; set; }
         public OilVolumeCalculation? OilVolumeCalculation { get; set; }
-        public List<MeasuringEquipment>? MeasuringEquipments { get; set; }
+        public List<MeasuringPoint>? MeasuringPoints { get; set; }
         public List<Field>? Fields { get; set; }
         public List<Measurement>? Measurements { get; set; }
     }

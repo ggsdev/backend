@@ -75,23 +75,13 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
 
             builder.Property(x => x.IsActive);
 
-            builder.HasOne(x => x.DOR)
-                .WithOne(d => d.Equipment);
-
-
-            builder.HasOne(x => x.DrainVolume)
-                .WithOne(d => d.Equipment);
-
-            builder.HasOne(x => x.Installation)
-                .WithMany(d => d.MeasuringEquipments)
-                .OnDelete(DeleteBehavior.Cascade)
-                .IsRequired();
+            builder.HasOne(x => x.MeasuringPoint)
+                .WithMany(d => d.MeasuringEquipments);
 
             builder.HasOne(x => x.User)
                 .WithMany(d => d.MeasuringEquipments)
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
         }
-
     }
 }

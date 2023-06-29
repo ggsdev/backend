@@ -76,7 +76,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("GroupPermissionId");
 
-                    b.ToTable("GroupOperations");
+                    b.ToTable("GroupOperations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.GroupPermission", b =>
@@ -215,7 +215,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GlobalOperations");
+                    b.ToTable("GlobalOperations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.Session", b =>
@@ -2306,10 +2306,12 @@ namespace PRIO.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ChannelNumber")
+                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("varchar");
 
                     b.Property<string>("CommunicationProtocol")
+                        .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("varchar");
 
@@ -2342,9 +2344,11 @@ namespace PRIO.Migrations
                         .HasColumnType("bit");
 
                     b.Property<bool?>("MVS")
+                        .IsRequired()
                         .HasColumnType("bit");
 
                     b.Property<string>("Model")
+                        .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("varchar");
 
@@ -2369,6 +2373,7 @@ namespace PRIO.Migrations
                         .HasColumnType("varchar");
 
                     b.Property<string>("TypeEquipment")
+                        .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("varchar");
 
@@ -2513,7 +2518,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("OilVolumeCalculations");
+                    b.ToTable("OilVolumeCalculations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models.Section", b =>
@@ -2595,7 +2600,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Auxiliaries");
+                    b.ToTable("Auxiliaries", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Shared.SystemHistories.Infra.EF.Models.SystemHistory", b =>

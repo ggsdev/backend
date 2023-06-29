@@ -18,8 +18,8 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Mappings
             builder.Property(x => x.CodInstallationAnp)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(120)
-                .IsRequired();  
-            
+                .IsRequired();
+
             builder.Property(x => x.UepName)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(120)
@@ -48,6 +48,9 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Mappings
                .WithMany(u => u.Installations)
                .OnDelete(DeleteBehavior.NoAction)
                .IsRequired();
+
+            builder.HasOne(x => x.OilVolumeCalculation)
+               .WithOne(u => u.Installation);
 
             builder.HasOne(x => x.Cluster)
                .WithMany(u => u.Installations)

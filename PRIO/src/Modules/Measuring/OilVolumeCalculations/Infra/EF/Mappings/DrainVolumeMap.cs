@@ -15,7 +15,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Mappings
              .HasMaxLength(60)
              .IsRequired();
 
-            builder.HasOne(x => x.Equipment)
+            builder.HasOne(x => x.MeasuringPoint)
                .WithOne(d => d.DrainVolume)
                .HasForeignKey<DrainVolume>("EquipmentId");
 

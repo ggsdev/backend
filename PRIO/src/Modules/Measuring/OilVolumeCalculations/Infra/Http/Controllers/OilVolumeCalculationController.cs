@@ -1,9 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
-using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
-using PRIO.src.Modules.Measuring.OilVolumeCalculations.ViewModels;
-using PRIO.src.Shared.Errors;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using PRIO.src.Shared.Infra.EF;
 
 namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controllers
@@ -13,100 +9,118 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
     public class OilVolumeCalculationController : ControllerBase
     {
         private readonly DataContext _context;
-        public OilVolumeCalculationController(DataContext context)
+        private readonly IMapper _mapper;
+        public OilVolumeCalculationController(DataContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateOilVolumeCalculationViewModel body)
-        {
-            if (HttpContext.Items["User"] is not User user)
-                return Unauthorized(new ErrorResponseDTO
-                {
-                    Message = "User not identified, please login first"
-                });
+        //[HttpPost]
+        //public async Task<OilVolumeCalculationDTO?> Create([FromBody] CreateOilVolumeCalculationViewModel body)
+        //{
+        //    if (HttpContext.Items["User"] is not User user)
+        //        throw new UnauthorizedAccessException("User not identified, please login first");
 
-            var installationInDatabase = await _context.Installations.Where(x => x.Id == body.InstallationId).FirstOrDefaultAsync();
-            if (installationInDatabase == null)
-                return NotFound(new ErrorResponseDTO
-                {
-                    Message = "User not identified, please login first"
-                });
-            if (installationInDatabase.OilVolumeCalculation != null)
-                return Conflict(new ErrorResponseDTO
-                {
-                    Message = "User not identified, please login first"
-                });
+        //    var installationInDatabase = await _context.Installations.Where(x => x.Id == body.InstallationId).FirstOrDefaultAsync() ?? throw new NotFoundException("Installation is not found.");
+        //    if (installationInDatabase.OilVolumeCalculation != null)
+        //        throw new ConflictException("Oil Volume Calculations is already register.");
 
-            var createOilVolumeCalculation = new OilVolumeCalculation
-            {
-                Id = Guid.NewGuid(),
-                Installation = installationInDatabase
-            };
-            _context.OilVolumeCalculations.Add(createOilVolumeCalculation);
+        //    if (body.Sections is not null)
+        //        foreach (var section in body.Sections)
+        //        {
+        //            var equipment = await _context.MeasuringEquipments.Where(x => x.Id == section.EquipmentId).FirstOrDefaultAsync() ?? throw new NotFoundException("Equipment section is not found.");
+        //        }
 
-            if (body.sections is not null)
-                foreach (var section in body.sections)
-                {
-                    var equipment = await _context.MeasuringEquipments.Where(x => x.Id == section.EquipmentId).FirstOrDefaultAsync();
+        //    if (body.TOGs is not null)
+        //        foreach (var tog in body.TOGs)
+        //        {
+        //            var equipment = await _context.MeasuringEquipments.Where(x => x.Id == tog.EquipmentId).FirstOrDefaultAsync() ?? throw new NotFoundException("Equipment TOG is not found.");
+        //        }
 
-                    var createSection = new Section
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = section.Name,
-                        OilVolumeCalculation = createOilVolumeCalculation,
-                        Equipment = equipment
-                    };
-                    _context.Sections.Add(createSection);
-                }
+        //    if (body.DORs is not null)
+        //        foreach (var dor in body.DORs)
+        //        {
+        //            var equipment = await _context.MeasuringEquipments.Where(x => x.Id == dor.EquipmentId).FirstOrDefaultAsync() ?? throw new NotFoundException("Equipment DOR is not found.");
+        //        }
 
-            if (body.TOGs is not null)
-                foreach (var tog in body.TOGs)
-                {
-                    var equipment = await _context.MeasuringEquipments.Where(x => x.Id == tog.EquipmentId).FirstOrDefaultAsync();
+        //    if (body.Drains is not null)
+        //        foreach (var drain in body.Drains)
+        //        {
+        //            var equipment = await _context.MeasuringEquipments.Where(x => x.Id == drain.EquipmentId).FirstOrDefaultAsync() ?? throw new NotFoundException("Equipment Drain is not found.");
+        //        }
 
-                    var createTog = new TOGRecoveredOil
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = tog.Name,
-                        OilVolumeCalculation = createOilVolumeCalculation,
-                        Equipment = equipment
-                    };
-                    _context.TOGRecoveredOils.Add(createTog);
-                }
+        //    var createOilVolumeCalculation = new OilVolumeCalculation
+        //    {
+        //        Id = Guid.NewGuid(),
+        //        Installation = installationInDatabase
+        //    };
+        //    _context.OilVolumeCalculations.Add(createOilVolumeCalculation);
 
-            if (body.DORs is not null)
-                foreach (var dor in body.DORs)
-                {
-                    var equipment = await _context.MeasuringEquipments.Where(x => x.Id == dor.EquipmentId).FirstOrDefaultAsync();
+        //    if (body.Sections is not null)
+        //        foreach (var section in body.Sections)
+        //        {
+        //            var equipment = await _context.MeasuringEquipments.Where(x => x.Id == section.EquipmentId).FirstOrDefaultAsync();
 
-                    var createDor = new DOR
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = dor.Name,
-                        OilVolumeCalculation = createOilVolumeCalculation,
-                        Equipment = equipment
-                    };
-                    _context.DORs.Add(createDor);
-                }
+        //            var createSection = new Section
+        //            {
+        //                Id = Guid.NewGuid(),
+        //                Name = section.Name,
+        //                OilVolumeCalculation = createOilVolumeCalculation,
+        //                Equipment = equipment
+        //            };
+        //            _context.Sections.Add(createSection);
+        //        }
 
-            if (body.Drains is not null)
-                foreach (var drain in body.Drains)
-                {
-                    var equipment = await _context.MeasuringEquipments.Where(x => x.Id == drain.EquipmentId).FirstOrDefaultAsync();
+        //    if (body.TOGs is not null)
+        //        foreach (var tog in body.TOGs)
+        //        {
+        //            var equipment = await _context.MeasuringEquipments.Where(x => x.Id == tog.EquipmentId).FirstOrDefaultAsync();
 
-                    var createDrain = new DrainVolume
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = drain.Name,
-                        OilVolumeCalculation = createOilVolumeCalculation,
-                        Equipment = equipment
-                    };
-                    _context.DrainVolumes.Add(createDrain);
-                }
+        //            var createTog = new TOGRecoveredOil
+        //            {
+        //                Id = Guid.NewGuid(),
+        //                Name = tog.Name,
+        //                OilVolumeCalculation = createOilVolumeCalculation,
+        //                Equipment = equipment
+        //            };
+        //            _context.TOGRecoveredOils.Add(createTog);
+        //        }
 
+        //    if (body.DORs is not null)
+        //        foreach (var dor in body.DORs)
+        //        {
+        //            var equipment = await _context.MeasuringEquipments.Where(x => x.Id == dor.EquipmentId).FirstOrDefaultAsync();
 
-        }
+        //            var createDor = new DOR
+        //            {
+        //                Id = Guid.NewGuid(),
+        //                Name = dor.Name,
+        //                OilVolumeCalculation = createOilVolumeCalculation,
+        //                Equipment = equipment
+        //            };
+        //            _context.DORs.Add(createDor);
+        //        }
+
+        //    if (body.Drains is not null)
+        //        foreach (var drain in body.Drains)
+        //        {
+        //            var equipment = await _context.MeasuringEquipments.Where(x => x.Id == drain.EquipmentId).FirstOrDefaultAsync();
+
+        //            var createDrain = new DrainVolume
+        //            {
+        //                Id = Guid.NewGuid(),
+        //                Name = drain.Name,
+        //                OilVolumeCalculation = createOilVolumeCalculation,
+        //                Equipment = equipment
+        //            };
+        //            _context.DrainVolumes.Add(createDrain);
+        //        }
+
+        //    await _context.SaveChangesAsync();
+        //    var OilVolumeCalculationDTO = _mapper.Map<OilVolumeCalculation, OilVolumeCalculationDTO>(createOilVolumeCalculation);
+
+        //    return OilVolumeCalculationDTO;
+        //}
     }
 }
