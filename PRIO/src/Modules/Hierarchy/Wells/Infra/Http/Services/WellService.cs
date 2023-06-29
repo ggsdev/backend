@@ -112,7 +112,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             if (updatedProperties.Any() is false && (well.Field?.Id == body.FieldId || body.FieldId is null))
                 throw new BadRequestException("This well already has these values, try to update to other values.");
 
-            if (body.FieldId is not null)
+            if (body.FieldId is not null && well.Field?.Id != body.FieldId)
             {
                 var fieldInDatabase = await _fieldRepository.GetOnlyField(body.FieldId);
 
