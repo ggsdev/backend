@@ -15,17 +15,17 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Repositories
         }
         public async Task<MeasuringPoint?> GetByIdAsync(Guid? id)
         {
-            return await _context.MeasuringPoint
+            return await _context.MeasuringPoints
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
         public async Task<MeasuringPoint?> GetByTagMeasuringPoint(string? tagMeasuringPoint)
         {
-            return await _context.MeasuringPoint
+            return await _context.MeasuringPoints
                 .FirstOrDefaultAsync(x => x.TagPointMeasuring == tagMeasuringPoint);
         }
         public async Task AddAsync(MeasuringPoint measuringPoint)
         {
-            await _context.MeasuringPoint.AddAsync(measuringPoint);
+            await _context.MeasuringPoints.AddAsync(measuringPoint);
             await _context.SaveChangesAsync();
         }
     }

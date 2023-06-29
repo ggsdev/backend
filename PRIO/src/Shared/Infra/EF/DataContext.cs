@@ -59,7 +59,7 @@ namespace PRIO.src.Shared.Infra.EF
 
         #region Measurement & Relations
         public DbSet<Measurement> Measurements { get; set; }
-        public DbSet<MeasuringPoint> MeasuringPoint { get; set; }
+        public DbSet<MeasuringPoint> MeasuringPoints { get; set; }
         public DbSet<OilVolumeCalculation> OilVolumeCalculations { get; set; }
         public DbSet<Section> Sections { get; set; }
         public DbSet<TOGRecoveredOil> TOGRecoveredOils { get; set; }

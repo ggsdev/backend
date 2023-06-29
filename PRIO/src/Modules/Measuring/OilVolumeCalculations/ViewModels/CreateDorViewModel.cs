@@ -2,6 +2,6 @@
 {
     public class CreateDorViewModel
     {
-        public Guid EquipmentId { get; set; }
+        public Guid MeasuringPointId { get; set; }
     }
 }
