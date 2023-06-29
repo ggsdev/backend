@@ -50,7 +50,8 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 DotEnv.Load();
 
-ConfigureServices(builder.Services);
+IConfiguration configuration = builder.Configuration;
+ConfigureServices(builder.Services, configuration);
 
 var app = builder.Build();
 
@@ -68,11 +69,10 @@ app.UseAuthorization();
 app.MapControllers();
 app.Run();
 
-static void ConfigureServices(IServiceCollection services)
+static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
 {
     var envVars = DotEnv.Read();
-    var jwtKey = envVars["SECRET_KEY"];
-    var key = Encoding.ASCII.GetBytes(jwtKey);
+
     services.AddControllers(config =>
     {
         var policy = new AuthorizationPolicyBuilder()
@@ -99,6 +99,7 @@ static void ConfigureServices(IServiceCollection services)
     {
         cfg.AddProfile<MainProfile>();
     });
+
     IMapper mapper = mapperConfig.CreateMapper();
 
     services.AddSingleton(mapper);
@@ -160,6 +161,9 @@ static void ConfigureServices(IServiceCollection services)
 
     services.AddScoped<XLSXService>();
 
+    var jwtKey = envVars["SECRET_KEY"];
+    var key = Encoding.ASCII.GetBytes(jwtKey);
+
     services.AddAuthentication(x =>
     {
         x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -177,6 +181,12 @@ static void ConfigureServices(IServiceCollection services)
             ValidateAudience = false
         };
     });
+
+    //services
+    //    .AddMicrosoftIdentityWebAppAuthentication(configuration, "AzureAd")
+    //    .EnableTokenAcquisitionToCallDownstreamApi(options => configuration.Bind("AzureAd", options))
+    //    .AddMicrosoftGraph(options => configuration.Bind("AzureAd", options))
+    //    .AddInMemoryTokenCaches();
 
     services.AddSwaggerGen(c =>
     {

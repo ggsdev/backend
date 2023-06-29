@@ -77,25 +77,6 @@ namespace PRIO.src.Shared.Infra.EF
             var envVars = DotEnv.Read();
 
             if (envVars.ContainsKey("SERVER") &&
-                envVars.ContainsKey("DATABASE") &&
-                envVars.ContainsKey("USER_ID") &&
-                envVars.ContainsKey("PASSWORD") &&
-                envVars.ContainsKey("ENCRYPT") &&
-                envVars.ContainsKey("PORT") &&
-                envVars.ContainsKey("SERVER_INSTANCE"))
-            {
-                var server = envVars["SERVER"];
-                var database = envVars["DATABASE"];
-                var userId = envVars["USER_ID"];
-                var password = envVars["PASSWORD"];
-                var encrypt = envVars["ENCRYPT"];
-                var port = envVars["PORT"];
-                var instance = envVars["SERVER_INSTANCE"];
-
-                optionsBuilder.UseSqlServer($"Server={server}\\{instance},{port};Database={database};User ID={userId};Password={password};Encrypt={encrypt};");
-            }
-
-            if (envVars.ContainsKey("SERVER") &&
                envVars.ContainsKey("DATABASE") &&
                envVars.ContainsKey("USER_ID") &&
                envVars.ContainsKey("PASSWORD") &&
