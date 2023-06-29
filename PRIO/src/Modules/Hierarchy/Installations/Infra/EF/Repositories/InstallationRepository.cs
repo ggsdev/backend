@@ -21,11 +21,11 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<Installation?> GetByIdWithFieldsEquipmentsAsync(Guid? id)
+        public async Task<Installation?> GetByIdWithFieldsMeasuringPointsAsync(Guid? id)
         {
             return await _context.Installations
                 .Include(x => x.Fields)
-                .Include(x => x.MeasuringEquipments)
+                .Include(x => x.MeasuringPoints)
                 .Include(x => x.Cluster)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }

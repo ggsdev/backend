@@ -1,6 +1,5 @@
 ﻿using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
-using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
-using PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models
@@ -20,11 +19,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models
         public string? ChannelNumber { get; set; }
         public bool? InOperation { get; set; }
         public string? Fluid { get; set; }
-        public Installation? Installation { get; set; }
-        public Section? Section { get; set; }
-        public TOGRecoveredOil? TOGRecoveredOil { get; set; }
-        public DrainVolume? DrainVolume { get; set; }
-        public DOR? DOR { get; set; }
+        public MeasuringPoint? MeasuringPoint { get; set; }
         public User? User { get; set; }
         public List<Measurement>? Measurements { get; set; }
     }

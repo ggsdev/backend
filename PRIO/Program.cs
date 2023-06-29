@@ -36,6 +36,8 @@ using PRIO.src.Modules.Hierarchy.Zones.Interfaces;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Equipments.Interfaces;
+using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Repositories;
+using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
 using PRIO.src.Shared.Auxiliaries.Infra.Http.Services;
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.Infra.Http.Filters;
@@ -50,7 +52,8 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 DotEnv.Load();
 
-ConfigureServices(builder.Services);
+IConfiguration configuration = builder.Configuration;
+ConfigureServices(builder.Services, configuration);
 
 var app = builder.Build();
 
@@ -68,11 +71,10 @@ app.UseAuthorization();
 app.MapControllers();
 app.Run();
 
-static void ConfigureServices(IServiceCollection services)
+static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
 {
     var envVars = DotEnv.Read();
-    var jwtKey = envVars["SECRET_KEY"];
-    var key = Encoding.ASCII.GetBytes(jwtKey);
+
     services.AddControllers(config =>
     {
         var policy = new AuthorizationPolicyBuilder()
@@ -99,6 +101,7 @@ static void ConfigureServices(IServiceCollection services)
     {
         cfg.AddProfile<MainProfile>();
     });
+
     IMapper mapper = mapperConfig.CreateMapper();
 
     services.AddSingleton(mapper);
@@ -144,6 +147,7 @@ static void ConfigureServices(IServiceCollection services)
     services.AddScoped<AuxiliaryService>();
 
     services.AddScoped<IMenuRepository, MenuRepository>();
+    services.AddScoped<IMeasuringPointRepository, MeasuringPointRepository>();
     services.AddScoped<IGroupRepository, GroupRepository>();
     services.AddScoped<IGroupPermissionRepository, GroupPermissionRepository>();
     services.AddScoped<IGroupOperationRepository, GroupOperationRepository>();
@@ -159,6 +163,9 @@ static void ConfigureServices(IServiceCollection services)
     #endregion
 
     services.AddScoped<XLSXService>();
+
+    var jwtKey = envVars["SECRET_KEY"];
+    var key = Encoding.ASCII.GetBytes(jwtKey);
 
     services.AddAuthentication(x =>
     {
@@ -177,6 +184,12 @@ static void ConfigureServices(IServiceCollection services)
             ValidateAudience = false
         };
     });
+
+    //services
+    //    .AddMicrosoftIdentityWebAppAuthentication(configuration, "AzureAd")
+    //    .EnableTokenAcquisitionToCallDownstreamApi(options => configuration.Bind("AzureAd", options))
+    //    .AddMicrosoftGraph(options => configuration.Bind("AzureAd", options))
+    //    .AddInMemoryTokenCaches();
 
     services.AddSwaggerGen(c =>
     {

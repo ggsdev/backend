@@ -17,7 +17,7 @@ namespace PRIO.src.Shared.SystemHistories.Infra.EF.Mappings
 
             builder.Property(x => x.Table)
                   .HasColumnType("varchar")
-                  .HasMaxLength(100)
+                  .HasMaxLength(30)
                   .IsRequired();
 
             builder.Property(x => x.TypeOperation)

@@ -77,7 +77,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
 
         public async Task<InstallationWithFieldsEquipmentsDTO> GetInstallationById(Guid id)
         {
-            var installation = await _installationRepository.GetByIdWithFieldsEquipmentsAsync(id);
+            var installation = await _installationRepository.GetByIdWithFieldsMeasuringPointsAsync(id);
 
             if (installation is null)
                 throw new NotFoundException("Installation not found");

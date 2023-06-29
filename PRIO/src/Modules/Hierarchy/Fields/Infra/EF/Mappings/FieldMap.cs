@@ -12,24 +12,24 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Mappings
 
             builder.Property(x => x.Name)
                 .HasColumnType("VARCHAR")
-                .HasMaxLength(120)
+                .HasMaxLength(60)
                 .IsRequired();
 
             builder.Property(x => x.CodField)
                 .HasColumnType("VARCHAR")
-                .HasMaxLength(10);
+                .HasMaxLength(60);
 
             builder.Property(x => x.State)
                .HasColumnType("VARCHAR")
-               .HasMaxLength(120);
+               .HasMaxLength(60);
 
             builder.Property(x => x.Basin)
                 .HasColumnType("VARCHAR")
-                .HasMaxLength(120);
+                .HasMaxLength(60);
 
             builder.Property(x => x.Location)
                 .HasColumnType("VARCHAR")
-                .HasMaxLength(120);
+                .HasMaxLength(60);
 
             builder.Property(x => x.Description)
                .HasColumnType("TEXT");

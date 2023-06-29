@@ -133,6 +133,17 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
                 Token = token,
             });
         }
+
+        //[Authorize]
+        //[HttpPost("authenticate-ad")]
+        //public IActionResult AuthenticateAD()
+        //{
+        //    // O código dentro deste método só será executado se o usuário estiver autenticado com sucesso via Azure AD
+
+        //    // Aqui você pode adicionar a lógica que deseja executar após a autenticação bem-sucedida, como retornar algum dado ou redirecionar para uma página específica.
+
+        //    return Ok("Authentication successful!");
+        //}
     }
     #endregion
 }

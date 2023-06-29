@@ -24,8 +24,9 @@ using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Mappings;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
-using PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Mappings;
-using PRIO.src.Modules.Measuring.OilVolumeCalculation.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Mappings;
+using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
 using PRIO.src.Shared.Auxiliaries.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF.Models;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Mappings;
@@ -58,6 +59,7 @@ namespace PRIO.src.Shared.Infra.EF
 
         #region Measurement & Relations
         public DbSet<Measurement> Measurements { get; set; }
+        public DbSet<MeasuringPoint> MeasuringPoints { get; set; }
         public DbSet<OilVolumeCalculation> OilVolumeCalculations { get; set; }
         public DbSet<Section> Sections { get; set; }
         public DbSet<TOGRecoveredOil> TOGRecoveredOils { get; set; }
@@ -75,25 +77,6 @@ namespace PRIO.src.Shared.Infra.EF
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var envVars = DotEnv.Read();
-
-            if (envVars.ContainsKey("SERVER") &&
-                envVars.ContainsKey("DATABASE") &&
-                envVars.ContainsKey("USER_ID") &&
-                envVars.ContainsKey("PASSWORD") &&
-                envVars.ContainsKey("ENCRYPT") &&
-                envVars.ContainsKey("PORT") &&
-                envVars.ContainsKey("SERVER_INSTANCE"))
-            {
-                var server = envVars["SERVER"];
-                var database = envVars["DATABASE"];
-                var userId = envVars["USER_ID"];
-                var password = envVars["PASSWORD"];
-                var encrypt = envVars["ENCRYPT"];
-                var port = envVars["PORT"];
-                var instance = envVars["SERVER_INSTANCE"];
-
-                optionsBuilder.UseSqlServer($"Server={server}\\{instance},{port};Database={database};User ID={userId};Password={password};Encrypt={encrypt};");
-            }
 
             if (envVars.ContainsKey("SERVER") &&
                envVars.ContainsKey("DATABASE") &&
@@ -194,6 +177,7 @@ namespace PRIO.src.Shared.Infra.EF
             modelBuilder.ApplyConfiguration(new TOGRecoveredOilMap());
             modelBuilder.ApplyConfiguration(new DORMap());
             modelBuilder.ApplyConfiguration(new DrainVolumeMap());
+            modelBuilder.ApplyConfiguration(new OilVolumeCalculationMap());
             modelBuilder.ApplyConfiguration(new FileTypeMap());
             modelBuilder.ApplyConfiguration(new VolumeMap());
             modelBuilder.ApplyConfiguration(new CalibrationMap());

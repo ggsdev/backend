@@ -1,5 +1,5 @@
 ﻿using PRIO.src.Modules.ControlAccess.Users.Dtos;
-using PRIO.src.Modules.Hierarchy.Installations.Dtos;
+using PRIO.src.Modules.Measuring.MeasuringPoints.Dtos;
 
 namespace PRIO.src.Modules.Measuring.Equipments.Dtos
 {
@@ -23,6 +23,6 @@ namespace PRIO.src.Modules.Measuring.Equipments.Dtos
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public UserDTO? User { get; set; }
-        public InstallationWithoutClusterDTO? Installation { get; set; }
+        public MeasuringPointDTO? MeasuringPoint { get; set; }
     }
 }

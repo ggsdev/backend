@@ -1,0 +1,11 @@
+﻿using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
+
+namespace PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces
+{
+    public interface IMeasuringPointRepository
+    {
+        Task<MeasuringPoint?> GetByIdAsync(Guid? id);
+        Task<MeasuringPoint?> GetByTagMeasuringPoint(string? tagMeasuringPoint);
+        Task AddAsync(MeasuringPoint measuringPoint);
+    }
+}
