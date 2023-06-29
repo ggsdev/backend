@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Mappings
@@ -13,7 +12,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Mappings
 
             builder.HasOne(x => x.Installation)
                .WithOne(d => d.OilVolumeCalculation)
-               .HasForeignKey<Installation>("InstallationId");
+               .HasForeignKey<OilVolumeCalculation>("InstallationId");
         }
     }
 }

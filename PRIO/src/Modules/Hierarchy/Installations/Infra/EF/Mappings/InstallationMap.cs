@@ -49,9 +49,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Mappings
                .OnDelete(DeleteBehavior.NoAction)
                .IsRequired();
 
-            builder.HasOne(x => x.OilVolumeCalculation)
-               .WithOne(u => u.Installation);
-
             builder.HasOne(x => x.Cluster)
                .WithMany(u => u.Installations)
                .OnDelete(DeleteBehavior.NoAction)
