@@ -131,13 +131,10 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
                 completion.Name = $"{well.Name}_{completion.Reservoir?.Zone?.CodZone}";
                 completion.Well = well;
 
-
                 updatedProperties[nameof(CompletionHistoryDTO.wellId)] = completion.Well.Id;
                 updatedProperties[nameof(CompletionHistoryDTO.name)] = completion.Name;
 
             }
-            Console.WriteLine(completion.Reservoir?.Id);
-            Console.WriteLine(body.ReservoirId);
             if (body?.ReservoirId is not null && completion.Reservoir?.Id != body.ReservoirId)
             {
                 if (reservoir is null)
@@ -152,10 +149,8 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
                 completion.Name = $"{completion.Well?.Name}_{reservoir.Zone?.CodZone}";
                 completion.Reservoir = reservoir;
 
-                Console.WriteLine("oi");
                 updatedProperties[nameof(CompletionHistoryDTO.reservoirId)] = completion.Reservoir.Id;
                 updatedProperties[nameof(CompletionHistoryDTO.name)] = completion.Name;
-
             }
 
             _completionRepository.Update(completion);
