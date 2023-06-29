@@ -18,9 +18,7 @@ namespace PRIO.src.Modules.ControlAccess.Menus.Infra.Http.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            Console.WriteLine("oi");
             var menus = await _menuService.Get();
-            Console.WriteLine("oi");
             return Ok(menus);
         }
     }

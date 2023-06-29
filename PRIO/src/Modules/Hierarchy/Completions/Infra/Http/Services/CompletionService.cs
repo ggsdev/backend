@@ -79,11 +79,11 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             return completionDTO;
         }
 
-        public async Task<List<CompletionDTO>> GetCompletions()
+        public async Task<List<CompletionWithWellAndReservoirDTO>> GetCompletions()
         {
             var completions = await _completionRepository.GetAsync();
 
-            var completionsDTO = _mapper.Map<List<Completion>, List<CompletionDTO>>(completions);
+            var completionsDTO = _mapper.Map<List<Completion>, List<CompletionWithWellAndReservoirDTO>>(completions);
 
             return completionsDTO;
         }
@@ -117,7 +117,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             if (updatedProperties.Any() is false && (body?.WellId == completion.Well?.Id || body?.WellId is null) && (body?.ReservoirId == completion.Reservoir?.Id || body?.ReservoirId is null))
                 throw new BadRequestException("This completion already has these values, try to update to other values.");
 
-            if (body?.WellId is not null)
+            if (body?.WellId is not null && completion.Well?.Id != body.WellId)
             {
                 if (well is null)
                     throw new NotFoundException("Well not found");
@@ -138,7 +138,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
                 }
             }
 
-            if (body?.ReservoirId is not null)
+            if (body?.ReservoirId is not null && completion.Reservoir?.Id != body.ReservoirId)
             {
                 if (reservoir is null)
                     throw new NotFoundException("Reservoir not found");

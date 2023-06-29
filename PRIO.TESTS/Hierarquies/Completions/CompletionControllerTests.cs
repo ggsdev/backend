@@ -31,6 +31,7 @@ using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Repositories;
+using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
 using PRIO.src.Shared.SystemHistories.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
@@ -48,6 +49,7 @@ namespace PRIO.TESTS.Hierarquies.Completions
         private ICompletionRepository _completionRepository;
         private IWellRepository _wellRepository;
         private IReservoirRepository _reservoirRepository;
+        private SystemHistoryService _systemHistoryService;
 
         private CreateCompletionViewModel _createViewModel;
         private UpdateCompletionViewModel _updateViewModel;
@@ -72,13 +74,18 @@ namespace PRIO.TESTS.Hierarquies.Completions
                 cfg.CreateMap<Completion, CompletionDTO>();
                 cfg.CreateMap<Completion, CompletionWithouWellDTO>();
                 cfg.CreateMap<Completion, CompletionHistoryDTO>();
+                cfg.CreateMap<Completion, CreateUpdateCompletionDTO>();
                 cfg.CreateMap<User, UserDTO>();
                 cfg.CreateMap<Reservoir, ReservoirDTO>();
+                cfg.CreateMap<Reservoir, CreateUpdateReservoirDTO>();
+                cfg.CreateMap<Reservoir, ReservoirWithZoneDTO>();
                 cfg.CreateMap<Zone, ZoneDTO>();
+                cfg.CreateMap<Zone, ZoneWithoutFieldDTO>();
                 cfg.CreateMap<Field, FieldDTO>();
                 cfg.CreateMap<Installation, InstallationDTO>();
                 cfg.CreateMap<Cluster, ClusterDTO>();
                 cfg.CreateMap<Well, WellDTO>();
+                cfg.CreateMap<Well, WellWithoutCompletionDTO>();
             });
 
             _mapper = mapperConfig.CreateMapper();
@@ -107,9 +114,11 @@ namespace PRIO.TESTS.Hierarquies.Completions
             _wellRepository = new WellRepository(_context);
             _reservoirRepository = new ReservoirRepository(_context);
 
+            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository);
+
             _service = new CompletionService(_mapper, _completionRepository,
                 _wellRepository, _reservoirRepository,
-                _systemHistoryRepository);
+                _systemHistoryService);
 
             _controller = new CompletionController(_service);
             _controller.ControllerContext.HttpContext = httpContext;
@@ -136,8 +145,8 @@ namespace PRIO.TESTS.Hierarquies.Completions
             var createdResult = (CreatedResult)response;
 
             Assert.IsInstanceOf<CreatedResult>(response);
-            Assert.That(((CompletionDTO)createdResult.Value).Name, Is.EqualTo($"{_well1.Name}_{_reservoir1.Zone?.CodZone}"));
-            Assert.That(createdResult.Location, Is.EqualTo($"completions/{((CompletionDTO)createdResult.Value).Id}"));
+            Assert.That(((CreateUpdateCompletionDTO)createdResult.Value).Name, Is.EqualTo($"{_well1.Name}_{_reservoir1.Zone?.CodZone}"));
+            Assert.That(createdResult.Location, Is.EqualTo($"completions/{((CreateUpdateCompletionDTO)createdResult.Value).Id}"));
         }
 
         [Test]
@@ -518,7 +527,8 @@ namespace PRIO.TESTS.Hierarquies.Completions
                 User = _user,
                 Cluster = _cluster1,
                 UepCod = "unique1",
-                CodInstallation = "unique1"
+                CodInstallationAnp = "unique1",
+                UepName = "asdsada"
             };
 
             Field _field1 = new()
@@ -593,7 +603,8 @@ namespace PRIO.TESTS.Hierarquies.Completions
                 User = _user,
                 Cluster = _cluster2,
                 UepCod = "unique2",
-                CodInstallation = "unique2"
+                CodInstallationAnp = "unique2",
+                UepName = "asdsada"
             };
 
             Field _field2 = new()

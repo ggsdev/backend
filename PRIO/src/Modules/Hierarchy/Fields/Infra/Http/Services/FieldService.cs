@@ -95,7 +95,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
             if (updatedProperties.Any() is false && (body.InstallationId is null || field.Installation?.Id == body.InstallationId))
                 throw new BadRequestException("This field already has these values, try to update to other values.");
 
-            if (body.InstallationId is not null)
+            if (body.InstallationId is not null && field.Installation?.Id != body.InstallationId)
             {
                 var installationInDatabase = await _installationRepository.GetByIdAsync(body.InstallationId);
 
