@@ -79,11 +79,11 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             return completionDTO;
         }
 
-        public async Task<List<CompletionDTO>> GetCompletions()
+        public async Task<List<CompletionWithWellAndReservoirDTO>> GetCompletions()
         {
             var completions = await _completionRepository.GetAsync();
 
-            var completionsDTO = _mapper.Map<List<Completion>, List<CompletionDTO>>(completions);
+            var completionsDTO = _mapper.Map<List<Completion>, List<CompletionWithWellAndReservoirDTO>>(completions);
 
             return completionsDTO;
         }

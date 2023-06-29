@@ -66,9 +66,13 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Repositories
         public async Task<List<Completion>> GetAsync()
         {
             return await _context.Completions
+                .Include(x => x.User)
                .Include(x => x.Well)
-               .Include(x => x.Reservoir)
-               .Include(x => x.User)
+                .Include(x => x.Reservoir)
+                .ThenInclude(r => r.Zone)
+                .ThenInclude(z => z.Field)
+                .ThenInclude(z => z.Installation)
+                .ThenInclude(z => z.Cluster)
                .ToListAsync();
         }
 
