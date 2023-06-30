@@ -6,6 +6,7 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces
     {
         Task<MeasuringPoint?> GetByIdAsync(Guid? id);
         Task<MeasuringPoint?> GetByTagMeasuringPoint(string? tagMeasuringPoint);
+        Task<MeasuringPoint?> GetByMeasuringPointNameWithInstallation(string? measuringPointName);
         Task AddAsync(MeasuringPoint measuringPoint);
     }
 }

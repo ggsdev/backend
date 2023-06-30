@@ -37,6 +37,7 @@ using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Equipments.Interfaces;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Repositories;
+using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
 using PRIO.src.Shared.Auxiliaries.Infra.Http.Services;
 using PRIO.src.Shared.Errors;
@@ -145,6 +146,7 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddScoped<WellService>();
     services.AddScoped<CompletionService>();
     services.AddScoped<EquipmentService>();
+    services.AddScoped<MeasuringPointService>();
     services.AddScoped<SystemHistoryService>();
     services.AddScoped<AuxiliaryService>();
 
