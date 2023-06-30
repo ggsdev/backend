@@ -39,6 +39,7 @@ using PRIO.src.Modules.Measuring.Equipments.Interfaces;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
 using PRIO.src.Shared.Auxiliaries.Infra.Http.Services;
+using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.Infra.Http.Filters;
 using PRIO.src.Shared.Infra.Http.Middlewares;
@@ -105,6 +106,7 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     IMapper mapper = mapperConfig.CreateMapper();
 
     services.AddSingleton(mapper);
+    services.AddScoped<ErrorMessages>();
     services.AddEndpointsApiExplorer();
     services.AddDbContext<DataContext>();
     services.AddScoped<AuthorizationFilter>();

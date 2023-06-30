@@ -4,6 +4,7 @@ using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Dtos;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.ViewModels;
+using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
@@ -32,7 +33,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
         public async Task<CreateUpdateFieldDTO> CreateField(CreateFieldViewModel body, User user)
         {
             var installationInDatabase = await _installationRepository
-                .GetByIdAsync(body.InstallationId) ?? throw new NotFoundException("Installation not found");
+                .GetByIdAsync(body.InstallationId) ?? throw new NotFoundException(ErrorMessages.NotFound<Installation>());
 
             var fieldId = Guid.NewGuid();
 
@@ -75,7 +76,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
                 .GetByIdAsync(id);
 
             if (field is null)
-                throw new NotFoundException("Field not found");
+                throw new NotFoundException(ErrorMessages.NotFound<Field>());
 
             var fieldDTO = _mapper.Map<Field, FieldDTO>(field);
             return fieldDTO;
@@ -86,21 +87,21 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
             var field = await _fieldRepository.GetByIdAsync(id);
 
             if (field is null)
-                throw new NotFoundException("Field not found");
+                throw new NotFoundException(ErrorMessages.NotFound<Field>());
 
             var beforeChangesField = _mapper.Map<FieldHistoryDTO>(field);
 
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(field, body);
 
             if (updatedProperties.Any() is false && (body.InstallationId is null || field.Installation?.Id == body.InstallationId))
-                throw new BadRequestException("This field already has these values, try to update to other values.");
+                throw new BadRequestException(ErrorMessages.UpdateToExistingValues<Installation>());
 
             if (body.InstallationId is not null && field.Installation?.Id != body.InstallationId)
             {
                 var installationInDatabase = await _installationRepository.GetByIdAsync(body.InstallationId);
 
                 if (installationInDatabase is null)
-                    throw new NotFoundException("Installation not found");
+                    throw new NotFoundException(ErrorMessages.NotFound<Installation>());
 
                 field.Installation = installationInDatabase;
                 updatedProperties[nameof(FieldHistoryDTO.installationId)] = installationInDatabase.Id;
@@ -122,8 +123,11 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
         {
             var field = await _fieldRepository.GetByIdAsync(id);
 
-            if (field is null || field.IsActive is false)
-                throw new NotFoundException("Field not found or inactive already");
+            if (field is null)
+                throw new NotFoundException(ErrorMessages.NotFound<Field>());
+
+            if (field.IsActive is false)
+                throw new BadRequestException(ErrorMessages.InactiveAlready<Field>());
 
             var propertiesUpdated = new
             {
@@ -146,8 +150,11 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
         {
             var field = await _fieldRepository.GetByIdAsync(id);
 
-            if (field is null || field.IsActive is true)
-                throw new NotFoundException("Field not found or active already");
+            if (field is null)
+                throw new NotFoundException(ErrorMessages.NotFound<Field>());
+
+            if (field.IsActive is true)
+                throw new BadRequestException(ErrorMessages.ActiveAlready<Field>());
 
             var propertiesUpdated = new
             {
@@ -174,7 +181,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
                 .GetAll(id);
 
             if (fieldHistories is null)
-                throw new NotFoundException("Field not found");
+                throw new NotFoundException(ErrorMessages.NotFound<Field>());
 
             foreach (var history in fieldHistories)
             {

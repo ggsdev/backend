@@ -5,7 +5,9 @@ using PRIO.src.Modules.Hierarchy.Completions.Dtos;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Completions.Interfaces;
 using PRIO.src.Modules.Hierarchy.Completions.ViewModels;
+using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Reservoirs.Interfaces;
+using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
@@ -37,20 +39,21 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             var well = await _wellRepository.GetWithFieldAsync(body.WellId);
 
             if (well is null)
-                throw new NotFoundException($"Well with id: {body.WellId} not found");
+                throw new NotFoundException(ErrorMessages.NotFound<Well>());
 
             var reservoir = await _reservoirRepository.GetWithZoneFieldAsync(body.ReservoirId);
 
             if (reservoir is null)
-                throw new NotFoundException($"Reservoir with id: {body.ReservoirId} not found");
+                throw new NotFoundException(ErrorMessages.NotFound<Reservoir>());
 
             if (reservoir.Zone?.Field?.Id != well.Field?.Id)
-                throw new ConflictException($"Reservoir: {reservoir.Name} and Well: {well.Name} doesn't belong to the same Field");
+                throw new ConflictException(ErrorMessages.DifferentFieldsCompletion());
 
-            var completion = await _completionRepository.GetExistingCompletionAsync(well.Id, reservoir.Id);
+            var completion = await _completionRepository
+                .GetExistingCompletionAsync(well.Id, reservoir.Id);
 
             if (completion is not null)
-                throw new ConflictException($"Completion with name: {well.Name}_{reservoir.Zone?.CodZone} already exists.");
+                throw new ConflictException(ErrorMessages.WellAndReservoirAlreadyCompletion());
 
             var completionName = $"{well.Name}_{reservoir.Zone?.CodZone}";
             var completionId = Guid.NewGuid();
@@ -93,7 +96,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             var completion = await _completionRepository.GetByIdAsync(id);
 
             if (completion is null)
-                throw new NotFoundException("Completion not found");
+                throw new NotFoundException(ErrorMessages.NotFound<Completion>());
 
             var completionDTO = _mapper.Map<Completion, CompletionWithWellAndReservoirDTO>(completion);
             return completionDTO;
@@ -104,7 +107,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             var completion = await _completionRepository.GetWithWellReservoirZoneAsync(id);
 
             if (completion is null)
-                throw new NotFoundException("Completion not found");
+                throw new NotFoundException(ErrorMessages.NotFound<Completion>());
 
             var well = await _wellRepository.GetWithFieldAsync(body.WellId);
 
@@ -115,18 +118,18 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(completion, body);
 
             if (updatedProperties.Any() is false && (body?.WellId == completion.Well?.Id || body?.WellId is null) && (body?.ReservoirId == completion.Reservoir?.Id || body?.ReservoirId is null))
-                throw new BadRequestException("This completion already has these values, try to update to other values.");
+                throw new BadRequestException(ErrorMessages.UpdateToExistingValues<Completion>());
 
             if (body?.WellId is not null && completion.Well?.Id != body.WellId)
             {
                 if (well is null)
-                    throw new NotFoundException("Well not found");
+                    throw new NotFoundException(ErrorMessages.NotFound<Well>());
 
                 if (reservoir is null && body?.ReservoirId is not null)
-                    throw new NotFoundException("Reservoir not found");
+                    throw new NotFoundException(ErrorMessages.NotFound<Reservoir>());
 
                 if (reservoir is not null && well.Field?.Id != reservoir.Zone?.Field?.Id)
-                    throw new ConflictException($"Well: {well.Name} and Reservoir: {reservoir.Name} doesn't belong to the same Field");
+                    throw new ConflictException(ErrorMessages.DifferentFieldsCompletion());
 
                 completion.Name = $"{well.Name}_{completion.Reservoir?.Zone?.CodZone}";
                 completion.Well = well;
@@ -138,13 +141,13 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             if (body?.ReservoirId is not null && completion.Reservoir?.Id != body.ReservoirId)
             {
                 if (reservoir is null)
-                    throw new NotFoundException("Reservoir not found");
+                    throw new NotFoundException(ErrorMessages.NotFound<Reservoir>());
 
                 if (well is null && body.WellId is not null)
-                    throw new NotFoundException("Well not found");
+                    throw new NotFoundException(ErrorMessages.NotFound<Well>());
 
                 if (well is not null && reservoir.Zone?.Field?.Id != well.Field?.Id)
-                    throw new ConflictException($"Reservoir: {reservoir.Name} and Well: {well.Name} doesn't belong to the same Field");
+                    throw new ConflictException(ErrorMessages.DifferentFieldsCompletion());
 
                 completion.Name = $"{completion.Well?.Name}_{reservoir.Zone?.CodZone}";
                 completion.Reservoir = reservoir;
@@ -168,8 +171,11 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
         {
             var completion = await _completionRepository.GetOnlyCompletion(id);
 
-            if (completion is null || !completion.IsActive)
-                throw new NotFoundException("Completion not found or inactive already");
+            if (completion is null)
+                throw new NotFoundException(ErrorMessages.NotFound<Completion>());
+
+            if (completion.IsActive is false)
+                throw new BadRequestException(ErrorMessages.InactiveAlready<Completion>());
 
             var propertiesUpdated = new
             {
@@ -191,8 +197,11 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
         {
             var completion = await _completionRepository.GetByIdAsync(id);
 
-            if (completion is null || completion.IsActive is true)
-                throw new NotFoundException("Completion not found or inactive already");
+            if (completion is null)
+                throw new NotFoundException(ErrorMessages.NotFound<Completion>());
+
+            if (completion.IsActive is true)
+                throw new BadRequestException(ErrorMessages.ActiveAlready<Completion>());
 
             var propertiesUpdated = new
             {
@@ -219,7 +228,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             var fieldHistories = await _systemHistoryService.GetAll(id);
 
             if (fieldHistories is null)
-                throw new NotFoundException("Completion not found");
+                throw new NotFoundException(ErrorMessages.NotFound<Completion>());
 
             foreach (var history in fieldHistories)
             {

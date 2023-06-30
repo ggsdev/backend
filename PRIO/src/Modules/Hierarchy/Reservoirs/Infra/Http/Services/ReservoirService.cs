@@ -5,6 +5,7 @@ using PRIO.src.Modules.Hierarchy.Reservoirs.Dtos;
 using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Reservoirs.Interfaces;
 using PRIO.src.Modules.Hierarchy.Reservoirs.ViewModels;
+using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Zones.Interfaces;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
@@ -35,7 +36,7 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
             var zoneInDatabase = await _zoneRepository.GetOnlyZone(body.ZoneId);
 
             if (zoneInDatabase is null)
-                throw new NotFoundException("Zone not found");
+                throw new NotFoundException(ErrorMessages.NotFound<Zone>());
 
             var reservoirId = Guid.NewGuid();
 
@@ -75,7 +76,7 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
             var reservoir = await _reservoirRepository.GetByIdAsync(id);
 
             if (reservoir is null)
-                throw new NotFoundException("Reservoir not found");
+                throw new NotFoundException(ErrorMessages.NotFound<Reservoir>());
 
             var reservoirDTO = _mapper.Map<Reservoir, ReservoirDTO>(reservoir);
 
@@ -88,7 +89,7 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
                 .GetWithZoneAsync(id);
 
             if (reservoir is null)
-                throw new NotFoundException("Reservoir not found");
+                throw new NotFoundException(ErrorMessages.NotFound<Reservoir>());
 
             var beforeChangesReservoir = _mapper.Map<ReservoirHistoryDTO>(reservoir);
 
@@ -96,14 +97,14 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
                 .CompareUpdateReturnOnlyUpdated(reservoir, body);
 
             if (updatedProperties.Any() is false && (body.ZoneId is null || body.ZoneId == reservoir.Zone?.Id))
-                throw new BadRequestException("This reservoir already has these values, try to update to other values.");
+                throw new BadRequestException(ErrorMessages.UpdateToExistingValues<Zone>());
 
             if (body.ZoneId is not null && reservoir.Zone?.Id != body.ZoneId)
             {
                 var zoneInDatabase = await _zoneRepository.GetOnlyZone(body.ZoneId);
 
                 if (zoneInDatabase is null)
-                    throw new NotFoundException("Zone not found");
+                    throw new NotFoundException(ErrorMessages.NotFound<Zone>());
 
                 reservoir.Zone = zoneInDatabase;
                 updatedProperties[nameof(ReservoirHistoryDTO.zoneId)] = zoneInDatabase.Id;
@@ -125,8 +126,11 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
             var reservoir = await _reservoirRepository
                 .GetWithZoneAsync(id);
 
-            if (reservoir is null || reservoir.IsActive is false)
-                throw new NotFoundException("Reservoir not found or inactive already");
+            if (reservoir is null)
+                throw new NotFoundException(ErrorMessages.NotFound<Reservoir>());
+
+            if (reservoir.IsActive is false)
+                throw new BadRequestException(ErrorMessages.InactiveAlready<Reservoir>());
 
             var propertiesUpdated = new
             {
@@ -149,8 +153,11 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
         {
             var reservoir = await _reservoirRepository.GetWithZoneAsync(id);
 
-            if (reservoir is null || reservoir.IsActive is true)
-                throw new NotFoundException("Reservoir not found or active already");
+            if (reservoir is null)
+                throw new NotFoundException(ErrorMessages.NotFound<Reservoir>());
+
+            if (reservoir.IsActive is true)
+                throw new BadRequestException(ErrorMessages.InactiveAlready<Reservoir>());
 
             var propertiesUpdated = new
             {
@@ -177,7 +184,7 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
             var reservoirHistories = await _systemHistoryService.GetAll(id);
 
             if (reservoirHistories is null)
-                throw new NotFoundException("Reservoir not found");
+                throw new NotFoundException(ErrorMessages.NotFound<Reservoir>());
 
             foreach (var history in reservoirHistories)
             {
