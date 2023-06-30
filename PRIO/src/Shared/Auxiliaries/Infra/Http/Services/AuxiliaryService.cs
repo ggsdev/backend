@@ -18,11 +18,11 @@ namespace PRIO.src.Shared.Auxiliaries.Infra.Http.Services
         {
             var validTables = new List<string>
             {
-                "clusters", "installations", "fields", "zones", "reservoirs", "wells", "completions"
+                "clusters", "installations", "fields", "zones", "reservoirs", "wells", "completions", "measuringequipments"
             };
 
-            if (validTables.Contains(table) is false)
-                throw new BadRequestException($"Invalid table options are: {string.Join(" ", validTables)}");
+            if (validTables.Contains(table.ToLower()) is false)
+                throw new BadRequestException($"Invalid table options are: {string.Join(", ", validTables)}");
 
             var validRoutes = new List<string>
             {
