@@ -8,7 +8,7 @@ using PRIO.src.Shared.Infra.EF;
 
 #nullable disable
 
-namespace PRIO.Migrations
+namespace PRIO.src.Shared.Infra.EF.Migrations
 {
     [DbContext(typeof(DataContext))]
     partial class DataContextModelSnapshot : ModelSnapshot
