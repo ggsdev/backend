@@ -64,7 +64,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
             var cluster = await _clusterRepository.GetClusterByIdAsync(id);
 
             if (cluster is null)
-                throw new NotFoundException("Cluster not found");
+                throw new NotFoundException(ErrorMessages.NotFound<Cluster>());
 
             var clusterDTO = _mapper.Map<Cluster, ClusterDTO>(cluster);
             return clusterDTO;
@@ -75,14 +75,14 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
             var cluster = await _clusterRepository.GetClusterByIdAsync(id);
 
             if (cluster is null)
-                throw new NotFoundException("Cluster not found");
+                throw new NotFoundException(ErrorMessages.NotFound<Cluster>());
 
             var beforeChangesCluster = _mapper.Map<ClusterHistoryDTO>(cluster);
 
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(cluster, body);
 
             if (updatedProperties.Any() is false)
-                throw new BadRequestException("This cluster already has these values, try to update to other values.");
+                throw new BadRequestException(ErrorMessages.UpdateToExistingValues<Cluster>());
 
             _clusterRepository.UpdateCluster(cluster);
 
@@ -99,9 +99,11 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
         public async Task DeleteCluster(Guid id, User user)
         {
             var cluster = await _clusterRepository.GetClusterByIdAsync(id);
+            if (cluster is null)
+                throw new NotFoundException(ErrorMessages.NotFound<Cluster>());
 
-            if (cluster is null || cluster.IsActive is false)
-                throw new NotFoundException("Cluster not found or inactive already");
+            if (cluster.IsActive is false)
+                throw new BadRequestException(ErrorMessages.InactiveAlready<Cluster>());
 
             var propertiesUpdated = new
             {
@@ -124,8 +126,11 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
         {
             var cluster = await _clusterRepository.GetClusterByIdAsync(id);
 
-            if (cluster is null || cluster.IsActive is true)
-                throw new NotFoundException("Cluster not found or active already");
+            if (cluster is null)
+                throw new NotFoundException(ErrorMessages.NotFound<Cluster>());
+
+            if (cluster.IsActive is true)
+                throw new BadRequestException(ErrorMessages.ActiveAlready<Cluster>());
 
             var propertiesUpdated = new
             {

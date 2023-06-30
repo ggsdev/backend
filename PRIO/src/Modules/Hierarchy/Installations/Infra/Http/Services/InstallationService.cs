@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces;
+using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Dtos;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
@@ -36,7 +37,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                .GetClusterByIdAsync(body.ClusterId);
 
             if (clusterInDatabase is null)
-                throw new NotFoundException("Cluster not found");
+                throw new NotFoundException(ErrorMessages.NotFound<Cluster>());
 
             var installationId = Guid.NewGuid();
 
@@ -80,7 +81,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
             var installation = await _installationRepository.GetByIdWithFieldsMeasuringPointsAsync(id);
 
             if (installation is null)
-                throw new NotFoundException("Installation not found");
+                throw new NotFoundException(ErrorMessages.NotFound<Installation>());
 
             var installationDTO = _mapper.Map<Installation, InstallationWithFieldsEquipmentsDTO>(installation);
 
@@ -93,21 +94,21 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                 .GetByIdAsync(id);
 
             if (installation is null)
-                throw new NotFoundException("Installation not found");
+                throw new NotFoundException(ErrorMessages.NotFound<Installation>());
 
             var beforeChangesInstallation = _mapper.Map<InstallationHistoryDTO>(installation);
 
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(installation, body);
 
             if (updatedProperties.Any() is false && (body.ClusterId is null || body.ClusterId == installation.Cluster?.Id))
-                throw new BadRequestException("This installation already has these values, try to update to other values.");
+                throw new BadRequestException(ErrorMessages.UpdateToExistingValues<Installation>());
 
             if (body.ClusterId is not null && installation.Cluster?.Id != body.ClusterId)
             {
                 var clusterInDatabase = await _clusterRespository.GetClusterByIdAsync(body.ClusterId);
 
                 if (clusterInDatabase is null)
-                    throw new NotFoundException("Cluster not found");
+                    throw new NotFoundException(ErrorMessages.NotFound<Cluster>());
 
                 installation.Cluster = clusterInDatabase;
                 updatedProperties[nameof(InstallationHistoryDTO.clusterId)] = clusterInDatabase.Id;
@@ -130,8 +131,11 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
             var installation = await _installationRepository
                 .GetByIdAsync(id);
 
-            if (installation is null || installation.IsActive is false)
-                throw new NotFoundException("Installation not found or inactive already");
+            if (installation is null)
+                throw new NotFoundException(ErrorMessages.NotFound<Installation>());
+
+            if (installation.IsActive is false)
+                throw new BadRequestException(ErrorMessages.InactiveAlready<Installation>());
 
             var propertiesUpdated = new
             {
@@ -154,8 +158,11 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
         {
             var installation = await _installationRepository.GetByIdAsync(id);
 
-            if (installation is null || installation.IsActive is true)
-                throw new NotFoundException("Installation not found or active already");
+            if (installation is null)
+                throw new NotFoundException(ErrorMessages.NotFound<Installation>());
+
+            if (installation.IsActive is true)
+                throw new BadRequestException(ErrorMessages.ActiveAlready<Installation>());
 
             var propertiesUpdated = new
             {
@@ -181,7 +188,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
         public async Task<List<SystemHistory>> GetInstallationHistory(Guid id)
         {
             var installationHistories = await _systemHistoryService
-                .GetAll(id) ?? throw new NotFoundException("Installation not found");
+                .GetAll(id) ?? throw new NotFoundException(ErrorMessages.NotFound<Installation>());
 
             foreach (var history in installationHistories)
             {

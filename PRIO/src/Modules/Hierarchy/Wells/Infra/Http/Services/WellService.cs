@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Newtonsoft.Json;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Hierarchy.Wells.Dtos;
 using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
@@ -35,7 +36,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             var field = await _fieldRepository.GetOnlyField(body.FieldId);
 
             if (field is null)
-                throw new NotFoundException("Field not found");
+                throw new NotFoundException(ErrorMessages.NotFound<Field>());
 
             var wellId = Guid.NewGuid();
 
@@ -93,7 +94,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             var well = await _wellRepository.GetByIdAsync(id);
 
             if (well is null)
-                throw new NotFoundException("Well not found");
+                throw new NotFoundException(ErrorMessages.NotFound<Well>());
 
             var wellDTO = _mapper.Map<Well, WellDTO>(well);
             return wellDTO;
@@ -103,21 +104,21 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             var well = await _wellRepository.GetWithFieldAsync(id);
 
             if (well is null)
-                throw new NotFoundException("Well not found");
+                throw new NotFoundException(ErrorMessages.NotFound<Well>());
 
             var beforeChangesWell = _mapper.Map<WellHistoryDTO>(well);
 
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(well, body);
 
             if (updatedProperties.Any() is false && (well.Field?.Id == body.FieldId || body.FieldId is null))
-                throw new BadRequestException("This well already has these values, try to update to other values.");
+                throw new BadRequestException(ErrorMessages.UpdateToExistingValues<Well>());
 
             if (body.FieldId is not null && well.Field?.Id != body.FieldId)
             {
                 var fieldInDatabase = await _fieldRepository.GetOnlyField(body.FieldId);
 
                 if (fieldInDatabase is null)
-                    throw new NotFoundException("Field not found");
+                    throw new NotFoundException(ErrorMessages.NotFound<Field>());
 
                 well.Field = fieldInDatabase;
                 updatedProperties[nameof(WellHistoryDTO.fieldId)] = fieldInDatabase.Id;
@@ -138,8 +139,11 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
         {
             var well = await _wellRepository.GetOnlyWellAsync(id);
 
-            if (well is null || well.IsActive is false)
-                throw new NotFoundException("Well not found or inactive already");
+            if (well is null)
+                throw new NotFoundException(ErrorMessages.NotFound<Well>());
+
+            if (well.IsActive is false)
+                throw new BadRequestException(ErrorMessages.InactiveAlready<Well>());
 
             var propertiesUpdated = new
             {
@@ -161,8 +165,11 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
         {
             var well = await _wellRepository.GetWithUserAsync(id);
 
-            if (well is null || well.IsActive is true)
-                throw new NotFoundException("Well not found or active already");
+            if (well is null)
+                throw new NotFoundException(ErrorMessages.NotFound<Well>());
+
+            if (well.IsActive is true)
+                throw new BadRequestException(ErrorMessages.ActiveAlready<Well>());
 
             var propertiesUpdated = new
             {
@@ -189,7 +196,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             var wellHistories = await _systemHistoryService.GetAll(id);
 
             if (wellHistories is null)
-                throw new NotFoundException("Well not found");
+                throw new NotFoundException(ErrorMessages.NotFound<Well>());
 
             foreach (var history in wellHistories)
             {
