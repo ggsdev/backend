@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Newtonsoft.Json;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Measuring.Equipments.Dtos;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
@@ -42,7 +43,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
         public async Task<MeasuringEquipmentDTO> CreateEquipment(CreateEquipmentViewModel body, User user)
         {
             if (body.Fluid is not null && !_fluidsAllowed.Contains(body.Fluid.ToLower()))
-                throw new BadRequestException("Fluids allowed are: gás, óleo, água");
+                throw new BadRequestException("Fluidos permitidos são: gás, óleo, água");
 
             var measuringPointInDatabase = await _measuringPointRepository.GetByTagMeasuringPoint(body.TagMeasuringPoint);
 
@@ -51,7 +52,9 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
                 if (body.TagMeasuringPoint is not null && body.MeasuringPointName is not null)
                 {
 
-                    var installationInDatabase = await _installationRepository.GetByIdAsync(body.InstallationId) ?? throw new NotFoundException("Installation is not found.");
+                    var installationInDatabase = await _installationRepository
+                        .GetByIdAsync(body.InstallationId) ?? throw new NotFoundException(ErrorMessages.NotFound<Installation>());
+
                     var createMeasuringPoint = new MeasuringPoint
                     {
                         Id = Guid.NewGuid(),
@@ -94,14 +97,14 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
                 }
                 else
                 {
-                    throw new BadRequestException("Measurement point not found or data for registration of measurement point not found");
+                    throw new BadRequestException("Ponto de medição não encontrado ou faltam dados na requisição");
                 }
             }
             else
             {
                 var checkEquipment = await _equipmentRepository.getByTagsSerialChannel(body.TagMeasuringPoint, body.TagEquipment, body.SerieNumber, body.ChannelNumber);
                 if (checkEquipment != null)
-                    throw new ConflictException("This device is already registered");
+                    throw new ConflictException("Esse equipamento já está registrado.");
 
                 var equipmentId = Guid.NewGuid();
                 var equipment = new MeasuringEquipment
@@ -150,7 +153,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
                 .GetWithInstallationAsync(id);
 
             if (equipment is null)
-                throw new NotFoundException("Equipment not found");
+                throw new NotFoundException(ErrorMessages.NotFound<MeasuringEquipment>());
 
             var equipmentDTO = _mapper.Map<MeasuringEquipment, MeasuringEquipmentDTO>(equipment);
 
@@ -162,24 +165,24 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
             var equipment = await _equipmentRepository.GetByIdAsync(id);
 
             if (equipment is null)
-                throw new NotFoundException("Equipment not found");
+                throw new NotFoundException(ErrorMessages.NotFound<MeasuringEquipment>());
 
             if (body.Fluid is not null && !_fluidsAllowed.Contains(body.Fluid.ToLower()))
-                throw new BadRequestException("Fluids allowed are: gás, óleo, água");
+                throw new BadRequestException("Fluidos permitidos são: gás, óleo, água");
 
             var beforeChangesEquipment = _mapper.Map<MeasuringEquipmentHistoryDTO>(equipment);
 
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(equipment, body);
 
             if (updatedProperties.Any() is false && (equipment.MeasuringPoint?.Id == body.MeasuringId || body.MeasuringId is null))
-                throw new BadRequestException("This equipment already has these values, try to update to other values.");
+                throw new BadRequestException(ErrorMessages.UpdateToExistingValues<MeasuringEquipmentDTO>());
 
             if (body.MeasuringId is not null)
             {
                 var measuringPointInDatabase = await _measuringPointRepository.GetByIdAsync(body.MeasuringId);
 
                 if (measuringPointInDatabase is null)
-                    throw new NotFoundException("Installation not found");
+                    throw new NotFoundException(ErrorMessages.NotFound<MeasuringEquipmentDTO>());
 
                 equipment.MeasuringPoint = measuringPointInDatabase;
                 updatedProperties[nameof(MeasuringEquipmentHistoryDTO.installationId)] = measuringPointInDatabase.Id;
@@ -201,8 +204,11 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
         {
             var equipment = await _equipmentRepository.GetByIdAsync(id);
 
-            if (equipment is null || equipment.IsActive is false)
-                throw new NotFoundException("Equipment not found or inactive already");
+            if (equipment is null)
+                throw new NotFoundException(ErrorMessages.NotFound<MeasuringEquipment>());
+
+            if (equipment.IsActive is false)
+                throw new BadRequestException(ErrorMessages.InactiveAlready<MeasuringEquipment>());
 
             var propertiesUpdated = new
             {
@@ -225,8 +231,11 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
         {
             var equipment = await _equipmentRepository.GetByIdAsync(id);
 
-            if (equipment is null || equipment.IsActive is true)
-                throw new NotFoundException("Equipment not found or active already");
+            if (equipment is null)
+                throw new NotFoundException(ErrorMessages.NotFound<MeasuringEquipment>());
+
+            if (equipment.IsActive is true)
+                throw new BadRequestException(ErrorMessages.ActiveAlready<MeasuringEquipment>());
 
             var propertiesUpdated = new
             {
@@ -253,7 +262,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
             var equipmentHistories = await _systemHistoryService.GetAll(id);
 
             if (equipmentHistories is null)
-                throw new NotFoundException("Measuring Equipment not found");
+                throw new NotFoundException(ErrorMessages.NotFound<MeasuringEquipment>());
 
             foreach (var history in equipmentHistories)
             {

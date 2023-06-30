@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Newtonsoft.Json;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Hierarchy.Zones.Dtos;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
@@ -35,12 +36,12 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
             var zoneInDatabase = await _zoneRepository.GetByCode(body.CodZone);
 
             if (zoneInDatabase is not null)
-                throw new ConflictException($"Zone with this codZone is alredy registered: {body.CodZone}");
+                throw new ConflictException(ErrorMessages.CodAlreadyExists<Zone>());
 
             var field = await _fieldRepository.GetByIdAsync(body.FieldId);
 
             if (field is null)
-                throw new NotFoundException("Field not found");
+                throw new NotFoundException(ErrorMessages.NotFound<Field>());
 
             var zoneId = Guid.NewGuid();
 
@@ -79,7 +80,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
             var zone = await _zoneRepository.GetByIdAsync(id);
 
             if (zone is null)
-                throw new NotFoundException("Zone not found");
+                throw new NotFoundException(ErrorMessages.NotFound<Zone>());
 
             var zoneDTO = _mapper.Map<Zone, ZoneDTO>(zone);
             return zoneDTO;
@@ -90,21 +91,21 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
             var zone = await _zoneRepository.GetWithField(id);
 
             if (zone is null)
-                throw new NotFoundException("Zone not found");
+                throw new NotFoundException(ErrorMessages.NotFound<Zone>());
 
             var beforeChangesZone = _mapper.Map<ZoneHistoryDTO>(zone);
 
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(zone, body);
 
             if (updatedProperties.Any() is false && (zone.Field?.Id == body.FieldId || body.FieldId is null))
-                throw new BadRequestException("This zone already has these values, try to update to other values.");
+                throw new BadRequestException(ErrorMessages.UpdateToExistingValues<Zone>());
 
             if (body.FieldId is not null && zone.Field?.Id != body.FieldId)
             {
                 var field = await _fieldRepository.GetOnlyField(body.FieldId);
 
                 if (field is null)
-                    throw new NotFoundException("Field not found");
+                    throw new NotFoundException(ErrorMessages.NotFound<Field>());
 
                 zone.Field = field;
                 updatedProperties[nameof(ZoneHistoryDTO.fieldId)] = field.Id;
@@ -126,8 +127,11 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
             var zone = await _zoneRepository
                 .GetWithUser(id);
 
-            if (zone is null || zone.IsActive is false)
-                throw new NotFoundException("Zone not found or inactive already");
+            if (zone is null)
+                throw new NotFoundException(ErrorMessages.NotFound<Zone>());
+
+            if (zone.IsActive is false)
+                throw new BadRequestException(ErrorMessages.InactiveAlready<Zone>());
 
             var propertiesUpdated = new
             {
@@ -151,8 +155,11 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
         {
             var zone = await _zoneRepository.GetWithUser(id);
 
-            if (zone is null || zone.IsActive is true)
-                throw new NotFoundException("Zone not found or is active already");
+            if (zone is null)
+                throw new NotFoundException(ErrorMessages.NotFound<Zone>());
+
+            if (zone.IsActive is true)
+                throw new BadRequestException(ErrorMessages.ActiveAlready<Zone>());
 
             var propertiesUpdated = new
             {
@@ -178,7 +185,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
             var zoneHistories = await _systemHistoryService.GetAll(id);
 
             if (zoneHistories is null)
-                throw new NotFoundException("Zone not found");
+                throw new NotFoundException(ErrorMessages.NotFound<Zone>());
 
             foreach (var history in zoneHistories)
             {
