@@ -23,6 +23,12 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Repositories
             return await _context.MeasuringPoints
                 .FirstOrDefaultAsync(x => x.TagPointMeasuring == tagMeasuringPoint);
         }
+
+        public async Task<MeasuringPoint?> GetByMeasuringPointNameWithInstallation(string? measuringPointName)
+        {
+            return await _context.MeasuringPoints.Include(x => x.Installation)
+                .FirstOrDefaultAsync(x => x.TagPointMeasuring == measuringPointName);
+        }
         public async Task AddAsync(MeasuringPoint measuringPoint)
         {
             await _context.MeasuringPoints.AddAsync(measuringPoint);

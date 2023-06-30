@@ -35,8 +35,14 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Repositories
                 .ThenInclude(x => x.Installation)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
+        public async Task<MeasuringEquipment?> GetByTypeWithMeasuringPointAsync(Guid? id, string type)
+        {
+            return await _context.MeasuringEquipments
+                .Include(x => x.MeasuringPoint)
+                .FirstOrDefaultAsync(x => x.MeasuringPoint.Id == id && x.Type == type && x.InOperation == true);
+        }
 
-        public async Task<MeasuringEquipment?> getByTagsSerialChannel(string? tagPoint, string? tagEquipment, string? serial, string channel)
+        public async Task<MeasuringEquipment?> GetByTagsSerialChannel(string? tagPoint, string? tagEquipment, string? serial, string channel)
         {
             return await _context.MeasuringEquipments
                 .FirstOrDefaultAsync(x => x.TagMeasuringPoint == tagPoint && x.TagEquipment == tagEquipment && x.SerieNumber == serial && x.ChannelNumber == channel);
