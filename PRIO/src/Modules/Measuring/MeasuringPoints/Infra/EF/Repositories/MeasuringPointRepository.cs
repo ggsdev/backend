@@ -34,5 +34,11 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Repositories
             await _context.MeasuringPoints.AddAsync(measuringPoint);
             await _context.SaveChangesAsync();
         }
+        public async Task<List<MeasuringPoint>> ListAllAsync()
+        {
+            var measuringPoints = await _context.MeasuringPoints.ToListAsync();
+            return measuringPoints;
+
+        }
     }
 }

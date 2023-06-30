@@ -49,5 +49,12 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Services
 
             return measuringPointDTO;
         }
+        public async Task<List<MeasuringPointDTO>> ListAll()
+        {
+            var measuringPoints = await _measuringPointRepository.ListAllAsync();
+            var measuringPointDTO = _mapper.Map<List<MeasuringPoint>, List<MeasuringPointDTO>>(measuringPoints);
+
+            return measuringPointDTO;
+        }
     }
 }
