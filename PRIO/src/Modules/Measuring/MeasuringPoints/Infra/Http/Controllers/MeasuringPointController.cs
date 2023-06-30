@@ -30,5 +30,19 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Controllers
             var measuringPointDTO = await _measuringPointService.CreateMeasuringPoint(body, user);
             return Created($"mpoint/{measuringPointDTO.Id}", measuringPointDTO);
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+
+            var measuringPointDTO = await _measuringPointService.ListAll();
+            return Ok(measuringPointDTO);
+        }
     }
 }
