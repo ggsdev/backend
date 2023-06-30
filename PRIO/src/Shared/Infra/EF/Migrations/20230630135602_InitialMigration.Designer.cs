@@ -9,11 +9,11 @@ using PRIO.src.Shared.Infra.EF;
 
 #nullable disable
 
-namespace PRIO.Migrations
+namespace PRIO.src.Shared.Infra.EF.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230623133511_initialMigrations")]
-    partial class initialMigrations
+    [Migration("20230630135602_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -407,7 +407,7 @@ namespace PRIO.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CodCluster")
-                        .HasMaxLength(8)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<DateTime>("CreatedAt")
@@ -424,7 +424,7 @@ namespace PRIO.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(120)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -447,7 +447,7 @@ namespace PRIO.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CodCompletion")
-                        .HasMaxLength(8)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<DateTime>("CreatedAt")
@@ -464,7 +464,7 @@ namespace PRIO.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(120)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<Guid?>("ReservoirId")
@@ -497,12 +497,11 @@ namespace PRIO.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Basin")
-                        .HasMaxLength(120)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<string>("CodField")
-                        .IsRequired()
-                        .HasMaxLength(10)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<DateTime>("CreatedAt")
@@ -521,16 +520,16 @@ namespace PRIO.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Location")
-                        .HasMaxLength(120)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(120)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<string>("State")
-                        .HasMaxLength(120)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -557,9 +556,9 @@ namespace PRIO.Migrations
                     b.Property<Guid>("ClusterId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CodInstallation")
+                    b.Property<string>("CodInstallationAnp")
                         .IsRequired()
-                        .HasMaxLength(120)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<DateTime>("CreatedAt")
@@ -571,17 +570,25 @@ namespace PRIO.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
+                    b.Property<decimal?>("GasSafetyBurnVolume")
+                        .HasColumnType("decimal");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(120)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<string>("UepCod")
                         .IsRequired()
-                        .HasMaxLength(120)
+                        .HasMaxLength(60)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("UepName")
+                        .IsRequired()
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -606,7 +613,7 @@ namespace PRIO.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CodReservoir")
-                        .HasMaxLength(8)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<DateTime>("CreatedAt")
@@ -623,7 +630,7 @@ namespace PRIO.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(120)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -651,7 +658,7 @@ namespace PRIO.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ArtificialLift")
-                        .HasMaxLength(150)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<decimal?>("BaseOfPerforated")
@@ -660,34 +667,34 @@ namespace PRIO.Migrations
 
                     b.Property<string>("CategoryAnp")
                         .IsRequired()
-                        .HasMaxLength(150)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<string>("CategoryOperator")
-                        .HasMaxLength(150)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<string>("CategoryReclassificationAnp")
-                        .HasMaxLength(150)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<string>("CodWell")
-                        .HasMaxLength(8)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<string>("CodWellAnp")
                         .IsRequired()
-                        .HasMaxLength(150)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<string>("CoordX")
                         .IsRequired()
-                        .HasMaxLength(150)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<string>("CoordY")
                         .IsRequired()
-                        .HasMaxLength(150)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<DateTime>("CreatedAt")
@@ -695,7 +702,7 @@ namespace PRIO.Migrations
 
                     b.Property<string>("DatumHorizontal")
                         .IsRequired()
-                        .HasMaxLength(150)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<DateTime?>("DeletedAt")
@@ -712,27 +719,27 @@ namespace PRIO.Migrations
 
                     b.Property<string>("Latitude4C")
                         .IsRequired()
-                        .HasMaxLength(150)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<string>("LatitudeDD")
                         .IsRequired()
-                        .HasMaxLength(150)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<string>("Longitude4C")
                         .IsRequired()
-                        .HasMaxLength(150)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<string>("LongitudeDD")
                         .IsRequired()
-                        .HasMaxLength(150)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(120)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<bool?>("StatusOperator")
@@ -744,12 +751,12 @@ namespace PRIO.Migrations
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasMaxLength(150)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<string>("TypeBaseCoordinate")
                         .IsRequired()
-                        .HasMaxLength(150)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -764,7 +771,7 @@ namespace PRIO.Migrations
 
                     b.Property<string>("WellOperatorName")
                         .IsRequired()
-                        .HasMaxLength(150)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.HasKey("Id");
@@ -784,7 +791,7 @@ namespace PRIO.Migrations
 
                     b.Property<string>("CodZone")
                         .IsRequired()
-                        .HasMaxLength(120)
+                        .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
                     b.Property<DateTime>("CreatedAt")
@@ -1504,6 +1511,9 @@ namespace PRIO.Migrations
                     b.Property<string>("IND_TOMADA_PRESSAO_ESTATICA_003")
                         .HasMaxLength(1)
                         .HasColumnType("char");
+
+                    b.Property<Guid>("InstallationId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -2278,6 +2288,8 @@ namespace PRIO.Migrations
 
                     b.HasIndex("FileTypeId");
 
+                    b.HasIndex("InstallationId");
+
                     b.HasIndex("MeasuringEquipmentId");
 
                     b.HasIndex("UserId");
@@ -2292,12 +2304,10 @@ namespace PRIO.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ChannelNumber")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("varchar");
 
                     b.Property<string>("CommunicationProtocol")
-                        .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("varchar");
 
@@ -2312,7 +2322,7 @@ namespace PRIO.Migrations
 
                     b.Property<string>("Fluid")
                         .IsRequired()
-                        .HasMaxLength(120)
+                        .HasMaxLength(60)
                         .HasColumnType("varchar");
 
                     b.Property<bool?>("HasSeal")
@@ -2323,18 +2333,16 @@ namespace PRIO.Migrations
                         .IsRequired()
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("InstallationId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<bool?>("MVS")
-                        .IsRequired()
                         .HasColumnType("bit");
 
+                    b.Property<Guid?>("MeasuringPointId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Model")
-                        .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("varchar");
 
@@ -2355,11 +2363,10 @@ namespace PRIO.Migrations
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasMaxLength(10)
+                        .HasMaxLength(60)
                         .HasColumnType("varchar");
 
                     b.Property<string>("TypeEquipment")
-                        .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("varchar");
 
@@ -2376,7 +2383,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("InstallationId");
+                    b.HasIndex("MeasuringPointId");
 
                     b.HasIndex("UserId");
 
@@ -2425,6 +2432,214 @@ namespace PRIO.Migrations
                     b.ToTable("Volumes_039", (string)null);
                 });
 
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("InstallationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TagPointMeasuring")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InstallationId");
+
+                    b.ToTable("MeasuringPoints");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.DOR", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("EquipmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar");
+
+                    b.Property<Guid?>("OilVolumeCalculationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EquipmentId")
+                        .IsUnique()
+                        .HasFilter("[EquipmentId] IS NOT NULL");
+
+                    b.HasIndex("OilVolumeCalculationId");
+
+                    b.ToTable("DORs", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.DrainVolume", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("EquipmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar");
+
+                    b.Property<Guid?>("OilVolumeCalculationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EquipmentId")
+                        .IsUnique()
+                        .HasFilter("[EquipmentId] IS NOT NULL");
+
+                    b.HasIndex("OilVolumeCalculationId");
+
+                    b.ToTable("DrainVolumes", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("InstallationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InstallationId")
+                        .IsUnique()
+                        .HasFilter("[InstallationId] IS NOT NULL");
+
+                    b.ToTable("OilVoumeCalculations", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.Section", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("EquipmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar");
+
+                    b.Property<Guid?>("OilVolumeCalculationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EquipmentId")
+                        .IsUnique()
+                        .HasFilter("[EquipmentId] IS NOT NULL");
+
+                    b.HasIndex("OilVolumeCalculationId");
+
+                    b.ToTable("Sections", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.TOGRecoveredOil", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("EquipmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar");
+
+                    b.Property<Guid?>("OilVolumeCalculationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EquipmentId")
+                        .IsUnique()
+                        .HasFilter("[EquipmentId] IS NOT NULL");
+
+                    b.HasIndex("OilVolumeCalculationId");
+
+                    b.ToTable("TOGRecoveredOils", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Shared.Auxiliaries.Infra.EF.Models.Auxiliary", b =>
+                {
+                    b.Property<Guid?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Option")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Route")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Select")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Table")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Auxiliaries");
+                });
+
             modelBuilder.Entity("PRIO.src.Shared.SystemHistories.Infra.EF.Models.SystemHistory", b =>
                 {
                     b.Property<Guid?>("Id")
@@ -2449,7 +2664,7 @@ namespace PRIO.Migrations
 
                     b.Property<string>("Table")
                         .IsRequired()
-                        .HasMaxLength(100)
+                        .HasMaxLength(30)
                         .HasColumnType("varchar");
 
                     b.Property<Guid?>("TableItemId")
@@ -2725,10 +2940,15 @@ namespace PRIO.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.MeasuringEquipment", "MeasuringEquipment")
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
                         .WithMany("Measurements")
-                        .HasForeignKey("MeasuringEquipmentId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("InstallationId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.MeasuringEquipment", null)
+                        .WithMany("Measurements")
+                        .HasForeignKey("MeasuringEquipmentId");
 
                     b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
                         .WithMany("Measurements")
@@ -2738,18 +2958,16 @@ namespace PRIO.Migrations
 
                     b.Navigation("FileType");
 
-                    b.Navigation("MeasuringEquipment");
+                    b.Navigation("Installation");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.MeasuringEquipment", b =>
                 {
-                    b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
+                    b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
                         .WithMany("MeasuringEquipments")
-                        .HasForeignKey("InstallationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MeasuringPointId");
 
                     b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
                         .WithMany("MeasuringEquipments")
@@ -2757,7 +2975,7 @@ namespace PRIO.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Installation");
+                    b.Navigation("MeasuringPoint");
 
                     b.Navigation("User");
                 });
@@ -2771,6 +2989,84 @@ namespace PRIO.Migrations
                         .IsRequired();
 
                     b.Navigation("Measurement");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
+                        .WithMany("MeasuringPoints")
+                        .HasForeignKey("InstallationId");
+
+                    b.Navigation("Installation");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.DOR", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
+                        .WithOne("DOR")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.DOR", "EquipmentId");
+
+                    b.HasOne("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", "OilVolumeCalculation")
+                        .WithMany("DORs")
+                        .HasForeignKey("OilVolumeCalculationId");
+
+                    b.Navigation("MeasuringPoint");
+
+                    b.Navigation("OilVolumeCalculation");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.DrainVolume", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
+                        .WithOne("DrainVolume")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.DrainVolume", "EquipmentId");
+
+                    b.HasOne("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", "OilVolumeCalculation")
+                        .WithMany("DrainVolumes")
+                        .HasForeignKey("OilVolumeCalculationId");
+
+                    b.Navigation("MeasuringPoint");
+
+                    b.Navigation("OilVolumeCalculation");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
+                        .WithOne("OilVolumeCalculation")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", "InstallationId");
+
+                    b.Navigation("Installation");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.Section", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
+                        .WithOne("Section")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.Section", "EquipmentId");
+
+                    b.HasOne("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", "OilVolumeCalculation")
+                        .WithMany("Sections")
+                        .HasForeignKey("OilVolumeCalculationId");
+
+                    b.Navigation("MeasuringPoint");
+
+                    b.Navigation("OilVolumeCalculation");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.TOGRecoveredOil", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
+                        .WithOne("TOGRecoveredOil")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.TOGRecoveredOil", "EquipmentId");
+
+                    b.HasOne("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", "OilVolumeCalculation")
+                        .WithMany("TOGRecoveredOils")
+                        .HasForeignKey("OilVolumeCalculationId");
+
+                    b.Navigation("MeasuringPoint");
+
+                    b.Navigation("OilVolumeCalculation");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.Group", b =>
@@ -2847,7 +3143,11 @@ namespace PRIO.Migrations
                 {
                     b.Navigation("Fields");
 
-                    b.Navigation("MeasuringEquipments");
+                    b.Navigation("Measurements");
+
+                    b.Navigation("MeasuringPoints");
+
+                    b.Navigation("OilVolumeCalculation");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Models.Reservoir", b =>
@@ -2882,6 +3182,30 @@ namespace PRIO.Migrations
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.MeasuringEquipment", b =>
                 {
                     b.Navigation("Measurements");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", b =>
+                {
+                    b.Navigation("DOR");
+
+                    b.Navigation("DrainVolume");
+
+                    b.Navigation("MeasuringEquipments");
+
+                    b.Navigation("Section");
+
+                    b.Navigation("TOGRecoveredOil");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", b =>
+                {
+                    b.Navigation("DORs");
+
+                    b.Navigation("DrainVolumes");
+
+                    b.Navigation("Sections");
+
+                    b.Navigation("TOGRecoveredOils");
                 });
 #pragma warning restore 612, 618
         }

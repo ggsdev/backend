@@ -3,14 +3,30 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace PRIO.Migrations
+namespace PRIO.src.Shared.Infra.EF.Migrations
 {
     /// <inheritdoc />
-    public partial class initialMigrations : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Auxiliaries",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Option = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Route = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Table = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Select = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Auxiliaries", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "FileTypes",
                 columns: table => new
@@ -95,7 +111,7 @@ namespace PRIO.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Table = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
+                    Table = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     TableItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
@@ -177,8 +193,8 @@ namespace PRIO.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
-                    CodCluster = table.Column<string>(type: "VARCHAR(8)", maxLength: 8, nullable: true),
+                    Name = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: false),
+                    CodCluster = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: true),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -281,9 +297,11 @@ namespace PRIO.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
-                    UepCod = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
-                    CodInstallation = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
+                    Name = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: false),
+                    UepCod = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: false),
+                    UepName = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: false),
+                    CodInstallationAnp = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: false),
+                    GasSafetyBurnVolume = table.Column<decimal>(type: "decimal(38,17)", nullable: true),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ClusterId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -338,11 +356,11 @@ namespace PRIO.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
-                    CodField = table.Column<string>(type: "VARCHAR(10)", maxLength: 10, nullable: false),
-                    State = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: true),
-                    Basin = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: true),
-                    Location = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: true),
+                    Name = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: false),
+                    CodField = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: true),
+                    State = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: true),
+                    Basin = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: true),
+                    Location = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: true),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     InstallationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -367,44 +385,48 @@ namespace PRIO.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MeasuringEquipments",
+                name: "MeasuringPoints",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TagEquipment = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false),
-                    TagMeasuringPoint = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false),
-                    SerieNumber = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false),
-                    Type = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false),
-                    TypeEquipment = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false),
-                    Model = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false),
-                    HasSeal = table.Column<bool>(type: "bit", nullable: false),
-                    MVS = table.Column<bool>(type: "bit", nullable: false),
-                    CommunicationProtocol = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false),
-                    TypePoint = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false),
-                    ChannelNumber = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false),
-                    InOperation = table.Column<bool>(type: "bit", nullable: false),
-                    Fluid = table.Column<string>(type: "varchar(120)", maxLength: 120, nullable: false),
-                    InstallationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TagPointMeasuring = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    InstallationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Description = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MeasuringEquipments", x => x.Id);
+                    table.PrimaryKey("PK_MeasuringPoints", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MeasuringEquipments_Installations_InstallationId",
+                        name: "FK_MeasuringPoints_Installations_InstallationId",
                         column: x => x.InstallationId,
                         principalTable: "Installations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OilVoumeCalculations",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    InstallationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OilVoumeCalculations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MeasuringEquipments_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
+                        name: "FK_OilVoumeCalculations_Installations_InstallationId",
+                        column: x => x.InstallationId,
+                        principalTable: "Installations",
                         principalColumn: "Id");
                 });
 
@@ -413,27 +435,27 @@ namespace PRIO.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
-                    WellOperatorName = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
-                    CodWellAnp = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
-                    CodWell = table.Column<string>(type: "VARCHAR(8)", maxLength: 8, nullable: true),
-                    CategoryAnp = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
-                    CategoryReclassificationAnp = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
-                    CategoryOperator = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
+                    Name = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: false),
+                    WellOperatorName = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: false),
+                    CodWellAnp = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: false),
+                    CodWell = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: true),
+                    CategoryAnp = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: false),
+                    CategoryReclassificationAnp = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: true),
+                    CategoryOperator = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: true),
                     StatusOperator = table.Column<bool>(type: "bit", nullable: true),
-                    Type = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
+                    Type = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: false),
                     WaterDepth = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: true),
                     TopOfPerforated = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: true),
                     BaseOfPerforated = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: true),
-                    ArtificialLift = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: true),
-                    Latitude4C = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
-                    Longitude4C = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
-                    LatitudeDD = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
-                    LongitudeDD = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
-                    DatumHorizontal = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
-                    TypeBaseCoordinate = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
-                    CoordX = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
-                    CoordY = table.Column<string>(type: "VARCHAR(150)", maxLength: 150, nullable: false),
+                    ArtificialLift = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: true),
+                    Latitude4C = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: false),
+                    Longitude4C = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: false),
+                    LatitudeDD = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: false),
+                    LongitudeDD = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: false),
+                    DatumHorizontal = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: false),
+                    TypeBaseCoordinate = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: false),
+                    CoordX = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: false),
+                    CoordY = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FieldId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "DATETIME", nullable: false),
@@ -462,7 +484,7 @@ namespace PRIO.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CodZone = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
+                    CodZone = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FieldId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -483,6 +505,173 @@ namespace PRIO.Migrations
                         name: "FK_Zones_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MeasuringEquipments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TagEquipment = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false),
+                    TagMeasuringPoint = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false),
+                    SerieNumber = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false),
+                    Type = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false),
+                    TypeEquipment = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: true),
+                    Model = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: true),
+                    HasSeal = table.Column<bool>(type: "bit", nullable: false),
+                    MVS = table.Column<bool>(type: "bit", nullable: true),
+                    CommunicationProtocol = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: true),
+                    TypePoint = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false),
+                    ChannelNumber = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: true),
+                    InOperation = table.Column<bool>(type: "bit", nullable: false),
+                    Fluid = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false),
+                    MeasuringPointId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MeasuringEquipments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MeasuringEquipments_MeasuringPoints_MeasuringPointId",
+                        column: x => x.MeasuringPointId,
+                        principalTable: "MeasuringPoints",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_MeasuringEquipments_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DORs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false),
+                    OilVolumeCalculationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    EquipmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DORs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DORs_MeasuringPoints_EquipmentId",
+                        column: x => x.EquipmentId,
+                        principalTable: "MeasuringPoints",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_DORs_OilVoumeCalculations_OilVolumeCalculationId",
+                        column: x => x.OilVolumeCalculationId,
+                        principalTable: "OilVoumeCalculations",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DrainVolumes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false),
+                    OilVolumeCalculationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    EquipmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DrainVolumes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DrainVolumes_MeasuringPoints_EquipmentId",
+                        column: x => x.EquipmentId,
+                        principalTable: "MeasuringPoints",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_DrainVolumes_OilVoumeCalculations_OilVolumeCalculationId",
+                        column: x => x.OilVolumeCalculationId,
+                        principalTable: "OilVoumeCalculations",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Sections",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false),
+                    OilVolumeCalculationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    EquipmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sections", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Sections_MeasuringPoints_EquipmentId",
+                        column: x => x.EquipmentId,
+                        principalTable: "MeasuringPoints",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Sections_OilVoumeCalculations_OilVolumeCalculationId",
+                        column: x => x.OilVolumeCalculationId,
+                        principalTable: "OilVoumeCalculations",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TOGRecoveredOils",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false),
+                    OilVolumeCalculationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    EquipmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TOGRecoveredOils", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TOGRecoveredOils_MeasuringPoints_EquipmentId",
+                        column: x => x.EquipmentId,
+                        principalTable: "MeasuringPoints",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TOGRecoveredOils_OilVoumeCalculations_OilVolumeCalculationId",
+                        column: x => x.OilVolumeCalculationId,
+                        principalTable: "OilVoumeCalculations",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Reservoirs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: false),
+                    CodReservoir = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: true),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ZoneId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reservoirs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Reservoirs_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Reservoirs_Zones_ZoneId",
+                        column: x => x.ZoneId,
+                        principalTable: "Zones",
                         principalColumn: "Id");
                 });
 
@@ -822,6 +1011,7 @@ namespace PRIO.Migrations
                     DHA_COD_INSTALACAO_039 = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: true),
                     FileTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    InstallationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     MeasuringEquipmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -839,11 +1029,15 @@ namespace PRIO.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
+                        name: "FK_Measurements_Installations_InstallationId",
+                        column: x => x.InstallationId,
+                        principalTable: "Installations",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_Measurements_MeasuringEquipments_MeasuringEquipmentId",
                         column: x => x.MeasuringEquipmentId,
                         principalTable: "MeasuringEquipments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Measurements_Users_UserId",
                         column: x => x.UserId,
@@ -852,14 +1046,15 @@ namespace PRIO.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Reservoirs",
+                name: "Completions",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
-                    CodReservoir = table.Column<string>(type: "VARCHAR(8)", maxLength: 8, nullable: true),
+                    Name = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: false),
+                    CodCompletion = table.Column<string>(type: "VARCHAR(60)", maxLength: 60, nullable: true),
+                    ReservoirId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    WellId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ZoneId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -868,16 +1063,21 @@ namespace PRIO.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Reservoirs", x => x.Id);
+                    table.PrimaryKey("PK_Completions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Reservoirs_Users_UserId",
+                        name: "FK_Completions_Reservoirs_ReservoirId",
+                        column: x => x.ReservoirId,
+                        principalTable: "Reservoirs",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Completions_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Reservoirs_Zones_ZoneId",
-                        column: x => x.ZoneId,
-                        principalTable: "Zones",
+                        name: "FK_Completions_Wells_WellId",
+                        column: x => x.WellId,
+                        principalTable: "Wells",
                         principalColumn: "Id");
                 });
 
@@ -961,42 +1161,6 @@ namespace PRIO.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Completions",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "VARCHAR(120)", maxLength: 120, nullable: false),
-                    CodCompletion = table.Column<string>(type: "VARCHAR(8)", maxLength: 8, nullable: true),
-                    ReservoirId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    WellId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Description = table.Column<string>(type: "TEXT", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Completions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Completions_Reservoirs_ReservoirId",
-                        column: x => x.ReservoirId,
-                        principalTable: "Reservoirs",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Completions_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Completions_Wells_WellId",
-                        column: x => x.WellId,
-                        principalTable: "Wells",
-                        principalColumn: "Id");
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_BSWS_039_MeasurementId",
                 table: "BSWS_039",
@@ -1026,6 +1190,30 @@ namespace PRIO.Migrations
                 name: "IX_Completions_WellId",
                 table: "Completions",
                 column: "WellId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DORs_EquipmentId",
+                table: "DORs",
+                column: "EquipmentId",
+                unique: true,
+                filter: "[EquipmentId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DORs_OilVolumeCalculationId",
+                table: "DORs",
+                column: "OilVolumeCalculationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DrainVolumes_EquipmentId",
+                table: "DrainVolumes",
+                column: "EquipmentId",
+                unique: true,
+                filter: "[EquipmentId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DrainVolumes_OilVolumeCalculationId",
+                table: "DrainVolumes",
+                column: "OilVolumeCalculationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Fields_InstallationId",
@@ -1073,6 +1261,11 @@ namespace PRIO.Migrations
                 column: "FileTypeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Measurements_InstallationId",
+                table: "Measurements",
+                column: "InstallationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Measurements_MeasuringEquipmentId",
                 table: "Measurements",
                 column: "MeasuringEquipmentId");
@@ -1083,9 +1276,9 @@ namespace PRIO.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MeasuringEquipments_InstallationId",
+                name: "IX_MeasuringEquipments_MeasuringPointId",
                 table: "MeasuringEquipments",
-                column: "InstallationId");
+                column: "MeasuringPointId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MeasuringEquipments_UserId",
@@ -1093,9 +1286,21 @@ namespace PRIO.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_MeasuringPoints_InstallationId",
+                table: "MeasuringPoints",
+                column: "InstallationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Menus_ParentId",
                 table: "Menus",
                 column: "ParentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OilVoumeCalculations_InstallationId",
+                table: "OilVoumeCalculations",
+                column: "InstallationId",
+                unique: true,
+                filter: "[InstallationId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reservoirs_UserId",
@@ -1108,10 +1313,34 @@ namespace PRIO.Migrations
                 column: "ZoneId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Sections_EquipmentId",
+                table: "Sections",
+                column: "EquipmentId",
+                unique: true,
+                filter: "[EquipmentId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Sections_OilVolumeCalculationId",
+                table: "Sections",
+                column: "OilVolumeCalculationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Sessions_UserId",
                 table: "Sessions",
                 column: "UserId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TOGRecoveredOils_EquipmentId",
+                table: "TOGRecoveredOils",
+                column: "EquipmentId",
+                unique: true,
+                filter: "[EquipmentId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TOGRecoveredOils_OilVolumeCalculationId",
+                table: "TOGRecoveredOils",
+                column: "OilVolumeCalculationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserOperations_GlobalOperationId",
@@ -1181,6 +1410,9 @@ namespace PRIO.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Auxiliaries");
+
+            migrationBuilder.DropTable(
                 name: "BSWS_039");
 
             migrationBuilder.DropTable(
@@ -1190,13 +1422,25 @@ namespace PRIO.Migrations
                 name: "Completions");
 
             migrationBuilder.DropTable(
+                name: "DORs");
+
+            migrationBuilder.DropTable(
+                name: "DrainVolumes");
+
+            migrationBuilder.DropTable(
                 name: "GroupOperations");
+
+            migrationBuilder.DropTable(
+                name: "Sections");
 
             migrationBuilder.DropTable(
                 name: "Sessions");
 
             migrationBuilder.DropTable(
                 name: "SystemHistories");
+
+            migrationBuilder.DropTable(
+                name: "TOGRecoveredOils");
 
             migrationBuilder.DropTable(
                 name: "UserOperations");
@@ -1209,6 +1453,9 @@ namespace PRIO.Migrations
 
             migrationBuilder.DropTable(
                 name: "Wells");
+
+            migrationBuilder.DropTable(
+                name: "OilVoumeCalculations");
 
             migrationBuilder.DropTable(
                 name: "GlobalOperations");
@@ -1236,6 +1483,9 @@ namespace PRIO.Migrations
 
             migrationBuilder.DropTable(
                 name: "Menus");
+
+            migrationBuilder.DropTable(
+                name: "MeasuringPoints");
 
             migrationBuilder.DropTable(
                 name: "Installations");
