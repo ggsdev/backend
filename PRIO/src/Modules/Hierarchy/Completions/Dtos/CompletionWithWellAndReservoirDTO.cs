@@ -12,6 +12,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Dtos
         public string? CodCompletion { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public bool? IsActive { get; set; }
         public UserDTO? User { get; set; }
         public ReservoirDTO? Reservoir { get; set; }
         public WellWithoutFieldDTO? Well { get; set; }
