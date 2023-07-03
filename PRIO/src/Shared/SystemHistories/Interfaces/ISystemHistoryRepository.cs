@@ -8,5 +8,6 @@ namespace PRIO.src.Shared.SystemHistories.Interfaces
         Task<SystemHistory?> GetFirst(Guid id);
         Task<SystemHistory?> GetLast(Guid id);
         Task<List<SystemHistory>> GetAll(Guid id);
+        Task<List<SystemHistory>> GetImports();
     }
 }
