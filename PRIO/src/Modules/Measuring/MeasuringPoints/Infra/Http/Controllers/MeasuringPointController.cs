@@ -31,7 +31,6 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Controllers
             return Created($"mpoint/{measuringPointDTO.Id}", measuringPointDTO);
         }
 
-
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -43,6 +42,71 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Controllers
 
             var measuringPointDTO = await _measuringPointService.ListAll();
             return Ok(measuringPointDTO);
+        }
+
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
+        {
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+
+            var measuringPointDTO = await _measuringPointService.GetById(id);
+            return Ok(measuringPointDTO);
+        }
+
+        [HttpPatch]
+        [Route("{id}")]
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateMeasuringPointViewModel body)
+        {
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+
+            var measuringPointDTO = await _measuringPointService.Update(id, body, user);
+            return Ok(measuringPointDTO);
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        {
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+
+            await _measuringPointService.Delete(id, user);
+            return NoContent();
+        }
+
+        [HttpPatch]
+        [Route("{id}/restore")]
+        public async Task<IActionResult> Restore([FromRoute] Guid id)
+        {
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+
+            var measuringPointDTO = await _measuringPointService.Restore(id, user);
+
+            return Ok(measuringPointDTO);
+        }
+
+        [HttpGet("{id}/history")]
+        public async Task<IActionResult> GetHistory([FromRoute] Guid id)
+        {
+            var measuringPointHistories = await _measuringPointService.GetHistory(id);
+
+            return Ok(measuringPointHistories);
         }
     }
 }
