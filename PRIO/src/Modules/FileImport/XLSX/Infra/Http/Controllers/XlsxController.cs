@@ -4,6 +4,7 @@ using PRIO.src.Modules.FileImport.XLSX.Dtos;
 using PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XLSX.ViewModels;
 using PRIO.src.Shared.Infra.Http.Filters;
+using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
 
 namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
 {
@@ -13,10 +14,12 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
     public class XLSXController : ControllerBase
     {
         private readonly XLSXService _service;
+        private readonly SystemHistoryService _systemHistoryService;
 
-        public XLSXController(XLSXService service)
+        public XLSXController(XLSXService service, SystemHistoryService systemHistoryService)
         {
             _service = service;
+            _systemHistoryService = systemHistoryService;
         }
 
         [HttpPost]
@@ -30,6 +33,14 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers
             {
                 Message = "File imported successfully"
             });
+        }
+
+        [HttpGet("history")]
+        public async Task<IActionResult> GetHistoryImports()
+        {
+            var data = await _systemHistoryService.GetImports();
+
+            return Ok(data);
         }
     }
 }

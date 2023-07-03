@@ -5,7 +5,6 @@ namespace PRIO.src.Modules.Hierarchy.Wells.ViewModels
 {
     public class UpdateWellViewModel
     {
-        public bool? IsActive { get; set; }
         [StringLength(60, ErrorMessage = "CodWell cannot exceed 60 characters.")]
         public string? CodWell { get; set; }
         [StringLength(60, ErrorMessage = "Name cannot exceed 60 characters.")]

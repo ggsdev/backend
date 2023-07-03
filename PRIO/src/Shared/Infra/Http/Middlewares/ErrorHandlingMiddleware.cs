@@ -31,7 +31,7 @@ namespace PRIO.src.Shared.Infra.Http.Middlewares
                 }
                 else
                 {
-                    Console.WriteLine(ex.Message);
+                    Console.WriteLine(ex);
                     await HandleExceptionAsync(context, ex, 500, "Internal Server Error");
                 }
             }
@@ -41,7 +41,14 @@ namespace PRIO.src.Shared.Infra.Http.Middlewares
         {
             context.Response.StatusCode = statusCode;
             context.Response.ContentType = "application/json";
-            await context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorResponseDTO { Message = errorMessage }));
+            if (ex is BadRequestException badRequestException && badRequestException.Errors != null)
+            {
+                await context.Response.WriteAsync(JsonConvert.SerializeObject(new XlsErrorImportDTO { Message = errorMessage, Errors = badRequestException.Errors }));
+            }
+            else
+            {
+                await context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorResponseDTO { Message = errorMessage }));
+            }
         }
 
     }

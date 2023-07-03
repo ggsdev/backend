@@ -46,7 +46,6 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<Reservoir> Reservoirs { get; set; }
         public DbSet<Completion> Completions { get; set; }
         public DbSet<Well> Wells { get; set; }
-        public DbSet<MeasuringEquipment> MeasuringEquipments { get; set; }
         public DbSet<SystemHistory> SystemHistories { get; set; }
         public DbSet<Auxiliary> Auxiliaries { get; set; }
 
@@ -59,6 +58,7 @@ namespace PRIO.src.Shared.Infra.EF
 
         #region Measurement & Relations
         public DbSet<Measurement> Measurements { get; set; }
+        public DbSet<MeasuringEquipment> MeasuringEquipments { get; set; }
         public DbSet<MeasuringPoint> MeasuringPoints { get; set; }
         public DbSet<OilVolumeCalculation> OilVolumeCalculations { get; set; }
         public DbSet<Section> Sections { get; set; }

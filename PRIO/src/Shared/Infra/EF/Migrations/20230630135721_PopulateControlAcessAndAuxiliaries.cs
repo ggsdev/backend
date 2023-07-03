@@ -61,7 +61,23 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Fluid", "Óleo",  DateTime.UtcNow },
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Fluid", "Água",  DateTime.UtcNow },
 
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Type", "EC",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Type", "ES",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Type", "EP",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Type", "CV",  DateTime.UtcNow },
+
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Medidor ultrassônico",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Analisador de BSW",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Medidor coriolis",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Medidor Turbina",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Medidor magnético",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Apropriação ao poço",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Placa de orifício",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Proving",  DateTime.UtcNow },
+
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypePoint", "Operacional",  DateTime.UtcNow },
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypePoint", "Medição Fiscal",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypePoint", "Transferência de custódia",  DateTime.UtcNow },
             };
 
             foreach (var item in data)
@@ -147,7 +163,8 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                 new object[] { "Testes de Poços", "ClipboardText", "5", "/testePocos", Guid.NewGuid(), true, false  },
                 new object[] { "Importar Dados Teste de Poço", "icon_importar_dados", "5.1", "/importarDadosTestePoco", Guid.NewGuid(), false, true  },
                 new object[] { "Geração de Arquivos", "File", "6", "/geracaoArquivos", Guid.NewGuid(), false, false  },
-                new object[] { "Relatórios", "Files", "7", "/relatorios", Guid.NewGuid(), false, false }
+                new object[] { "Relatórios", "Files", "7", "/relatorios", Guid.NewGuid(), false, false },
+                new object[] { "Importar Dados de Hierarquia", "", "1.5", "/importarDadosHierarquia", Guid.NewGuid(), false, true }
             };
             foreach (var menu in menuData)
             {

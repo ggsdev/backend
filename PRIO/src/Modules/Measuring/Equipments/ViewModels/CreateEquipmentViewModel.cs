@@ -10,7 +10,6 @@ namespace PRIO.src.Modules.Measuring.Equipments.ViewModels
         [Required(ErrorMessage = "TagMeasuringPoint is a required field.")]
         [StringLength(120, ErrorMessage = "TagMeasuringPoint cannot exceed 120 characters.")]
         public string? TagMeasuringPoint { get; set; }
-        public string? MeasuringPointName { get; set; }
         [Required(ErrorMessage = "SerieNumber is a required field.")]
         [StringLength(120, ErrorMessage = "SerieNumber cannot exceed 120 characters.")]
         public string? SerieNumber { get; set; }
@@ -37,7 +36,6 @@ namespace PRIO.src.Modules.Measuring.Equipments.ViewModels
         [StringLength(120, ErrorMessage = "Fluid cannot exceed 120 characters.")]
         public string? Fluid { get; set; }
         [Required(ErrorMessage = "InstallationId is a required field.")]
-        public Guid? InstallationId { get; set; }
         public bool? IsActive { get; set; } = true;
         public string? Description { get; set; }
     }

@@ -9,6 +9,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Interfaces
         void Delete(Completion completion);
         void Restore(Completion completion);
         Task<Completion?> GetByIdAsync(Guid? id);
+        Task<Completion?> GetByCode(string? cod);
         Task<List<Completion>> GetAsync();
         Task<Completion?> GetOnlyCompletion(Guid? id);
         Task<Completion?> GetWithWellReservoirZoneAsync(Guid? id);

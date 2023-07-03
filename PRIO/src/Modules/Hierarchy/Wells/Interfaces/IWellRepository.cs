@@ -10,6 +10,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Interfaces
         void Restore(Well well);
         Task<Well?> GetByIdAsync(Guid? id);
         Task<List<Well>> GetAsync();
+        Task<Well?> GetByCode(string? cod);
         Task<Well?> GetWithFieldAsync(Guid? id);
         Task<Well?> GetOnlyWellAsync(Guid? id);
         Task<Well?> GetByIdWithFieldAndCompletions(Guid? id);

@@ -29,9 +29,12 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
 
         public async Task<ClusterDTO> CreateCluster(CreateClusterViewModel body, User user)
         {
-            var clusterId = Guid.NewGuid();
+            var cluster = await _clusterRepository.GetByCod(body.CodCluster);
+            if (cluster is not null)
+                throw new ConflictException(ErrorMessages.CodAlreadyExists<Cluster>());
 
-            var cluster = new Cluster
+            var clusterId = Guid.NewGuid();
+            cluster = new Cluster
             {
                 Id = clusterId,
                 Name = body.Name,
@@ -72,15 +75,19 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
 
         public async Task<ClusterDTO> UpdateCluster(Guid id, UpdateClusterViewModel body, User user)
         {
-            var cluster = await _clusterRepository.GetClusterByIdAsync(id);
+            var cluster = await _clusterRepository.GetClusterWithInstallationsAsync(id);
 
             if (cluster is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Cluster>());
 
+            if (cluster.Installations.Count > 0)
+                if (body.CodCluster is not null)
+                    if (body.CodCluster != cluster.CodCluster)
+                        throw new ConflictException("Código do Cluster não pode ser alterado.");
+
             var beforeChangesCluster = _mapper.Map<ClusterHistoryDTO>(cluster);
 
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(cluster, body);
-
             if (updatedProperties.Any() is false)
                 throw new BadRequestException(ErrorMessages.UpdateToExistingValues<Cluster>());
 

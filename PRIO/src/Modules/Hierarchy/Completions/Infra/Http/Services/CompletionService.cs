@@ -36,6 +36,10 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
 
         public async Task<CreateUpdateCompletionDTO> CreateCompletion(CreateCompletionViewModel body, User user)
         {
+            var completionExistingCode = await _completionRepository.GetByCode(body.CodCompletion);
+            if (completionExistingCode is not null)
+                throw new ConflictException(ErrorMessages.CodAlreadyExists<Completion>());
+
             var well = await _wellRepository.GetWithFieldAsync(body.WellId);
 
             if (well is null)
