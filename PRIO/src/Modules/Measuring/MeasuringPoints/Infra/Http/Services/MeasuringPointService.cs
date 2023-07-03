@@ -49,6 +49,7 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Services
                 Id = measuringPointId,
                 Name = body.Name,
                 TagPointMeasuring = body.TagPointMeasuring,
+                Description = body.Description is not null ? body.Description : null,
                 Installation = installationInDatabase
             };
             await _measuringPointRepository.AddAsync(measuringPoint);
@@ -82,7 +83,6 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Services
             var measuringPoint = await _measuringPointRepository.GetByIdAsync(id);
             if (measuringPoint == null)
                 throw new NotFoundException("Ponto de medição não encontrado.");
-
 
             var measuringPointByTagInDatabase = await _measuringPointRepository.GetByTagMeasuringPointUpdate(body.TagPointMeasuring, measuringPoint.Installation.Id, measuringPoint.Id);
             if (measuringPointByTagInDatabase != null)
