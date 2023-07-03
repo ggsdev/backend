@@ -90,10 +90,16 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
         public async Task<CreateUpdateReservoirDTO> UpdateReservoir(UpdateReservoirViewModel body, Guid id, User user)
         {
             var reservoir = await _reservoirRepository
-                .GetWithZoneAsync(id);
+                .GetByIdWithCompletionsAsync(id);
 
             if (reservoir is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Reservoir>());
+
+
+            if (reservoir.Completions.Count > 0)
+                if (body.CodReservoir is not null)
+                    if (body.CodReservoir != reservoir.CodReservoir)
+                        throw new ConflictException("Código do reservatório não pode ser alterado.");
 
             var beforeChangesReservoir = _mapper.Map<ReservoirHistoryDTO>(reservoir);
 

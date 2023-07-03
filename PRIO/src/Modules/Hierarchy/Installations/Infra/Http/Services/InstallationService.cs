@@ -98,10 +98,16 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
         public async Task<CreateUpdateInstallationDTO> UpdateInstallation(UpdateInstallationViewModel body, Guid id, User user)
         {
             var installation = await _installationRepository
-                .GetByIdAsync(id);
+                .GetByIdWithFieldsMeasuringPointsAsync(id);
 
             if (installation is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Installation>());
+
+
+            if (installation.Fields.Count > 0)
+                if (body.CodInstallationAnp is not null)
+                    if (body.CodInstallationAnp != installation.CodInstallationAnp)
+                        throw new ConflictException("Código da instalação não pode ser alterado.");
 
             var beforeChangesInstallation = _mapper.Map<InstallationHistoryDTO>(installation);
 

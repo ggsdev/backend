@@ -88,10 +88,15 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
 
         public async Task<CreateUpdateFieldDTO> UpdateField(Guid id, UpdateFieldViewModel body, User user)
         {
-            var field = await _fieldRepository.GetByIdAsync(id);
+            var field = await _fieldRepository.GetByIdWithWellsAndZonesAsync(id);
 
             if (field is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Field>());
+
+            if (field.Wells.Count > 0 || field.Zones.Count > 0)
+                if (body.CodField is not null)
+                    if (body.CodField != field.CodField)
+                        throw new ConflictException("Código do campo não pode ser alterado.");
 
             var beforeChangesField = _mapper.Map<FieldHistoryDTO>(field);
 

@@ -105,10 +105,15 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
         }
         public async Task<CreateUpdateWellDTO> UpdateWell(UpdateWellViewModel body, Guid id, User user)
         {
-            var well = await _wellRepository.GetWithFieldAsync(id);
+            var well = await _wellRepository.GetByIdWithFieldAndCompletions(id);
 
             if (well is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Well>());
+
+            if (well.Completions.Count > 0)
+                if (body.CodWellAnp is not null)
+                    if (body.CodWellAnp != well.CodWellAnp)
+                        throw new ConflictException("Código do campo não pode ser alterado.");
 
             var beforeChangesWell = _mapper.Map<WellHistoryDTO>(well);
 
