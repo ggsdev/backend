@@ -77,7 +77,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
                 TypePoint = body.TypePoint,
                 ChannelNumber = body.ChannelNumber,
                 InOperation = body.InOperation,
-                Fluid = body.Fluid.ToLower(),
+                Fluid = body.Fluid,
                 MeasuringPoint = measuringPointInDatabase,
                 Description = body.Description is not null ? body.Description : null,
                 User = user,
