@@ -29,9 +29,12 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
 
         public async Task<ClusterDTO> CreateCluster(CreateClusterViewModel body, User user)
         {
-            var clusterId = Guid.NewGuid();
+            var cluster = await _clusterRepository.GetByCod(body.CodCluster);
+            if (cluster is not null)
+                throw new ConflictException("Cluster com esse código já existe, tente outro");
 
-            var cluster = new Cluster
+            var clusterId = Guid.NewGuid();
+            cluster = new Cluster
             {
                 Id = clusterId,
                 Name = body.Name,
