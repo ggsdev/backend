@@ -4,6 +4,6 @@
     {
         public string? TagMeasuringPoint { get; set; }
         public string? MeasuringPointName { get; set; }
-        public Guid? InstallationId { get; set; }
+        public Guid InstallationId { get; set; }
     }
 }
