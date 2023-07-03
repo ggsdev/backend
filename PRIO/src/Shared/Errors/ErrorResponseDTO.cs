@@ -7,4 +7,14 @@ namespace PRIO.src.Shared.Errors
         [JsonProperty("message")]
         public string Message { get; set; } = string.Empty;
     }
+
+    public class XlsErrorImportDTO
+    {
+        [JsonProperty("message")]
+
+        public string Message { get; set; } = string.Empty;
+        [JsonProperty("errors")]
+
+        public List<string>? Errors { get; set; }
+    }
 }
