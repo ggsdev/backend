@@ -59,8 +59,20 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
             var entityDictionary = new Dictionary<string, BaseModel>();
             var entityHistoriesDictionary = new Dictionary<string, SystemHistory>();
 
-            var columnPositions = XlsUtils.GetColumnPositions(worksheetTab);
             var dateCurrent = DateTime.UtcNow;
+            var columnPositions = XlsUtils.GetColumnPositions(worksheetTab);
+
+            var errors = XlsUtils.ValidateColumns(worksheetTab);
+
+            if (errors.Any())
+            {
+                var error = new XlsErrorImportDTO
+                {
+                    Message = "Alguma(s) colunas(s) da planilha não possuem o valor esperado.",
+                    Errors = errors
+                };
+                throw new BadRequestException(error.Message, error.Errors);
+            }
 
             for (int row = 2; row <= dimension.End.Row; ++row)
             {
@@ -110,6 +122,18 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                 var columnWellCoordX = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCoordXColumnName]].Value?.ToString()?.Trim();
                 var columnWellCoordY = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCoordYColumnName]].Value?.ToString()?.Trim();
                 #endregion
+
+                //if (errorColumns.Any() is true)
+                //{
+                //    string errorMessage = $"Alguma(s) colunas possuem erro: ";
+
+                //    for (int i = 0; i < errorColumns.Count - 1; i++)
+                //        errorMessage += $"{errorColumns[i]}, ";
+
+                //    errorMessage += errorColumns[errorColumns.Count - 1];
+
+                //    throw new BadRequestException(errorMessage);
+                //}
 
                 if (!string.IsNullOrWhiteSpace(columnCluster) && !entityDictionary.TryGetValue(columnCluster.ToLower(), out var cluster))
                 {

@@ -94,5 +94,71 @@ namespace PRIO.src.Shared.Utils
 
             return columnPositions;
         }
+
+
+        public static List<string> ValidateColumns(ExcelWorksheet worksheet)
+        {
+            var errorMessages = new List<string>();
+
+            var expectedColumns = new List<string>
+                {
+                    ClusterColumnName,
+                    FieldColumnName,
+                    InstallationCodColumnName,
+                    InstallationColumnName,
+                    InstallationCodUepColumnName,
+                    InstallationNameUepColumnName,
+                    FieldCodeColumnName,
+                    ReservoirColumnName,
+                    ZoneCodeColumnName,
+                    AllocationByReservoirColumnName,
+                    CompletionColumnName,
+                    WellNameColumnName,
+                    WellNameOperatorColumnName,
+                    WellCodeAnpColumnName,
+                    WellCategoryAnpColumnName,
+                    WellCategoryReclassificationColumnName,
+                    WellCategoryOperatorColumnName,
+                    WellStatusOperatorColumnName,
+                    WellProfileColumnName,
+                    WellWaterDepthColumnName,
+                    WellPerforationTopMdColumnName,
+                    WellBottomPerforationColumnName,
+                    WellArtificialLiftColumnName,
+                    WellLatitude4cColumnName,
+                    WellLongitude4cColumnName,
+                    WellLatitudeDDColumnName,
+                    WellLongitudeDDColumnName,
+                    WellDatumHorizontalColumnName,
+                    WellTypeCoordinateColumnName,
+                    WellCoordXColumnName,
+                WellCoordYColumnName
+            };
+
+            for (int column = 1; column <= worksheet.Dimension.Columns; column++)
+            {
+                var currentValue = worksheet.Cells[1, column].Value?.ToString();
+                if (currentValue is not null)
+                {
+                    bool isValidColumn = false;
+                    foreach (var expectedValue in expectedColumns)
+                    {
+                        if (currentValue.ToUpper() == expectedValue)
+                        {
+                            isValidColumn = true;
+                            break;
+                        }
+                    }
+
+                    if (!isValidColumn)
+                    {
+                        var expectedValue = expectedColumns[column - 1];
+                        errorMessages.Add($"Valor inválido para coluna: '{currentValue}' na {column}ª posição, deveria ser: '{expectedValue}'");
+                    }
+                }
+            }
+
+            return errorMessages;
+        }
     }
 }
