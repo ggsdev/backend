@@ -79,8 +79,9 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
 
             if (cluster is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Cluster>());
-            //if (cluster.Installations.Count < 0)
-            //Console.WriteLine(cluster.Installations.Count);
+
+            if (cluster.Installations.Count > 0)
+                body.CodCluster = cluster.CodCluster;
 
             var beforeChangesCluster = _mapper.Map<ClusterHistoryDTO>(cluster);
 

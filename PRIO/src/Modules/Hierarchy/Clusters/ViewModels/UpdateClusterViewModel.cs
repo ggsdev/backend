@@ -6,8 +6,8 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.ViewModels
     {
         [StringLength(60, ErrorMessage = "Name cannot exceed 60 characters.")]
         public string? Name { get; set; }
-        //[StringLength(60, ErrorMessage = "CodCluster cannot exceed 60 characters.")]
-        //public string? CodCluster { get; set; }
+        [StringLength(60, ErrorMessage = "CodCluster cannot exceed 60 characters.")]
+        public string? CodCluster { get; set; }
         public string? Description { get; set; }
     }
 }
