@@ -2,7 +2,7 @@
 {
     public class ImportHistoryDTO
     {
-        public object? FileName { get; set; }
+        public string? FileName { get; set; }
         public Guid? CreatedBy { get; set; }
         public DateTime? CreatedAt { get; set; }
     }

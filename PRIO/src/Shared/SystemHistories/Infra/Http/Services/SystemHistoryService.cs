@@ -55,9 +55,10 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
             {
                 bool foundMatch = false;
 
+                dynamic fieldsChanged = data[i].FieldsChanged;
                 foreach (var history in historiesDTO)
                 {
-                    if (history.FileName?.ToString() == data[i].FieldsChanged?.ToString())
+                    if (history.FileName?.ToString() == fieldsChanged.FileName?.ToString())
                     {
                         foundMatch = true;
                         break;
@@ -70,7 +71,8 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
                     {
                         CreatedAt = data[i].CreatedAt,
                         CreatedBy = data[i].CreatedBy,
-                        FileName = data[i].FieldsChanged
+
+                        FileName = fieldsChanged.FileName,
                     });
 
                 }
@@ -173,6 +175,11 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
             currentData.createdAt = dateCurrent;
             currentData.updatedAt = dateCurrent;
 
+            var obj = new
+            {
+                FileName = fileName
+            };
+
             var history = new SystemHistory
             {
                 Table = tableName,
@@ -180,7 +187,7 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
                 CreatedBy = user?.Id,
                 TableItemId = tableItemId,
                 CurrentData = currentData,
-                FieldsChanged = fileName
+                FieldsChanged = obj
 
             };
 
@@ -193,9 +200,12 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
             var firstHistory = await _systemHistoryRepository.GetFirst(tableItemId);
 
             var changedFields = UpdateFields.DictionaryToObject(updatedProperties);
-            changedFields.fileName = fileName;
             dynamic currentData = _mapper.Map<T, U>(objectUpdated);
-
+            var obj = new
+            {
+                FileName = fileName
+            };
+            changedFields.fileName = obj;
             var dateCurrent = DateTime.UtcNow;
 
             currentData.createdAt = dateCurrent;

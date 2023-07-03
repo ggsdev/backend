@@ -411,6 +411,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
 
                             _context.Wells.Update(wellConverted);
 
+
+
                             await _systemHistoryService
                                 .ImportUpdate(HistoryColumns.TableWells, user, data.FileName, updatedProperties, wellConverted.Id, wellConverted, beforeChangesWell);
                         }
