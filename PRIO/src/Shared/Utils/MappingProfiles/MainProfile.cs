@@ -30,8 +30,10 @@ using PRIO.src.Modules.Measuring.MeasuringPoints.Dtos;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Dtos;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
+using PRIO.src.Shared.SystemHistories.Dtos;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Dtos.UserDtos;
+using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
 using System.Globalization;
 
 namespace PRIO.src.Shared.Utils.MappingProfiles
@@ -158,6 +160,9 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<Completion, CompletionWithoutReservoirDTO>();
             CreateMap<Completion, CreateUpdateCompletionDTO>();
             CreateMap<Completion, CompletionWithWellAndReservoirDTO>();
+
+
+            CreateMap<SystemHistory, ImportHistoryDTO>();
             #endregion
 
             #region Measuring

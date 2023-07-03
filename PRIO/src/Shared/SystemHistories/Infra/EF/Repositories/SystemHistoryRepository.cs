@@ -42,5 +42,13 @@ namespace PRIO.src.Shared.SystemHistories.Infra.EF.Repositories
                      .OrderByDescending(x => x.CreatedAt)
                      .ToListAsync();
         }
+
+        public async Task<List<SystemHistory>> GetImports()
+        {
+            return await _context.SystemHistories
+                .Where(x => x.TypeOperation == "IMPORT" || x.TypeOperation == "IMPORTUPDATE")
+                .OrderByDescending(x => x.CreatedAt)
+                .ToListAsync();
+        }
     }
 }

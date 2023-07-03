@@ -163,7 +163,8 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                 new object[] { "Testes de Poços", "ClipboardText", "5", "/testePocos", Guid.NewGuid(), true, false  },
                 new object[] { "Importar Dados Teste de Poço", "icon_importar_dados", "5.1", "/importarDadosTestePoco", Guid.NewGuid(), false, true  },
                 new object[] { "Geração de Arquivos", "File", "6", "/geracaoArquivos", Guid.NewGuid(), false, false  },
-                new object[] { "Relatórios", "Files", "7", "/relatorios", Guid.NewGuid(), false, false }
+                new object[] { "Relatórios", "Files", "7", "/relatorios", Guid.NewGuid(), false, false },
+                new object[] { "Importar Dados de Hierarquia", "", "1.5", "/importarDadosHierarquia", Guid.NewGuid(), false, true }
             };
             foreach (var menu in menuData)
             {
