@@ -88,10 +88,15 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
 
         public async Task<CreateUpdateZoneDTO> UpdateZone(UpdateZoneViewModel body, Guid id, User user)
         {
-            var zone = await _zoneRepository.GetWithField(id);
+            var zone = await _zoneRepository.GetByIdWithReservoirsAsync(id);
 
             if (zone is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Zone>());
+
+            if (zone.Reservoirs.Count > 0)
+                if (body.CodZone is not null)
+                    if (body.CodZone != zone.CodZone)
+                        throw new ConflictException("Código da zona não pode ser alterado.");
 
             var beforeChangesZone = _mapper.Map<ZoneHistoryDTO>(zone);
 
