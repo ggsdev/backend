@@ -14,7 +14,6 @@ namespace PRIO.src.Modules.Hierarchy.Fields.ViewModels
         public string? State { get; set; }
         [StringLength(60, ErrorMessage = "Location cannot exceed 60 characters.")]
         public string? Location { get; set; }
-        public bool? IsActive { get; set; }
         public string? Description { get; set; }
         public Guid? InstallationId { get; set; }
     }

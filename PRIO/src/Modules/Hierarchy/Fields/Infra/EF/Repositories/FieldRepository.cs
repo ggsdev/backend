@@ -13,6 +13,11 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
             _context = context;
         }
 
+        public async Task<Field?> GetByCod(string? cod)
+        {
+            return await _context.Fields
+              .FirstOrDefaultAsync(x => x.CodField == cod);
+        }
         public async Task<Field?> GetByIdAsync(Guid? id)
         {
             return await _context.Fields

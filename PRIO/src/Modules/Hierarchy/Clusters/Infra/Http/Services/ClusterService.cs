@@ -31,7 +31,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
         {
             var cluster = await _clusterRepository.GetByCod(body.CodCluster);
             if (cluster is not null)
-                throw new ConflictException("Cluster com esse código já existe, tente outro");
+                throw new ConflictException(ErrorMessages.CodAlreadyExists<Cluster>());
 
             var clusterId = Guid.NewGuid();
             cluster = new Cluster

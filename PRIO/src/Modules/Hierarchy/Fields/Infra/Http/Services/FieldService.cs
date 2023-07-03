@@ -32,6 +32,10 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
 
         public async Task<CreateUpdateFieldDTO> CreateField(CreateFieldViewModel body, User user)
         {
+            var fieldExistingCode = await _fieldRepository.GetByCod(body.CodField);
+            if (fieldExistingCode is not null)
+                throw new ConflictException(ErrorMessages.CodAlreadyExists<Field>());
+
             var installationInDatabase = await _installationRepository
                 .GetByIdAsync(body.InstallationId) ?? throw new NotFoundException(ErrorMessages.NotFound<Installation>());
 

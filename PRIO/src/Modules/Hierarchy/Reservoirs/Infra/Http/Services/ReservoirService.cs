@@ -33,6 +33,10 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
 
         public async Task<CreateUpdateReservoirDTO> CreateReservoir(CreateReservoirViewModel body, User user)
         {
+            var reservoirExistingCode = await _reservoirRepository.GetByCode(body.CodReservoir);
+            if (reservoirExistingCode is not null)
+                throw new ConflictException(ErrorMessages.CodAlreadyExists<Reservoir>());
+
             var zoneInDatabase = await _zoneRepository.GetOnlyZone(body.ZoneId);
 
             if (zoneInDatabase is null)
