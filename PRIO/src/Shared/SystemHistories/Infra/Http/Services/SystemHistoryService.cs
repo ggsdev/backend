@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
+using PRIO.src.Shared.SystemHistories.Dtos;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
 using PRIO.src.Shared.SystemHistories.Interfaces;
 using PRIO.src.Shared.Utils;
@@ -10,11 +12,13 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
     {
         private readonly IMapper _mapper;
         private readonly ISystemHistoryRepository _systemHistoryRepository;
+        private readonly UserService _userService;
 
-        public SystemHistoryService(IMapper mapper, ISystemHistoryRepository systemHistoryRepository)
+        public SystemHistoryService(IMapper mapper, ISystemHistoryRepository systemHistoryRepository, UserService userService)
         {
             _mapper = mapper;
             _systemHistoryRepository = systemHistoryRepository;
+            _userService = userService;
         }
         public async Task Create<T, U>(string tableName, User user, Guid tableItemId, T objectCreated) where T : class where U : class
         {
@@ -42,8 +46,25 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
         }
 
 
+        public async Task<List<ImportHistoryDTO>> GetImports()
+        {
+            var data = await _systemHistoryRepository.GetImports();
+            var historiesDTO = new List<ImportHistoryDTO>();
+
+            foreach (var history in data)
+                historiesDTO.Add(new ImportHistoryDTO
+                {
+                    CreatedAt = history.CreatedAt,
+                    CreatedBy = history.CreatedBy,
+                    Id = history.Id,
+                    FileName = history.FieldsChanged
+                });
+
+            return historiesDTO;
+        }
+
         public async Task Update<T, U>(string tableName, User user, Dictionary<string, object> updatedProperties, Guid tableItemId, T objectUpdated, U objectBeforeChanges)
-        where T : class where U : class
+    where T : class where U : class
         {
             var firstHistory = await _systemHistoryRepository.GetFirst(tableItemId);
 
@@ -128,9 +149,8 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
         }
 
 
-        public async Task Import<T, U>(string tableName, User user, Guid tableItemId, T objectCreated) where T : class where U : class
+        public async Task Import<T, U>(string tableName, User user, string fileName, Guid tableItemId, T objectCreated) where T : class where U : class
         {
-
             dynamic currentData = _mapper.Map<T, U>(objectCreated);
             var dateCurrent = DateTime.UtcNow;
 
@@ -144,18 +164,20 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
                 CreatedBy = user?.Id,
                 TableItemId = tableItemId,
                 CurrentData = currentData,
+                FieldsChanged = fileName
+
             };
 
             await _systemHistoryRepository.AddAsync(history);
         }
 
-        public async Task ImportUpdate<T, U>(string tableName, User user, Dictionary<string, object> updatedProperties, Guid tableItemId, T objectUpdated, U objectBeforeChanges)
+        public async Task ImportUpdate<T, U>(string tableName, User user, string fileName, Dictionary<string, object> updatedProperties, Guid tableItemId, T objectUpdated, U objectBeforeChanges)
         where T : class where U : class
         {
             var firstHistory = await _systemHistoryRepository.GetFirst(tableItemId);
 
             var changedFields = UpdateFields.DictionaryToObject(updatedProperties);
-
+            changedFields.fileName = fileName;
             dynamic currentData = _mapper.Map<T, U>(objectUpdated);
 
             var dateCurrent = DateTime.UtcNow;
@@ -173,11 +195,11 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
                 FieldsChanged = changedFields,
                 CurrentData = currentData,
                 PreviousData = objectBeforeChanges,
+
             };
 
             await _systemHistoryRepository.AddAsync(history);
 
         }
-
     }
 }
