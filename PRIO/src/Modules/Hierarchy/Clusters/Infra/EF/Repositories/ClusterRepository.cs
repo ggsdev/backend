@@ -22,6 +22,11 @@ public class ClusterRepository : IClusterRepository
         return await _context.Clusters.FirstOrDefaultAsync(c => c.Id == id);
     }
 
+    public async Task<Cluster?> GetByCod(string? cod)
+    {
+        return await _context.Clusters.FirstOrDefaultAsync(c => c.CodCluster == cod);
+    }
+
     public async Task<Cluster?> GetClusterWithInstallationsAsync(Guid? id)
     {
         return await _context.Clusters
