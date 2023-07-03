@@ -75,10 +75,12 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
 
         public async Task<ClusterDTO> UpdateCluster(Guid id, UpdateClusterViewModel body, User user)
         {
-            var cluster = await _clusterRepository.GetClusterByIdAsync(id);
+            var cluster = await _clusterRepository.GetClusterWithInstallationsAsync(id);
 
             if (cluster is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Cluster>());
+            //if (cluster.Installations.Count < 0)
+            //Console.WriteLine(cluster.Installations.Count);
 
             var beforeChangesCluster = _mapper.Map<ClusterHistoryDTO>(cluster);
 

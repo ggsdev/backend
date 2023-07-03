@@ -18,6 +18,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Dtos
         public string? TypePoint { get; set; }
         public string? ChannelNumber { get; set; }
         public bool? InOperation { get; set; }
+        public bool? IsActive { get; set; }
         public string? Fluid { get; set; }
         public string? Description { get; set; }
         public DateTime CreatedAt { get; set; }
