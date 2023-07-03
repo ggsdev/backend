@@ -51,20 +51,36 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
             var data = await _systemHistoryRepository.GetImports();
             var historiesDTO = new List<ImportHistoryDTO>();
 
-            foreach (var history in data)
-                historiesDTO.Add(new ImportHistoryDTO
+            for (int i = 0; i < data.Count; i++)
+            {
+                bool foundMatch = false;
+
+                foreach (var history in historiesDTO)
                 {
-                    CreatedAt = history.CreatedAt,
-                    CreatedBy = history.CreatedBy,
-                    Id = history.Id,
-                    FileName = history.FieldsChanged
-                });
+                    if (history.FileName?.ToString() == data[i].FieldsChanged?.ToString())
+                    {
+                        foundMatch = true;
+                        break;
+                    }
+                }
+
+                if (!foundMatch)
+                {
+                    historiesDTO.Add(new ImportHistoryDTO
+                    {
+                        CreatedAt = data[i].CreatedAt,
+                        CreatedBy = data[i].CreatedBy,
+                        FileName = data[i].FieldsChanged
+                    });
+
+                }
+            }
 
             return historiesDTO;
         }
 
         public async Task Update<T, U>(string tableName, User user, Dictionary<string, object> updatedProperties, Guid tableItemId, T objectUpdated, U objectBeforeChanges)
-    where T : class where U : class
+        where T : class where U : class
         {
             var firstHistory = await _systemHistoryRepository.GetFirst(tableItemId);
 

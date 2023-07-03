@@ -162,7 +162,8 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<Completion, CompletionWithWellAndReservoirDTO>();
 
 
-            CreateMap<SystemHistory, ImportHistoryDTO>();
+            CreateMap<SystemHistory, ImportHistoryDTO>()
+            .ForMember(dest => dest.FileName, opt => opt.MapFrom(src => src.FieldsChanged));
             #endregion
 
             #region Measuring
