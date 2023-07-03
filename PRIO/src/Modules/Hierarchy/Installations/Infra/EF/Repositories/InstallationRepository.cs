@@ -21,6 +21,12 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
+        public async Task<Installation?> GetByCod(string? cod)
+        {
+            return await _context.Installations
+              .FirstOrDefaultAsync(x => x.CodInstallationAnp == cod);
+        }
+
         public async Task<Installation?> GetByIdWithFieldsMeasuringPointsAsync(Guid? id)
         {
             return await _context.Installations

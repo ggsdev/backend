@@ -33,6 +33,10 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
 
         public async Task<CreateUpdateWellDTO> CreateWell(CreateWellViewModel body, User user)
         {
+            var wellExistingCode = await _wellRepository.GetByCode(body.CodWellAnp);
+            if (wellExistingCode is not null)
+                throw new ConflictException(ErrorMessages.CodAlreadyExists<Well>());
+
             var field = await _fieldRepository.GetOnlyField(body.FieldId);
 
             if (field is null)

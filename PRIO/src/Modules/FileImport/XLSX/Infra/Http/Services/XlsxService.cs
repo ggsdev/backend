@@ -123,18 +123,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                 var columnWellCoordY = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCoordYColumnName]].Value?.ToString()?.Trim();
                 #endregion
 
-                //if (errorColumns.Any() is true)
-                //{
-                //    string errorMessage = $"Alguma(s) colunas possuem erro: ";
-
-                //    for (int i = 0; i < errorColumns.Count - 1; i++)
-                //        errorMessage += $"{errorColumns[i]}, ";
-
-                //    errorMessage += errorColumns[errorColumns.Count - 1];
-
-                //    throw new BadRequestException(errorMessage);
-                //}
-
                 if (!string.IsNullOrWhiteSpace(columnCluster) && !entityDictionary.TryGetValue(columnCluster.ToLower(), out var cluster))
                 {
                     cluster = await _context.Clusters.FirstOrDefaultAsync(x => x.Name.ToLower() == columnCluster.ToLower());

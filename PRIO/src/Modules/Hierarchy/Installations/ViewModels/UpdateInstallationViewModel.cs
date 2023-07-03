@@ -15,6 +15,5 @@ namespace PRIO.src.Modules.Hierarchy.Installations.ViewModels
         public string? CodInstallationAnp { get; set; }
         public double? GasSafetyBurnVolume { get; set; }
         public string? Description { get; set; }
-        public bool? IsActive { get; set; }
     }
 }
