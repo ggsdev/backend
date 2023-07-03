@@ -2,8 +2,8 @@
 {
     public class CreateMeasuringPointViewModel
     {
-        public string? TagMeasuringPoint { get; set; }
-        public string? MeasuringPointName { get; set; }
+        public string? TagPointMeasuring { get; set; }
+        public string? Name { get; set; }
         public Guid InstallationId { get; set; }
     }
 }

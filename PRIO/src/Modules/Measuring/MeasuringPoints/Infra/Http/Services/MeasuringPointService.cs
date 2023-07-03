@@ -35,11 +35,11 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Services
         {
             var installationInDatabase = await _installationRepository.GetByIdAsync(body.InstallationId) ?? throw new NotFoundException(ErrorMessages.NotFound<Installation>());
 
-            var measuringPointByTagInDatabase = await _measuringPointRepository.GetByTagMeasuringPoint(body.TagMeasuringPoint);
+            var measuringPointByTagInDatabase = await _measuringPointRepository.GetByTagMeasuringPoint(body.TagPointMeasuring);
             if (measuringPointByTagInDatabase != null)
                 throw new ConflictException("Tag do ponto de medição já cadastrado.");
 
-            var measuringPointByNameInDatabase = await _measuringPointRepository.GetByMeasuringPointNameWithInstallation(body.MeasuringPointName, body.InstallationId);
+            var measuringPointByNameInDatabase = await _measuringPointRepository.GetByMeasuringPointNameWithInstallation(body.Name, body.InstallationId);
             if (measuringPointByNameInDatabase != null)
                 throw new ConflictException("Nome do ponto de medição já cadastrado na instalação.");
 
@@ -47,8 +47,8 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Services
             var measuringPoint = new MeasuringPoint
             {
                 Id = measuringPointId,
-                Name = body.MeasuringPointName,
-                TagPointMeasuring = body.TagMeasuringPoint,
+                Name = body.Name,
+                TagPointMeasuring = body.TagPointMeasuring,
                 Installation = installationInDatabase
             };
             await _measuringPointRepository.AddAsync(measuringPoint);
