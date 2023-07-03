@@ -83,7 +83,6 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Services
             if (measuringPoint == null)
                 throw new NotFoundException("Ponto de medição não encontrado.");
 
-
             var measuringPointByTagInDatabase = await _measuringPointRepository.GetByTagMeasuringPointUpdate(body.TagPointMeasuring, measuringPoint.Installation.Id, measuringPoint.Id);
             if (measuringPointByTagInDatabase != null)
                 throw new ConflictException("Tag do ponto de medição já cadastrado.");
