@@ -16,6 +16,7 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Repositories
         public async Task<MeasuringPoint?> GetByIdAsync(Guid? id)
         {
             return await _context.MeasuringPoints
+                .Include(p => p.Installation)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
         public async Task<MeasuringPoint?> GetByTagMeasuringPoint(string? tagMeasuringPoint)
@@ -49,7 +50,7 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Repositories
         }
         public async Task<List<MeasuringPoint>> ListAllAsync()
         {
-            var measuringPoints = await _context.MeasuringPoints.ToListAsync();
+            var measuringPoints = await _context.MeasuringPoints.Include(x => x.Installation).ToListAsync();
             return measuringPoints;
 
         }

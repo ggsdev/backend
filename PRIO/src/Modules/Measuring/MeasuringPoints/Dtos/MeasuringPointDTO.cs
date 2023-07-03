@@ -1,4 +1,6 @@
-﻿namespace PRIO.src.Modules.Measuring.MeasuringPoints.Dtos
+﻿using PRIO.src.Modules.Hierarchy.Installations.Dtos;
+
+namespace PRIO.src.Modules.Measuring.MeasuringPoints.Dtos
 {
     public class MeasuringPointDTO
     {
@@ -8,5 +10,7 @@
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public bool? IsActive { get; set; }
+        public string? Description { get; set; }
+        public InstallationWithoutClusterDTO? Installation { get; set; }
     }
 }
