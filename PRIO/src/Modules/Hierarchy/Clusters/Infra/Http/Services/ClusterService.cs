@@ -81,7 +81,9 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                 throw new NotFoundException(ErrorMessages.NotFound<Cluster>());
 
             if (cluster.Installations.Count > 0)
-                body.CodCluster = cluster.CodCluster;
+                if (body.CodCluster is not null)
+                    if (body.CodCluster != cluster.CodCluster)
+                        throw new ConflictException("Código do Cluster não pode ser alterado.");
 
             var beforeChangesCluster = _mapper.Map<ClusterHistoryDTO>(cluster);
 
