@@ -46,9 +46,9 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
             using var stream = new MemoryStream(Convert.FromBase64String(contentBase64!));
             using ExcelPackage package = new(stream);
             envVars.TryGetValue("INSTANCE", out var getInstanceName);
-            envVars.TryGetValue("INSTALLATION", out var getInstallationInstanceName);
+            //envVars.TryGetValue("INSTALLATION", out var getInstallationInstanceName);
             getInstanceName ??= _consolidationInstance;
-            getInstallationInstanceName ??= _consolidationInstance;
+            //getInstallationInstanceName ??= _consolidationInstance;
 
             var workbook = package.Workbook;
             var worksheetTab = workbook.Worksheets
@@ -64,7 +64,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
             var columnPositions = XlsUtils.GetColumnPositions(worksheetTab);
 
             var errors = XlsUtils.ValidateColumns(worksheetTab);
-
+            Console.WriteLine(errors.Count);
             if (errors.Any())
             {
                 var error = new XlsErrorImportDTO
