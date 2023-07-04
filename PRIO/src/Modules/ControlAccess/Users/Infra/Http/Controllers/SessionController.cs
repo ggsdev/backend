@@ -38,9 +38,11 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
         {
             var envVars = DotEnv.Read();
             var secretKey = envVars["SECRET_KEY"];
+            if ((Decrypt.TryParseBase64String(body.Email, out byte[]? encriptedBytes) && Decrypt.TryParseBase64String(body.Password, out byte[]? encryptedBytes2)) is false)
+                return BadRequest(new ErrorResponseDTO { Message = "Email and password not encrypted." });
 
             var email = Decrypt
-                .DecryptAes(body.Email, secretKey);
+              .DecryptAes(body.Email, secretKey);
 
             var password = Decrypt
                 .DecryptAes(body.Password, secretKey);
@@ -94,19 +96,19 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
         public async Task<IActionResult> LoginAD([FromBody] LoginAdViewModel body)
         {
             var envVars = DotEnv.Read();
-            var secretKey = envVars["SECRET_KEY"];
+            //var secretKey = envVars["SECRET_KEY"];
 
             //var decryptedCredentials = Decrypt
             //    .DecryptAes(body.Username, body.Password, secretKey);
 
-            var credentialsValid = ActiveDirectory
-                .VerifyCredentialsWithActiveDirectory(body.Username, body.Password);
+            //var credentialsValid = ActiveDirectory
+            //    .VerifyCredentialsWithActiveDirectory(body.Username, body.Password);
 
-            if (credentialsValid is false)
-                return Unauthorized(new ErrorResponseDTO
-                {
-                    Message = "Username or password invalid"
-                });
+            //if (credentialsValid is false)
+            //    return Unauthorized(new ErrorResponseDTO
+            //    {
+            //        Message = "Username or password invalid"
+            //    });
 
             var user = await _context
                 .Users
