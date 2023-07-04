@@ -2,6 +2,7 @@
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
 using PRIO.src.Shared.SystemHistories.Interfaces;
+using PRIO.src.Shared.Utils;
 
 namespace PRIO.src.Shared.SystemHistories.Infra.EF.Repositories
 {
@@ -46,7 +47,7 @@ namespace PRIO.src.Shared.SystemHistories.Infra.EF.Repositories
         public async Task<List<SystemHistory>> GetImports()
         {
             return await _context.SystemHistories
-                .Where(x => (x.TypeOperation == "IMPORT" || x.TypeOperation == "IMPORTUPDATE"))
+                .Where(x => (x.TypeOperation == HistoryColumns.Import || x.TypeOperation == HistoryColumns.ImportUpdate))
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
         }
