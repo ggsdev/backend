@@ -39,17 +39,19 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
             var envVars = DotEnv.Read();
             var secretKey = envVars["SECRET_KEY"];
 
-            var decryptedCredentials = Decrypt
-                .DecryptAes(body.Email, body.Password, secretKey);
+            var email = Decrypt
+                .DecryptAes(body.Email, secretKey);
+
+            var password = Decrypt
+                .DecryptAes(body.Password, secretKey);
 
             //var credentialsValid = ActiveDirectory
             //    .VerifyCredentialsWithActiveDirectory(body.Email, body.Password);
 
-
             var user = await _context
                 .Users
                 .Include(u => u.Session)
-                .FirstOrDefaultAsync(x => x.Email == decryptedCredentials.Email && x.IsActive);
+                .FirstOrDefaultAsync(x => x.Email == email && x.IsActive);
 
             if (user is null)
             {
@@ -61,7 +63,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
                 return Unauthorized(errorResponse);
             }
 
-            var passwordMatch = BCrypt.Net.BCrypt.Verify(decryptedCredentials.Password, user.Password);
+            var passwordMatch = BCrypt.Net.BCrypt.Verify(password, user.Password);
             if (!passwordMatch)
             {
                 var errorResponse = new ErrorResponseDTO
