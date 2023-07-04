@@ -113,6 +113,13 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             if (completion is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Completion>());
 
+            if (body.CodCompletion is not null)
+            {
+                var fieldInDatabase = await _completionRepository.GetByCode(body.CodCompletion);
+                if (fieldInDatabase is not null)
+                    throw new ConflictException(ErrorMessages.CodAlreadyExists<Completion>());
+            }
+
             var well = await _wellRepository.GetWithFieldAsync(body.WellId);
 
             var reservoir = await _reservoirRepository.GetWithZoneFieldAsync(body.ReservoirId);

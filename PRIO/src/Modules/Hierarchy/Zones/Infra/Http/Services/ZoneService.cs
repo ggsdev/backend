@@ -98,6 +98,13 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
                     if (body.CodZone != zone.CodZone)
                         throw new ConflictException("Código da zona não pode ser alterado.");
 
+            if (body.CodZone is not null)
+            {
+                var zoneInDatabase = await _zoneRepository.GetByCode(body.CodZone);
+                if (zoneInDatabase is not null)
+                    throw new ConflictException(ErrorMessages.CodAlreadyExists<Zone>());
+            }
+
             var beforeChangesZone = _mapper.Map<ZoneHistoryDTO>(zone);
 
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(zone, body);

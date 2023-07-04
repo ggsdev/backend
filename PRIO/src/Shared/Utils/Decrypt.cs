@@ -53,6 +53,20 @@ namespace PRIO.src.Shared.Utils
             hashList.CopyTo(32, iv, 0, 16);
         }
 
+        public static bool TryParseBase64String(string base64String, out byte[]? bytes)
+        {
+            try
+            {
+                bytes = Convert.FromBase64String(base64String);
+                return true;
+            }
+            catch (FormatException)
+            {
+                bytes = null;
+                return false;
+            }
+        }
+
         public static string DecryptAes(string encryptedString, string passphrase)
         {
 
