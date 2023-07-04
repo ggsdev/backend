@@ -2,7 +2,6 @@
 {
     public class WellUpdateImportViewModel
     {
-        public string? Name { get; set; }
         public string? WellOperatorName { get; set; }
         public string? CategoryAnp { get; set; }
         public string? CategoryReclassificationAnp { get; set; }

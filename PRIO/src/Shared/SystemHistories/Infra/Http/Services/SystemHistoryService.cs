@@ -50,7 +50,7 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
         {
             var data = await _systemHistoryRepository.GetImports();
             var historiesDTO = new List<ImportHistoryDTO>();
-
+            Console.WriteLine(data[data.Count - 1].FieldsChanged);
             for (int i = 0; i < data.Count; i++)
             {
                 bool foundMatch = false;
@@ -58,7 +58,7 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
                 dynamic fieldsChanged = data[i].FieldsChanged;
                 foreach (var history in historiesDTO)
                 {
-                    if (history.FileName?.ToString() == fieldsChanged.fileName?.ToString())
+                    if (history.FileName?.ToString().ToLower() == fieldsChanged.fileName?.ToString()?.ToLower())
                     {
                         foundMatch = true;
                         break;
@@ -201,11 +201,8 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
 
             var changedFields = UpdateFields.DictionaryToObject(updatedProperties);
             dynamic currentData = _mapper.Map<T, U>(objectUpdated);
-            var obj = new
-            {
-                fileName = fileName
-            };
-            changedFields.fileName = obj;
+
+            changedFields.fileName = fileName;
             var dateCurrent = DateTime.UtcNow;
 
             currentData.createdAt = dateCurrent;
