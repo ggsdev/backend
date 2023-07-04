@@ -50,7 +50,6 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
         {
             var data = await _systemHistoryRepository.GetImports();
             var historiesDTO = new List<ImportHistoryDTO>();
-            Console.WriteLine(data[data.Count - 1].FieldsChanged);
             for (int i = 0; i < data.Count; i++)
             {
                 bool foundMatch = false;
