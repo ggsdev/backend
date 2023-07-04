@@ -10,6 +10,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Interfaces
         void Restore(MeasuringEquipment equipment);
         Task<MeasuringEquipment?> GetByIdAsync(Guid? id);
         Task<MeasuringEquipment?> GetByTypeWithMeasuringPointAsync(Guid? id, string type);
+        Task<MeasuringEquipment?> GetExistingEquipment(string? serieNumber, string? tagEquipment);
         Task<MeasuringEquipment?> GetByTagsSerialChannel(string? tagPoint, string? tagEquipment, string? serial, string channel);
         Task<List<MeasuringEquipment>> GetAsync();
         Task<MeasuringEquipment?> GetWithInstallationAsync(Guid? id);

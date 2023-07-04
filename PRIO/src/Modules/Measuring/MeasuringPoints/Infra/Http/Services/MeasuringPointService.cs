@@ -50,8 +50,10 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Services
                 Name = body.Name,
                 TagPointMeasuring = body.TagPointMeasuring,
                 Description = body.Description is not null ? body.Description : null,
+                IsActive = body.IsActive is not null ? body.IsActive.Value : true,
                 Installation = installationInDatabase
             };
+
             await _measuringPointRepository.AddAsync(measuringPoint);
 
             await _systemHistoryService
