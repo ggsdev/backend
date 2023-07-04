@@ -46,7 +46,9 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
             using var stream = new MemoryStream(Convert.FromBase64String(contentBase64!));
             using ExcelPackage package = new(stream);
             envVars.TryGetValue("INSTANCE", out var getInstanceName);
+            envVars.TryGetValue("INSTALLATION", out var getInstallationInstanceName);
             getInstanceName ??= _consolidationInstance;
+            getInstallationInstanceName ??= _consolidationInstance;
 
             var workbook = package.Workbook;
             var worksheetTab = workbook.Worksheets
@@ -81,6 +83,9 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                     continue;
 
                 var columnInstallation = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationColumnName]].Value?.ToString()?.Trim();
+                //if (!(columnInstallation?.ToLower() == getInstallationInstanceName || getInstallationInstanceName.ToLower() == _consolidationInstance))
+                //    continue;
+
                 var columnInstallationCod = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationCodColumnName]].Value?.ToString()?.Trim();
                 var columnInstallationCodUep = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationCodUepColumnName]].Value?.ToString()?.Trim();
                 var columnInstallationNameUep = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationNameUepColumnName]].Value?.ToString()?.Trim();
