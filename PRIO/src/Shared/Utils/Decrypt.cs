@@ -81,13 +81,13 @@ namespace PRIO.src.Shared.Utils
         //    return srDecrypt.ReadToEnd();
         //}
 
-        public static DecryptedCredentials DecryptAes(string encryptedUsername, string encryptedPassword, string passphrase)
+        public static DecryptedCredentials DecryptAes(string encryptedEmail, string encryptedPassword, string passphrase)
         {
-            var base64UsernameBytes = Convert.FromBase64String(encryptedUsername);
+            var base64EmailBytes = Convert.FromBase64String(encryptedEmail);
             var base64PasswordBytes = Convert.FromBase64String(encryptedPassword);
 
-            var saltBytes = base64UsernameBytes[8..16];
-            var usernameCipherTextBytes = base64UsernameBytes[16..];
+            var saltBytes = base64EmailBytes[8..16];
+            var emailCipherTextBytes = base64EmailBytes[16..];
             var passwordCipherTextBytes = base64PasswordBytes[16..];
 
             var passphraseBytes = Encoding.UTF8.GetBytes(passphrase);
@@ -102,21 +102,21 @@ namespace PRIO.src.Shared.Utils
             aes.Padding = PaddingMode.PKCS7;
             aes.Mode = CipherMode.CBC;
 
-            var usernameDecryptor = aes.CreateDecryptor(keyBytes, ivBytes);
+            var emailDecryptor = aes.CreateDecryptor(keyBytes, ivBytes);
             var passwordDecryptor = aes.CreateDecryptor(keyBytes, ivBytes);
 
-            using var msUsernameDecrypt = new MemoryStream(usernameCipherTextBytes);
+            using var msEmailDecrypt = new MemoryStream(emailCipherTextBytes);
             using var msPasswordDecrypt = new MemoryStream(passwordCipherTextBytes);
 
-            using var csUsernameDecrypt = new CryptoStream(msUsernameDecrypt, usernameDecryptor, CryptoStreamMode.Read);
+            using var csEmailDecrypt = new CryptoStream(msEmailDecrypt, emailDecryptor, CryptoStreamMode.Read);
             using var csPasswordDecrypt = new CryptoStream(msPasswordDecrypt, passwordDecryptor, CryptoStreamMode.Read);
 
-            using var srUsernameDecrypt = new StreamReader(csUsernameDecrypt);
+            using var srEmailDecrypt = new StreamReader(csEmailDecrypt);
             using var srPasswordDecrypt = new StreamReader(csPasswordDecrypt);
 
             var decryptedCredentials = new DecryptedCredentials
             {
-                Username = srUsernameDecrypt.ReadToEnd(),
+                Email = srEmailDecrypt.ReadToEnd(),
                 Password = srPasswordDecrypt.ReadToEnd()
             };
 
@@ -180,7 +180,7 @@ namespace PRIO.src.Shared.Utils
 
         public class DecryptedCredentials
         {
-            public string Username { get; set; }
+            public string Email { get; set; }
             public string Password { get; set; }
         }
     }
