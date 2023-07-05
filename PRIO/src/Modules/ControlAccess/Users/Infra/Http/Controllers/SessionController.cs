@@ -42,13 +42,13 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
                 return BadRequest(new ErrorResponseDTO { Message = "Email and password not encrypted." });
 
             var email = Decrypt
-              .DecryptAes(body.Email, secretKey);
+                .DecryptAes(body.Email, secretKey);
 
             var password = Decrypt
-                .DecryptAes(body.Password, secretKey);
+              .DecryptAes(body.Password, secretKey);
 
-            //var credentialsValid = ActiveDirectory
-            //    .VerifyCredentialsWithActiveDirectory(body.Email, body.Password);
+            var credentialsValid = ActiveDirectory
+                .VerifyCredentialsWithActiveDirectory(body.Email, body.Password);
 
             var user = await _context
                 .Users
