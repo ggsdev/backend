@@ -64,7 +64,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
             var columnPositions = XlsUtils.GetColumnPositions(worksheetTab);
 
             var errors = XlsUtils.ValidateColumns(worksheetTab);
-            Console.WriteLine(errors.Count);
             if (errors.Any())
             {
                 var error = new XlsErrorImportDTO

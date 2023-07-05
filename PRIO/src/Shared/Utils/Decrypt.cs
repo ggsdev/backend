@@ -203,11 +203,6 @@ namespace PRIO.src.Shared.Utils
     //    using var srEmailDecrypt = new StreamReader(csEmailDecrypt);
     //    using var srPasswordDecrypt = new StreamReader(csPasswordDecrypt);
 
-    //    Console.WriteLine("oi");
-    //    Console.WriteLine(srEmailDecrypt.ReadToEnd());
-    //    Console.WriteLine(srPasswordDecrypt.ReadToEnd());
-    //    Console.WriteLine("oi");
-
     //    var decryptedCredentials = new DecryptedCredentials
     //    {
     //        Email = srEmailDecrypt.ReadToEnd(),
