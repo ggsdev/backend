@@ -8,7 +8,6 @@ using PRIO.src.Modules.ControlAccess.Users.ViewModels;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.Infra.Http.Services;
-using PRIO.src.Shared.SystemHistories.Dtos.UserDtos;
 using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
 using PRIO.src.Shared.Utils;
 
@@ -77,8 +76,9 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
 
                 await _context.Users.AddAsync(createUser);
 
-                await _systemHistoryService
-                    .Create<User, UserHistoryDTO>(HistoryColumns.TableUsers, createUser, userId, createUser);
+                //await _systemHistoryService
+                //    .Create<User, UserHistoryDTO>(HistoryColumns.TableUsers, createUser, userId, createUser);
+
                 await _context.SaveChangesAsync();
 
                 token = await _tokenServices.CreateSessionAndToken(createUser, userHttpAgent);
