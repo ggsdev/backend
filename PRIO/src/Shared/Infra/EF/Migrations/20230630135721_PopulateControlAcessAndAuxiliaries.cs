@@ -126,7 +126,8 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
             var usersData = new List<object[]>
             {
-                    new object[] {"pmonteiro", "pmonteiro@prio3.com.br", null, "pmonteiro", Guid.NewGuid()},
+                    new object[] {"Prinna", "pmonteiro@prio3.com.br", null, "pmonteiro", Guid.NewGuid()},
+                    new object[] {"Nandão", "falberdi.globalhitts@prio3.com.br", null, "falberdi.globalhitts", Guid.NewGuid()},
             };
 
             foreach (var user in usersData)
