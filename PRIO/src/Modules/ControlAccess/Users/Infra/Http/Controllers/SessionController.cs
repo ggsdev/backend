@@ -8,7 +8,6 @@ using PRIO.src.Modules.ControlAccess.Users.ViewModels;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.Infra.Http.Services;
-using PRIO.src.Shared.SystemHistories.Dtos.UserDtos;
 using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
 using PRIO.src.Shared.Utils;
 
@@ -49,8 +48,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
               .DecryptAes(body.Password, secretKey);
 
             var credentialsValid = ActiveDirectory
-                .VerifyCredentialsWithActiveDirectory(body.Username, body.Password);
-
+                .VerifyCredentialsWithActiveDirectory(username, password);
 
             if (credentialsValid is false)
                 return Unauthorized(new ErrorResponseDTO
@@ -117,7 +115,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
             var user = await _context
                 .Users
                 .Include(u => u.Session)
-                .FirstOrDefaultAsync(x => x.Username == body.Username);
+                .FirstOrDefaultAsync(x => x.Username == usernameDecrypted);
 
             string token;
             var userHttpAgent = Request.Headers["User-Agent"].ToString();
@@ -128,13 +126,14 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
                 var createUser = new User
                 {
                     Id = userId,
-                    Username = body.Username,
+                    Username = usernameDecrypted,
+
                 };
 
                 await _context.Users.AddAsync(createUser);
 
-                await _systemHistoryService
-                    .Create<User, UserHistoryDTO>(HistoryColumns.TableUsers, createUser, userId, createUser);
+                //await _systemHistoryService
+                //    .Create<User, UserHistoryDTO>(HistoryColumns.TableUsers, createUser, userId, createUser);
 
                 await _context.SaveChangesAsync();
 
@@ -155,4 +154,3 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
     }
 }
 #endregion
-//}
