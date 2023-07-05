@@ -3,6 +3,7 @@ using dotenv.net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Interfaces;
@@ -59,6 +60,21 @@ ConfigureServices(builder.Services, configuration);
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    try
+    {
+        var context = services.GetRequiredService<DataContext>();
+        context.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        Console.Write(ex.ToString());
+    }
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -109,7 +125,8 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddSingleton(mapper);
     services.AddScoped<ErrorMessages>();
     services.AddEndpointsApiExplorer();
-    services.AddDbContext<DataContext>();
+    services.AddDbContext<DataContext>(options =>
+              options.UseSqlServer(configuration.GetConnectionString("dbConnection")));
     services.AddScoped<AuthorizationFilter>();
 
     services.AddScoped<TokenServices>();
@@ -167,6 +184,8 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     #endregion
 
     services.AddScoped<XLSXService>();
+
+
 
     var jwtKey = envVars["SECRET_KEY"];
     var key = Encoding.ASCII.GetBytes(jwtKey);

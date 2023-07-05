@@ -36,9 +36,14 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
         [FromBody] LoginViewModel body)
         {
             var envVars = DotEnv.Read();
+
+            //Console.WriteLine("1434 " + " " + Decrypt.EncryptAes("1434", envVars["SECRET_KEY"]));
+
+
             var secretKey = envVars["SECRET_KEY"];
             if ((Decrypt.TryParseBase64String(body.Email, out byte[]? encriptedBytes) && Decrypt.TryParseBase64String(body.Password, out byte[]? encryptedBytes2)) is false)
                 return BadRequest(new ErrorResponseDTO { Message = "Email and password not encrypted." });
+
 
             var email = Decrypt
                 .DecryptAes(body.Email, secretKey);
