@@ -185,8 +185,6 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
 
     services.AddScoped<XLSXService>();
 
-
-
     var jwtKey = envVars["SECRET_KEY"];
     var key = Encoding.ASCII.GetBytes(jwtKey);
 
