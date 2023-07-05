@@ -137,24 +137,21 @@ namespace PRIO.src.Shared.Utils
 
             for (int column = 1; column <= worksheet.Dimension.Columns; column++)
             {
-                var currentValue = worksheet.Cells[1, column].Value?.ToString();
-                if (currentValue is not null)
+                var currentValue = worksheet.Cells[1, column].Value?.ToString()?.ToUpper();
+                bool isValidColumn = false;
+                foreach (var expectedValue in expectedColumns)
                 {
-                    bool isValidColumn = false;
-                    foreach (var expectedValue in expectedColumns)
+                    if (currentValue?.ToUpper() == expectedValue.ToUpper())
                     {
-                        if (currentValue.ToUpper() == expectedValue)
-                        {
-                            isValidColumn = true;
-                            break;
-                        }
+                        isValidColumn = true;
+                        break;
                     }
+                }
 
-                    if (!isValidColumn)
-                    {
-                        var expectedValue = expectedColumns[column - 1];
-                        errorMessages.Add($"Valor inválido para coluna: '{currentValue}' na {column}ª posição, deveria ser: '{expectedValue}'");
-                    }
+                if (!isValidColumn)
+                {
+                    var expectedValue = expectedColumns[column - 1];
+                    errorMessages.Add($"Valor inválido para coluna: na {column}ª posição, deveria ser: '{expectedValue}'");
                 }
             }
 
