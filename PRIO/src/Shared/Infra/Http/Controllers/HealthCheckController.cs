@@ -27,7 +27,7 @@ namespace PRIO.src.Shared.Infra.Http.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Problem when connecting to database: " + ex.Message });
             }
         }
     }
