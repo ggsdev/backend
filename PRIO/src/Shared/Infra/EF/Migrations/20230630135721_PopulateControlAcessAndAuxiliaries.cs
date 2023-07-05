@@ -123,6 +123,36 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
              columns: new[] { "Name", "Email", "Password", "Username", "IsActive", "Id", "CreatedAt", "UpdatedAt", "GroupId", "Type", "IsPermissionDefault" },
              values: new object[] { nameUser, emailUser, BCrypt.Net.BCrypt.HashPassword(passwordUser), usernameUser, true, idUser, DateTime.UtcNow, DateTime.UtcNow, idGroup, nameGroup, true });
 
+
+            var usersData = new List<object[]>
+            {
+                    new object[] {"pmonteiro", "pmonteiro@prio3.com.br", null, "pmonteiro", Guid.NewGuid()},
+            };
+
+            foreach (var user in usersData)
+            {
+                var nameUserNotMaster = user[0];
+                var emailUserNotMaster = user[1];
+                var passwordUserNotMaster = user[2];
+                var usernameUserNotMaster = (string)user[3];
+                var idUserNotMaster = (Guid)user[4];
+
+                migrationBuilder.InsertData(
+                    table: "Users",
+                    columns: new[]
+                    {
+                            "Name", "Email", "Password", "Username", "IsActive", "Id", "CreatedAt",
+                            "UpdatedAt", "GroupId", "Type", "IsPermissionDefault"
+                    },
+                    values: new object[]
+                    {
+                            nameUserNotMaster, emailUserNotMaster, passwordUserNotMaster, usernameUserNotMaster,
+                            true, idUserNotMaster, DateTime.UtcNow, DateTime.UtcNow, idGroup, nameGroup, true
+                    });
+            }
+
+
+
             //criação das operacoes
             var idGetOperation = Guid.NewGuid();
             var idPostOperation = Guid.NewGuid();
@@ -223,6 +253,7 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     columns: new[] { "Id", "GroupId", "GroupName", "MenuId", "MenuName", "MenuOrder", "MenuIcon", "MenuRoute", "CreatedAt", "UpdatedAt", "hasParent", "hasChildren", "IsActive" },
                     values: new object[] { idGroupPermission, idGroup, nameGroup, idMenu, nameMenu, orderMenu, iconMenu, routeMenu, DateTime.UtcNow, DateTime.UtcNow, hasParent, hasChildren, true });
 
+                // PERMISSAO PARA MASTER
                 migrationBuilder.InsertData(
                     table: "UserPermissions",
                     columns: new[] { "Id", "UserId", "GroupMenuId", "GroupId", "GroupName", "MenuId", "MenuName", "MenuOrder", "MenuIcon", "MenuRoute", "CreatedAt", "hasParent", "hasChildren" },
@@ -230,6 +261,7 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
                 if (hasChildren == false)
                 {
+                    // OPERACOES PARA MASTER
                     foreach (var operation in operationData)
                     {
                         var methodOperation = (string)operation[0];
@@ -244,8 +276,44 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                             table: "UserOperations",
                             columns: new[] { "Id", "OperationName", "GlobalOperationId", "UserPermissionId", "GroupName" },
                             values: new object[] { Guid.NewGuid(), methodOperation, idOperation, idUserPermission, nameGroup });
+
                     }
                 }
+                // OUTROS USUÁRIOS 
+                foreach (var user in usersData)
+                {
+                    var idUserPermissionNotMaster = Guid.NewGuid();
+
+                    var userIdNotMaster = (Guid)user[4];
+
+                    migrationBuilder.InsertData(
+                            table: "UserPermissions",
+                            columns: new[]
+                            {
+                                "Id", "UserId", "GroupMenuId", "GroupId", "GroupName", "MenuId", "MenuName",
+                                "MenuOrder", "MenuIcon", "MenuRoute", "CreatedAt", "hasParent", "hasChildren"
+                            },
+                            values: new object[]
+                            {
+                                idUserPermissionNotMaster , userIdNotMaster , idGroupPermission, idGroup, nameGroup,
+                                idMenu, nameMenu, orderMenu, iconMenu, routeMenu, DateTime.UtcNow, hasParent, hasChildren
+                            });
+
+                    if (hasChildren == false)
+                    {
+                        foreach (var operation in operationData)
+                        {
+                            var methodOperation = (string)operation[0];
+                            var idOperation = (Guid)operation[1];
+
+                            migrationBuilder.InsertData(
+                                table: "UserOperations",
+                                columns: new[] { "Id", "OperationName", "GlobalOperationId", "UserPermissionId", "GroupName" },
+                                values: new object[] { Guid.NewGuid(), methodOperation, idOperation, idUserPermissionNotMaster, nameGroup });
+                        }
+                    }
+                }
+
             }
         }
         /// <inheritdoc />
