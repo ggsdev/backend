@@ -11,9 +11,9 @@ namespace PRIO.src.Shared.Utils
             try
             {
                 var envVars = DotEnv.Read();
-                var domain = envVars["DOMINIO"];
-                var serverAd = envVars["ACTIVEDIRECTORY"];
-                using var context = new PrincipalContext(ContextType.Domain, serverAd, domain);
+                //var domain = envVars["DOMINIO"];
+                var serverAd = envVars["AD"];
+                using var context = new PrincipalContext(ContextType.Domain, serverAd);
                 return context.ValidateCredentials(email, password);
             }
             catch (Exception ex)
