@@ -46,10 +46,10 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
             if (getInstanceName is null)
                 throw new BadRequestException("Cluster não encontrado na planilha.");
 
-            envVars.TryGetValue("INSTALLATION_INSTANCE", out var getInstallationInstanceName);
+            envVars.TryGetValue("INSTALLATION_INSTANCE", out var getInstallationCode);
 
-            if (getInstallationInstanceName is null)
-                throw new BadRequestException("Instalação não encontrada na planilha.");
+            if (getInstallationCode is null)
+                throw new BadRequestException("Código da instalação não encontrada na planilha.");
 
             var contentBase64 = data.ContentBase64?.Replace("data:@file/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,", "");
             using var stream = new MemoryStream(Convert.FromBase64String(contentBase64!));
@@ -84,14 +84,15 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
             {
                 var columnCluster = worksheetTab.Cells[row, columnPositions[XlsUtils.ClusterColumnName]].Value?.ToString();
 
-                if (columnCluster?.ToUpper() != getInstanceName)
-                    continue;
-
-                var columnInstallation = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationColumnName]].Value?.ToString()?.Trim();
-                if (columnInstallation?.ToUpper() != getInstallationInstanceName)
+                if (columnCluster is not null && columnCluster.ToUpper().Trim().Contains(getInstanceName.ToUpper().Trim()) is false)
                     continue;
 
                 var columnInstallationCod = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationCodColumnName]].Value?.ToString()?.Trim();
+
+                if (columnInstallationCod is not null && columnInstallationCod.ToUpper().Trim().Contains(getInstallationCode.ToUpper().Trim()) is false)
+                    continue;
+
+                var columnInstallation = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationColumnName]].Value?.ToString()?.Trim();
 
                 var columnInstallationCodUep = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationCodUepColumnName]].Value?.ToString()?.Trim();
                 var columnInstallationNameUep = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationNameUepColumnName]].Value?.ToString()?.Trim();
