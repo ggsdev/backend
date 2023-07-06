@@ -15,7 +15,6 @@ using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.Infra.EF.Models;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
-using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
 using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
 using PRIO.src.Shared.Utils;
 using System.Globalization;
@@ -24,7 +23,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
 {
     public class XLSXService
     {
-        private readonly string _consolidationInstance = "consolidador";
         private readonly IMapper _mapper;
         private readonly DataContext _context;
         private readonly SystemHistoryService _systemHistoryService;
@@ -38,16 +36,25 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
 
         public async Task ImportFiles(RequestXslxViewModel data, User user)
         {
+            var envVars = DotEnv.Read();
+
             if (data.FileName.EndsWith(".xlsx") is false)
                 throw new BadRequestException("O arquivo deve ter a extensão .xlsx");
 
-            var envVars = DotEnv.Read();
+            envVars.TryGetValue("INSTANCE", out var getInstanceName);
+
+            if (getInstanceName is null)
+                throw new BadRequestException("Cluster não encontrado na planilha.");
+
+            envVars.TryGetValue("INSTALLATION_INSTANCE", out var getInstallationCode);
+
+            if (getInstallationCode is null)
+                throw new BadRequestException("Código da instalação não encontrada na planilha.");
 
             var contentBase64 = data.ContentBase64?.Replace("data:@file/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,", "");
             using var stream = new MemoryStream(Convert.FromBase64String(contentBase64!));
             using ExcelPackage package = new(stream);
-            envVars.TryGetValue("INSTANCE", out var getInstanceName);
-            getInstanceName ??= _consolidationInstance;
+
 
             var workbook = package.Workbook;
             var worksheetTab = workbook.Worksheets
@@ -57,13 +64,12 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
             var dimension = worksheetTab.Dimension;
 
             var entityDictionary = new Dictionary<string, BaseModel>();
-            var entityHistoriesDictionary = new Dictionary<string, SystemHistory>();
+            var updatedDictionary = new Dictionary<string, BaseModel>();
 
             var dateCurrent = DateTime.UtcNow;
             var columnPositions = XlsUtils.GetColumnPositions(worksheetTab);
 
             var errors = XlsUtils.ValidateColumns(worksheetTab);
-
             if (errors.Any())
             {
                 var error = new XlsErrorImportDTO
@@ -78,11 +84,16 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
             {
                 var columnCluster = worksheetTab.Cells[row, columnPositions[XlsUtils.ClusterColumnName]].Value?.ToString();
 
-                if (!(columnCluster?.ToLower() == getInstanceName || getInstanceName.ToLower() == _consolidationInstance))
+                if (columnCluster is not null && columnCluster.ToUpper().Trim().Contains(getInstanceName.ToUpper().Trim()) is false)
+                    continue;
+
+                var columnInstallationCod = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationCodColumnName]].Value?.ToString()?.Trim();
+
+                if (columnInstallationCod is not null && columnInstallationCod.ToUpper().Trim().Contains(getInstallationCode.ToUpper().Trim()) is false)
                     continue;
 
                 var columnInstallation = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationColumnName]].Value?.ToString()?.Trim();
-                var columnInstallationCod = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationCodColumnName]].Value?.ToString()?.Trim();
+
                 var columnInstallationCodUep = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationCodUepColumnName]].Value?.ToString()?.Trim();
                 var columnInstallationNameUep = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationNameUepColumnName]].Value?.ToString()?.Trim();
 
@@ -125,7 +136,9 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
 
                 if (!string.IsNullOrWhiteSpace(columnCluster) && !entityDictionary.TryGetValue(columnCluster.ToLower(), out var cluster))
                 {
-                    cluster = await _context.Clusters.FirstOrDefaultAsync(x => x.Name.ToLower() == columnCluster.ToLower());
+                    cluster = await _context.Clusters
+                        .FirstOrDefaultAsync(x => x.Name.ToLower().Trim() == columnCluster.ToLower().Trim());
+
                     if (cluster is null)
                     {
                         var clusterId = Guid.NewGuid();
@@ -145,14 +158,18 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                     }
                 }
 
-                if (!string.IsNullOrWhiteSpace(columnInstallation) && !entityDictionary.TryGetValue(columnInstallation.ToLower(), out var installation))
+                if (!string.IsNullOrWhiteSpace(columnInstallationCod) && !entityDictionary.TryGetValue(columnInstallationCod.ToLower(), out var installation))
                 {
                     installation = await _context.Installations
-                        .FirstOrDefaultAsync(x => x.Name.ToLower() == columnInstallation.ToLower());
+                        .FirstOrDefaultAsync(x => x.CodInstallationAnp.ToLower().Trim() == columnInstallationCod.ToLower().Trim());
 
-                    if (installation is null)
+                    if (installation is null && columnCluster is not null)
                     {
                         var installationId = Guid.NewGuid();
+
+                        var clusterInDatabase = await _context.Clusters
+                            .FirstOrDefaultAsync(x => x.Name == columnCluster);
+
                         installation = new Installation
                         {
                             Id = installationId,
@@ -162,31 +179,34 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             UepName = columnInstallationNameUep,
                             User = user,
                             IsActive = true,
-                            Cluster = columnCluster is not null ? (Cluster)entityDictionary.GetValueOrDefault(columnCluster.ToLower())! : null,
+                            Cluster = entityDictionary.GetValueOrDefault(columnCluster.ToLower()) as Cluster is null ? clusterInDatabase : entityDictionary.GetValueOrDefault(columnCluster.ToLower()) as Cluster,
                         };
 
                         await _systemHistoryService
                             .Import<Installation, InstallationHistoryDTO>(HistoryColumns.TableInstallations, user, data.FileName, installation.Id, (Installation)installation);
 
-                        entityDictionary[columnInstallation.ToLower()] = installation;
+                        entityDictionary[columnInstallationCod.ToLower()] = installation;
                     }
                 }
 
                 if (!string.IsNullOrWhiteSpace(columnField) && !entityDictionary.TryGetValue(columnField.ToLower(), out var field))
                 {
                     field = await _context.Fields
-                        .Include(x => x.Installation)
                         .FirstOrDefaultAsync(x => x.Name.ToLower().Trim() == columnField.ToLower().Trim());
 
-                    if (field is null)
+                    if (field is null && columnInstallationCod is not null)
                     {
                         var fieldId = Guid.NewGuid();
+
+                        var installationInDatabase = await _context.Installations
+                            .FirstOrDefaultAsync(x => x.CodInstallationAnp == columnInstallationCod);
+
                         field = new Field
                         {
                             Id = fieldId,
                             Name = columnField,
                             User = user,
-                            Installation = columnInstallation is not null ? (Installation)entityDictionary.GetValueOrDefault(columnInstallation.ToLower())! : null,
+                            Installation = entityDictionary.GetValueOrDefault(columnInstallationCod.ToLower()) as Installation is null ? installationInDatabase : entityDictionary.GetValueOrDefault(columnInstallationCod.ToLower()) as Installation,
                             CodField = columnCodeField,
                             IsActive = true,
                         };
@@ -196,51 +216,27 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
 
                         entityDictionary[columnField.ToLower()] = field;
                     }
-
-                    else
-                    {
-                        var fieldConverted = (Field)field;
-
-                        if (fieldConverted.Installation is not null && columnInstallation.ToLower() != fieldConverted.Installation.Name.ToLower())
-                        {
-
-                            var beforeChangesField = _mapper.Map<FieldHistoryDTO>(fieldConverted);
-
-                            Dictionary<string, object> updatedProperties = new();
-
-                            var installationToUpdate = await _context.Installations
-                                .FirstOrDefaultAsync(x => x.CodInstallationAnp == columnInstallationCod);
-
-                            if (installationToUpdate is not null && fieldConverted.Installation?.Name != installationToUpdate?.Name)
-                            {
-                                fieldConverted.Installation = installationToUpdate;
-                                updatedProperties[nameof(FieldHistoryDTO.installationId)] = installationToUpdate.Id;
-
-                                _context.Fields.Update(fieldConverted);
-
-                                await _systemHistoryService
-                                    .ImportUpdate(HistoryColumns.TableFields, user, data.FileName, updatedProperties, fieldConverted.Id, fieldConverted, beforeChangesField);
-                            }
-                        }
-                    }
                 }
 
                 if (!string.IsNullOrWhiteSpace(columnZone) && !entityDictionary.TryGetValue(columnZone.ToLower(), out var zone))
                 {
                     zone = await _context.Zones
-                        .Include(x => x.Field)
-                        .FirstOrDefaultAsync(x => x.CodZone.ToLower() == columnZone.ToLower());
+                        .FirstOrDefaultAsync(x => x.CodZone.ToLower().Trim() == columnZone.ToLower().Trim());
 
-                    if (zone is null)
+                    if (zone is null && columnField is not null)
                     {
                         var zoneId = Guid.NewGuid();
+
+                        var fieldInDatabase = await _context.Fields
+                            .FirstOrDefaultAsync(x => x.CodField == columnField);
+
                         zone = new Zone
                         {
                             Id = zoneId,
                             CodZone = columnZone,
                             User = user,
                             IsActive = true,
-                            Field = columnField is not null ? (Field)entityDictionary.GetValueOrDefault(columnField.ToLower())! : null,
+                            Field = entityDictionary.GetValueOrDefault(columnField.ToLower()) as Field is null ? fieldInDatabase : entityDictionary.GetValueOrDefault(columnField.ToLower()) as Field,
                         };
 
                         await _systemHistoryService
@@ -248,49 +244,28 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
 
                         entityDictionary[columnZone.ToLower()] = zone;
                     }
-                    else
-                    {
-                        var zoneConverted = (Zone)zone;
 
-                        if (zoneConverted.Field is not null && columnField.ToLower() != zoneConverted.Field.Name.ToLower())
-                        {
-                            var beforeChangesZone = _mapper.Map<ZoneHistoryDTO>(zoneConverted);
-
-                            Dictionary<string, object> updatedProperties = new();
-
-                            var fieldToUpdate = await _context.Fields
-                                .FirstOrDefaultAsync(x => x.Name == columnField);
-
-                            if (fieldToUpdate is not null && zoneConverted.Field?.Name != fieldToUpdate?.Name)
-                            {
-                                zoneConverted.Field = fieldToUpdate;
-                                updatedProperties[nameof(ZoneHistoryDTO.fieldId)] = fieldToUpdate.Id;
-
-                                _context.Zones.Update(zoneConverted);
-
-                                await _systemHistoryService
-                                    .ImportUpdate(HistoryColumns.TableZones, user, data.FileName, updatedProperties, zoneConverted.Id, zoneConverted, beforeChangesZone);
-                            }
-                        }
-                    }
                 }
 
                 if (!string.IsNullOrWhiteSpace(columnReservoir) && !entityDictionary.TryGetValue(columnReservoir.ToLower(), out var reservoir))
                 {
                     reservoir = await _context.Reservoirs
-                        .Include(x => x.Zone)
-                        .FirstOrDefaultAsync(x => x.Name.ToLower() == columnReservoir.ToLower());
+                        .FirstOrDefaultAsync(x => x.Name.ToLower().Trim() == columnReservoir.ToLower().Trim());
 
-                    if (reservoir is null)
+                    if (reservoir is null && columnZone is not null)
                     {
                         var reservoirId = Guid.NewGuid();
+
+                        var zoneInDatabase = await _context.Zones
+                            .FirstOrDefaultAsync(x => x.CodZone == columnZone);
+
                         reservoir = new Reservoir
                         {
                             Id = reservoirId,
                             Name = columnReservoir,
                             User = user,
                             CodReservoir = GenerateCode.Generate(columnReservoir),
-                            Zone = columnZone is not null ? (Zone)entityDictionary.GetValueOrDefault(columnZone.ToLower())! : null,
+                            Zone = entityDictionary.GetValueOrDefault(columnZone.ToLower()) as Zone is null ? zoneInDatabase : entityDictionary.GetValueOrDefault(columnZone.ToLower()) as Zone,
                             IsActive = true,
                         };
 
@@ -299,39 +274,20 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
 
                         entityDictionary[columnReservoir.ToLower()] = reservoir;
                     }
-                    else
-                    {
-                        var reservoirConverted = (Reservoir)reservoir;
-
-                        if (reservoirConverted.Zone is not null && columnZone.ToLower() != reservoirConverted.Zone.CodZone.ToLower())
-                        {
-                            var beforeChangesReservoir = _mapper.Map<ReservoirHistoryDTO>(reservoirConverted);
-
-                            Dictionary<string, object> updatedProperties = new();
-
-                            var zoneToUpdate = await _context.Zones
-                                .FirstOrDefaultAsync(x => x.CodZone == columnZone);
-
-                            if (zoneToUpdate is not null && reservoirConverted.Zone?.CodZone != zoneToUpdate?.CodZone)
-                            {
-                                reservoirConverted.Zone = zoneToUpdate;
-                                updatedProperties[nameof(ReservoirHistoryDTO.zoneId)] = zoneToUpdate.Id;
-
-                                _context.Reservoirs.Update(reservoirConverted);
-
-                                await _systemHistoryService
-                                    .ImportUpdate(HistoryColumns.TableReservoirs, user, data.FileName, updatedProperties, reservoirConverted.Id, reservoirConverted, beforeChangesReservoir);
-                            }
-                        }
-                    }
                 }
 
                 if (!string.IsNullOrWhiteSpace(columnWellCodeAnp) && !entityDictionary.TryGetValue(columnWellCodeAnp.ToLower(), out var well))
                 {
-                    well = await _context.Wells.FirstOrDefaultAsync(x => x.CodWellAnp.ToLower() == columnWellCodeAnp.ToLower());
-                    if (well is null)
+                    well = await _context.Wells
+                        .FirstOrDefaultAsync(x => x.CodWellAnp.ToLower() == columnWellCodeAnp.ToLower());
+
+                    if (well is null && columnField is not null)
                     {
                         var wellId = Guid.NewGuid();
+
+                        var fieldInDatabase = await _context.Fields
+                            .FirstOrDefaultAsync(x => x.Name == columnField);
+
                         well = new Well
                         {
                             Id = wellId,
@@ -357,13 +313,14 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             CoordY = columnWellCoordY,
                             User = user,
                             IsActive = true,
-                            Field = (Field)entityDictionary.GetValueOrDefault(columnField.ToLower()),
+                            Field = entityDictionary.GetValueOrDefault(columnField.ToLower()) as Field is null ? fieldInDatabase : entityDictionary.GetValueOrDefault(columnField.ToLower()) as Field,
                         };
 
                         await _systemHistoryService
-                             .Import<Well, WellHistoryDTO>(HistoryColumns.TableWells, user, data.FileName, well.Id, (Well)well);
+                        .Import<Well, WellHistoryDTO>(HistoryColumns.TableWells, user, data.FileName, well.Id, (Well)well);
 
                         entityDictionary[columnWellCodeAnp.ToLower()] = well;
+
                     }
 
                     else
@@ -374,7 +331,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
 
                         var propertiesToUpdate = new WellUpdateImportViewModel
                         {
-                            Name = columnWellNameAnp,
                             WellOperatorName = columnWellOperatorName,
                             CategoryAnp = columnWellCategoryAnp,
                             CategoryReclassificationAnp = columnWellCategoryReclassification,
@@ -397,21 +353,10 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
 
                         var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(wellConverted, propertiesToUpdate);
 
-                        if (updatedProperties.Any() is true ||
-                            (wellConverted.Field is not null && wellConverted.Field.Name.ToLower() != columnField.ToLower()))
+                        if (updatedProperties.Any() is true)
                         {
-                            if (wellConverted.Field is not null && wellConverted.Field?.Name.ToLower() != columnField.ToLower())
-                            {
-                                var fieldToUpdate = await _context.Fields
-                                    .FirstOrDefaultAsync(x => x.Name.ToLower() == columnField.ToLower());
 
-                                wellConverted.Field = fieldToUpdate;
-                                updatedProperties[nameof(WellHistoryDTO.fieldId)] = fieldToUpdate.Id;
-                            }
-
-                            _context.Wells.Update(wellConverted);
-
-
+                            updatedDictionary[columnWellCodeAnp.ToLower()] = well;
 
                             await _systemHistoryService
                                 .ImportUpdate(HistoryColumns.TableWells, user, data.FileName, updatedProperties, wellConverted.Id, wellConverted, beforeChangesWell);
@@ -422,19 +367,23 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                 if (!string.IsNullOrWhiteSpace(columnCompletion) && !string.IsNullOrWhiteSpace(columnWellCodeAnp) && !entityDictionary.TryGetValue(columnCompletion.ToLower(), out var completion))
                 {
                     completion = await _context.Completions
-                        .FirstOrDefaultAsync(x => x.Name.ToLower() == columnCompletion.ToLower());
+                    .FirstOrDefaultAsync(x => x.Name == columnCompletion);
 
-                    if (completion is null)
+                    if (completion is null && columnCompletion is not null)
                     {
                         var completionId = Guid.NewGuid();
+
+                        var wellInDatabase = await _context.Wells
+                            .FirstOrDefaultAsync(x => x.CodWellAnp == columnWellCodeAnp);
+
                         completion = new Completion
                         {
                             Id = completionId,
                             Name = columnCompletion,
                             User = user,
                             CodCompletion = GenerateCode.Generate(columnCompletion),
-                            Reservoir = columnReservoir is not null ? (Reservoir)entityDictionary.GetValueOrDefault(columnReservoir?.ToLower()) : null,
-                            Well = columnWellCodeAnp is not null ? (Well)entityDictionary.GetValueOrDefault(columnWellCodeAnp?.ToLower()) : null,
+                            Reservoir = columnReservoir is not null ? entityDictionary.GetValueOrDefault(columnReservoir.ToLower()) as Reservoir : null,
+                            Well = entityDictionary.GetValueOrDefault(columnWellCodeAnp.ToLower()) as Well is null ? wellInDatabase : entityDictionary.GetValueOrDefault(columnWellCodeAnp.ToLower()) as Well,
                             IsActive = true
                         };
 
@@ -446,7 +395,14 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                 }
             }
 
+            if (entityDictionary.Values.Count <= 0 && updatedDictionary.Values.Count <= 0)
+                throw new BadRequestException("Nenhum item foi adicionado ou atualizado.");
+
+
             await _context.AddRangeAsync(entityDictionary.Values);
+
+            _context.UpdateRange(updatedDictionary.Values);
+
             await _context.SaveChangesAsync();
         }
     }

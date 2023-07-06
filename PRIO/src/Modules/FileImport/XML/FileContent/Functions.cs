@@ -30,7 +30,6 @@ namespace PRIO.src.Modules.FileImport.XML.FileContent
             if (e.Severity == XmlSeverityType.Error)
             {
                 _result?.Add(e.Message);
-                Console.WriteLine(e.Message);
             }
 
         }

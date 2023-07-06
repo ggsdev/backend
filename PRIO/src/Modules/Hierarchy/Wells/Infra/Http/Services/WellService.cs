@@ -115,6 +115,13 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
                     if (body.CodWellAnp != well.CodWellAnp)
                         throw new ConflictException("Código do campo não pode ser alterado.");
 
+            if (body.CodWellAnp is not null)
+            {
+                var wellInDatabase = await _wellRepository.GetByCode(body.CodWellAnp);
+                if (wellInDatabase is not null)
+                    throw new ConflictException(ErrorMessages.CodAlreadyExists<Well>());
+
+            }
             var beforeChangesWell = _mapper.Map<WellHistoryDTO>(well);
 
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(well, body);

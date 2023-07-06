@@ -50,6 +50,20 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
             if (body.Type is not null && !_typesAllowed.Contains(body.Type))
                 throw new BadRequestException("Tipos permitidos são: CV, EP, ES, EC.");
 
+            var existingMeasuringEquipment = await _equipmentRepository.GetExistingEquipment(body.SerieNumber, body.TagEquipment);
+
+            if (existingMeasuringEquipment is not null)
+            {
+                if (existingMeasuringEquipment.SerieNumber == body.SerieNumber && existingMeasuringEquipment.TagEquipment == body.TagEquipment)
+                    throw new ConflictException($"Já existe um equipmento com a TAG do equipmento: {existingMeasuringEquipment.TagEquipment} e com número de série: {existingMeasuringEquipment.SerieNumber} cadastrado");
+
+                if (existingMeasuringEquipment.TagEquipment == body.TagEquipment)
+                    throw new ConflictException($"Já existe um equipmento com a TAG do equipmento: {existingMeasuringEquipment.TagEquipment} cadastrado");
+
+                if (existingMeasuringEquipment.SerieNumber == body.SerieNumber)
+                    throw new ConflictException($"Já existe um equipmento com o número de série: {existingMeasuringEquipment.SerieNumber} cadastrado");
+            }
+
             var measuringPointInDatabase = await _measuringPointRepository.GetByTagMeasuringPoint(body.TagMeasuringPoint);
             if (measuringPointInDatabase == null)
                 throw new NotFoundException("Ponto de medição não encontrado.");
@@ -128,6 +142,22 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
             if (body.Type is not null && !_typesAllowed.Contains(body.Type))
                 throw new BadRequestException("Tipos permitidos são: CV, EP, ES, EC.");
 
+            if (body.SerieNumber is not null || body.TagEquipment is not null)
+            {
+                var existingMeasuringEquipment = await _equipmentRepository.GetExistingEquipment(body.SerieNumber, body.TagEquipment);
+
+                if (existingMeasuringEquipment is not null)
+                {
+                    if (existingMeasuringEquipment.SerieNumber == body.SerieNumber && existingMeasuringEquipment.TagEquipment == body.TagEquipment)
+                        throw new ConflictException($"Já existe um equipmento com a TAG do equipmento: {existingMeasuringEquipment.TagEquipment} e com número de série: {existingMeasuringEquipment.SerieNumber} cadastrado");
+
+                    if (existingMeasuringEquipment.TagEquipment == body.TagEquipment)
+                        throw new ConflictException($"Já existe um equipmento com a TAG do equipmento: {existingMeasuringEquipment.TagEquipment} cadastrado");
+
+                    if (existingMeasuringEquipment.SerieNumber == body.SerieNumber)
+                        throw new ConflictException($"Já existe um equipmento com o número de série: {existingMeasuringEquipment.SerieNumber} cadastrado");
+                }
+            }
 
             var measuringPointByTagMeasuringPointInDatabase = await _measuringPointRepository.GetByTagMeasuringPoint(body.TagMeasuringPoint);
             if (measuringPointByTagMeasuringPointInDatabase == null)

@@ -109,6 +109,13 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                     if (body.CodInstallationAnp != installation.CodInstallationAnp)
                         throw new ConflictException("Código da instalação não pode ser alterado.");
 
+            if (body.CodInstallationAnp is not null)
+            {
+                var installationInDatabase = await _installationRepository.GetByCod(body.CodInstallationAnp);
+                if (installationInDatabase is not null)
+                    throw new ConflictException(ErrorMessages.CodAlreadyExists<Installation>());
+            }
+
             var beforeChangesInstallation = _mapper.Map<InstallationHistoryDTO>(installation);
 
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(installation, body);

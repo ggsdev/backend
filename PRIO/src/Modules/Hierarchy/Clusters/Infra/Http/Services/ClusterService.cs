@@ -85,6 +85,13 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                     if (body.CodCluster != cluster.CodCluster)
                         throw new ConflictException("Código do Cluster não pode ser alterado.");
 
+            if (body.CodCluster is not null)
+            {
+                var clusterInDatabase = await _clusterRepository.GetByCod(body.CodCluster);
+                if (clusterInDatabase is not null)
+                    throw new ConflictException(ErrorMessages.CodAlreadyExists<Cluster>());
+            }
+
             var beforeChangesCluster = _mapper.Map<ClusterHistoryDTO>(cluster);
 
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(cluster, body);

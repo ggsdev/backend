@@ -101,6 +101,13 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
                     if (body.CodReservoir != reservoir.CodReservoir)
                         throw new ConflictException("Código do reservatório não pode ser alterado.");
 
+            if (body.CodReservoir is not null)
+            {
+                var reservoirInDatabase = await _reservoirRepository.GetByCode(body.CodReservoir);
+                if (reservoirInDatabase is not null)
+                    throw new ConflictException(ErrorMessages.CodAlreadyExists<Reservoir>());
+            }
+
             var beforeChangesReservoir = _mapper.Map<ReservoirHistoryDTO>(reservoir);
 
             var updatedProperties = UpdateFields

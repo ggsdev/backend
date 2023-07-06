@@ -98,6 +98,14 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
                     if (body.CodField != field.CodField)
                         throw new ConflictException("Código do campo não pode ser alterado.");
 
+            if (body.CodField is not null)
+            {
+                var fieldInDatabase = await _fieldRepository.GetByCod(body.CodField);
+                if (fieldInDatabase is not null)
+                    throw new ConflictException(ErrorMessages.CodAlreadyExists<Field>());
+            }
+
+
             var beforeChangesField = _mapper.Map<FieldHistoryDTO>(field);
 
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(field, body);

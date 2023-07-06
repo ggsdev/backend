@@ -34,6 +34,12 @@ using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
 
 namespace PRIO.src.Shared.Infra.EF
 {
+    public class DatabaseConnectionException : Exception
+    {
+        public DatabaseConnectionException(string message) : base(message)
+        {
+        }
+    }
     public class DataContext : DbContext
     {
         public DbSet<User> Users { get; set; }
@@ -73,6 +79,7 @@ namespace PRIO.src.Shared.Infra.EF
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
+            //Database.Migrate();
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -83,7 +90,8 @@ namespace PRIO.src.Shared.Infra.EF
                envVars.ContainsKey("USER_ID") &&
                envVars.ContainsKey("PASSWORD") &&
                envVars.ContainsKey("ENCRYPT") &&
-               envVars.ContainsKey("PORT"))
+               envVars.ContainsKey("PORT") &&
+               envVars.ContainsKey("SERVER_INSTANCE"))
             {
                 var server = envVars["SERVER"];
                 var database = envVars["DATABASE"];
@@ -91,9 +99,13 @@ namespace PRIO.src.Shared.Infra.EF
                 var password = envVars["PASSWORD"];
                 var encrypt = envVars["ENCRYPT"];
                 var port = envVars["PORT"];
+                var instance = envVars["SERVER_INSTANCE"];
 
-                optionsBuilder.UseSqlServer($"Server={server},{port};Database={database};User ID={userId};Password={password};Encrypt={encrypt};");
+
+                optionsBuilder.UseSqlServer($"Server={server},{port}\\{instance};Database={database};User ID={userId};Password={password};Encrypt={encrypt};");
+
             }
+
         }
         public override int SaveChanges()
         {

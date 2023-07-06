@@ -46,40 +46,74 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
         }
 
 
+        //public async Task<List<ImportHistoryDTO>> GetImports()
+        //{
+        //    var data = await _systemHistoryRepository.GetImports();
+        //    var historiesDTO = new List<ImportHistoryDTO>();
+        //    for (int i = 0; i < data.Count; i++)
+        //    {
+        //        bool foundMatch = false;
+
+        //        dynamic fieldsChanged = data[i].FieldsChanged;
+        //        foreach (var history in historiesDTO)
+        //        {
+        //            if (history.FileName?.ToString().ToLower() == fieldsChanged.fileName?.ToString()?.ToLower())
+        //            {
+        //                foundMatch = true;
+        //                break;
+        //            }
+        //        }
+
+        //        if (!foundMatch)
+        //        {
+        //            historiesDTO.Add(new ImportHistoryDTO
+        //            {
+        //                CreatedAt = data[i].CreatedAt,
+        //                CreatedBy = data[i].CreatedBy,
+
+        //                FileName = fieldsChanged?.fileName,
+        //            });
+
+        //        }
+        //    }
+
+        //    return historiesDTO;
+        //}
+
+
         public async Task<List<ImportHistoryDTO>> GetImports()
         {
             var data = await _systemHistoryRepository.GetImports();
             var historiesDTO = new List<ImportHistoryDTO>();
 
-            for (int i = 0; i < data.Count; i++)
+            var fileNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var history in data)
             {
-                bool foundMatch = false;
+                dynamic fieldsChanged = history.FieldsChanged;
 
-                dynamic fieldsChanged = data[i].FieldsChanged;
-                foreach (var history in historiesDTO)
-                {
-                    if (history.FileName?.ToString() == fieldsChanged.fileName?.ToString())
-                    {
-                        foundMatch = true;
-                        break;
-                    }
-                }
+                var fileName = fieldsChanged?.fileName?.ToString();
+                if (string.IsNullOrEmpty(fileName))
+                    continue;
 
-                if (!foundMatch)
+                var lowerCaseFileName = fileName.ToLowerInvariant();
+
+                if (!fileNames.Contains(lowerCaseFileName))
                 {
                     historiesDTO.Add(new ImportHistoryDTO
                     {
-                        CreatedAt = data[i].CreatedAt,
-                        CreatedBy = data[i].CreatedBy,
-
-                        FileName = fieldsChanged?.fileName,
+                        CreatedAt = history.CreatedAt,
+                        CreatedBy = history.CreatedBy,
+                        FileName = fileName,
                     });
 
+                    fileNames.Add(lowerCaseFileName);
                 }
             }
 
             return historiesDTO;
         }
+
 
         public async Task Update<T, U>(string tableName, User user, Dictionary<string, object> updatedProperties, Guid tableItemId, T objectUpdated, U objectBeforeChanges)
         where T : class where U : class
@@ -201,11 +235,8 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
 
             var changedFields = UpdateFields.DictionaryToObject(updatedProperties);
             dynamic currentData = _mapper.Map<T, U>(objectUpdated);
-            var obj = new
-            {
-                fileName = fileName
-            };
-            changedFields.fileName = obj;
+
+            changedFields.fileName = fileName;
             var dateCurrent = DateTime.UtcNow;
 
             currentData.createdAt = dateCurrent;

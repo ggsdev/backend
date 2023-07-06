@@ -80,7 +80,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
             }
             catch (DbUpdateException e)
             {
-                Console.WriteLine(e);
                 return BadRequest();
             }
         }
