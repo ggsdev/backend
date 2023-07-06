@@ -72,7 +72,6 @@
     <Folder Include="src\Modules\Measuring\Measurements\Infra\Http\Services\" />
     <Folder Include="src\Modules\Measuring\Measurements\ViewModels\" />
     <Folder Include="src\Shared\Infra\EF\Mappings\" />
-    <Folder Include="src\Shared\Infra\Http\Controllers\" />
   </ItemGroup>
 
 </Project>

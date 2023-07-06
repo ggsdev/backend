@@ -23,7 +23,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
 {
     public class XLSXService
     {
-        private readonly string _consolidationInstance = "consolidador";
         private readonly IMapper _mapper;
         private readonly DataContext _context;
         private readonly SystemHistoryService _systemHistoryService;
@@ -37,18 +36,25 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
 
         public async Task ImportFiles(RequestXslxViewModel data, User user)
         {
+            var envVars = DotEnv.Read();
+
             if (data.FileName.EndsWith(".xlsx") is false)
                 throw new BadRequestException("O arquivo deve ter a extensão .xlsx");
 
-            var envVars = DotEnv.Read();
+            envVars.TryGetValue("INSTANCE", out var getInstanceName);
+
+            if (getInstanceName is null)
+                throw new BadRequestException("Cluster não encontrado na planilha.");
+
+            envVars.TryGetValue("INSTALLATION_INSTANCE", out var getInstallationCode);
+
+            if (getInstallationCode is null)
+                throw new BadRequestException("Código da instalação não encontrada na planilha.");
 
             var contentBase64 = data.ContentBase64?.Replace("data:@file/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,", "");
             using var stream = new MemoryStream(Convert.FromBase64String(contentBase64!));
             using ExcelPackage package = new(stream);
-            envVars.TryGetValue("INSTANCE", out var getInstanceName);
-            //envVars.TryGetValue("INSTALLATION", out var getInstallationInstanceName);
-            getInstanceName ??= _consolidationInstance;
-            //getInstallationInstanceName ??= _consolidationInstance;
+
 
             var workbook = package.Workbook;
             var worksheetTab = workbook.Worksheets
@@ -64,7 +70,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
             var columnPositions = XlsUtils.GetColumnPositions(worksheetTab);
 
             var errors = XlsUtils.ValidateColumns(worksheetTab);
-            Console.WriteLine(errors.Count);
             if (errors.Any())
             {
                 var error = new XlsErrorImportDTO
@@ -79,14 +84,16 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
             {
                 var columnCluster = worksheetTab.Cells[row, columnPositions[XlsUtils.ClusterColumnName]].Value?.ToString();
 
-                if (!(columnCluster?.ToLower() == getInstanceName || getInstanceName.ToLower() == _consolidationInstance))
+                if (columnCluster is not null && columnCluster.ToUpper().Trim().Contains(getInstanceName.ToUpper().Trim()) is false)
+                    continue;
+
+                var columnInstallationCod = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationCodColumnName]].Value?.ToString()?.Trim();
+
+                if (columnInstallationCod is not null && columnInstallationCod.ToUpper().Trim().Contains(getInstallationCode.ToUpper().Trim()) is false)
                     continue;
 
                 var columnInstallation = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationColumnName]].Value?.ToString()?.Trim();
-                //if (!(columnInstallation?.ToLower() == getInstallationInstanceName || getInstallationInstanceName.ToLower() == _consolidationInstance))
-                //    continue;
 
-                var columnInstallationCod = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationCodColumnName]].Value?.ToString()?.Trim();
                 var columnInstallationCodUep = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationCodUepColumnName]].Value?.ToString()?.Trim();
                 var columnInstallationNameUep = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationNameUepColumnName]].Value?.ToString()?.Trim();
 

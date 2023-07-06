@@ -8,7 +8,6 @@ using PRIO.src.Modules.ControlAccess.Users.ViewModels;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.Infra.Http.Services;
-using PRIO.src.Shared.SystemHistories.Dtos.UserDtos;
 using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
 using PRIO.src.Shared.Utils;
 
@@ -37,83 +36,30 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
         [FromBody] LoginViewModel body)
         {
             var envVars = DotEnv.Read();
-            var secretKey = envVars["SECRET_KEY"];
-            if ((Decrypt.TryParseBase64String(body.Email, out byte[]? encriptedBytes) && Decrypt.TryParseBase64String(body.Password, out byte[]? encryptedBytes2)) is false)
-                return BadRequest(new ErrorResponseDTO { Message = "Email and password not encrypted." });
 
-            var email = Decrypt
-              .DecryptAes(body.Email, secretKey);
+            var secretKey = envVars["SECRET_KEY"];
+            if ((Decrypt.TryParseBase64String(body.Username, out byte[]? encriptedBytes) && Decrypt.TryParseBase64String(body.Password, out byte[]? encryptedBytes2)) is false)
+                return BadRequest(new ErrorResponseDTO { Message = "Username and password not encrypted." });
+
+            var username = Decrypt
+                .DecryptAes(body.Username, secretKey);
 
             var password = Decrypt
-                .DecryptAes(body.Password, secretKey);
+              .DecryptAes(body.Password, secretKey);
 
-            //var credentialsValid = ActiveDirectory
-            //    .VerifyCredentialsWithActiveDirectory(body.Email, body.Password);
+            var credentialsValid = ActiveDirectory
+                .VerifyCredentialsWithActiveDirectory(username, password);
+
+            if (credentialsValid is false)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "Usuário ou senha inválida."
+                });
 
             var user = await _context
                 .Users
                 .Include(u => u.Session)
-                .FirstOrDefaultAsync(x => x.Email == email && x.IsActive);
-
-            if (user is null)
-            {
-                var errorResponse = new ErrorResponseDTO
-                {
-                    Message = "E-mail or password invalid"
-                };
-
-                return Unauthorized(errorResponse);
-            }
-
-            var passwordMatch = BCrypt.Net.BCrypt.Verify(password, user.Password);
-            if (!passwordMatch)
-            {
-                var errorResponse = new ErrorResponseDTO
-                {
-                    Message = "E-mail or password invalid"
-                };
-
-                return Unauthorized(errorResponse);
-            }
-
-            var userHttpAgent = Request.Headers["User-Agent"].ToString();
-            var token = await _tokenServices.CreateSessionAndToken(user, userHttpAgent);
-
-            return Ok(new LoginDTO
-            {
-                Token = token,
-            });
-        }
-
-        #endregion
-
-        #region Login Active Directory
-
-        [AllowAnonymous]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginDTO))]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponseDTO))]
-        [HttpPost("loginAd")]
-        public async Task<IActionResult> LoginAD([FromBody] LoginAdViewModel body)
-        {
-            var envVars = DotEnv.Read();
-            //var secretKey = envVars["SECRET_KEY"];
-
-            //var decryptedCredentials = Decrypt
-            //    .DecryptAes(body.Username, body.Password, secretKey);
-
-            //var credentialsValid = ActiveDirectory
-            //    .VerifyCredentialsWithActiveDirectory(body.Username, body.Password);
-
-            //if (credentialsValid is false)
-            //    return Unauthorized(new ErrorResponseDTO
-            //    {
-            //        Message = "Username or password invalid"
-            //    });
-
-            var user = await _context
-                .Users
-                .Include(u => u.Session)
-                .FirstOrDefaultAsync(x => x.Username == body.Username);
+                .FirstOrDefaultAsync(x => x.Username == username && x.IsActive);
 
             string token;
             var userHttpAgent = Request.Headers["User-Agent"].ToString();
@@ -124,13 +70,13 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
                 var createUser = new User
                 {
                     Id = userId,
-                    Username = body.Username,
+                    Username = username,
                 };
 
                 await _context.Users.AddAsync(createUser);
 
-                await _systemHistoryService
-                    .Create<User, UserHistoryDTO>(HistoryColumns.TableUsers, createUser, userId, createUser);
+                //await _systemHistoryService
+                //    .Create<User, UserHistoryDTO>(HistoryColumns.TableUsers, createUser, userId, createUser);
 
                 await _context.SaveChangesAsync();
 
@@ -148,16 +94,62 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
             });
         }
 
-        //[Authorize]
-        //[HttpPost("authenticate-ad")]
-        //public IActionResult AuthenticateAD()
-        //{
-        //    // O código dentro deste método só será executado se o usuário estiver autenticado com sucesso via Azure AD
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginDTO))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponseDTO))]
+        [HttpPost("loginDev")]
+        public async Task<IActionResult> LoginDev([FromBody] LoginAdViewModel body)
+        {
+            var envVars = DotEnv.Read();
+            var secretKey = envVars["SECRET_KEY"];
+            if ((Decrypt.TryParseBase64String(body.Username, out byte[]? encriptedBytes) && Decrypt.TryParseBase64String(body.Password, out byte[]? encryptedBytes2)) is false)
+                return BadRequest(new ErrorResponseDTO { Message = "Username and password not encrypted." });
 
-        //    // Aqui você pode adicionar a lógica que deseja executar após a autenticação bem-sucedida, como retornar algum dado ou redirecionar para uma página específica.
+            var usernameDecrypted = Decrypt
+                .DecryptAes(body.Username, secretKey);
 
-        //    return Ok("Authentication successful!");
-        //}
+            var passwordDecrypted = Decrypt
+                .DecryptAes(body.Password, secretKey);
+
+            var user = await _context
+                .Users
+                .Include(u => u.Session)
+                .FirstOrDefaultAsync(x => x.Username == usernameDecrypted);
+
+            string token;
+            var userHttpAgent = Request.Headers["User-Agent"].ToString();
+
+            if (user is null)
+            {
+                var userId = Guid.NewGuid();
+                var createUser = new User
+                {
+                    Id = userId,
+                    Username = usernameDecrypted,
+
+                };
+
+                await _context.Users.AddAsync(createUser);
+
+                //await _systemHistoryService
+                //    .Create<User, UserHistoryDTO>(HistoryColumns.TableUsers, createUser, userId, createUser);
+
+                await _context.SaveChangesAsync();
+
+                token = await _tokenServices.CreateSessionAndToken(createUser, userHttpAgent);
+            }
+            else
+            {
+                token = await _tokenServices.CreateSessionAndToken(user, userHttpAgent);
+
+            }
+
+            return Ok(new LoginDTO
+            {
+                Token = token,
+            });
+        }
+
     }
-    #endregion
 }
+#endregion
