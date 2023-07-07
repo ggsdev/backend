@@ -73,14 +73,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
 
             var errors = XlsUtils.ValidateColumns(worksheetTab);
             if (errors.Any())
-            {
-                var error = new XlsErrorImportDTO
-                {
-                    Message = "Alguma(s) coluna(s) de título da planilha não possuem o valor esperado.",
-                    Errors = errors
-                };
-                throw new BadRequestException(error.Message, error.Errors);
-            }
+                throw new BadRequestException("Alguma(s) coluna(s) de título da planilha não possuem o valor esperado.", status: "Error");
 
             for (int row = 2; row <= dimension.End.Row; ++row)
             {
@@ -163,7 +156,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             Name = columnCluster,
                             User = user,
                             IsActive = true,
-                            CodCluster = GenerateCode.Generate(columnCluster),
+                            CodCluster = "N/A",
                         };
 
                         await _systemHistoryService
@@ -309,7 +302,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             Id = reservoirId,
                             Name = columnReservoir,
                             User = user,
-                            CodReservoir = GenerateCode.Generate(columnReservoir),
+                            CodReservoir = "N/A",
                             Zone = entityDictionary.GetValueOrDefault(columnZone.ToLower()) as Zone is null ? zoneInDatabase : entityDictionary.GetValueOrDefault(columnZone.ToLower()) as Zone,
                             IsActive = true,
                         };
@@ -425,7 +418,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             Id = completionId,
                             Name = columnCompletion,
                             User = user,
-                            CodCompletion = GenerateCode.Generate(columnCompletion),
+                            CodCompletion = "N/A",
                             Reservoir = columnReservoir is not null ? entityDictionary.GetValueOrDefault(columnReservoir.ToLower()) as Reservoir : null,
                             Well = entityDictionary.GetValueOrDefault(columnWellCodeAnp.ToLower()) as Well is null ? wellInDatabase : entityDictionary.GetValueOrDefault(columnWellCodeAnp.ToLower()) as Well,
                             IsActive = true
