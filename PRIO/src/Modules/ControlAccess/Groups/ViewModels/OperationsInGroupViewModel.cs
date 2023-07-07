@@ -2,6 +2,6 @@
 {
     public class OperationsInGroupViewModel
     {
-        public Guid? OperationId { get; set; }
+        public Guid OperationId { get; set; }
     }
 }

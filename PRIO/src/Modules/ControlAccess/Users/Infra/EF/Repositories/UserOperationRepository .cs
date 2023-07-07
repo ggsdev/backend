@@ -40,9 +40,22 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
                 .Where(x => x.UserPermission.GroupId == groupId)
                 .ToListAsync();
         }
+        public async Task<UserOperation> GetUserOperationsByOperationNameMenuNameAndPermissionId(string? operationName, string? menuName, Guid userPermissionId)
+        {
+            return await _context
+                        .UserOperations.Include(x => x.UserPermission)
+                        .Where(x => x.OperationName == operationName)
+                        .Where(x => x.UserPermission.MenuName == menuName)
+                        .Where(x => x.UserPermission.User.Id == userPermissionId)
+                        .FirstOrDefaultAsync();
+        }
         public void UpdateUserOperations(List<UserOperation> userOperations)
         {
             _context.UserOperations.UpdateRange(userOperations);
+        }
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
         }
     }
 }
