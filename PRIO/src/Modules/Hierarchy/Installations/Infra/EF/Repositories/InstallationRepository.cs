@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PRIO.src.Modules.FileImport.XML.FileContent._039;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Shared.Infra.EF;
@@ -11,6 +12,26 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
         public InstallationRepository(DataContext context)
         {
             _context = context;
+        }
+
+        public async Task<Installation?> GetInstallationMeasurement039ByUepAndAnpCodAsync(DADOS_BASICOS_039 basicData, string acronym)
+        {
+            switch (acronym)
+            {
+                case "039":
+                    {
+                        return await _context.Installations
+                         .FirstOrDefaultAsync(x => x.UepCod == basicData.DHA_COD_INSTALACAO_039 && x.CodInstallationAnp == basicData.DHA_COD_INSTALACAO_039);
+                    }
+
+                case "001":
+                    return await _context.Installations
+                        .FirstOrDefaultAsync(x => x.UepCod == basicData.DHA_COD_INSTALACAO_039 && x.CodInstallationAnp == basicData.DHA_COD_INSTALACAO_039);
+
+            }
+
+            return await _context.Installations
+                        .FirstOrDefaultAsync(x => x.UepCod == basicData.DHA_COD_INSTALACAO_039 && x.CodInstallationAnp == basicData.DHA_COD_INSTALACAO_039);
         }
 
         public async Task<Installation?> GetByIdAsync(Guid? id)

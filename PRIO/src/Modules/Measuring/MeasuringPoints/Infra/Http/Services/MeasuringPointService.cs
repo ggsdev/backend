@@ -96,6 +96,7 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Services
 
             var beforeChangesMeasuringPoint = _mapper.Map<MeasuringPointHistoryDTO>(measuringPoint);
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(measuringPoint, body);
+
             if (updatedProperties.Any() is false)
                 throw new BadRequestException(ErrorMessages.UpdateToExistingValues<MeasuringPointDTO>());
 

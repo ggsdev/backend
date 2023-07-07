@@ -41,7 +41,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                 Description = body.Description is not null ? body.Description : null,
                 User = user,
                 IsActive = body.IsActive is not null ? body.IsActive.Value : true,
-                CodCluster = body.CodCluster is not null ? body.CodCluster : GenerateCode.Generate(body.Name)
+                CodCluster = body.CodCluster is not null ? body.CodCluster : "N/A"
             };
 
             await _clusterRepository.AddClusterAsync(cluster);

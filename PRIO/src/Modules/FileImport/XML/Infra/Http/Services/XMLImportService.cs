@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XML.Dtos;
@@ -8,50 +7,49 @@ using PRIO.src.Modules.FileImport.XML.FileContent._001;
 using PRIO.src.Modules.FileImport.XML.FileContent._002;
 using PRIO.src.Modules.FileImport.XML.FileContent._003;
 using PRIO.src.Modules.FileImport.XML.FileContent._039;
+using PRIO.src.Modules.FileImport.XML.Infra.EF.Interfaces;
+using PRIO.src.Modules.FileImport.XML.Infra.Utils;
 using PRIO.src.Modules.FileImport.XML.ViewModels;
+using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
-using PRIO.src.Shared.Infra.Http.Filters;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace PRIO.Controllers
+namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 {
-    [ApiController]
-    [Route("measurements")]
-    [ServiceFilter(typeof(AuthorizationFilter))]
-    public partial class XMLController : ControllerBase
+    public partial class XMLImportService
     {
         private readonly IMapper _mapper;
         private readonly DTOFiles _responseResult;
+        private readonly DataContext _context;
+        private readonly IInstallationRepository _installationRepository;
+        private readonly IXMLImportRepository _repository;
 
         [GeneratedRegex("(?<=data:@file/xml;base64,)\\w+")]
         private static partial Regex XmlRegex();
-        public XMLController(IMapper mapper)
+        public XMLImportService(IMapper mapper, DataContext dataContext, IInstallationRepository installationRepository, IXMLImportRepository xMLImportRepository)
         {
             _mapper = mapper;
             _responseResult = new();
+            _context = dataContext;
+            _installationRepository = installationRepository;
+            _repository = xMLImportRepository;
         }
 
-        [HttpPost]
-        public async Task<ActionResult> PostBase64Files([FromBody] RequestXmlViewModel data, [FromServices] DataContext context)
+        public async Task<DTOFiles> Import(RequestXmlViewModel data, User user)
         {
-            var user = HttpContext.Items["User"] as User;
 
-            for (int i = 0; i < data.Files.Count; ++i)
+            for (int i = 0; i < data?.Files?.Count; ++i)
             {
                 #region validations
                 var match = XmlRegex().Match(data.Files[i].ContentBase64);
                 if (!match.Success)
-                    return BadRequest(new ErrorResponseDTO
-                    {
-                        Message = $"One file has a non-XML extension. Failed to post file position in the list: {i} with file name: {data.Files[i].FileName}"
-
-                    });
+                    throw new BadRequestException($"One file has a non-XML extension. Failed to post file position in the list: {i} with file name: {data.Files[i].FileName}");
 
                 var fileContent = data.Files[i].ContentBase64?.Replace("data:@file/xml;base64,", "");
 
@@ -64,10 +62,8 @@ namespace PRIO.Controllers
                     }.Contains(data.Files[i].FileName);
 
                 if (!isValidFileName)
-                    return BadRequest(new ErrorResponseDTO
-                    {
-                        Message = $"Invalid file name. Supported names are: 001, 002, 003, 039. Failed to post file position in the list: {i} with the file name: {data.Files[i].FileName}"
-                    });
+                    throw new BadRequestException($"Invalid file name. Supported names are: 001, 002, 003, 039. Failed to post file position in the list: {i} with the file name: {data.Files[i].FileName}");
+
                 #endregion
 
                 #region pathing
@@ -91,7 +87,7 @@ namespace PRIO.Controllers
                 {
                     var result = Functions.CheckFormat(pathXml, pathSchema);
                     if (result is not null && result.Count > 0)
-                        return BadRequest(new { Message = result });
+                        throw new BadRequestException(string.Join(",", result));
                 }
 
                 var documentXml = XDocument.Load(pathXml);
@@ -102,10 +98,7 @@ namespace PRIO.Controllers
                 var dadosBasicosElements = rootElement?.Elements("LISTA_DADOS_BASICOS")?.Elements("DADOS_BASICOS");
 
                 if (dadosBasicosElements is null)
-                    return BadRequest(new ErrorResponseDTO
-                    {
-                        Message = "LISTA_DADOS_BASICOS XML element cant be null"
-                    });
+                    throw new BadRequestException("LISTA_DADOS_BASICOS XML element cant be null");
                 #endregion
 
                 for (int k = 0; k < dadosBasicosElements.Count(); ++k)
@@ -118,24 +111,27 @@ namespace PRIO.Controllers
                         case "039":
                             {
                                 #region elementos XML
-                                var dadosBasicos = dadosBasicosElement is not null ? Functions.DeserializeXml<DADOS_BASICOS_039>(dadosBasicosElement) : null;
+                                var dadosBasicos = Functions.DeserializeXml<DADOS_BASICOS_039>(dadosBasicosElement);
                                 #endregion
                                 try
                                 {
-                                    var installation = await context.Installations
-                                            .FirstOrDefaultAsync(x => x.UepCod == dadosBasicos.DHA_COD_INSTALACAO_039 && x.CodInstallationAnp == dadosBasicos.DHA_COD_INSTALACAO_039);
+                                    var installation = await _installationRepository
+                                        .GetInstallationMeasurement039ByUepAndAnpCodAsync(dadosBasicos, XmlUtils.FileAcronym039);
 
                                     var measurement = _mapper.Map<Measurement>(dadosBasicos);
                                     measurement.FileType = new FileType
                                     {
                                         Name = data.Files[i].FileName,
-                                        Acronym = "EFM",
+                                        Acronym = XmlUtils.FileAcronym039,
 
                                     };
+
                                     measurement.User = user;
+
                                     if (installation is not null)
                                         measurement.Installation = installation;
-                                    await context.Measurements.AddAsync(measurement);
+
+                                    await _context.Measurements.AddAsync(measurement);
 
                                     var measurement039DTO = _mapper.Map<Measurement, _039DTO>(measurement);
                                     _responseResult._039File ??= new List<_039DTO>();
@@ -144,10 +140,7 @@ namespace PRIO.Controllers
                                 catch (Exception ex)
                                 {
                                     Console.WriteLine(ex);
-                                    return BadRequest(new ErrorResponseDTO
-                                    {
-                                        Message = $"Something went wrong: {ex.Message}"
-                                    });
+                                    throw new BadRequestException($"Something went wrong: {ex.Message}");
                                 }
                                 break;
                             }
@@ -176,9 +169,9 @@ namespace PRIO.Controllers
                                 #endregion
                                 if (dadosBasicos is not null)
                                 {
-                                    var installation = await context.Installations
+                                    var installation = await _context.Installations
                                        .FirstOrDefaultAsync(x => x.UepCod == dadosBasicos.COD_INSTALACAO_001 && x.CodInstallationAnp == dadosBasicos.COD_INSTALACAO_001);
-                                    //var equipment = await context.MeasuringEquipments
+                                    //var equipment = await _context.MeasuringEquipments
                                     //       .FirstOrDefaultAsync(x => x.TagMeasuringPoint == dadosBasicos.COD_TAG_PONTO_MEDICAO_001);
 
                                     try
@@ -314,7 +307,7 @@ namespace PRIO.Controllers
                                             FileType = new FileType
                                             {
                                                 Name = data.Files[i].FileName,
-                                                Acronym = "PMO",
+                                                Acronym = XmlUtils.FileAcronym001,
 
                                             },
                                             #endregion
@@ -328,7 +321,7 @@ namespace PRIO.Controllers
                                         if (installation is not null)
                                             measurement.Installation = installation;
 
-                                        await context.Measurements.AddAsync(measurement);
+                                        await _context.Measurements.AddAsync(measurement);
 
                                         var measurement001DTO = _mapper.Map<Measurement, _001DTO>(measurement);
                                         _responseResult._001File ??= new List<_001DTO>();
@@ -337,10 +330,7 @@ namespace PRIO.Controllers
                                     catch (Exception ex)
                                     {
                                         Console.WriteLine(ex);
-                                        return BadRequest(new ErrorResponseDTO
-                                        {
-                                            Message = $"Something went wrong: {ex.Message}"
-                                        });
+                                        throw new BadRequestException($"Something went wrong: {ex.Message}");
                                     }
                                 }
 
@@ -372,7 +362,7 @@ namespace PRIO.Controllers
 
                                 #endregion
 
-                                var installation = await context.Installations
+                                var installation = await _context.Installations
                                       .FirstOrDefaultAsync(x => x.UepCod == dadosBasicos.COD_INSTALACAO_002 && x.CodInstallationAnp == dadosBasicos.COD_INSTALACAO_002);
                                 try
                                 {
@@ -528,7 +518,7 @@ namespace PRIO.Controllers
                                         FileType = new FileType
                                         {
                                             Name = data.Files[i].FileName,
-                                            Acronym = "PMGL",
+                                            Acronym = XmlUtils.FileAcronym002,
 
                                         },
                                         #endregion
@@ -543,7 +533,7 @@ namespace PRIO.Controllers
                                     if (installation is not null)
                                         measurement.Installation = installation;
 
-                                    await context.AddAsync(measurement);
+                                    await _context.AddAsync(measurement);
                                     var measurement002DTO = _mapper.Map<Measurement, _002DTO>(measurement);
                                     _responseResult._002File ??= new List<_002DTO>();
                                     _responseResult._002File?.Add(measurement002DTO);
@@ -552,10 +542,8 @@ namespace PRIO.Controllers
                                 catch (Exception ex)
                                 {
                                     Console.WriteLine(ex);
-                                    return BadRequest(new ErrorResponseDTO
-                                    {
-                                        Message = $"Something went wrong: {ex.Message}"
-                                    });
+                                    throw new BadRequestException($"Something went wrong: {ex.Message}"
+                                    );
                                 }
 
                                 break;
@@ -601,7 +589,7 @@ namespace PRIO.Controllers
                                 var producao = producaoElement is not null ? Functions.DeserializeXml<PRODUCAO_003>(producaoElement) : null;
                                 #endregion
 
-                                var installation = await context.Installations
+                                var installation = await _context.Installations
                                       .FirstOrDefaultAsync(x => x.UepCod == dadosBasicos.COD_INSTALACAO_003 && x.CodInstallationAnp == dadosBasicos.COD_INSTALACAO_003);
 
                                 try
@@ -736,7 +724,7 @@ namespace PRIO.Controllers
                                         FileType = new FileType
                                         {
                                             Name = data.Files[i].FileName,
-                                            Acronym = "PMGD",
+                                            Acronym = XmlUtils.FileAcronym003,
 
                                         },
                                         #endregion
@@ -751,7 +739,7 @@ namespace PRIO.Controllers
                                     if (installation is not null)
                                         measurement.Installation = installation;
 
-                                    await context.Measurements.AddAsync(measurement);
+                                    await _context.Measurements.AddAsync(measurement);
                                     var measurement003DTO = _mapper.Map<Measurement, _003DTO>(measurement);
                                     _responseResult._003File ??= new List<_003DTO>();
                                     _responseResult._003File?.Add(measurement003DTO);
@@ -759,10 +747,7 @@ namespace PRIO.Controllers
                                 catch (Exception ex)
                                 {
                                     Console.WriteLine(ex);
-                                    return BadRequest(new ErrorResponseDTO
-                                    {
-                                        Message = $"Something went wrong: {ex.Message}"
-                                    });
+                                    throw new BadRequestException($"Something went wrong: {ex.Message}");
                                 }
                             }
                             break;
@@ -771,80 +756,8 @@ namespace PRIO.Controllers
                     }
                 }
             }
-            await context.SaveChangesAsync();
-
-            return Created("measurements", _responseResult);
+            await _context.SaveChangesAsync();
+            return _responseResult;
         }
-
-        [HttpGet]
-        public async Task<IActionResult> GetAll([FromServices] DataContext context, [FromQuery] string? acronym, [FromQuery] string? name)
-        {
-            var filesQuery = context.FileTypes.Include(x => x.Measurements).ThenInclude(m => m.User);
-
-            if (!string.IsNullOrEmpty(acronym))
-            {
-                var possibleAcronymValues = new List<string> { "PMO", "PMGL", "PMGD", "EFM" };
-                var isValidValue = possibleAcronymValues.Contains(acronym.ToUpper().Trim());
-                if (!isValidValue)
-                    return BadRequest(new ErrorResponseDTO
-                    {
-                        Message = $"Acronym valid values are: PMO, PMGL, PMGD, EFM"
-                    });
-
-                filesQuery = context.FileTypes
-                   .Where(x => x.Acronym == acronym)
-                   .Include(x => x.Measurements)
-                   .ThenInclude(m => m.User);
-            }
-
-            if (!string.IsNullOrEmpty(name))
-            {
-                var possibleNameValues = new List<string> { "001", "002", "003", "039" };
-                var isValidValue = possibleNameValues.Contains(name.ToUpper().Trim());
-                if (!isValidValue)
-                    return BadRequest(new ErrorResponseDTO
-                    {
-                        Message = "Name valid values are: 001, 002, 003, 039"
-                    });
-
-                filesQuery = context.FileTypes
-                    .Where(x => x.Name == name)
-                    .Include(x => x.Measurements)
-                    .ThenInclude(m => m.User);
-            }
-
-            var files = await filesQuery.ToListAsync();
-            var measurements = files.SelectMany(file => file.Measurements);
-
-            foreach (var measurement in measurements)
-            {
-                switch (measurement.FileType.Name)
-                {
-                    case "001":
-                        _responseResult._001File ??= new List<_001DTO>();
-                        _responseResult._001File.Add(_mapper.Map<_001DTO>(measurement));
-                        break;
-
-                    case "002":
-                        _responseResult._002File ??= new List<_002DTO>();
-                        _responseResult._002File.Add(_mapper.Map<_002DTO>(measurement));
-                        break;
-
-                    case "003":
-                        _responseResult._003File ??= new List<_003DTO>();
-                        _responseResult._003File.Add(_mapper.Map<_003DTO>(measurement));
-                        break;
-
-                    case "039":
-                        _responseResult._039File ??= new List<_039DTO>();
-                        _responseResult._039File.Add(_mapper.Map<_039DTO>(measurement));
-                        break;
-                }
-            }
-
-            return Ok(_responseResult);
-        }
-
     }
 }
-
