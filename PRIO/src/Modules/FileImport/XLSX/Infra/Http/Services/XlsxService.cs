@@ -76,7 +76,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
             {
                 var error = new XlsErrorImportDTO
                 {
-                    Message = "Alguma(s) colunas(s) de título da planilha não possuem o valor esperado.",
+                    Message = "Alguma(s) coluna(s) de título da planilha não possuem o valor esperado.",
                     Errors = errors
                 };
                 throw new BadRequestException(error.Message, error.Errors);
