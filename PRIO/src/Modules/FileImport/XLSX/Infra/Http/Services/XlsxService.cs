@@ -440,7 +440,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
             }
 
             if (entityDictionary.Values.Count <= 0 && updatedDictionary.Values.Count <= 0 && errorCount >= 1)
-                throw new BadRequestException($"Nenhum item foi adicionado ou atualizado, pois tiveram: {errorCount} linhas com informações obrigatórias em branco.", status: "Error");
+                throw new BadRequestException($"Nenhum item foi adicionado ou atualizado, tiveram: {errorCount} linhas com informações obrigatórias em branco.", status: "Error");
 
             if (entityDictionary.Values.Count <= 0 && updatedDictionary.Values.Count <= 0)
                 throw new BadRequestException("Nenhum item foi adicionado ou atualizado.", status: "Error");
