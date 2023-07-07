@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Clusters.Dtos;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Completions.Dtos;
@@ -50,6 +51,7 @@ namespace PRIO.TESTS.Hierarquies.Completions
         private IWellRepository _wellRepository;
         private IReservoirRepository _reservoirRepository;
         private SystemHistoryService _systemHistoryService;
+        private UserService _userService;
 
         private CreateCompletionViewModel _createViewModel;
         private UpdateCompletionViewModel _updateViewModel;
@@ -113,8 +115,9 @@ namespace PRIO.TESTS.Hierarquies.Completions
             _completionRepository = new CompletionRepository(_context);
             _wellRepository = new WellRepository(_context);
             _reservoirRepository = new ReservoirRepository(_context);
+            _userService = new UserService(_context, _mapper);
 
-            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository);
+            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository, _userService);
 
             _service = new CompletionService(_mapper, _completionRepository,
                 _wellRepository, _reservoirRepository,
