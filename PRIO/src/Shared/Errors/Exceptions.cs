@@ -3,6 +3,7 @@
     public class BadRequestException : Exception
     {
         public List<string>? Errors { get; }
+        public string ReturnStatus { get; } = string.Empty;
 
         public BadRequestException()
         {
@@ -12,6 +13,12 @@
             : base(message)
         {
         }
+        public BadRequestException(string message, string status)
+            : base(message)
+        {
+            ReturnStatus = status;
+        }
+
         public BadRequestException(string message, List<string> errors)
             : base(message)
         {
