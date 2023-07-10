@@ -407,6 +407,6 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models
         public FileType? FileType { get; set; }
         public User? User { get; set; }
 
-        public Installation? Installation { get; set; }
+        public Installation Installation { get; set; }
     }
 }

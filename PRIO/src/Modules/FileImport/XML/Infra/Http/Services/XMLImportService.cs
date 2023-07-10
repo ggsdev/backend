@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.FileImport.XLSX.Dtos;
 using PRIO.src.Modules.FileImport.XML.Dtos;
 using PRIO.src.Modules.FileImport.XML.FileContent;
 using PRIO.src.Modules.FileImport.XML.FileContent._001;
@@ -8,7 +9,6 @@ using PRIO.src.Modules.FileImport.XML.FileContent._002;
 using PRIO.src.Modules.FileImport.XML.FileContent._003;
 using PRIO.src.Modules.FileImport.XML.FileContent._039;
 using PRIO.src.Modules.FileImport.XML.Infra.EF.Interfaces;
-using PRIO.src.Modules.FileImport.XML.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XML.Infra.Utils;
 using PRIO.src.Modules.FileImport.XML.ViewModels;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
@@ -43,9 +43,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             _repository = xMLImportRepository;
         }
 
-        public async Task<DTOFiles> Import(RequestXmlViewModel data, User user)
+        public async Task<DTOFiles> Validate(RequestXmlViewModel data, User user)
         {
-
             for (int i = 0; i < data?.Files?.Count; ++i)
             {
                 #region validations
@@ -115,6 +114,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                 #region elementos XML
                                 var dadosBasicos = Functions.DeserializeXml<DADOS_BASICOS_039>(dadosBasicosElement);
                                 #endregion
+
                                 try
                                 {
                                     var installation = await _installationRepository
@@ -394,7 +394,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                         contains = true;
 
                                 if (contains is false)
-                                    throw new BadRequestException($"Ponto de medição não cadastrado, arquivo: ${data.Files[i].FileName}, TAG: {equipment?.TagMeasuringPoint}");
+                                    throw new BadRequestException($"Ponto de medição não cadastrado, arquivo: {data.Files[i].FileName}, TAG inválida ou não existente");
 
                                 try
                                 {
@@ -639,7 +639,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                         contains = true;
 
                                 if (contains is false)
-                                    throw new BadRequestException($"Ponto de medição não cadastrado, arquivo: ${data.Files[i].FileName}, TAG: {equipment?.TagMeasuringPoint}");
+                                    throw new BadRequestException($"Ponto de medição não cadastrado, arquivo: {data.Files[i].FileName}, TAG inválida ou não existente");
 
                                 try
                                 {
@@ -798,23 +798,195 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     }
                 }
 
-                var importId = Guid.NewGuid();
-                var importedFile = new ImportedFile
-                {
-                    Id = importId,
-                    Content = data.Files[i].ContentBase64,
-                    FileType = data.Files[i].FileName,
-
-                };
-
-                await _context.AddAsync(importedFile);
             }
-            await _context.SaveChangesAsync();
-
 
             return _responseResult;
         }
 
+        public async Task<ImportResponseDTO> Import(DTOFiles data, User user)
+        {
 
+            foreach (var file in data._001File)
+            {
+                var measurement = _mapper.Map<_001DTO, Measurement>(file);
+
+                var measurementExists = await _context.Measurements
+                  .AnyAsync(x => x.Id == measurement.Id);
+
+                if (measurementExists is true)
+                    throw new ConflictException($"Medição com número de série: {measurement.NUM_SERIE_ELEMENTO_PRIMARIO_001} já cadastrada.");
+
+                var installation = await _context.Installations
+                                      .FirstOrDefaultAsync(x => x.UepCod == measurement.COD_INSTALACAO_001 && x.CodInstallationAnp == measurement.COD_INSTALACAO_001);
+
+                if (installation is null)
+                    throw new NotFoundException($"{ErrorMessages.NotFound<Installation>()} Código: {measurement.COD_INSTALACAO_001}");
+
+                measurement.User = user;
+
+                measurement.FileType = new FileType
+                {
+                    Name = XmlUtils.File001,
+                    Acronym = XmlUtils.FileAcronym001,
+                };
+
+                measurement.Installation = installation;
+
+                await _context.Measurements.AddAsync(measurement);
+            }
+
+            foreach (var file in data._002File)
+            {
+                var measurement = _mapper.Map<_002DTO, Measurement>(file);
+
+                var measurementExists = await _context.Measurements
+                  .AnyAsync(x => x.Id == measurement.Id);
+
+                if (measurementExists is true)
+                    throw new ConflictException($"Medição com número de série: {measurement.NUM_SERIE_ELEMENTO_PRIMARIO_002} já cadastrada.");
+
+                var installation = await _context.Installations
+                                      .FirstOrDefaultAsync(x => x.UepCod == measurement.COD_INSTALACAO_002 && x.CodInstallationAnp == measurement.COD_INSTALACAO_002);
+
+                if (installation is null)
+                    throw new NotFoundException($"{ErrorMessages.NotFound<Installation>()} Código: {measurement.COD_INSTALACAO_002}");
+
+                measurement.User = user;
+
+                measurement.FileType = new FileType
+                {
+                    Name = XmlUtils.File002,
+                    Acronym = XmlUtils.FileAcronym002,
+
+                };
+                measurement.Installation = installation;
+                await _context.Measurements.AddAsync(measurement);
+
+            }
+
+            foreach (var file in data._003File)
+            {
+                var measurement = _mapper.Map<_003DTO, Measurement>(file);
+                var measurementExists = await _context.Measurements
+                  .AnyAsync(x => x.Id == measurement.Id);
+
+                if (measurementExists is true)
+                    throw new ConflictException($"Medição com número de série: {measurement.NUM_SERIE_ELEMENTO_PRIMARIO_003} já cadastrada.");
+
+                var installation = await _context.Installations
+                                      .FirstOrDefaultAsync(x => x.UepCod == measurement.COD_INSTALACAO_003 && x.CodInstallationAnp == measurement.COD_INSTALACAO_003);
+
+                if (installation is null)
+                    throw new NotFoundException($"{ErrorMessages.NotFound<Installation>()} Código: {measurement.COD_INSTALACAO_003}");
+
+                measurement.User = user;
+
+                measurement.FileType = new FileType
+                {
+                    Name = XmlUtils.File003,
+                    Acronym = XmlUtils.FileAcronym003,
+
+                };
+                measurement.Installation = installation;
+                await _context.Measurements.AddAsync(measurement);
+
+            }
+
+            foreach (var file in data._039File)
+            {
+                var measurement = _mapper.Map<_039DTO, Measurement>(file);
+                var measurementExists = await _context.Measurements
+                  .AnyAsync(x => x.Id == measurement.Id);
+
+                if (measurementExists is true)
+                    throw new ConflictException($"Medição com código de falha: {measurement.COD_FALHA_039} já cadastrada.");
+
+                var installation = await _context.Installations
+                                      .FirstOrDefaultAsync(x => x.UepCod == measurement.DHA_COD_INSTALACAO_039 && x.CodInstallationAnp == measurement.DHA_COD_INSTALACAO_039);
+
+                if (installation is null)
+                    throw new NotFoundException($"{ErrorMessages.NotFound<Installation>()} Código: {measurement.DHA_COD_INSTALACAO_039}");
+
+                measurement.User = user;
+
+                measurement.FileType = new FileType
+                {
+                    Name = XmlUtils.File039,
+                    Acronym = XmlUtils.FileAcronym039,
+
+                };
+                measurement.Installation = installation;
+                await _context.Measurements.AddAsync(measurement);
+            }
+
+            await _context.SaveChangesAsync();
+
+            return new ImportResponseDTO { Status = "Success", Message = $"Arquivo importado com sucesso, {_context.Measurements.Count()} medições importadas" };
+        }
+
+        public async Task<DTOFiles> GetAll(string? acronym, string? name)
+        {
+            var filesQuery = _context.FileTypes
+                .Include(x => x.Measurements).ThenInclude(m => m.User);
+
+            if (!string.IsNullOrEmpty(acronym))
+            {
+                var possibleAcronymValues = new List<string> { "PMO", "PMGL", "PMGD", "EFM" };
+                var isValidValue = possibleAcronymValues.Contains(acronym.ToUpper().Trim());
+                if (!isValidValue)
+                    throw new BadRequestException("Acronym valid values are: PMO, PMGL, PMGD, EFM"
+                    );
+
+                filesQuery = _context.FileTypes
+                   .Where(x => x.Acronym == acronym)
+                   .Include(x => x.Measurements)
+                   .ThenInclude(m => m.User);
+            }
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                var possibleNameValues = new List<string> { "001", "002", "003", "039" };
+                var isValidValue = possibleNameValues.Contains(name.ToUpper().Trim());
+                if (!isValidValue)
+                    throw new BadRequestException("Name valid values are: 001, 002, 003, 039"
+                   );
+
+                filesQuery = _context.FileTypes
+                    .Where(x => x.Name == name)
+                    .Include(x => x.Measurements)
+                    .ThenInclude(m => m.User);
+            }
+
+            var files = await filesQuery.ToListAsync();
+            var measurements = files.SelectMany(file => file.Measurements);
+
+            foreach (var measurement in measurements)
+            {
+                switch (measurement.FileType?.Name)
+                {
+                    case "001":
+                        _responseResult._001File ??= new List<_001DTO>();
+                        _responseResult._001File.Add(_mapper.Map<_001DTO>(measurement));
+                        break;
+
+                    case "002":
+                        _responseResult._002File ??= new List<_002DTO>();
+                        _responseResult._002File.Add(_mapper.Map<_002DTO>(measurement));
+                        break;
+
+                    case "003":
+                        _responseResult._003File ??= new List<_003DTO>();
+                        _responseResult._003File.Add(_mapper.Map<_003DTO>(measurement));
+                        break;
+
+                    case "039":
+                        _responseResult._039File ??= new List<_039DTO>();
+                        _responseResult._039File.Add(_mapper.Map<_039DTO>(measurement));
+                        break;
+                }
+            }
+
+            return _responseResult;
+        }
     }
 }

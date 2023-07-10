@@ -1,7 +1,4 @@
-﻿using PRIO.src.Modules.Hierarchy.Installations.Dtos;
-using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
-
-namespace PRIO.src.Modules.FileImport.XML.Dtos
+﻿namespace PRIO.src.Modules.FileImport.XML.Dtos
 {
     public class _001DTO
     {
@@ -26,6 +23,7 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public double? ICE_METER_FACTOR_8_001 { get; set; }
         public double? ICE_METER_FACTOR_9_001 { get; set; }
         public double? ICE_METER_FACTOR_10_001 { get; set; }
+
         public double? ICE_METER_FACTOR_11_001 { get; set; }
         public double? ICE_METER_FACTOR_12_001 { get; set; }
         public double? ICE_METER_FACTOR_13_001 { get; set; }
@@ -118,8 +116,6 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public double? MED_VOLUME_LIQUIDO_MVMDO_001 { get; set; }
         public double? MED_VOLUME_TTLZO_FIM_PRDO_001 { get; set; }
         public double? MED_VOLUME_TTLZO_INCO_PRDO_001 { get; set; }
-        public FileType? FileType { get; set; }
-        public InstallationWithoutClusterDTO? Installation { get; set; }
 
     }
 }

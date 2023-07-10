@@ -64,21 +64,28 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
                 string.IsNullOrEmpty(src.DHA_MEDICAO_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_MEDICAO_039, "dd/MM/yyyy", CultureInfo.InvariantCulture)));
 
             CreateMap<Measurement, _039DTO>();
+            CreateMap<_039DTO, Measurement>();
             #endregion
 
             #region 001
             CreateMap<_001PMO, Measurement>();
             CreateMap<Measurement, _001DTO>();
+            CreateMap<_001DTO, Measurement>();
+
             #endregion
 
             #region 002
             CreateMap<_002PMGL, Measurement>();
             CreateMap<Measurement, _002DTO>();
+            CreateMap<_002DTO, Measurement>();
+
             #endregion
 
             #region 003
             CreateMap<_003PMGD, Measurement>();
             CreateMap<Measurement, _003DTO>();
+            CreateMap<_003DTO, Measurement>();
+
             #endregion
 
             #region Control Access
@@ -110,6 +117,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<Installation, CreateUpdateInstallationDTO>();
             CreateMap<Installation, InstallationHistoryDTO>();
             CreateMap<Installation, InstallationWithoutClusterDTO>();
+            CreateMap<InstallationWithoutClusterDTO, Installation>();
             CreateMap<Installation, InstallationWithFieldsEquipmentsDTO>();
 
             CreateMap<Field, FieldDTO>();

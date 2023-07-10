@@ -1,11 +1,9 @@
-﻿using PRIO.src.Modules.Hierarchy.Installations.Dtos;
-using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
-
-namespace PRIO.src.Modules.FileImport.XML.Dtos
+﻿namespace PRIO.src.Modules.FileImport.XML.Dtos
 {
     public class _002DTO
     {
         public Guid Id { get; set; }
+        public Guid? ImportId { get; set; }
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_002 { get; set; }
         public string? COD_INSTALACAO_002 { get; set; }
         public string? COD_TAG_PONTO_MEDICAO_002 { get; set; }
@@ -126,9 +124,6 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public double? PRZ_DURACAO_FLUXO_EFETIVO_002 { get; set; }
         public double? MED_BRUTO_MOVIMENTADO_002 { get; set; }
         public double? MED_CORRIGIDO_MVMDO_002 { get; set; }
-        public FileType? FileType { get; set; }
-        public InstallationWithoutClusterDTO? Installation { get; set; }
-
 
     }
 }
