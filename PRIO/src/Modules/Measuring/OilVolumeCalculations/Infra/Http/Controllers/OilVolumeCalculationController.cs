@@ -53,7 +53,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                 foreach (var tog in body.TOGs)
                 {
                     var MeasuringPoint = await _context.MeasuringPoints.Where(x => x.Id == tog.MeasuringPointId).FirstOrDefaultAsync() ?? throw new NotFoundException("Equipamento TOG não encontrado.");
-                    var togFound = await _context.Sections
+                    var togFound = await _context.TOGRecoveredOils
                         .Include(x => x.OilVolumeCalculation)
                         .ThenInclude(x => x.Installation)
                         .Include(x => x.MeasuringPoint)
@@ -67,7 +67,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                 foreach (var dor in body.DORs)
                 {
                     var MeasuringPoint = await _context.MeasuringPoints.Where(x => x.Id == dor.MeasuringPointId).FirstOrDefaultAsync() ?? throw new NotFoundException("Equipamento DOR não encontrado");
-                    var dorFound = await _context.Sections
+                    var dorFound = await _context.DORs
                        .Include(x => x.OilVolumeCalculation)
                        .ThenInclude(x => x.Installation)
                        .Include(x => x.MeasuringPoint)
@@ -81,7 +81,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                 foreach (var drain in body.Drains)
                 {
                     var MeasuringPoint = await _context.MeasuringPoints.Where(x => x.Id == drain.MeasuringPointId).FirstOrDefaultAsync() ?? throw new NotFoundException("Equipamento Dreno não encontrado.");
-                    var drainFound = await _context.Sections
+                    var drainFound = await _context.DrainVolumes
                        .Include(x => x.OilVolumeCalculation)
                        .ThenInclude(x => x.Installation)
                        .Include(x => x.MeasuringPoint)
@@ -319,57 +319,61 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
             if (body.Sections is not null)
                 foreach (var section in body.Sections)
                 {
-                    var MeasuringPoint = await _context.MeasuringPoints.Where(x => x.Id == section.MeasuringPointId).FirstOrDefaultAsync() ?? throw new NotFoundException("Equipment section is not found.");
+                    var measuringPoint = await _context.MeasuringPoints.Where(x => x.Id == section.MeasuringPointId).FirstOrDefaultAsync() ?? throw new NotFoundException("Equipment section is not found.");
                     var sectionFound = await _context.Sections
                         .Include(x => x.OilVolumeCalculation)
                         .ThenInclude(x => x.Installation)
                         .Include(x => x.MeasuringPoint)
-                        .Where(x => !x.MeasuringPoint.Id.Equals(section.MeasuringPointId))
+                        .Where(x => !x.OilVolumeCalculation.Id.Equals(installationInDatabase.OilVolumeCalculation.Id))
+                        .Where(x => x.MeasuringPoint.Id.Equals(section.MeasuringPointId))
                         .FirstOrDefaultAsync();
                     if (sectionFound is not null)
-                        throw new ConflictException($"Equipamento pra ser atualizado possui relação com outra instalação ({sectionFound.OilVolumeCalculation.Installation.Name}).");
+                        throw new ConflictException($"Equipamento para ser atualizado possui relação com outra instalação ({sectionFound.OilVolumeCalculation.Installation.Name}).");
                 }
 
             if (body.TOGs is not null)
                 foreach (var tog in body.TOGs)
                 {
-                    var MeasuringPoint = await _context.MeasuringPoints.Where(x => x.Id == tog.MeasuringPointId).FirstOrDefaultAsync() ?? throw new NotFoundException("Equipment TOG is not found.");
-                    var togFound = await _context.Sections
+                    var measuringPoint = await _context.MeasuringPoints.Where(x => x.Id == tog.MeasuringPointId).FirstOrDefaultAsync() ?? throw new NotFoundException("Equipment TOG is not found.");
+                    var togFound = await _context.TOGRecoveredOils
                         .Include(x => x.OilVolumeCalculation)
                         .ThenInclude(x => x.Installation)
                         .Include(x => x.MeasuringPoint)
-                        .Where(x => !x.MeasuringPoint.Id.Equals(tog.MeasuringPointId))
+                        .Where(x => !x.OilVolumeCalculation.Id.Equals(installationInDatabase.OilVolumeCalculation.Id))
+                        .Where(x => x.MeasuringPoint.Id.Equals(tog.MeasuringPointId))
                         .FirstOrDefaultAsync();
                     if (togFound is not null)
-                        throw new ConflictException($"Equipamento pra ser atualizado possui relação com outra instalação ({togFound.OilVolumeCalculation.Installation.Name}).");
+                        throw new ConflictException($"Equipamento para ser atualizado possui relação com outra instalação ({togFound.OilVolumeCalculation.Installation.Name}).");
                 }
 
             if (body.DORs is not null)
                 foreach (var dor in body.DORs)
                 {
-                    var MeasuringPoint = await _context.MeasuringPoints.Where(x => x.Id == dor.MeasuringPointId).FirstOrDefaultAsync() ?? throw new NotFoundException("Equipment DOR is not found.");
-                    var dorFound = await _context.Sections
+                    var measuringPoint = await _context.MeasuringPoints.Where(x => x.Id == dor.MeasuringPointId).FirstOrDefaultAsync() ?? throw new NotFoundException("Equipment DOR is not found.");
+                    var dorFound = await _context.DORs
                         .Include(x => x.OilVolumeCalculation)
                         .ThenInclude(x => x.Installation)
                         .Include(x => x.MeasuringPoint)
-                        .Where(x => !x.MeasuringPoint.Id.Equals(dor.MeasuringPointId))
+                        .Where(x => !x.OilVolumeCalculation.Id.Equals(installationInDatabase.OilVolumeCalculation.Id))
+                        .Where(x => x.MeasuringPoint.Id.Equals(dor.MeasuringPointId))
                         .FirstOrDefaultAsync();
                     if (dorFound is not null)
-                        throw new ConflictException($"Equipamento pra ser atualizado possui relação com outra instalação ({dorFound.OilVolumeCalculation.Installation.Name}).");
+                        throw new ConflictException($"Equipamento para ser atualizado possui relação com outra instalação ({dorFound.OilVolumeCalculation.Installation.Name}).");
                 }
 
             if (body.Drains is not null)
                 foreach (var drain in body.Drains)
                 {
-                    var MeasuringPoint = await _context.MeasuringPoints.Where(x => x.Id == drain.MeasuringPointId).FirstOrDefaultAsync() ?? throw new NotFoundException("Equipment Drain is not found.");
-                    var drainFound = await _context.Sections
+                    var measuringPoint = await _context.MeasuringPoints.Where(x => x.Id == drain.MeasuringPointId).FirstOrDefaultAsync() ?? throw new NotFoundException("Equipment Drain is not found.");
+                    var drainFound = await _context.DrainVolumes
                         .Include(x => x.OilVolumeCalculation)
                         .ThenInclude(x => x.Installation)
                         .Include(x => x.MeasuringPoint)
-                        .Where(x => !x.MeasuringPoint.Id.Equals(drain.MeasuringPointId))
+                        .Where(x => !x.OilVolumeCalculation.Id.Equals(installationInDatabase.OilVolumeCalculation.Id))
+                        .Where(x => x.MeasuringPoint.Id.Equals(drain.MeasuringPointId))
                         .FirstOrDefaultAsync();
                     if (drainFound is not null)
-                        throw new ConflictException($"Equipamento pra ser atualizado possui relação com outra instalação ({drainFound.OilVolumeCalculation.Installation.Name}).");
+                        throw new ConflictException($"Equipamento para ser atualizado possui relação com outra instalação ({drainFound.OilVolumeCalculation.Installation.Name}).");
                 }
 
             var oilCalculationInDatabase = await _context.OilVolumeCalculations
@@ -479,57 +483,118 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
             if (body.Sections is not null)
                 foreach (var section in body.Sections)
                 {
+                    Console.WriteLine("section");
                     var MeasuringPoint = await _context.MeasuringPoints.Where(x => x.Id == section.MeasuringPointId).FirstOrDefaultAsync() ?? throw new NotFoundException("Equipment section is not found.");
                     var sectionFound = await _context.Sections
                         .Include(x => x.OilVolumeCalculation)
                         .ThenInclude(x => x.Installation)
                         .Include(x => x.MeasuringPoint)
-                        .Where(x => !x.MeasuringPoint.Id.Equals(section.MeasuringPointId))
+                        .Where(x => !x.OilVolumeCalculation.Id.Equals(installationInDatabase.OilVolumeCalculation.Id))
+                        .Where(x => x.MeasuringPoint.Id.Equals(section.MeasuringPointId))
                         .FirstOrDefaultAsync();
                     if (sectionFound is not null)
-                        throw new ConflictException($"Equipamento pra ser deletado possui relação com outra instalação ({sectionFound.OilVolumeCalculation.Installation.Name}).");
+                    {
+                        Console.WriteLine(sectionFound.Id);
+                        throw new ConflictException($"Equipamento para ser deletado possui relação com outra instalação ({sectionFound.OilVolumeCalculation.Installation.Name}).");
+                    }
+
+                    var sectionFoundSame = await _context.Sections
+                        .Include(x => x.OilVolumeCalculation)
+                        .ThenInclude(x => x.Installation)
+                        .Include(x => x.MeasuringPoint)
+                        .Where(x => x.OilVolumeCalculation.Id.Equals(installationInDatabase.OilVolumeCalculation.Id))
+                        .Where(x => x.MeasuringPoint.Id.Equals(section.MeasuringPointId))
+                        .FirstOrDefaultAsync();
+                    if (sectionFoundSame is null)
+                    {
+                        throw new NotFoundException($"Equipamento não possui relação nesta instalação ({installationInDatabase.Name}).");
+                    }
                 }
 
             if (body.TOGs is not null)
                 foreach (var tog in body.TOGs)
                 {
+                    Console.WriteLine("tog");
                     var MeasuringPoint = await _context.MeasuringPoints.Where(x => x.Id == tog.MeasuringPointId).FirstOrDefaultAsync() ?? throw new NotFoundException("Equipment TOG is not found.");
-                    var togFound = await _context.Sections
+                    var togFound = await _context.TOGRecoveredOils
                         .Include(x => x.OilVolumeCalculation)
                         .ThenInclude(x => x.Installation)
                         .Include(x => x.MeasuringPoint)
-                        .Where(x => !x.MeasuringPoint.Id.Equals(tog.MeasuringPointId))
+                        .Where(x => !x.OilVolumeCalculation.Id.Equals(installationInDatabase.OilVolumeCalculation.Id))
+                        .Where(x => x.MeasuringPoint.Id.Equals(tog.MeasuringPointId))
                         .FirstOrDefaultAsync();
                     if (togFound is not null)
                         throw new ConflictException($"Equipamento pra ser deletado possui relação com outra instalação ({togFound.OilVolumeCalculation.Installation.Name}).");
+
+                    var togFoundSame = await _context.TOGRecoveredOils
+                        .Include(x => x.OilVolumeCalculation)
+                        .ThenInclude(x => x.Installation)
+                        .Include(x => x.MeasuringPoint)
+                        .Where(x => x.OilVolumeCalculation.Id.Equals(installationInDatabase.OilVolumeCalculation.Id))
+                        .Where(x => x.MeasuringPoint.Id.Equals(tog.MeasuringPointId))
+                        .FirstOrDefaultAsync();
+                    if (togFoundSame is null)
+                    {
+                        throw new NotFoundException($"Equipamento não possui relação nesta instalação ({installationInDatabase.Name}).");
+                    }
                 }
 
             if (body.DORs is not null)
                 foreach (var dor in body.DORs)
                 {
+                    Console.WriteLine("dor");
                     var MeasuringPoint = await _context.MeasuringPoints.Where(x => x.Id == dor.MeasuringPointId).FirstOrDefaultAsync() ?? throw new NotFoundException("Equipment DOR is not found.");
-                    var dorFound = await _context.Sections
+                    var dorFound = await _context.DORs
                         .Include(x => x.OilVolumeCalculation)
                         .ThenInclude(x => x.Installation)
                         .Include(x => x.MeasuringPoint)
-                        .Where(x => !x.MeasuringPoint.Id.Equals(dor.MeasuringPointId))
+                        .Where(x => !x.OilVolumeCalculation.Id.Equals(installationInDatabase.OilVolumeCalculation.Id))
+                        .Where(x => x.MeasuringPoint.Id.Equals(dor.MeasuringPointId))
                         .FirstOrDefaultAsync();
                     if (dorFound is not null)
                         throw new ConflictException($"Equipamento pra ser deletado possui relação com outra instalação ({dorFound.OilVolumeCalculation.Installation.Name}).");
+
+                    var dorFoundSame = await _context.DORs
+                        .Include(x => x.OilVolumeCalculation)
+                        .ThenInclude(x => x.Installation)
+                        .Include(x => x.MeasuringPoint)
+                        .Where(x => x.OilVolumeCalculation.Id.Equals(installationInDatabase.OilVolumeCalculation.Id))
+                        .Where(x => x.MeasuringPoint.Id.Equals(dor.MeasuringPointId))
+                        .FirstOrDefaultAsync();
+                    if (dorFoundSame is null)
+                    {
+                        throw new NotFoundException($"Equipamento não possui relação nesta instalação ({installationInDatabase.Name}).");
+                    }
                 }
 
             if (body.Drains is not null)
                 foreach (var drain in body.Drains)
                 {
+                    Console.WriteLine("drain");
                     var MeasuringPoint = await _context.MeasuringPoints.Where(x => x.Id == drain.MeasuringPointId).FirstOrDefaultAsync() ?? throw new NotFoundException("Equipment Drain is not found.");
-                    var drainFound = await _context.Sections
+                    var drainFound = await _context.DrainVolumes
                         .Include(x => x.OilVolumeCalculation)
                         .ThenInclude(x => x.Installation)
                         .Include(x => x.MeasuringPoint)
-                        .Where(x => !x.MeasuringPoint.Id.Equals(drain.MeasuringPointId))
+                        .Where(x => !x.OilVolumeCalculation.Id.Equals(installationInDatabase.OilVolumeCalculation.Id))
+                        .Where(x => x.MeasuringPoint.Id.Equals(drain.MeasuringPointId))
                         .FirstOrDefaultAsync();
                     if (drainFound is not null)
                         throw new ConflictException($"Equipamento pra ser deletado possui relação com outra instalação ({drainFound.OilVolumeCalculation.Installation.Name}).");
+
+                    var drainFoundSame = await _context.DrainVolumes
+                        .Include(x => x.OilVolumeCalculation)
+                        .ThenInclude(x => x.Installation)
+                        .Include(x => x.MeasuringPoint)
+                        .Where(x => x.OilVolumeCalculation.Id.Equals(installationInDatabase.OilVolumeCalculation.Id))
+                        .Where(x => x.MeasuringPoint.Id.Equals(drain.MeasuringPointId))
+                        .FirstOrDefaultAsync();
+                    if (drainFoundSame is null)
+                    {
+                        Console.WriteLine(installationId);
+                        Console.WriteLine(drain.MeasuringPointId);
+                        throw new NotFoundException($"Equipamento não possui relação nesta instalação ({installationInDatabase.Name}).");
+                    }
                 }
 
             var oilCalculationInDatabase = await _context.OilVolumeCalculations
@@ -541,41 +606,88 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
             if (oilCalculationInDatabase is null)
                 throw new NotFoundException("Intalação não possui cálculo para ser atualizado");
 
-            if (oilCalculationInDatabase.Sections.Any())
+            if (body.Sections.Any())
             {
                 foreach (var section in body.Sections)
                 {
-                    var MeasuringPoint = await _context.MeasuringPoints.Where(x => x.Id == section.MeasuringPointId).FirstOrDefaultAsync() ?? throw new NotFoundException("Equipment section is not found.");
                     var sectionFound = await _context.Sections
                         .Include(x => x.OilVolumeCalculation)
                         .ThenInclude(x => x.Installation)
                         .Include(x => x.MeasuringPoint)
-                        .Where(x => !x.MeasuringPoint.Id.Equals(section.MeasuringPointId))
+                        .Where(x => x.MeasuringPoint.Id.Equals(section.MeasuringPointId))
                         .FirstOrDefaultAsync();
-                    if (sectionFound is not null)
-                        throw new ConflictException($"Equipamento pra ser deletado possui relação com outra instalação ({sectionFound.OilVolumeCalculation.Installation.Name}).");
+                    Console.WriteLine("section");
+                    Console.WriteLine(sectionFound.Id);
+
+                    sectionFound.IsActive = false;
+                    sectionFound.DeletedAt = DateTime.UtcNow;
+
+                    _context.Sections.Update(sectionFound);
                 }
             }
 
-            if (oilCalculationInDatabase.TOGRecoveredOils.Any())
+            if (body.TOGs.Any())
             {
-                _context.TOGRecoveredOils.RemoveRange(oilCalculationInDatabase.TOGRecoveredOils);
+                foreach (var tog in body.TOGs)
+                {
+                    var togFound = await _context.TOGRecoveredOils
+                        .Include(x => x.OilVolumeCalculation)
+                        .ThenInclude(x => x.Installation)
+                        .Include(x => x.MeasuringPoint)
+                        .Where(x => x.MeasuringPoint.Id.Equals(tog.MeasuringPointId))
+                        .FirstOrDefaultAsync();
+                    Console.WriteLine("TOGs");
+                    Console.WriteLine(togFound.Id);
+
+                    togFound.IsActive = false;
+                    togFound.DeletedAt = DateTime.UtcNow;
+
+                    _context.TOGRecoveredOils.Update(togFound);
+                }
             }
 
-            if (oilCalculationInDatabase.DrainVolumes.Any())
+            if (body.Drains.Any())
             {
-                _context.DrainVolumes.RemoveRange(oilCalculationInDatabase.DrainVolumes);
+                foreach (var drain in body.Drains)
+                {
+                    var drainFound = await _context.DrainVolumes
+                        .Include(x => x.OilVolumeCalculation)
+                        .ThenInclude(x => x.Installation)
+                        .Include(x => x.MeasuringPoint)
+                        .Where(x => x.MeasuringPoint.Id.Equals(drain.MeasuringPointId))
+                        .FirstOrDefaultAsync();
+                    Console.WriteLine("drain");
+                    Console.WriteLine(drainFound.Id);
+
+                    drainFound.IsActive = false;
+                    drainFound.DeletedAt = DateTime.UtcNow;
+
+                    _context.DrainVolumes.Update(drainFound);
+                }
             }
 
-            if (oilCalculationInDatabase.DORs.Any())
+            if (body.DORs.Any())
             {
-                _context.DORs.RemoveRange(oilCalculationInDatabase.DORs);
+                foreach (var dor in body.DORs)
+                {
+                    var dorFound = await _context.DORs
+                        .Include(x => x.OilVolumeCalculation)
+                        .ThenInclude(x => x.Installation)
+                        .Include(x => x.MeasuringPoint)
+                        .Where(x => x.MeasuringPoint.Id.Equals(dor.MeasuringPointId))
+                        .FirstOrDefaultAsync();
+
+                    dorFound.IsActive = false;
+                    dorFound.DeletedAt = DateTime.UtcNow;
+
+                    _context.DORs.Update(dorFound);
+                }
             }
 
             await _context.SaveChangesAsync();
             var OilVolumeCalculationDTO = _mapper.Map<OilVolumeCalculation, OilVolumeCalculationDTO>(oilCalculationInDatabase);
 
-            return OilVolumeCalculationDTO;
+            return NoContent();
         }
     }
 }
