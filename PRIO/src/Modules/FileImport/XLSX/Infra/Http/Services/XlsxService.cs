@@ -48,11 +48,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
             if (getInstanceName is null)
                 throw new BadRequestException("Cluster não encontrado na planilha.", status: "Error");
 
-            envVars.TryGetValue("INSTALLATION_INSTANCE", out var getInstallationCode);
-
-            if (getInstallationCode is null)
-                throw new BadRequestException("Código da instalação não encontrada na planilha.", status: "Error");
-
             var contentBase64 = data.ContentBase64?.Replace("data:@file/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,", "");
             using var stream = new MemoryStream(Convert.FromBase64String(contentBase64!));
             using ExcelPackage package = new(stream);
@@ -83,9 +78,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                     continue;
 
                 var columnInstallationCod = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationCodColumnName]].Value?.ToString()?.Trim();
-
-                if (columnInstallationCod is not null && columnInstallationCod.ToUpper().Trim().Contains(getInstallationCode.ToUpper().Trim()) is false)
-                    continue;
 
                 var columnInstallation = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationColumnName]].Value?.ToString()?.Trim();
 
@@ -133,7 +125,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
 
                 var columnCompletion = worksheetTab.Cells[row, columnPositions[XlsUtils.CompletionColumnName]].Value?.ToString()?.Trim();
 
-                if (columnCluster is not null && columnCluster.ToUpper().Trim().Contains(getInstanceName.ToUpper().Trim()) is true && columnInstallationCod is not null && columnInstallationCod.ToUpper().Trim().Contains(getInstallationCode.ToUpper().Trim()) is true)
+                if (columnCluster is not null && columnCluster.ToUpper().Trim().Contains(getInstanceName.ToUpper().Trim()) is true)
                 {
                     if (string.IsNullOrWhiteSpace(columnCluster) || string.IsNullOrWhiteSpace(columnInstallationCod) || string.IsNullOrWhiteSpace(columnInstallationCodUep) || string.IsNullOrWhiteSpace(columnInstallationNameUep) || string.IsNullOrWhiteSpace(columnCodeField) || string.IsNullOrWhiteSpace(columnZone) || string.IsNullOrWhiteSpace(columnReservoir) || string.IsNullOrWhiteSpace(columnWellCodeAnp) || string.IsNullOrWhiteSpace(columnCompletion))
                     {
