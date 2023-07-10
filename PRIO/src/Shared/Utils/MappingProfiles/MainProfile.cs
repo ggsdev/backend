@@ -172,6 +172,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<MeasuringEquipment, MeasuringEquipmentWithoutInstallationDTO>();
             CreateMap<MeasuringPoint, MeasuringPointDTO>();
             CreateMap<MeasuringPoint, MeasuringPointHistoryDTO>();
+            CreateMap<MeasuringPoint, MeasuringPointWithoutInstallationDTO>();
             CreateMap<OilVolumeCalculation, OilVolumeCalculationDTO>();
             CreateMap<Section, SectionWithEquipmentDTO>();
             CreateMap<DrainVolume, DrainVolumeWithEquipmentDTO>();
