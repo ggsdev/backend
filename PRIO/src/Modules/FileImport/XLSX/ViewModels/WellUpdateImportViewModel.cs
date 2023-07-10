@@ -20,5 +20,6 @@
         public string? TypeBaseCoordinate { get; set; }
         public string? CoordX { get; set; }
         public string? CoordY { get; set; }
+        public bool? IsActive { get; set; }
     }
 }

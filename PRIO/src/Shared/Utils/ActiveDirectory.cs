@@ -6,15 +6,18 @@ namespace PRIO.src.Shared.Utils
 {
     public static class ActiveDirectory
     {
-        public static bool VerifyCredentialsWithActiveDirectory(string email, string password)
+        public static bool VerifyCredentialsWithActiveDirectory(string username, string password)
         {
             try
             {
                 var envVars = DotEnv.Read();
                 var domain = envVars["DOMINIO"];
                 var serverAd = envVars["AD"];
+
+                var treatedUsername = username.Split('@')[0];
+
                 using var context = new PrincipalContext(ContextType.Domain, domain, serverAd);
-                return context.ValidateCredentials(email, password);
+                return context.ValidateCredentials(treatedUsername, password);
             }
             catch (Exception ex)
             {

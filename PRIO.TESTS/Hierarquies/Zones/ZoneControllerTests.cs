@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Clusters.Dtos;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Dtos;
@@ -36,6 +37,7 @@ namespace PRIO.TESTS.Hierarquies.Zones
         private DataContext _context;
         private CreateZoneViewModel _viewModel;
         private ZoneService _service;
+        private UserService _userService;
         private User _user;
 
         private IFieldRepository _fieldRepository;
@@ -83,7 +85,9 @@ namespace PRIO.TESTS.Hierarquies.Zones
             _fieldRepository = new FieldRepository(_context);
             _zoneRepository = new ZoneRepository(_context);
 
-            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository);
+            _userService = new UserService(_context, _mapper);
+
+            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository, _userService);
 
             _service = new ZoneService(_mapper, _systemHistoryService, _fieldRepository, _zoneRepository);
 

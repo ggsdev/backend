@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using PRIO.src.Modules.FileImport.XLSX.Dtos;
 using PRIO.src.Shared.Errors;
 
 namespace PRIO.src.Shared.Infra.Http.Middlewares
@@ -44,6 +45,11 @@ namespace PRIO.src.Shared.Infra.Http.Middlewares
             if (ex is BadRequestException badRequestException && badRequestException.Errors != null)
             {
                 await context.Response.WriteAsync(JsonConvert.SerializeObject(new XlsErrorImportDTO { Message = errorMessage, Errors = badRequestException.Errors }));
+            }
+
+            if (ex is BadRequestException badRequestExceptionStatus && badRequestExceptionStatus.ReturnStatus is not null)
+            {
+                await context.Response.WriteAsync(JsonConvert.SerializeObject(new ImportResponseDTO { Message = errorMessage, Status = badRequestExceptionStatus.ReturnStatus }));
             }
             else
             {

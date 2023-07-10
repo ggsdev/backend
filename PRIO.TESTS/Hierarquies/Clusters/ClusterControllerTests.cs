@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Clusters.Dtos;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
@@ -26,6 +27,7 @@ namespace PRIO.TESTS.Hierarquies.Clusters
         private IClusterRepository _clusterRepository;
         private ISystemHistoryRepository _systemHistoryRepository;
         private SystemHistoryService _systemHistoryService;
+        private UserService _userService;
 
         private ClusterService _service;
         private CreateClusterViewModel _viewModel;
@@ -64,8 +66,9 @@ namespace PRIO.TESTS.Hierarquies.Clusters
 
             _systemHistoryRepository = new SystemHistoryRepository(_context);
             _clusterRepository = new ClusterRepository(_context);
+            _userService = new UserService(_context, _mapper);
 
-            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository);
+            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository, _userService);
 
             _service = new ClusterService(_mapper, _clusterRepository, _systemHistoryService);
             _controller = new ClusterController(_service);

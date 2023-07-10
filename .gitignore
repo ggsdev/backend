@@ -35,3 +35,4 @@ msbuild.wrn
 
 #Enviroment variables
 .env
+.env.encrypted
