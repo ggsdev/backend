@@ -7,11 +7,13 @@ using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.ViewModels;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
+using PRIO.src.Shared.Infra.Http.Filters;
 
 namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controllers
 {
     [ApiController]
     [Route("calculation")]
+    [ServiceFilter(typeof(AuthorizationFilter))]
     public class OilVolumeCalculationController : ControllerBase
     {
         private readonly DataContext _context;
@@ -22,9 +24,10 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
             _mapper = mapper;
         }
 
-        [HttpPost]
+        [HttpPost("oil")]
         public async Task<OilVolumeCalculationDTO?> Create([FromBody] CreateOilVolumeCalculationViewModel body)
         {
+            Console.WriteLine(HttpContext.Items["User"]);
             if (HttpContext.Items["User"] is not User user)
                 throw new UnauthorizedAccessException("User not identified, please login first");
 
@@ -123,6 +126,134 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
             var OilVolumeCalculationDTO = _mapper.Map<OilVolumeCalculation, OilVolumeCalculationDTO>(createOilVolumeCalculation);
 
             return OilVolumeCalculationDTO;
+        }
+
+        [HttpGet("oil/{installationId}")]
+        public async Task<OilVolumeCalculationDTO?> Get([FromRoute] Guid installationId)
+        {
+            var OilVolumeCalculation = await _context.OilVolumeCalculations.Include(x => x.Installation)
+                .Include(x => x.DrainVolumes)
+                .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.DORs)
+                .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.Sections)
+                .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.TOGRecoveredOils)
+                .ThenInclude(x => x.MeasuringPoint)
+                .Where(x => x.Installation.Id == installationId)
+                .FirstOrDefaultAsync();
+
+            var OilVolumeCalculationDTO = _mapper.Map<OilVolumeCalculation, OilVolumeCalculationDTO>(OilVolumeCalculation);
+            return OilVolumeCalculationDTO;
+
+        }
+
+        [HttpGet("oil/{installationId}/equation")]
+        public async Task<object> GetEquation([FromRoute] Guid installationId)
+        {
+            var OilVolumeCalculation = await _context.OilVolumeCalculations.Include(x => x.Installation)
+                .Include(x => x.DrainVolumes)
+                .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.DORs)
+                .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.Sections)
+                .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.TOGRecoveredOils)
+                .ThenInclude(x => x.MeasuringPoint)
+                .Where(x => x.Installation.Id == installationId)
+                .FirstOrDefaultAsync();
+
+            string? equation = "(";
+
+            if (OilVolumeCalculation.Sections is not null && OilVolumeCalculation.Sections.Count > 0)
+            {
+                int? sectionCount = OilVolumeCalculation.Sections.Count;
+
+                for (var i = 0; i < sectionCount; i++)
+                {
+                    if (OilVolumeCalculation.Sections[i] is not null)
+                    {
+                        equation += $"{OilVolumeCalculation.Sections[i].MeasuringPoint.Name} * (1 - BSW {OilVolumeCalculation.Sections[i].MeasuringPoint.Name})";
+
+                        if (i + 1 != sectionCount)
+                        {
+                            equation += " + ";
+                        }
+                    }
+                }
+            }
+
+            if (OilVolumeCalculation.TOGRecoveredOils is not null && OilVolumeCalculation.TOGRecoveredOils.Count > 0)
+            {
+                if (!string.IsNullOrEmpty(equation) && equation[^1] != '(')
+                {
+                    equation += " + ";
+                }
+
+                int? togsCount = OilVolumeCalculation.TOGRecoveredOils.Count;
+
+                for (var i = 0; i < togsCount; i++)
+                {
+                    if (OilVolumeCalculation.TOGRecoveredOils[i] is not null)
+                    {
+                        equation += $"{OilVolumeCalculation.TOGRecoveredOils[i].MeasuringPoint.Name}";
+
+                        if (i + 1 != togsCount)
+                        {
+                            equation += " + ";
+                        }
+                    }
+                }
+            }
+
+            if (OilVolumeCalculation.DrainVolumes is not null && OilVolumeCalculation.DrainVolumes.Count > 0)
+            {
+                if (!string.IsNullOrEmpty(equation) && equation[^1] != '(' && equation[^1] != '+')
+                {
+                    equation += " + ";
+                }
+
+                int? drainCount = OilVolumeCalculation.DrainVolumes.Count;
+
+                for (var i = 0; i < drainCount; i++)
+                {
+                    if (OilVolumeCalculation.DrainVolumes[i] is not null)
+                    {
+                        equation += $"{OilVolumeCalculation.DrainVolumes[i].MeasuringPoint.Name}";
+
+                        if (i + 1 != drainCount)
+                        {
+                            equation += " + ";
+                        }
+                    }
+                }
+            }
+
+            if (OilVolumeCalculation.DORs is not null && OilVolumeCalculation.DORs.Count > 0)
+            {
+                if (!string.IsNullOrEmpty(equation) && equation[^1] != '(' && equation[^1] != '+')
+                {
+                    equation += " + ";
+                }
+
+                int? dorCount = OilVolumeCalculation.DORs.Count;
+
+                for (var i = 0; i < dorCount; i++)
+                {
+                    if (OilVolumeCalculation.DORs[i] is not null)
+                    {
+                        equation += $"{OilVolumeCalculation.DORs[i].MeasuringPoint.Name} * (1 - BSW {OilVolumeCalculation.Sections[i].MeasuringPoint.Name})";
+
+                        if (i + 1 != dorCount)
+                        {
+                            equation += " + ";
+                        }
+                    }
+                }
+            }
+
+            var returno = new { equation = equation };
+            return returno;
         }
     }
 }
