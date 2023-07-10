@@ -24,9 +24,7 @@ namespace PRIO.src.Modules.ControlAccess.Operations.Infra.Http.Controllers
         [HttpGet]
         public async Task<List<GlobalOperation>> Get()
         {
-
             var operations = await _context.GlobalOperations.ToListAsync();
-
             return operations;
         }
     }
