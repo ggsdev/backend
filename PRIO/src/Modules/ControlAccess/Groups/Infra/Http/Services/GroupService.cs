@@ -244,7 +244,6 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
         public async Task RestoreGroup(Guid id)
         {
             var group = await _groupRepository.GetGroupByIdAsync(id);
-
             if (group is null || group.IsActive is true)
                 throw new NotFoundException("Group not found or active already");
 
@@ -257,10 +256,11 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
             var users = await _userRepository.GetUsersByLastGroupId(id);
 
             var changedDate = DateTime.UtcNow;
-
+            Console.WriteLine(users.Count);
             foreach (var user in users)
             {
                 user.Group = group;
+                Console.WriteLine(user.Group.IsActive);
 
                 for (int i = 0; i < groupPermissions.Count; ++i)
                 {

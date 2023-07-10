@@ -34,7 +34,7 @@ namespace PRIO.src.Modules.FileImport.XML.FileContent
 
         }
 
-        public static T? DeserializeXml<T>(XElement element)
+        public static T DeserializeXml<T>(XElement element)
         {
             var serializer = new XmlSerializer(typeof(T));
             return (T)serializer.Deserialize(element.CreateReader());

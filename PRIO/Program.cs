@@ -18,6 +18,9 @@ using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Interfaces;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services;
+using PRIO.src.Modules.FileImport.XML.Infra.EF.Interfaces;
+using PRIO.src.Modules.FileImport.XML.Infra.EF.Repositories;
+using PRIO.src.Modules.FileImport.XML.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Repositories;
@@ -154,6 +157,8 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
 
     services.AddScoped<ICompletionRepository, CompletionRepository>();
 
+    services.AddScoped<IXMLImportRepository, XMLImportRepository>();
+
     #endregion
 
     #region Hierarchy Services
@@ -168,6 +173,7 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddScoped<MeasuringPointService>();
     services.AddScoped<SystemHistoryService>();
     services.AddScoped<AuxiliaryService>();
+    services.AddScoped<XMLImportService>();
 
     services.AddScoped<IMenuRepository, MenuRepository>();
     services.AddScoped<IMeasuringPointRepository, MeasuringPointRepository>();
