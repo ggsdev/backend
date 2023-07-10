@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
@@ -37,6 +38,7 @@ namespace PRIO.TESTS.Hierarquies.Wells
         private Field _field2;
         private CreateWellViewModel _createViewModel;
         private WellService _service;
+        private UserService _userService;
 
         private IWellRepository _wellRepository;
         private ISystemHistoryRepository _systemHistoryRepository;
@@ -144,8 +146,9 @@ namespace PRIO.TESTS.Hierarquies.Wells
             _wellRepository = new WellRepository(_context);
             _fieldRepository = new FieldRepository(_context);
 
-            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository);
+            _userService = new UserService(_context, _mapper);
 
+            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository, _userService);
             _service = new WellService(_mapper, _fieldRepository, _systemHistoryService, _wellRepository);
 
             _controller = new WellController(_service);

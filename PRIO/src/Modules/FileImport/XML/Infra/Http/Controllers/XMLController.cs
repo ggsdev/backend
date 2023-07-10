@@ -174,174 +174,176 @@ namespace PRIO.Controllers
                                 var producaoElement = dadosBasicosElement?.Element("LISTA_PRODUCAO")?.Element("PRODUCAO");
                                 var producao = producaoElement is not null ? Functions.DeserializeXml<PRODUCAO_001>(producaoElement) : null;
                                 #endregion
-
-                                var installation = await context.Installations
+                                if (dadosBasicos is not null)
+                                {
+                                    var installation = await context.Installations
                                        .FirstOrDefaultAsync(x => x.UepCod == dadosBasicos.COD_INSTALACAO_001 && x.CodInstallationAnp == dadosBasicos.COD_INSTALACAO_001);
+                                    //var equipment = await context.MeasuringEquipments
+                                    //       .FirstOrDefaultAsync(x => x.TagMeasuringPoint == dadosBasicos.COD_TAG_PONTO_MEDICAO_001);
 
-                                //var equipment = await context.MeasuringEquipments
-                                //       .FirstOrDefaultAsync(x => x.TagMeasuringPoint == dadosBasicos.COD_TAG_PONTO_MEDICAO_001);
-
-                                try
-                                {
-                                    var measurement = new Measurement
+                                    try
                                     {
-                                        #region atributos dados basicos
-                                        NUM_SERIE_ELEMENTO_PRIMARIO_001 = dadosBasicos?.NUM_SERIE_ELEMENTO_PRIMARIO_001,
-                                        COD_INSTALACAO_001 = dadosBasicos?.COD_INSTALACAO_001,
-                                        COD_TAG_PONTO_MEDICAO_001 = dadosBasicos?.COD_TAG_PONTO_MEDICAO_001,
-                                        #endregion
-
-                                        #region configuracao cv
-                                        NUM_SERIE_COMPUTADOR_VAZAO_001 = configuracaoCv?.NUM_SERIE_COMPUTADOR_VAZAO_001,
-                                        DHA_COLETA_001 = DateTime.TryParseExact(configuracaoCv?.DHA_COLETA_001, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dhaColeta) ? dhaColeta : null,
-                                        MED_TEMPERATURA_001 = double.TryParse(configuracaoCv?.MED_TEMPERATURA_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double medTemperatura) ? medTemperatura : 0,
-                                        MED_PRESSAO_ATMSA_001 = double.TryParse(configuracaoCv?.MED_PRESSAO_ATMSA_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double medPressaoAtmsa) ? medPressaoAtmsa : 0,
-                                        MED_PRESSAO_RFRNA_001 = double.TryParse(configuracaoCv?.MED_PRESSAO_RFRNA_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double medPressaoRfrna) ? medPressaoRfrna : 0,
-                                        DSC_VERSAO_SOFTWARE_001 = configuracaoCv?.DSC_VERSAO_SOFTWARE_001,
-                                        #endregion
-
-                                        #region elemento primario
-                                        ICE_METER_FACTOR_1_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_1_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceMeterFactor1) ? iceMeterFactor1 : 0,
-                                        ICE_METER_FACTOR_2_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_2_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_2_001) ? ICE_METER_FACTOR_2_001 : 0,
-                                        ICE_METER_FACTOR_3_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_3_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_3_001) ? ICE_METER_FACTOR_3_001 : 0,
-                                        ICE_METER_FACTOR_4_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_4_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_4_001) ? ICE_METER_FACTOR_4_001 : 0,
-                                        ICE_METER_FACTOR_5_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_5_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_5_001) ? ICE_METER_FACTOR_5_001 : 0,
-                                        ICE_METER_FACTOR_6_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_6_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_6_001) ? ICE_METER_FACTOR_6_001 : 0,
-                                        ICE_METER_FACTOR_7_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_7_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_7_001) ? ICE_METER_FACTOR_7_001 : 0,
-                                        ICE_METER_FACTOR_8_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_8_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_8_001) ? ICE_METER_FACTOR_8_001 : 0,
-                                        ICE_METER_FACTOR_9_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_9_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_9_001) ? ICE_METER_FACTOR_9_001 : 0,
-                                        ICE_METER_FACTOR_10_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_10_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_10_001) ? ICE_METER_FACTOR_10_001 : 0,
-                                        ICE_METER_FACTOR_11_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_11_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_11_001) ? ICE_METER_FACTOR_11_001 : 0,
-                                        ICE_METER_FACTOR_12_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_12_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_12_001) ? ICE_METER_FACTOR_12_001 : 0,
-                                        ICE_METER_FACTOR_13_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_13_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_13_001) ? ICE_METER_FACTOR_13_001 : 0,
-                                        ICE_METER_FACTOR_14_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_14_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_14_001) ? ICE_METER_FACTOR_14_001 : 0,
-                                        ICE_METER_FACTOR_15_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_15_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_15_001) ? ICE_METER_FACTOR_15_001 : 0,
-
-                                        QTD_PULSOS_METER_FACTOR_1_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_1_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_1_001) ? QTD_PULSOS_METER_FACTOR_1_001 : 0,
-                                        QTD_PULSOS_METER_FACTOR_2_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_2_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_2_001) ? QTD_PULSOS_METER_FACTOR_2_001 : 0,
-                                        QTD_PULSOS_METER_FACTOR_3_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_3_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_3_001) ? QTD_PULSOS_METER_FACTOR_3_001 : 0,
-                                        QTD_PULSOS_METER_FACTOR_4_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_4_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_4_001) ? QTD_PULSOS_METER_FACTOR_4_001 : 0,
-                                        QTD_PULSOS_METER_FACTOR_5_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_5_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_5_001) ? QTD_PULSOS_METER_FACTOR_5_001 : 0,
-                                        QTD_PULSOS_METER_FACTOR_6_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_6_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_6_001) ? QTD_PULSOS_METER_FACTOR_6_001 : 0,
-                                        QTD_PULSOS_METER_FACTOR_7_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_7_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_7_001) ? QTD_PULSOS_METER_FACTOR_7_001 : 0,
-                                        QTD_PULSOS_METER_FACTOR_8_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_8_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_8_001) ? QTD_PULSOS_METER_FACTOR_8_001 : 0,
-                                        QTD_PULSOS_METER_FACTOR_9_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_9_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_9_001) ? QTD_PULSOS_METER_FACTOR_9_001 : 0,
-                                        QTD_PULSOS_METER_FACTOR_10_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_10_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_10_001) ? QTD_PULSOS_METER_FACTOR_10_001 : 0,
-                                        QTD_PULSOS_METER_FACTOR_11_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_11_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_11_001) ? QTD_PULSOS_METER_FACTOR_11_001 : 0,
-                                        QTD_PULSOS_METER_FACTOR_12_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_12_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_12_001) ? QTD_PULSOS_METER_FACTOR_12_001 : 0,
-                                        QTD_PULSOS_METER_FACTOR_13_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_13_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_13_001) ? QTD_PULSOS_METER_FACTOR_13_001 : 0,
-                                        QTD_PULSOS_METER_FACTOR_14_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_14_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_14_001) ? QTD_PULSOS_METER_FACTOR_14_001 : 0,
-                                        QTD_PULSOS_METER_FACTOR_15_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_15_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_15_001) ? QTD_PULSOS_METER_FACTOR_15_001 : 0,
-
-                                        ICE_K_FACTOR_1_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_1_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor1) ? iceKFactor1 : 0,
-                                        ICE_K_FACTOR_2_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_2_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor2) ? iceKFactor2 : 0,
-                                        ICE_K_FACTOR_3_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_3_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor3) ? iceKFactor3 : 0,
-                                        ICE_K_FACTOR_4_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_4_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor4) ? iceKFactor4 : 0,
-                                        ICE_K_FACTOR_5_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_5_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor5) ? iceKFactor5 : 0,
-                                        ICE_K_FACTOR_6_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_6_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor6) ? iceKFactor6 : 0,
-                                        ICE_K_FACTOR_7_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_7_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor7) ? iceKFactor7 : 0,
-                                        ICE_K_FACTOR_8_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_8_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor8) ? iceKFactor8 : 0,
-                                        ICE_K_FACTOR_9_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_9_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor9) ? iceKFactor9 : 0,
-                                        ICE_K_FACTOR_10_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_10_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor10) ? iceKFactor10 : 0,
-                                        ICE_K_FACTOR_11_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_11_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor11) ? iceKFactor11 : 0,
-                                        ICE_K_FACTOR_12_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_12_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor12) ? iceKFactor12 : 0,
-                                        ICE_K_FACTOR_13_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_13_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_K_FACTOR_13_001) ? ICE_K_FACTOR_13_001 : 0,
-                                        ICE_K_FACTOR_14_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_14_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_K_FACTOR_14_001) ? ICE_K_FACTOR_14_001 : 0,
-                                        ICE_K_FACTOR_15_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_15_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_K_FACTOR_15_001) ? ICE_K_FACTOR_15_001 : 0,
-
-                                        QTD_PULSOS_K_FACTOR_1_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_1_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor1) ? qtdPulsosKFactor1 : 0,
-                                        QTD_PULSOS_K_FACTOR_2_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_2_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor2) ? qtdPulsosKFactor2 : 0,
-                                        QTD_PULSOS_K_FACTOR_3_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_3_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor3) ? qtdPulsosKFactor3 : 0,
-                                        QTD_PULSOS_K_FACTOR_4_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_4_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor4) ? qtdPulsosKFactor4 : 0,
-                                        QTD_PULSOS_K_FACTOR_5_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_5_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor5) ? qtdPulsosKFactor5 : 0,
-                                        QTD_PULSOS_K_FACTOR_6_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_6_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor6) ? qtdPulsosKFactor6 : 0,
-                                        QTD_PULSOS_K_FACTOR_7_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_7_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor7) ? qtdPulsosKFactor7 : 0,
-                                        QTD_PULSOS_K_FACTOR_8_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_8_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor8) ? qtdPulsosKFactor8 : 0,
-                                        QTD_PULSOS_K_FACTOR_9_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_9_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor9) ? qtdPulsosKFactor9 : 0,
-                                        QTD_PULSOS_K_FACTOR_10_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_10_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor10) ? qtdPulsosKFactor10 : 0,
-                                        QTD_PULSOS_K_FACTOR_11_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_11_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor11) ? qtdPulsosKFactor11 : 0,
-                                        QTD_PULSOS_K_FACTOR_12_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_12_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_K_FACTOR_12_001) ? QTD_PULSOS_K_FACTOR_12_001 : 0,
-                                        QTD_PULSOS_K_FACTOR_13_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_13_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_K_FACTOR_13_001) ? QTD_PULSOS_K_FACTOR_13_001 : 0,
-                                        QTD_PULSOS_K_FACTOR_14_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_14_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_K_FACTOR_14_001) ? QTD_PULSOS_K_FACTOR_14_001 : 0,
-                                        QTD_PULSOS_K_FACTOR_15_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_15_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_K_FACTOR_15_001) ? QTD_PULSOS_K_FACTOR_15_001 : 0,
-
-                                        ICE_CUTOFF_001 = double.TryParse(elementoPrimario?.ICE_CUTOFF_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceCutoff) ? iceCutoff : 0,
-                                        ICE_LIMITE_SPRR_ALARME_001 = double.TryParse(elementoPrimario?.ICE_LIMITE_SPRR_ALARME_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceLimiteSprrAlarme) ? iceLimiteSprrAlarme : 0,
-                                        ICE_LIMITE_INFRR_ALARME_001 = double.TryParse(elementoPrimario?.ICE_LIMITE_INFRR_ALARME_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceLimiteInfrrAlarme) ? iceLimiteInfrrAlarme : 0,
-                                        IND_HABILITACAO_ALARME_1_001 = elementoPrimario?.IND_HABILITACAO_ALARME_1_001,
-                                        #endregion
-
-                                        #region instrumento pressao
-                                        NUM_SERIE_1_001 = instrumentoPressao?.NUM_SERIE_1_001,
-                                        MED_PRSO_LIMITE_SPRR_ALRME_001 = double.TryParse(instrumentoPressao?.MED_PRSO_LIMITE_SPRR_ALRME_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var limiteSprr) ? limiteSprr : 0,
-                                        MED_PRSO_LMTE_INFRR_ALRME_001 = double.TryParse(instrumentoPressao?.MED_PRSO_LMTE_INFRR_ALRME_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var limiteInfrr) ? limiteInfrr : 0,
-                                        IND_HABILITACAO_ALARME_2_001 = instrumentoPressao?.IND_HABILITACAO_ALARME_2_001,
-                                        MED_PRSO_ADOTADA_FALHA_001 = double.TryParse(instrumentoPressao?.MED_PRSO_ADOTADA_FALHA_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var adotFalha) ? adotFalha : 0,
-                                        DSC_ESTADO_INSNO_CASO_FALHA_001 = instrumentoPressao?.DSC_ESTADO_INSNO_CASO_FALHA_001,
-                                        IND_TIPO_PRESSAO_CONSIDERADA_001 = instrumentoPressao?.IND_TIPO_PRESSAO_CONSIDERADA_001,
-                                        #endregion
-
-                                        #region instrumento temperatura
-
-                                        NUM_SERIE_2_001 = instrumentoTemperatura?.NUM_SERIE_2_001,
-                                        MED_TMPTA_SPRR_ALARME_001 = double.TryParse(instrumentoTemperatura?.MED_TMPTA_SPRR_ALARME_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var tmptaAl) ? tmptaAl : 0,
-                                        MED_TMPTA_INFRR_ALRME_001 = double.TryParse(instrumentoTemperatura?.MED_TMPTA_INFRR_ALRME_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var infrrAl) ? infrrAl : 0,
-                                        IND_HABILITACAO_ALARME_3_001 = instrumentoTemperatura?.IND_HABILITACAO_ALARME_3_001,
-                                        MED_TMPTA_ADTTA_FALHA_001 = double.TryParse(instrumentoTemperatura?.MED_TMPTA_ADTTA_FALHA_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var adtta) ? adtta : 0,
-                                        DSC_ESTADO_INSTRUMENTO_FALHA_1_001 = instrumentoTemperatura?.DSC_ESTADO_INSTRUMENTO_FALHA_1_001,
-
-                                        #endregion
-
-                                        #region producao
-
-                                        DHA_INICIO_PERIODO_MEDICAO_001 = DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_001, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var inicioPer) ? inicioPer : null,
-                                        DHA_FIM_PERIODO_MEDICAO_001 = DateTime.TryParseExact(producao?.DHA_FIM_PERIODO_MEDICAO_001, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var fimPer) ? fimPer : null,
-                                        ICE_DENSIDADADE_RELATIVA_001 = double.TryParse(producao?.ICE_DENSIDADADE_RELATIVA_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_DENSIDADADE_RELATIVA_001) ? ICE_DENSIDADADE_RELATIVA_001 : 0,
-                                        ICE_CORRECAO_BSW_001 = double.TryParse(producao?.ICE_CORRECAO_BSW_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_CORRECAO_BSW_001) ? ICE_CORRECAO_BSW_001 : 0,
-                                        ICE_CORRECAO_PRESSAO_LIQUIDO_001 = double.TryParse(producao?.ICE_CORRECAO_PRESSAO_LIQUIDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var pressaoLiq) ? pressaoLiq : 0,
-                                        ICE_CRRCO_TEMPERATURA_LIQUIDO_001 = double.TryParse(producao?.ICE_CRRCO_TEMPERATURA_LIQUIDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var crrcoTemp) ? crrcoTemp : 0,
-                                        MED_PRESSAO_ESTATICA_001 = double.TryParse(producao?.MED_PRESSAO_ESTATICA_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_PRESSAO_ESTATICA_001) ? MED_PRESSAO_ESTATICA_001 : 0,
-                                        MED_TMPTA_FLUIDO_001 = double.TryParse(producao?.MED_TMPTA_FLUIDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_TMPTA_FLUIDO_001) ? MED_TMPTA_FLUIDO_001 : 0,
-                                        MED_VOLUME_BRTO_CRRGO_MVMDO_001 = double.TryParse(producao?.MED_VOLUME_BRTO_CRRGO_MVMDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_VOLUME_BRTO_CRRGO_MVMDO_001) ? MED_VOLUME_BRTO_CRRGO_MVMDO_001 : 0,
-                                        MED_VOLUME_BRUTO_MVMDO_001 = double.TryParse(producao?.MED_VOLUME_BRUTO_MVMDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_VOLUME_BRUTO_MVMDO_001) ? MED_VOLUME_BRUTO_MVMDO_001 : 0,
-                                        MED_VOLUME_LIQUIDO_MVMDO_001 = double.TryParse(producao?.MED_VOLUME_LIQUIDO_MVMDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_VOLUME_LIQUIDO_MVMDO_001) ? MED_VOLUME_LIQUIDO_MVMDO_001 : 0,
-                                        MED_VOLUME_TTLZO_FIM_PRDO_001 = double.TryParse(producao?.MED_VOLUME_TTLZO_FIM_PRDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_VOLUME_TTLZO_FIM_PRDO_001) ? MED_VOLUME_TTLZO_FIM_PRDO_001 : 0,
-                                        MED_VOLUME_TTLZO_INCO_PRDO_001 = double.TryParse(producao?.MED_VOLUME_TTLZO_INCO_PRDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_VOLUME_TTLZO_INCO_PRDO_001) ? MED_VOLUME_TTLZO_INCO_PRDO_001 : 0,
-
-                                        #endregion
-
-                                        #region FileType relation
-                                        FileType = new FileType
+                                        var measurement = new Measurement
                                         {
-                                            Name = data.Files[i].FileName,
-                                            Acronym = "PMO",
+                                            #region atributos dados basicos
+                                            NUM_SERIE_ELEMENTO_PRIMARIO_001 = dadosBasicos?.NUM_SERIE_ELEMENTO_PRIMARIO_001,
+                                            COD_INSTALACAO_001 = dadosBasicos?.COD_INSTALACAO_001,
+                                            COD_TAG_PONTO_MEDICAO_001 = dadosBasicos?.COD_TAG_PONTO_MEDICAO_001,
+                                            #endregion
 
-                                        },
-                                        #endregion
+                                            #region configuracao cv
+                                            NUM_SERIE_COMPUTADOR_VAZAO_001 = configuracaoCv?.NUM_SERIE_COMPUTADOR_VAZAO_001,
+                                            DHA_COLETA_001 = DateTime.TryParseExact(configuracaoCv?.DHA_COLETA_001, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dhaColeta) ? dhaColeta : null,
+                                            MED_TEMPERATURA_001 = double.TryParse(configuracaoCv?.MED_TEMPERATURA_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double medTemperatura) ? medTemperatura : 0,
+                                            MED_PRESSAO_ATMSA_001 = double.TryParse(configuracaoCv?.MED_PRESSAO_ATMSA_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double medPressaoAtmsa) ? medPressaoAtmsa : 0,
+                                            MED_PRESSAO_RFRNA_001 = double.TryParse(configuracaoCv?.MED_PRESSAO_RFRNA_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double medPressaoRfrna) ? medPressaoRfrna : 0,
+                                            DSC_VERSAO_SOFTWARE_001 = configuracaoCv?.DSC_VERSAO_SOFTWARE_001,
+                                            #endregion
 
-                                        #region User relation
-                                        User = user,
+                                            #region elemento primario
+                                            ICE_METER_FACTOR_1_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_1_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceMeterFactor1) ? iceMeterFactor1 : 0,
+                                            ICE_METER_FACTOR_2_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_2_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_2_001) ? ICE_METER_FACTOR_2_001 : 0,
+                                            ICE_METER_FACTOR_3_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_3_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_3_001) ? ICE_METER_FACTOR_3_001 : 0,
+                                            ICE_METER_FACTOR_4_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_4_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_4_001) ? ICE_METER_FACTOR_4_001 : 0,
+                                            ICE_METER_FACTOR_5_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_5_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_5_001) ? ICE_METER_FACTOR_5_001 : 0,
+                                            ICE_METER_FACTOR_6_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_6_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_6_001) ? ICE_METER_FACTOR_6_001 : 0,
+                                            ICE_METER_FACTOR_7_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_7_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_7_001) ? ICE_METER_FACTOR_7_001 : 0,
+                                            ICE_METER_FACTOR_8_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_8_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_8_001) ? ICE_METER_FACTOR_8_001 : 0,
+                                            ICE_METER_FACTOR_9_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_9_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_9_001) ? ICE_METER_FACTOR_9_001 : 0,
+                                            ICE_METER_FACTOR_10_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_10_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_10_001) ? ICE_METER_FACTOR_10_001 : 0,
+                                            ICE_METER_FACTOR_11_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_11_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_11_001) ? ICE_METER_FACTOR_11_001 : 0,
+                                            ICE_METER_FACTOR_12_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_12_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_12_001) ? ICE_METER_FACTOR_12_001 : 0,
+                                            ICE_METER_FACTOR_13_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_13_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_13_001) ? ICE_METER_FACTOR_13_001 : 0,
+                                            ICE_METER_FACTOR_14_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_14_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_14_001) ? ICE_METER_FACTOR_14_001 : 0,
+                                            ICE_METER_FACTOR_15_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_15_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_15_001) ? ICE_METER_FACTOR_15_001 : 0,
 
-                                        #endregion
+                                            QTD_PULSOS_METER_FACTOR_1_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_1_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_1_001) ? QTD_PULSOS_METER_FACTOR_1_001 : 0,
+                                            QTD_PULSOS_METER_FACTOR_2_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_2_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_2_001) ? QTD_PULSOS_METER_FACTOR_2_001 : 0,
+                                            QTD_PULSOS_METER_FACTOR_3_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_3_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_3_001) ? QTD_PULSOS_METER_FACTOR_3_001 : 0,
+                                            QTD_PULSOS_METER_FACTOR_4_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_4_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_4_001) ? QTD_PULSOS_METER_FACTOR_4_001 : 0,
+                                            QTD_PULSOS_METER_FACTOR_5_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_5_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_5_001) ? QTD_PULSOS_METER_FACTOR_5_001 : 0,
+                                            QTD_PULSOS_METER_FACTOR_6_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_6_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_6_001) ? QTD_PULSOS_METER_FACTOR_6_001 : 0,
+                                            QTD_PULSOS_METER_FACTOR_7_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_7_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_7_001) ? QTD_PULSOS_METER_FACTOR_7_001 : 0,
+                                            QTD_PULSOS_METER_FACTOR_8_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_8_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_8_001) ? QTD_PULSOS_METER_FACTOR_8_001 : 0,
+                                            QTD_PULSOS_METER_FACTOR_9_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_9_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_9_001) ? QTD_PULSOS_METER_FACTOR_9_001 : 0,
+                                            QTD_PULSOS_METER_FACTOR_10_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_10_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_10_001) ? QTD_PULSOS_METER_FACTOR_10_001 : 0,
+                                            QTD_PULSOS_METER_FACTOR_11_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_11_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_11_001) ? QTD_PULSOS_METER_FACTOR_11_001 : 0,
+                                            QTD_PULSOS_METER_FACTOR_12_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_12_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_12_001) ? QTD_PULSOS_METER_FACTOR_12_001 : 0,
+                                            QTD_PULSOS_METER_FACTOR_13_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_13_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_13_001) ? QTD_PULSOS_METER_FACTOR_13_001 : 0,
+                                            QTD_PULSOS_METER_FACTOR_14_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_14_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_14_001) ? QTD_PULSOS_METER_FACTOR_14_001 : 0,
+                                            QTD_PULSOS_METER_FACTOR_15_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_15_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_15_001) ? QTD_PULSOS_METER_FACTOR_15_001 : 0,
 
-                                    };
-                                    if (installation is not null)
-                                        measurement.Installation = installation;
+                                            ICE_K_FACTOR_1_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_1_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor1) ? iceKFactor1 : 0,
+                                            ICE_K_FACTOR_2_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_2_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor2) ? iceKFactor2 : 0,
+                                            ICE_K_FACTOR_3_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_3_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor3) ? iceKFactor3 : 0,
+                                            ICE_K_FACTOR_4_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_4_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor4) ? iceKFactor4 : 0,
+                                            ICE_K_FACTOR_5_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_5_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor5) ? iceKFactor5 : 0,
+                                            ICE_K_FACTOR_6_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_6_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor6) ? iceKFactor6 : 0,
+                                            ICE_K_FACTOR_7_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_7_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor7) ? iceKFactor7 : 0,
+                                            ICE_K_FACTOR_8_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_8_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor8) ? iceKFactor8 : 0,
+                                            ICE_K_FACTOR_9_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_9_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor9) ? iceKFactor9 : 0,
+                                            ICE_K_FACTOR_10_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_10_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor10) ? iceKFactor10 : 0,
+                                            ICE_K_FACTOR_11_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_11_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor11) ? iceKFactor11 : 0,
+                                            ICE_K_FACTOR_12_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_12_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor12) ? iceKFactor12 : 0,
+                                            ICE_K_FACTOR_13_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_13_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_K_FACTOR_13_001) ? ICE_K_FACTOR_13_001 : 0,
+                                            ICE_K_FACTOR_14_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_14_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_K_FACTOR_14_001) ? ICE_K_FACTOR_14_001 : 0,
+                                            ICE_K_FACTOR_15_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_15_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_K_FACTOR_15_001) ? ICE_K_FACTOR_15_001 : 0,
 
-                                    await context.Measurements.AddAsync(measurement);
+                                            QTD_PULSOS_K_FACTOR_1_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_1_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor1) ? qtdPulsosKFactor1 : 0,
+                                            QTD_PULSOS_K_FACTOR_2_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_2_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor2) ? qtdPulsosKFactor2 : 0,
+                                            QTD_PULSOS_K_FACTOR_3_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_3_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor3) ? qtdPulsosKFactor3 : 0,
+                                            QTD_PULSOS_K_FACTOR_4_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_4_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor4) ? qtdPulsosKFactor4 : 0,
+                                            QTD_PULSOS_K_FACTOR_5_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_5_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor5) ? qtdPulsosKFactor5 : 0,
+                                            QTD_PULSOS_K_FACTOR_6_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_6_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor6) ? qtdPulsosKFactor6 : 0,
+                                            QTD_PULSOS_K_FACTOR_7_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_7_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor7) ? qtdPulsosKFactor7 : 0,
+                                            QTD_PULSOS_K_FACTOR_8_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_8_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor8) ? qtdPulsosKFactor8 : 0,
+                                            QTD_PULSOS_K_FACTOR_9_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_9_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor9) ? qtdPulsosKFactor9 : 0,
+                                            QTD_PULSOS_K_FACTOR_10_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_10_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor10) ? qtdPulsosKFactor10 : 0,
+                                            QTD_PULSOS_K_FACTOR_11_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_11_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor11) ? qtdPulsosKFactor11 : 0,
+                                            QTD_PULSOS_K_FACTOR_12_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_12_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_K_FACTOR_12_001) ? QTD_PULSOS_K_FACTOR_12_001 : 0,
+                                            QTD_PULSOS_K_FACTOR_13_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_13_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_K_FACTOR_13_001) ? QTD_PULSOS_K_FACTOR_13_001 : 0,
+                                            QTD_PULSOS_K_FACTOR_14_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_14_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_K_FACTOR_14_001) ? QTD_PULSOS_K_FACTOR_14_001 : 0,
+                                            QTD_PULSOS_K_FACTOR_15_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_15_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_K_FACTOR_15_001) ? QTD_PULSOS_K_FACTOR_15_001 : 0,
 
-                                    var measurement001DTO = _mapper.Map<Measurement, _001DTO>(measurement);
-                                    _responseResult._001File ??= new List<_001DTO>();
-                                    _responseResult._001File?.Add(measurement001DTO);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Console.WriteLine(ex);
-                                    return BadRequest(new ErrorResponseDTO
+                                            ICE_CUTOFF_001 = double.TryParse(elementoPrimario?.ICE_CUTOFF_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceCutoff) ? iceCutoff : 0,
+                                            ICE_LIMITE_SPRR_ALARME_001 = double.TryParse(elementoPrimario?.ICE_LIMITE_SPRR_ALARME_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceLimiteSprrAlarme) ? iceLimiteSprrAlarme : 0,
+                                            ICE_LIMITE_INFRR_ALARME_001 = double.TryParse(elementoPrimario?.ICE_LIMITE_INFRR_ALARME_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceLimiteInfrrAlarme) ? iceLimiteInfrrAlarme : 0,
+                                            IND_HABILITACAO_ALARME_1_001 = elementoPrimario?.IND_HABILITACAO_ALARME_1_001,
+                                            #endregion
+
+                                            #region instrumento pressao
+                                            NUM_SERIE_1_001 = instrumentoPressao?.NUM_SERIE_1_001,
+                                            MED_PRSO_LIMITE_SPRR_ALRME_001 = double.TryParse(instrumentoPressao?.MED_PRSO_LIMITE_SPRR_ALRME_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var limiteSprr) ? limiteSprr : 0,
+                                            MED_PRSO_LMTE_INFRR_ALRME_001 = double.TryParse(instrumentoPressao?.MED_PRSO_LMTE_INFRR_ALRME_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var limiteInfrr) ? limiteInfrr : 0,
+                                            IND_HABILITACAO_ALARME_2_001 = instrumentoPressao?.IND_HABILITACAO_ALARME_2_001,
+                                            MED_PRSO_ADOTADA_FALHA_001 = double.TryParse(instrumentoPressao?.MED_PRSO_ADOTADA_FALHA_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var adotFalha) ? adotFalha : 0,
+                                            DSC_ESTADO_INSNO_CASO_FALHA_001 = instrumentoPressao?.DSC_ESTADO_INSNO_CASO_FALHA_001,
+                                            IND_TIPO_PRESSAO_CONSIDERADA_001 = instrumentoPressao?.IND_TIPO_PRESSAO_CONSIDERADA_001,
+                                            #endregion
+
+                                            #region instrumento temperatura
+
+                                            NUM_SERIE_2_001 = instrumentoTemperatura?.NUM_SERIE_2_001,
+                                            MED_TMPTA_SPRR_ALARME_001 = double.TryParse(instrumentoTemperatura?.MED_TMPTA_SPRR_ALARME_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var tmptaAl) ? tmptaAl : 0,
+                                            MED_TMPTA_INFRR_ALRME_001 = double.TryParse(instrumentoTemperatura?.MED_TMPTA_INFRR_ALRME_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var infrrAl) ? infrrAl : 0,
+                                            IND_HABILITACAO_ALARME_3_001 = instrumentoTemperatura?.IND_HABILITACAO_ALARME_3_001,
+                                            MED_TMPTA_ADTTA_FALHA_001 = double.TryParse(instrumentoTemperatura?.MED_TMPTA_ADTTA_FALHA_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var adtta) ? adtta : 0,
+                                            DSC_ESTADO_INSTRUMENTO_FALHA_1_001 = instrumentoTemperatura?.DSC_ESTADO_INSTRUMENTO_FALHA_1_001,
+
+                                            #endregion
+
+                                            #region producao
+
+                                            DHA_INICIO_PERIODO_MEDICAO_001 = DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_001, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var inicioPer) ? inicioPer : null,
+                                            DHA_FIM_PERIODO_MEDICAO_001 = DateTime.TryParseExact(producao?.DHA_FIM_PERIODO_MEDICAO_001, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var fimPer) ? fimPer : null,
+                                            ICE_DENSIDADADE_RELATIVA_001 = double.TryParse(producao?.ICE_DENSIDADADE_RELATIVA_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_DENSIDADADE_RELATIVA_001) ? ICE_DENSIDADADE_RELATIVA_001 : 0,
+                                            ICE_CORRECAO_BSW_001 = double.TryParse(producao?.ICE_CORRECAO_BSW_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_CORRECAO_BSW_001) ? ICE_CORRECAO_BSW_001 : 0,
+                                            ICE_CORRECAO_PRESSAO_LIQUIDO_001 = double.TryParse(producao?.ICE_CORRECAO_PRESSAO_LIQUIDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var pressaoLiq) ? pressaoLiq : 0,
+                                            ICE_CRRCO_TEMPERATURA_LIQUIDO_001 = double.TryParse(producao?.ICE_CRRCO_TEMPERATURA_LIQUIDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var crrcoTemp) ? crrcoTemp : 0,
+                                            MED_PRESSAO_ESTATICA_001 = double.TryParse(producao?.MED_PRESSAO_ESTATICA_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_PRESSAO_ESTATICA_001) ? MED_PRESSAO_ESTATICA_001 : 0,
+                                            MED_TMPTA_FLUIDO_001 = double.TryParse(producao?.MED_TMPTA_FLUIDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_TMPTA_FLUIDO_001) ? MED_TMPTA_FLUIDO_001 : 0,
+                                            MED_VOLUME_BRTO_CRRGO_MVMDO_001 = double.TryParse(producao?.MED_VOLUME_BRTO_CRRGO_MVMDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_VOLUME_BRTO_CRRGO_MVMDO_001) ? MED_VOLUME_BRTO_CRRGO_MVMDO_001 : 0,
+                                            MED_VOLUME_BRUTO_MVMDO_001 = double.TryParse(producao?.MED_VOLUME_BRUTO_MVMDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_VOLUME_BRUTO_MVMDO_001) ? MED_VOLUME_BRUTO_MVMDO_001 : 0,
+                                            MED_VOLUME_LIQUIDO_MVMDO_001 = double.TryParse(producao?.MED_VOLUME_LIQUIDO_MVMDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_VOLUME_LIQUIDO_MVMDO_001) ? MED_VOLUME_LIQUIDO_MVMDO_001 : 0,
+                                            MED_VOLUME_TTLZO_FIM_PRDO_001 = double.TryParse(producao?.MED_VOLUME_TTLZO_FIM_PRDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_VOLUME_TTLZO_FIM_PRDO_001) ? MED_VOLUME_TTLZO_FIM_PRDO_001 : 0,
+                                            MED_VOLUME_TTLZO_INCO_PRDO_001 = double.TryParse(producao?.MED_VOLUME_TTLZO_INCO_PRDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_VOLUME_TTLZO_INCO_PRDO_001) ? MED_VOLUME_TTLZO_INCO_PRDO_001 : 0,
+
+                                            #endregion
+
+                                            #region FileType relation
+                                            FileType = new FileType
+                                            {
+                                                Name = data.Files[i].FileName,
+                                                Acronym = "PMO",
+
+                                            },
+                                            #endregion
+
+                                            #region User relation
+                                            User = user,
+
+                                            #endregion
+
+                                        };
+                                        if (installation is not null)
+                                            measurement.Installation = installation;
+
+                                        await context.Measurements.AddAsync(measurement);
+
+                                        var measurement001DTO = _mapper.Map<Measurement, _001DTO>(measurement);
+                                        _responseResult._001File ??= new List<_001DTO>();
+                                        _responseResult._001File?.Add(measurement001DTO);
+                                    }
+                                    catch (Exception ex)
                                     {
-                                        Message = $"Something went wrong: {ex.Message}"
-                                    });
+                                        Console.WriteLine(ex);
+                                        return BadRequest(new ErrorResponseDTO
+                                        {
+                                            Message = $"Something went wrong: {ex.Message}"
+                                        });
+                                    }
                                 }
+
 
                             }
                             break;
