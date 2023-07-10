@@ -13,8 +13,11 @@ namespace PRIO.src.Shared.Utils
                 var envVars = DotEnv.Read();
                 var domain = envVars["DOMINIO"];
                 var serverAd = envVars["AD"];
+
+                var treatedUsername = username.Split('@')[0];
+
                 using var context = new PrincipalContext(ContextType.Domain, domain, serverAd);
-                return context.ValidateCredentials(username, password);
+                return context.ValidateCredentials(treatedUsername, password);
             }
             catch (Exception ex)
             {
