@@ -33,7 +33,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
 
         public async Task<CreateUpdateInstallationDTO> CreateInstallation(CreateInstallationViewModel body, User user)
         {
-
             var installationExistingCode = await _installationRepository
                 .GetByCod(body.CodInstallationAnp);
 
