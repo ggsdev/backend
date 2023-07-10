@@ -1,6 +1,8 @@
-﻿namespace PRIO.src.Modules.FileImport.XML.Infra.EF.Repositories
+﻿using PRIO.src.Modules.FileImport.XML.Infra.EF.Interfaces;
+
+namespace PRIO.src.Modules.FileImport.XML.Infra.EF.Repositories
 {
-    public class XMLImportRepository
+    public class XMLImportRepository : IXMLImportRepository
     {
     }
 }

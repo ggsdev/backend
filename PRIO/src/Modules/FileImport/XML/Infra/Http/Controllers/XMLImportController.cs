@@ -19,13 +19,24 @@ namespace PRIO.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> PostBase64Files([FromBody] RequestXmlViewModel data)
+        public async Task<ActionResult> ImportFiles([FromBody] RequestXmlViewModel data)
         {
             var user = HttpContext.Items["User"] as User;
             var result = await _service.Import(data, user);
 
 
             return Created("import-measurements", result);
+        }
+
+
+        [HttpPost("validate")]
+        public async Task<ActionResult> ValidateImport([FromBody] RequestXmlViewModel data)
+        {
+            var user = HttpContext.Items["User"] as User;
+            var result = await _service.Import(data, user);
+
+
+            return Ok(result);
         }
 
         //[HttpGet]

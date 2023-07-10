@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.src.Shared.Infra.EF.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230710173933_XmlImportTable")]
+    partial class XmlImportTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -416,10 +419,8 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("FileType")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("varchar");
+                    b.Property<Guid>("FileTypeId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -428,6 +429,8 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FileTypeId");
 
                     b.ToTable("ImportedFiles", (string)null);
                 });
@@ -2790,6 +2793,17 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("PRIO.src.Modules.FileImport.XML.Infra.EF.Models.ImportedFile", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.FileType", "FileType")
+                        .WithMany("ImportedFile")
+                        .HasForeignKey("FileTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FileType");
+                });
+
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models.Cluster", b =>
                 {
                     b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
@@ -3179,6 +3193,8 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.FileType", b =>
                 {
+                    b.Navigation("ImportedFile");
+
                     b.Navigation("Measurements");
                 });
 
