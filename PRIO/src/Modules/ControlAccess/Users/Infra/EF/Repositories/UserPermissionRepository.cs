@@ -26,6 +26,14 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
                 .Where(x => x.User.Id == userId)
                 .ToListAsync();
         }
+        public async Task<UserPermission> GetUserPermissionByMenuNameAndUserId(string? menuName, Guid userId)
+        {
+            return await _context
+                        .UserPermissions.Include(x => x.User)
+                        .Where(x => x.MenuName == menuName)
+                        .Where(x => x.User.Id == userId)
+                        .FirstOrDefaultAsync();
+        }
 
         public async Task<List<UserPermission>> GetUserPermissionsByGroupId()
         {

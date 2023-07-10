@@ -12,6 +12,8 @@ using PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services;
 using PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Interfaces;
 using PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Menus.Infra.Http.Services;
+using PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Interfaces;
+using PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Interfaces;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
@@ -181,6 +183,7 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddScoped<IUserRepository, UserRepository>();
     services.AddScoped<IUserPermissionRepository, UserPermissionRepository>();
     services.AddScoped<IUserOperationRepository, UserOperationRepository>();
+    services.AddScoped<IGlobalOperationsRepository, GlobalOperationsRepository>();
     #endregion
 
     #region Control Access Services

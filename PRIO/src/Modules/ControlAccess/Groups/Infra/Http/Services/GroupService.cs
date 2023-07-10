@@ -286,6 +286,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
                         hasParent = groupPermissions[i].hasParent,
                         User = user,
                     };
+                    await _userPermissionRepository.AddUserPermission(userPermission);
 
                     foreach (var operation in groupPermissions[i].Operations)
                     {
@@ -299,8 +300,6 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
 
                         await _userOperationRepository.AddUserOperation(userOperation);
                     }
-
-                    await _userPermissionRepository.AddUserPermission(userPermission);
                 }
             }
         }

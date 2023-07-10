@@ -7,7 +7,9 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Interfaces
         Task AddUserOperation(UserOperation userOperation);
         Task<List<UserOperation>> GetUserOperationsByUserId(Guid userId);
         Task<List<UserOperation>> GetUserOperationsByGroupId(Guid groupId);
+        Task<UserOperation> GetUserOperationsByOperationNameMenuNameAndPermissionId(string? operationName, string? menuName, Guid userPermissionId);
         Task RemoveUserOperations(List<UserOperation> userOperations);
         void UpdateUserOperations(List<UserOperation> userOperations);
+        Task SaveChangesAsync();
     }
 }
