@@ -1,6 +1,6 @@
 ﻿using OfficeOpenXml;
 
-namespace PRIO.src.Shared.Utils
+namespace PRIO.src.Modules.FileImport.XLSX.Utils
 {
     internal static class XlsUtils
     {
@@ -94,8 +94,6 @@ namespace PRIO.src.Shared.Utils
 
             return columnPositions;
         }
-
-
         public static List<string> ValidateColumns(ExcelWorksheet worksheet)
         {
             var errorMessages = new List<string>();
@@ -151,7 +149,7 @@ namespace PRIO.src.Shared.Utils
                 if (!isValidColumn)
                 {
                     var expectedValue = expectedColumns[column - 1];
-                    errorMessages.Add($"Valor inválido para coluna: na {column}ª posição, deveria ser: '{expectedValue}'");
+                    errorMessages.Add($"Valor inválido ou faltando, deveria ser: '{expectedValue}'");
                 }
             }
 

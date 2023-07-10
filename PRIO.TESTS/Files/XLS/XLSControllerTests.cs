@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XLSX.Dtos;
 using PRIO.src.Modules.FileImport.XLSX.Infra.Http.Controllers;
 using PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services;
@@ -39,6 +40,7 @@ namespace PRIO.TESTS.Files.XLS
         private User _user;
         private IMapper _mapper;
         private XLSXService _service;
+        private UserService _userService;
         private ISystemHistoryRepository _systemHistoryRepository;
         private SystemHistoryService _systemHistoryService;
 
@@ -99,10 +101,13 @@ namespace PRIO.TESTS.Files.XLS
 
             _systemHistoryRepository = new SystemHistoryRepository(_context);
 
-            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository);
+            _userService = new UserService(_context, _mapper);
+
+            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository, _userService);
+
             _service = new XLSXService(_mapper, _context, _systemHistoryService);
 
-            _controller = new XLSXController(_service);
+            _controller = new XLSXController(_service, _systemHistoryService);
             _controller.ControllerContext.HttpContext = httpContext;
             _viewModel = new RequestXslxViewModel
             {

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Clusters.Dtos;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
@@ -32,6 +33,7 @@ namespace PRIO.TESTS.Hierarquies.Installations
         private CreateInstallationViewModel _viewModel;
         private InstallationService _service;
         private User _user;
+        private UserService _userService;
 
         private ISystemHistoryRepository _systemHistoryRepository;
         private IClusterRepository _clusterRepository;
@@ -75,8 +77,9 @@ namespace PRIO.TESTS.Hierarquies.Installations
             _installationRepository = new InstallationRepository(_context);
             _clusterRepository = new ClusterRepository(_context);
 
-            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository);
+            _userService = new UserService(_context, _mapper);
 
+            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository, _userService);
 
             _service = new InstallationService(_mapper, _installationRepository, _clusterRepository, _systemHistoryService);
             _controller = new InstallationController(_service);

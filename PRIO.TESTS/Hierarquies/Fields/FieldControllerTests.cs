@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Dtos;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
@@ -35,6 +36,7 @@ namespace PRIO.TESTS.Hierarquies.Fields
         private User _user;
         private Installation _installation1;
         private Installation _installation2;
+        private UserService _userService;
         private Guid _invalidId;
 
         private IFieldRepository _fieldRepository;
@@ -113,8 +115,9 @@ namespace PRIO.TESTS.Hierarquies.Fields
             _fieldRepository = new FieldRepository(_context);
             _installationRepository = new InstallationRepository(_context);
 
-            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository);
+            _userService = new UserService(_context, _mapper);
 
+            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository, _userService);
             _service = new FieldService(_mapper, _fieldRepository, _systemHistoryService, _installationRepository);
             _controller = new FieldController(_service);
             _controller.ControllerContext.HttpContext = httpContext;
