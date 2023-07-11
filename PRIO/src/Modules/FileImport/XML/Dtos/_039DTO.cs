@@ -10,6 +10,8 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public short? DSC_TIPO_FALHA_039 { get; set; }
         public string? COD_FALHA_039 { get; set; }
         public string? IND_TIPO_NOTIFICACAO_039 { get; set; }
+        public string FileName { get; set; } = string.Empty;
+
         public DateTime? DHA_OCORRENCIA_039 { get; set; }
         public DateTime? DHA_DETECCAO_039 { get; set; }
         public DateTime? DHA_RETORNO_039 { get; set; } = null;

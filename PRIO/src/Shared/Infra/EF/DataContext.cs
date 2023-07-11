@@ -8,8 +8,6 @@ using PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Mappings;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
-using PRIO.src.Modules.FileImport.XML.Infra.EF.Mappings;
-using PRIO.src.Modules.FileImport.XML.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Mappings;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Mappings;
@@ -26,6 +24,8 @@ using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Mappings;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Mappings;
+using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
@@ -56,9 +56,8 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<Well> Wells { get; set; }
         public DbSet<SystemHistory> SystemHistories { get; set; }
         public DbSet<Auxiliary> Auxiliaries { get; set; }
-        public DbSet<ImportedFile> ImportedFiles { get; set; }
-
         public DbSet<Group> Groups { get; set; }
+        public DbSet<MeasurementHistory> MeasurementHistories { get; set; }
         public DbSet<GroupOperation> GroupOperations { get; set; }
         public DbSet<UserOperation> UserOperations { get; set; }
         public DbSet<GroupPermission> GroupPermissions { get; set; }
@@ -176,10 +175,10 @@ namespace PRIO.src.Shared.Infra.EF
             modelBuilder.ApplyConfiguration(new WellMap());
 
             modelBuilder.ApplyConfiguration(new MeasuringEquipmentMap());
+            modelBuilder.ApplyConfiguration(new MeasurementHistoryMap());
 
             modelBuilder.ApplyConfiguration(new SystemHistoryMap());
 
-            modelBuilder.ApplyConfiguration(new ImportedFileMap());
 
             modelBuilder.ApplyConfiguration(new GroupMap());
             modelBuilder.ApplyConfiguration(new MenuMap());

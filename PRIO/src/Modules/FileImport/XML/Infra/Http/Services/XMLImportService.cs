@@ -13,6 +13,7 @@ using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Interfaces;
+using PRIO.src.Modules.Measuring.Measurements.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Measurements.Interfaces;
 using PRIO.src.Shared.Errors;
 using System.Globalization;
@@ -27,19 +28,21 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
     {
         private readonly IMapper _mapper;
         private readonly DTOFiles _responseResult;
+        private readonly MeasurementService _measurementService;
         private readonly IInstallationRepository _installationRepository;
         private readonly IEquipmentRepository _equipmentRepository;
         private readonly IMeasurementRepository _repository;
 
         [GeneratedRegex("(?<=data:@file/xml;base64,)\\w+")]
         private static partial Regex XmlRegex();
-        public XMLImportService(IMapper mapper, IInstallationRepository installationRepository, IMeasurementRepository xMLImportRepository, IEquipmentRepository equipmentRepository)
+        public XMLImportService(IMapper mapper, IInstallationRepository installationRepository, IMeasurementRepository xMLImportRepository, IEquipmentRepository equipmentRepository, MeasurementService measurementService)
         {
             _mapper = mapper;
             _responseResult = new();
             _installationRepository = installationRepository;
             _repository = xMLImportRepository;
             _equipmentRepository = equipmentRepository;
+            _measurementService = measurementService;
         }
 
         public async Task<DTOFiles> Validate(RequestXmlViewModel data, User user)
@@ -59,7 +62,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         "001",
                         "002",
                         "003"
-                    }.Contains(data.Files[i].FileName);
+                    }.Contains(data.Files[i].FileType);
 
                 if (!isValidFileName)
                     throw new BadRequestException($"Deve pertencer a uma das categorias: 001, 002, 003, 039. Importação falhou, arquivo com nome: {data.Files[i].FileName}");
@@ -68,7 +71,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                 #region pathing
                 var projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\.."));
-                var relativeSchemaPath = Path.Combine("src", "Modules", "FileImport", "XML", "FileContent", $"_{data.Files[i].FileName}\\Schema.xsd");
+                var relativeSchemaPath = Path.Combine("src", "Modules", "FileImport", "XML", "FileContent", $"_{data.Files[i].FileType}\\Schema.xsd");
                 var pathXml = Path.GetTempPath() + "xmlImports.xml";
                 var pathSchema = Path.GetFullPath(Path.Combine(projectRoot, relativeSchemaPath));
                 #endregion
@@ -105,7 +108,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 {
                     var dadosBasicosElement = dadosBasicosElements.ElementAt(k);
 
-                    switch (data.Files[i].FileName)
+                    switch (data.Files[i].FileType)
                     {
                         #region 039
                         case "039":
@@ -132,7 +135,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                         var equipment = await _equipmentRepository.GetByTagMeasuringPoint(dadosBasicos.COD_TAG_PONTO_MEDICAO_039, XmlUtils.File039);
 
                                         if (equipment is null)
-                                            throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), TAG do ponto de medição {dadosBasicos.COD_TAG_PONTO_MEDICAO_039}: {ErrorMessages.NotFound<MeasuringEquipment>()}");
+                                            throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS),equipamento com TAG do ponto de medição {dadosBasicos.COD_TAG_PONTO_MEDICAO_039}: {ErrorMessages.NotFound<MeasuringEquipment>()}");
 
                                         if (installation.MeasuringPoints is not null)
                                         {
@@ -147,10 +150,11 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                         }
 
                                         var measurement = _mapper.Map<Measurement>(dadosBasicos);
+                                        measurement.FileName = data.Files[i].FileName;
                                         measurement.Id = Guid.NewGuid();
                                         measurement.FileType = new FileType
                                         {
-                                            Name = data.Files[i].FileName,
+                                            Name = data.Files[i].FileType,
                                             Acronym = XmlUtils.FileAcronym039,
 
                                         };
@@ -210,7 +214,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                     var equipment = await _equipmentRepository.GetByTagMeasuringPoint(dadosBasicos.COD_TAG_PONTO_MEDICAO_001, XmlUtils.File001);
 
                                     if (equipment is null)
-                                        throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), TAG do ponto de medição {dadosBasicos.COD_TAG_PONTO_MEDICAO_001}: {ErrorMessages.NotFound<MeasuringEquipment>()}");
+                                        throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), equipamento com TAG do ponto de medição {dadosBasicos.COD_TAG_PONTO_MEDICAO_001}: {ErrorMessages.NotFound<MeasuringEquipment>()}");
 
                                     if (installation.MeasuringPoints is not null)
                                     {
@@ -355,12 +359,13 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                             #endregion
 
+                                            FileName = data.Files[i].FileName,
                                             Installation = installation,
                                             User = user,
 
                                             FileType = new FileType
                                             {
-                                                Name = data.Files[i].FileName,
+                                                Name = data.Files[i].FileType,
                                                 Acronym = XmlUtils.FileAcronym001,
 
                                             },
@@ -422,7 +427,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                     var equipment = await _equipmentRepository.GetByTagMeasuringPoint(dadosBasicos.COD_TAG_PONTO_MEDICAO_002, XmlUtils.File002);
 
                                     if (equipment is null)
-                                        throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), TAG do ponto de medição {dadosBasicos.COD_TAG_PONTO_MEDICAO_002}: {ErrorMessages.NotFound<MeasuringEquipment>()}");
+                                        throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), equipamento com TAG do ponto de medição {dadosBasicos.COD_TAG_PONTO_MEDICAO_002}: {ErrorMessages.NotFound<MeasuringEquipment>()}");
 
                                     if (installation.MeasuringPoints is not null)
                                     {
@@ -588,9 +593,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                             MED_CORRIGIDO_MVMDO_002 = double.TryParse(producao?.MED_CORRIGIDO_MVMDO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_CORRIGIDO_MVMDO_002) ? MED_CORRIGIDO_MVMDO_002 : 0,
                                             #endregion
 
+                                            FileName = data.Files[i].FileName,
                                             FileType = new FileType
                                             {
-                                                Name = data.Files[i].FileName,
+                                                Name = data.Files[i].FileType,
                                                 Acronym = XmlUtils.FileAcronym002,
 
                                             },
@@ -670,7 +676,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                     var equipment = await _equipmentRepository.GetByTagMeasuringPoint(dadosBasicos.COD_TAG_PONTO_MEDICAO_003, XmlUtils.File003);
 
                                     if (equipment is null)
-                                        throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), TAG do ponto de medição {dadosBasicos.COD_TAG_PONTO_MEDICAO_003}: {ErrorMessages.NotFound<MeasuringEquipment>()}");
+                                        throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), equipamento com TAG do ponto de medição {dadosBasicos.COD_TAG_PONTO_MEDICAO_003}: {ErrorMessages.NotFound<MeasuringEquipment>()}");
 
                                     if (installation.MeasuringPoints is not null)
                                     {
@@ -814,9 +820,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                             MED_CORRIGIDO_MVMDO_003 = double.TryParse(producao?.MED_CORRIGIDO_MVMDO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_CORRIGIDO_MVMDO_003) ? MED_CORRIGIDO_MVMDO_003 : 0,
                                             #endregion
 
+                                            FileName = data.Files[i].FileName,
                                             FileType = new FileType
                                             {
-                                                Name = data.Files[i].FileName,
+                                                Name = data.Files[i].FileType,
                                                 Acronym = XmlUtils.FileAcronym003,
 
                                             },
@@ -864,15 +871,24 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 if (installation is null)
                     throw new NotFoundException($"{ErrorMessages.NotFound<Installation>()} Código: {measurement.COD_INSTALACAO_001}");
 
+                var fileInfo = new FileBasicInfoDTO
+                {
+                    Acronym = XmlUtils.FileAcronym001,
+                    Name = file.FileName,
+                    Type = XmlUtils.File001
+                };
+
                 measurement.User = user;
 
                 measurement.FileType = new FileType
                 {
-                    Name = XmlUtils.File001,
-                    Acronym = XmlUtils.FileAcronym001,
+                    Name = fileInfo.Type,
+                    Acronym = fileInfo.Acronym,
                 };
 
                 measurement.Installation = installation;
+
+                await _measurementService.Import(measurement, user, fileInfo);
 
                 await _repository.AddAsync(measurement);
             }
@@ -891,15 +907,24 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 if (installation is null)
                     throw new NotFoundException($"{ErrorMessages.NotFound<Installation>()} Código: {measurement.COD_INSTALACAO_002}");
 
+                var fileInfo = new FileBasicInfoDTO
+                {
+                    Acronym = XmlUtils.FileAcronym001,
+                    Name = file.FileName,
+                    Type = XmlUtils.File001
+                };
+
                 measurement.User = user;
 
                 measurement.FileType = new FileType
                 {
-                    Name = XmlUtils.File002,
-                    Acronym = XmlUtils.FileAcronym002,
-
+                    Name = fileInfo.Type,
+                    Acronym = fileInfo.Acronym,
                 };
+
                 measurement.Installation = installation;
+
+                await _measurementService.Import(measurement, user, fileInfo);
                 await _repository.AddAsync(measurement);
 
             }
@@ -917,15 +942,24 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 if (installation is null)
                     throw new NotFoundException($"{ErrorMessages.NotFound<Installation>()} Código: {measurement.COD_INSTALACAO_003}");
 
+                var fileInfo = new FileBasicInfoDTO
+                {
+                    Acronym = XmlUtils.FileAcronym001,
+                    Name = file.FileName,
+                    Type = XmlUtils.File001
+                };
+
                 measurement.User = user;
 
                 measurement.FileType = new FileType
                 {
-                    Name = XmlUtils.File003,
-                    Acronym = XmlUtils.FileAcronym003,
-
+                    Name = fileInfo.Type,
+                    Acronym = fileInfo.Acronym,
                 };
+
                 measurement.Installation = installation;
+
+                await _measurementService.Import(measurement, user, fileInfo);
                 await _repository.AddAsync(measurement);
 
             }
@@ -943,19 +977,32 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 if (installation is null)
                     throw new NotFoundException($"{ErrorMessages.NotFound<Installation>()} Código: {measurement.DHA_COD_INSTALACAO_039}");
 
+                var fileInfo = new FileBasicInfoDTO
+                {
+                    Acronym = XmlUtils.FileAcronym001,
+                    Name = file.FileName,
+                    Type = XmlUtils.File001
+                };
+
                 measurement.User = user;
 
                 measurement.FileType = new FileType
                 {
-                    Name = XmlUtils.File039,
-                    Acronym = XmlUtils.FileAcronym039,
-
+                    Name = fileInfo.Type,
+                    Acronym = fileInfo.Acronym,
                 };
+
                 measurement.Installation = installation;
+
+                await _measurementService.Import(measurement, user, fileInfo);
                 await _repository.AddAsync(measurement);
             }
 
             await _repository.SaveChangesAsync();
+
+            if (_repository.CountAdded() == 0)
+                return new ImportResponseDTO { Status = "Error", Message = $"Nenhuma medição foi adicionada" };
+
 
             return new ImportResponseDTO { Status = "Success", Message = $"Arquivo importado com sucesso, {_repository.CountAdded()} medições importadas" };
         }

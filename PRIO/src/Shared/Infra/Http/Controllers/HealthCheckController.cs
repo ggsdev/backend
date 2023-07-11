@@ -20,14 +20,21 @@ namespace PRIO.src.Shared.Infra.Http.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetHealth()
         {
+            var version = "0.1.0.1";
+            //release, feature, fix, minorFix
             try
             {
-                await _dbContext.Database.CanConnectAsync();
-                return Ok(new { Message = "API is healthy" });
+                var safe = await _dbContext.Database.CanConnectAsync();
+                if (safe is false)
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Problema ao se conectar com o banco de dados", Version = version });
+
+                return Ok(new { Message = "API saudável", Version = version });
+
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Problem when connecting to database: " + ex.Message });
+                Console.WriteLine(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Problema ao se conectar com o banco de dados", Version = version });
             }
         }
     }

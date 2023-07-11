@@ -3,6 +3,7 @@
     public class _001DTO
     {
         public Guid Id { get; set; }
+        public string FileName { get; set; } = string.Empty;
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_001 { get; set; }
         public string COD_INSTALACAO_001 { get; set; } = string.Empty;
         public string? COD_TAG_PONTO_MEDICAO_001 { get; set; }
