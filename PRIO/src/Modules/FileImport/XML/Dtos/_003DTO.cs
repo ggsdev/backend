@@ -8,6 +8,8 @@
         public string? COD_TAG_PONTO_MEDICAO_003 { get; set; }
         public string? NUM_SERIE_COMPUTADOR_VAZAO_003 { get; set; }
         public DateTime? DHA_COLETA_003 { get; set; }
+        public string FileName { get; set; } = string.Empty;
+
         public double? MED_TEMPERATURA_1_003 { get; set; }
         public double? MED_PRESSAO_ATMSA_003 { get; set; }
         public double? MED_PRESSAO_RFRNA_003 { get; set; }

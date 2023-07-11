@@ -4,6 +4,8 @@
     {
         public Guid Id { get; set; }
         public Guid? ImportId { get; set; }
+        public string FileName { get; set; } = string.Empty;
+
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_002 { get; set; }
         public string COD_INSTALACAO_002 { get; set; } = string.Empty;
         public string? COD_TAG_PONTO_MEDICAO_002 { get; set; }

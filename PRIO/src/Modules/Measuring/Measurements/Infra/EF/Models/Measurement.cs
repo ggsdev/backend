@@ -1,11 +1,14 @@
 ﻿using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models
 {
     public class Measurement : BaseModel
     {
+        public string FileName { get; set; } = string.Empty;
+
         #region 001
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_001 { get; set; }
         public string? COD_INSTALACAO_001 { get; set; }
@@ -407,6 +410,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models
 
         public FileType? FileType { get; set; }
         public User? User { get; set; }
+        public List<MeasurementHistory>? MeasurementHistories { get; set; }
 
         public Installation Installation { get; set; }
     }
