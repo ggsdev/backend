@@ -368,6 +368,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models
 
         #region 039
         public string? COD_TAG_EQUIPAMENTO_039 { get; set; }
+        public string? COD_TAG_PONTO_MEDICAO_039 { get; set; }
 
         public string? COD_FALHA_SUPERIOR_039 { get; set; }
 

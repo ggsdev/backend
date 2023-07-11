@@ -19,7 +19,7 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public string? DHA_DSC_METODOLOGIA_039 { get; set; }
         public string? DHA_NOM_RESPONSAVEL_RELATO_039 { get; set; }
         public string? DHA_NUM_SERIE_EQUIPAMENTO_039 { get; set; }
-        public string? DHA_COD_INSTALACAO_039 { get; set; }
+        public string DHA_COD_INSTALACAO_039 { get; set; } = string.Empty;
 
         public List<Calibration>? LISTA_CALIBRACAO { get; set; }
         public List<Bsw>? LISTA_BSW { get; set; }

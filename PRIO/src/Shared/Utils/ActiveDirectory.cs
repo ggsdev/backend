@@ -21,7 +21,8 @@ namespace PRIO.src.Shared.Utils
             }
             catch (Exception ex)
             {
-                throw new BadRequestException(ex.Message);
+
+                throw new BadRequestException(ex.Message, status: "400");
             }
         }
     }

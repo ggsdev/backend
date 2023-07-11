@@ -4,7 +4,7 @@
     {
         public Guid Id { get; set; }
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_003 { get; set; }
-        public string? COD_INSTALACAO_003 { get; set; }
+        public string COD_INSTALACAO_003 { get; set; } = string.Empty;
         public string? COD_TAG_PONTO_MEDICAO_003 { get; set; }
         public string? NUM_SERIE_COMPUTADOR_VAZAO_003 { get; set; }
         public DateTime? DHA_COLETA_003 { get; set; }
