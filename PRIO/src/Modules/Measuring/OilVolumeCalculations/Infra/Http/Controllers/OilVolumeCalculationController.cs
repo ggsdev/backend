@@ -44,7 +44,6 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                         .Include(x => x.MeasuringPoint)
                         .Where(x => x.MeasuringPoint.Id == section.MeasuringPointId)
                         .FirstOrDefaultAsync();
-                    Console.WriteLine(sectionFound);
                     if (sectionFound is not null)
                         throw new ConflictException($"Equipamento já possui relação com o cálculo da instalação {sectionFound.OilVolumeCalculation.Installation.Name}");
                 }
@@ -467,6 +466,81 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
             return OilVolumeCalculationDTO;
         }
 
+        [HttpPatch("oil/{installationId}/refresh")]
+        public async Task<object> Refresh([FromRoute] Guid installationId)
+        {
+            if (HttpContext.Items["User"] is not User user)
+                throw new UnauthorizedAccessException("User not identified, please login first");
+
+            var installationInDatabase = await _context.Installations.Include(x => x.OilVolumeCalculation).Where(x => x.Id == installationId).FirstOrDefaultAsync();
+            if (installationInDatabase == null)
+                throw new NotFoundException("Instalação não encontrada");
+            if (installationInDatabase.OilVolumeCalculation is null)
+                throw new NotFoundException("Intalação não possui cálculo para ser atualizado");
+
+            var oilCalculationInDatabase = await _context.OilVolumeCalculations
+                .Include(x => x.Sections)
+                .Include(x => x.TOGRecoveredOils)
+                .Include(x => x.DrainVolumes)
+                .Include(x => x.DORs)
+                .Where(x => x.Id == installationInDatabase.OilVolumeCalculation.Id).FirstOrDefaultAsync();
+            if (oilCalculationInDatabase is null)
+                throw new NotFoundException("Intalação não possui cálculo para ser atualizado");
+
+            if (oilCalculationInDatabase.Sections.Any())
+            {
+                foreach (var section in oilCalculationInDatabase.Sections)
+                {
+                    var foundSection = await _context.Sections.Where(x => x.Id == section.Id).FirstOrDefaultAsync();
+                    foundSection.DeletedAt = null;
+                    foundSection.IsActive = true;
+
+                    _context.Sections.Update(foundSection);
+                }
+
+            }
+
+            if (oilCalculationInDatabase.TOGRecoveredOils.Any())
+            {
+                foreach (var tog in oilCalculationInDatabase.TOGRecoveredOils)
+                {
+                    var foundTOG = await _context.TOGRecoveredOils.Where(x => x.Id == tog.Id).FirstOrDefaultAsync();
+                    foundTOG.DeletedAt = null;
+                    foundTOG.IsActive = true;
+
+                    _context.TOGRecoveredOils.Update(foundTOG);
+                }
+            }
+
+            if (oilCalculationInDatabase.DrainVolumes.Any())
+            {
+                foreach (var drain in oilCalculationInDatabase.DrainVolumes)
+                {
+                    var foundDrain = await _context.DrainVolumes.Where(x => x.Id == drain.Id).FirstOrDefaultAsync();
+                    foundDrain.DeletedAt = null;
+                    foundDrain.IsActive = true;
+
+                    _context.DrainVolumes.Update(foundDrain);
+                }
+            }
+
+            if (oilCalculationInDatabase.DORs.Any())
+            {
+                foreach (var dor in oilCalculationInDatabase.DORs)
+                {
+                    var foundDOR = await _context.DORs.Where(x => x.Id == dor.Id).FirstOrDefaultAsync();
+                    foundDOR.DeletedAt = null;
+                    foundDOR.IsActive = true;
+
+                    _context.DORs.Update(foundDOR);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            var OilVolumeCalculationDTO = _mapper.Map<OilVolumeCalculation, OilVolumeCalculationDTO>(oilCalculationInDatabase);
+            return OilVolumeCalculationDTO;
+        }
+
         [HttpDelete("oil/{installationId}")]
         public async Task<object> DeleteOilCalculation([FromRoute] Guid installationId, [FromBody] CreateOilVolumeCalculationViewModel body)
         {
@@ -483,7 +557,6 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
             if (body.Sections is not null)
                 foreach (var section in body.Sections)
                 {
-                    Console.WriteLine("section");
                     var MeasuringPoint = await _context.MeasuringPoints.Where(x => x.Id == section.MeasuringPointId).FirstOrDefaultAsync() ?? throw new NotFoundException("Equipment section is not found.");
                     var sectionFound = await _context.Sections
                         .Include(x => x.OilVolumeCalculation)
@@ -494,7 +567,6 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                         .FirstOrDefaultAsync();
                     if (sectionFound is not null)
                     {
-                        Console.WriteLine(sectionFound.Id);
                         throw new ConflictException($"Equipamento para ser deletado possui relação com outra instalação ({sectionFound.OilVolumeCalculation.Installation.Name}).");
                     }
 
@@ -514,7 +586,6 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
             if (body.TOGs is not null)
                 foreach (var tog in body.TOGs)
                 {
-                    Console.WriteLine("tog");
                     var MeasuringPoint = await _context.MeasuringPoints.Where(x => x.Id == tog.MeasuringPointId).FirstOrDefaultAsync() ?? throw new NotFoundException("Equipment TOG is not found.");
                     var togFound = await _context.TOGRecoveredOils
                         .Include(x => x.OilVolumeCalculation)
@@ -542,7 +613,6 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
             if (body.DORs is not null)
                 foreach (var dor in body.DORs)
                 {
-                    Console.WriteLine("dor");
                     var MeasuringPoint = await _context.MeasuringPoints.Where(x => x.Id == dor.MeasuringPointId).FirstOrDefaultAsync() ?? throw new NotFoundException("Equipment DOR is not found.");
                     var dorFound = await _context.DORs
                         .Include(x => x.OilVolumeCalculation)
@@ -570,7 +640,6 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
             if (body.Drains is not null)
                 foreach (var drain in body.Drains)
                 {
-                    Console.WriteLine("drain");
                     var MeasuringPoint = await _context.MeasuringPoints.Where(x => x.Id == drain.MeasuringPointId).FirstOrDefaultAsync() ?? throw new NotFoundException("Equipment Drain is not found.");
                     var drainFound = await _context.DrainVolumes
                         .Include(x => x.OilVolumeCalculation)
@@ -591,8 +660,6 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                         .FirstOrDefaultAsync();
                     if (drainFoundSame is null)
                     {
-                        Console.WriteLine(installationId);
-                        Console.WriteLine(drain.MeasuringPointId);
                         throw new NotFoundException($"Equipamento não possui relação nesta instalação ({installationInDatabase.Name}).");
                     }
                 }
@@ -616,8 +683,6 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                         .Include(x => x.MeasuringPoint)
                         .Where(x => x.MeasuringPoint.Id.Equals(section.MeasuringPointId))
                         .FirstOrDefaultAsync();
-                    Console.WriteLine("section");
-                    Console.WriteLine(sectionFound.Id);
 
                     sectionFound.IsActive = false;
                     sectionFound.DeletedAt = DateTime.UtcNow;
@@ -636,8 +701,6 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                         .Include(x => x.MeasuringPoint)
                         .Where(x => x.MeasuringPoint.Id.Equals(tog.MeasuringPointId))
                         .FirstOrDefaultAsync();
-                    Console.WriteLine("TOGs");
-                    Console.WriteLine(togFound.Id);
 
                     togFound.IsActive = false;
                     togFound.DeletedAt = DateTime.UtcNow;
@@ -656,8 +719,6 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                         .Include(x => x.MeasuringPoint)
                         .Where(x => x.MeasuringPoint.Id.Equals(drain.MeasuringPointId))
                         .FirstOrDefaultAsync();
-                    Console.WriteLine("drain");
-                    Console.WriteLine(drainFound.Id);
 
                     drainFound.IsActive = false;
                     drainFound.DeletedAt = DateTime.UtcNow;
