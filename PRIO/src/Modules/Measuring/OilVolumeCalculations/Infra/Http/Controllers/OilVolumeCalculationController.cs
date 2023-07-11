@@ -213,40 +213,45 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
 
             if (OilVolumeCalculation.Sections is not null && OilVolumeCalculation.Sections.Count > 0)
             {
-                int? sectionCount = OilVolumeCalculation.Sections.Count;
+                var countSectionsActives = OilVolumeCalculation.Sections.Where(x => x.IsActive == true).ToList();
 
-                for (var i = 0; i < sectionCount; i++)
+                for (var i = 0; i < countSectionsActives.Count; i++)
                 {
-                    if (OilVolumeCalculation.Sections[i] is not null)
+                    if (countSectionsActives[i] is not null)
                     {
-                        equation += $"{OilVolumeCalculation.Sections[i].MeasuringPoint.Name} * (1 - BSW {OilVolumeCalculation.Sections[i].MeasuringPoint.Name})";
+                        equation += $"{countSectionsActives[i].MeasuringPoint.Name} * (1 - BSW {countSectionsActives[i].MeasuringPoint.Name})";
 
-                        if (i + 1 != sectionCount)
+                        if (i + 1 != countSectionsActives.Count)
                         {
                             equation += " + ";
                         }
+
                     }
                 }
             }
 
             if (OilVolumeCalculation.TOGRecoveredOils is not null && OilVolumeCalculation.TOGRecoveredOils.Count > 0)
             {
-                if (!string.IsNullOrEmpty(equation) && equation[^1] != '(')
+                var countTogsActives = OilVolumeCalculation.TOGRecoveredOils.Where(x => x.IsActive == true).ToList();
+                if (countTogsActives.Count > 0)
                 {
-                    equation += " + ";
-                }
-
-                int? togsCount = OilVolumeCalculation.TOGRecoveredOils.Count;
-
-                for (var i = 0; i < togsCount; i++)
-                {
-                    if (OilVolumeCalculation.TOGRecoveredOils[i] is not null)
+                    if (!string.IsNullOrEmpty(equation) && equation[^1] != '(')
                     {
-                        equation += $"{OilVolumeCalculation.TOGRecoveredOils[i].MeasuringPoint.Name}";
+                        equation += " + ";
+                    }
 
-                        if (i + 1 != togsCount)
+                    int? togsCount = OilVolumeCalculation.TOGRecoveredOils.Count;
+
+                    for (var i = 0; i < countTogsActives.Count; i++)
+                    {
+                        if (countTogsActives[i] is not null)
                         {
-                            equation += " + ";
+                            equation += $"{countTogsActives[i].MeasuringPoint.Name}";
+
+                            if (i + 1 != countTogsActives.Count)
+                            {
+                                equation += " + ";
+                            }
                         }
                     }
                 }
@@ -254,22 +259,26 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
 
             if (OilVolumeCalculation.DrainVolumes is not null && OilVolumeCalculation.DrainVolumes.Count > 0)
             {
-                if (!string.IsNullOrEmpty(equation) && equation[^1] != '(' && equation[^1] != '+')
+                var countDrainsActives = OilVolumeCalculation.DrainVolumes.Where(x => x.IsActive == true).ToList();
+                if (countDrainsActives.Count > 0)
                 {
-                    equation += " + ";
-                }
-
-                int? drainCount = OilVolumeCalculation.DrainVolumes.Count;
-
-                for (var i = 0; i < drainCount; i++)
-                {
-                    if (OilVolumeCalculation.DrainVolumes[i] is not null)
+                    if (!string.IsNullOrEmpty(equation) && equation[^1] != '(' && equation[^1] != '+')
                     {
-                        equation += $"{OilVolumeCalculation.DrainVolumes[i].MeasuringPoint.Name}";
+                        equation += " + ";
+                    }
 
-                        if (i + 1 != drainCount)
+                    int? drainCount = OilVolumeCalculation.DrainVolumes.Count;
+
+                    for (var i = 0; i < countDrainsActives.Count; i++)
+                    {
+                        if (countDrainsActives[i] is not null)
                         {
-                            equation += " + ";
+                            equation += $"{countDrainsActives[i].MeasuringPoint.Name}";
+
+                            if (i + 1 != countDrainsActives.Count)
+                            {
+                                equation += " + ";
+                            }
                         }
                     }
                 }
@@ -277,22 +286,25 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
 
             if (OilVolumeCalculation.DORs is not null && OilVolumeCalculation.DORs.Count > 0)
             {
-                if (!string.IsNullOrEmpty(equation) && equation[^1] != '(' && equation[^1] != '+')
+                var countDorsActives = OilVolumeCalculation.DORs.Where(x => x.IsActive == true).ToList();
+                if (countDorsActives.Count > 0)
                 {
-                    equation += " + ";
-                }
-
-                int? dorCount = OilVolumeCalculation.DORs.Count;
-
-                for (var i = 0; i < dorCount; i++)
-                {
-                    if (OilVolumeCalculation.DORs[i] is not null)
+                    if (!string.IsNullOrEmpty(equation) && equation[^1] != '(' && equation[^1] != '+')
                     {
-                        equation += $"{OilVolumeCalculation.DORs[i].MeasuringPoint.Name} * (1 - BSW {OilVolumeCalculation.DORs[i].MeasuringPoint.Name})";
+                        equation += " + ";
+                    }
 
-                        if (i + 1 != dorCount)
+                    for (var i = 0; i < countDorsActives.Count; i++)
+                    {
+                        if (OilVolumeCalculation.DORs[i] is not null)
                         {
-                            equation += " + ";
+                            equation += $"{countDorsActives[i].MeasuringPoint.Name} * (1 - BSW {countDorsActives[i].MeasuringPoint.Name})";
+
+                            if (i + 1 != countDorsActives.Count)
+                            {
+                                equation += " + ";
+                            }
+
                         }
                     }
                 }
@@ -752,5 +764,3 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
         }
     }
 }
-
-
