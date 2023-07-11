@@ -169,7 +169,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                     }
                                     catch (Exception ex)
                                     {
-                                        Console.WriteLine(ex);
                                         throw new BadRequestException($"Something went wrong: {ex.Message}");
                                     }
                                 }
@@ -378,7 +377,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                     }
                                     catch (Exception ex)
                                     {
-                                        Console.WriteLine(ex);
                                         throw new BadRequestException($"Something went wrong: {ex.Message}");
                                     }
                                 }
@@ -612,7 +610,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                     }
                                     catch (Exception ex)
                                     {
-                                        Console.WriteLine(ex);
                                         throw new BadRequestException($"Something went wrong: {ex.Message}"
                                         );
                                     }
@@ -838,7 +835,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                     }
                                     catch (Exception ex)
                                     {
-                                        Console.WriteLine(ex);
                                         throw new BadRequestException($"Something went wrong: {ex.Message}");
                                     }
                                 }
