@@ -144,10 +144,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<Reservoir, ReservoirWithoutZoneDTO>();
             CreateMap<Reservoir, ReservoirWithCompletionsDTO>();
 
-            CreateMap<Well, WellDTO>()
-                .ForMember(dest => dest.WaterDepth, opt => opt.MapFrom(src => TruncateTwoDecimals(src.WaterDepth)))
-                .ForMember(dest => dest.TopOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.TopOfPerforated)))
-                .ForMember(dest => dest.BaseOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.BaseOfPerforated)));
+            CreateMap<Well, WellDTO>();
             CreateMap<Well, WellHistoryDTO>();
             CreateMap<Well, CreateUpdateWellDTO>()
                 .ForMember(dest => dest.WaterDepth, opt => opt.MapFrom(src => TruncateTwoDecimals(src.WaterDepth)))
