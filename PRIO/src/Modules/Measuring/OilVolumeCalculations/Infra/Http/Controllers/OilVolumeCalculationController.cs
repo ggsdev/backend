@@ -291,7 +291,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                 {
                     if (!string.IsNullOrEmpty(equation) && equation[^1] != '(' && equation[^1] != '+')
                     {
-                        equation += " + ";
+                        equation += " - (";
                     }
 
                     for (var i = 0; i < countDorsActives.Count; i++)
@@ -304,9 +304,9 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                             {
                                 equation += " + ";
                             }
-
                         }
                     }
+                    equation += ")";
                 }
             }
 
