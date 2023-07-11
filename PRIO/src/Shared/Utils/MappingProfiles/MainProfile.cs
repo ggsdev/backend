@@ -100,8 +100,14 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<UserPermissionParentDTO, UserPermissionChildrenDTO>();
             CreateMap<GroupPermission, GroupPermissionsDTO>();
             CreateMap<Group, GroupDTO>();
+            CreateMap<GroupPermission, GroupPermissionChildrenDTO>();
+            CreateMap<GroupPermission, GroupPermissionParentDTO>();
+            CreateMap<GroupPermissionParentDTO, GroupPermissionChildrenDTO>();
+            CreateMap<Group, GroupWithGroupPermissionDTO>();
+            CreateMap<GroupPermission, GroupPermissionsWithoutMenusDTO>();
             CreateMap<Menu, MenuDTO>();
             CreateMap<GroupOperation, UserGroupOperationDTO>();
+            CreateMap<GroupOperation, GroupOperationDTO>();
             CreateMap<User, UserGroupDTO>();
             CreateMap<Group, GroupWithMenusDTO>();
             CreateMap<Reservoir, ReservoirWithZoneDTO>();

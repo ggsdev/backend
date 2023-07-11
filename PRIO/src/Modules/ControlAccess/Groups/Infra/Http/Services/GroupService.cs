@@ -146,14 +146,44 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
             return groupsDTO;
         }
 
-        public async Task<GroupDTO> GetGroupById(Guid id)
+        public async Task<GroupWithGroupPermissionDTO> GetGroupById(Guid id)
         {
             var group = await _groupRepository.GetGroupByIdAsync(id);
 
             if (group is null)
                 throw new NotFoundException("Group not found");
 
-            var groupDTO = _mapper.Map<Group, GroupDTO>(group);
+            group.GroupPermissions = group.GroupPermissions.OrderBy(x => x.MenuOrder).ToList();
+            var groupDTO = _mapper.Map<Group, GroupWithGroupPermissionDTO>(group);
+            var parentElements = new List<GroupPermissionParentDTO>();
+
+            foreach (var gpermission in groupDTO.GroupPermissions)
+            {
+                if (gpermission.hasParent == false && gpermission.hasChildren == true)
+                {
+                    gpermission.Children = new List<GroupPermissionChildrenDTO>();
+                    parentElements.Add(gpermission);
+                }
+                else if (gpermission.hasParent == true && gpermission.hasChildren == false)
+                {
+                    var parentOrder = gpermission.MenuOrder.Split('.')[0];
+                    var parentElement = parentElements.FirstOrDefault(x => x.MenuOrder.StartsWith(parentOrder));
+                    if (parentElement != null)
+                    {
+                        var childrenDTO = _mapper.Map<GroupPermissionParentDTO, GroupPermissionChildrenDTO>(gpermission);
+                        parentElement.Children.Add(childrenDTO);
+                        parentElements.Remove(gpermission);
+                    }
+                }
+
+                foreach (var operation in gpermission.Operations)
+                {
+                    var operationName = operation.OperationName;
+                }
+            }
+
+
+            groupDTO.GroupPermissions.RemoveAll(permission => permission.MenuOrder.Contains("."));
             return groupDTO;
         }
 
