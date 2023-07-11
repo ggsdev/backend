@@ -1,5 +1,4 @@
-﻿using PRIO.src.Modules.FileImport.XML.FileContent._039;
-using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
+﻿using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Hierarchy.Installations.Interfaces
 {
@@ -11,7 +10,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Interfaces
         void Restore(Installation installation);
         Task<Installation?> GetByIdAsync(Guid? id);
         Task<Installation?> GetByCod(string? cod);
-        Task<Installation?> GetInstallationMeasurement039ByUepAndAnpCodAsync(DADOS_BASICOS_039 basicData, string acronym);
+        Task<Installation?> GetInstallationMeasurementByUepAndAnpCodAsync(string codInstallation, string acronym);
         Task<Installation?> GetByIdWithFieldsMeasuringPointsAsync(Guid? id);
         Task<List<Installation>> GetAsync();
         Task SaveChangesAsync();

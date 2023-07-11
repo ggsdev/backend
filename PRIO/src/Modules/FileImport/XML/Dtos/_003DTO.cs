@@ -1,13 +1,10 @@
-﻿using PRIO.src.Modules.Hierarchy.Installations.Dtos;
-using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
-
-namespace PRIO.src.Modules.FileImport.XML.Dtos
+﻿namespace PRIO.src.Modules.FileImport.XML.Dtos
 {
     public class _003DTO
     {
         public Guid Id { get; set; }
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_003 { get; set; }
-        public string? COD_INSTALACAO_003 { get; set; }
+        public string COD_INSTALACAO_003 { get; set; } = string.Empty;
         public string? COD_TAG_PONTO_MEDICAO_003 { get; set; }
         public string? NUM_SERIE_COMPUTADOR_VAZAO_003 { get; set; }
         public DateTime? DHA_COLETA_003 { get; set; }
@@ -89,11 +86,10 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public DateTime? DHA_FIM_PERIODO_MEDICAO_003 { get; set; }
         public double? ICE_DENSIDADE_RELATIVA_003 { get; set; }
         public double? MED_DIFERENCIAL_PRESSAO_003 { get; set; }
+
         public double? MED_PRESSAO_ESTATICA_003 { get; set; }
         public double? MED_TEMPERATURA_2_003 { get; set; }
         public double? PRZ_DURACAO_FLUXO_EFETIVO_003 { get; set; }
         public double? MED_CORRIGIDO_MVMDO_003 { get; set; }
-        public FileType FileType { get; set; }
-        public InstallationWithoutClusterDTO? Installation { get; set; }
     }
 }

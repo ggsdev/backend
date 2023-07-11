@@ -18,8 +18,6 @@ using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Interfaces;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services;
-using PRIO.src.Modules.FileImport.XML.Infra.EF.Interfaces;
-using PRIO.src.Modules.FileImport.XML.Infra.EF.Repositories;
 using PRIO.src.Modules.FileImport.XML.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services;
@@ -42,6 +40,8 @@ using PRIO.src.Modules.Hierarchy.Zones.Interfaces;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Equipments.Interfaces;
+using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories;
+using PRIO.src.Modules.Measuring.Measurements.Interfaces;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
@@ -157,7 +157,7 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
 
     services.AddScoped<ICompletionRepository, CompletionRepository>();
 
-    services.AddScoped<IXMLImportRepository, XMLImportRepository>();
+    services.AddScoped<IMeasurementRepository, MeasurementRepository>();
 
     #endregion
 

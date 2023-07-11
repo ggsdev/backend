@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Interfaces;
+using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 
 namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Repositories
@@ -54,6 +55,31 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Repositories
                 .FirstOrDefaultAsync(x => x.TagMeasuringPoint == tagPoint && x.TagEquipment == tagEquipment && x.SerieNumber == serial && x.ChannelNumber == channel);
         }
 
+        public async Task<MeasuringEquipment?> GetByTagMeasuringPoint(string tagPoint, string acronym)
+        {
+            switch (acronym)
+            {
+                case "039":
+                    return await _context.MeasuringEquipments
+                     .FirstOrDefaultAsync(x => x.TagMeasuringPoint == tagPoint);
+
+                case "001":
+                    return await _context.MeasuringEquipments
+                        .FirstOrDefaultAsync(x => x.TagMeasuringPoint == tagPoint);
+
+                case "002":
+                    return await _context.MeasuringEquipments
+                        .FirstOrDefaultAsync(x => x.TagMeasuringPoint == tagPoint);
+
+                case "003":
+                    return await _context.MeasuringEquipments
+                        .FirstOrDefaultAsync(x => x.TagMeasuringPoint == tagPoint);
+
+                default:
+                    throw new BadRequestException("Acronym values are: 001, 002, 003, 039");
+            }
+        }
+
         public void Update(MeasuringEquipment installation)
         {
             _context.MeasuringEquipments.Update(installation);
@@ -73,5 +99,6 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Repositories
         {
             await _context.SaveChangesAsync();
         }
+
     }
 }

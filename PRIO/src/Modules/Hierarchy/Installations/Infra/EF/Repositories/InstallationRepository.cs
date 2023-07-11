@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PRIO.src.Modules.FileImport.XML.FileContent._039;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
+using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 
 namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
@@ -14,24 +14,30 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
             _context = context;
         }
 
-        public async Task<Installation?> GetInstallationMeasurement039ByUepAndAnpCodAsync(DADOS_BASICOS_039 basicData, string acronym)
+        public async Task<Installation?> GetInstallationMeasurementByUepAndAnpCodAsync(string codInstallation, string acronym)
         {
             switch (acronym)
             {
                 case "039":
-                    {
-                        return await _context.Installations
-                         .FirstOrDefaultAsync(x => x.UepCod == basicData.DHA_COD_INSTALACAO_039 && x.CodInstallationAnp == basicData.DHA_COD_INSTALACAO_039);
-                    }
+                    return await _context.Installations
+                     .FirstOrDefaultAsync(x => x.UepCod == codInstallation && x.CodInstallationAnp == codInstallation);
 
                 case "001":
                     return await _context.Installations
-                        .FirstOrDefaultAsync(x => x.UepCod == basicData.DHA_COD_INSTALACAO_039 && x.CodInstallationAnp == basicData.DHA_COD_INSTALACAO_039);
+                        .FirstOrDefaultAsync(x => x.UepCod == codInstallation && x.CodInstallationAnp == codInstallation);
 
+                case "002":
+                    return await _context.Installations
+                        .FirstOrDefaultAsync(x => x.UepCod == codInstallation && x.CodInstallationAnp == codInstallation);
+
+                case "003":
+                    return await _context.Installations
+                        .FirstOrDefaultAsync(x => x.UepCod == codInstallation && x.CodInstallationAnp == codInstallation);
+
+                default:
+                    throw new BadRequestException("Acronym values are: 001, 002, 003, 039");
             }
 
-            return await _context.Installations
-                        .FirstOrDefaultAsync(x => x.UepCod == basicData.DHA_COD_INSTALACAO_039 && x.CodInstallationAnp == basicData.DHA_COD_INSTALACAO_039);
         }
 
         public async Task<Installation?> GetByIdAsync(Guid? id)

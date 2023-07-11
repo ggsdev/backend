@@ -3,7 +3,7 @@
     public class BadRequestException : Exception
     {
         public List<string>? Errors { get; }
-        public string ReturnStatus { get; } = string.Empty;
+        public string? ReturnStatus { get; }
 
         public BadRequestException()
         {

@@ -103,8 +103,8 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
             var envVars = DotEnv.Read();
             var secretKey = envVars["SECRET_KEY"];
             if ((Decrypt.TryParseBase64String(body.Username, out byte[]? encriptedBytes) && Decrypt.TryParseBase64String(body.Password, out byte[]? encryptedBytes2)) is false)
-               return BadRequest(new ErrorResponseDTO { Message = "Username and password not encrypted." });
-
+                return BadRequest(new ErrorResponseDTO { Message = "Username and password not encrypted." });
+                
             var usernameDecrypted = Decrypt
                .DecryptAes(body.Username, secretKey);
 
