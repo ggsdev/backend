@@ -19,7 +19,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
         }
         public async Task<Group?> GetGroupByIdAsync(Guid id)
         {
-            return await _context.Groups.Include(x => x.GroupPermissions).FirstOrDefaultAsync(x => x.Id == id);
+            return await _context.Groups.Include(x => x.GroupPermissions).ThenInclude(x => x.Operations).FirstOrDefaultAsync(x => x.Id == id);
         }
         public async Task<Group?> GetGroupByNameAsync(string groupName)
         {
