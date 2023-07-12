@@ -3,6 +3,8 @@ using Newtonsoft.Json;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
+using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.Equipments.Interfaces;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Dtos;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
@@ -19,21 +21,28 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Services
     {
         private readonly IMapper _mapper;
         private readonly IMeasuringPointRepository _measuringPointRepository;
+        private readonly IEquipmentRepository _equipmentRepository;
         private readonly SystemHistoryService _systemHistoryService;
         private readonly IInstallationRepository _installationRepository;
-        private readonly string _tableName = HistoryColumns.TableEquipments;
+        private readonly string _tableName = HistoryColumns.TableMeasuringPoints;
 
 
-        public MeasuringPointService(IMapper mapper, IMeasuringPointRepository measuringPoint, IInstallationRepository installation, SystemHistoryService systemHistoryService)
+        public MeasuringPointService(IMapper mapper, IMeasuringPointRepository measuringPoint, IInstallationRepository installation, SystemHistoryService systemHistoryService, IEquipmentRepository equipmentRepository)
         {
             _mapper = mapper;
             _measuringPointRepository = measuringPoint;
             _installationRepository = installation;
             _systemHistoryService = systemHistoryService;
+            _equipmentRepository = equipmentRepository;
         }
         public async Task<MeasuringPointDTO> CreateMeasuringPoint(CreateMeasuringPointViewModel body, User user)
         {
             var installationInDatabase = await _installationRepository.GetByIdAsync(body.InstallationId) ?? throw new NotFoundException(ErrorMessages.NotFound<Installation>());
+
+            if (installationInDatabase.IsActive is false)
+            {
+                throw new BadRequestException("Instalação está inativa");
+            }
 
             var measuringPointByTagInDatabase = await _measuringPointRepository.GetByTagMeasuringPoint(body.TagPointMeasuring);
             if (measuringPointByTagInDatabase != null)
@@ -82,8 +91,10 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Services
         }
         public async Task<MeasuringPointDTO> Update(Guid id, UpdateMeasuringPointViewModel body, User user)
         {
-            var measuringPoint = await _measuringPointRepository.GetByIdAsync(id);
-            if (measuringPoint == null)
+            var measuringPoint = await _measuringPointRepository
+                .GetByIdAsync(id);
+
+            if (measuringPoint is null)
                 throw new NotFoundException("Ponto de medição não encontrado.");
 
             var measuringPointByTagInDatabase = await _measuringPointRepository.GetByTagMeasuringPointUpdate(body.TagPointMeasuring, measuringPoint.Installation.Id, measuringPoint.Id);
@@ -111,7 +122,7 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Services
         }
         public async Task Delete(Guid id, User user)
         {
-            var measuringPoint = await _measuringPointRepository.GetByIdAsync(id);
+            var measuringPoint = await _measuringPointRepository.GetMeasuringPointWithChildren(id);
             if (measuringPoint is null)
                 throw new NotFoundException(ErrorMessages.NotFound<MeasuringPoint>());
 
@@ -130,7 +141,28 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Services
             await _systemHistoryService
                 .Delete<MeasuringPoint, MeasuringPointHistoryDTO>(_tableName, user, updatedProperties, measuringPoint.Id, measuringPoint);
 
-            await _measuringPointRepository.Delete(measuringPoint);
+            _measuringPointRepository.Delete(measuringPoint);
+
+            if (measuringPoint.MeasuringEquipments is not null)
+                foreach (var equipment in measuringPoint.MeasuringEquipments)
+                {
+                    if (equipment.IsActive is true)
+                    {
+                        var equipmentPropertiesToUpdate = new
+                        {
+                            IsActive = false,
+                            DeletedAt = DateTime.UtcNow,
+                        };
+
+                        var equipmentUpdatedProperties = UpdateFields
+                        .CompareUpdateReturnOnlyUpdated(equipment, equipmentPropertiesToUpdate);
+
+                        await _systemHistoryService
+                            .Delete<MeasuringEquipment, MeasuringEquipmentHistoryDTO>(HistoryColumns.TableEquipments, user, equipmentUpdatedProperties, equipment.Id, equipment);
+
+                        _equipmentRepository.Delete(equipment);
+                    }
+                }
 
             await _measuringPointRepository.SaveChangesAsync();
         }

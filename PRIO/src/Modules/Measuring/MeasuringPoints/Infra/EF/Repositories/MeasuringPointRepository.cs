@@ -26,6 +26,17 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Repositories
                 .FirstOrDefaultAsync(x => x.TagPointMeasuring == tagMeasuringPoint);
         }
 
+        public async Task<MeasuringPoint?> GetMeasuringPointWithChildren(Guid? id)
+        {
+            return await _context.MeasuringPoints
+               .Include(x => x.MeasuringEquipments)
+               //.Include(x => x.DOR)
+               //.Include(x => x.TOGRecoveredOil)
+               //.Include(x => x.Section)
+               //.Include(x => x.DrainVolume)
+               .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public async Task<MeasuringPoint?> GetByTagMeasuringPointUpdate(string? tagMeasuringPoint, Guid installationId, Guid pointMeasuringId)
         {
             return await _context.MeasuringPoints
@@ -59,10 +70,9 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Repositories
             _context.MeasuringPoints.Update(measuringPoint);
             await _context.SaveChangesAsync();
         }
-        public async Task Delete(MeasuringPoint measuringPoint)
+        public void Delete(MeasuringPoint measuringPoint)
         {
             _context.MeasuringPoints.Update(measuringPoint);
-            await _context.SaveChangesAsync();
         }
         public async Task Restore(MeasuringPoint measuringPoint)
         {

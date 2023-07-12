@@ -19,5 +19,6 @@
         public readonly static string TableUsers = "USERS";
         public readonly static string TableGroups = "GROUPS";
         public readonly static string TableEquipments = "MEASURING EQUIPMENTS";
+        public readonly static string TableMeasuringPoints = "MEASURING POINTS";
     }
 }
