@@ -64,6 +64,9 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
             if (clusterInDatabase is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Cluster>());
 
+            if (clusterInDatabase.IsActive is false)
+                throw new ConflictException("Cluster não está ativo");
+
             var installationId = Guid.NewGuid();
 
             var installation = new Installation

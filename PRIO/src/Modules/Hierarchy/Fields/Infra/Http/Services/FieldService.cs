@@ -39,6 +39,9 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
             var installationInDatabase = await _installationRepository
                 .GetByIdAsync(body.InstallationId) ?? throw new NotFoundException(ErrorMessages.NotFound<Installation>());
 
+            if (installationInDatabase.IsActive is false)
+                throw new ConflictException("Instalação não está ativa.");
+
             var fieldId = Guid.NewGuid();
 
             var field = new Field

@@ -46,6 +46,9 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             if (field is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Field>());
 
+            if (field.IsActive is false)
+                throw new NotFoundException("Campo não está ativo.");
+
             var wellId = Guid.NewGuid();
 
             var well = new Well
