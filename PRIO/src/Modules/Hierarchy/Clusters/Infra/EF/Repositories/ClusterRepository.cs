@@ -29,6 +29,7 @@ public class ClusterRepository : IClusterRepository
                 .ThenInclude(i => i.Fields)
                     .ThenInclude(f => f.Zones)
                         .ThenInclude(z => z.Reservoirs)
+                            .ThenInclude(r => r.Completions)
             .Include(x => x.Installations)
                 .ThenInclude(i => i.Fields)
                     .ThenInclude(f => f.Wells)

@@ -201,6 +201,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
                 .Delete<Completion, CompletionHistoryDTO>(_tableName, user, updatedProperties, completion.Id, completion);
 
             _completionRepository.Update(completion);
+
             await _completionRepository.SaveChangesAsync();
         }
 

@@ -28,7 +28,13 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Repositories
                 .ThenInclude(i => i!.Cluster)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
-
+        public async Task<Zone?> GetZoneAndChildren(Guid? id)
+        {
+            return await _context.Zones
+                            .Include(z => z.Reservoirs)
+                                .ThenInclude(r => r.Completions)
+                .FirstOrDefaultAsync(c => c.Id == id);
+        }
         public async Task<Zone?> GetWithField(Guid? id)
         {
             return await _context.Zones
