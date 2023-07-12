@@ -13,6 +13,7 @@ using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
 using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
 using PRIO.src.Shared.Utils;
+using System.Security.Policy;
 
 namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
 {
@@ -201,6 +202,12 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
 
             if (reservoir.IsActive is true)
                 throw new BadRequestException(ErrorMessages.InactiveAlready<Reservoir>());
+
+            if (reservoir.Zone is null)
+                throw new NotFoundException("Zona não encontrado.");
+
+            if (reservoir.Zone.IsActive is false)
+                throw new ConflictException("Zona não está ativo");
 
             var propertiesUpdated = new
             {

@@ -389,6 +389,12 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
             if (installation.IsActive is true)
                 throw new BadRequestException(ErrorMessages.ActiveAlready<Installation>());
 
+            if (installation.Cluster is null)
+                throw new NotFoundException("Cluster não encontrado.");
+
+            if (installation.Cluster.IsActive is false)
+                throw new ConflictException("Cluster não está ativo");
+
             var propertiesUpdated = new
             {
                 IsActive = true,

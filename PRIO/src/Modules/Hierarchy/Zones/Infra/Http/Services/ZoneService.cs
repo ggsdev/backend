@@ -233,6 +233,13 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
             if (zone.IsActive is true)
                 throw new BadRequestException(ErrorMessages.ActiveAlready<Zone>());
 
+            if (zone.Field is null)
+                throw new NotFoundException("Campo não encontrado.");
+
+            if (zone.Field.IsActive is false)
+                throw new ConflictException("Campo não está ativo");
+
+
             var propertiesUpdated = new
             {
                 IsActive = true,

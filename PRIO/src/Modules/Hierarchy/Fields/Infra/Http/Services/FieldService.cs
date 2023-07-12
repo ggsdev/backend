@@ -301,6 +301,12 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
             if (field.IsActive is true)
                 throw new BadRequestException(ErrorMessages.ActiveAlready<Field>());
 
+            if (field.Installation is null)
+                throw new NotFoundException("Installation não encontrado.");
+
+            if (field.Installation.IsActive is false)
+                throw new ConflictException("Installation não está ativo");
+
             var propertiesUpdated = new
             {
                 IsActive = true,

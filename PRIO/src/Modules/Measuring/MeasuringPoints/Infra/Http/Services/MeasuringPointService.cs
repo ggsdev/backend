@@ -145,6 +145,12 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Services
             if (measuringPoint.IsActive is true)
                 throw new BadRequestException(ErrorMessages.ActiveAlready<MeasuringPoint>());
 
+            if (measuringPoint.Installation is null)
+                throw new NotFoundException("Instalação não encontrada.");
+
+            if (measuringPoint.Installation.IsActive is false)
+                throw new ConflictException("Instalação não está ativa");
+
             var propertiesUpdated = new
             {
                 IsActive = true,
