@@ -26,6 +26,7 @@ using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
@@ -169,6 +170,7 @@ namespace PRIO.src.Shared.Infra.EF
 
             modelBuilder.ApplyConfiguration(new MeasuringEquipmentMap());
             modelBuilder.ApplyConfiguration(new MeasurementHistoryMap());
+            modelBuilder.ApplyConfiguration(new MeasuringPointMap());
 
             modelBuilder.ApplyConfiguration(new SystemHistoryMap());
 
