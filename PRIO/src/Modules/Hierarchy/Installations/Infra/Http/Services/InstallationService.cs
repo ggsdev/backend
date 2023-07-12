@@ -16,6 +16,10 @@ using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Zones.Interfaces;
+using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.Equipments.Interfaces;
+using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
@@ -34,10 +38,12 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
         private readonly IWellRepository _wellRepository;
         private readonly ICompletionRepository _completionRepository;
         private readonly IReservoirRepository _reservoirRepository;
+        private readonly IMeasuringPointRepository _measuringPointRepository;
+        private readonly IEquipmentRepository _equipmentRepository;
         private readonly SystemHistoryService _systemHistoryService;
         private readonly string _tableName = HistoryColumns.TableInstallations;
 
-        public InstallationService(IMapper mapper, IInstallationRepository installationRepository, IClusterRepository clusterRepository, SystemHistoryService systemHistoryService, IFieldRepository fieldRepository, IZoneRepository zoneRepository, IWellRepository wellRepository, IReservoirRepository reservoirRepository, ICompletionRepository completionRepository)
+        public InstallationService(IMapper mapper, IInstallationRepository installationRepository, IClusterRepository clusterRepository, SystemHistoryService systemHistoryService, IFieldRepository fieldRepository, IZoneRepository zoneRepository, IWellRepository wellRepository, IReservoirRepository reservoirRepository, ICompletionRepository completionRepository, IMeasuringPointRepository measuringPointRepository, IEquipmentRepository equipmentRepository)
         {
             _mapper = mapper;
             _clusterRepository = clusterRepository;
@@ -46,6 +52,8 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
             _zoneRepository = zoneRepository;
             _reservoirRepository = reservoirRepository;
             _wellRepository = wellRepository;
+            _measuringPointRepository = measuringPointRepository;
+            _equipmentRepository = equipmentRepository;
             _completionRepository = completionRepository;
             _systemHistoryService = systemHistoryService;
         }
@@ -188,6 +196,47 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                 DeletedAt = DateTime.UtcNow,
             };
 
+            if (installation.MeasuringPoints is not null)
+                foreach (var mpoint in installation.MeasuringPoints)
+                {
+                    if (mpoint.IsActive is true)
+                    {
+                        var mpointPropertiesToUpdate = new
+                        {
+                            IsActive = false,
+                            DeletedAt = DateTime.UtcNow,
+                        };
+
+                        var mpointUpdatedProperties = UpdateFields
+                        .CompareUpdateReturnOnlyUpdated(mpoint, mpointPropertiesToUpdate);
+
+                        await _systemHistoryService
+                            .Delete<MeasuringPoint, MeasuringPointHistoryDTO>(HistoryColumns.TableInstallations, user, mpointUpdatedProperties, mpoint.Id, mpoint);
+
+                        await _measuringPointRepository.Delete(mpoint);
+                    }
+
+                    if (mpoint.MeasuringEquipments is not null)
+                        foreach (var mEquipment in mpoint.MeasuringEquipments)
+                        {
+                            if (mEquipment.IsActive is true)
+                            {
+                                var mEquipmentPropertiesToUpdate = new
+                                {
+                                    IsActive = false,
+                                    DeletedAt = DateTime.UtcNow,
+                                };
+
+                                var mEquipmentUpdatedProperties = UpdateFields
+                                .CompareUpdateReturnOnlyUpdated(mEquipment, mEquipmentPropertiesToUpdate);
+
+                                await _systemHistoryService
+                                    .Delete<MeasuringEquipment, MeasuringEquipmentHistoryDTO>(HistoryColumns.TableInstallations, user, mEquipmentUpdatedProperties, mEquipment.Id, mEquipment);
+
+                                _equipmentRepository.Delete(mEquipment);
+                            }
+                        }
+                }
 
             if (installation.Fields is not null)
                 foreach (var field in installation.Fields)

@@ -49,6 +49,16 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                     .Include(i => i.Fields)
                         .ThenInclude(f => f.Wells)
                                 .ThenInclude(r => r.Completions)
+                    .Include(x => x.MeasuringPoints)
+                        .ThenInclude(x => x.MeasuringEquipments)
+                     .Include(x => x.MeasuringPoints)
+                        .ThenInclude(x => x.DOR)
+                     .Include(x => x.MeasuringPoints)
+                        .ThenInclude(x => x.Section)
+                     .Include(x => x.MeasuringPoints)
+                        .ThenInclude(x => x.TOGRecoveredOil)
+                     .Include(x => x.MeasuringPoints)
+                        .ThenInclude(x => x.DrainVolume)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
