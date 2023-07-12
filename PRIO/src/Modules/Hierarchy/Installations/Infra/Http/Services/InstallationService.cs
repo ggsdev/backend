@@ -213,7 +213,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                         await _systemHistoryService
                             .Delete<MeasuringPoint, MeasuringPointHistoryDTO>(HistoryColumns.TableInstallations, user, mpointUpdatedProperties, mpoint.Id, mpoint);
 
-                        await _measuringPointRepository.Delete(mpoint);
+                        _measuringPointRepository.Delete(mpoint);
                     }
 
                     if (mpoint.MeasuringEquipments is not null)
