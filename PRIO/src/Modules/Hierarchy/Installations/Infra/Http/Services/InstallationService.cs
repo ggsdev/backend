@@ -125,6 +125,10 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                 throw new NotFoundException(ErrorMessages.NotFound<Installation>());
 
 
+            if (installation.IsActive is false)
+                throw new ConflictException("Instalação não está ativo.");
+
+
             if (installation.Fields.Count > 0)
                 if (body.CodInstallationAnp is not null)
                     if (body.CodInstallationAnp != installation.CodInstallationAnp)

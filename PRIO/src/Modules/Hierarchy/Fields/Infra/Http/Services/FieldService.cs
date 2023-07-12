@@ -112,6 +112,9 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
             if (field is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Field>());
 
+            if (field.IsActive is false)
+                throw new ConflictException("Campo não está ativo.");
+
             if (field.Wells.Count > 0 || field.Zones.Count > 0)
                 if (body.CodField is not null)
                     if (body.CodField != field.CodField)

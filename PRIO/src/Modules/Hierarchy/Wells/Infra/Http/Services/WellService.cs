@@ -117,6 +117,9 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             if (well is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Well>());
 
+            if (well.IsActive is false)
+                throw new ConflictException("Poço não está ativo.");
+
             if (well.Completions.Count > 0)
                 if (body.CodWellAnp is not null)
                     if (body.CodWellAnp != well.CodWellAnp)

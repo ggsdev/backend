@@ -107,6 +107,9 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
             if (zone is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Zone>());
 
+            if (zone.IsActive is false)
+                throw new ConflictException("Zona não está ativo.");
+
             if (zone.Reservoirs.Count > 0)
                 if (body.CodZone is not null)
                     if (body.CodZone != zone.CodZone)
@@ -151,7 +154,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
         public async Task DeleteZone(Guid id, User user)
         {
             var zone = await _zoneRepository
-                .GetWithUser(id);
+                .GetZoneAndChildren(id);
 
             if (zone is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Zone>());

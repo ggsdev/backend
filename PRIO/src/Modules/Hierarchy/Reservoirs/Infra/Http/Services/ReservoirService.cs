@@ -13,6 +13,7 @@ using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
 using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
 using PRIO.src.Shared.Utils;
+using System.Security.Policy;
 
 namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
 {
@@ -99,6 +100,8 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
             if (reservoir is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Reservoir>());
 
+            if (reservoir.IsActive is false)
+                throw new ConflictException("Reservatório não está ativo.");
 
             if (reservoir.Completions.Count > 0)
                 if (body.CodReservoir is not null)
@@ -145,7 +148,7 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
         public async Task DeleteReservoir(Guid id, User user)
         {
             var reservoir = await _reservoirRepository
-                .GetWithZoneAsync(id);
+                .GetReservoirAndChildren(id);
 
             if (reservoir is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Reservoir>());

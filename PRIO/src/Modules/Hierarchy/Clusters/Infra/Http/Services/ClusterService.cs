@@ -103,6 +103,9 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
             if (cluster is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Cluster>());
 
+            if (cluster.IsActive is false)
+                throw new ConflictException("Cluster não está ativo.");
+
             if (cluster.Installations.Count > 0)
                 if (body.CodCluster is not null)
                     if (body.CodCluster != cluster.CodCluster)

@@ -119,6 +119,9 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             if (completion is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Completion>());
 
+            if (completion.IsActive is false)
+                throw new ConflictException("Completação não está ativa.");
+
             if (body.CodCompletion is not null)
             {
                 var fieldInDatabase = await _completionRepository.GetByCode(body.CodCompletion);
