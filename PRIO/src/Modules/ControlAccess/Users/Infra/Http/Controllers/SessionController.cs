@@ -94,106 +94,106 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
             });
         }
 
-        //[AllowAnonymous]
-        //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginDTO))]
-        //[ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponseDTO))]
-        //[HttpPost("loginDev")]
-        //public async Task<IActionResult> LoginDev([FromBody] LoginAdViewModel body)
-        //{
-        //    var envVars = DotEnv.Read();
-        //    var secretKey = envVars["SECRET_KEY"];
-        //    if ((Decrypt.TryParseBase64String(body.Username, out byte[]? encriptedBytes) && Decrypt.TryParseBase64String(body.Password, out byte[]? encryptedBytes2)) is false)
-        //        return BadRequest(new ErrorResponseDTO { Message = "Username and password not encrypted." });
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginDTO))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponseDTO))]
+        [HttpPost("loginDev")]
+        public async Task<IActionResult> LoginDev([FromBody] LoginAdViewModel body)
+        {
+            var envVars = DotEnv.Read();
+            var secretKey = envVars["SECRET_KEY"];
+            if ((Decrypt.TryParseBase64String(body.Username, out byte[]? encriptedBytes) && Decrypt.TryParseBase64String(body.Password, out byte[]? encryptedBytes2)) is false)
+                return BadRequest(new ErrorResponseDTO { Message = "Username and password not encrypted." });
 
-        //    var usernameDecrypted = Decrypt
-        //       .DecryptAes(body.Username, secretKey);
+            var usernameDecrypted = Decrypt
+               .DecryptAes(body.Username, secretKey);
 
-        //    var passwordDecrypted = Decrypt
-        //       .DecryptAes(body.Password, secretKey);
+            var passwordDecrypted = Decrypt
+               .DecryptAes(body.Password, secretKey);
 
-        //    var user = await _context
-        //        .Users
-        //        .Include(u => u.Session)
-        //        .FirstOrDefaultAsync(x => x.Username == usernameDecrypted);
+            var user = await _context
+                .Users
+                .Include(u => u.Session)
+                .FirstOrDefaultAsync(x => x.Username == usernameDecrypted);
 
-        //    string token;
-        //    var userHttpAgent = Request.Headers["User-Agent"].ToString();
+            string token;
+            var userHttpAgent = Request.Headers["User-Agent"].ToString();
 
-        //    if (user is null)
-        //    {
-        //        var userId = Guid.NewGuid();
-        //        var createUser = new User
-        //        {
-        //            Id = userId,
-        //            Username = usernameDecrypted,
+            if (user is null)
+            {
+                var userId = Guid.NewGuid();
+                var createUser = new User
+                {
+                    Id = userId,
+                    Username = usernameDecrypted,
 
-        //        };
+                };
 
-        //        await _context.Users.AddAsync(createUser);
+                await _context.Users.AddAsync(createUser);
 
-        //        //await _systemHistoryService
-        //        //    .Create<User, UserHistoryDTO>(HistoryColumns.TableUsers, createUser, userId, createUser);
+                //await _systemHistoryService
+                //    .Create<User, UserHistoryDTO>(HistoryColumns.TableUsers, createUser, userId, createUser);
 
-        //        await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
-        //        token = await _tokenServices.CreateSessionAndToken(createUser, userHttpAgent);
-        //    }
-        //    else
-        //    {
-        //        token = await _tokenServices.CreateSessionAndToken(user, userHttpAgent);
+                token = await _tokenServices.CreateSessionAndToken(createUser, userHttpAgent);
+            }
+            else
+            {
+                token = await _tokenServices.CreateSessionAndToken(user, userHttpAgent);
 
-        //    }
+            }
 
-        //    return Ok(new LoginDTO
-        //    {
-        //        Token = token,
-        //    });
-        //}
+            return Ok(new LoginDTO
+            {
+                Token = token,
+            });
+        }
 
-        //[AllowAnonymous]
-        //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginDTO))]
-        //[ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponseDTO))]
-        //[HttpPost("loginBack")]
-        //public async Task<IActionResult> LoginBack([FromBody] LoginAdViewModel body)
-        //{
-        //    var user = await _context
-        //        .Users
-        //        .Include(u => u.Session)
-        //        .FirstOrDefaultAsync(x => x.Username == body.Username);
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginDTO))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponseDTO))]
+        [HttpPost("loginBack")]
+        public async Task<IActionResult> LoginBack([FromBody] LoginAdViewModel body)
+        {
+            var user = await _context
+                .Users
+                .Include(u => u.Session)
+                .FirstOrDefaultAsync(x => x.Username == body.Username);
 
-        //    string token;
-        //    var userHttpAgent = Request.Headers["User-Agent"].ToString();
+            string token;
+            var userHttpAgent = Request.Headers["User-Agent"].ToString();
 
-        //    if (user is null)
-        //    {
-        //        var userId = Guid.NewGuid();
-        //        var createUser = new User
-        //        {
-        //            Id = userId,
-        //            Username = body.Username,
+            if (user is null)
+            {
+                var userId = Guid.NewGuid();
+                var createUser = new User
+                {
+                    Id = userId,
+                    Username = body.Username,
 
-        //        };
+                };
 
-        //        await _context.Users.AddAsync(createUser);
+                await _context.Users.AddAsync(createUser);
 
-        //        //await _systemHistoryService
-        //        //    .Create<User, UserHistoryDTO>(HistoryColumns.TableUsers, createUser, userId, createUser);
+                //await _systemHistoryService
+                //    .Create<User, UserHistoryDTO>(HistoryColumns.TableUsers, createUser, userId, createUser);
 
-        //        await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
-        //        token = await _tokenServices.CreateSessionAndToken(createUser, userHttpAgent);
-        //    }
-        //    else
-        //    {
-        //        token = await _tokenServices.CreateSessionAndToken(user, userHttpAgent);
+                token = await _tokenServices.CreateSessionAndToken(createUser, userHttpAgent);
+            }
+            else
+            {
+                token = await _tokenServices.CreateSessionAndToken(user, userHttpAgent);
 
-        //    }
+            }
 
-        //    return Ok(new LoginDTO
-        //    {
-        //        Token = token,
-        //    });
-        //}
+            return Ok(new LoginDTO
+            {
+                Token = token,
+            });
+        }
 
     }
 }
