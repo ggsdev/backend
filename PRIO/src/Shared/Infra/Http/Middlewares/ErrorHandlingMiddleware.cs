@@ -32,6 +32,7 @@ namespace PRIO.src.Shared.Infra.Http.Middlewares
                 }
                 else
                 {
+                    Console.WriteLine(ex);
                     await HandleExceptionAsync(context, ex, 500, "Internal Server Error");
                 }
             }
