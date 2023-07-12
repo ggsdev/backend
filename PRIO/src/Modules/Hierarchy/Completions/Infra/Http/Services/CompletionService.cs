@@ -224,6 +224,18 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             if (completion.IsActive is true)
                 throw new BadRequestException(ErrorMessages.ActiveAlready<Completion>());
 
+            if (completion.Well is null)
+                throw new NotFoundException("Poço não encontrado.");
+
+            if (completion.Well.IsActive is false)
+                throw new ConflictException("Poço não está ativo");
+
+            if (completion.Reservoir is null)
+                throw new NotFoundException("Reservatório não encontrado.");
+
+            if (completion.Reservoir.IsActive is false)
+                throw new ConflictException("Reservatório não está ativo");
+
             var propertiesUpdated = new
             {
                 IsActive = true,

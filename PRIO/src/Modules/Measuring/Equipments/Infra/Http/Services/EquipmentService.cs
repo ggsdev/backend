@@ -238,6 +238,14 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
             if (equipment.IsActive is true)
                 throw new BadRequestException(ErrorMessages.ActiveAlready<MeasuringEquipment>());
 
+
+            if (equipment.MeasuringPoint is null)
+                throw new NotFoundException("Ponto de medição não encontrado.");
+
+            if (equipment.MeasuringPoint.IsActive is false)
+                throw new ConflictException("Ponto de medição não está ativo");
+
+
             var propertiesUpdated = new
             {
                 IsActive = true,

@@ -213,7 +213,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                         await _systemHistoryService
                             .Delete<MeasuringPoint, MeasuringPointHistoryDTO>(HistoryColumns.TableInstallations, user, mpointUpdatedProperties, mpoint.Id, mpoint);
 
-                        await _measuringPointRepository.Delete(mpoint);
+                        _measuringPointRepository.Delete(mpoint);
                     }
 
                     if (mpoint.MeasuringEquipments is not null)
@@ -388,6 +388,12 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
 
             if (installation.IsActive is true)
                 throw new BadRequestException(ErrorMessages.ActiveAlready<Installation>());
+
+            if (installation.Cluster is null)
+                throw new NotFoundException("Cluster não encontrado.");
+
+            if (installation.Cluster.IsActive is false)
+                throw new ConflictException("Cluster não está ativo");
 
             var propertiesUpdated = new
             {

@@ -218,6 +218,12 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             if (well.IsActive is true)
                 throw new BadRequestException(ErrorMessages.ActiveAlready<Well>());
 
+            if (well.Field is null)
+                throw new NotFoundException("Campo não encontrado.");
+
+            if (well.Field.IsActive is false)
+                throw new ConflictException("Campo não está ativo");
+
             var propertiesUpdated = new
             {
                 IsActive = true,
