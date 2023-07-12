@@ -170,7 +170,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
             if (installationInDatabase == null)
                 throw new NotFoundException("Instalação não encontrada");
 
-            var OilVolumeCalculation = await _context.OilVolumeCalculations.Include(x => x.Installation)
+            var oilVolumeCalculation = await _context.OilVolumeCalculations.Include(x => x.Installation)
                 .Include(x => x.DrainVolumes)
                 .ThenInclude(x => x.MeasuringPoint)
                 .Include(x => x.DORs)
@@ -182,8 +182,27 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                 .Where(x => x.Installation.Id == installationId)
                 .FirstOrDefaultAsync();
 
-            var OilVolumeCalculationDTO = _mapper.Map<OilVolumeCalculation, OilVolumeCalculationDTO>(OilVolumeCalculation);
-            return OilVolumeCalculationDTO;
+            if (oilVolumeCalculation != null)
+            {
+                oilVolumeCalculation.DrainVolumes = oilVolumeCalculation.DrainVolumes
+                    .Where(x => x.IsActive == true)
+                    .ToList();
+
+                oilVolumeCalculation.DORs = oilVolumeCalculation.DORs
+                    .Where(x => x.IsActive == true)
+                    .ToList();
+
+                oilVolumeCalculation.Sections = oilVolumeCalculation.Sections
+                    .Where(x => x.IsActive == true)
+                    .ToList();
+
+                oilVolumeCalculation.TOGRecoveredOils = oilVolumeCalculation.TOGRecoveredOils
+                    .Where(x => x.IsActive == true)
+                    .ToList();
+            }
+
+            var oilVolumeCalculationDTO = _mapper.Map<OilVolumeCalculation, OilVolumeCalculationDTO>(oilVolumeCalculation);
+            return oilVolumeCalculationDTO;
         }
 
         [HttpGet("oil/{installationId}/equation")]

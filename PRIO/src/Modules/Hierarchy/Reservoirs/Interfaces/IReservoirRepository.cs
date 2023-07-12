@@ -15,6 +15,7 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Interfaces
         Task<Reservoir?> GetOnlyReservoirAsync(Guid? id);
         Task<Reservoir?> GetWithZoneFieldAsync(Guid? id);
         Task<Reservoir?> GetByIdWithCompletionsAsync(Guid? id);
+        Task<Reservoir?> GetReservoirAndChildren(Guid? id);
         Task SaveChangesAsync();
     }
 }
