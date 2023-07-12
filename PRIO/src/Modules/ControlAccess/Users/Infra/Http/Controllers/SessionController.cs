@@ -86,6 +86,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
             }
             else
             {
+
                 token = await _tokenServices.CreateSessionAndToken(user, userHttpAgent);
 
             }

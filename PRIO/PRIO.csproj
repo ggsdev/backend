@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <PackageId>$(AssemblyName)</PackageId>
+    <Version>0.1.3</Version>
   </PropertyGroup>
 
   <ItemGroup>
