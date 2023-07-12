@@ -126,8 +126,10 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
             var usersData = new List<object[]>
             {
-                    new object[] {"Nandão", "falberdi.globalhitts@prio3.com.br", null, "falberdi.globalhitts", Guid.NewGuid()},
-                    new object[] { "Felipe", "fsantos@prio3.com.br", null, "fsantos", Guid.NewGuid()},
+                new object[] { "Prinna", "pmonteiro@prio3.com.br", null, "pmonteiro", Guid.NewGuid(),
+                new object[] { "Alfredo", "amolisani@prio3.com.br", null, "amolisani", Guid.NewGuid()},
+                new object[] { "Thais", "tgoncalves@prio3.com.br", null, "tgoncalves", Guid.NewGuid()},
+                new object[] { "Fernando", "falberdi.globalhitts@prio3.com.br", null, "falberdi.globalhitts", Guid.NewGuid()} },
             };
 
             foreach (var user in usersData)
@@ -188,14 +190,15 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                 new object[] { "Grupos", "icon_grupo", "1.2", "/grupos", Guid.NewGuid(), false, true  },
                 new object[] { "Usuários", "icon_usuario", "1.3", "/usuarios", Guid.NewGuid(), false, true },
                 new object[] { "Configurar Cálculos", "icon_configuracao", "1.4", "/configurarCalculos", Guid.NewGuid(), false, true  },
-                new object[] { "Dados de Produção", "FileArrowUp", "2", "/dadosProducao", Guid.NewGuid(), false, false  },
+                new object[] { "Dados de Produção", "FileArrowUp", "2", "/dadosProducao", Guid.NewGuid(), true, false  },
                 new object[] { "Gestão da Produção", "Gear", "3", "/gestaoProducao", Guid.NewGuid(), false, false   },
                 new object[] { "Notificação de Falhas", "WarningOctagon", "4", "/notificacaoFalhas", Guid.NewGuid(), false, false   },
                 new object[] { "Testes de Poços", "ClipboardText", "5", "/testePocos", Guid.NewGuid(), true, false  },
                 new object[] { "Importar Dados Teste de Poço", "icon_importar_dados", "5.1", "/importarDadosTestePoco", Guid.NewGuid(), false, true  },
                 new object[] { "Geração de Arquivos", "File", "6", "/geracaoArquivos", Guid.NewGuid(), false, false  },
                 new object[] { "Relatórios", "Files", "7", "/relatorios", Guid.NewGuid(), false, false },
-                new object[] { "Importar Dados de Hierarquia", "", "1.5", "/importarDadosHierarquia", Guid.NewGuid(), false, true }
+                new object[] { "Importar Dados de Hierarquia", "", "1.5", "/importarDadosHierarquia", Guid.NewGuid(), false, true },
+                new object[] { "Importação dos Dados de Produção", "", "2.1", "/importarDadosProducao", Guid.NewGuid(), false, true }
             };
             foreach (var menu in menuData)
             {

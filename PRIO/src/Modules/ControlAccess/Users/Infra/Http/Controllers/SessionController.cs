@@ -56,10 +56,12 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
                     Message = "Usuário ou senha inválida."
                 });
 
+            var treatedUsername = username.Split('@')[0];
+
             var user = await _context
                 .Users
                 .Include(u => u.Session)
-                .FirstOrDefaultAsync(x => x.Username == username && x.IsActive);
+                .FirstOrDefaultAsync(x => x.Username == treatedUsername && x.IsActive);
 
             string token;
             var userHttpAgent = Request.Headers["User-Agent"].ToString();
@@ -70,7 +72,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
                 var createUser = new User
                 {
                     Id = userId,
-                    Username = username,
+                    Username = treatedUsername,
                 };
 
                 await _context.Users.AddAsync(createUser);
