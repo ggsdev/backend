@@ -96,7 +96,6 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
                 throw;
             }
         }
@@ -286,11 +285,9 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
             var users = await _userRepository.GetUsersByLastGroupId(id);
 
             var changedDate = DateTime.UtcNow;
-            Console.WriteLine(users.Count);
             foreach (var user in users)
             {
                 user.Group = group;
-                Console.WriteLine(user.Group.IsActive);
 
                 for (int i = 0; i < groupPermissions.Count; ++i)
                 {

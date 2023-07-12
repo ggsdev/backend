@@ -5,6 +5,17 @@ using PRIO.src.Modules.Hierarchy.Clusters.Dtos;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Clusters.ViewModels;
+using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Completions.Interfaces;
+using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
+using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Reservoirs.Interfaces;
+using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
+using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Zones.Interfaces;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
@@ -17,13 +28,25 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
     {
         private readonly IMapper _mapper;
         private readonly IClusterRepository _clusterRepository;
+        private readonly IInstallationRepository _installationRepository;
+        private readonly IFieldRepository _fieldRepository;
+        private readonly IZoneRepository _zoneRepository;
+        private readonly IWellRepository _wellRepository;
+        private readonly ICompletionRepository _completionRepository;
+        private readonly IReservoirRepository _reservoirRepository;
         private readonly SystemHistoryService _systemHistoryService;
         private readonly string _tableName = HistoryColumns.TableClusters;
 
-        public ClusterService(IMapper mapper, IClusterRepository clusterRepository, SystemHistoryService systemHistoryService)
+        public ClusterService(IMapper mapper, IClusterRepository clusterRepository, SystemHistoryService systemHistoryService, IInstallationRepository installationRepository, IFieldRepository fieldRepository, IZoneRepository zoneRepository, IWellRepository wellRepository, IReservoirRepository reservoirRepository, ICompletionRepository completionRepository)
         {
             _mapper = mapper;
             _clusterRepository = clusterRepository;
+            _installationRepository = installationRepository;
+            _fieldRepository = fieldRepository;
+            _zoneRepository = zoneRepository;
+            _reservoirRepository = reservoirRepository;
+            _wellRepository = wellRepository;
+            _completionRepository = completionRepository;
             _systemHistoryService = systemHistoryService;
         }
 
@@ -112,24 +135,136 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
 
         public async Task DeleteCluster(Guid id, User user)
         {
-            var cluster = await _clusterRepository.GetClusterByIdAsync(id);
+            var cluster = await _clusterRepository
+                .GetClusterAndChildren(id);
+
             if (cluster is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Cluster>());
 
             if (cluster.IsActive is false)
                 throw new BadRequestException(ErrorMessages.InactiveAlready<Cluster>());
 
-            var propertiesUpdated = new
+            var clusterPropertiesToUpdate = new
             {
                 IsActive = false,
                 DeletedAt = DateTime.UtcNow,
             };
 
-            var updatedProperties = UpdateFields
-                .CompareUpdateReturnOnlyUpdated(cluster, propertiesUpdated);
+            if (cluster.Installations is not null)
+                foreach (var installation in cluster.Installations)
+                {
+                    var installationPropertiesToUpdate = new
+                    {
+                        IsActive = false,
+                        DeletedAt = DateTime.UtcNow,
+                    };
+
+                    var installationUpdatedProperties = UpdateFields
+                    .CompareUpdateReturnOnlyUpdated(installation, installationPropertiesToUpdate);
+
+                    await _systemHistoryService
+                        .Delete<Installation, InstallationHistoryDTO>(HistoryColumns.TableInstallations, user, installationUpdatedProperties, installation.Id, installation);
+
+                    _installationRepository.Delete(installation);
+
+                    if (installation.Fields is not null)
+                        foreach (var field in installation.Fields)
+                        {
+                            var fieldPropertiesToUpdate = new
+                            {
+                                IsActive = false,
+                                DeletedAt = DateTime.UtcNow,
+                            };
+
+                            var fieldUpdatedProperties = UpdateFields
+                            .CompareUpdateReturnOnlyUpdated(field, fieldPropertiesToUpdate);
+
+                            await _systemHistoryService
+                                .Delete<Field, FieldHistoryDTO>(HistoryColumns.TableFields, user, fieldUpdatedProperties, field.Id, field);
+
+                            _fieldRepository.Delete(field);
+
+                            if (field.Zones is not null)
+                                foreach (var zone in field.Zones)
+                                {
+                                    var zonePropertiesToUpdate = new
+                                    {
+                                        IsActive = false,
+                                        DeletedAt = DateTime.UtcNow,
+                                    };
+
+                                    var zoneUpdatedProperties = UpdateFields
+                                    .CompareUpdateReturnOnlyUpdated(zone, zonePropertiesToUpdate);
+
+                                    await _systemHistoryService
+                                        .Delete<Zone, ZoneHistoryDTO>(HistoryColumns.TableZones, user, zoneUpdatedProperties, zone.Id, zone);
+
+                                    _zoneRepository.Delete(zone);
+
+                                    if (zone.Reservoirs is not null)
+                                        foreach (var reservoir in zone.Reservoirs)
+                                        {
+                                            var reservoirPropertiesToUpdate = new
+                                            {
+                                                IsActive = false,
+                                                DeletedAt = DateTime.UtcNow,
+                                            };
+
+                                            var reservoirUpdatedProperties = UpdateFields
+                                            .CompareUpdateReturnOnlyUpdated(reservoir, reservoirPropertiesToUpdate);
+
+                                            await _systemHistoryService
+                                                .Delete<Reservoir, ReservoirHistoryDTO>(HistoryColumns.TableReservoirs, user, reservoirUpdatedProperties, reservoir.Id, reservoir);
+
+                                            _reservoirRepository.Delete(reservoir);
+                                        }
+                                }
+
+                            if (field.Wells is not null)
+                                foreach (var well in field.Wells)
+                                {
+                                    var wellPropertiesToUpdate = new
+                                    {
+                                        IsActive = false,
+                                        DeletedAt = DateTime.UtcNow,
+                                    };
+
+                                    var wellUpdatedProperties = UpdateFields
+                                    .CompareUpdateReturnOnlyUpdated(well, wellPropertiesToUpdate);
+
+                                    await _systemHistoryService
+                                        .Delete<Well, WellHistoryDTO>(HistoryColumns.TableWells, user, wellUpdatedProperties, well.Id, well);
+
+                                    _wellRepository.Delete(well);
+
+
+                                    if (well.Completions is not null)
+                                        foreach (var completion in well.Completions)
+                                        {
+                                            var completionPropertiesToUpdate = new
+                                            {
+                                                IsActive = false,
+                                                DeletedAt = DateTime.UtcNow,
+                                            };
+
+                                            var completionUpdatedProperties = UpdateFields
+                                            .CompareUpdateReturnOnlyUpdated(completion, completionPropertiesToUpdate);
+
+                                            await _systemHistoryService
+                                                .Delete<Completion, CompletionHistoryDTO>(HistoryColumns.TableCompletions, user, completionUpdatedProperties, completion.Id, completion);
+
+                                            _completionRepository.Delete(completion);
+                                        }
+                                }
+                        }
+                }
+
+
+            var clusterUpdatedProperties = UpdateFields
+                .CompareUpdateReturnOnlyUpdated(cluster, clusterPropertiesToUpdate);
 
             await _systemHistoryService
-                .Delete<Cluster, ClusterHistoryDTO>(_tableName, user, updatedProperties, cluster.Id, cluster);
+                .Delete<Cluster, ClusterHistoryDTO>(_tableName, user, clusterUpdatedProperties, cluster.Id, cluster);
 
             _clusterRepository.DeleteCluster(cluster);
 

@@ -8,6 +8,7 @@
     <FileVersion>1.0.0.1</FileVersion>
     <SignAssembly>False</SignAssembly>
     <PackageIcon>prioImage.jpg</PackageIcon>
+    <Version>0.1.3</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
