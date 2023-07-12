@@ -225,7 +225,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
 
         public async Task<CreateUpdateZoneDTO> RestoreZone(Guid id, User user)
         {
-            var zone = await _zoneRepository.GetWithUser(id);
+            var zone = await _zoneRepository.GetWithField(id);
 
             if (zone is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Zone>());
