@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Newtonsoft.Json;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Reservoirs.Dtos;
 using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Reservoirs.Interfaces;
@@ -155,6 +156,26 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
                 DeletedAt = DateTime.UtcNow,
             };
 
+            if (reservoir.Completions is not null)
+                foreach (var completion in reservoir.Completions)
+                {
+                    if (completion.IsActive is true)
+                    {
+                        var completionPropertiesToUpdate = new
+                        {
+                            IsActive = false,
+                            DeletedAt = DateTime.UtcNow,
+                        };
+
+                        var completionUpdatedProperties = UpdateFields
+                        .CompareUpdateReturnOnlyUpdated(completion, completionPropertiesToUpdate);
+
+                        await _systemHistoryService
+                            .Delete<Completion, CompletionHistoryDTO>(HistoryColumns.TableReservoirs, user, completionUpdatedProperties, completion.Id, completion);
+
+                        _reservoirRepository.Delete(reservoir);
+                    }
+                }
             var updatedProperties = UpdateFields
                 .CompareUpdateReturnOnlyUpdated(reservoir, propertiesUpdated);
 

@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Newtonsoft.Json;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Completions.Interfaces;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Hierarchy.Wells.Dtos;
@@ -20,14 +22,16 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
         private readonly IMapper _mapper;
         private readonly IFieldRepository _fieldRepository;
         private readonly IWellRepository _wellRepository;
+        private readonly ICompletionRepository _completionRepository;
         private readonly SystemHistoryService _systemHistoryService;
         private readonly string _tableName = HistoryColumns.TableWells;
 
-        public WellService(IMapper mapper, IFieldRepository fieldRepository, SystemHistoryService systemHistoryService, IWellRepository wellRepository)
+        public WellService(IMapper mapper, IFieldRepository fieldRepository, SystemHistoryService systemHistoryService, IWellRepository wellRepository, ICompletionRepository completionRepositor)
         {
             _mapper = mapper;
             _fieldRepository = fieldRepository;
             _wellRepository = wellRepository;
+            _completionRepository = completionRepositor;
             _systemHistoryService = systemHistoryService;
         }
 
@@ -166,6 +170,27 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
                 IsActive = false,
                 DeletedAt = DateTime.UtcNow,
             };
+
+            if (well.Completions is not null)
+                foreach (var completion in well.Completions)
+                {
+                    if (completion.IsActive is true)
+                    {
+                        var completionPropertiesToUpdate = new
+                        {
+                            IsActive = false,
+                            DeletedAt = DateTime.UtcNow,
+                        };
+
+                        var completionUpdatedProperties = UpdateFields
+                        .CompareUpdateReturnOnlyUpdated(completion, completionPropertiesToUpdate);
+
+                        await _systemHistoryService
+                            .Delete<Completion, CompletionHistoryDTO>(HistoryColumns.TableReservoirs, user, completionUpdatedProperties, completion.Id, completion);
+
+                        _completionRepository.Delete(completion);
+                    }
+                }
             var updatedProperties = UpdateFields
                 .CompareUpdateReturnOnlyUpdated(well, propertiesUpdated);
 

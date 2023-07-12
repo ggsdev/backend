@@ -40,6 +40,18 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
 
         }
 
+        public async Task<Installation?> GetInstallationAndChildren(Guid? id)
+        {
+            return await _context.Installations
+                    .Include(i => i.Fields)
+                        .ThenInclude(f => f.Zones)
+                            .ThenInclude(z => z.Reservoirs)
+                    .Include(i => i.Fields)
+                        .ThenInclude(f => f.Wells)
+                                .ThenInclude(r => r.Completions)
+                .FirstOrDefaultAsync(c => c.Id == id);
+        }
+
         public async Task<Installation?> GetByIdAsync(Guid? id)
         {
             return await _context.Installations
