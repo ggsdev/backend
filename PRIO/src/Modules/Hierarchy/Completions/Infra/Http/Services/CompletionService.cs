@@ -45,10 +45,16 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             if (well is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Well>());
 
+            if (well.IsActive is false)
+                throw new ConflictException("Poço não está ativo.");
+
             var reservoir = await _reservoirRepository.GetWithZoneFieldAsync(body.ReservoirId);
 
             if (reservoir is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Reservoir>());
+
+            if (reservoir.IsActive is false)
+                throw new ConflictException("Reservatório não está ativo.");
 
             if (reservoir.Zone?.Field?.Id != well.Field?.Id)
                 throw new ConflictException(ErrorMessages.DifferentFieldsCompletion());

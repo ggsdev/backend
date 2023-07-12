@@ -54,6 +54,9 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
             if (field is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Field>());
 
+            if (field.IsActive is false)
+                throw new ConflictException("Campo não está ativo.");
+
             var zoneId = Guid.NewGuid();
 
             var zone = new Zone

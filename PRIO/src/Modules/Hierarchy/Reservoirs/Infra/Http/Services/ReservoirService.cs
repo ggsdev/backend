@@ -43,6 +43,9 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
             if (zoneInDatabase is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Zone>());
 
+            if (zoneInDatabase.IsActive is false)
+                throw new ConflictException("Zona não está ativa.");
+
             var reservoirId = Guid.NewGuid();
 
             var reservoir = new Reservoir
