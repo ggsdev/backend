@@ -120,7 +120,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             if (well.IsActive is false)
                 throw new ConflictException("Poço não está ativo.");
 
-            if (well.Completions.Count > 0)
+            if (well.Completions is not null && well.Completions.Count > 0)
                 if (body.CodWellAnp is not null)
                     if (body.CodWellAnp != well.CodWellAnp)
                         throw new ConflictException("Código do campo não pode ser alterado.");
@@ -163,7 +163,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
 
         public async Task DeleteWell(Guid id, User user)
         {
-            var well = await _wellRepository.GetOnlyWellAsync(id);
+            var well = await _wellRepository.GetByIdWithFieldAndCompletions(id);
 
             if (well is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Well>());
@@ -210,7 +210,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
 
         public async Task<CreateUpdateWellDTO> RestoreWell(Guid id, User user)
         {
-            var well = await _wellRepository.GetWithUserAsync(id);
+            var well = await _wellRepository.GetByIdWithFieldAndCompletions(id);
 
             if (well is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Well>());
