@@ -156,15 +156,14 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
         [HttpPost("loginBack")]
         public async Task<IActionResult> LoginBack([FromBody] LoginAdViewModel body)
         {
-            var treatedUsername = body.Username.Split('@')[0];
-
             var user = await _context
                 .Users
                 .Include(u => u.Session)
-                .FirstOrDefaultAsync(x => x.Username == treatedUsername);
+                .FirstOrDefaultAsync(x => x.Username == body.Username);
 
             string token;
             var userHttpAgent = Request.Headers["User-Agent"].ToString();
+
             if (user is null)
             {
                 var userId = Guid.NewGuid();
