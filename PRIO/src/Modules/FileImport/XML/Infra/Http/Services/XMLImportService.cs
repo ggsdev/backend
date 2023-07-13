@@ -116,6 +116,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                 #region elementos XML
                                 var dadosBasicos = Functions.DeserializeXml<DADOS_BASICOS_039>(dadosBasicosElement);
                                 #endregion
+
                                 if (dadosBasicos is not null && dadosBasicos.COD_FALHA_039 is not null && dadosBasicos.DHA_COD_INSTALACAO_039 is not null && dadosBasicos.COD_TAG_PONTO_MEDICAO_039 is not null)
                                 {
                                     try
@@ -994,11 +995,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 await _repository.AddAsync(measurement);
             }
 
-            await _repository.SaveChangesAsync();
-
             if (_repository.CountAdded() == 0)
                 return new ImportResponseDTO { Status = "Error", Message = $"Nenhuma medição foi adicionada" };
 
+            await _repository.SaveChangesAsync();
 
             return new ImportResponseDTO { Status = "Success", Message = $"Arquivo importado com sucesso, {_repository.CountAdded()} medições importadas" };
         }

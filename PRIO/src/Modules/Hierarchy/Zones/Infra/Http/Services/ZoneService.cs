@@ -55,7 +55,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
                 throw new NotFoundException(ErrorMessages.NotFound<Field>());
 
             if (field.IsActive is false)
-                throw new ConflictException("Campo não está ativo.");
+                throw new ConflictException(ErrorMessages.Inactive<Field>());
 
             var zoneId = Guid.NewGuid();
 
@@ -108,12 +108,12 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
                 throw new NotFoundException(ErrorMessages.NotFound<Zone>());
 
             if (zone.IsActive is false)
-                throw new ConflictException("Zona não está ativo.");
+                throw new ConflictException(ErrorMessages.Inactive<Zone>());
 
             if (zone.Reservoirs.Count > 0)
                 if (body.CodZone is not null)
                     if (body.CodZone != zone.CodZone)
-                        throw new ConflictException("Código da zona não pode ser alterado.");
+                        throw new ConflictException(ErrorMessages.CodCantBeUpdated<Zone>());
 
             if (body.CodZone is not null)
             {
@@ -234,10 +234,10 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
                 throw new BadRequestException(ErrorMessages.ActiveAlready<Zone>());
 
             if (zone.Field is null)
-                throw new NotFoundException("Campo não encontrado.");
+                throw new NotFoundException(ErrorMessages.NotFound<Field>());
 
             if (zone.Field.IsActive is false)
-                throw new ConflictException("Campo não está ativo");
+                throw new ConflictException(ErrorMessages.Inactive<Field>());
 
 
             var propertiesUpdated = new

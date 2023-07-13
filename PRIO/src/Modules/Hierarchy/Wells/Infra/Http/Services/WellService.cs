@@ -47,7 +47,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
                 throw new NotFoundException(ErrorMessages.NotFound<Field>());
 
             if (field.IsActive is false)
-                throw new NotFoundException("Campo não está ativo.");
+                throw new NotFoundException(ErrorMessages.Inactive<Field>());
 
             var wellId = Guid.NewGuid();
 
@@ -118,12 +118,12 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
                 throw new NotFoundException(ErrorMessages.NotFound<Well>());
 
             if (well.IsActive is false && well.StatusOperator is false)
-                throw new ConflictException("Poço não está ativo.");
+                throw new ConflictException(ErrorMessages.Inactive<Well>());
 
             if (well.Completions is not null && well.Completions.Count > 0)
                 if (body.CodWellAnp is not null)
                     if (body.CodWellAnp != well.CodWellAnp)
-                        throw new ConflictException("Código do campo não pode ser alterado.");
+                        throw new ConflictException(ErrorMessages.CodCantBeUpdated<Well>());
 
             if (body.CodWellAnp is not null)
             {
@@ -220,10 +220,10 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
                 throw new BadRequestException(ErrorMessages.ActiveAlready<Well>());
 
             if (well.Field is null)
-                throw new NotFoundException("Campo não encontrado.");
+                throw new NotFoundException(ErrorMessages.NotFound<Field>());
 
             if (well.Field.IsActive is false)
-                throw new ConflictException("Campo não está ativo");
+                throw new ConflictException(ErrorMessages.Inactive<Field>());
 
             var propertiesUpdated = new
             {

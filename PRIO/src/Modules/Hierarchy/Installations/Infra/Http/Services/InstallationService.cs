@@ -73,7 +73,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                 throw new NotFoundException(ErrorMessages.NotFound<Cluster>());
 
             if (clusterInDatabase.IsActive is false)
-                throw new ConflictException("Cluster não está ativo");
+                throw new ConflictException(ErrorMessages.Inactive<Cluster>());
 
             var installationId = Guid.NewGuid();
 
@@ -134,13 +134,13 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
 
 
             if (installation.IsActive is false)
-                throw new ConflictException("Instalação não está ativo.");
+                throw new ConflictException(ErrorMessages.Inactive<Installation>());
 
 
             if (installation.Fields.Count > 0)
                 if (body.CodInstallationAnp is not null)
                     if (body.CodInstallationAnp != installation.CodInstallationAnp)
-                        throw new ConflictException("Código da instalação não pode ser alterado.");
+                        throw new ConflictException(ErrorMessages.CodCantBeUpdated<Installation>());
 
             if (body.CodInstallationAnp is not null)
             {
@@ -390,10 +390,10 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                 throw new BadRequestException(ErrorMessages.ActiveAlready<Installation>());
 
             if (installation.Cluster is null)
-                throw new NotFoundException("Cluster não encontrado.");
+                throw new NotFoundException(ErrorMessages.NotFound<Cluster>());
 
             if (installation.Cluster.IsActive is false)
-                throw new ConflictException("Cluster não está ativo");
+                throw new ConflictException(ErrorMessages.Inactive<Cluster>());
 
             var propertiesUpdated = new
             {

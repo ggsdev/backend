@@ -56,7 +56,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
                 .GetByIdAsync(body.InstallationId) ?? throw new NotFoundException(ErrorMessages.NotFound<Installation>());
 
             if (installationInDatabase.IsActive is false)
-                throw new ConflictException("Instalação não está ativa.");
+                throw new ConflictException(ErrorMessages.Inactive<Installation>());
 
             var fieldId = Guid.NewGuid();
 
@@ -113,12 +113,12 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
                 throw new NotFoundException(ErrorMessages.NotFound<Field>());
 
             if (field.IsActive is false)
-                throw new ConflictException("Campo não está ativo.");
+                throw new ConflictException(ErrorMessages.Inactive<Field>());
 
             if (field.Wells.Count > 0 || field.Zones.Count > 0)
                 if (body.CodField is not null)
                     if (body.CodField != field.CodField)
-                        throw new ConflictException("Código do campo não pode ser alterado.");
+                        throw new ConflictException(ErrorMessages.CodCantBeUpdated<Field>());
 
             if (body.CodField is not null)
             {
@@ -302,10 +302,10 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
                 throw new BadRequestException(ErrorMessages.ActiveAlready<Field>());
 
             if (field.Installation is null)
-                throw new NotFoundException("Installation não encontrado.");
+                throw new NotFoundException(ErrorMessages.NotFound<Installation>());
 
             if (field.Installation.IsActive is false)
-                throw new ConflictException("Installation não está ativo");
+                throw new ConflictException(ErrorMessages.Inactive<Installation>());
 
             var propertiesUpdated = new
             {
