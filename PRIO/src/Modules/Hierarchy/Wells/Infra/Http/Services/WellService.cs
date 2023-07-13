@@ -117,7 +117,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             if (well is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Well>());
 
-            if (well.IsActive is false)
+            if (well.IsActive is false && well.StatusOperator is false)
                 throw new ConflictException("Poço não está ativo.");
 
             if (well.Completions is not null && well.Completions.Count > 0)
@@ -168,13 +168,14 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             if (well is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Well>());
 
-            if (well.IsActive is false)
+            if (well.IsActive is false && well.StatusOperator is false)
                 throw new BadRequestException(ErrorMessages.InactiveAlready<Well>());
 
             var propertiesUpdated = new
             {
                 IsActive = false,
                 DeletedAt = DateTime.UtcNow,
+                StatusOperator = false
             };
 
             if (well.Completions is not null)
@@ -215,7 +216,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             if (well is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Well>());
 
-            if (well.IsActive is true)
+            if (well.IsActive is true && well.StatusOperator is true)
                 throw new BadRequestException(ErrorMessages.ActiveAlready<Well>());
 
             if (well.Field is null)
@@ -228,6 +229,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             {
                 IsActive = true,
                 DeletedAt = (DateTime?)null,
+                StatusOperator = true
             };
             var updatedProperties = UpdateFields
                 .CompareUpdateReturnOnlyUpdated(well, propertiesUpdated);
