@@ -12,10 +12,13 @@ using PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services;
 using PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Interfaces;
 using PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Menus.Infra.Http.Services;
+using PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Interfaces;
+using PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Interfaces;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services;
+using PRIO.src.Modules.FileImport.XML.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Repositories;
@@ -37,6 +40,9 @@ using PRIO.src.Modules.Hierarchy.Zones.Interfaces;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Equipments.Interfaces;
+using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories;
+using PRIO.src.Modules.Measuring.Measurements.Infra.Http.Services;
+using PRIO.src.Modules.Measuring.Measurements.Interfaces;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
@@ -152,6 +158,10 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
 
     services.AddScoped<ICompletionRepository, CompletionRepository>();
 
+    services.AddScoped<IMeasurementRepository, MeasurementRepository>();
+
+    services.AddScoped<IMeasurementHistoryRepository, MeasurementHistoryRepository>();
+
     #endregion
 
     #region Hierarchy Services
@@ -166,6 +176,8 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddScoped<MeasuringPointService>();
     services.AddScoped<SystemHistoryService>();
     services.AddScoped<AuxiliaryService>();
+    services.AddScoped<XMLImportService>();
+    services.AddScoped<MeasurementService>();
 
     services.AddScoped<IMenuRepository, MenuRepository>();
     services.AddScoped<IMeasuringPointRepository, MeasuringPointRepository>();
@@ -175,6 +187,7 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddScoped<IUserRepository, UserRepository>();
     services.AddScoped<IUserPermissionRepository, UserPermissionRepository>();
     services.AddScoped<IUserOperationRepository, UserOperationRepository>();
+    services.AddScoped<IGlobalOperationsRepository, GlobalOperationsRepository>();
     #endregion
 
     #region Control Access Services

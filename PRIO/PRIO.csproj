@@ -5,6 +5,18 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <PackageId>$(AssemblyName)</PackageId>
+    <FileVersion>1.0.0.1</FileVersion>
+    <SignAssembly>False</SignAssembly>
+    <PackageIcon>prioImage.jpg</PackageIcon>
+    <Version>0.1.3</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <ItemGroup>
@@ -67,12 +79,17 @@
     <Folder Include="src\Modules\FileImport\XLSX\Infra\EF\Mappings\" />
     <Folder Include="src\Modules\FileImport\XML\Infra\EF\Models\" />
     <Folder Include="src\Modules\FileImport\XML\Infra\EF\Mappings\" />
-    <Folder Include="src\Modules\FileImport\XML\Infra\Http\Services\" />
     <Folder Include="src\Modules\Measuring\Measurements\Dtos\" />
     <Folder Include="src\Modules\Measuring\Measurements\Infra\Http\Controllers\" />
-    <Folder Include="src\Modules\Measuring\Measurements\Infra\Http\Services\" />
     <Folder Include="src\Modules\Measuring\Measurements\ViewModels\" />
     <Folder Include="src\Shared\Infra\EF\Mappings\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\..\Downloads\prioImage.jpg">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

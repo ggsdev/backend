@@ -14,6 +14,8 @@ namespace PRIO.src.Modules.Measuring.Equipments.Interfaces
         Task<MeasuringEquipment?> GetByTagsSerialChannel(string? tagPoint, string? tagEquipment, string? serial, string channel);
         Task<List<MeasuringEquipment>> GetAsync();
         Task<MeasuringEquipment?> GetWithInstallationAsync(Guid? id);
+        Task<MeasuringEquipment?> GetByTagMeasuringPoint(string tagPoint, string acronym);
         Task SaveChangesAsync();
+
     }
 }

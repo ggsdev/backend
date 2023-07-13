@@ -10,14 +10,9 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Mappings
         {
             builder.ToTable("DrainVolumes");
 
-            builder.Property(x => x.Name)
-             .HasColumnType("varchar")
-             .HasMaxLength(60)
-             .IsRequired();
-
             builder.HasOne(x => x.MeasuringPoint)
                .WithOne(d => d.DrainVolume)
-               .HasForeignKey<DrainVolume>("EquipmentId");
+               .HasForeignKey<DrainVolume>("MeasuringPointId");
 
             builder.HasOne(x => x.OilVolumeCalculation)
                .WithMany(d => d.DrainVolumes);

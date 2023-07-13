@@ -22,9 +22,32 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
                 .Where(x => x.GroupPermission.Group.Id == groupId)
                 .ToListAsync();
         }
+        public async Task<GroupOperation> GetGroupOperationsByMenuIdAndGroupPermissionId(Guid operationId, Guid? groupPermissionId)
+        {
+            return await _context.GroupOperations
+                                          .Include(x => x.GlobalOperation!)
+                                          .Include(x => x.GroupPermission!)
+                                          .Where(x => x.GlobalOperation.Id == operationId)
+                                          .Where(x => x.GroupPermission.Id == groupPermissionId)
+                                          .FirstOrDefaultAsync();
+        }
+        public async Task<GroupOperation> GetGroupOperationsByOperationIdAndGroupName(Guid OperationId, string groupName)
+        {
+            var groupOperation = await _context.GroupOperations
+                                              .Include(x => x.GlobalOperation)
+                                              .Include(x => x.GroupPermission)
+                                              .Where(x => x.GlobalOperation.Id == OperationId)
+                                              .Where(x => x.GroupPermission.GroupName == groupName)
+                                              .FirstOrDefaultAsync();
+            return groupOperation;
+        }
         public void UpdateGroupOperations(List<GroupOperation> groupOperations)
         {
             _context.GroupOperations.UpdateRange(groupOperations);
+        }
+        public async void SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
         }
     }
 }

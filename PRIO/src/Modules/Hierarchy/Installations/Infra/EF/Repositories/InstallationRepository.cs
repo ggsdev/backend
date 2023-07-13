@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
+using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 
 namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
@@ -11,6 +12,54 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
         public InstallationRepository(DataContext context)
         {
             _context = context;
+        }
+
+        public async Task<Installation?> GetInstallationMeasurementByUepAndAnpCodAsync(string codInstallation, string acronym)
+        {
+            switch (acronym)
+            {
+                case "039":
+                    return await _context.Installations
+                     .FirstOrDefaultAsync(x => x.UepCod == codInstallation && x.CodInstallationAnp == codInstallation);
+
+                case "001":
+                    return await _context.Installations
+                        .FirstOrDefaultAsync(x => x.UepCod == codInstallation && x.CodInstallationAnp == codInstallation);
+
+                case "002":
+                    return await _context.Installations
+                        .FirstOrDefaultAsync(x => x.UepCod == codInstallation && x.CodInstallationAnp == codInstallation);
+
+                case "003":
+                    return await _context.Installations
+                        .FirstOrDefaultAsync(x => x.UepCod == codInstallation && x.CodInstallationAnp == codInstallation);
+
+                default:
+                    throw new BadRequestException("Acronym values are: 001, 002, 003, 039");
+            }
+
+        }
+
+        public async Task<Installation?> GetInstallationAndChildren(Guid? id)
+        {
+            return await _context.Installations
+                    .Include(i => i.Fields)
+                        .ThenInclude(f => f.Zones)
+                            .ThenInclude(z => z.Reservoirs)
+                    .Include(i => i.Fields)
+                        .ThenInclude(f => f.Wells)
+                                .ThenInclude(r => r.Completions)
+                    .Include(x => x.MeasuringPoints)
+                        .ThenInclude(x => x.MeasuringEquipments)
+                     .Include(x => x.MeasuringPoints)
+                        .ThenInclude(x => x.DOR)
+                     .Include(x => x.MeasuringPoints)
+                        .ThenInclude(x => x.Section)
+                     .Include(x => x.MeasuringPoints)
+                        .ThenInclude(x => x.TOGRecoveredOil)
+                     .Include(x => x.MeasuringPoints)
+                        .ThenInclude(x => x.DrainVolume)
+                .FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task<Installation?> GetByIdAsync(Guid? id)

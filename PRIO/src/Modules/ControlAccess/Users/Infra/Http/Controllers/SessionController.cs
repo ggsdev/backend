@@ -45,7 +45,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
                 .DecryptAes(body.Username, secretKey);
 
             var password = Decrypt
-            .DecryptAes(body.Password, secretKey);
+              .DecryptAes(body.Password, secretKey);
 
             var credentialsValid = ActiveDirectory
                 .VerifyCredentialsWithActiveDirectory(username, password);
@@ -106,10 +106,10 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
                 return BadRequest(new ErrorResponseDTO { Message = "Username and password not encrypted." });
 
             var usernameDecrypted = Decrypt
-                .DecryptAes(body.Username, secretKey);
+               .DecryptAes(body.Username, secretKey);
 
             var passwordDecrypted = Decrypt
-                .DecryptAes(body.Password, secretKey);
+               .DecryptAes(body.Password, secretKey);
 
             var user = await _context
                 .Users

@@ -15,6 +15,9 @@ namespace PRIO.src.Modules.FileImport.XML.FileContent._039
     {
         [XmlAttribute("COD_FALHA")]
         public string? COD_FALHA_039 { get; set; }
+
+        [XmlAttribute("COD_TAG_PONTO_MEDICAO")]
+        public string? COD_TAG_PONTO_MEDICAO_039 { get; set; }
         [XmlAttribute("COD_INSTALACAO")]
         public string? DHA_COD_INSTALACAO_039 { get; set; }
         [XmlElement("COD_TAG_EQUIPAMENTO")]

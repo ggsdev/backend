@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Newtonsoft.Json;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Reservoirs.Dtos;
 using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Reservoirs.Interfaces;
@@ -41,6 +42,9 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
 
             if (zoneInDatabase is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Zone>());
+
+            if (zoneInDatabase.IsActive is false)
+                throw new ConflictException("Zona não está ativa.");
 
             var reservoirId = Guid.NewGuid();
 
@@ -95,6 +99,8 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
             if (reservoir is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Reservoir>());
 
+            if (reservoir.IsActive is false)
+                throw new ConflictException("Reservatório não está ativo.");
 
             if (reservoir.Completions.Count > 0)
                 if (body.CodReservoir is not null)
@@ -141,7 +147,7 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
         public async Task DeleteReservoir(Guid id, User user)
         {
             var reservoir = await _reservoirRepository
-                .GetWithZoneAsync(id);
+                .GetReservoirAndChildren(id);
 
             if (reservoir is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Reservoir>());
@@ -155,6 +161,26 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
                 DeletedAt = DateTime.UtcNow,
             };
 
+            if (reservoir.Completions is not null)
+                foreach (var completion in reservoir.Completions)
+                {
+                    if (completion.IsActive is true)
+                    {
+                        var completionPropertiesToUpdate = new
+                        {
+                            IsActive = false,
+                            DeletedAt = DateTime.UtcNow,
+                        };
+
+                        var completionUpdatedProperties = UpdateFields
+                        .CompareUpdateReturnOnlyUpdated(completion, completionPropertiesToUpdate);
+
+                        await _systemHistoryService
+                            .Delete<Completion, CompletionHistoryDTO>(HistoryColumns.TableReservoirs, user, completionUpdatedProperties, completion.Id, completion);
+
+                        _reservoirRepository.Delete(reservoir);
+                    }
+                }
             var updatedProperties = UpdateFields
                 .CompareUpdateReturnOnlyUpdated(reservoir, propertiesUpdated);
 
@@ -175,6 +201,12 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
 
             if (reservoir.IsActive is true)
                 throw new BadRequestException(ErrorMessages.InactiveAlready<Reservoir>());
+
+            if (reservoir.Zone is null)
+                throw new NotFoundException("Zona não encontrado.");
+
+            if (reservoir.Zone.IsActive is false)
+                throw new ConflictException("Zona não está ativo");
 
             var propertiesUpdated = new
             {

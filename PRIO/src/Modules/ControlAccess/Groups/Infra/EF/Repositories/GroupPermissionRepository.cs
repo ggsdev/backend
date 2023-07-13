@@ -38,6 +38,30 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
                 .Where(x => x.Group.Id == groupId)
                 .ToListAsync();
         }
+        public async Task<GroupPermission> GetGroupPermissionById(Guid? id)
+        {
+            return await _context.GroupPermissions
+                    .Where(x => x.Id == id)
+                    .FirstOrDefaultAsync();
+        }
+        public async Task<GroupPermission> GetGroupPermissionByMenuIdAndGroupId(Guid menuId, Guid groupId)
+        {
+            return await _context.GroupPermissions
+                    .Include(x => x.Menu)
+                    .Include(x => x.Group)
+                    .Where(x => x.Menu.Id == menuId)
+                    .Where(x => x.Group.Id == groupId)
+                    .FirstOrDefaultAsync();
+        }
+        public async Task<GroupPermission> GetGroupPermissionByMenuIdAndGroupName(Guid menuId, string groupName)
+        {
+            return await _context.GroupPermissions
+                    .Include(x => x.Menu)
+                    .Include(x => x.Group)
+                    .Where(x => x.Menu.Id == menuId)
+                    .Where(x => x.Group.Name == groupName)
+                    .FirstOrDefaultAsync();
+        }
 
     }
 }
