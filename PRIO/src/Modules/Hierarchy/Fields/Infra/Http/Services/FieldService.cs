@@ -121,9 +121,10 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
                         throw new ConflictException("Código do campo não pode ser alterado.");
 
             if (field.Installation is not null)
-                if (body.InstallationId is not null)
-                    if (body.InstallationId != field.Installation.Id)
-                        throw new ConflictException("Relacionamento não pode ser alterado.");
+                if (field.Wells is not null || field.Zones is not null)
+                    if (body.InstallationId is not null)
+                        if (body.InstallationId != field.Installation.Id)
+                            throw new ConflictException("Relacionamento não pode ser alterado.");
 
             if (body.CodField is not null)
             {
