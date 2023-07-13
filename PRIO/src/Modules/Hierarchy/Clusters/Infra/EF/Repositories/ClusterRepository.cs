@@ -30,10 +30,15 @@ public class ClusterRepository : IClusterRepository
                     .ThenInclude(f => f.Zones)
                         .ThenInclude(z => z.Reservoirs)
                             .ThenInclude(r => r.Completions)
+
             .Include(x => x.Installations)
                 .ThenInclude(i => i.Fields)
                     .ThenInclude(f => f.Wells)
                             .ThenInclude(r => r.Completions)
+
+            .Include(x => x.Installations)
+                .ThenInclude(i => i.MeasuringPoints)
+                    .ThenInclude(m => m.MeasuringEquipments)
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 
