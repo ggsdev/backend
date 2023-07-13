@@ -143,9 +143,10 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                             throw new ConflictException("Código da instalação não pode ser alterado.");
 
             if (installation.Cluster is not null)
-                if (body.ClusterId is not null)
-                    if (body.ClusterId != installation.Cluster.Id)
-                        throw new ConflictException("Relacionamento não pode ser alterado.");
+                if (installation.Fields is not null)
+                    if (body.ClusterId is not null)
+                        if (body.ClusterId != installation.Cluster.Id)
+                            throw new ConflictException("Relacionamento não pode ser alterado.");
 
             if (body.CodInstallationAnp is not null)
             {
