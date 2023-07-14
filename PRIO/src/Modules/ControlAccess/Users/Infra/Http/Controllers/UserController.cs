@@ -12,6 +12,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
 {
     [ApiController]
     [Route("users")]
+    [ServiceFilter(typeof(AuthorizationFilter))]
     public class UserController : ControllerBase
     {
         private readonly UserService _service;
@@ -35,7 +36,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
 
         #region Create
         [HttpPost]
-        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponseDTO))]
         public async Task<IActionResult> Post([FromBody] CreateUserViewModel body)

@@ -47,13 +47,15 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
 
         public async Task<UserDTO> CreateUserAsync(CreateUserViewModel body, User loggedUser)
         {
+            var treatedUsername = body.Username.Split('@')[0];
+
             var userInAd = ActiveDirectory
-                .CheckUserExistsInActiveDirectory(body.Username);
+                .CheckUserExistsInActiveDirectory(treatedUsername);
             if (userInAd is false)
                 throw new NotFoundException("Não foi possível validar o usuário no domínio, digite um usuário valido");
 
             var userInDatabase = await _userRepository
-                .GetUserByUsername(body.Username);
+                .GetUserByUsername(treatedUsername);
             if (userInDatabase != null)
                 throw new ConflictException("Usuário já cadastrado");
 
@@ -62,7 +64,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             {
                 Id = userId,
                 Name = body.Name,
-                Username = body.Username,
+                Username = treatedUsername,
                 Description = body.Description is not null ? body.Description : null,
             };
 
