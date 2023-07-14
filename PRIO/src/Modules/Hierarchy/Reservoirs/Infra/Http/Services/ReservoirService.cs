@@ -44,7 +44,7 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
                 throw new NotFoundException(ErrorMessages.NotFound<Zone>());
 
             if (zoneInDatabase.IsActive is false)
-                throw new ConflictException("Zona não está ativa.");
+                throw new ConflictException(ErrorMessages.Inactive<Zone>());
 
             var reservoirId = Guid.NewGuid();
 
@@ -100,12 +100,12 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
                 throw new NotFoundException(ErrorMessages.NotFound<Reservoir>());
 
             if (reservoir.IsActive is false)
-                throw new ConflictException("Reservatório não está ativo.");
+                throw new ConflictException(ErrorMessages.Inactive<Reservoir>());
 
             if (reservoir.Completions.Count > 0)
                 if (body.CodReservoir is not null)
                     if (body.CodReservoir != reservoir.CodReservoir)
-                        throw new ConflictException("Código do reservatório não pode ser alterado.");
+                        throw new ConflictException(ErrorMessages.CodCantBeUpdated<Reservoir>());
 
             if (body.CodReservoir is not null)
             {
@@ -203,10 +203,10 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
                 throw new BadRequestException(ErrorMessages.InactiveAlready<Reservoir>());
 
             if (reservoir.Zone is null)
-                throw new NotFoundException("Zona não encontrado.");
+                throw new NotFoundException(ErrorMessages.NotFound<Zone>());
 
             if (reservoir.Zone.IsActive is false)
-                throw new ConflictException("Zona não está ativo");
+                throw new ConflictException(ErrorMessages.Inactive<Zone>());
 
             var propertiesUpdated = new
             {
