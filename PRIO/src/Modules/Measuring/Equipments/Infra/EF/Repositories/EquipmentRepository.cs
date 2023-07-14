@@ -61,18 +61,22 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Repositories
             {
                 case "039":
                     return await _context.MeasuringEquipments
+                        .Include(x => x.MeasuringPoint)
                      .FirstOrDefaultAsync(x => x.TagMeasuringPoint == tagPoint);
 
                 case "001":
                     return await _context.MeasuringEquipments
+                        .Include(x => x.MeasuringPoint)
                         .FirstOrDefaultAsync(x => x.TagMeasuringPoint == tagPoint);
 
                 case "002":
                     return await _context.MeasuringEquipments
+                        .Include(x => x.MeasuringPoint)
                         .FirstOrDefaultAsync(x => x.TagMeasuringPoint == tagPoint);
 
                 case "003":
                     return await _context.MeasuringEquipments
+                        .Include(x => x.MeasuringPoint)
                         .FirstOrDefaultAsync(x => x.TagMeasuringPoint == tagPoint);
 
                 default:

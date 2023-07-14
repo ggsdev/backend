@@ -12,6 +12,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
 {
     [ApiController]
     [Route("users")]
+    [ServiceFilter(typeof(AuthorizationFilter))]
     public class UserController : ControllerBase
     {
         private readonly UserService _service;
@@ -35,12 +36,17 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
 
         #region Create
         [HttpPost]
-        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponseDTO))]
         public async Task<IActionResult> Post([FromBody] CreateUserViewModel body)
         {
-            var userDTO = await _service.CreateUserAsync(body);
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+
+            var userDTO = await _service.CreateUserAsync(body, user);
             return Created($"users/{userDTO.Id}", userDTO);
         }
         #endregion
