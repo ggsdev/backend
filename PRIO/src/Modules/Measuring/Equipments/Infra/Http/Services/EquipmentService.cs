@@ -159,33 +159,27 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
                 }
             }
 
-            var measuringPointByTagMeasuringPointInDatabase = await _measuringPointRepository.GetByTagMeasuringPoint(body.TagMeasuringPoint);
-            if (measuringPointByTagMeasuringPointInDatabase == null)
-                throw new NotFoundException("Ponto de medição não encontrado.");
-
-            if (body.Type == "CV" || body.Type == "EP")
-            {
-                var checkUniqueEquipment = await _equipmentRepository.GetByTypeWithMeasuringPointAsync(measuringPointByTagMeasuringPointInDatabase.Id, body.Type);
-                if (checkUniqueEquipment != null)
-                    throw new ConflictException($"Já existe um {body.Type} nesse ponto de medição.");
-            }
-
             var beforeChangesEquipment = _mapper.Map<MeasuringEquipmentHistoryDTO>(equipment);
 
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(equipment, body);
-
             if (updatedProperties.Any() is false && (equipment.MeasuringPoint?.Id == body.MeasuringId || body.MeasuringId is null))
                 throw new BadRequestException(ErrorMessages.UpdateToExistingValues<MeasuringEquipmentDTO>());
 
-            if (body.MeasuringId is not null)
+            if (body.TagMeasuringPoint is not null)
             {
-                var measuringPointInDatabase = await _measuringPointRepository.GetByIdAsync(body.MeasuringId);
+                var measuringPointByTagMeasuringPointInDatabase = await _measuringPointRepository.GetByTagMeasuringPoint(body.TagMeasuringPoint);
+                if (measuringPointByTagMeasuringPointInDatabase == null)
+                    throw new NotFoundException("Ponto de medição não encontrado.");
 
-                if (measuringPointInDatabase is null)
-                    throw new NotFoundException(ErrorMessages.NotFound<MeasuringEquipmentDTO>());
+                if (body.Type == "CV" || body.Type == "EP")
+                {
+                    var checkUniqueEquipment = await _equipmentRepository.GetByTypeWithMeasuringPointAsync(measuringPointByTagMeasuringPointInDatabase.Id, body.Type);
+                    if (checkUniqueEquipment != null)
+                        throw new ConflictException($"Já existe um {body.Type} nesse ponto de medição.");
+                }
 
-                equipment.MeasuringPoint = measuringPointInDatabase;
-                updatedProperties[nameof(MeasuringEquipmentHistoryDTO.installationId)] = measuringPointInDatabase.Id;
+                equipment.MeasuringPoint = measuringPointByTagMeasuringPointInDatabase;
+                updatedProperties[nameof(MeasuringEquipmentHistoryDTO.installationId)] = measuringPointByTagMeasuringPointInDatabase.Id;
             }
 
             _equipmentRepository.Update(equipment);
