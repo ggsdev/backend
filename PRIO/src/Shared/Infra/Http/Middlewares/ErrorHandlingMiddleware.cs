@@ -45,6 +45,7 @@ namespace PRIO.src.Shared.Infra.Http.Middlewares
             if (ex is BadRequestException badRequestException && badRequestException.Errors != null)
             {
                 await context.Response.WriteAsync(JsonConvert.SerializeObject(new XlsErrorImportDTO { Message = errorMessage, Errors = badRequestException.Errors }));
+                return;
             }
 
             if (ex is BadRequestException badRequestExceptionStatus && badRequestExceptionStatus.ReturnStatus is not null)
@@ -52,7 +53,7 @@ namespace PRIO.src.Shared.Infra.Http.Middlewares
                 await context.Response.WriteAsync(JsonConvert.SerializeObject(new ImportResponseDTO { Message = errorMessage, Status = badRequestExceptionStatus.ReturnStatus }));
             }
 
-            if (ex! is BadRequestException badRequestExceptionDS && badRequestExceptionDS.ReturnStatus == null)
+            else
             {
                 await context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorResponseDTO { Message = errorMessage }));
 
