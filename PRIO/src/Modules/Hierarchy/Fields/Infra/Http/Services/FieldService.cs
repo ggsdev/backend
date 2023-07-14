@@ -120,6 +120,12 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
                     if (body.CodField != field.CodField)
                         throw new ConflictException(ErrorMessages.CodCantBeUpdated<Field>());
 
+            if (field.Installation is not null)
+                if (field.Wells is not null || field.Zones is not null)
+                    if (body.InstallationId is not null)
+                        if (body.InstallationId != field.Installation.Id)
+                            throw new ConflictException("Relacionamento não pode ser alterado.");
+
             if (body.CodField is not null)
             {
                 var fieldInDatabase = await _fieldRepository.GetByCod(body.CodField);

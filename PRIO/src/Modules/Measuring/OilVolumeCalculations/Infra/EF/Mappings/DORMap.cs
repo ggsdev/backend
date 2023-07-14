@@ -10,6 +10,11 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Mappings
         {
             builder.ToTable("DORs");
 
+            builder.Property(x => x.Name)
+               .HasColumnType("VARCHAR")
+               .HasMaxLength(260)
+               .IsRequired();
+
             builder.HasOne(x => x.MeasuringPoint)
                 .WithOne(d => d.DOR)
                 .HasForeignKey<DOR>("MeasuringPointId");

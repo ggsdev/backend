@@ -132,15 +132,20 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
             if (installation is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Installation>());
 
-
             if (installation.IsActive is false)
                 throw new ConflictException(ErrorMessages.Inactive<Installation>());
 
+            if (installation.Fields is not null)
+                if (installation.Fields.Count > 0)
+                    if (body.CodInstallationAnp is not null)
+                        if (body.CodInstallationAnp != installation.CodInstallationAnp)
+                            throw new ConflictException(ErrorMessages.CodCantBeUpdated<Installation>());
 
-            if (installation.Fields.Count > 0)
-                if (body.CodInstallationAnp is not null)
-                    if (body.CodInstallationAnp != installation.CodInstallationAnp)
-                        throw new ConflictException(ErrorMessages.CodCantBeUpdated<Installation>());
+            if (installation.Cluster is not null)
+                if (installation.Fields is not null)
+                    if (body.ClusterId is not null)
+                        if (body.ClusterId != installation.Cluster.Id)
+                            throw new ConflictException("Relacionamento não pode ser alterado.");
 
             if (body.CodInstallationAnp is not null)
             {

@@ -105,6 +105,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                     var createSection = new Section
                     {
                         Id = Guid.NewGuid(),
+                        Name = section.MeasuringPointName,
                         OilVolumeCalculation = createOilVolumeCalculation,
                         MeasuringPoint = MeasuringPoint
                     };
@@ -119,6 +120,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                     var createTog = new TOGRecoveredOil
                     {
                         Id = Guid.NewGuid(),
+                        Name = tog.MeasuringPointName,
                         OilVolumeCalculation = createOilVolumeCalculation,
                         MeasuringPoint = MeasuringPoint
                     };
@@ -133,6 +135,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                     var createDor = new DOR
                     {
                         Id = Guid.NewGuid(),
+                        Name = dor.MeasuringPointName,
                         OilVolumeCalculation = createOilVolumeCalculation,
                         MeasuringPoint = MeasuringPoint
                     };
@@ -147,6 +150,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                     var createDrain = new DrainVolume
                     {
                         Id = Guid.NewGuid(),
+                        Name = drain.MeasuringPointName,
                         OilVolumeCalculation = createOilVolumeCalculation,
                         MeasuringPoint = MeasuringPoint
                     };
@@ -443,6 +447,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                     var createSection = new Section
                     {
                         Id = Guid.NewGuid(),
+                        Name = section.MeasuringPointName,
                         OilVolumeCalculation = oilCalculationInDatabase,
                         MeasuringPoint = MeasuringPoint
                     };
@@ -457,6 +462,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                     var createTog = new TOGRecoveredOil
                     {
                         Id = Guid.NewGuid(),
+                        Name = tog.MeasuringPointName,
                         OilVolumeCalculation = oilCalculationInDatabase,
                         MeasuringPoint = MeasuringPoint
                     };
@@ -471,6 +477,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                     var createDor = new DOR
                     {
                         Id = Guid.NewGuid(),
+                        Name = dor.MeasuringPointName,
                         OilVolumeCalculation = oilCalculationInDatabase,
                         MeasuringPoint = MeasuringPoint
                     };
@@ -485,6 +492,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                     var createDrain = new DrainVolume
                     {
                         Id = Guid.NewGuid(),
+                        Name = drain.MeasuringPointName,
                         OilVolumeCalculation = oilCalculationInDatabase,
                         MeasuringPoint = MeasuringPoint
                     };
