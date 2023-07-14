@@ -106,6 +106,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                     {
                         Id = Guid.NewGuid(),
                         Name = section.MeasuringPointName,
+                        BSW = section.BSW,
                         OilVolumeCalculation = createOilVolumeCalculation,
                         MeasuringPoint = MeasuringPoint
                     };
@@ -136,6 +137,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                     {
                         Id = Guid.NewGuid(),
                         Name = dor.MeasuringPointName,
+                        BSW = dor.BSW,
                         OilVolumeCalculation = createOilVolumeCalculation,
                         MeasuringPoint = MeasuringPoint
                     };
@@ -448,6 +450,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                     {
                         Id = Guid.NewGuid(),
                         Name = section.MeasuringPointName,
+                        BSW = section.BSW,
                         OilVolumeCalculation = oilCalculationInDatabase,
                         MeasuringPoint = MeasuringPoint
                     };
@@ -478,6 +481,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                     {
                         Id = Guid.NewGuid(),
                         Name = dor.MeasuringPointName,
+                        BSW = dor.BSW,
                         OilVolumeCalculation = oilCalculationInDatabase,
                         MeasuringPoint = MeasuringPoint
                     };

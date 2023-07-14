@@ -7,6 +7,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
+        public int BSW { get; set; }
         public OilVolumeCalculation? OilVolumeCalculation { get; set; }
         public MeasuringPoint? MeasuringPoint { get; set; }
     }
