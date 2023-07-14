@@ -3,5 +3,6 @@
     public class CreateSectionViewModel
     {
         public Guid MeasuringPointId { get; set; }
+        public string MeasuringPointName { get; }
     }
 }

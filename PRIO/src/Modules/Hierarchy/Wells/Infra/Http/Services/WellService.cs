@@ -125,6 +125,12 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
                     if (body.CodWellAnp != well.CodWellAnp)
                         throw new ConflictException("Código do campo não pode ser alterado.");
 
+            if (well.Field is not null)
+                if (well.Completions.Count > 0)
+                    if (body.FieldId is not null)
+                        if (body.FieldId != well.Field.Id)
+                            throw new ConflictException("Código da instalação não pode ser alterado.");
+
             if (body.CodWellAnp is not null)
             {
                 var wellInDatabase = await _wellRepository.GetByCode(body.CodWellAnp);

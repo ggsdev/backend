@@ -110,10 +110,18 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
             if (zone.IsActive is false)
                 throw new ConflictException("Zona não está ativo.");
 
-            if (zone.Reservoirs.Count > 0)
-                if (body.CodZone is not null)
-                    if (body.CodZone != zone.CodZone)
-                        throw new ConflictException("Código da zona não pode ser alterado.");
+            if (zone.Reservoirs is not null)
+                if (zone.Reservoirs.Count > 0)
+                    if (body.CodZone is not null)
+                        if (body.CodZone != zone.CodZone)
+                            throw new ConflictException("Código da zona não pode ser alterado.");
+
+            if (zone.Reservoirs is not null)
+                if (zone.Reservoirs.Count > 0)
+                    if (body.FieldId is not null)
+                        if (body.FieldId != zone.Field.Id)
+                            throw new ConflictException("Código da instalação não pode ser alterado.");
+
 
             if (body.CodZone is not null)
             {
