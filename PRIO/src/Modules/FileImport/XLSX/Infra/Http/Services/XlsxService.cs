@@ -158,20 +158,19 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                     }
                 }
 
-                if (!string.IsNullOrWhiteSpace(columnInstallationCod) && !entityDictionary.TryGetValue(columnInstallationCod.ToLower(), out var installation))
+                if (!string.IsNullOrWhiteSpace(columnInstallationCod) && !string.IsNullOrWhiteSpace(columnCluster) && !entityDictionary.TryGetValue(columnInstallationCod.ToLower(), out var installation))
                 {
                     installation = await _context.Installations
                         .FirstOrDefaultAsync(x => x.CodInstallationAnp.ToLower().Trim() == columnInstallationCod.ToLower().Trim());
 
                     if (installation is null)
                     {
+                        var clusterInDatabase = await _context.Clusters
+                            .FirstOrDefaultAsync(x => x.Name == columnCluster);
+
                         var installationId = Guid.NewGuid();
-
-                        if (columnCluster is not null && entityDictionary.GetValueOrDefault(columnCluster.ToLower()) is null)
+                        if (clusterInDatabase is not null && clusterInDatabase.IsActive)
                         {
-                            var clusterInDatabase = await _context.Clusters
-                                .FirstOrDefaultAsync(x => x.Name == columnCluster);
-
                             installation = new Installation
                             {
                                 Id = installationId,
@@ -184,7 +183,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                 Cluster = clusterInDatabase
                             };
                         }
-                        else if (columnCluster is not null && entityDictionary.GetValueOrDefault(columnCluster.ToLower()) is not null)
+                        else if (clusterInDatabase is null && entityDictionary.GetValueOrDefault(columnCluster.ToLower()) is not null)
                         {
                             installation = new Installation
                             {
@@ -198,56 +197,75 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                 Cluster = entityDictionary.GetValueOrDefault(columnCluster.ToLower()) as Cluster
                             };
                         }
+                        if (installation is not null)
+                        {
+                            await _systemHistoryService
+                                .Import<Installation, InstallationHistoryDTO>(HistoryColumns.TableInstallations, user, data.FileName, installation.Id, (Installation)installation);
 
-                        await _systemHistoryService
-                            .Import<Installation, InstallationHistoryDTO>(HistoryColumns.TableInstallations, user, data.FileName, installation.Id, (Installation)installation);
-
-                        entityDictionary[columnInstallationCod.ToLower()] = installation;
+                            entityDictionary[columnInstallationCod.ToLower()] = installation;
+                        }
                     }
                 }
 
-                if (!string.IsNullOrWhiteSpace(columnCodeField) && !entityDictionary.TryGetValue(columnCodeField.ToLower(), out var field))
+                if (!string.IsNullOrWhiteSpace(columnCodeField) && !string.IsNullOrWhiteSpace(columnInstallationCod) && !entityDictionary.TryGetValue(columnCodeField.ToLower(), out var field))
                 {
                     field = await _context.Fields
                         .FirstOrDefaultAsync(x => x.CodField.ToLower().Trim() == columnCodeField.ToLower().Trim());
 
                     if (field is null)
                     {
-                        var fieldId = Guid.NewGuid();
-
                         var installationInDatabase = await _context.Installations
                             .FirstOrDefaultAsync(x => x.CodInstallationAnp == columnInstallationCod);
 
-                        field = new Field
+                        var fieldId = Guid.NewGuid();
+                        if (installationInDatabase is not null && installationInDatabase.IsActive)
                         {
-                            Id = fieldId,
-                            Name = columnField,
-                            User = user,
-                            Installation = entityDictionary.GetValueOrDefault(columnInstallationCod.ToLower()) as Installation is null ? installationInDatabase : entityDictionary.GetValueOrDefault(columnInstallationCod.ToLower()) as Installation,
-                            CodField = columnCodeField,
-                            IsActive = true,
-                        };
+                            field = new Field
+                            {
+                                Id = fieldId,
+                                Name = columnField,
+                                User = user,
+                                Installation = installationInDatabase,
+                                CodField = columnCodeField,
+                                IsActive = true,
+                            };
 
-                        await _systemHistoryService
+                        }
+                        else if (installationInDatabase is null && entityDictionary.GetValueOrDefault(columnInstallationCod.ToLower()) is not null)
+                        {
+                            field = new Field
+                            {
+                                Id = fieldId,
+                                Name = columnField,
+                                User = user,
+                                Installation = entityDictionary.GetValueOrDefault(columnInstallationCod.ToLower()) as Installation,
+                                CodField = columnCodeField,
+                                IsActive = true,
+                            };
+                        }
+                        if (field is not null)
+                        {
+                            await _systemHistoryService
                              .Import<Field, FieldHistoryDTO>(HistoryColumns.TableFields, user, data.FileName, field.Id, (Field)field);
 
-                        entityDictionary[columnCodeField.ToLower()] = field;
+                            entityDictionary[columnCodeField.ToLower()] = field;
+                        }
                     }
                 }
 
-                if (!string.IsNullOrWhiteSpace(columnZone) && !entityDictionary.TryGetValue(columnZone.ToLower(), out var zone))
+                if (!string.IsNullOrWhiteSpace(columnZone) && !string.IsNullOrWhiteSpace(columnCodeField) && !entityDictionary.TryGetValue(columnZone.ToLower(), out var zone))
                 {
                     zone = await _context.Zones
                         .FirstOrDefaultAsync(x => x.CodZone.ToLower().Trim() == columnZone.ToLower().Trim());
 
                     if (zone is null)
                     {
-                        var zoneId = Guid.NewGuid();
-                        if (columnCodeField is not null && entityDictionary.GetValueOrDefault(columnCodeField.ToLower()) is null)
-                        {
-                            var fieldInDatabase = await _context.Fields
-                            .FirstOrDefaultAsync(x => x.CodField == columnCodeField);
+                        var fieldInDatabase = await _context.Fields
+                        .FirstOrDefaultAsync(x => x.CodField == columnCodeField);
 
+                        var zoneId = Guid.NewGuid();
+                        if (fieldInDatabase is not null && fieldInDatabase.IsActive)
+                        {
                             zone = new Zone
                             {
                                 Id = zoneId,
@@ -258,7 +276,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             };
                         }
 
-                        else if (columnCodeField is not null && entityDictionary.GetValueOrDefault(columnCodeField.ToLower()) is not null)
+                        else if (fieldInDatabase is null && entityDictionary.GetValueOrDefault(columnCodeField.ToLower()) is not null)
                         {
                             zone = new Zone
                             {
@@ -269,88 +287,139 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                 Field = entityDictionary.GetValueOrDefault(columnCodeField.ToLower()) as Field
                             };
                         }
+                        if (zone is not null)
+                        {
+                            await _systemHistoryService
+                           .Import<Zone, ZoneHistoryDTO>(HistoryColumns.TableZones, user, data.FileName, zone.Id, (Zone)zone);
 
-                        await _systemHistoryService
-                            .Import<Zone, ZoneHistoryDTO>(HistoryColumns.TableZones, user, data.FileName, zoneId, (Zone)zone);
-
-                        entityDictionary[columnZone.ToLower()] = zone;
+                            entityDictionary[columnZone.ToLower()] = zone;
+                        }
                     }
                 }
 
-                if (!string.IsNullOrWhiteSpace(columnReservoir) && !entityDictionary.TryGetValue(columnReservoir.ToLower(), out var reservoir))
+                if (!string.IsNullOrWhiteSpace(columnReservoir) && !string.IsNullOrWhiteSpace(columnZone) && !entityDictionary.TryGetValue(columnReservoir.ToLower(), out var reservoir))
                 {
                     reservoir = await _context.Reservoirs
                         .FirstOrDefaultAsync(x => x.Name.ToLower().Trim() == columnReservoir.ToLower().Trim());
 
                     if (reservoir is null)
                     {
-                        var reservoirId = Guid.NewGuid();
-
                         var zoneInDatabase = await _context.Zones
                             .FirstOrDefaultAsync(x => x.CodZone == columnZone);
-
-                        reservoir = new Reservoir
+                        var reservoirId = Guid.NewGuid();
+                        if (zoneInDatabase is not null && zoneInDatabase.IsActive)
                         {
-                            Id = reservoirId,
-                            Name = columnReservoir,
-                            User = user,
-                            CodReservoir = "N/A",
-                            Zone = entityDictionary.GetValueOrDefault(columnZone.ToLower()) as Zone is null ? zoneInDatabase : entityDictionary.GetValueOrDefault(columnZone.ToLower()) as Zone,
-                            IsActive = true,
-                        };
+                            reservoir = new Reservoir
+                            {
+                                Id = reservoirId,
+                                Name = columnReservoir,
+                                User = user,
+                                CodReservoir = "N/A",
+                                Zone = zoneInDatabase,
+                                IsActive = true,
+                            };
+                        }
+                        else if (zoneInDatabase is null && entityDictionary.GetValueOrDefault(columnZone.ToLower()) is not null)
+                        {
+                            reservoir = new Reservoir
+                            {
+                                Id = reservoirId,
+                                Name = columnReservoir,
+                                User = user,
+                                CodReservoir = "N/A",
+                                Zone = entityDictionary.GetValueOrDefault(columnZone.ToLower()) as Zone,
+                                IsActive = true,
+                            };
+                        }
+                        if (reservoir is not null)
+                        {
+                            await _systemHistoryService
+                                .Import<Reservoir, ReservoirHistoryDTO>(HistoryColumns.TableReservoirs, user, data.FileName, reservoir.Id, (Reservoir)reservoir);
 
-                        await _systemHistoryService
-                            .Import<Reservoir, ReservoirHistoryDTO>(HistoryColumns.TableReservoirs, user, data.FileName, reservoir.Id, (Reservoir)reservoir);
-
-                        entityDictionary[columnReservoir.ToLower()] = reservoir;
+                            entityDictionary[columnReservoir.ToLower()] = reservoir;
+                        }
                     }
                 }
 
-                if (!string.IsNullOrWhiteSpace(columnWellCodeAnp) && !entityDictionary.TryGetValue(columnWellCodeAnp.ToLower(), out var well))
+                if (!string.IsNullOrWhiteSpace(columnWellCodeAnp) && !string.IsNullOrWhiteSpace(columnCodeField) && !entityDictionary.TryGetValue(columnWellCodeAnp.ToLower(), out var well))
                 {
                     well = await _context.Wells
                         .FirstOrDefaultAsync(x => x.CodWellAnp.ToLower() == columnWellCodeAnp.ToLower());
 
                     if (well is null)
                     {
-                        var wellId = Guid.NewGuid();
-
                         var fieldInDatabase = await _context.Fields
                             .FirstOrDefaultAsync(x => x.CodField == columnCodeField);
+                        var wellId = Guid.NewGuid();
 
-                        well = new Well
+                        if (fieldInDatabase is not null && fieldInDatabase.IsActive)
                         {
-                            Id = wellId,
-                            Name = columnWellNameAnp,
-                            WellOperatorName = columnWellOperatorName,
-                            CodWellAnp = columnWellCodeAnp,
-                            CategoryAnp = columnWellCategoryAnp,
-                            CategoryReclassificationAnp = columnWellCategoryReclassification,
-                            CategoryOperator = columnWellCategoryOperator,
-                            StatusOperator = columnWellStatusOperatorBoolean,
-                            Type = columnWellProfile,
-                            WaterDepth = decimal.TryParse(columnWellWaterDepth?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var columnWellWaterDepthDouble) ? columnWellWaterDepthDouble : 0,
-                            TopOfPerforated = decimal.TryParse(columnWellPerforationTopMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var topOfPerforated) ? topOfPerforated : 0,
-                            BaseOfPerforated = decimal.TryParse(columnWellBottomPerforationMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var baseOfPerforated) ? baseOfPerforated : 0,
-                            ArtificialLift = columnWellArtificialLift,
-                            Latitude4C = columnWellLatitude4c,
-                            Longitude4C = columnWellLongitude4c,
-                            LatitudeDD = columnWellLatitudeDD,
-                            LongitudeDD = columnWellLongitudeDD,
-                            DatumHorizontal = columnWellDatumHorizontal,
-                            TypeBaseCoordinate = columnWellTypeCoordinate,
-                            CoordX = columnWellCoordX,
-                            CoordY = columnWellCoordY,
-                            User = user,
-                            IsActive = columnWellStatusOperatorBoolean,
-                            Field = entityDictionary.GetValueOrDefault(columnCodeField.ToLower()) as Field is null ? fieldInDatabase : entityDictionary.GetValueOrDefault(columnCodeField.ToLower()) as Field,
-                        };
+                            well = new Well
+                            {
+                                Id = wellId,
+                                Name = columnWellNameAnp,
+                                WellOperatorName = columnWellOperatorName,
+                                CodWellAnp = columnWellCodeAnp,
+                                CategoryAnp = columnWellCategoryAnp,
+                                CategoryReclassificationAnp = columnWellCategoryReclassification,
+                                CategoryOperator = columnWellCategoryOperator,
+                                StatusOperator = columnWellStatusOperatorBoolean,
+                                Type = columnWellProfile,
+                                WaterDepth = decimal.TryParse(columnWellWaterDepth?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var columnWellWaterDepthDouble) ? columnWellWaterDepthDouble : 0,
+                                TopOfPerforated = decimal.TryParse(columnWellPerforationTopMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var topOfPerforated) ? topOfPerforated : 0,
+                                BaseOfPerforated = decimal.TryParse(columnWellBottomPerforationMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var baseOfPerforated) ? baseOfPerforated : 0,
+                                ArtificialLift = columnWellArtificialLift,
+                                Latitude4C = columnWellLatitude4c,
+                                Longitude4C = columnWellLongitude4c,
+                                LatitudeDD = columnWellLatitudeDD,
+                                LongitudeDD = columnWellLongitudeDD,
+                                DatumHorizontal = columnWellDatumHorizontal,
+                                TypeBaseCoordinate = columnWellTypeCoordinate,
+                                CoordX = columnWellCoordX,
+                                CoordY = columnWellCoordY,
+                                User = user,
+                                IsActive = columnWellStatusOperatorBoolean,
+                                Field = fieldInDatabase,
+                            };
+                        }
+                        else if (fieldInDatabase is null && entityDictionary.GetValueOrDefault(columnCodeField.ToLower()) is not null)
+                        {
+                            well = new Well
+                            {
+                                Id = wellId,
+                                Name = columnWellNameAnp,
+                                WellOperatorName = columnWellOperatorName,
+                                CodWellAnp = columnWellCodeAnp,
+                                CategoryAnp = columnWellCategoryAnp,
+                                CategoryReclassificationAnp = columnWellCategoryReclassification,
+                                CategoryOperator = columnWellCategoryOperator,
+                                StatusOperator = columnWellStatusOperatorBoolean,
+                                Type = columnWellProfile,
+                                WaterDepth = decimal.TryParse(columnWellWaterDepth?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var columnWellWaterDepthDouble) ? columnWellWaterDepthDouble : 0,
+                                TopOfPerforated = decimal.TryParse(columnWellPerforationTopMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var topOfPerforated) ? topOfPerforated : 0,
+                                BaseOfPerforated = decimal.TryParse(columnWellBottomPerforationMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var baseOfPerforated) ? baseOfPerforated : 0,
+                                ArtificialLift = columnWellArtificialLift,
+                                Latitude4C = columnWellLatitude4c,
+                                Longitude4C = columnWellLongitude4c,
+                                LatitudeDD = columnWellLatitudeDD,
+                                LongitudeDD = columnWellLongitudeDD,
+                                DatumHorizontal = columnWellDatumHorizontal,
+                                TypeBaseCoordinate = columnWellTypeCoordinate,
+                                CoordX = columnWellCoordX,
+                                CoordY = columnWellCoordY,
+                                User = user,
+                                IsActive = columnWellStatusOperatorBoolean,
+                                Field = entityDictionary.GetValueOrDefault(columnCodeField.ToLower()) as Field,
+                            };
+                        }
+                        if (well is not null)
+                        {
+                            await _systemHistoryService
+                            .Import<Well, WellHistoryDTO>(HistoryColumns.TableWells, user, data.FileName, well.Id, (Well)well);
 
-                        await _systemHistoryService
-                        .Import<Well, WellHistoryDTO>(HistoryColumns.TableWells, user, data.FileName, well.Id, (Well)well);
+                            entityDictionary[columnWellCodeAnp.ToLower()] = well;
 
-                        entityDictionary[columnWellCodeAnp.ToLower()] = well;
-
+                        }
                     }
 
                     else
@@ -393,33 +462,57 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                         }
                     }
                 }
-                if (!string.IsNullOrWhiteSpace(columnCompletion) && !entityDictionary.TryGetValue(columnCompletion.ToLower(), out var completion))
+
+                if (!string.IsNullOrWhiteSpace(columnCompletion) && !string.IsNullOrWhiteSpace(columnReservoir) && !string.IsNullOrWhiteSpace(columnWellCodeAnp) && !entityDictionary.TryGetValue(columnCompletion.ToLower(), out var completion))
                 {
                     completion = await _context.Completions
                     .FirstOrDefaultAsync(x => x.Name == columnCompletion);
 
                     if (completion is null && columnCompletion is not null)
                     {
-                        var completionId = Guid.NewGuid();
-
                         var wellInDatabase = await _context.Wells
                             .FirstOrDefaultAsync(x => x.CodWellAnp == columnWellCodeAnp);
 
-                        completion = new Completion
+                        var reservoirInDatabase = await _context.Reservoirs
+                            .FirstOrDefaultAsync(x => x.Name.ToUpper() == columnReservoir.ToUpper());
+
+                        var completionId = Guid.NewGuid();
+
+                        if ((wellInDatabase is not null && wellInDatabase.IsActive) || (reservoirInDatabase is not null && reservoirInDatabase.IsActive))
                         {
-                            Id = completionId,
-                            Name = columnCompletion,
-                            User = user,
-                            CodCompletion = "N/A",
-                            Reservoir = columnReservoir is not null ? entityDictionary.GetValueOrDefault(columnReservoir.ToLower()) as Reservoir : null,
-                            Well = entityDictionary.GetValueOrDefault(columnWellCodeAnp.ToLower()) as Well is null ? wellInDatabase : entityDictionary.GetValueOrDefault(columnWellCodeAnp.ToLower()) as Well,
-                            IsActive = true
-                        };
+                            completion = new Completion
+                            {
+                                Id = completionId,
+                                Name = columnCompletion,
+                                User = user,
+                                CodCompletion = "N/A",
+                                Reservoir = reservoirInDatabase is null ? entityDictionary.GetValueOrDefault(columnReservoir.ToLower()) as Reservoir : reservoirInDatabase,
+                                Well = wellInDatabase is null ? entityDictionary.GetValueOrDefault(columnWellCodeAnp.ToLower()) as Well : wellInDatabase,
+                                IsActive = true
+                            };
+                        }
 
-                        await _systemHistoryService
-                             .Import<Completion, CompletionHistoryDTO>(HistoryColumns.TableCompletions, user, data.FileName, completion.Id, (Completion)completion);
+                        else if ((wellInDatabase is null && entityDictionary.GetValueOrDefault(columnWellCodeAnp.ToLower()) is not null) && (entityDictionary.GetValueOrDefault(columnReservoir.ToLower()) is not null && reservoirInDatabase is null))
+                        {
+                            completion = new Completion
+                            {
+                                Id = completionId,
+                                Name = columnCompletion,
+                                User = user,
+                                CodCompletion = "N/A",
+                                Reservoir = entityDictionary.GetValueOrDefault(columnReservoir.ToLower()) as Reservoir,
+                                Well = entityDictionary.GetValueOrDefault(columnWellCodeAnp.ToLower()) as Well,
+                                IsActive = true
+                            };
+                        }
 
-                        entityDictionary[columnCompletion.ToLower()] = completion;
+                        if (completion is not null)
+                        {
+                            await _systemHistoryService
+                                 .Import<Completion, CompletionHistoryDTO>(HistoryColumns.TableCompletions, user, data.FileName, completion.Id, (Completion)completion);
+
+                            entityDictionary[columnCompletion.ToLower()] = completion;
+                        }
                     }
                 }
             }

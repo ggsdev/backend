@@ -14,10 +14,8 @@ namespace PRIO.src.Shared.Utils
                 var domain = envVars["DOMINIO"];
                 var serverAd = envVars["AD"];
 
-                var treatedUsername = username.Split('@')[0];
-
                 using var context = new PrincipalContext(ContextType.Domain, domain, serverAd);
-                return context.ValidateCredentials(treatedUsername, password);
+                return context.ValidateCredentials(username, password);
             }
             catch (Exception ex)
             {

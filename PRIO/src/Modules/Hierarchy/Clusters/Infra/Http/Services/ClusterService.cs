@@ -112,12 +112,12 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                 throw new NotFoundException(ErrorMessages.NotFound<Cluster>());
 
             if (cluster.IsActive is false)
-                throw new ConflictException("Cluster não está ativo.");
+                throw new ConflictException(ErrorMessages.Inactive<Cluster>());
 
-            if (cluster.Installations.Count > 0)
+            if (cluster.Installations is not null && cluster.Installations.Count > 0)
                 if (body.CodCluster is not null)
                     if (body.CodCluster != cluster.CodCluster)
-                        throw new ConflictException("Código do Cluster não pode ser alterado.");
+                        throw new ConflictException(ErrorMessages.CodCantBeUpdated<Cluster>());
 
             if (body.CodCluster is not null)
             {
