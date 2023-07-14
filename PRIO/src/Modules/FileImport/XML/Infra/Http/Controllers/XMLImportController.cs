@@ -40,14 +40,13 @@ namespace PRIO.Controllers
             return Ok(result);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] string? acronym, [FromQuery] string? name)
-        {
-            var result = await _service.GetAll(acronym, name);
+        //[HttpGet]
+        //public async Task<IActionResult> GetAll([FromQuery] string? acronym, [FromQuery] string? name)
+        //{
+        //    var result = await _service.GetAll(acronym, name);
 
-            return Ok(result);
-        }
-
+        //    return Ok(result);
+        //}
     }
 }
 

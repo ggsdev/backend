@@ -9,6 +9,7 @@
         private static readonly string _reservoir = "Reservoir";
         private static readonly string _completion = "Completion";
         private static readonly string _zone = "Zone";
+        private static readonly string _user = "User";
         private static readonly string _equipment = "MeasuringEquipment";
 
         //private readonly IStringLocalizer<ErrorMessages> _localizer;
@@ -44,6 +45,9 @@
 
             if (typeof(TModel).Name == _equipment)
                 return "Equipamento de medição" + message;
+
+            if (typeof(TModel).Name == _user)
+                return "Usuário" + message;
 
             return message;
 

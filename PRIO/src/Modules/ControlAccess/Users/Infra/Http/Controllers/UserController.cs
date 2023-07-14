@@ -40,7 +40,13 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponseDTO))]
         public async Task<IActionResult> Post([FromBody] CreateUserViewModel body)
         {
-            var userDTO = await _service.CreateUserAsync(body);
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+
+            var userDTO = await _service.CreateUserAsync(body, user);
             return Created($"users/{userDTO.Id}", userDTO);
         }
         #endregion

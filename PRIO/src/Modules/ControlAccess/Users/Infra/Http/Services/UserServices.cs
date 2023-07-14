@@ -46,11 +46,17 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             return userDTOS;
         }
 
-        public async Task<UserDTO> CreateUserAsync(CreateUserViewModel body)
+        public async Task<UserDTO> CreateUserAsync(CreateUserViewModel body, User loggedUser)
         {
-            var userInDatabase = await _userRepository.GetUsersByEmail(body.Email);
+            var userInAd = ActiveDirectory
+                .CheckUserExistsInActiveDirectory(body.Username);
+            if (userInAd is false)
+                throw new NotFoundException("Não foi possível validar o usuário no domínio, digite um usuário valido");
+
+            var userInDatabase = await _userRepository
+                .GetUserByUsername(body.Username);
             if (userInDatabase != null)
-                throw new ConflictException("User is already exists");
+                throw new ConflictException("Usuário já cadastrado");
 
             var userId = Guid.NewGuid();
             var user = new User
@@ -58,30 +64,34 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                 Id = userId,
                 Name = body.Name,
                 Username = body.Username,
-                Email = body.Email,
-                Password = BCrypt.Net.BCrypt.HashPassword(body.Password),
                 Description = body.Description is not null ? body.Description : null,
             };
 
-            await _userRepository.CreateUser(user);
+            await _userRepository
+                .CreateUser(user);
+
             var currentData = _mapper.Map<User, UserHistoryDTO>(user);
-            currentData.createdAt = DateTime.UtcNow;
-            currentData.updatedAt = DateTime.UtcNow;
+
+            var dateNow = DateTime.UtcNow;
+
+            currentData.createdAt = dateNow;
+            currentData.updatedAt = dateNow;
 
             var history = new SystemHistory
             {
                 Table = HistoryColumns.TableUsers,
                 TypeOperation = HistoryColumns.Create,
-                CreatedBy = user?.Id,
+                CreatedBy = loggedUser?.Id,
                 TableItemId = userId,
                 CurrentData = currentData,
             };
+
             await _systemHistoryRepository.AddAsync(history);
 
             await _userRepository.SaveChangesAsync();
-            var userDTO = _mapper.Map<User, UserDTO>(user!);
-            return userDTO;
+            var userDTO = _mapper.Map<User, UserDTO>(user);
 
+            return userDTO;
         }
 
         public async Task<ProfileDTO?> ProfileAsync(Guid userId)
@@ -89,7 +99,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             var user = await _userRepository.GetUserById(userId);
 
             if (user is null)
-                throw new NotFoundException("User is not found");
+                throw new NotFoundException("User not found");
 
             if (userId.ToString() != user.Id.ToString())
                 throw new ConflictException("User don't have permission to do that.");
@@ -131,7 +141,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
         {
             var user = await _userRepository.GetUserById(id);
             if (user is null)
-                throw new NotFoundException("User is not found");
+                throw new NotFoundException("User not found");
 
             var userDTO = _mapper.Map<User, UserDTO>(user);
             return userDTO;
@@ -141,7 +151,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
         {
             var user = await _userRepository.GetUserById(id);
             if (user is null || user.IsActive is false)
-                throw new NotFoundException("User is not found");
+                throw new NotFoundException("User not found");
 
             var beforeChangesUser = _mapper.Map<UserHistoryDTO>(user);
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(user, body);
@@ -169,11 +179,11 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
         {
             var user = await _userRepository.GetUserById(id);
             if (user is null || user.IsActive is false)
-                throw new NotFoundException("User is not found");
+                throw new NotFoundException("User not found");
 
             var userOperation = await _userRepository.GetUserById(userOperationId);
             if (userOperation is null)
-                throw new NotFoundException("User is not found");
+                throw new NotFoundException("User not found");
 
             user.DeletedAt = DateTime.UtcNow;
             user.IsActive = false;
@@ -191,7 +201,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
 
             var userOperation = await _userRepository.GetUserById(userOperationId);
             if (userOperation is null)
-                throw new NotFoundException("User is not found");
+                throw new NotFoundException("User not found");
 
             user.IsActive = true;
             user.DeletedAt = null;
@@ -212,7 +222,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
 
             var userWithPermissions = await _userRepository.GetUserById(id);
             if (userWithPermissions is null)
-                throw new NotFoundException("User is not found");
+                throw new NotFoundException("User not found");
             if (userWithPermissions.Group is null)
                 throw new NotFoundException("User no have found");
 

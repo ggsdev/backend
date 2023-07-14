@@ -27,7 +27,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
     public partial class XMLImportService
     {
         private readonly IMapper _mapper;
-        private readonly DTOFiles _responseResult;
+        private readonly DTOFilesClient _responseResult;
         private readonly MeasurementService _measurementService;
         private readonly IInstallationRepository _installationRepository;
         private readonly IEquipmentRepository _equipmentRepository;
@@ -45,11 +45,16 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             _measurementService = measurementService;
         }
 
-        public async Task<DTOFiles> Validate(RequestXmlViewModel data, User user)
+        public async Task<DTOFilesClient> Validate(RequestXmlViewModel data, User user)
         {
             #region client side validations
             for (int i = 0; i < data.Files.Count; ++i)
             {
+                var isValidExtension = data.Files[i].FileName.EndsWith("xml");
+
+                if (isValidExtension is false)
+                    throw new BadRequestException($"Modelo arquivo inválido. Importação falhou arquivo com nome: {data.Files[i].FileName}");
+
                 var match = XmlRegex().Match(data.Files[i].ContentBase64);
                 if (!match.Success)
                     throw new BadRequestException($"Um dos arquivos tem o formato base64 inválido, nome do arquivo: {data.Files[i].FileName}");
@@ -68,16 +73,11 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             #endregion
 
+            var errorsInImport = new List<string>();
             for (int i = 0; i < data.Files.Count; ++i)
             {
                 #region validations
-                var isValidExtension = data.Files[i].FileName.EndsWith("xml");
 
-                var errorsInImport = new List<string>();
-
-                if (isValidExtension is false)
-                    //throw new BadRequestException($"O arquivo deve ter a extensão .xml. Importação falhou arquivo com nome: {data.Files[i].FileName}");
-                    errorsInImport.Add($"O arquivo deve ter a extensão .xml, nome do arquivo: {data.Files[i].FileName}");
 
                 var fileContent = data.Files[i].ContentBase64?.Replace("data:@file/xml;base64,", "");
 
@@ -133,73 +133,66 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                 if (dadosBasicos is not null && dadosBasicos.COD_FALHA_039 is not null && dadosBasicos.DHA_COD_INSTALACAO_039 is not null && dadosBasicos.COD_TAG_PONTO_MEDICAO_039 is not null)
                                 {
-                                    try
+                                    var measurementInDatabase = await _repository
+                                        .GetUnique039Async(dadosBasicos.COD_FALHA_039);
+
+                                    if (measurementInDatabase is not null)
+                                        //throw new ConflictException($"Medição {XmlUtils.File039} com código de falha: {dadosBasicos.COD_FALHA_039} já existente");
+                                        errorsInImport.Add($"Medição {XmlUtils.File039} com código de falha: {dadosBasicos.COD_FALHA_039} já existente");
+
+
+                                    var installation = await _installationRepository
+                                      .GetInstallationMeasurementByUepAndAnpCodAsync(dadosBasicos.DHA_COD_INSTALACAO_039, XmlUtils.FileAcronym039);
+
+                                    if (installation is null)
+                                        //throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): {ErrorMessages.NotFound<Installation>()}");
+                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS");
+
+                                    var equipment = await _equipmentRepository.GetByTagMeasuringPoint(dadosBasicos.COD_TAG_PONTO_MEDICAO_039, XmlUtils.File039);
+
+                                    if (equipment is null)
+                                        //throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS),equipamento com TAG do ponto de medição {dadosBasicos.COD_TAG_PONTO_MEDICAO_039}: {ErrorMessages.NotFound<MeasuringEquipment>()}");
+                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS),equipamento com TAG do ponto de medição {dadosBasicos.COD_TAG_PONTO_MEDICAO_039}: {ErrorMessages.NotFound<MeasuringEquipment>()}");
+
+
+                                    if (installation is not null && installation.MeasuringPoints is not null)
                                     {
-                                        var measurementInDatabase = await _repository
-                                            .GetUnique039Async(dadosBasicos.COD_FALHA_039);
+                                        bool contains = false;
 
-                                        if (measurementInDatabase is not null)
-                                            //throw new ConflictException($"Medição {XmlUtils.File039} com código de falha: {dadosBasicos.COD_FALHA_039} já existente");
-                                            errorsInImport.Add($"Medição {XmlUtils.File039} com código de falha: {dadosBasicos.COD_FALHA_039} já existente");
+                                        foreach (var point in installation.MeasuringPoints)
+                                            if (equipment is not null && equipment.TagMeasuringPoint == point.TagPointMeasuring)
+                                                contains = true;
 
+                                        if (contains is false)
+                                            //throw new BadRequestException($"Problema na {k + 1}ª medição do arquivo {data.Files[i].FileName}, TAG do ponto de medição não encontrado nessa instalação");
+                                            errorsInImport.Add($"Problema na {k + 1}ª medição do arquivo {data.Files[i].FileName}, TAG do ponto de medição não encontrado nessa instalação");
 
-                                        var installation = await _installationRepository
-                                          .GetInstallationMeasurementByUepAndAnpCodAsync(dadosBasicos.DHA_COD_INSTALACAO_039, XmlUtils.FileAcronym039);
-
-                                        if (installation is null)
-                                            //throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): {ErrorMessages.NotFound<Installation>()}");
-                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS");
-
-
-                                        var equipment = await _equipmentRepository.GetByTagMeasuringPoint(dadosBasicos.COD_TAG_PONTO_MEDICAO_039, XmlUtils.File039);
-
-                                        if (equipment is null)
-                                            //throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS),equipamento com TAG do ponto de medição {dadosBasicos.COD_TAG_PONTO_MEDICAO_039}: {ErrorMessages.NotFound<MeasuringEquipment>()}");
-                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS),equipamento com TAG do ponto de medição {dadosBasicos.COD_TAG_PONTO_MEDICAO_039}: {ErrorMessages.NotFound<MeasuringEquipment>()}");
-
-
-                                        if (installation is not null && installation.MeasuringPoints is not null)
-                                        {
-                                            bool contains = false;
-
-                                            foreach (var point in installation.MeasuringPoints)
-                                                if (equipment is not null && equipment.TagMeasuringPoint == point.TagPointMeasuring)
-                                                    contains = true;
-
-                                            if (contains is false)
-                                                //throw new BadRequestException($"Problema na {k + 1}ª medição do arquivo {data.Files[i].FileName}, TAG do ponto de medição não encontrado nessa instalação");
-                                                errorsInImport.Add($"Problema na {k + 1}ª medição do arquivo {data.Files[i].FileName}, TAG do ponto de medição não encontrado nessa instalação");
-
-                                        }
-
-                                        if (errorsInImport.Count == 0)
-                                        {
-                                            var measurement = _mapper.Map<Measurement>(dadosBasicos);
-                                            measurement.FileName = data.Files[i].FileName;
-                                            measurement.Id = Guid.NewGuid();
-                                            measurement.FileType = new FileType
-                                            {
-                                                Name = data.Files[i].FileType,
-                                                Acronym = XmlUtils.FileAcronym039,
-
-                                            };
-
-                                            measurement.User = user;
-                                            if (installation is not null)
-                                                measurement.Installation = installation;
-
-                                            var measurement039DTO = _mapper.Map<Measurement, _039DTO>(measurement);
-                                            _responseResult._039File ??= new List<_039DTO>();
-                                            _responseResult._039File?.Add(measurement039DTO);
-                                        }
                                     }
-                                    catch (Exception ex)
+
+                                    if (errorsInImport.Count == 0 && installation is not null)
                                     {
-                                        throw new BadRequestException($"Something went wrong: {ex.Message}");
+                                        var measurement = _mapper.Map<Measurement>(dadosBasicos);
+                                        measurement.FileName = data.Files[i].FileName;
+                                        measurement.Id = Guid.NewGuid();
+                                        measurement.FileType = new FileType
+                                        {
+                                            Name = data.Files[i].FileType,
+                                            Acronym = XmlUtils.FileAcronym039,
+
+                                        };
+
+                                        measurement.User = user;
+                                        measurement.Installation = installation;
+                                        var measurement039DTO = _mapper.Map<Measurement, Client039DTO>(measurement);
+
+                                        _responseResult._039File ??= new List<Client039DTO>();
+                                        _responseResult._039File?.Add(measurement039DTO);
                                     }
                                 }
+
                                 break;
                             }
+
                         #endregion
 
                         #region 001
@@ -224,36 +217,47 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                 var producao = producaoElement is not null ? Functions.DeserializeXml<PRODUCAO_001>(producaoElement) : null;
                                 #endregion
 
-                                if (dadosBasicos is not null && dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_001 is not null && dadosBasicos.COD_TAG_PONTO_MEDICAO_001 is not null && dadosBasicos.COD_INSTALACAO_001 is not null)
+                                if (dadosBasicos is not null && dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_001 is not null && dadosBasicos.COD_TAG_PONTO_MEDICAO_001 is not null && dadosBasicos.COD_INSTALACAO_001 is not null && producao is not null && producao.DHA_INICIO_PERIODO_MEDICAO_001 is not null)
                                 {
+                                    DateTime? isConvertable = DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_001, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateBeginningMeasurement) ? dateBeginningMeasurement : null;
+
+                                    var checkDateExists = await _repository.GetAnyByDate(dateBeginningMeasurement, XmlUtils.File001);
+
+                                    if (checkDateExists)
+                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): {producao.DHA_INICIO_PERIODO_MEDICAO_001} já existente");
+
                                     var measurementInDatabase = await _repository.GetUnique001Async(dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_001);
 
                                     if (measurementInDatabase is not null)
-                                        throw new ConflictException($"Medição {XmlUtils.File001} com número de série do elemento primário: {dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_001} já existente");
+                                        //throw new ConflictException($"Medição {XmlUtils.File001} com número de série do elemento primário: {dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_001} já existente");
+                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) número de série do elemento primário: {dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_001} já existente");
 
                                     var installation = await _installationRepository.GetInstallationMeasurementByUepAndAnpCodAsync(dadosBasicos.COD_INSTALACAO_001, XmlUtils.File001);
 
                                     if (installation is null)
-                                        throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): {ErrorMessages.NotFound<Installation>()}");
+                                        //throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): {ErrorMessages.NotFound<Installation>()}");
+                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): {ErrorMessages.NotFound<Installation>()}");
 
                                     var equipment = await _equipmentRepository.GetByTagMeasuringPoint(dadosBasicos.COD_TAG_PONTO_MEDICAO_001, XmlUtils.File001);
 
                                     if (equipment is null)
-                                        throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), equipamento com TAG do ponto de medição {dadosBasicos.COD_TAG_PONTO_MEDICAO_001}: {ErrorMessages.NotFound<MeasuringEquipment>()}");
+                                        //throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), equipamento com TAG do ponto de medição {dadosBasicos.COD_TAG_PONTO_MEDICAO_001}: {ErrorMessages.NotFound<MeasuringEquipment>()}");
+                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), equipamento com TAG do ponto de medição {dadosBasicos.COD_TAG_PONTO_MEDICAO_001}: {ErrorMessages.NotFound<MeasuringEquipment>()}");
 
-                                    if (installation.MeasuringPoints is not null)
+
+                                    if (installation is not null && installation.MeasuringPoints is not null)
                                     {
                                         bool contains = false;
 
                                         foreach (var point in installation.MeasuringPoints)
-                                            if (equipment.TagMeasuringPoint == point.TagPointMeasuring)
+                                            if (equipment is not null && equipment.TagMeasuringPoint == point.TagPointMeasuring)
                                                 contains = true;
 
                                         if (contains is false)
-                                            throw new BadRequestException($"Problema na {k + 1}ª medição do arquivo {data.Files[i].FileName}, TAG do ponto de medição não encontrado nessa instalação");
+                                            //throw new BadRequestException($"Problema na {k + 1}ª medição do arquivo {data.Files[i].FileName}, TAG do ponto de medição não encontrado nessa instalação");
+                                            errorsInImport.Add($"Problema na {k + 1}ª medição do arquivo {data.Files[i].FileName}, TAG do ponto de medição não encontrado nessa instalação");
                                     }
-
-                                    try
+                                    if (errorsInImport.Count == 0 && installation is not null && equipment is not null && equipment.MeasuringPoint is not null)
                                     {
                                         var measurement = new Measurement
                                         {
@@ -376,7 +380,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                             ICE_CRRCO_TEMPERATURA_LIQUIDO_001 = double.TryParse(producao?.ICE_CRRCO_TEMPERATURA_LIQUIDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var crrcoTemp) ? crrcoTemp : 0,
                                             MED_PRESSAO_ESTATICA_001 = double.TryParse(producao?.MED_PRESSAO_ESTATICA_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_PRESSAO_ESTATICA_001) ? MED_PRESSAO_ESTATICA_001 : 0,
                                             MED_TMPTA_FLUIDO_001 = double.TryParse(producao?.MED_TMPTA_FLUIDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_TMPTA_FLUIDO_001) ? MED_TMPTA_FLUIDO_001 : 0,
-                                            MED_VOLUME_BRTO_CRRGO_MVMDO_001 = double.TryParse(producao?.MED_VOLUME_BRTO_CRRGO_MVMDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_VOLUME_BRTO_CRRGO_MVMDO_001) ? MED_VOLUME_BRTO_CRRGO_MVMDO_001 : 0,
+                                            MED_VOLUME_BRTO_CRRGO_MVMDO_001 = double.TryParse(producao?.MED_VOLUME_BRTO_CRRGO_MVMDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_VOLUME_BRTO_CRRGO_MVMDO_001) ? MED_VOLUME_BRTO_CRRGO_MVMDO_001 : throw new BadRequestException($"Arquivo: {data.Files[i].FileName} campo: MED_VOLUME_BRTO_CRRGO_MVMDO não está no formato aceitável: 00000,00000, {k + 1} medição(DADOS_BASICOS)ª."),
                                             MED_VOLUME_BRUTO_MVMDO_001 = double.TryParse(producao?.MED_VOLUME_BRUTO_MVMDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_VOLUME_BRUTO_MVMDO_001) ? MED_VOLUME_BRUTO_MVMDO_001 : 0,
                                             MED_VOLUME_LIQUIDO_MVMDO_001 = double.TryParse(producao?.MED_VOLUME_LIQUIDO_MVMDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_VOLUME_LIQUIDO_MVMDO_001) ? MED_VOLUME_LIQUIDO_MVMDO_001 : 0,
                                             MED_VOLUME_TTLZO_FIM_PRDO_001 = double.TryParse(producao?.MED_VOLUME_TTLZO_FIM_PRDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_VOLUME_TTLZO_FIM_PRDO_001) ? MED_VOLUME_TTLZO_FIM_PRDO_001 : 0,
@@ -397,18 +401,22 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                         };
 
-                                        var measurement001DTO = _mapper.Map<Measurement, _001DTO>(measurement);
-                                        _responseResult._001File ??= new List<_001DTO>();
+                                        var measurement001DTO = _mapper.Map<Measurement, Client001DTO>(measurement);
+                                        measurement001DTO.Summary = new ClientInfo
+                                        {
+                                            Date = dateBeginningMeasurement,
+                                            Status = true,
+                                            LocationMeasuringPoint = equipment.MeasuringPoint.Name,
+                                            TagMeasuringPoint = equipment.TagMeasuringPoint,
+                                            Volume = measurement.MED_VOLUME_BRUTO_MVMDO_001,
+
+                                        };
+                                        _responseResult._001File ??= new List<Client001DTO>();
                                         _responseResult._001File?.Add(measurement001DTO);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        throw new BadRequestException($"Something went wrong: {ex.Message}");
                                     }
                                 }
 
                                 break;
-
                             }
                         #endregion
 
@@ -435,37 +443,47 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                 #endregion
 
-                                if (dadosBasicos is not null && dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_002 is not null && dadosBasicos.COD_INSTALACAO_002 is not null && dadosBasicos.COD_TAG_PONTO_MEDICAO_002 is not null)
+                                if (dadosBasicos is not null && dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_002 is not null && dadosBasicos.COD_INSTALACAO_002 is not null && dadosBasicos.COD_TAG_PONTO_MEDICAO_002 is not null && producao is not null && producao.DHA_INICIO_PERIODO_MEDICAO_002 is not null)
                                 {
+
+                                    DateTime? isConvertable = DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_002, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateBeginningMeasurement) ? dateBeginningMeasurement : null;
+
+                                    var checkDateExists = await _repository.GetAnyByDate(dateBeginningMeasurement, XmlUtils.File002);
+
+                                    if (checkDateExists)
+                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): {producao.DHA_INICIO_PERIODO_MEDICAO_002} já existente");
 
                                     var measurementInDatabase = await _repository.GetUnique002Async(dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_002);
 
                                     if (measurementInDatabase is not null)
-                                        throw new ConflictException($"Medição {XmlUtils.File002} com número de série do elemento primário: {dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_002} já existente");
+                                        //throw new ConflictException($"Medição {XmlUtils.File002} com número de série do elemento primário: {dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_002} já existente");
+                                        errorsInImport.Add($"Medição {XmlUtils.File002} com número de série do elemento primário: {dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_002} já existente");
 
                                     var installation = await _installationRepository.GetInstallationMeasurementByUepAndAnpCodAsync(dadosBasicos.COD_INSTALACAO_002, XmlUtils.File002);
 
                                     if (installation is null)
-                                        throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): {ErrorMessages.NotFound<Installation>()}");
+                                        //throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): {ErrorMessages.NotFound<Installation>()}");
+                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): {ErrorMessages.NotFound<Installation>()}");
 
                                     var equipment = await _equipmentRepository.GetByTagMeasuringPoint(dadosBasicos.COD_TAG_PONTO_MEDICAO_002, XmlUtils.File002);
 
                                     if (equipment is null)
-                                        throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), equipamento com TAG do ponto de medição {dadosBasicos.COD_TAG_PONTO_MEDICAO_002}: {ErrorMessages.NotFound<MeasuringEquipment>()}");
+                                        //throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), equipamento com TAG do ponto de medição {dadosBasicos.COD_TAG_PONTO_MEDICAO_002}: {ErrorMessages.NotFound<MeasuringEquipment>()}");
+                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), equipamento com TAG do ponto de medição {dadosBasicos.COD_TAG_PONTO_MEDICAO_002}: {ErrorMessages.NotFound<MeasuringEquipment>()}");
 
-                                    if (installation.MeasuringPoints is not null)
+                                    if (installation is not null && installation.MeasuringPoints is not null)
                                     {
                                         bool contains = false;
 
                                         foreach (var point in installation.MeasuringPoints)
-                                            if (equipment.TagMeasuringPoint == point.TagPointMeasuring)
+                                            if (equipment is not null && equipment.TagMeasuringPoint == point.TagPointMeasuring)
                                                 contains = true;
 
                                         if (contains is false)
-                                            throw new BadRequestException($"Problema na {k + 1}ª medição do arquivo {data.Files[i].FileName}, TAG do ponto de medição não encontrado nessa instalação");
+                                            //throw new BadRequestException($"Problema na {k + 1}ª medição do arquivo {data.Files[i].FileName}, TAG do ponto de medição não encontrado nessa instalação");
+                                            errorsInImport.Add($"Problema na {k + 1}ª medição do arquivo {data.Files[i].FileName}, TAG do ponto de medição não encontrado nessa instalação");
                                     }
-
-                                    try
+                                    if (errorsInImport.Count == 0 && installation is not null && equipment is not null && equipment.MeasuringPoint is not null)
                                     {
 
                                         var measurement = new Measurement()
@@ -614,7 +632,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                             MED_TEMPERATURA_2_002 = double.TryParse(producao?.MED_TEMPERATURA_2_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TEMPERATURA_2_002) ? MED_TEMPERATURA_2_002 : 0,
                                             PRZ_DURACAO_FLUXO_EFETIVO_002 = double.TryParse(producao?.PRZ_DURACAO_FLUXO_EFETIVO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PRZ_DURACAO_FLUXO_EFETIVO_002) ? PRZ_DURACAO_FLUXO_EFETIVO_002 : 0,
                                             MED_BRUTO_MOVIMENTADO_002 = double.TryParse(producao?.MED_BRUTO_MOVIMENTADO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_BRUTO_MOVIMENTADO_002) ? MED_BRUTO_MOVIMENTADO_002 : 0,
-                                            MED_CORRIGIDO_MVMDO_002 = double.TryParse(producao?.MED_CORRIGIDO_MVMDO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_CORRIGIDO_MVMDO_002) ? MED_CORRIGIDO_MVMDO_002 : 0,
+                                            MED_CORRIGIDO_MVMDO_002 = double.TryParse(producao?.MED_CORRIGIDO_MVMDO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_CORRIGIDO_MVMDO_002) ? MED_CORRIGIDO_MVMDO_002 : throw new BadRequestException($"Arquivo: {data.Files[i].FileName} campo: MED_CORRIGIDO_MVMDO não está no formato aceitável: 00000,00000, {k + 1} medição(DADOS_BASICOS)ª."),
                                             #endregion
 
                                             FileName = data.Files[i].FileName,
@@ -628,16 +646,18 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                             Installation = installation
                                         };
 
-                                        var measurement002DTO = _mapper.Map<Measurement, _002DTO>(measurement);
+                                        var measurement002DTO = _mapper.Map<Measurement, Client002DTO>(measurement);
+                                        measurement002DTO.Summary = new ClientInfo
+                                        {
+                                            Date = dateBeginningMeasurement,
+                                            Status = true,
+                                            LocationMeasuringPoint = equipment.MeasuringPoint.Name,
+                                            TagMeasuringPoint = equipment.TagMeasuringPoint,
+                                            Volume = measurement.MED_CORRIGIDO_MVMDO_002,
 
-                                        _responseResult._002File ??= new List<_002DTO>();
+                                        };
+                                        _responseResult._002File ??= new List<Client002DTO>();
                                         _responseResult._002File?.Add(measurement002DTO);
-
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        throw new BadRequestException($"Something went wrong: {ex.Message}"
-                                        );
                                     }
                                 }
 
@@ -684,37 +704,48 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                 var producao = producaoElement is not null ? Functions.DeserializeXml<PRODUCAO_003>(producaoElement) : null;
                                 #endregion
 
-                                if (dadosBasicos is not null && dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_003 is not null && dadosBasicos.COD_INSTALACAO_003 is not null)
+                                if (dadosBasicos is not null && dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_003 is not null && dadosBasicos.COD_INSTALACAO_003 is not null && producao is not null && producao.DHA_INICIO_PERIODO_MEDICAO_003 is not null)
                                 {
+                                    DateTime? isConvertable = DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_003, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateBeginningMeasurement) ? dateBeginningMeasurement : null;
+
+                                    var checkDateExists = await _repository.GetAnyByDate(dateBeginningMeasurement, XmlUtils.File003);
+
+                                    if (checkDateExists)
+                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): {producao.DHA_INICIO_PERIODO_MEDICAO_003} já existente");
+
                                     var measurementInDatabase = await _repository.GetUnique003Async(dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_003);
 
                                     if (measurementInDatabase is not null)
-                                        throw new ConflictException($"Medição {XmlUtils.File003} com número de série do elemento primário: {dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_003} já existente");
+                                        //throw new ConflictException($"Medição {XmlUtils.File003} com número de série do elemento primário: {dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_003} já existente");
+                                        errorsInImport.Add($"Medição {XmlUtils.File003} com número de série do elemento primário: {dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_003} já existente");
 
                                     var installation = await _installationRepository.GetInstallationMeasurementByUepAndAnpCodAsync(dadosBasicos.COD_INSTALACAO_003, XmlUtils.File003);
 
                                     if (installation is null)
-                                        throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): {ErrorMessages.NotFound<Installation>()}");
+                                        //throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): {ErrorMessages.NotFound<Installation>()}");
+                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): {ErrorMessages.NotFound<Installation>()}");
 
                                     var equipment = await _equipmentRepository.GetByTagMeasuringPoint(dadosBasicos.COD_TAG_PONTO_MEDICAO_003, XmlUtils.File003);
 
                                     if (equipment is null)
-                                        throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), equipamento com TAG do ponto de medição {dadosBasicos.COD_TAG_PONTO_MEDICAO_003}: {ErrorMessages.NotFound<MeasuringEquipment>()}");
+                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), equipamento com TAG do ponto de medição {dadosBasicos.COD_TAG_PONTO_MEDICAO_003}: {ErrorMessages.NotFound<MeasuringEquipment>()}");
+                                    //throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), equipamento com TAG do ponto de medição {dadosBasicos.COD_TAG_PONTO_MEDICAO_003}: {ErrorMessages.NotFound<MeasuringEquipment>()}");
 
-                                    if (installation.MeasuringPoints is not null)
+                                    if (installation is not null && installation.MeasuringPoints is not null)
                                     {
                                         bool contains = false;
 
                                         foreach (var point in installation.MeasuringPoints)
-                                            if (equipment.TagMeasuringPoint == point.TagPointMeasuring)
+                                            if (equipment is not null && equipment.TagMeasuringPoint == point.TagPointMeasuring)
                                                 contains = true;
 
                                         if (contains is false)
-                                            throw new BadRequestException($"Problema na {k + 1}ª medição do arquivo {data.Files[i].FileName}, TAG do ponto de medição não encontrado nessa instalação");
+                                            //throw new BadRequestException($"Problema na {k + 1}ª medição do arquivo {data.Files[i].FileName}, TAG do ponto de medição não encontrado nessa instalação");
+                                            errorsInImport.Add($"Problema na {k + 1}ª medição do arquivo {data.Files[i].FileName}, TAG do ponto de medição não encontrado nessa instalação");
                                     }
-
-                                    try
+                                    if (errorsInImport.Count == 0 && installation is not null && equipment is not null && equipment.MeasuringPoint is not null)
                                     {
+
                                         var measurement = new Measurement
                                         {
                                             Id = Guid.NewGuid(),
@@ -840,7 +871,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                             MED_PRESSAO_ESTATICA_003 = double.TryParse(producao?.MED_PRESSAO_ESTATICA_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRESSAO_ESTATICA_003) ? MED_PRESSAO_ESTATICA_003 : 0,
                                             MED_TEMPERATURA_2_003 = double.TryParse(producao?.MED_TEMPERATURA_2_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TEMPERATURA_2_003) ? MED_TEMPERATURA_2_003 : 0,
                                             PRZ_DURACAO_FLUXO_EFETIVO_003 = double.TryParse(producao?.PRZ_DURACAO_FLUXO_EFETIVO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PRZ_DURACAO_FLUXO_EFETIVO_003) ? PRZ_DURACAO_FLUXO_EFETIVO_003 : 0,
-                                            MED_CORRIGIDO_MVMDO_003 = double.TryParse(producao?.MED_CORRIGIDO_MVMDO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_CORRIGIDO_MVMDO_003) ? MED_CORRIGIDO_MVMDO_003 : 0,
+                                            MED_CORRIGIDO_MVMDO_003 = double.TryParse(producao?.MED_CORRIGIDO_MVMDO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_CORRIGIDO_MVMDO_003) ? MED_CORRIGIDO_MVMDO_003 : throw new BadRequestException($"Arquivo: {data.Files[i].FileName} campo: MED_CORRIGIDO_MVMDO não está no formato aceitável: 00000,00000, {k + 1} medição(DADOS_BASICOS)ª."),
                                             #endregion
 
                                             FileName = data.Files[i].FileName,
@@ -855,22 +886,35 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                             User = user
                                         };
 
-                                        var measurement003DTO = _mapper.Map<Measurement, _003DTO>(measurement);
-                                        _responseResult._003File ??= new List<_003DTO>();
+                                        var measurement003DTO = _mapper.Map<Measurement, Client003DTO>(measurement);
+                                        measurement003DTO.Summary = new ClientInfo
+                                        {
+                                            Date = dateBeginningMeasurement,
+                                            Status = true,
+                                            LocationMeasuringPoint = equipment.MeasuringPoint.Name,
+                                            TagMeasuringPoint = equipment.TagMeasuringPoint,
+                                            Volume = measurement.MED_CORRIGIDO_MVMDO_003,
+
+                                        };
+                                        _responseResult._003File ??= new List<Client003DTO>();
                                         _responseResult._003File?.Add(measurement003DTO);
                                     }
-                                    catch (Exception ex)
-                                    {
-                                        throw new BadRequestException($"Something went wrong: {ex.Message}");
-                                    }
+
                                 }
+
                             }
+
                             break;
 
                             #endregion
                     }
                 }
 
+
+            }
+            if (errorsInImport.Count > 0)
+            {
+                throw new BadRequestException($"Algum(s) erro(s) ocorreram durante a importação do arquivo:", errors: errorsInImport);
             }
 
             return _responseResult;
@@ -1028,62 +1072,62 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             return new ImportResponseDTO { Status = "Success", Message = $"Arquivo importado com sucesso, {_repository.CountAdded()} medições importadas" };
         }
 
-        public async Task<DTOFiles> GetAll(string? acronym, string? name)
-        {
-            var filesQuery = _repository.FileTypeBuilder();
+        //public async Task<DTOFiles> GetAll(string? acronym, string? name)
+        //{
+        //    var filesQuery = _repository.FileTypeBuilder();
 
-            if (!string.IsNullOrEmpty(acronym))
-            {
-                var possibleAcronymValues = new List<string> { "PMO", "PMGL", "PMGD", "EFM" };
-                var isValidValue = possibleAcronymValues.Contains(acronym.ToUpper().Trim());
-                if (!isValidValue)
-                    throw new BadRequestException("Acronym valid values are: PMO, PMGL, PMGD, EFM"
-                    );
+        //    if (!string.IsNullOrEmpty(acronym))
+        //    {
+        //        var possibleAcronymValues = new List<string> { "PMO", "PMGL", "PMGD", "EFM" };
+        //        var isValidValue = possibleAcronymValues.Contains(acronym.ToUpper().Trim());
+        //        if (!isValidValue)
+        //            throw new BadRequestException("Acronym valid values are: PMO, PMGL, PMGD, EFM"
+        //            );
 
-                filesQuery = _repository.FileTypeBuilderByAcronym(acronym);
-            }
+        //        filesQuery = _repository.FileTypeBuilderByAcronym(acronym);
+        //    }
 
-            if (!string.IsNullOrEmpty(name))
-            {
-                var possibleNameValues = new List<string> { "001", "002", "003", "039" };
-                var isValidValue = possibleNameValues.Contains(name.ToUpper().Trim());
-                if (!isValidValue)
-                    throw new BadRequestException("Name valid values are: 001, 002, 003, 039"
-                   );
+        //    if (!string.IsNullOrEmpty(name))
+        //    {
+        //        var possibleNameValues = new List<string> { "001", "002", "003", "039" };
+        //        var isValidValue = possibleNameValues.Contains(name.ToUpper().Trim());
+        //        if (!isValidValue)
+        //            throw new BadRequestException("Name valid values are: 001, 002, 003, 039"
+        //           );
 
-                filesQuery = _repository.FileTypeBuilderByName(name);
-            }
+        //        filesQuery = _repository.FileTypeBuilderByName(name);
+        //    }
 
-            var files = await _repository.FilesToListAsync(filesQuery);
-            var measurements = files.SelectMany(file => file.Measurements);
+        //    var files = await _repository.FilesToListAsync(filesQuery);
+        //    var measurements = files.SelectMany(file => file.Measurements);
 
-            foreach (var measurement in measurements)
-            {
-                switch (measurement.FileType?.Name)
-                {
-                    case "001":
-                        _responseResult._001File ??= new List<_001DTO>();
-                        _responseResult._001File.Add(_mapper.Map<_001DTO>(measurement));
-                        break;
+        //    foreach (var measurement in measurements)
+        //    {
+        //        switch (measurement.FileType?.Name)
+        //        {
+        //            case "001":
+        //                _responseResult._001File ??= new List<_001DTO>();
+        //                _responseResult._001File.Add(_mapper.Map<_001DTO>(measurement));
+        //                break;
 
-                    case "002":
-                        _responseResult._002File ??= new List<_002DTO>();
-                        _responseResult._002File.Add(_mapper.Map<_002DTO>(measurement));
-                        break;
+        //            case "002":
+        //                _responseResult._002File ??= new List<_002DTO>();
+        //                _responseResult._002File.Add(_mapper.Map<_002DTO>(measurement));
+        //                break;
 
-                    case "003":
-                        _responseResult._003File ??= new List<_003DTO>();
-                        _responseResult._003File.Add(_mapper.Map<_003DTO>(measurement));
-                        break;
+        //            case "003":
+        //                _responseResult._003File ??= new List<_003DTO>();
+        //                _responseResult._003File.Add(_mapper.Map<_003DTO>(measurement));
+        //                break;
 
-                    case "039":
-                        _responseResult._039File ??= new List<_039DTO>();
-                        _responseResult._039File.Add(_mapper.Map<_039DTO>(measurement));
-                        break;
-                }
-            }
+        //            case "039":
+        //                _responseResult._039File ??= new List<_039DTO>();
+        //                _responseResult._039File.Add(_mapper.Map<_039DTO>(measurement));
+        //                break;
+        //        }
+        //    }
 
-            return _responseResult;
-        }
+        //    return _responseResult;
+        //}
     }
 }

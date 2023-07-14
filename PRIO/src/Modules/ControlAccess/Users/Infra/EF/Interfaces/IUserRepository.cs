@@ -9,6 +9,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Interfaces
         Task AddUserPermission(UserPermission userPermission);
         Task<List<User>> GetUsers();
         Task<User?> GetUsersByEmail(string email);
+        Task<User?> GetUserByUsername(string username);
         Task<User> GetUserById(Guid id);
         Task ValidateMenu(InsertUserPermissionViewModel body);
         Task UpdateUser(User userHasGroup);

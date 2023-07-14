@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Query;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Measurements.Interfaces;
+using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 
 namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories
@@ -21,6 +22,23 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories
         public async Task<Measurement?> GetUnique039Async(string codFailure)
         {
             return await _context.Measurements.FirstOrDefaultAsync(x => x.COD_FALHA_039 == codFailure);
+        }
+        public async Task<bool> GetAnyByDate(DateTime date, string fileType)
+        {
+            switch (fileType)
+            {
+                case "001":
+                    return await _context.Measurements.AnyAsync(x => x.DHA_INICIO_PERIODO_MEDICAO_001 == date);
+
+                case "002":
+                    return await _context.Measurements.AnyAsync(x => x.DHA_INICIO_PERIODO_MEDICAO_002 == date);
+
+                case "003":
+                    return await _context.Measurements.AnyAsync(x => x.DHA_INICIO_PERIODO_MEDICAO_003 == date);
+
+                default:
+                    throw new BadRequestException("arquivo: 001,002,003");
+            }
         }
 
         public async Task<Measurement?> GetUnique001Async(string numSerie)
