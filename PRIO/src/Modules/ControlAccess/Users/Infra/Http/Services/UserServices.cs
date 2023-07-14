@@ -6,9 +6,8 @@ using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Interfaces;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.ViewModels;
 using PRIO.src.Shared.Errors;
-using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.SystemHistories.Dtos.UserDtos;
-using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
+using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
 using PRIO.src.Shared.SystemHistories.Interfaces;
 using PRIO.src.Shared.Utils;
 
@@ -23,13 +22,14 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
         private IGroupOperationRepository _groupOperationRepository;
         private IGlobalOperationsRepository _globalOperationsRepository;
         private ISystemHistoryRepository _systemHistoryRepository;
+        private SystemHistoryService _systemHistoryService;
         private IMapper _mapper;
 
-        public UserService(DataContext context, IMapper mapper, IUserRepository user, ISystemHistoryRepository systemHistoryRepository, IUserPermissionRepository userPermissionRepository, IUserOperationRepository userOperationRepository, IGroupPermissionRepository groupPermissionRepository, IGroupOperationRepository groupOperationRepository, IGlobalOperationsRepository globalOperationsRepository)
+        public UserService(IMapper mapper, IUserRepository user, SystemHistoryService systemHistoryService, IUserPermissionRepository userPermissionRepository, IUserOperationRepository userOperationRepository, IGroupPermissionRepository groupPermissionRepository, IGroupOperationRepository groupOperationRepository, IGlobalOperationsRepository globalOperationsRepository)
         {
             _mapper = mapper;
             _userRepository = user;
-            _systemHistoryRepository = systemHistoryRepository;
+            _systemHistoryService = systemHistoryService;
             _userPermissionRepository = userPermissionRepository;
             _userOperationRepository = userOperationRepository;
             _groupPermissionRepository = groupPermissionRepository;
@@ -70,23 +70,8 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             await _userRepository
                 .CreateUser(user);
 
-            var currentData = _mapper.Map<User, UserHistoryDTO>(user);
-
-            var dateNow = DateTime.UtcNow;
-
-            currentData.createdAt = dateNow;
-            currentData.updatedAt = dateNow;
-
-            var history = new SystemHistory
-            {
-                Table = HistoryColumns.TableUsers,
-                TypeOperation = HistoryColumns.Create,
-                CreatedBy = loggedUser?.Id,
-                TableItemId = userId,
-                CurrentData = currentData,
-            };
-
-            await _systemHistoryRepository.AddAsync(history);
+            await _systemHistoryService
+                .Create<User, UserHistoryDTO>(HistoryColumns.TableUsers, loggedUser, userId, user);
 
             await _userRepository.SaveChangesAsync();
             var userDTO = _mapper.Map<User, UserDTO>(user);
