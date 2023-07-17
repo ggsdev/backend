@@ -103,6 +103,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
         }
         #endregion
 
+        #region Restore
         [HttpPatch("{id}/restore")]
         public async Task<IActionResult> Restore([FromRoute] Guid id)
         {
@@ -110,6 +111,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
             var userDTO = await _service.RestoreUserByIdAsync(id, userOperationId);
             return Ok(userDTO);
         }
+        #endregion
 
         #region Edit Permission User
         [HttpPatch("{id}/permissions")]
