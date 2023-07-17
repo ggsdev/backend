@@ -9,9 +9,9 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models
         public string? HighPressureFuelGas { get; set; }
         public string? LowPressureFuelGas { get; set; }
         public string? ExportGas1 { get; set; }
-        public string? ExportGas2 { get; set; }
+        public string? ExportGas2 { get; set; }/*lista?*/
         public string? ExportGas3 { get; set; }
-        public string? ImportGas1 { get; set; }
+        public string? ImportGas1 { get; set; }/*lista?*/
         public string? ImportGas2 { get; set; }
         public string? ImportGas3 { get; set; }
         public string? AssistanceGas { get; set; }

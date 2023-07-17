@@ -15,6 +15,7 @@ using PRIO.src.Modules.Measuring.Equipments.Interfaces;
 using PRIO.src.Modules.Measuring.Measurements.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Measurements.Interfaces;
 using PRIO.src.Shared.Errors;
+using PRIO.src.Shared.Utils;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -54,10 +55,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 if (isValidExtension is false)
                     throw new BadRequestException($"Modelo arquivo inválido. Importação falhou arquivo com nome: {data.Files[i].FileName}");
 
-                var match = XmlRegex().Match(data.Files[i].ContentBase64);
-                if (!match.Success)
-                    throw new BadRequestException($"Um dos arquivos tem o formato base64 inválido, nome do arquivo: {data.Files[i].FileName}");
+                var fileContent = data.Files[i].ContentBase64.Replace("data:@file/xml;base64,", "");
 
+                if (Decrypt.TryParseBase64String(fileContent, out byte[]? encriptedBytes) is false)
+                    throw new BadRequestException("Não é um base64 válido");
                 var isValidFileName = new List<string>()
                     {
                         "039",
@@ -75,12 +76,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             var errorsInImport = new List<string>();
             for (int i = 0; i < data.Files.Count; ++i)
             {
-                #region validations
-
-
-                var fileContent = data.Files[i].ContentBase64?.Replace("data:@file/xml;base64,", "");
-
-                #endregion
+                var fileContent = data.Files[i].ContentBase64.Replace("data:@file/xml;base64,", "");
 
                 #region pathing
                 var projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\.."));
@@ -1071,62 +1067,62 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             return new ImportResponseDTO { Status = "Success", Message = $"Arquivo importado com sucesso, {_repository.CountAdded()} medições importadas" };
         }
 
-        //public async Task<DTOFiles> GetAll(string? acronym, string? name)
-        //{
-        //    var filesQuery = _repository.FileTypeBuilder();
+        public async Task<DTOFilesClient> GetAll(string? acronym, string? name)
+        {
+            var filesQuery = _repository.FileTypeBuilder();
 
-        //    if (!string.IsNullOrEmpty(acronym))
-        //    {
-        //        var possibleAcronymValues = new List<string> { "PMO", "PMGL", "PMGD", "EFM" };
-        //        var isValidValue = possibleAcronymValues.Contains(acronym.ToUpper().Trim());
-        //        if (!isValidValue)
-        //            throw new BadRequestException("Acronym valid values are: PMO, PMGL, PMGD, EFM"
-        //            );
+            if (!string.IsNullOrEmpty(acronym))
+            {
+                var possibleAcronymValues = new List<string> { "PMO", "PMGL", "PMGD", "EFM" };
+                var isValidValue = possibleAcronymValues.Contains(acronym.ToUpper().Trim());
+                if (!isValidValue)
+                    throw new BadRequestException("Acronym valid values are: PMO, PMGL, PMGD, EFM"
+                    );
 
-        //        filesQuery = _repository.FileTypeBuilderByAcronym(acronym);
-        //    }
+                filesQuery = _repository.FileTypeBuilderByAcronym(acronym);
+            }
 
-        //    if (!string.IsNullOrEmpty(name))
-        //    {
-        //        var possibleNameValues = new List<string> { "001", "002", "003", "039" };
-        //        var isValidValue = possibleNameValues.Contains(name.ToUpper().Trim());
-        //        if (!isValidValue)
-        //            throw new BadRequestException("Name valid values are: 001, 002, 003, 039"
-        //           );
+            if (!string.IsNullOrEmpty(name))
+            {
+                var possibleNameValues = new List<string> { "001", "002", "003", "039" };
+                var isValidValue = possibleNameValues.Contains(name.ToUpper().Trim());
+                if (!isValidValue)
+                    throw new BadRequestException("Name valid values are: 001, 002, 003, 039"
+                   );
 
-        //        filesQuery = _repository.FileTypeBuilderByName(name);
-        //    }
+                filesQuery = _repository.FileTypeBuilderByName(name);
+            }
 
-        //    var files = await _repository.FilesToListAsync(filesQuery);
-        //    var measurements = files.SelectMany(file => file.Measurements);
+            var files = await _repository.FilesToListAsync(filesQuery);
+            var measurements = files.SelectMany(file => file.Measurements);
 
-        //    foreach (var measurement in measurements)
-        //    {
-        //        switch (measurement.FileType?.Name)
-        //        {
-        //            case "001":
-        //                _responseResult._001File ??= new List<_001DTO>();
-        //                _responseResult._001File.Add(_mapper.Map<_001DTO>(measurement));
-        //                break;
+            foreach (var measurement in measurements)
+            {
+                switch (measurement.FileType?.Name)
+                {
+                    case "001":
+                        _responseResult._001File ??= new List<Client001DTO>();
+                        _responseResult._001File.Add(_mapper.Map<Client001DTO>(measurement));
+                        break;
 
-        //            case "002":
-        //                _responseResult._002File ??= new List<_002DTO>();
-        //                _responseResult._002File.Add(_mapper.Map<_002DTO>(measurement));
-        //                break;
+                    case "002":
+                        _responseResult._002File ??= new List<Client002DTO>();
+                        _responseResult._002File.Add(_mapper.Map<Client002DTO>(measurement));
+                        break;
 
-        //            case "003":
-        //                _responseResult._003File ??= new List<_003DTO>();
-        //                _responseResult._003File.Add(_mapper.Map<_003DTO>(measurement));
-        //                break;
+                    case "003":
+                        _responseResult._003File ??= new List<Client003DTO>();
+                        _responseResult._003File.Add(_mapper.Map<Client003DTO>(measurement));
+                        break;
 
-        //            case "039":
-        //                _responseResult._039File ??= new List<_039DTO>();
-        //                _responseResult._039File.Add(_mapper.Map<_039DTO>(measurement));
-        //                break;
-        //        }
-        //    }
+                        //case "039":
+                        //    _responseResult._039File ??= new List<Client039DTO>();
+                        //    _responseResult._039File.Add(_mapper.Map<Client039DTO>(measurement));
+                        //    break;
+                }
+            }
 
-        //    return _responseResult;
-        //}
+            return _responseResult;
+        }
     }
 }

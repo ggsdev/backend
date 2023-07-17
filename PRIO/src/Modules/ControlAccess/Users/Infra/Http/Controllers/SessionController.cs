@@ -51,57 +51,46 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
                 .VerifyCredentialsWithActiveDirectory(username, password);
 
             if (credentialsValid is false)
-            {
                 return Unauthorized(new ErrorResponseDTO
                 {
                     Message = "Usuário ou senha inválida."
                 });
-            }
-            else
+
+            var treatedUsername = username.Split('@')[0];
+
+            var user = await _context
+                .Users
+                .Include(u => u.Session)
+                .Include(u => u.Group)
+                .FirstOrDefaultAsync(x => x.Username.ToLower().Trim() == treatedUsername.ToLower().Trim() && x.IsActive);
+
+            var userHttpAgent = Request.Headers["User-Agent"].ToString();
+
+            if (user is null || user.Group is null)
             {
-                var treatedUsername = username.Split('@')[0];
-
-                var user = await _context
-                    .Users
-                    .Include(u => u.Session)
-                    .Include(u => u.Group)
-                    .FirstOrDefaultAsync(x => x.Username == treatedUsername && x.IsActive);
-
-                string token;
-                var userHttpAgent = Request.Headers["User-Agent"].ToString();
-
-                if (user is null || user.Group is null)
+                return Unauthorized(new ErrorResponseDTO
                 {
-                    return Unauthorized(new ErrorResponseDTO
-                    {
-                        Message = "Usuário sem permissões."
-                    });
-                    //var userId = Guid.NewGuid();
-                    //var createUser = new User
-                    //{
-                    //    Id = userId,
-                    //    Username = treatedUsername,
-                    //};
-                    //await _context.Users.AddAsync(createUser);
-
-                    //await _systemHistoryService
-                    //    .Create<User, UserHistoryDTO>(HistoryColumns.TableUsers, createUser, userId, createUser);
-
-                    //await _context.SaveChangesAsync();
-                    //token = await _tokenServices.CreateSessionAndToken(createUser, userHttpAgent);
-                }
-                else
-                {
-                    token = await _tokenServices.CreateSessionAndToken(user, userHttpAgent);
-                }
-
-                return Ok(new LoginDTO
-                {
-                    Token = token,
+                    Message = "Usuário sem permissões."
                 });
+                //var userId = Guid.NewGuid();
+                //var createUser = new User
+                //{
+                //    Id = userId,
+                //    Username = treatedUsername,
+                //};
+                //await _context.Users.AddAsync(createUser);
 
+                //await _systemHistoryService
+                //    .Create<User, UserHistoryDTO>(HistoryColumns.TableUsers, createUser, userId, createUser);
+
+                //await _context.SaveChangesAsync();
+                //token = await _tokenServices.CreateSessionAndToken(createUser, userHttpAgent);
             }
 
+            return Ok(new LoginDTO
+            {
+                Token = await _tokenServices.CreateSessionAndToken(user, userHttpAgent)
+            });
         }
 
         [AllowAnonymous]
