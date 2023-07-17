@@ -49,13 +49,15 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
         {
             var treatedUsername = body.Username.Split('@')[0];
 
-            var userInAd = ActiveDirectory
-                .CheckUserExistsInActiveDirectory(treatedUsername);
-            if (userInAd is false)
-                throw new NotFoundException("Não foi possível validar o usuário no domínio, digite um usuário valido");
+            //var userInAd = ActiveDirectory
+            //    .CheckUserExistsInActiveDirectory(treatedUsername);
+
+            //if (userInAd is false)
+            //    throw new NotFoundException("Não foi possível validar o usuário no domínio, digite um usuário valido");
 
             var userInDatabase = await _userRepository
                 .GetUserByUsername(treatedUsername);
+
             if (userInDatabase != null)
                 throw new ConflictException("Usuário já cadastrado");
 

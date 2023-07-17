@@ -223,7 +223,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                     var checkDateExists = await _repository.GetAnyByDate(dateBeginningMeasurement, XmlUtils.File001);
 
-                                    if (checkDateExists)
+                                    if (checkDateExists && producao is not null)
                                         errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): {producao.DHA_INICIO_PERIODO_MEDICAO_001} já existente");
 
                                     var measurementInDatabase = await _repository.GetUnique001Async(dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_001);
@@ -975,9 +975,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                 var fileInfo = new FileBasicInfoDTO
                 {
-                    Acronym = XmlUtils.FileAcronym001,
+                    Acronym = XmlUtils.FileAcronym002,
                     Name = file.FileName,
-                    Type = XmlUtils.File001
+                    Type = XmlUtils.File002
                 };
 
                 measurement.User = user;
@@ -1010,9 +1010,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                 var fileInfo = new FileBasicInfoDTO
                 {
-                    Acronym = XmlUtils.FileAcronym001,
+                    Acronym = XmlUtils.FileAcronym003,
                     Name = file.FileName,
-                    Type = XmlUtils.File001
+                    Type = XmlUtils.File003
                 };
 
                 measurement.User = user;
@@ -1045,9 +1045,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                 var fileInfo = new FileBasicInfoDTO
                 {
-                    Acronym = XmlUtils.FileAcronym001,
+                    Acronym = XmlUtils.FileAcronym039,
                     Name = file.FileName,
-                    Type = XmlUtils.File001
+                    Type = XmlUtils.File039
                 };
 
                 measurement.User = user;
@@ -1065,7 +1065,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             }
 
             if (_repository.CountAdded() == 0)
-                return new ImportResponseDTO { Status = "Error", Message = $"Nenhuma medição foi adicionada" };
+                throw new BadRequestException("Nenhuma medição foi adicionada", status: "Error");
 
             await _repository.SaveChangesAsync();
 

@@ -20,18 +20,22 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
             {
                 case "039":
                     return await _context.Installations
+                        .Include(x => x.MeasuringPoints)
                      .FirstOrDefaultAsync(x => x.UepCod == codInstallation && x.CodInstallationAnp == codInstallation);
 
                 case "001":
                     return await _context.Installations
+                        .Include(x => x.MeasuringPoints)
                         .FirstOrDefaultAsync(x => x.UepCod == codInstallation && x.CodInstallationAnp == codInstallation);
 
                 case "002":
                     return await _context.Installations
+                        .Include(x => x.MeasuringPoints)
                         .FirstOrDefaultAsync(x => x.UepCod == codInstallation && x.CodInstallationAnp == codInstallation);
 
                 case "003":
                     return await _context.Installations
+                        .Include(x => x.MeasuringPoints)
                         .FirstOrDefaultAsync(x => x.UepCod == codInstallation && x.CodInstallationAnp == codInstallation);
 
                 default:
