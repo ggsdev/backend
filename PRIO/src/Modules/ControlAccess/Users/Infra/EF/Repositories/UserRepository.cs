@@ -35,6 +35,13 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
             var user = await _context.Users.FirstOrDefaultAsync((x) => x.Email == email || x.Username == email);
             return user;
         }
+
+        public async Task<User?> GetUserByUsername(string username)
+        {
+            return await _context.Users
+                .FirstOrDefaultAsync((x) => x.Username == username);
+        }
+
         public async Task<User> GetUserById(Guid id)
         {
             var user = await _context.Users
