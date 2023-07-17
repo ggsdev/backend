@@ -39,7 +39,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
         public async Task<User?> GetUserByUsername(string username)
         {
             return await _context.Users
-                .FirstOrDefaultAsync((x) => x.Username == username);
+                .FirstOrDefaultAsync((x) => x.Username.ToLower().Trim() == username.ToLower().Trim());
         }
 
         public async Task<User> GetUserById(Guid id)

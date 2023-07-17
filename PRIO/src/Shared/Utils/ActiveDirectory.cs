@@ -24,22 +24,24 @@ namespace PRIO.src.Shared.Utils
             }
         }
 
-        public static bool CheckUserExistsInActiveDirectory(string username)
-        {
-            try
-            {
-                using var context = new PrincipalContext(ContextType.Domain, _domain, _serverAd);
-                using var userPrincipal = UserPrincipal.FindByIdentity(context, IdentityType.SamAccountName, username);
+        //public static bool CheckUserExistsInActiveDirectory(string username)
+        //{
 
-                return userPrincipal is not null;
-            }
-            catch (Exception ex)
-            {
-                throw new BadRequestException(ex.Message, status: "400");
-            }
-        }
+        //    try
+        //    {
+        //        using var context = new PrincipalContext(ContextType.Domain, _domain, _serverAd);
 
+        //        var userPrincipal = UserPrincipal.FindByIdentity(context, IdentityType.SamAccountName, username) ??
+        //                 UserPrincipal.FindByIdentity(context, IdentityType.UserPrincipalName, username) ??
+        //                 UserPrincipal.FindByIdentity(context, IdentityType.DistinguishedName, username);
+
+        //        return userPrincipal is not null;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex);
+        //        throw new BadRequestException(ex.Message, status: "400");
+        //    }
+        //}
     }
-
-
 }
