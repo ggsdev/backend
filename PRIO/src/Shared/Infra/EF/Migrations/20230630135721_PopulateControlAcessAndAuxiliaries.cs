@@ -98,10 +98,9 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                );
             }
 
-            // criação do grupo
+            // criação do grupo MASTER
             var groupData = new object[]
             {"Master", Guid.NewGuid()};
-
             var nameGroup = (string)groupData[0];
             var idGroup = (Guid)groupData[1];
 
@@ -110,6 +109,18 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                 columns: new[] { "Name", "IsActive", "Id", "CreatedAt", "UpdatedAt" },
                 values: new object[] { nameGroup, true, idGroup, DateTime.UtcNow, DateTime.UtcNow });
 
+            // criação do grupo BASICO
+            var basicGroup = new object[]
+           {"Básico", Guid.NewGuid()};
+            var nameBasicGroup = (string)basicGroup[0];
+            var idBasicGroup = (Guid)basicGroup[1];
+
+            migrationBuilder.InsertData(
+                table: "Groups",
+                columns: new[] { "Name", "IsActive", "Id", "CreatedAt", "UpdatedAt" },
+                values: new object[] { nameBasicGroup, true, idBasicGroup, DateTime.UtcNow, DateTime.UtcNow });
+
+            // criação user master
             var userData = new object[]
             {"Master","master@prio.com.br","master","Master", Guid.NewGuid()};
             var nameUser = (string)userData[0];
@@ -155,8 +166,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
             }
 
-
-
             //criação das operacoes
             var idGetOperation = Guid.NewGuid();
             var idPostOperation = Guid.NewGuid();
@@ -201,6 +210,7 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                 new object[] { "Importar Dados de Hierarquia", "", "1.5", "/importarDadosHierarquia", Guid.NewGuid(), false, true },
                 new object[] { "Importação dos Dados de Produção", "", "2.1", "/importarDadosProducao", Guid.NewGuid(), false, true }
             };
+
             foreach (var menu in menuData)
             {
                 var nameMenu = (string)menu[0];
@@ -253,12 +263,24 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         values: new object[] { nameMenu, iconMenu, orderMenu, routeMenu, null, true, idMenu, DateTime.UtcNow, DateTime.UtcNow });
                 }
 
+                // PERMISSÕES PARA O GROUP MASTER
                 migrationBuilder.InsertData(
                     table: "GroupPermissions",
                     columns: new[] { "Id", "GroupId", "GroupName", "MenuId", "MenuName", "MenuOrder", "MenuIcon", "MenuRoute", "CreatedAt", "UpdatedAt", "hasParent", "hasChildren", "IsActive" },
                     values: new object[] { idGroupPermission, idGroup, nameGroup, idMenu, nameMenu, orderMenu, iconMenu, routeMenu, DateTime.UtcNow, DateTime.UtcNow, hasParent, hasChildren, true });
 
-                // PERMISSAO PARA MASTER
+                // PERMISSÕES PARA O GROUP BASICO
+                var idGroupBasicoPermission = Guid.NewGuid();
+                if ((string)menu[0] == "Administração" || (string)menu[0] == "Cadastros Básicos")
+                {
+                    migrationBuilder.InsertData(
+                        table: "GroupPermissions",
+                        columns: new[] { "Id", "GroupId", "GroupName", "MenuId", "MenuName", "MenuOrder", "MenuIcon", "MenuRoute", "CreatedAt", "UpdatedAt", "hasParent", "hasChildren", "IsActive" },
+                        values: new object[] { idGroupBasicoPermission, idBasicGroup, nameBasicGroup, idMenu, nameMenu, orderMenu, iconMenu, routeMenu, DateTime.UtcNow, DateTime.UtcNow, hasParent, hasChildren, true });
+                };
+
+                // PERMISSAO PARA USER MASTER
+
                 migrationBuilder.InsertData(
                     table: "UserPermissions",
                     columns: new[] { "Id", "UserId", "GroupMenuId", "GroupId", "GroupName", "MenuId", "MenuName", "MenuOrder", "MenuIcon", "MenuRoute", "CreatedAt", "hasParent", "hasChildren" },
@@ -277,10 +299,21 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                             columns: new[] { "Id", "OperationName", "GlobalOperationId", "GroupPermissionId", "GroupName" },
                             values: new object[] { Guid.NewGuid(), methodOperation, idOperation, idGroupPermission, nameGroup });
 
+                        if ((string)menu[0] == "Administração" || (string)menu[0] == "Cadastros Básicos")
+                        {
+                            if (methodOperation == "GET")
+                            {
+                                migrationBuilder.InsertData(
+                                    table: "GroupOperations",
+                                    columns: new[] { "Id", "OperationName", "GlobalOperationId", "GroupPermissionId", "GroupName" },
+                                    values: new object[] { Guid.NewGuid(), methodOperation, idOperation, idGroupBasicoPermission, nameBasicGroup });
+                            }
+                        }
+
                         migrationBuilder.InsertData(
-                            table: "UserOperations",
-                            columns: new[] { "Id", "OperationName", "GlobalOperationId", "UserPermissionId", "GroupName" },
-                            values: new object[] { Guid.NewGuid(), methodOperation, idOperation, idUserPermission, nameGroup });
+                        table: "UserOperations",
+                        columns: new[] { "Id", "OperationName", "GlobalOperationId", "UserPermissionId", "GroupName" },
+                        values: new object[] { Guid.NewGuid(), methodOperation, idOperation, idUserPermission, nameGroup });
 
                     }
                 }
