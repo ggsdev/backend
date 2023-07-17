@@ -58,6 +58,20 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Controllers
             return Ok(measuringPointDTO);
         }
 
+        [HttpGet]
+        [Route("installation/{id}")]
+        public async Task<IActionResult> GetByInstallationId([FromRoute] Guid id)
+        {
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+
+            var measuringPointDTO = await _measuringPointService.GetByInstallationId(id);
+            return Ok(measuringPointDTO);
+        }
+
         [HttpPatch]
         [Route("{id}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateMeasuringPointViewModel body)
