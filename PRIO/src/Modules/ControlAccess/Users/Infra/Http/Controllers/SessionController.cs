@@ -96,6 +96,51 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
                 Token = token,
             });
         }
+
+        //[AllowAnonymous]
+        //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginDTO))]
+        //[ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponseDTO))]
+        //[HttpPost("loginBack")]
+        //public async Task<IActionResult> LoginBack([FromBody] LoginAdViewModel body)
+        //{
+        //    var user = await _context
+        //        .Users
+        //        .Include(u => u.Session)
+        //        .FirstOrDefaultAsync(x => x.Username == body.Username);
+
+        //    string token;
+        //    var userHttpAgent = Request.Headers["User-Agent"].ToString();
+
+        //    if (user is null)
+        //    {
+        //        var userId = Guid.NewGuid();
+        //        var createUser = new User
+        //        {
+        //            Id = userId,
+        //            Username = body.Username,
+
+        //        };
+
+        //        await _context.Users.AddAsync(createUser);
+
+        //        //await _systemHistoryService
+        //        //    .Create<User, UserHistoryDTO>(HistoryColumns.TableUsers, createUser, userId, createUser);
+
+        //        await _context.SaveChangesAsync();
+
+        //        token = await _tokenServices.CreateSessionAndToken(createUser, userHttpAgent);
+        //    }
+        //    else
+        //    {
+        //        token = await _tokenServices.CreateSessionAndToken(user, userHttpAgent);
+
+        //    }
+
+        //    return Ok(new LoginDTO
+        //    {
+        //        Token = token,
+        //    });
+        //}
     }
 }
 #endregion
