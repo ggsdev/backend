@@ -20,10 +20,10 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models
         public AssistanceGas? AssistanceGas { get; set; }
         public ExportGas? ExportGas { get; set; }
         public HighPressureGas? HighPressureGas { get; set; }
-        public HPFlare? HpFlare { get; set; }
+        public HPFlare? HPFlare { get; set; }
         public ImportGas? ImportGas { get; set; }
         public LowPressureGas? LowPressureGas { get; set; }
-        public LPFlare? LpFlare { get; set; }
+        public LPFlare? LPFlare { get; set; }
         public PilotGas? PilotGas { get; set; }
         public PurgeGas? PurgeGas { get; set; }
     }

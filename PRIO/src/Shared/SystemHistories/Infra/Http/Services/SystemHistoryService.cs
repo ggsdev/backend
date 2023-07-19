@@ -35,6 +35,7 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
                 CreatedBy = user?.Id,
                 TableItemId = tableItemId,
                 CurrentData = currentData,
+                UpdatedBy = user?.Id,
             };
 
             await _systemHistoryRepository.AddAsync(history);
