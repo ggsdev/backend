@@ -50,10 +50,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             #region client side validations
             for (int i = 0; i < data.Files.Count; ++i)
             {
-                var isValidExtension = data.Files[i].FileName.EndsWith("xml");
+                var isValidExtension = data.Files[i].FileName.ToLower().EndsWith("xml");
 
                 if (isValidExtension is false)
-                    throw new BadRequestException($"Modelo arquivo inválido. Importação falhou arquivo com nome: {data.Files[i].FileName}");
+                    throw new BadRequestException($"Formato arquivo inválido, deve ter a extensão xml. Importação falhou arquivo com nome: {data.Files[i].FileName}");
 
                 var fileContent = data.Files[i].ContentBase64.Replace("data:@file/xml;base64,", "");
 
