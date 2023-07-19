@@ -214,12 +214,17 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                 if (dadosBasicos is not null && dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_001 is not null && dadosBasicos.COD_TAG_PONTO_MEDICAO_001 is not null && dadosBasicos.COD_INSTALACAO_001 is not null && producao is not null && producao.DHA_INICIO_PERIODO_MEDICAO_001 is not null)
                                 {
-                                    DateTime? isConvertable = DateTime.TryParseExact(producao.DHA_INICIO_PERIODO_MEDICAO_001, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateBeginningMeasurement) ? dateBeginningMeasurement : throw new BadRequestException("Formato da tag DHA_INICIO_PERIODO_MEDICAO incorreto deve ser: dd/MM/yyyy HH:mm:ss");
+                                    if (DateTime.TryParseExact(producao.DHA_INICIO_PERIODO_MEDICAO_001, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateBeginningMeasurement))
+                                    {
+                                        var checkDateExists = await _repository.GetAnyByDate(dateBeginningMeasurement, XmlUtils.File001);
 
-                                    var checkDateExists = await _repository.GetAnyByDate(dateBeginningMeasurement, XmlUtils.File001);
-
-                                    if (checkDateExists && producao is not null)
-                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) data: {producao.DHA_INICIO_PERIODO_MEDICAO_001} já existente");
+                                        if (checkDateExists)
+                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) data: {producao.DHA_INICIO_PERIODO_MEDICAO_001} já existente");
+                                    }
+                                    else
+                                    {
+                                        errorsInImport.Add("Formato da tag DHA_INICIO_PERIODO_MEDICAO incorreto deve ser: dd/MM/yyyy HH:mm:ss");
+                                    }
 
                                     var measurementInDatabase = await _repository.GetUnique001Async(dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_001);
 
@@ -441,12 +446,17 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                 if (dadosBasicos is not null && dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_002 is not null && dadosBasicos.COD_INSTALACAO_002 is not null && dadosBasicos.COD_TAG_PONTO_MEDICAO_002 is not null && producao is not null && producao.DHA_INICIO_PERIODO_MEDICAO_002 is not null)
                                 {
 
-                                    DateTime? isConvertable = DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_002, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateBeginningMeasurement) ? dateBeginningMeasurement : throw new BadRequestException("Formato da tag DHA_INICIO_PERIODO_MEDICAO incorreto deve ser: dd/MM/yyyy HH:mm:ss");
+                                    if (DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_002, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateBeginningMeasurement))
+                                    {
+                                        var checkDateExists = await _repository.GetAnyByDate(dateBeginningMeasurement, XmlUtils.File002);
 
-                                    var checkDateExists = await _repository.GetAnyByDate(dateBeginningMeasurement, XmlUtils.File002);
-
-                                    if (checkDateExists)
-                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) data: {producao.DHA_INICIO_PERIODO_MEDICAO_002} já existente");
+                                        if (checkDateExists)
+                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) data: {producao.DHA_INICIO_PERIODO_MEDICAO_002} já existente");
+                                    }
+                                    else
+                                    {
+                                        errorsInImport.Add("Formato da tag DHA_INICIO_PERIODO_MEDICAO incorreto deve ser: dd/MM/yyyy HH:mm:ss");
+                                    }
 
                                     var measurementInDatabase = await _repository.GetUnique002Async(dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_002);
 
@@ -701,12 +711,18 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                 if (dadosBasicos is not null && dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_003 is not null && dadosBasicos.COD_INSTALACAO_003 is not null && producao is not null && producao.DHA_INICIO_PERIODO_MEDICAO_003 is not null)
                                 {
-                                    DateTime? isConvertable = DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_003, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateBeginningMeasurement) ? dateBeginningMeasurement : throw new BadRequestException("Formato da tag DHA_INICIO_PERIODO_MEDICAO incorreto deve ser: dd/MM/yyyy HH:mm:ss");
 
-                                    var checkDateExists = await _repository.GetAnyByDate(dateBeginningMeasurement, XmlUtils.File003);
+                                    if (DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_003, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateBeginningMeasurement))
+                                    {
+                                        var checkDateExists = await _repository.GetAnyByDate(dateBeginningMeasurement, XmlUtils.File003);
 
-                                    if (checkDateExists)
-                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) data: {producao.DHA_INICIO_PERIODO_MEDICAO_003} já existente");
+                                        if (checkDateExists)
+                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) data: {producao.DHA_INICIO_PERIODO_MEDICAO_003} já existente");
+                                    }
+                                    else
+                                    {
+                                        errorsInImport.Add("Formato da tag DHA_INICIO_PERIODO_MEDICAO incorreto deve ser: dd/MM/yyyy HH:mm:ss");
+                                    }
 
                                     var measurementInDatabase = await _repository.GetUnique003Async(dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_003);
 
@@ -1123,6 +1139,11 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             }
 
             return _responseResult;
+        }
+
+        public async Task<List<string>> DownloadErrors(List<string> errors)
+        {
+            return errors;
         }
     }
 }
