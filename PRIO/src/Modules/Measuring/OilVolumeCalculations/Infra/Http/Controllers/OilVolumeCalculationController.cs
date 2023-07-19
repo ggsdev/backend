@@ -335,7 +335,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                 }
             }
 
-            var returno = new { equation = equation };
+            var returno = new { equation };
             return returno;
         }
 
@@ -350,7 +350,6 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
                 throw new NotFoundException("Instalação não encontrada");
             if (installationInDatabase.OilVolumeCalculation is null)
                 throw new NotFoundException("Intalação não possui cálculo para ser atualizado");
-
 
             if (body.Sections is not null)
                 foreach (var section in body.Sections)
@@ -540,7 +539,6 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
 
                     _context.Sections.Update(foundSection);
                 }
-
             }
 
             if (oilCalculationInDatabase.TOGRecoveredOils.Any())
