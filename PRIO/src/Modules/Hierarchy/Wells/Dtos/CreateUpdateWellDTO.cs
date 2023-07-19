@@ -3,8 +3,8 @@
     public class CreateUpdateWellDTO
     {
         public Guid? Id { get; set; }
-        public string? CodWell { get; set; }
         public string? Name { get; set; }
+        public string? CodWell { get; set; }
         public string? WellOperatorName { get; set; }
         public string? CodWellAnp { get; set; }
         public string? CategoryAnp { get; set; }

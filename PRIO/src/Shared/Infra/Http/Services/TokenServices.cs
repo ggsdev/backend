@@ -68,7 +68,7 @@ namespace PRIO.src.Shared.Infra.Http.Services
                 user.Session = new Session
                 {
                     Token = token,
-                    ExpiresIn = DateTime.UtcNow.AddDays(5),
+                    ExpiresIn = DateTime.UtcNow.AddHours(1),
                     UserHttpAgent = userHttpAgent
                 };
 

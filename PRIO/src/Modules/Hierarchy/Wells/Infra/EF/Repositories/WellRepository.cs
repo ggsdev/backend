@@ -31,6 +31,13 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
+        public async Task<Well?> GetWellAndChildren(Guid? id)
+        {
+            return await _context.Wells
+                                .Include(r => r.Completions)
+                .FirstOrDefaultAsync(c => c.Id == id);
+        }
+
         public async Task<Well?> GetByIdWithFieldAndCompletions(Guid? id)
         {
             return await _context.Wells

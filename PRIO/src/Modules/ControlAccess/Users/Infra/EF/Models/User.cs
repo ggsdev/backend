@@ -7,6 +7,7 @@ using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF.Models;
 using System.Text.Json.Serialization;
 
@@ -35,6 +36,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models
         public List<Zone>? Zones { get; set; }
         [JsonIgnore]
         public List<Measurement>? Measurements { get; set; }
+        public List<MeasurementHistory>? MeasurementsHistories { get; set; }
         public List<MeasuringEquipment>? MeasuringEquipments { get; set; }
         #endregion
     }

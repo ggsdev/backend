@@ -1,21 +1,19 @@
-﻿using PRIO.src.Shared.Infra.EF.Models;
+﻿using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
+using PRIO.src.Shared.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models
 {
     public class GasVolumeCalculation : BaseModel
     {
-        public string? HPFlare { get; set; }
-        public string? LPFlare { get; set; }
-        public string? HighPressureFuelGas { get; set; }
-        public string? LowPressureFuelGas { get; set; }
-        public string? ExportGas1 { get; set; }
-        public string? ExportGas2 { get; set; }
-        public string? ExportGas3 { get; set; }
-        public string? ImportGas1 { get; set; }
-        public string? ImportGas2 { get; set; }
-        public string? ImportGas3 { get; set; }
-        public string? AssistanceGas { get; set; }
-        public string? PilotGas { get; set; }
-        public string? PurgeGas { get; set; }
+        public Installation Installation { get; set; }
+        public List<HPFlare> HPFlares { get; set; } = new();
+        public List<LPFlare> LPFlares { get; set; } = new();
+        public List<HighPressureGas> HighPressureGases { get; set; } = new();
+        public List<LowPressureGas> LowPressureGases { get; set; } = new();
+        public List<ExportGas> ExportGases { get; set; } = new();
+        public List<ImportGas> ImportGases { get; set; } = new();
+        public List<AssistanceGas> AssistanceGases { get; set; } = new();
+        public List<PilotGas> PilotGases { get; set; } = new();
+        public List<PurgeGas> PurgeGases { get; set; } = new();
     }
 }

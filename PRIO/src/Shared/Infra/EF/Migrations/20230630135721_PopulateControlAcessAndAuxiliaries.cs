@@ -57,23 +57,53 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Wells", "TypeBaseCoordinate", "Definitiva",  DateTime.UtcNow },
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Wells", "TypeBaseCoordinate", "Provisória",  DateTime.UtcNow },
 
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "Tramo A",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "Tramo B",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "Tramo C",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "Tramo D",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "Óleo recuperado TOG",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "Volume dreno",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "DOR A",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "DOR B",  DateTime.UtcNow },
+
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "HPFlare",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "LPFlare",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "HighPressureGas",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "LowPressureGas",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "ExportGas1",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "ExportGas2",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "ExportGas3",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "ImportGas1",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "ImportGas2",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "ImportGas3",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "AssistanceGas",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "PilotGas",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "PurgeGas",  DateTime.UtcNow },
+
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Fluid", "Gás",  DateTime.UtcNow },
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Fluid", "Óleo",  DateTime.UtcNow },
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Fluid", "Água",  DateTime.UtcNow },
 
-                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Type", "EC",  DateTime.UtcNow },
-                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Type", "ES",  DateTime.UtcNow },
-                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Type", "EP",  DateTime.UtcNow },
-                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Type", "CV",  DateTime.UtcNow },
+                //new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Type", "EC",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Type", "Elemento Secundário",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Type", "Elemento Primário",  DateTime.UtcNow },
+                //new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Type", "CV",  DateTime.UtcNow },
 
-                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Medidor ultrassônico",  DateTime.UtcNow },
-                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Analisador de BSW",  DateTime.UtcNow },
-                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Medidor coriolis",  DateTime.UtcNow },
+                // Elemento Primário
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Medidor Ultrassônico",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Medidor Coriolis",  DateTime.UtcNow },
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Medidor Turbina",  DateTime.UtcNow },
-                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Medidor magnético",  DateTime.UtcNow },
-                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Apropriação ao poço",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Medidor Magnético",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Medidor Multifásico",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Medidor de Deslocamento Positivo",  DateTime.UtcNow },
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Placa de orifício",  DateTime.UtcNow },
-                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Proving",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Outros",  DateTime.UtcNow },
+
+                //Elemento Secundário
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Transmissor de Pressão Diferencial",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Transmissor de Pressão Estátca",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Transmissor de Temperatura",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Transmissor Multivariável",  DateTime.UtcNow },
 
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypePoint", "Operacional",  DateTime.UtcNow },
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypePoint", "Medição Fiscal",  DateTime.UtcNow },
@@ -98,10 +128,9 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                );
             }
 
-            // criação do grupo
+            // criação do grupo MASTER
             var groupData = new object[]
             {"Master", Guid.NewGuid()};
-
             var nameGroup = (string)groupData[0];
             var idGroup = (Guid)groupData[1];
 
@@ -110,6 +139,18 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                 columns: new[] { "Name", "IsActive", "Id", "CreatedAt", "UpdatedAt" },
                 values: new object[] { nameGroup, true, idGroup, DateTime.UtcNow, DateTime.UtcNow });
 
+            // criação do grupo BASICO
+            var basicGroup = new object[]
+           {"Básico", Guid.NewGuid()};
+            var nameBasicGroup = (string)basicGroup[0];
+            var idBasicGroup = (Guid)basicGroup[1];
+
+            migrationBuilder.InsertData(
+                table: "Groups",
+                columns: new[] { "Name", "IsActive", "Id", "CreatedAt", "UpdatedAt" },
+                values: new object[] { nameBasicGroup, true, idBasicGroup, DateTime.UtcNow, DateTime.UtcNow });
+
+            // criação user master
             var userData = new object[]
             {"Master","master@prio.com.br","master","Master", Guid.NewGuid()};
             var nameUser = (string)userData[0];
@@ -126,8 +167,10 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
             var usersData = new List<object[]>
             {
-                    new object[] {"Nandão", "falberdi.globalhitts@prio3.com.br", null, "falberdi.globalhitts", Guid.NewGuid()},
-                    new object[] { "Felipe", "fsantos@prio3.com.br", null, "fsantos", Guid.NewGuid()},
+                new object[] { "Prinna", "pmonteiro@prio3.com.br", null, "pmonteiro", Guid.NewGuid() } ,
+                new object[] { "Alfredo", "amolisani@prio3.com.br", null, "amolisani", Guid.NewGuid()},
+                new object[] { "Thais", "tgoncalves@prio3.com.br", null, "tgoncalves", Guid.NewGuid()},
+                new object[] { "Fernando", "falberdi.globalhitts@prio3.com.br", null, "falberdi.globalhitts", Guid.NewGuid()} ,
             };
 
             foreach (var user in usersData)
@@ -140,19 +183,18 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
                 migrationBuilder.InsertData(
                     table: "Users",
-                    columns: new[]
-                    {
+                            columns: new[]
+                            {
                             "Name", "Email", "Password", "Username", "IsActive", "Id", "CreatedAt",
                             "UpdatedAt", "GroupId", "Type", "IsPermissionDefault"
-                    },
-                    values: new object[]
-                    {
+                            },
+                            values: new object[]
+                            {
                             nameUserNotMaster, emailUserNotMaster, passwordUserNotMaster, usernameUserNotMaster,
                             true, idUserNotMaster, DateTime.UtcNow, DateTime.UtcNow, idGroup, nameGroup, true
-                    });
+                            });
+
             }
-
-
 
             //criação das operacoes
             var idGetOperation = Guid.NewGuid();
@@ -188,15 +230,17 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                 new object[] { "Grupos", "icon_grupo", "1.2", "/grupos", Guid.NewGuid(), false, true  },
                 new object[] { "Usuários", "icon_usuario", "1.3", "/usuarios", Guid.NewGuid(), false, true },
                 new object[] { "Configurar Cálculos", "icon_configuracao", "1.4", "/configurarCalculos", Guid.NewGuid(), false, true  },
-                new object[] { "Dados de Produção", "FileArrowUp", "2", "/dadosProducao", Guid.NewGuid(), false, false  },
+                new object[] { "Dados de Produção", "FileArrowUp", "2", "/dadosProducao", Guid.NewGuid(), true, false  },
                 new object[] { "Gestão da Produção", "Gear", "3", "/gestaoProducao", Guid.NewGuid(), false, false   },
                 new object[] { "Notificação de Falhas", "WarningOctagon", "4", "/notificacaoFalhas", Guid.NewGuid(), false, false   },
                 new object[] { "Testes de Poços", "ClipboardText", "5", "/testePocos", Guid.NewGuid(), true, false  },
                 new object[] { "Importar Dados Teste de Poço", "icon_importar_dados", "5.1", "/importarDadosTestePoco", Guid.NewGuid(), false, true  },
                 new object[] { "Geração de Arquivos", "File", "6", "/geracaoArquivos", Guid.NewGuid(), false, false  },
                 new object[] { "Relatórios", "Files", "7", "/relatorios", Guid.NewGuid(), false, false },
-                new object[] { "Importar Dados de Hierarquia", "", "1.5", "/importarDadosHierarquia", Guid.NewGuid(), false, true }
+                new object[] { "Importar Dados de Hierarquia", "", "1.5", "/importarDadosHierarquia", Guid.NewGuid(), false, true },
+                new object[] { "Importação dos Dados de Produção", "", "2.1", "/importarDadosProducao", Guid.NewGuid(), false, true }
             };
+
             foreach (var menu in menuData)
             {
                 var nameMenu = (string)menu[0];
@@ -249,12 +293,24 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         values: new object[] { nameMenu, iconMenu, orderMenu, routeMenu, null, true, idMenu, DateTime.UtcNow, DateTime.UtcNow });
                 }
 
+                // PERMISSÕES PARA O GROUP MASTER
                 migrationBuilder.InsertData(
                     table: "GroupPermissions",
                     columns: new[] { "Id", "GroupId", "GroupName", "MenuId", "MenuName", "MenuOrder", "MenuIcon", "MenuRoute", "CreatedAt", "UpdatedAt", "hasParent", "hasChildren", "IsActive" },
                     values: new object[] { idGroupPermission, idGroup, nameGroup, idMenu, nameMenu, orderMenu, iconMenu, routeMenu, DateTime.UtcNow, DateTime.UtcNow, hasParent, hasChildren, true });
 
-                // PERMISSAO PARA MASTER
+                // PERMISSÕES PARA O GROUP BASICO
+                var idGroupBasicoPermission = Guid.NewGuid();
+                if ((string)menu[0] == "Administração" || (string)menu[0] == "Cadastros Básicos")
+                {
+                    migrationBuilder.InsertData(
+                        table: "GroupPermissions",
+                        columns: new[] { "Id", "GroupId", "GroupName", "MenuId", "MenuName", "MenuOrder", "MenuIcon", "MenuRoute", "CreatedAt", "UpdatedAt", "hasParent", "hasChildren", "IsActive" },
+                        values: new object[] { idGroupBasicoPermission, idBasicGroup, nameBasicGroup, idMenu, nameMenu, orderMenu, iconMenu, routeMenu, DateTime.UtcNow, DateTime.UtcNow, hasParent, hasChildren, true });
+                };
+
+                // PERMISSAO PARA USER MASTER
+
                 migrationBuilder.InsertData(
                     table: "UserPermissions",
                     columns: new[] { "Id", "UserId", "GroupMenuId", "GroupId", "GroupName", "MenuId", "MenuName", "MenuOrder", "MenuIcon", "MenuRoute", "CreatedAt", "hasParent", "hasChildren" },
@@ -273,10 +329,21 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                             columns: new[] { "Id", "OperationName", "GlobalOperationId", "GroupPermissionId", "GroupName" },
                             values: new object[] { Guid.NewGuid(), methodOperation, idOperation, idGroupPermission, nameGroup });
 
+                        if ((string)menu[0] == "Administração" || (string)menu[0] == "Cadastros Básicos")
+                        {
+                            if (methodOperation == "GET")
+                            {
+                                migrationBuilder.InsertData(
+                                    table: "GroupOperations",
+                                    columns: new[] { "Id", "OperationName", "GlobalOperationId", "GroupPermissionId", "GroupName" },
+                                    values: new object[] { Guid.NewGuid(), methodOperation, idOperation, idGroupBasicoPermission, nameBasicGroup });
+                            }
+                        }
+
                         migrationBuilder.InsertData(
-                            table: "UserOperations",
-                            columns: new[] { "Id", "OperationName", "GlobalOperationId", "UserPermissionId", "GroupName" },
-                            values: new object[] { Guid.NewGuid(), methodOperation, idOperation, idUserPermission, nameGroup });
+                        table: "UserOperations",
+                        columns: new[] { "Id", "OperationName", "GlobalOperationId", "UserPermissionId", "GroupName" },
+                        values: new object[] { Guid.NewGuid(), methodOperation, idOperation, idUserPermission, nameGroup });
 
                     }
                 }

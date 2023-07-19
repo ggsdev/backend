@@ -72,51 +72,51 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
 
             for (int row = 2; row <= dimension.End.Row; ++row)
             {
-                var columnCluster = worksheetTab.Cells[row, columnPositions[XlsUtils.ClusterColumnName]].Value?.ToString();
+                var cellCluster = worksheetTab.Cells[row, columnPositions[XlsUtils.ClusterColumnName]].Value?.ToString();
 
-                if (columnCluster is not null && columnCluster.ToUpper().Trim().Contains(getInstanceName.ToUpper().Trim()) is false)
+                if (cellCluster is not null && cellCluster.ToUpper().Trim().Contains(getInstanceName.ToUpper().Trim()) is false)
                     continue;
 
-                var columnInstallationCod = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationCodColumnName]].Value?.ToString()?.Trim();
+                var cellInstallationCod = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationCodColumnName]].Value?.ToString()?.Trim();
 
-                var columnInstallation = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationColumnName]].Value?.ToString()?.Trim();
+                var cellInstallation = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationColumnName]].Value?.ToString()?.Trim();
 
-                var columnInstallationCodUep = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationCodUepColumnName]].Value?.ToString()?.Trim();
+                var cellInstallationCodUep = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationCodUepColumnName]].Value?.ToString()?.Trim();
 
-                var columnInstallationNameUep = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationNameUepColumnName]].Value?.ToString()?.Trim();
+                var cellInstallationNameUep = worksheetTab.Cells[row, columnPositions[XlsUtils.InstallationNameUepColumnName]].Value?.ToString()?.Trim();
 
-                var columnField = worksheetTab.Cells[row, columnPositions[XlsUtils.FieldColumnName]].Value?.ToString()?.Trim();
+                var cellField = worksheetTab.Cells[row, columnPositions[XlsUtils.FieldColumnName]].Value?.ToString()?.Trim();
 
-                var columnCodeField = worksheetTab.Cells[row, columnPositions[XlsUtils.FieldCodeColumnName]].Value?.ToString()?.Trim();
+                var cellCodeField = worksheetTab.Cells[row, columnPositions[XlsUtils.FieldCodeColumnName]].Value?.ToString()?.Trim();
 
 
                 #region Well rows
-                var columnWellCodeAnp = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCodeAnpColumnName]].Value?.ToString()?.Trim();
+                var cellWellCodeAnp = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCodeAnpColumnName]].Value?.ToString()?.Trim();
 
-                var columnWellNameAnp = worksheetTab.Cells[row, columnPositions[XlsUtils.WellNameColumnName]].Value?.ToString()?.Trim();
-                var columnWellOperatorName = worksheetTab.Cells[row, columnPositions[XlsUtils.WellNameOperatorColumnName]].Value?.ToString()?.Trim();
-                var columnWellCategoryAnp = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCategoryAnpColumnName]].Value?.ToString()?.Trim();
-                var columnWellCategoryReclassification = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCategoryReclassificationColumnName]].Value?.ToString()?.Trim();
-                var columnWellCategoryOperator = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCategoryOperatorColumnName]].Value?.ToString()?.Trim();
-                var columnWellStatusOperator = worksheetTab.Cells[row, columnPositions[XlsUtils.WellStatusOperatorColumnName]].Value?.ToString()?.ToLower()?.Trim();
-                bool columnWellStatusOperatorBoolean = true;
-                if (columnWellStatusOperator is not null && columnWellStatusOperator.Contains("ativo"))
-                    columnWellStatusOperatorBoolean = true;
-                if (columnWellStatusOperator is not null && columnWellStatusOperator.Contains("inativo"))
-                    columnWellStatusOperatorBoolean = false;
-                var columnWellProfile = worksheetTab.Cells[row, columnPositions[XlsUtils.WellProfileColumnName]].Value?.ToString()?.Trim();
-                var columnWellWaterDepth = worksheetTab.Cells[row, columnPositions[XlsUtils.WellWaterDepthColumnName]].Value?.ToString()?.Trim();
-                var columnWellPerforationTopMd = worksheetTab.Cells[row, columnPositions[XlsUtils.WellPerforationTopMdColumnName]].Value?.ToString()?.Trim();
-                var columnWellBottomPerforationMd = worksheetTab.Cells[row, columnPositions[XlsUtils.WellBottomPerforationColumnName]].Value?.ToString()?.Trim();
-                var columnWellArtificialLift = worksheetTab.Cells[row, columnPositions[XlsUtils.WellArtificialLiftColumnName]].Value?.ToString()?.Trim();
-                var columnWellLatitude4c = worksheetTab.Cells[row, columnPositions[XlsUtils.WellLatitude4cColumnName]].Value?.ToString()?.Trim();
-                var columnWellLongitude4c = worksheetTab.Cells[row, columnPositions[XlsUtils.WellLongitude4cColumnName]].Value?.ToString()?.Trim();
-                var columnWellLatitudeDD = worksheetTab.Cells[row, columnPositions[XlsUtils.WellLatitudeDDColumnName]].Value?.ToString()?.Trim();
-                var columnWellLongitudeDD = worksheetTab.Cells[row, columnPositions[XlsUtils.WellLongitudeDDColumnName]].Value?.ToString()?.Trim();
-                var columnWellDatumHorizontal = worksheetTab.Cells[row, columnPositions[XlsUtils.WellDatumHorizontalColumnName]].Value?.ToString()?.Trim();
-                var columnWellTypeCoordinate = worksheetTab.Cells[row, columnPositions[XlsUtils.WellTypeCoordinateColumnName]].Value?.ToString()?.Trim();
-                var columnWellCoordX = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCoordXColumnName]].Value?.ToString()?.Trim();
-                var columnWellCoordY = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCoordYColumnName]].Value?.ToString()?.Trim();
+                var cellWellNameAnp = worksheetTab.Cells[row, columnPositions[XlsUtils.WellNameColumnName]].Value?.ToString()?.Trim();
+                var cellWellOperatorName = worksheetTab.Cells[row, columnPositions[XlsUtils.WellNameOperatorColumnName]].Value?.ToString()?.Trim();
+                var cellWellCategoryAnp = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCategoryAnpColumnName]].Value?.ToString()?.Trim();
+                var cellWellCategoryReclassification = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCategoryReclassificationColumnName]].Value?.ToString()?.Trim();
+                var cellWellCategoryOperator = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCategoryOperatorColumnName]].Value?.ToString()?.Trim();
+                var cellWellStatusOperator = worksheetTab.Cells[row, columnPositions[XlsUtils.WellStatusOperatorColumnName]].Value?.ToString()?.ToLower()?.Trim();
+                bool cellWellStatusOperatorBoolean = true;
+                if (cellWellStatusOperator is not null && cellWellStatusOperator.Contains("ativo"))
+                    cellWellStatusOperatorBoolean = true;
+                if (cellWellStatusOperator is not null && cellWellStatusOperator.Contains("inativo"))
+                    cellWellStatusOperatorBoolean = false;
+                var cellWellProfile = worksheetTab.Cells[row, columnPositions[XlsUtils.WellProfileColumnName]].Value?.ToString()?.Trim();
+                var cellWellWaterDepth = worksheetTab.Cells[row, columnPositions[XlsUtils.WellWaterDepthColumnName]].Value?.ToString()?.Trim();
+                var cellWellPerforationTopMd = worksheetTab.Cells[row, columnPositions[XlsUtils.WellPerforationTopMdColumnName]].Value?.ToString()?.Trim();
+                var cellWellBottomPerforationMd = worksheetTab.Cells[row, columnPositions[XlsUtils.WellBottomPerforationColumnName]].Value?.ToString()?.Trim();
+                var cellWellArtificialLift = worksheetTab.Cells[row, columnPositions[XlsUtils.WellArtificialLiftColumnName]].Value?.ToString()?.Trim();
+                var cellWellLatitude4c = worksheetTab.Cells[row, columnPositions[XlsUtils.WellLatitude4cColumnName]].Value?.ToString()?.Trim();
+                var cellWellLongitude4c = worksheetTab.Cells[row, columnPositions[XlsUtils.WellLongitude4cColumnName]].Value?.ToString()?.Trim();
+                var cellcolumnWellLatitudeDD = worksheetTab.Cells[row, columnPositions[XlsUtils.WellLatitudeDDColumnName]].Value?.ToString()?.Trim();
+                var cellWellLongitudeDD = worksheetTab.Cells[row, columnPositions[XlsUtils.WellLongitudeDDColumnName]].Value?.ToString()?.Trim();
+                var cellWellDatumHorizontal = worksheetTab.Cells[row, columnPositions[XlsUtils.WellDatumHorizontalColumnName]].Value?.ToString()?.Trim();
+                var cellWellTypeCoordinate = worksheetTab.Cells[row, columnPositions[XlsUtils.WellTypeCoordinateColumnName]].Value?.ToString()?.Trim();
+                var cellWellCoordX = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCoordXColumnName]].Value?.ToString()?.Trim();
+                var cellWellCoordY = worksheetTab.Cells[row, columnPositions[XlsUtils.WellCoordYColumnName]].Value?.ToString()?.Trim();
                 #endregion
 
                 var columnZone = worksheetTab.Cells[row, columnPositions[XlsUtils.ZoneCodeColumnName]].Value?.ToString()?.Trim();
@@ -125,19 +125,19 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
 
                 var columnCompletion = worksheetTab.Cells[row, columnPositions[XlsUtils.CompletionColumnName]].Value?.ToString()?.Trim();
 
-                if (columnCluster is not null && columnCluster.ToUpper().Trim().Contains(getInstanceName.ToUpper().Trim()) is true)
+                if (cellCluster is not null && cellCluster.ToUpper().Trim().Contains(getInstanceName.ToUpper().Trim()) is true)
                 {
-                    if (string.IsNullOrWhiteSpace(columnCluster) || string.IsNullOrWhiteSpace(columnInstallationCod) || string.IsNullOrWhiteSpace(columnInstallationCodUep) || string.IsNullOrWhiteSpace(columnInstallationNameUep) || string.IsNullOrWhiteSpace(columnCodeField) || string.IsNullOrWhiteSpace(columnZone) || string.IsNullOrWhiteSpace(columnReservoir) || string.IsNullOrWhiteSpace(columnWellCodeAnp) || string.IsNullOrWhiteSpace(columnCompletion))
+                    if (string.IsNullOrWhiteSpace(cellCluster) || string.IsNullOrWhiteSpace(cellInstallationCod) || string.IsNullOrWhiteSpace(cellInstallationCodUep) || string.IsNullOrWhiteSpace(cellInstallationNameUep) || string.IsNullOrWhiteSpace(cellCodeField) || string.IsNullOrWhiteSpace(columnZone) || string.IsNullOrWhiteSpace(columnReservoir) || string.IsNullOrWhiteSpace(cellWellCodeAnp) || string.IsNullOrWhiteSpace(columnCompletion))
                     {
                         errorCount++;
                         continue;
                     }
                 }
 
-                if (!string.IsNullOrWhiteSpace(columnCluster) && !entityDictionary.TryGetValue(columnCluster.ToLower(), out var cluster))
+                if (!string.IsNullOrWhiteSpace(cellCluster) && !entityDictionary.TryGetValue(cellCluster.ToLower(), out var cluster))
                 {
                     cluster = await _context.Clusters
-                        .FirstOrDefaultAsync(x => x.Name.ToLower().Trim() == columnCluster.ToLower().Trim());
+                        .FirstOrDefaultAsync(x => x.Name.ToLower().Trim() == cellCluster.ToLower().Trim());
 
                     if (cluster is null)
                     {
@@ -145,7 +145,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                         cluster = new Cluster
                         {
                             Id = clusterId,
-                            Name = columnCluster,
+                            Name = cellCluster,
                             User = user,
                             IsActive = true,
                             CodCluster = "N/A",
@@ -154,100 +154,118 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                         await _systemHistoryService
                             .Import<Cluster, ClusterHistoryDTO>(HistoryColumns.TableClusters, user, data.FileName, cluster.Id, (Cluster)cluster);
 
-                        entityDictionary[columnCluster.ToLower()] = cluster;
+                        entityDictionary[cellCluster.ToLower()] = cluster;
                     }
                 }
 
-                if (!string.IsNullOrWhiteSpace(columnInstallationCod) && !entityDictionary.TryGetValue(columnInstallationCod.ToLower(), out var installation))
+                if (!string.IsNullOrWhiteSpace(cellInstallationCod) && !string.IsNullOrWhiteSpace(cellCluster) && !entityDictionary.TryGetValue(cellInstallationCod.ToLower(), out var installation))
                 {
                     installation = await _context.Installations
-                        .FirstOrDefaultAsync(x => x.CodInstallationAnp.ToLower().Trim() == columnInstallationCod.ToLower().Trim());
+                        .FirstOrDefaultAsync(x => x.CodInstallationAnp.ToLower().Trim() == cellInstallationCod.ToLower().Trim());
 
                     if (installation is null)
                     {
+                        var clusterInDatabase = await _context.Clusters
+                            .FirstOrDefaultAsync(x => x.Name == cellCluster);
+
                         var installationId = Guid.NewGuid();
-
-                        if (columnCluster is not null && entityDictionary.GetValueOrDefault(columnCluster.ToLower()) is null)
+                        if (clusterInDatabase is not null && clusterInDatabase.IsActive)
                         {
-                            var clusterInDatabase = await _context.Clusters
-                                .FirstOrDefaultAsync(x => x.Name == columnCluster);
-
                             installation = new Installation
                             {
                                 Id = installationId,
-                                Name = columnInstallation,
-                                UepCod = columnInstallationCodUep,
-                                CodInstallationAnp = columnInstallationCod,
-                                UepName = columnInstallationNameUep,
+                                Name = cellInstallation,
+                                UepCod = cellInstallationCodUep,
+                                CodInstallationAnp = cellInstallationCod,
+                                UepName = cellInstallationNameUep,
                                 User = user,
                                 IsActive = true,
                                 Cluster = clusterInDatabase
                             };
                         }
-                        else if (columnCluster is not null && entityDictionary.GetValueOrDefault(columnCluster.ToLower()) is not null)
+                        else if (clusterInDatabase is null && entityDictionary.GetValueOrDefault(cellCluster.ToLower()) is not null)
                         {
                             installation = new Installation
                             {
                                 Id = installationId,
-                                Name = columnInstallation,
-                                UepCod = columnInstallationCodUep,
-                                CodInstallationAnp = columnInstallationCod,
-                                UepName = columnInstallationNameUep,
+                                Name = cellInstallation,
+                                UepCod = cellInstallationCodUep,
+                                CodInstallationAnp = cellInstallationCod,
+                                UepName = cellInstallationNameUep,
                                 User = user,
                                 IsActive = true,
-                                Cluster = entityDictionary.GetValueOrDefault(columnCluster.ToLower()) as Cluster
+                                Cluster = entityDictionary.GetValueOrDefault(cellCluster.ToLower()) as Cluster
                             };
                         }
+                        if (installation is not null)
+                        {
+                            await _systemHistoryService
+                                .Import<Installation, InstallationHistoryDTO>(HistoryColumns.TableInstallations, user, data.FileName, installation.Id, (Installation)installation);
 
-                        await _systemHistoryService
-                            .Import<Installation, InstallationHistoryDTO>(HistoryColumns.TableInstallations, user, data.FileName, installation.Id, (Installation)installation);
-
-                        entityDictionary[columnInstallationCod.ToLower()] = installation;
+                            entityDictionary[cellInstallationCod.ToLower()] = installation;
+                        }
                     }
                 }
 
-                if (!string.IsNullOrWhiteSpace(columnCodeField) && !entityDictionary.TryGetValue(columnCodeField.ToLower(), out var field))
+                if (!string.IsNullOrWhiteSpace(cellCodeField) && !string.IsNullOrWhiteSpace(cellInstallationCod) && !entityDictionary.TryGetValue(cellCodeField.ToLower(), out var field))
                 {
                     field = await _context.Fields
-                        .FirstOrDefaultAsync(x => x.CodField.ToLower().Trim() == columnCodeField.ToLower().Trim());
+                        .FirstOrDefaultAsync(x => x.CodField.ToLower().Trim() == cellCodeField.ToLower().Trim());
 
                     if (field is null)
                     {
-                        var fieldId = Guid.NewGuid();
-
                         var installationInDatabase = await _context.Installations
-                            .FirstOrDefaultAsync(x => x.CodInstallationAnp == columnInstallationCod);
+                            .FirstOrDefaultAsync(x => x.CodInstallationAnp == cellInstallationCod);
 
-                        field = new Field
+                        var fieldId = Guid.NewGuid();
+                        if (installationInDatabase is not null && installationInDatabase.IsActive)
                         {
-                            Id = fieldId,
-                            Name = columnField,
-                            User = user,
-                            Installation = entityDictionary.GetValueOrDefault(columnInstallationCod.ToLower()) as Installation is null ? installationInDatabase : entityDictionary.GetValueOrDefault(columnInstallationCod.ToLower()) as Installation,
-                            CodField = columnCodeField,
-                            IsActive = true,
-                        };
+                            field = new Field
+                            {
+                                Id = fieldId,
+                                Name = cellField,
+                                User = user,
+                                Installation = installationInDatabase,
+                                CodField = cellCodeField,
+                                IsActive = true,
+                            };
 
-                        await _systemHistoryService
+                        }
+                        else if (installationInDatabase is null && entityDictionary.GetValueOrDefault(cellInstallationCod.ToLower()) is not null)
+                        {
+                            field = new Field
+                            {
+                                Id = fieldId,
+                                Name = cellField,
+                                User = user,
+                                Installation = entityDictionary.GetValueOrDefault(cellInstallationCod.ToLower()) as Installation,
+                                CodField = cellCodeField,
+                                IsActive = true,
+                            };
+                        }
+                        if (field is not null)
+                        {
+                            await _systemHistoryService
                              .Import<Field, FieldHistoryDTO>(HistoryColumns.TableFields, user, data.FileName, field.Id, (Field)field);
 
-                        entityDictionary[columnCodeField.ToLower()] = field;
+                            entityDictionary[cellCodeField.ToLower()] = field;
+                        }
                     }
                 }
 
-                if (!string.IsNullOrWhiteSpace(columnZone) && !entityDictionary.TryGetValue(columnZone.ToLower(), out var zone))
+                if (!string.IsNullOrWhiteSpace(columnZone) && !string.IsNullOrWhiteSpace(cellCodeField) && !entityDictionary.TryGetValue(columnZone.ToLower(), out var zone))
                 {
                     zone = await _context.Zones
                         .FirstOrDefaultAsync(x => x.CodZone.ToLower().Trim() == columnZone.ToLower().Trim());
 
                     if (zone is null)
                     {
-                        var zoneId = Guid.NewGuid();
-                        if (columnCodeField is not null && entityDictionary.GetValueOrDefault(columnCodeField.ToLower()) is null)
-                        {
-                            var fieldInDatabase = await _context.Fields
-                            .FirstOrDefaultAsync(x => x.CodField == columnCodeField);
+                        var fieldInDatabase = await _context.Fields
+                        .FirstOrDefaultAsync(x => x.CodField == cellCodeField);
 
+                        var zoneId = Guid.NewGuid();
+                        if (fieldInDatabase is not null && fieldInDatabase.IsActive)
+                        {
                             zone = new Zone
                             {
                                 Id = zoneId,
@@ -258,7 +276,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             };
                         }
 
-                        else if (columnCodeField is not null && entityDictionary.GetValueOrDefault(columnCodeField.ToLower()) is not null)
+                        else if (fieldInDatabase is null && entityDictionary.GetValueOrDefault(cellCodeField.ToLower()) is not null)
                         {
                             zone = new Zone
                             {
@@ -266,91 +284,142 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                 CodZone = columnZone,
                                 User = user,
                                 IsActive = true,
-                                Field = entityDictionary.GetValueOrDefault(columnCodeField.ToLower()) as Field
+                                Field = entityDictionary.GetValueOrDefault(cellCodeField.ToLower()) as Field
                             };
                         }
+                        if (zone is not null)
+                        {
+                            await _systemHistoryService
+                           .Import<Zone, ZoneHistoryDTO>(HistoryColumns.TableZones, user, data.FileName, zone.Id, (Zone)zone);
 
-                        await _systemHistoryService
-                            .Import<Zone, ZoneHistoryDTO>(HistoryColumns.TableZones, user, data.FileName, zoneId, (Zone)zone);
-
-                        entityDictionary[columnZone.ToLower()] = zone;
+                            entityDictionary[columnZone.ToLower()] = zone;
+                        }
                     }
                 }
 
-                if (!string.IsNullOrWhiteSpace(columnReservoir) && !entityDictionary.TryGetValue(columnReservoir.ToLower(), out var reservoir))
+                if (!string.IsNullOrWhiteSpace(columnReservoir) && !string.IsNullOrWhiteSpace(columnZone) && !entityDictionary.TryGetValue(columnReservoir.ToLower(), out var reservoir))
                 {
                     reservoir = await _context.Reservoirs
                         .FirstOrDefaultAsync(x => x.Name.ToLower().Trim() == columnReservoir.ToLower().Trim());
 
                     if (reservoir is null)
                     {
-                        var reservoirId = Guid.NewGuid();
-
                         var zoneInDatabase = await _context.Zones
                             .FirstOrDefaultAsync(x => x.CodZone == columnZone);
-
-                        reservoir = new Reservoir
+                        var reservoirId = Guid.NewGuid();
+                        if (zoneInDatabase is not null && zoneInDatabase.IsActive)
                         {
-                            Id = reservoirId,
-                            Name = columnReservoir,
-                            User = user,
-                            CodReservoir = "N/A",
-                            Zone = entityDictionary.GetValueOrDefault(columnZone.ToLower()) as Zone is null ? zoneInDatabase : entityDictionary.GetValueOrDefault(columnZone.ToLower()) as Zone,
-                            IsActive = true,
-                        };
+                            reservoir = new Reservoir
+                            {
+                                Id = reservoirId,
+                                Name = columnReservoir,
+                                User = user,
+                                CodReservoir = "N/A",
+                                Zone = zoneInDatabase,
+                                IsActive = true,
+                            };
+                        }
+                        else if (zoneInDatabase is null && entityDictionary.GetValueOrDefault(columnZone.ToLower()) is not null)
+                        {
+                            reservoir = new Reservoir
+                            {
+                                Id = reservoirId,
+                                Name = columnReservoir,
+                                User = user,
+                                CodReservoir = "N/A",
+                                Zone = entityDictionary.GetValueOrDefault(columnZone.ToLower()) as Zone,
+                                IsActive = true,
+                            };
+                        }
+                        if (reservoir is not null)
+                        {
+                            await _systemHistoryService
+                                .Import<Reservoir, ReservoirHistoryDTO>(HistoryColumns.TableReservoirs, user, data.FileName, reservoir.Id, (Reservoir)reservoir);
 
-                        await _systemHistoryService
-                            .Import<Reservoir, ReservoirHistoryDTO>(HistoryColumns.TableReservoirs, user, data.FileName, reservoir.Id, (Reservoir)reservoir);
-
-                        entityDictionary[columnReservoir.ToLower()] = reservoir;
+                            entityDictionary[columnReservoir.ToLower()] = reservoir;
+                        }
                     }
                 }
 
-                if (!string.IsNullOrWhiteSpace(columnWellCodeAnp) && !entityDictionary.TryGetValue(columnWellCodeAnp.ToLower(), out var well))
+                if (!string.IsNullOrWhiteSpace(cellWellCodeAnp) && !string.IsNullOrWhiteSpace(cellCodeField) && !entityDictionary.TryGetValue(cellWellCodeAnp.ToLower(), out var well))
                 {
                     well = await _context.Wells
-                        .FirstOrDefaultAsync(x => x.CodWellAnp.ToLower() == columnWellCodeAnp.ToLower());
+                        .FirstOrDefaultAsync(x => x.CodWellAnp.ToLower() == cellWellCodeAnp.ToLower());
 
                     if (well is null)
                     {
+                        var fieldInDatabase = await _context.Fields
+                            .FirstOrDefaultAsync(x => x.CodField == cellCodeField);
                         var wellId = Guid.NewGuid();
 
-                        var fieldInDatabase = await _context.Fields
-                            .FirstOrDefaultAsync(x => x.CodField == columnCodeField);
-
-                        well = new Well
+                        if (fieldInDatabase is not null && fieldInDatabase.IsActive)
                         {
-                            Id = wellId,
-                            Name = columnWellNameAnp,
-                            WellOperatorName = columnWellOperatorName,
-                            CodWellAnp = columnWellCodeAnp,
-                            CategoryAnp = columnWellCategoryAnp,
-                            CategoryReclassificationAnp = columnWellCategoryReclassification,
-                            CategoryOperator = columnWellCategoryOperator,
-                            StatusOperator = columnWellStatusOperatorBoolean,
-                            Type = columnWellProfile,
-                            WaterDepth = decimal.TryParse(columnWellWaterDepth?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var columnWellWaterDepthDouble) ? columnWellWaterDepthDouble : 0,
-                            TopOfPerforated = decimal.TryParse(columnWellPerforationTopMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var topOfPerforated) ? topOfPerforated : 0,
-                            BaseOfPerforated = decimal.TryParse(columnWellBottomPerforationMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var baseOfPerforated) ? baseOfPerforated : 0,
-                            ArtificialLift = columnWellArtificialLift,
-                            Latitude4C = columnWellLatitude4c,
-                            Longitude4C = columnWellLongitude4c,
-                            LatitudeDD = columnWellLatitudeDD,
-                            LongitudeDD = columnWellLongitudeDD,
-                            DatumHorizontal = columnWellDatumHorizontal,
-                            TypeBaseCoordinate = columnWellTypeCoordinate,
-                            CoordX = columnWellCoordX,
-                            CoordY = columnWellCoordY,
-                            User = user,
-                            IsActive = columnWellStatusOperatorBoolean,
-                            Field = entityDictionary.GetValueOrDefault(columnCodeField.ToLower()) as Field is null ? fieldInDatabase : entityDictionary.GetValueOrDefault(columnCodeField.ToLower()) as Field,
-                        };
+                            well = new Well
+                            {
+                                Id = wellId,
+                                Name = cellWellNameAnp,
+                                WellOperatorName = cellWellOperatorName,
+                                CodWellAnp = cellWellCodeAnp,
+                                CategoryAnp = cellWellCategoryAnp,
+                                CategoryReclassificationAnp = cellWellCategoryReclassification,
+                                CategoryOperator = cellWellCategoryOperator,
+                                StatusOperator = cellWellStatusOperatorBoolean,
+                                Type = cellWellProfile,
+                                WaterDepth = decimal.TryParse(cellWellWaterDepth?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var cellWellWaterDepthDouble) ? cellWellWaterDepthDouble : 0,
+                                TopOfPerforated = decimal.TryParse(cellWellPerforationTopMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var topOfPerforated) ? topOfPerforated : 0,
+                                BaseOfPerforated = decimal.TryParse(cellWellBottomPerforationMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var baseOfPerforated) ? baseOfPerforated : 0,
+                                ArtificialLift = cellWellArtificialLift,
+                                Latitude4C = cellWellLatitude4c,
+                                Longitude4C = cellWellLongitude4c,
+                                LatitudeDD = cellcolumnWellLatitudeDD,
+                                LongitudeDD = cellWellLongitudeDD,
+                                DatumHorizontal = cellWellDatumHorizontal,
+                                TypeBaseCoordinate = cellWellTypeCoordinate,
+                                CoordX = cellWellCoordX,
+                                CoordY = cellWellCoordY,
+                                User = user,
+                                IsActive = cellWellStatusOperatorBoolean,
+                                Field = fieldInDatabase,
+                            };
+                        }
+                        else if (fieldInDatabase is null && entityDictionary.GetValueOrDefault(cellCodeField.ToLower()) is not null)
+                        {
+                            well = new Well
+                            {
+                                Id = wellId,
+                                Name = cellWellNameAnp,
+                                WellOperatorName = cellWellOperatorName,
+                                CodWellAnp = cellWellCodeAnp,
+                                CategoryAnp = cellWellCategoryAnp,
+                                CategoryReclassificationAnp = cellWellCategoryReclassification,
+                                CategoryOperator = cellWellCategoryOperator,
+                                StatusOperator = cellWellStatusOperatorBoolean,
+                                Type = cellWellProfile,
+                                WaterDepth = decimal.TryParse(cellWellWaterDepth?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var cellWellWaterDepthDouble) ? cellWellWaterDepthDouble : 0,
+                                TopOfPerforated = decimal.TryParse(cellWellPerforationTopMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var topOfPerforated) ? topOfPerforated : 0,
+                                BaseOfPerforated = decimal.TryParse(cellWellBottomPerforationMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var baseOfPerforated) ? baseOfPerforated : 0,
+                                ArtificialLift = cellWellArtificialLift,
+                                Latitude4C = cellWellLatitude4c,
+                                Longitude4C = cellWellLongitude4c,
+                                LatitudeDD = cellcolumnWellLatitudeDD,
+                                LongitudeDD = cellWellLongitudeDD,
+                                DatumHorizontal = cellWellDatumHorizontal,
+                                TypeBaseCoordinate = cellWellTypeCoordinate,
+                                CoordX = cellWellCoordX,
+                                CoordY = cellWellCoordY,
+                                User = user,
+                                IsActive = cellWellStatusOperatorBoolean,
+                                Field = entityDictionary.GetValueOrDefault(cellCodeField.ToLower()) as Field,
+                            };
+                        }
+                        if (well is not null)
+                        {
+                            await _systemHistoryService
+                            .Import<Well, WellHistoryDTO>(HistoryColumns.TableWells, user, data.FileName, well.Id, (Well)well);
 
-                        await _systemHistoryService
-                        .Import<Well, WellHistoryDTO>(HistoryColumns.TableWells, user, data.FileName, well.Id, (Well)well);
+                            entityDictionary[cellWellCodeAnp.ToLower()] = well;
 
-                        entityDictionary[columnWellCodeAnp.ToLower()] = well;
-
+                        }
                     }
 
                     else
@@ -361,65 +430,89 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
 
                         var propertiesToUpdate = new WellUpdateImportViewModel
                         {
-                            WellOperatorName = columnWellOperatorName,
-                            CategoryAnp = columnWellCategoryAnp,
-                            CategoryReclassificationAnp = columnWellCategoryReclassification,
-                            CategoryOperator = columnWellCategoryOperator,
-                            StatusOperator = columnWellStatusOperatorBoolean,
-                            Type = columnWellProfile,
-                            WaterDepth = decimal.TryParse(columnWellWaterDepth?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var columnWellWaterDepthDouble) ? columnWellWaterDepthDouble : 0,
-                            TopOfPerforated = decimal.TryParse(columnWellPerforationTopMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var topOfPerforated) ? topOfPerforated : 0,
-                            BaseOfPerforated = decimal.TryParse(columnWellBottomPerforationMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var baseOfPerforated) ? baseOfPerforated : 0,
-                            ArtificialLift = columnWellArtificialLift,
-                            Latitude4C = columnWellLatitude4c,
-                            Longitude4C = columnWellLongitude4c,
-                            LatitudeDD = columnWellLatitudeDD,
-                            LongitudeDD = columnWellLongitudeDD,
-                            DatumHorizontal = columnWellDatumHorizontal,
-                            TypeBaseCoordinate = columnWellTypeCoordinate,
-                            CoordX = columnWellCoordX,
-                            CoordY = columnWellCoordY,
-                            IsActive = columnWellStatusOperatorBoolean
+                            WellOperatorName = cellWellOperatorName,
+                            CategoryAnp = cellWellCategoryAnp,
+                            CategoryReclassificationAnp = cellWellCategoryReclassification,
+                            CategoryOperator = cellWellCategoryOperator,
+                            StatusOperator = cellWellStatusOperatorBoolean,
+                            Type = cellWellProfile,
+                            WaterDepth = decimal.TryParse(cellWellWaterDepth?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var cellWellWaterDepthDouble) ? cellWellWaterDepthDouble : 0,
+                            TopOfPerforated = decimal.TryParse(cellWellPerforationTopMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var topOfPerforated) ? topOfPerforated : 0,
+                            BaseOfPerforated = decimal.TryParse(cellWellBottomPerforationMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var baseOfPerforated) ? baseOfPerforated : 0,
+                            ArtificialLift = cellWellArtificialLift,
+                            Latitude4C = cellWellLatitude4c,
+                            Longitude4C = cellWellLongitude4c,
+                            LatitudeDD = cellcolumnWellLatitudeDD,
+                            LongitudeDD = cellWellLongitudeDD,
+                            DatumHorizontal = cellWellDatumHorizontal,
+                            TypeBaseCoordinate = cellWellTypeCoordinate,
+                            CoordX = cellWellCoordX,
+                            CoordY = cellWellCoordY,
+                            IsActive = cellWellStatusOperatorBoolean
                         };
 
                         var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(wellConverted, propertiesToUpdate);
 
                         if (updatedProperties.Any() is true)
                         {
-                            updatedDictionary[columnWellCodeAnp.ToLower()] = well;
+                            updatedDictionary[cellWellCodeAnp.ToLower()] = well;
 
                             await _systemHistoryService
                                 .ImportUpdate(HistoryColumns.TableWells, user, data.FileName, updatedProperties, wellConverted.Id, wellConverted, beforeChangesWell);
                         }
                     }
                 }
-                if (!string.IsNullOrWhiteSpace(columnCompletion) && !entityDictionary.TryGetValue(columnCompletion.ToLower(), out var completion))
+
+                if (!string.IsNullOrWhiteSpace(columnCompletion) && !string.IsNullOrWhiteSpace(columnReservoir) && !string.IsNullOrWhiteSpace(cellWellCodeAnp) && !entityDictionary.TryGetValue(columnCompletion.ToLower(), out var completion))
                 {
                     completion = await _context.Completions
                     .FirstOrDefaultAsync(x => x.Name == columnCompletion);
 
                     if (completion is null && columnCompletion is not null)
                     {
+                        var wellInDatabase = await _context.Wells
+                            .FirstOrDefaultAsync(x => x.CodWellAnp == cellWellCodeAnp);
+
+                        var reservoirInDatabase = await _context.Reservoirs
+                            .FirstOrDefaultAsync(x => x.Name.ToUpper() == columnReservoir.ToUpper());
+
                         var completionId = Guid.NewGuid();
 
-                        var wellInDatabase = await _context.Wells
-                            .FirstOrDefaultAsync(x => x.CodWellAnp == columnWellCodeAnp);
-
-                        completion = new Completion
+                        if ((wellInDatabase is not null && wellInDatabase.IsActive) || (reservoirInDatabase is not null && reservoirInDatabase.IsActive))
                         {
-                            Id = completionId,
-                            Name = columnCompletion,
-                            User = user,
-                            CodCompletion = "N/A",
-                            Reservoir = columnReservoir is not null ? entityDictionary.GetValueOrDefault(columnReservoir.ToLower()) as Reservoir : null,
-                            Well = entityDictionary.GetValueOrDefault(columnWellCodeAnp.ToLower()) as Well is null ? wellInDatabase : entityDictionary.GetValueOrDefault(columnWellCodeAnp.ToLower()) as Well,
-                            IsActive = true
-                        };
+                            completion = new Completion
+                            {
+                                Id = completionId,
+                                Name = columnCompletion,
+                                User = user,
+                                CodCompletion = "N/A",
+                                Reservoir = reservoirInDatabase is null ? entityDictionary.GetValueOrDefault(columnReservoir.ToLower()) as Reservoir : reservoirInDatabase,
+                                Well = wellInDatabase is null ? entityDictionary.GetValueOrDefault(cellWellCodeAnp.ToLower()) as Well : wellInDatabase,
+                                IsActive = true
+                            };
+                        }
 
-                        await _systemHistoryService
-                             .Import<Completion, CompletionHistoryDTO>(HistoryColumns.TableCompletions, user, data.FileName, completion.Id, (Completion)completion);
+                        else if ((wellInDatabase is null && entityDictionary.GetValueOrDefault(cellWellCodeAnp.ToLower()) is not null) && (entityDictionary.GetValueOrDefault(columnReservoir.ToLower()) is not null && reservoirInDatabase is null))
+                        {
+                            completion = new Completion
+                            {
+                                Id = completionId,
+                                Name = columnCompletion,
+                                User = user,
+                                CodCompletion = "N/A",
+                                Reservoir = entityDictionary.GetValueOrDefault(columnReservoir.ToLower()) as Reservoir,
+                                Well = entityDictionary.GetValueOrDefault(cellWellCodeAnp.ToLower()) as Well,
+                                IsActive = true
+                            };
+                        }
 
-                        entityDictionary[columnCompletion.ToLower()] = completion;
+                        if (completion is not null)
+                        {
+                            await _systemHistoryService
+                                 .Import<Completion, CompletionHistoryDTO>(HistoryColumns.TableCompletions, user, data.FileName, completion.Id, (Completion)completion);
+
+                            entityDictionary[columnCompletion.ToLower()] = completion;
+                        }
                     }
                 }
             }

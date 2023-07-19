@@ -45,7 +45,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
                 .DecryptAes(body.Username, secretKey);
 
             var password = Decrypt
-            .DecryptAes(body.Password, secretKey);
+              .DecryptAes(body.Password, secretKey);
 
             var credentialsValid = ActiveDirectory
                 .VerifyCredentialsWithActiveDirectory(username, password);
@@ -56,41 +56,40 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
                     Message = "Usuário ou senha inválida."
                 });
 
+            var treatedUsername = username.Split('@')[0];
+
             var user = await _context
                 .Users
                 .Include(u => u.Session)
-                .FirstOrDefaultAsync(x => x.Username == username && x.IsActive);
+                .Include(u => u.Group)
+                .FirstOrDefaultAsync(x => x.Username.ToLower().Trim() == treatedUsername.ToLower().Trim() && x.IsActive);
 
-            string token;
             var userHttpAgent = Request.Headers["User-Agent"].ToString();
 
-            if (user is null)
+            if (user is null || user.Group is null)
             {
-                var userId = Guid.NewGuid();
-                var createUser = new User
+                return Unauthorized(new ErrorResponseDTO
                 {
-                    Id = userId,
-                    Username = username,
-                };
-
-                await _context.Users.AddAsync(createUser);
+                    Message = "Usuário sem permissões."
+                });
+                //var userId = Guid.NewGuid();
+                //var createUser = new User
+                //{
+                //    Id = userId,
+                //    Username = treatedUsername,
+                //};
+                //await _context.Users.AddAsync(createUser);
 
                 //await _systemHistoryService
                 //    .Create<User, UserHistoryDTO>(HistoryColumns.TableUsers, createUser, userId, createUser);
 
-                await _context.SaveChangesAsync();
-
-                token = await _tokenServices.CreateSessionAndToken(createUser, userHttpAgent);
-            }
-            else
-            {
-                token = await _tokenServices.CreateSessionAndToken(user, userHttpAgent);
-
+                //await _context.SaveChangesAsync();
+                //token = await _tokenServices.CreateSessionAndToken(createUser, userHttpAgent);
             }
 
             return Ok(new LoginDTO
             {
-                Token = token,
+                Token = await _tokenServices.CreateSessionAndToken(user, userHttpAgent)
             });
         }
 
@@ -106,10 +105,10 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
                 return BadRequest(new ErrorResponseDTO { Message = "Username and password not encrypted." });
 
             var usernameDecrypted = Decrypt
-                .DecryptAes(body.Username, secretKey);
+               .DecryptAes(body.Username, secretKey);
 
             var passwordDecrypted = Decrypt
-                .DecryptAes(body.Password, secretKey);
+               .DecryptAes(body.Password, secretKey);
 
             var user = await _context
                 .Users
@@ -192,6 +191,44 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
             return Ok(new LoginDTO
             {
                 Token = token,
+            });
+        }
+
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginDTO))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponseDTO))]
+        [HttpPost("loginNandao")]
+        public async Task<IActionResult> LoginNandao([FromBody] LoginAdViewModel body)
+        {
+
+            var credentialsValid = ActiveDirectory
+               .VerifyCredentialsWithActiveDirectory(body.Username, body.Password);
+
+            if (credentialsValid is false)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "Usuário ou senha inválida."
+                });
+
+            var user = await _context
+                .Users
+                .Include(u => u.Session)
+                .FirstOrDefaultAsync(x => x.Username == body.Username);
+
+            string token;
+            var userHttpAgent = Request.Headers["User-Agent"].ToString();
+
+            if (user is null || user.Group is null)
+            {
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "Usuário sem permissões."
+                });
+            }
+
+            return Ok(new LoginDTO
+            {
+                Token = await _tokenServices.CreateSessionAndToken(user, userHttpAgent)
             });
         }
 

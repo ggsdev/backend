@@ -9,6 +9,7 @@
         private static readonly string _reservoir = "Reservoir";
         private static readonly string _completion = "Completion";
         private static readonly string _zone = "Zone";
+        private static readonly string _user = "User";
         private static readonly string _equipment = "MeasuringEquipment";
 
         //private readonly IStringLocalizer<ErrorMessages> _localizer;
@@ -44,6 +45,9 @@
 
             if (typeof(TModel).Name == _equipment)
                 return "Equipamento de medição" + message;
+
+            if (typeof(TModel).Name == _user)
+                return "Usuário" + message;
 
             return message;
 
@@ -83,7 +87,7 @@
 
         public static string ActiveAlready<TModel>()
         {
-            var message = " já está ativo.";
+            var message = " já está ativo(a).";
 
             if (typeof(TModel).Name == _cluster)
                 return "Cluster" + message;
@@ -173,6 +177,35 @@
                 return "Equipamento de medição" + message;
             return message;
         }
+        public static string CodCantBeUpdated<TModel>()
+        {
+            var message = " não pode ter o código alterado.";
+
+            if (typeof(TModel).Name == _cluster)
+                return "Cluster" + message;
+
+            if (typeof(TModel).Name == _installation)
+                return "Instalação" + message;
+
+            if (typeof(TModel).Name == _field)
+                return "Campo" + message;
+
+            if (typeof(TModel).Name == _zone)
+                return "Zona" + message;
+
+            if (typeof(TModel).Name == _reservoir)
+                return "Reservatório" + message;
+
+            if (typeof(TModel).Name == _well)
+                return "Poço" + message;
+
+            if (typeof(TModel).Name == _completion)
+                return "Completação" + message;
+
+            if (typeof(TModel).Name == _equipment)
+                return "Equipamento de medição" + message;
+            return message;
+        }
 
         public static string DifferentFieldsCompletion()
         {
@@ -182,6 +215,37 @@
         public static string WellAndReservoirAlreadyCompletion()
         {
             return "Já existe uma completação com esse poço e reservatório associados";
+        }
+
+        public static string Inactive<TModel>()
+        {
+            var message = " está inativo(a).";
+
+            if (typeof(TModel).Name == _cluster)
+                return "Cluster" + message;
+
+            if (typeof(TModel).Name == _installation)
+                return "Instalação" + message;
+
+            if (typeof(TModel).Name == _field)
+                return "Campo" + message;
+
+            if (typeof(TModel).Name == _zone)
+                return "Zona" + message;
+
+            if (typeof(TModel).Name == _reservoir)
+                return "Reservatório" + message;
+
+            if (typeof(TModel).Name == _well)
+                return "Poço" + message;
+
+            if (typeof(TModel).Name == _completion)
+                return "Completação" + message;
+
+            if (typeof(TModel).Name == _equipment)
+                return "Equipamento de medição" + message;
+
+            return message;
         }
     }
 }

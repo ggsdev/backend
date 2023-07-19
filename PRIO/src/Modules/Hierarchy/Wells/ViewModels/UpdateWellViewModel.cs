@@ -19,8 +19,6 @@ namespace PRIO.src.Modules.Hierarchy.Wells.ViewModels
         public string? CategoryReclassificationAnp { get; set; }
         [StringLength(60, ErrorMessage = "CategoryOperator cannot exceed 60 characters.")]
         public string? CategoryOperator { get; set; }
-        public bool StatusOperator { get; set; }
-        [StringLength(60, ErrorMessage = "Type cannot exceed 60 characters.")]
         public string? Type { get; set; }
         [DecimalPrecision(12, isRequired: false)]
         public decimal WaterDepth { get; set; }

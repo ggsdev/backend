@@ -45,10 +45,16 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             if (well is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Well>());
 
+            if (well.IsActive is false && well.StatusOperator is false)
+                throw new ConflictException(ErrorMessages.Inactive<Well>());
+
             var reservoir = await _reservoirRepository.GetWithZoneFieldAsync(body.ReservoirId);
 
             if (reservoir is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Reservoir>());
+
+            if (reservoir.IsActive is false)
+                throw new ConflictException(ErrorMessages.Inactive<Reservoir>());
 
             if (reservoir.Zone?.Field?.Id != well.Field?.Id)
                 throw new ConflictException(ErrorMessages.DifferentFieldsCompletion());
@@ -112,6 +118,9 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
 
             if (completion is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Completion>());
+
+            if (completion.IsActive is false)
+                throw new ConflictException(ErrorMessages.Inactive<Completion>());
 
             if (body.CodCompletion is not null)
             {
@@ -201,6 +210,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
                 .Delete<Completion, CompletionHistoryDTO>(_tableName, user, updatedProperties, completion.Id, completion);
 
             _completionRepository.Update(completion);
+
             await _completionRepository.SaveChangesAsync();
         }
 
@@ -213,6 +223,18 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
 
             if (completion.IsActive is true)
                 throw new BadRequestException(ErrorMessages.ActiveAlready<Completion>());
+
+            if (completion.Well is null)
+                throw new NotFoundException(ErrorMessages.NotFound<Well>());
+
+            if (completion.Well.IsActive is false && completion.Well.StatusOperator is false)
+                throw new ConflictException(ErrorMessages.Inactive<Well>());
+
+            if (completion.Reservoir is null)
+                throw new NotFoundException(ErrorMessages.NotFound<Reservoir>());
+
+            if (completion.Reservoir.IsActive is false)
+                throw new ConflictException(ErrorMessages.Inactive<Reservoir>());
 
             var propertiesUpdated = new
             {

@@ -10,9 +10,6 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
         {
             builder.ToTable("Measurements");
 
-            builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id)
-                .ValueGeneratedOnAdd();
 
             #region 039
 

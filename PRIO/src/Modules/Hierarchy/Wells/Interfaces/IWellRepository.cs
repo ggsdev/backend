@@ -15,6 +15,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Interfaces
         Task<Well?> GetOnlyWellAsync(Guid? id);
         Task<Well?> GetByIdWithFieldAndCompletions(Guid? id);
         Task<Well?> GetWithUserAsync(Guid? id);
+        Task<Well?> GetWellAndChildren(Guid? id);
         Task SaveChangesAsync();
     }
 }

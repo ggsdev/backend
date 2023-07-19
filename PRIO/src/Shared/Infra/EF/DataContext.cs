@@ -24,6 +24,11 @@ using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Mappings;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Mappings;
+using PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Mappings;
+using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
@@ -54,16 +59,14 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<Well> Wells { get; set; }
         public DbSet<SystemHistory> SystemHistories { get; set; }
         public DbSet<Auxiliary> Auxiliaries { get; set; }
-
         public DbSet<Group> Groups { get; set; }
+        public DbSet<MeasurementHistory> MeasurementHistories { get; set; }
         public DbSet<GroupOperation> GroupOperations { get; set; }
         public DbSet<UserOperation> UserOperations { get; set; }
         public DbSet<GroupPermission> GroupPermissions { get; set; }
         public DbSet<UserPermission> UserPermissions { get; set; }
         public DbSet<Menu> Menus { get; set; }
-
         #region Measurement & Relations
-        public DbSet<Measurement> Measurements { get; set; }
         public DbSet<MeasuringEquipment> MeasuringEquipments { get; set; }
         public DbSet<MeasuringPoint> MeasuringPoints { get; set; }
         public DbSet<OilVolumeCalculation> OilVolumeCalculations { get; set; }
@@ -71,6 +74,20 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<TOGRecoveredOil> TOGRecoveredOils { get; set; }
         public DbSet<DrainVolume> DrainVolumes { get; set; }
         public DbSet<DOR> DORs { get; set; }
+
+
+        public DbSet<AssistanceGas> AssistanceGases { get; set; }
+        public DbSet<ExportGas> ExportGases { get; set; }
+        public DbSet<HighPressureGas> HighPressureGases { get; set; }
+        public DbSet<HPFlare> HPFlares { get; set; }
+        public DbSet<ImportGas> ImportGases { get; set; }
+        public DbSet<LowPressureGas> LowPressureGases { get; set; }
+        public DbSet<LPFlare> LPFlares { get; set; }
+        public DbSet<PilotGas> PilotGases { get; set; }
+        public DbSet<PurgeGas> PurgeGases { get; set; }
+        public DbSet<GasVolumeCalculation> GasVolumeCalculations { get; set; }
+
+        public DbSet<Measurement> Measurements { get; set; }
         public DbSet<FileType> FileTypes { get; set; }
         public DbSet<Volume> Volume { get; set; }
         public DbSet<Calibration> Calibrations { get; set; }
@@ -79,19 +96,12 @@ namespace PRIO.src.Shared.Infra.EF
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
-            //Database.Migrate();
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var envVars = DotEnv.Read();
 
-            if (envVars.ContainsKey("SERVER") &&
-               envVars.ContainsKey("DATABASE") &&
-               envVars.ContainsKey("USER_ID") &&
-               envVars.ContainsKey("PASSWORD") &&
-               envVars.ContainsKey("ENCRYPT") &&
-               envVars.ContainsKey("PORT") &&
-               envVars.ContainsKey("SERVER_INSTANCE"))
+            if (envVars.ContainsKey("SERVER"))
             {
                 var server = envVars["SERVER"];
                 var database = envVars["DATABASE"];
@@ -103,7 +113,6 @@ namespace PRIO.src.Shared.Infra.EF
 
 
                 optionsBuilder.UseSqlServer($"Server={server},{port}\\{instance};Database={database};User ID={userId};Password={password};Encrypt={encrypt};");
-
             }
 
         }
@@ -156,6 +165,8 @@ namespace PRIO.src.Shared.Infra.EF
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.ApplyConfiguration(new SystemHistoryMap());
+
             modelBuilder.ApplyConfiguration(new UserMap());
             modelBuilder.ApplyConfiguration(new SessionMap());
 
@@ -174,8 +185,9 @@ namespace PRIO.src.Shared.Infra.EF
             modelBuilder.ApplyConfiguration(new WellMap());
 
             modelBuilder.ApplyConfiguration(new MeasuringEquipmentMap());
+            modelBuilder.ApplyConfiguration(new MeasurementHistoryMap());
+            modelBuilder.ApplyConfiguration(new MeasuringPointMap());
 
-            modelBuilder.ApplyConfiguration(new SystemHistoryMap());
 
             modelBuilder.ApplyConfiguration(new GroupMap());
             modelBuilder.ApplyConfiguration(new MenuMap());
@@ -184,12 +196,25 @@ namespace PRIO.src.Shared.Infra.EF
             modelBuilder.ApplyConfiguration(new UserOperationMap());
 
             #region Measurement & Relations
-            modelBuilder.ApplyConfiguration(new MeasurementMap());
             modelBuilder.ApplyConfiguration(new SectionMap());
             modelBuilder.ApplyConfiguration(new TOGRecoveredOilMap());
             modelBuilder.ApplyConfiguration(new DORMap());
             modelBuilder.ApplyConfiguration(new DrainVolumeMap());
             modelBuilder.ApplyConfiguration(new OilVolumeCalculationMap());
+
+            modelBuilder.ApplyConfiguration(new AssistanceGasMap());
+            modelBuilder.ApplyConfiguration(new ExportGasMap());
+            modelBuilder.ApplyConfiguration(new GasVolumeCalculationMap());
+            modelBuilder.ApplyConfiguration(new HighPressureGasMap());
+            modelBuilder.ApplyConfiguration(new HPFlareMap());
+            modelBuilder.ApplyConfiguration(new ImportGasMap());
+            modelBuilder.ApplyConfiguration(new LowPressureGasMap());
+            modelBuilder.ApplyConfiguration(new LPFlareMap());
+            modelBuilder.ApplyConfiguration(new PilotGasMap());
+            modelBuilder.ApplyConfiguration(new PurgeGasMap());
+
+
+            modelBuilder.ApplyConfiguration(new MeasurementMap());
             modelBuilder.ApplyConfiguration(new FileTypeMap());
             modelBuilder.ApplyConfiguration(new VolumeMap());
             modelBuilder.ApplyConfiguration(new CalibrationMap());
