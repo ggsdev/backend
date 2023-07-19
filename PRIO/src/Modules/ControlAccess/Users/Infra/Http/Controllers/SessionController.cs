@@ -194,6 +194,44 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
             });
         }
 
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginDTO))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponseDTO))]
+        [HttpPost("loginNandao")]
+        public async Task<IActionResult> LoginNandao([FromBody] LoginAdViewModel body)
+        {
+
+            var credentialsValid = ActiveDirectory
+               .VerifyCredentialsWithActiveDirectory(body.Username, body.Password);
+
+            if (credentialsValid is false)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "Usuário ou senha inválida."
+                });
+
+            var user = await _context
+                .Users
+                .Include(u => u.Session)
+                .FirstOrDefaultAsync(x => x.Username == body.Username);
+
+            string token;
+            var userHttpAgent = Request.Headers["User-Agent"].ToString();
+
+            if (user is null || user.Group is null)
+            {
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "Usuário sem permissões."
+                });
+            }
+
+            return Ok(new LoginDTO
+            {
+                Token = await _tokenServices.CreateSessionAndToken(user, userHttpAgent)
+            });
+        }
+
     }
 }
 #endregion
