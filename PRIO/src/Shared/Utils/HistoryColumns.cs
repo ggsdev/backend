@@ -20,5 +20,6 @@
         public readonly static string TableGroups = "GROUPS";
         public readonly static string TableEquipments = "MEASURING EQUIPMENTS";
         public readonly static string TableMeasuringPoints = "MEASURING POINTS";
+        public readonly static string TableGasVolume = "GAS VOLUME CALCULATIONS";
     }
 }
