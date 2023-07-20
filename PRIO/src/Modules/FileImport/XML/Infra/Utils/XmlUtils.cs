@@ -1,4 +1,6 @@
-﻿namespace PRIO.src.Modules.FileImport.XML.Infra.Utils
+﻿using System.Globalization;
+
+namespace PRIO.src.Modules.FileImport.XML.Infra.Utils
 {
     public class XmlUtils
     {
@@ -13,5 +15,17 @@
         internal static readonly string FileAcronym002 = "PMGL";
         internal static readonly string FileAcronym003 = "PMGD";
 
+        public static decimal? DecimalParser(string? valueToBeParsed, List<string> errors, string? nameElement = "")
+        {
+            if (string.IsNullOrEmpty(valueToBeParsed))
+                return null;
+
+            if (valueToBeParsed is not null && decimal.TryParse(valueToBeParsed.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal result))
+                return result;
+            else
+                errors.Add($"Modelo dados inválidos, valor: {valueToBeParsed}, tag: {nameElement} formato númerico aceitável: 000,000");
+
+            return 0;
+        }
     }
 }
