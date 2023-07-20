@@ -1,4 +1,7 @@
 ﻿using AutoMapper;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.Dtos;
 using PRIO.src.Modules.FileImport.XML.Dtos;
@@ -21,7 +24,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
-
 namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 {
     public partial class XMLImportService
@@ -81,10 +83,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 var fileContent = data.Files[i].ContentBase64.Replace("data:@file/xml;base64,", "");
 
                 #region pathing
-                var projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\.."));
-                var relativeSchemaPath = Path.Combine("src", "Modules", "FileImport", "XML", "FileContent", $"_{data.Files[i].FileType}\\Schema.xsd");
-                var pathXml = Path.GetTempPath() + "xmlImports.xml";
-                var pathSchema = Path.GetFullPath(Path.Combine(projectRoot, relativeSchemaPath));
+                var projectRoot = System.IO.Path.GetFullPath(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\.."));
+                var relativeSchemaPath = System.IO.Path.Combine("src", "Modules", "FileImport", "XML", "FileContent", $"_{data.Files[i].FileType}\\Schema.xsd");
+                var pathXml = System.IO.Path.GetTempPath() + "xmlImports.xml";
+                var pathSchema = System.IO.Path.GetFullPath(System.IO.Path.Combine(projectRoot, relativeSchemaPath));
                 #endregion
 
                 #region writting, parsing
@@ -1143,9 +1145,28 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             return _responseResult;
         }
 
-        public async Task<List<string>> DownloadErrors(List<string> errors)
+        public ErrorPdfDTO DownloadErrors(List<string> errors)
         {
-            return errors;
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                PdfDocument pdfDoc = new PdfDocument(new PdfWriter(memoryStream));
+
+                Document document = new Document(pdfDoc);
+
+                foreach (string error in errors)
+                {
+                    Paragraph paragraph = new Paragraph(error);
+                    document.Add(paragraph);
+                }
+
+                document.Close();
+
+                byte[] pdfBytes = memoryStream.ToArray();
+
+                var response = new ErrorPdfDTO { ContentBase64 = Convert.ToBase64String(pdfBytes) };
+
+                return response;
+            }
         }
     }
 }
