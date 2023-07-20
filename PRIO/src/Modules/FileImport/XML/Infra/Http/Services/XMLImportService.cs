@@ -1,4 +1,7 @@
 ﻿using AutoMapper;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.Dtos;
 using PRIO.src.Modules.FileImport.XML.Dtos;
@@ -21,7 +24,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
-
 namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 {
     public partial class XMLImportService
@@ -74,15 +76,17 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             #endregion
 
             var errorsInImport = new List<string>();
+            var errorsInFormat = new List<string>();
+
             for (int i = 0; i < data.Files.Count; ++i)
             {
                 var fileContent = data.Files[i].ContentBase64.Replace("data:@file/xml;base64,", "");
 
                 #region pathing
-                var projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\.."));
-                var relativeSchemaPath = Path.Combine("src", "Modules", "FileImport", "XML", "FileContent", $"_{data.Files[i].FileType}\\Schema.xsd");
-                var pathXml = Path.GetTempPath() + "xmlImports.xml";
-                var pathSchema = Path.GetFullPath(Path.Combine(projectRoot, relativeSchemaPath));
+                var projectRoot = System.IO.Path.GetFullPath(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\.."));
+                var relativeSchemaPath = System.IO.Path.Combine("src", "Modules", "FileImport", "XML", "FileContent", $"_{data.Files[i].FileType}\\Schema.xsd");
+                var pathXml = System.IO.Path.GetTempPath() + "xmlImports.xml";
+                var pathSchema = System.IO.Path.GetFullPath(System.IO.Path.Combine(projectRoot, relativeSchemaPath));
                 #endregion
 
                 #region writting, parsing
@@ -271,90 +275,90 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                             #region configuracao cv
                                             NUM_SERIE_COMPUTADOR_VAZAO_001 = configuracaoCv?.NUM_SERIE_COMPUTADOR_VAZAO_001,
-                                            DHA_COLETA_001 = DateTime.TryParseExact(configuracaoCv.DHA_COLETA_001, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dhaColeta) ? dhaColeta : null,
-                                            MED_TEMPERATURA_001 = double.TryParse(configuracaoCv?.MED_TEMPERATURA_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double medTemperatura) ? medTemperatura : null,
-                                            MED_PRESSAO_ATMSA_001 = double.TryParse(configuracaoCv.MED_PRESSAO_ATMSA_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double medPressaoAtmsa) ? medPressaoAtmsa : null,
-                                            MED_PRESSAO_RFRNA_001 = double.TryParse(configuracaoCv.MED_PRESSAO_RFRNA_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double medPressaoRfrna) ? medPressaoRfrna : null,
+                                            DHA_COLETA_001 = DateTime.TryParseExact(configuracaoCv?.DHA_COLETA_001, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dhaColeta) ? dhaColeta : null,
+                                            MED_TEMPERATURA_001 = XmlUtils.DecimalParser(configuracaoCv?.MED_TEMPERATURA_001, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            MED_PRESSAO_ATMSA_001 = XmlUtils.DecimalParser(configuracaoCv?.MED_PRESSAO_ATMSA_001, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            MED_PRESSAO_RFRNA_001 = XmlUtils.DecimalParser(configuracaoCv?.MED_PRESSAO_RFRNA_001, errorsInFormat, configuracaoCvElement?.Name.LocalName),
                                             DSC_VERSAO_SOFTWARE_001 = configuracaoCv?.DSC_VERSAO_SOFTWARE_001,
                                             #endregion
 
                                             #region elemento primario
-                                            ICE_METER_FACTOR_1_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_1_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceMeterFactor1) ? iceMeterFactor1 : null,
-                                            ICE_METER_FACTOR_2_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_2_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_2_001) ? ICE_METER_FACTOR_2_001 : null,
-                                            ICE_METER_FACTOR_3_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_3_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_3_001) ? ICE_METER_FACTOR_3_001 : null,
-                                            ICE_METER_FACTOR_4_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_4_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_4_001) ? ICE_METER_FACTOR_4_001 : null,
-                                            ICE_METER_FACTOR_5_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_5_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_5_001) ? ICE_METER_FACTOR_5_001 : null,
-                                            ICE_METER_FACTOR_6_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_6_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_6_001) ? ICE_METER_FACTOR_6_001 : null,
-                                            ICE_METER_FACTOR_7_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_7_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_7_001) ? ICE_METER_FACTOR_7_001 : null,
-                                            ICE_METER_FACTOR_8_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_8_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_8_001) ? ICE_METER_FACTOR_8_001 : null,
-                                            ICE_METER_FACTOR_9_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_9_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_9_001) ? ICE_METER_FACTOR_9_001 : null,
-                                            ICE_METER_FACTOR_10_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_10_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_10_001) ? ICE_METER_FACTOR_10_001 : null,
-                                            ICE_METER_FACTOR_11_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_11_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_11_001) ? ICE_METER_FACTOR_11_001 : null,
-                                            ICE_METER_FACTOR_12_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_12_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_12_001) ? ICE_METER_FACTOR_12_001 : null,
-                                            ICE_METER_FACTOR_13_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_13_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_13_001) ? ICE_METER_FACTOR_13_001 : null,
-                                            ICE_METER_FACTOR_14_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_14_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_14_001) ? ICE_METER_FACTOR_14_001 : null,
-                                            ICE_METER_FACTOR_15_001 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_15_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_METER_FACTOR_15_001) ? ICE_METER_FACTOR_15_001 : null,
+                                            ICE_METER_FACTOR_1_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_1_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_2_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_2_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_3_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_3_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_4_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_4_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_5_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_5_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_6_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_6_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_7_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_7_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_8_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_8_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_9_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_9_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_10_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_10_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_11_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_11_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_12_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_12_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_13_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_13_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_14_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_14_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_15_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_15_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
 
-                                            QTD_PULSOS_METER_FACTOR_1_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_1_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_1_001) ? QTD_PULSOS_METER_FACTOR_1_001 : null,
-                                            QTD_PULSOS_METER_FACTOR_2_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_2_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_2_001) ? QTD_PULSOS_METER_FACTOR_2_001 : null,
-                                            QTD_PULSOS_METER_FACTOR_3_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_3_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_3_001) ? QTD_PULSOS_METER_FACTOR_3_001 : null,
-                                            QTD_PULSOS_METER_FACTOR_4_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_4_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_4_001) ? QTD_PULSOS_METER_FACTOR_4_001 : null,
-                                            QTD_PULSOS_METER_FACTOR_5_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_5_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_5_001) ? QTD_PULSOS_METER_FACTOR_5_001 : null,
-                                            QTD_PULSOS_METER_FACTOR_6_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_6_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_6_001) ? QTD_PULSOS_METER_FACTOR_6_001 : null,
-                                            QTD_PULSOS_METER_FACTOR_7_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_7_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_7_001) ? QTD_PULSOS_METER_FACTOR_7_001 : null,
-                                            QTD_PULSOS_METER_FACTOR_8_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_8_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_8_001) ? QTD_PULSOS_METER_FACTOR_8_001 : null,
-                                            QTD_PULSOS_METER_FACTOR_9_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_9_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_9_001) ? QTD_PULSOS_METER_FACTOR_9_001 : null,
-                                            QTD_PULSOS_METER_FACTOR_10_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_10_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_10_001) ? QTD_PULSOS_METER_FACTOR_10_001 : null,
-                                            QTD_PULSOS_METER_FACTOR_11_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_11_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_11_001) ? QTD_PULSOS_METER_FACTOR_11_001 : null,
-                                            QTD_PULSOS_METER_FACTOR_12_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_12_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_12_001) ? QTD_PULSOS_METER_FACTOR_12_001 : null,
-                                            QTD_PULSOS_METER_FACTOR_13_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_13_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_13_001) ? QTD_PULSOS_METER_FACTOR_13_001 : null,
-                                            QTD_PULSOS_METER_FACTOR_14_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_14_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_14_001) ? QTD_PULSOS_METER_FACTOR_14_001 : null,
-                                            QTD_PULSOS_METER_FACTOR_15_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_15_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_METER_FACTOR_15_001) ? QTD_PULSOS_METER_FACTOR_15_001 : null,
+                                            QTD_PULSOS_METER_FACTOR_1_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_1_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_2_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_2_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_3_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_3_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_4_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_4_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_5_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_5_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_6_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_6_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_7_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_7_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_8_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_8_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_9_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_9_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_10_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_10_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_11_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_11_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_12_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_12_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_13_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_13_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_14_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_14_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_15_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_15_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
 
-                                            ICE_K_FACTOR_1_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_1_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor1) ? iceKFactor1 : null,
-                                            ICE_K_FACTOR_2_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_2_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor2) ? iceKFactor2 : null,
-                                            ICE_K_FACTOR_3_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_3_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor3) ? iceKFactor3 : null,
-                                            ICE_K_FACTOR_4_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_4_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor4) ? iceKFactor4 : null,
-                                            ICE_K_FACTOR_5_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_5_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor5) ? iceKFactor5 : null,
-                                            ICE_K_FACTOR_6_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_6_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor6) ? iceKFactor6 : null,
-                                            ICE_K_FACTOR_7_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_7_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor7) ? iceKFactor7 : null,
-                                            ICE_K_FACTOR_8_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_8_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor8) ? iceKFactor8 : null,
-                                            ICE_K_FACTOR_9_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_9_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor9) ? iceKFactor9 : null,
-                                            ICE_K_FACTOR_10_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_10_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor10) ? iceKFactor10 : null,
-                                            ICE_K_FACTOR_11_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_11_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor11) ? iceKFactor11 : null,
-                                            ICE_K_FACTOR_12_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_12_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceKFactor12) ? iceKFactor12 : null,
-                                            ICE_K_FACTOR_13_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_13_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_K_FACTOR_13_001) ? ICE_K_FACTOR_13_001 : null,
-                                            ICE_K_FACTOR_14_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_14_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_K_FACTOR_14_001) ? ICE_K_FACTOR_14_001 : null,
-                                            ICE_K_FACTOR_15_001 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_15_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_K_FACTOR_15_001) ? ICE_K_FACTOR_15_001 : null,
+                                            ICE_K_FACTOR_1_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_1_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_2_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_2_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_3_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_3_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_4_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_4_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_5_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_5_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_6_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_6_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_7_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_7_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_8_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_8_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_9_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_9_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_10_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_10_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_11_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_11_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_12_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_12_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_13_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_13_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_14_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_14_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_15_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_15_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
 
-                                            QTD_PULSOS_K_FACTOR_1_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_1_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor1) ? qtdPulsosKFactor1 : null,
-                                            QTD_PULSOS_K_FACTOR_2_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_2_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor2) ? qtdPulsosKFactor2 : null,
-                                            QTD_PULSOS_K_FACTOR_3_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_3_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor3) ? qtdPulsosKFactor3 : null,
-                                            QTD_PULSOS_K_FACTOR_4_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_4_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor4) ? qtdPulsosKFactor4 : null,
-                                            QTD_PULSOS_K_FACTOR_5_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_5_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor5) ? qtdPulsosKFactor5 : null,
-                                            QTD_PULSOS_K_FACTOR_6_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_6_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor6) ? qtdPulsosKFactor6 : null,
-                                            QTD_PULSOS_K_FACTOR_7_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_7_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor7) ? qtdPulsosKFactor7 : null,
-                                            QTD_PULSOS_K_FACTOR_8_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_8_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor8) ? qtdPulsosKFactor8 : null,
-                                            QTD_PULSOS_K_FACTOR_9_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_9_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor9) ? qtdPulsosKFactor9 : null,
-                                            QTD_PULSOS_K_FACTOR_10_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_10_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor10) ? qtdPulsosKFactor10 : null,
-                                            QTD_PULSOS_K_FACTOR_11_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_11_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var qtdPulsosKFactor11) ? qtdPulsosKFactor11 : null,
-                                            QTD_PULSOS_K_FACTOR_12_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_12_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_K_FACTOR_12_001) ? QTD_PULSOS_K_FACTOR_12_001 : null,
-                                            QTD_PULSOS_K_FACTOR_13_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_13_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_K_FACTOR_13_001) ? QTD_PULSOS_K_FACTOR_13_001 : null,
-                                            QTD_PULSOS_K_FACTOR_14_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_14_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_K_FACTOR_14_001) ? QTD_PULSOS_K_FACTOR_14_001 : null,
-                                            QTD_PULSOS_K_FACTOR_15_001 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_15_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var QTD_PULSOS_K_FACTOR_15_001) ? QTD_PULSOS_K_FACTOR_15_001 : null,
+                                            QTD_PULSOS_K_FACTOR_1_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_1_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_2_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_2_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_3_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_3_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_4_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_4_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_5_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_5_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_6_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_6_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_7_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_7_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_8_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_8_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_9_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_9_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_10_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_10_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_11_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_11_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_12_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_12_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_13_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_13_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_14_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_14_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_15_001 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_15_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
 
-                                            ICE_CUTOFF_001 = double.TryParse(elementoPrimario?.ICE_CUTOFF_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceCutoff) ? iceCutoff : null,
-                                            ICE_LIMITE_SPRR_ALARME_001 = double.TryParse(elementoPrimario?.ICE_LIMITE_SPRR_ALARME_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceLimiteSprrAlarme) ? iceLimiteSprrAlarme : null,
-                                            ICE_LIMITE_INFRR_ALARME_001 = double.TryParse(elementoPrimario?.ICE_LIMITE_INFRR_ALARME_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var iceLimiteInfrrAlarme) ? iceLimiteInfrrAlarme : null,
+                                            ICE_CUTOFF_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_CUTOFF_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_LIMITE_SPRR_ALARME_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_LIMITE_SPRR_ALARME_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_LIMITE_INFRR_ALARME_001 = XmlUtils.DecimalParser(elementoPrimario?.ICE_LIMITE_INFRR_ALARME_001, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
                                             IND_HABILITACAO_ALARME_1_001 = elementoPrimario?.IND_HABILITACAO_ALARME_1_001,
                                             #endregion
 
                                             #region instrumento pressao
                                             NUM_SERIE_1_001 = instrumentoPressao?.NUM_SERIE_1_001,
-                                            MED_PRSO_LIMITE_SPRR_ALRME_001 = double.TryParse(instrumentoPressao?.MED_PRSO_LIMITE_SPRR_ALRME_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var limiteSprr) ? limiteSprr : null,
-                                            MED_PRSO_LMTE_INFRR_ALRME_001 = double.TryParse(instrumentoPressao?.MED_PRSO_LMTE_INFRR_ALRME_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var limiteInfrr) ? limiteInfrr : null,
+                                            MED_PRSO_LIMITE_SPRR_ALRME_001 = XmlUtils.DecimalParser(instrumentoPressao?.MED_PRSO_LIMITE_SPRR_ALRME_001, errorsInFormat, instrumentoPressaoElement?.Name.LocalName),
+                                            MED_PRSO_LMTE_INFRR_ALRME_001 = XmlUtils.DecimalParser(instrumentoPressao?.MED_PRSO_LMTE_INFRR_ALRME_001, errorsInFormat, instrumentoPressaoElement?.Name.LocalName),
                                             IND_HABILITACAO_ALARME_2_001 = instrumentoPressao?.IND_HABILITACAO_ALARME_2_001,
-                                            MED_PRSO_ADOTADA_FALHA_001 = double.TryParse(instrumentoPressao?.MED_PRSO_ADOTADA_FALHA_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var adotFalha) ? adotFalha : null,
+                                            MED_PRSO_ADOTADA_FALHA_001 = XmlUtils.DecimalParser(instrumentoPressao?.MED_PRSO_ADOTADA_FALHA_001, errorsInFormat, instrumentoPressaoElement?.Name.LocalName),
                                             DSC_ESTADO_INSNO_CASO_FALHA_001 = instrumentoPressao?.DSC_ESTADO_INSNO_CASO_FALHA_001,
                                             IND_TIPO_PRESSAO_CONSIDERADA_001 = instrumentoPressao?.IND_TIPO_PRESSAO_CONSIDERADA_001,
                                             #endregion
@@ -362,10 +366,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                             #region instrumento temperatura
 
                                             NUM_SERIE_2_001 = instrumentoTemperatura?.NUM_SERIE_2_001,
-                                            MED_TMPTA_SPRR_ALARME_001 = double.TryParse(instrumentoTemperatura?.MED_TMPTA_SPRR_ALARME_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var tmptaAl) ? tmptaAl : null,
-                                            MED_TMPTA_INFRR_ALRME_001 = double.TryParse(instrumentoTemperatura?.MED_TMPTA_INFRR_ALRME_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var infrrAl) ? infrrAl : null,
+                                            MED_TMPTA_SPRR_ALARME_001 = XmlUtils.DecimalParser(instrumentoTemperatura?.MED_TMPTA_SPRR_ALARME_001, errorsInFormat, instrumentoTemperaturaElement?.Name.LocalName),
+                                            MED_TMPTA_INFRR_ALRME_001 = XmlUtils.DecimalParser(instrumentoTemperatura?.MED_TMPTA_INFRR_ALRME_001, errorsInFormat, instrumentoTemperaturaElement?.Name.LocalName),
                                             IND_HABILITACAO_ALARME_3_001 = instrumentoTemperatura?.IND_HABILITACAO_ALARME_3_001,
-                                            MED_TMPTA_ADTTA_FALHA_001 = double.TryParse(instrumentoTemperatura?.MED_TMPTA_ADTTA_FALHA_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var adtta) ? adtta : null,
+                                            MED_TMPTA_ADTTA_FALHA_001 = XmlUtils.DecimalParser(instrumentoTemperatura?.MED_TMPTA_ADTTA_FALHA_001, errorsInFormat, instrumentoTemperaturaElement?.Name.LocalName),
                                             DSC_ESTADO_INSTRUMENTO_FALHA_1_001 = instrumentoTemperatura?.DSC_ESTADO_INSTRUMENTO_FALHA_1_001,
 
                                             #endregion
@@ -374,17 +378,15 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                             DHA_INICIO_PERIODO_MEDICAO_001 = DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_001, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var inicioPer) ? inicioPer : null,
                                             DHA_FIM_PERIODO_MEDICAO_001 = DateTime.TryParseExact(producao?.DHA_FIM_PERIODO_MEDICAO_001, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var fimPer) ? fimPer : null,
-                                            ICE_DENSIDADADE_RELATIVA_001 = double.TryParse(producao?.ICE_DENSIDADADE_RELATIVA_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_DENSIDADADE_RELATIVA_001) ? ICE_DENSIDADADE_RELATIVA_001 : null,
-                                            //ICE_CORRECAO_BSW_001 = double.TryParse(producao?.ICE_CORRECAO_BSW_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var ICE_CORRECAO_BSW_001) ? ICE_CORRECAO_BSW_001 : 0null
-                                            ICE_CORRECAO_PRESSAO_LIQUIDO_001 = double.TryParse(producao?.ICE_CORRECAO_PRESSAO_LIQUIDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var pressaoLiq) ? pressaoLiq : null,
-                                            ICE_CRRCO_TEMPERATURA_LIQUIDO_001 = double.TryParse(producao?.ICE_CRRCO_TEMPERATURA_LIQUIDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var crrcoTemp) ? crrcoTemp : null,
-                                            MED_PRESSAO_ESTATICA_001 = double.TryParse(producao?.MED_PRESSAO_ESTATICA_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_PRESSAO_ESTATICA_001) ? MED_PRESSAO_ESTATICA_001 : null,
-                                            MED_TMPTA_FLUIDO_001 = double.TryParse(producao?.MED_TMPTA_FLUIDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_TMPTA_FLUIDO_001) ? MED_TMPTA_FLUIDO_001 : null,
-                                            MED_VOLUME_BRTO_CRRGO_MVMDO_001 = double.TryParse(producao?.MED_VOLUME_BRTO_CRRGO_MVMDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_VOLUME_BRTO_CRRGO_MVMDO_001) ? MED_VOLUME_BRTO_CRRGO_MVMDO_001 : throw new BadRequestException($"Arquivo: {data.Files[i].FileName} campo: MED_VOLUME_BRTO_CRRGO_MVMDO não está no formato aceitável: 00000,00000, {k + 1} medição(DADOS_BASICOS)ª."),
-                                            MED_VOLUME_BRUTO_MVMDO_001 = double.TryParse(producao?.MED_VOLUME_BRUTO_MVMDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_VOLUME_BRUTO_MVMDO_001) ? MED_VOLUME_BRUTO_MVMDO_001 : null,
-                                            //MED_VOLUME_LIQUIDO_MVMDO_001 = double.TryParse(producao?.MED_VOLUME_LIQUIDO_MVMDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_VOLUME_LIQUIDO_MVMDO_001) ? MED_VOLUME_LIQUIDO_MVMDO_001 : 0null
-                                            MED_VOLUME_TTLZO_FIM_PRDO_001 = double.TryParse(producao?.MED_VOLUME_TTLZO_FIM_PRDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_VOLUME_TTLZO_FIM_PRDO_001) ? MED_VOLUME_TTLZO_FIM_PRDO_001 : null,
-                                            MED_VOLUME_TTLZO_INCO_PRDO_001 = double.TryParse(producao?.MED_VOLUME_TTLZO_INCO_PRDO_001?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var MED_VOLUME_TTLZO_INCO_PRDO_001) ? MED_VOLUME_TTLZO_INCO_PRDO_001 : null,
+                                            ICE_DENSIDADADE_RELATIVA_001 = XmlUtils.DecimalParser(producao?.ICE_DENSIDADADE_RELATIVA_001, errorsInFormat, producaoElement.Name.LocalName),
+                                            //ICE_CORRECAO_BSW_001 = XmlUtils.DecimalParser(producao?.ICE_CORRECAO_BSW_001?.Replac, errorsInFormat, producaoElement.Name.LocalName)XmlUtils.DecimalParser(producao?.ICE_CORRECAO_PRESSAO_LIQUIDO_001, errorsInFormat, producaoElement.Name.LocalName),
+                                            ICE_CRRCO_TEMPERATURA_LIQUIDO_001 = XmlUtils.DecimalParser(producao?.ICE_CRRCO_TEMPERATURA_LIQUIDO_001, errorsInFormat, producaoElement.Name.LocalName),
+                                            MED_PRESSAO_ESTATICA_001 = XmlUtils.DecimalParser(producao?.MED_PRESSAO_ESTATICA_001, errorsInFormat, producaoElement.Name.LocalName),
+                                            MED_TMPTA_FLUIDO_001 = XmlUtils.DecimalParser(producao?.MED_TMPTA_FLUIDO_001, errorsInFormat, producaoElement.Name.LocalName),
+                                            MED_VOLUME_BRTO_CRRGO_MVMDO_001 = XmlUtils.DecimalParser(producao?.MED_VOLUME_BRTO_CRRGO_MVMDO_001, errorsInFormat, producaoElement.Name.LocalName),
+                                            MED_VOLUME_BRUTO_MVMDO_001 = XmlUtils.DecimalParser(producao?.MED_VOLUME_BRUTO_MVMDO_001, errorsInFormat, producaoElement.Name.LocalName),
+                                            //MED_VOLUME_LIQUIDO_MVMDO_001 = XmlUtils.DecimalParser(producao?.MED_VOLUME_LIQUIDO_MVMDO_001?.Replac, errorsInFormat, producaoElement.Name.LocalName)XmlUtils.DecimalParser(producao?.MED_VOLUME_TTLZO_FIM_PRDO_001, errorsInFormat, producaoElement.Name.LocalName),
+                                            MED_VOLUME_TTLZO_INCO_PRDO_001 = XmlUtils.DecimalParser(producao?.MED_VOLUME_TTLZO_INCO_PRDO_001, errorsInFormat, producaoElement.Name.LocalName),
 
                                             #endregion
 
@@ -504,116 +506,116 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                             #region configuracao cv
                                             NUM_SERIE_COMPUTADOR_VAZAO_002 = configuracaoCv?.NUM_SERIE_COMPUTADOR_VAZAO_002,
                                             DHA_COLETA_002 = DateTime.TryParseExact(configuracaoCv?.DHA_COLETA_002, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var DHA_COLETA_002) ? DHA_COLETA_002 : null,
-                                            MED_TEMPERATURA_1_002 = double.TryParse(configuracaoCv?.MED_TEMPERATURA_1_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double medTemp) ? medTemp : null,
-                                            MED_PRESSAO_ATMSA_002 = double.TryParse(configuracaoCv?.MED_PRESSAO_ATMSA_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double medPressAt) ? medPressAt : null,
-                                            MED_PRESSAO_RFRNA_002 = double.TryParse(configuracaoCv?.MED_PRESSAO_RFRNA_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double medPressRf) ? medPressRf : null,
-                                            MED_DENSIDADE_RELATIVA_002 = double.TryParse(configuracaoCv?.MED_DENSIDADE_RELATIVA_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double medDens) ? medDens : null,
+                                            MED_TEMPERATURA_1_002 = XmlUtils.DecimalParser(configuracaoCv?.MED_TEMPERATURA_1_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            MED_PRESSAO_ATMSA_002 = XmlUtils.DecimalParser(configuracaoCv?.MED_PRESSAO_ATMSA_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            MED_PRESSAO_RFRNA_002 = XmlUtils.DecimalParser(configuracaoCv?.MED_PRESSAO_RFRNA_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            MED_DENSIDADE_RELATIVA_002 = XmlUtils.DecimalParser(configuracaoCv?.MED_DENSIDADE_RELATIVA_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
                                             DSC_NORMA_UTILIZADA_CALCULO_002 = configuracaoCv?.DSC_NORMA_UTILIZADA_CALCULO_002,
-                                            PCT_CROMATOGRAFIA_NITROGENIO_002 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_NITROGENIO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double pctCromaNit) ? pctCromaNit : null,
+                                            PCT_CROMATOGRAFIA_NITROGENIO_002 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_NITROGENIO_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
 
-                                            PCT_CROMATOGRAFIA_CO2_002 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_CO2_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double pctCromaCO2) ? pctCromaCO2 : null,
-                                            PCT_CROMATOGRAFIA_METANO_002 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_METANO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_METANO_002) ? PCT_CROMATOGRAFIA_METANO_002 : null,
-                                            PCT_CROMATOGRAFIA_ETANO_002 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_ETANO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_ETANO_002) ? PCT_CROMATOGRAFIA_ETANO_002 : null,
-                                            PCT_CROMATOGRAFIA_PROPANO_002 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_PROPANO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_PROPANO_002) ? PCT_CROMATOGRAFIA_PROPANO_002 : null,
-                                            PCT_CROMATOGRAFIA_N_BUTANO_002 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_N_BUTANO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_N_BUTANO_002) ? PCT_CROMATOGRAFIA_N_BUTANO_002 : null,
-                                            PCT_CROMATOGRAFIA_I_BUTANO_002 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_I_BUTANO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_I_BUTANO_002) ? PCT_CROMATOGRAFIA_I_BUTANO_002 : null,
-                                            PCT_CROMATOGRAFIA_N_PENTANO_002 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_N_PENTANO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_N_PENTANO_002) ? PCT_CROMATOGRAFIA_N_PENTANO_002 : null,
-                                            PCT_CROMATOGRAFIA_I_PENTANO_002 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_I_PENTANO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_I_PENTANO_002) ? PCT_CROMATOGRAFIA_I_PENTANO_002 : null,
-                                            PCT_CROMATOGRAFIA_HEXANO_002 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_HEXANO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_HEXANO_002) ? PCT_CROMATOGRAFIA_HEXANO_002 : null,
-                                            PCT_CROMATOGRAFIA_HEPTANO_002 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_HEPTANO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_HEPTANO_002) ? PCT_CROMATOGRAFIA_HEPTANO_002 : null,
-                                            PCT_CROMATOGRAFIA_OCTANO_002 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_OCTANO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_OCTANO_002) ? PCT_CROMATOGRAFIA_OCTANO_002 : null,
-                                            PCT_CROMATOGRAFIA_NONANO_002 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_NONANO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_NONANO_002) ? PCT_CROMATOGRAFIA_NONANO_002 : null,
-                                            PCT_CROMATOGRAFIA_DECANO_002 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_DECANO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_DECANO_002) ? PCT_CROMATOGRAFIA_DECANO_002 : null,
-                                            PCT_CROMATOGRAFIA_H2S_002 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_H2S_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_H2S_002) ? PCT_CROMATOGRAFIA_H2S_002 : null,
-                                            PCT_CROMATOGRAFIA_AGUA_002 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_AGUA_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_AGUA_002) ? PCT_CROMATOGRAFIA_AGUA_002 : null,
-                                            PCT_CROMATOGRAFIA_HELIO_002 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_HELIO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_HELIO_002) ? PCT_CROMATOGRAFIA_HELIO_002 : null,
-                                            PCT_CROMATOGRAFIA_OXIGENIO_002 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_OXIGENIO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_OXIGENIO_002) ? PCT_CROMATOGRAFIA_OXIGENIO_002 : null,
-                                            PCT_CROMATOGRAFIA_CO_002 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_CO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_CO_002) ? PCT_CROMATOGRAFIA_CO_002 : null,
-                                            PCT_CROMATOGRAFIA_HIDROGENIO_002 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_HIDROGENIO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_HIDROGENIO_002) ? PCT_CROMATOGRAFIA_HIDROGENIO_002 : null,
-                                            PCT_CROMATOGRAFIA_ARGONIO_002 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_ARGONIO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_ARGONIO_002) ? PCT_CROMATOGRAFIA_ARGONIO_002 : null,
+                                            PCT_CROMATOGRAFIA_CO2_002 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_CO2_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_METANO_002 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_METANO_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_ETANO_002 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_ETANO_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_PROPANO_002 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_PROPANO_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_N_BUTANO_002 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_N_BUTANO_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_I_BUTANO_002 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_I_BUTANO_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_N_PENTANO_002 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_N_PENTANO_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_I_PENTANO_002 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_I_PENTANO_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_HEXANO_002 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_HEXANO_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_HEPTANO_002 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_HEPTANO_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_OCTANO_002 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_OCTANO_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_NONANO_002 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_NONANO_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_DECANO_002 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_DECANO_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_H2S_002 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_H2S_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_AGUA_002 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_AGUA_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_HELIO_002 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_HELIO_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_OXIGENIO_002 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_OXIGENIO_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_CO_002 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_CO_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_HIDROGENIO_002 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_HIDROGENIO_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_ARGONIO_002 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_ARGONIO_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
 
                                             DSC_VERSAO_SOFTWARE_002 = configuracaoCv?.DSC_VERSAO_SOFTWARE_002,
 
                                             #endregion
 
                                             #region elemento primario
-                                            ICE_METER_FACTOR_1_002 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_1_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_METER_FACTOR_1_002) ? ICE_METER_FACTOR_1_002 : null,
-                                            ICE_METER_FACTOR_2_002 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_2_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_METER_FACTOR_2_002) ? ICE_METER_FACTOR_2_002 : null,
-                                            ICE_METER_FACTOR_3_002 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_3_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_METER_FACTOR_3_002) ? ICE_METER_FACTOR_3_002 : null,
-                                            ICE_METER_FACTOR_4_002 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_4_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_METER_FACTOR_4_002) ? ICE_METER_FACTOR_4_002 : null,
-                                            ICE_METER_FACTOR_5_002 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_5_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_METER_FACTOR_5_002) ? ICE_METER_FACTOR_5_002 : null,
-                                            ICE_METER_FACTOR_6_002 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_6_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_METER_FACTOR_6_002) ? ICE_METER_FACTOR_6_002 : null,
-                                            ICE_METER_FACTOR_7_002 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_7_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_METER_FACTOR_7_002) ? ICE_METER_FACTOR_7_002 : null,
-                                            ICE_METER_FACTOR_8_002 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_8_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_METER_FACTOR_8_002) ? ICE_METER_FACTOR_8_002 : null,
-                                            ICE_METER_FACTOR_9_002 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_9_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_METER_FACTOR_9_002) ? ICE_METER_FACTOR_9_002 : null,
-                                            ICE_METER_FACTOR_10_002 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_10_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_METER_FACTOR_10_002) ? ICE_METER_FACTOR_10_002 : null,
-                                            ICE_METER_FACTOR_11_002 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_11_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_METER_FACTOR_11_002) ? ICE_METER_FACTOR_11_002 : null,
-                                            ICE_METER_FACTOR_12_002 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_12_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_METER_FACTOR_12_002) ? ICE_METER_FACTOR_12_002 : null,
-                                            ICE_METER_FACTOR_13_002 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_13_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_METER_FACTOR_13_002) ? ICE_METER_FACTOR_13_002 : null,
-                                            ICE_METER_FACTOR_14_002 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_14_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_METER_FACTOR_14_002) ? ICE_METER_FACTOR_14_002 : null,
-                                            ICE_METER_FACTOR_15_002 = double.TryParse(elementoPrimario?.ICE_METER_FACTOR_15_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_METER_FACTOR_15_002) ? ICE_METER_FACTOR_15_002 : null,
+                                            ICE_METER_FACTOR_1_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_1_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_2_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_2_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_3_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_3_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_4_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_4_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_5_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_5_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_6_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_6_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_7_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_7_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_8_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_8_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_9_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_9_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_10_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_10_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_11_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_11_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_12_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_12_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_13_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_13_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_14_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_14_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_METER_FACTOR_15_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_METER_FACTOR_15_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
 
-                                            QTD_PULSOS_METER_FACTOR_1_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_1_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_METER_FACTOR_1_002) ? QTD_PULSOS_METER_FACTOR_1_002 : null,
-                                            QTD_PULSOS_METER_FACTOR_2_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_2_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_METER_FACTOR_2_002) ? QTD_PULSOS_METER_FACTOR_2_002 : null,
-                                            QTD_PULSOS_METER_FACTOR_3_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_3_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_METER_FACTOR_3_002) ? QTD_PULSOS_METER_FACTOR_3_002 : null,
-                                            QTD_PULSOS_METER_FACTOR_4_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_4_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_METER_FACTOR_4_002) ? QTD_PULSOS_METER_FACTOR_4_002 : null,
-                                            QTD_PULSOS_METER_FACTOR_5_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_5_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_METER_FACTOR_5_002) ? QTD_PULSOS_METER_FACTOR_5_002 : null,
-                                            QTD_PULSOS_METER_FACTOR_6_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_6_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_METER_FACTOR_6_002) ? QTD_PULSOS_METER_FACTOR_6_002 : null,
-                                            QTD_PULSOS_METER_FACTOR_7_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_7_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_METER_FACTOR_7_002) ? QTD_PULSOS_METER_FACTOR_7_002 : null,
-                                            QTD_PULSOS_METER_FACTOR_8_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_8_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_METER_FACTOR_8_002) ? QTD_PULSOS_METER_FACTOR_8_002 : null,
-                                            QTD_PULSOS_METER_FACTOR_9_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_9_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_METER_FACTOR_9_002) ? QTD_PULSOS_METER_FACTOR_9_002 : null,
-                                            QTD_PULSOS_METER_FACTOR_10_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_10_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_METER_FACTOR_10_002) ? QTD_PULSOS_METER_FACTOR_10_002 : null,
-                                            QTD_PULSOS_METER_FACTOR_11_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_11_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_METER_FACTOR_11_002) ? QTD_PULSOS_METER_FACTOR_11_002 : null,
-                                            QTD_PULSOS_METER_FACTOR_12_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_12_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_METER_FACTOR_12_002) ? QTD_PULSOS_METER_FACTOR_12_002 : null,
-                                            QTD_PULSOS_METER_FACTOR_13_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_13_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_METER_FACTOR_13_002) ? QTD_PULSOS_METER_FACTOR_13_002 : null,
-                                            QTD_PULSOS_METER_FACTOR_14_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_14_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_METER_FACTOR_14_002) ? QTD_PULSOS_METER_FACTOR_14_002 : null,
-                                            QTD_PULSOS_METER_FACTOR_15_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_METER_FACTOR_15_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_METER_FACTOR_15_002) ? QTD_PULSOS_METER_FACTOR_15_002 : null,
+                                            QTD_PULSOS_METER_FACTOR_1_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_1_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_2_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_2_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_3_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_3_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_4_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_4_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_5_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_5_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_6_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_6_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_7_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_7_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_8_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_8_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_9_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_9_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_10_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_10_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_11_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_11_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_12_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_12_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_13_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_13_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_14_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_14_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_METER_FACTOR_15_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_METER_FACTOR_15_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
 
-                                            ICE_K_FACTOR_1_002 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_1_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_K_FACTOR_1_002) ? ICE_K_FACTOR_1_002 : null,
-                                            ICE_K_FACTOR_2_002 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_2_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_K_FACTOR_2_002) ? ICE_K_FACTOR_2_002 : null,
-                                            ICE_K_FACTOR_3_002 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_3_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_K_FACTOR_3_002) ? ICE_K_FACTOR_3_002 : null,
-                                            ICE_K_FACTOR_4_002 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_4_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_K_FACTOR_4_002) ? ICE_K_FACTOR_4_002 : null,
-                                            ICE_K_FACTOR_5_002 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_5_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_K_FACTOR_5_002) ? ICE_K_FACTOR_5_002 : null,
-                                            ICE_K_FACTOR_6_002 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_6_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_K_FACTOR_6_002) ? ICE_K_FACTOR_6_002 : null,
-                                            ICE_K_FACTOR_7_002 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_7_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_K_FACTOR_7_002) ? ICE_K_FACTOR_7_002 : null,
-                                            ICE_K_FACTOR_8_002 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_8_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_K_FACTOR_8_002) ? ICE_K_FACTOR_8_002 : null,
-                                            ICE_K_FACTOR_9_002 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_9_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_K_FACTOR_9_002) ? ICE_K_FACTOR_9_002 : null,
-                                            ICE_K_FACTOR_10_002 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_10_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_K_FACTOR_10_002) ? ICE_K_FACTOR_10_002 : null,
-                                            ICE_K_FACTOR_11_002 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_11_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_K_FACTOR_11_002) ? ICE_K_FACTOR_11_002 : null,
-                                            ICE_K_FACTOR_12_002 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_12_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_K_FACTOR_12_002) ? ICE_K_FACTOR_12_002 : null,
-                                            ICE_K_FACTOR_13_002 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_13_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_K_FACTOR_13_002) ? ICE_K_FACTOR_13_002 : null,
-                                            ICE_K_FACTOR_14_002 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_14_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_K_FACTOR_14_002) ? ICE_K_FACTOR_14_002 : null,
-                                            ICE_K_FACTOR_15_002 = double.TryParse(elementoPrimario?.ICE_K_FACTOR_15_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_K_FACTOR_15_002) ? ICE_K_FACTOR_15_002 : null,
+                                            ICE_K_FACTOR_1_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_1_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_2_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_2_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_3_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_3_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_4_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_4_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_5_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_5_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_6_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_6_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_7_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_7_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_8_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_8_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_9_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_9_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_10_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_10_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_11_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_11_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_12_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_12_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_13_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_13_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_14_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_14_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_K_FACTOR_15_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_K_FACTOR_15_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
 
-                                            QTD_PULSOS_K_FACTOR_1_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_1_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_K_FACTOR_1_002) ? QTD_PULSOS_K_FACTOR_1_002 : null,
-                                            QTD_PULSOS_K_FACTOR_2_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_2_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_K_FACTOR_2_002) ? QTD_PULSOS_K_FACTOR_2_002 : null,
-                                            QTD_PULSOS_K_FACTOR_3_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_3_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_K_FACTOR_3_002) ? QTD_PULSOS_K_FACTOR_3_002 : null,
-                                            QTD_PULSOS_K_FACTOR_4_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_4_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_K_FACTOR_4_002) ? QTD_PULSOS_K_FACTOR_4_002 : null,
-                                            QTD_PULSOS_K_FACTOR_5_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_5_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_K_FACTOR_5_002) ? QTD_PULSOS_K_FACTOR_5_002 : null,
-                                            QTD_PULSOS_K_FACTOR_6_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_6_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_K_FACTOR_6_002) ? QTD_PULSOS_K_FACTOR_6_002 : null,
-                                            QTD_PULSOS_K_FACTOR_7_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_7_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_K_FACTOR_7_002) ? QTD_PULSOS_K_FACTOR_7_002 : null,
-                                            QTD_PULSOS_K_FACTOR_8_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_8_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_K_FACTOR_8_002) ? QTD_PULSOS_K_FACTOR_8_002 : null,
-                                            QTD_PULSOS_K_FACTOR_9_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_9_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_K_FACTOR_9_002) ? QTD_PULSOS_K_FACTOR_9_002 : null,
-                                            QTD_PULSOS_K_FACTOR_10_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_10_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_K_FACTOR_10_002) ? QTD_PULSOS_K_FACTOR_10_002 : null,
-                                            QTD_PULSOS_K_FACTOR_11_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_11_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_K_FACTOR_11_002) ? QTD_PULSOS_K_FACTOR_11_002 : null,
-                                            QTD_PULSOS_K_FACTOR_12_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_12_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_K_FACTOR_12_002) ? QTD_PULSOS_K_FACTOR_12_002 : null,
-                                            QTD_PULSOS_K_FACTOR_13_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_13_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_K_FACTOR_13_002) ? QTD_PULSOS_K_FACTOR_13_002 : null,
-                                            QTD_PULSOS_K_FACTOR_14_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_14_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_K_FACTOR_14_002) ? QTD_PULSOS_K_FACTOR_14_002 : null,
-                                            QTD_PULSOS_K_FACTOR_15_002 = double.TryParse(elementoPrimario?.QTD_PULSOS_K_FACTOR_15_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double QTD_PULSOS_K_FACTOR_15_002) ? QTD_PULSOS_K_FACTOR_15_002 : null,
+                                            QTD_PULSOS_K_FACTOR_1_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_1_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_2_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_2_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_3_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_3_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_4_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_4_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_5_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_5_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_6_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_6_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_7_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_7_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_8_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_8_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_9_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_9_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_10_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_10_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_11_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_11_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_12_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_12_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_13_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_13_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_14_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_14_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            QTD_PULSOS_K_FACTOR_15_002 = XmlUtils.DecimalParser(elementoPrimario?.QTD_PULSOS_K_FACTOR_15_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
 
-                                            ICE_CUTOFF_002 = double.TryParse(elementoPrimario?.ICE_CUTOFF_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_CUTOFF_002) ? ICE_CUTOFF_002 : null,
-                                            ICE_LIMITE_SPRR_ALARME_002 = double.TryParse(elementoPrimario?.ICE_LIMITE_SPRR_ALARME_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_LIMITE_SPRR_ALARME_002) ? ICE_LIMITE_SPRR_ALARME_002 : null,
-                                            ICE_LIMITE_INFRR_ALARME_002 = double.TryParse(elementoPrimario?.ICE_LIMITE_INFRR_ALARME_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_LIMITE_INFRR_ALARME_002) ? ICE_LIMITE_INFRR_ALARME_002 : null,
+                                            ICE_CUTOFF_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_CUTOFF_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_LIMITE_SPRR_ALARME_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_LIMITE_SPRR_ALARME_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_LIMITE_INFRR_ALARME_002 = XmlUtils.DecimalParser(elementoPrimario?.ICE_LIMITE_INFRR_ALARME_002, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
                                             IND_HABILITACAO_ALARME_1_002 = elementoPrimario?.IND_HABILITACAO_ALARME_1_002,
                                             #endregion
 
                                             #region instrumento pressao
 
                                             NUM_SERIE_1_002 = instrumentoPressao?.NUM_SERIE_1_002,
-                                            MED_PRSO_LIMITE_SPRR_ALRME_002 = double.TryParse(instrumentoPressao?.MED_PRSO_LIMITE_SPRR_ALRME_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRSO_LIMITE_SPRR_ALRME_002) ? MED_PRSO_LIMITE_SPRR_ALRME_002 : null,
-                                            MED_PRSO_LMTE_INFRR_ALRME_002 = double.TryParse(instrumentoPressao?.MED_PRSO_LMTE_INFRR_ALRME_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRSO_LMTE_INFRR_ALRME_002) ? MED_PRSO_LMTE_INFRR_ALRME_002 : null,
+                                            MED_PRSO_LIMITE_SPRR_ALRME_002 = XmlUtils.DecimalParser(instrumentoPressao?.MED_PRSO_LIMITE_SPRR_ALRME_002, errorsInFormat, instrumentoPressaoElement?.Name.LocalName),
+                                            MED_PRSO_LMTE_INFRR_ALRME_002 = XmlUtils.DecimalParser(instrumentoPressao?.MED_PRSO_LMTE_INFRR_ALRME_002, errorsInFormat, instrumentoPressaoElement?.Name.LocalName),
                                             IND_HABILITACAO_ALARME_2_002 = instrumentoPressao?.IND_HABILITACAO_ALARME_2_002,
-                                            MED_PRSO_ADOTADA_FALHA_002 = double.TryParse(instrumentoPressao?.MED_PRSO_ADOTADA_FALHA_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRSO_ADOTADA_FALHA_002) ? MED_PRSO_ADOTADA_FALHA_002 : null,
+                                            MED_PRSO_ADOTADA_FALHA_002 = XmlUtils.DecimalParser(instrumentoPressao?.MED_PRSO_ADOTADA_FALHA_002, errorsInFormat, instrumentoPressaoElement?.Name.LocalName),
                                             DSC_ESTADO_INSNO_CASO_FALHA_002 = instrumentoPressao?.DSC_ESTADO_INSNO_CASO_FALHA_002,
                                             IND_TIPO_PRESSAO_CONSIDERADA_002 = instrumentoPressao?.IND_TIPO_PRESSAO_CONSIDERADA_002,
 
@@ -621,10 +623,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                             #region instrumento temperatura
                                             NUM_SERIE_2_002 = instrumentoTemperatura?.NUM_SERIE_2_002,
-                                            MED_TMPTA_SPRR_ALARME_002 = double.TryParse(instrumentoTemperatura?.MED_TMPTA_SPRR_ALARME_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TMPTA_SPRR_ALARME_002) ? MED_TMPTA_SPRR_ALARME_002 : null,
-                                            MED_TMPTA_INFRR_ALRME_002 = double.TryParse(instrumentoTemperatura?.MED_TMPTA_INFRR_ALRME_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TMPTA_INFRR_ALRME_002) ? MED_TMPTA_INFRR_ALRME_002 : null,
+                                            MED_TMPTA_SPRR_ALARME_002 = XmlUtils.DecimalParser(instrumentoTemperatura?.MED_TMPTA_SPRR_ALARME_002, errorsInFormat, instrumentoTemperaturaElement?.Name.LocalName),
+                                            MED_TMPTA_INFRR_ALRME_002 = XmlUtils.DecimalParser(instrumentoTemperatura?.MED_TMPTA_INFRR_ALRME_002, errorsInFormat, instrumentoTemperaturaElement?.Name.LocalName),
                                             IND_HABILITACAO_ALARME_3_002 = instrumentoTemperatura?.IND_HABILITACAO_ALARME_3_002,
-                                            MED_TMPTA_ADTTA_FALHA_002 = double.TryParse(instrumentoTemperatura?.MED_TMPTA_ADTTA_FALHA_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TMPTA_ADTTA_FALHA_002) ? MED_TMPTA_ADTTA_FALHA_002 : null,
+                                            MED_TMPTA_ADTTA_FALHA_002 = XmlUtils.DecimalParser(instrumentoTemperatura?.MED_TMPTA_ADTTA_FALHA_002, errorsInFormat, instrumentoTemperaturaElement?.Name.LocalName),
                                             DSC_ESTADO_INSTRUMENTO_FALHA_002 = instrumentoTemperatura?.DSC_ESTADO_INSTRUMENTO_FALHA_002,
 
                                             #endregion
@@ -632,12 +634,12 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                             #region producao
                                             DHA_INICIO_PERIODO_MEDICAO_002 = DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_002, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var DHA_INICIO_PERIODO_MEDICAO_002) ? DHA_INICIO_PERIODO_MEDICAO_002 : null,
                                             DHA_FIM_PERIODO_MEDICAO_002 = DateTime.TryParseExact(producao?.DHA_FIM_PERIODO_MEDICAO_002, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var DHA_FIM_PERIODO_MEDICAO_002) ? DHA_FIM_PERIODO_MEDICAO_002 : null,
-                                            ICE_DENSIDADE_RELATIVA_002 = double.TryParse(producao?.ICE_DENSIDADE_RELATIVA_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_DENSIDADE_RELATIVA_002) ? ICE_DENSIDADE_RELATIVA_002 : null,
-                                            MED_PRESSAO_ESTATICA_002 = double.TryParse(producao?.MED_PRESSAO_ESTATICA_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRESSAO_ESTATICA_002) ? MED_PRESSAO_ESTATICA_002 : null,
-                                            MED_TEMPERATURA_2_002 = double.TryParse(producao?.MED_TEMPERATURA_2_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TEMPERATURA_2_002) ? MED_TEMPERATURA_2_002 : null,
-                                            PRZ_DURACAO_FLUXO_EFETIVO_002 = double.TryParse(producao?.PRZ_DURACAO_FLUXO_EFETIVO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PRZ_DURACAO_FLUXO_EFETIVO_002) ? PRZ_DURACAO_FLUXO_EFETIVO_002 : null,
-                                            MED_BRUTO_MOVIMENTADO_002 = double.TryParse(producao?.MED_BRUTO_MOVIMENTADO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_BRUTO_MOVIMENTADO_002) ? MED_BRUTO_MOVIMENTADO_002 : null,
-                                            MED_CORRIGIDO_MVMDO_002 = double.TryParse(producao?.MED_CORRIGIDO_MVMDO_002?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_CORRIGIDO_MVMDO_002) ? MED_CORRIGIDO_MVMDO_002 : throw new BadRequestException($"Arquivo: {data.Files[i].FileName} campo: MED_CORRIGIDO_MVMDO não está no formato aceitável: 00000,00000, {k + 1} medição(DADOS_BASICOS)ª."),
+                                            ICE_DENSIDADE_RELATIVA_002 = XmlUtils.DecimalParser(producao?.ICE_DENSIDADE_RELATIVA_002, errorsInFormat, producaoElement?.Name.LocalName),
+                                            MED_PRESSAO_ESTATICA_002 = XmlUtils.DecimalParser(producao?.MED_PRESSAO_ESTATICA_002, errorsInFormat, producaoElement?.Name.LocalName),
+                                            MED_TEMPERATURA_2_002 = XmlUtils.DecimalParser(producao?.MED_TEMPERATURA_2_002, errorsInFormat, producaoElement?.Name.LocalName),
+                                            PRZ_DURACAO_FLUXO_EFETIVO_002 = XmlUtils.DecimalParser(producao?.PRZ_DURACAO_FLUXO_EFETIVO_002, errorsInFormat, producaoElement?.Name.LocalName),
+                                            MED_BRUTO_MOVIMENTADO_002 = XmlUtils.DecimalParser(producao?.MED_BRUTO_MOVIMENTADO_002, errorsInFormat, producaoElement?.Name.LocalName),
+                                            MED_CORRIGIDO_MVMDO_002 = XmlUtils.DecimalParser(producao?.MED_CORRIGIDO_MVMDO_002, errorsInFormat, producaoElement?.Name.LocalName),
                                             #endregion
 
                                             FileName = data.Files[i].FileName,
@@ -762,58 +764,59 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                             Id = Guid.NewGuid(),
 
                                             #region atributos
-                                            NUM_SERIE_ELEMENTO_PRIMARIO_003 = dadosBasicos?.NUM_SERIE_ELEMENTO_PRIMARIO_003,
-                                            COD_INSTALACAO_003 = dadosBasicos?.COD_INSTALACAO_003,
-                                            COD_TAG_PONTO_MEDICAO_003 = dadosBasicos?.COD_TAG_PONTO_MEDICAO_003,
+                                            NUM_SERIE_ELEMENTO_PRIMARIO_003 = dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_003,
+                                            COD_INSTALACAO_003 = dadosBasicos.COD_INSTALACAO_003,
+                                            COD_TAG_PONTO_MEDICAO_003 = dadosBasicos.COD_TAG_PONTO_MEDICAO_003,
                                             #endregion
 
                                             #region configuracao cv
 
                                             NUM_SERIE_COMPUTADOR_VAZAO_003 = configuracaoCv?.NUM_SERIE_COMPUTADOR_VAZAO_003,
                                             DHA_COLETA_003 = DateTime.TryParseExact(configuracaoCv?.DHA_COLETA_003, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var DHA_COLETA_003) ? DHA_COLETA_003 : null,
-                                            MED_TEMPERATURA_1_003 = double.TryParse(configuracaoCv?.MED_TEMPERATURA_1_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TEMPERATURA_1_003) ? MED_TEMPERATURA_1_003 : null,
-                                            MED_PRESSAO_ATMSA_003 = double.TryParse(configuracaoCv?.MED_PRESSAO_ATMSA_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRESSAO_ATMSA_003) ? MED_PRESSAO_ATMSA_003 : null,
-                                            MED_PRESSAO_RFRNA_003 = double.TryParse(configuracaoCv?.MED_PRESSAO_RFRNA_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRESSAO_RFRNA_003) ? MED_PRESSAO_RFRNA_003 : null,
-                                            MED_DENSIDADE_RELATIVA_003 = double.TryParse(configuracaoCv?.MED_DENSIDADE_RELATIVA_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_DENSIDADE_RELATIVA_003) ? MED_DENSIDADE_RELATIVA_003 : null,
+                                            MED_TEMPERATURA_1_003 = XmlUtils.DecimalParser(configuracaoCv?.MED_TEMPERATURA_1_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+                                            MED_PRESSAO_ATMSA_003 = XmlUtils.DecimalParser(configuracaoCv?.MED_PRESSAO_ATMSA_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+                                            MED_PRESSAO_RFRNA_003 = XmlUtils.DecimalParser(configuracaoCv?.MED_PRESSAO_RFRNA_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+
+                                            MED_DENSIDADE_RELATIVA_003 = XmlUtils.DecimalParser(configuracaoCv?.MED_DENSIDADE_RELATIVA_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
                                             DSC_NORMA_UTILIZADA_CALCULO_003 = configuracaoCv?.DSC_NORMA_UTILIZADA_CALCULO_003,
 
-                                            PCT_CROMATOGRAFIA_NITROGENIO_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_NITROGENIO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_NITROGENIO_003) ? PCT_CROMATOGRAFIA_NITROGENIO_003 : null,
-                                            PCT_CROMATOGRAFIA_CO2_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_CO2_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_CO2_003) ? PCT_CROMATOGRAFIA_CO2_003 : null,
-                                            PCT_CROMATOGRAFIA_METANO_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_METANO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_METANO_003) ? PCT_CROMATOGRAFIA_METANO_003 : null,
-                                            PCT_CROMATOGRAFIA_ETANO_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_ETANO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_ETANO_003) ? PCT_CROMATOGRAFIA_ETANO_003 : null,
-                                            PCT_CROMATOGRAFIA_PROPANO_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_PROPANO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_PROPANO_003) ? PCT_CROMATOGRAFIA_PROPANO_003 : null,
-                                            PCT_CROMATOGRAFIA_N_BUTANO_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_N_BUTANO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_N_BUTANO_003) ? PCT_CROMATOGRAFIA_N_BUTANO_003 : null,
-                                            PCT_CROMATOGRAFIA_I_BUTANO_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_I_BUTANO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_I_BUTANO_003) ? PCT_CROMATOGRAFIA_I_BUTANO_003 : null,
-                                            PCT_CROMATOGRAFIA_N_PENTANO_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_N_PENTANO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_N_PENTANO_003) ? PCT_CROMATOGRAFIA_N_PENTANO_003 : null,
-                                            PCT_CROMATOGRAFIA_I_PENTANO_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_I_PENTANO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_I_PENTANO_003) ? PCT_CROMATOGRAFIA_I_PENTANO_003 : null,
-                                            PCT_CROMATOGRAFIA_HEXANO_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_HEXANO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_HEXANO_003) ? PCT_CROMATOGRAFIA_HEXANO_003 : null,
-                                            PCT_CROMATOGRAFIA_HEPTANO_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_HEPTANO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_HEPTANO_003) ? PCT_CROMATOGRAFIA_HEPTANO_003 : null,
-                                            PCT_CROMATOGRAFIA_OCTANO_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_OCTANO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_OCTANO_003) ? PCT_CROMATOGRAFIA_OCTANO_003 : null,
-                                            PCT_CROMATOGRAFIA_NONANO_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_NONANO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_NONANO_003) ? PCT_CROMATOGRAFIA_NONANO_003 : null,
-                                            PCT_CROMATOGRAFIA_DECANO_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_DECANO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_DECANO_003) ? PCT_CROMATOGRAFIA_DECANO_003 : null,
-                                            PCT_CROMATOGRAFIA_H2S_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_H2S_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_H2S_003) ? PCT_CROMATOGRAFIA_H2S_003 : null,
-                                            PCT_CROMATOGRAFIA_AGUA_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_AGUA_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_AGUA_003) ? PCT_CROMATOGRAFIA_AGUA_003 : null,
-                                            PCT_CROMATOGRAFIA_HELIO_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_HELIO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_HELIO_003) ? PCT_CROMATOGRAFIA_HELIO_003 : null,
-                                            PCT_CROMATOGRAFIA_OXIGENIO_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_OXIGENIO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_OXIGENIO_003) ? PCT_CROMATOGRAFIA_OXIGENIO_003 : null,
-                                            PCT_CROMATOGRAFIA_CO_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_CO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_CO_003) ? PCT_CROMATOGRAFIA_CO_003 : null,
-                                            PCT_CROMATOGRAFIA_HIDROGENIO_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_HIDROGENIO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_HIDROGENIO_003) ? PCT_CROMATOGRAFIA_HIDROGENIO_003 : null,
-                                            PCT_CROMATOGRAFIA_ARGONIO_003 = double.TryParse(configuracaoCv?.PCT_CROMATOGRAFIA_ARGONIO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PCT_CROMATOGRAFIA_ARGONIO_003) ? PCT_CROMATOGRAFIA_ARGONIO_003 : null,
+                                            PCT_CROMATOGRAFIA_NITROGENIO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_NITROGENIO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_CO2_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_CO2_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_METANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_METANO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_ETANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_ETANO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_PROPANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_PROPANO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_N_BUTANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_N_BUTANO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_I_BUTANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_I_BUTANO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_N_PENTANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_N_PENTANO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_I_PENTANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_I_PENTANO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_HEXANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_HEXANO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_HEPTANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_HEPTANO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_OCTANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_OCTANO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_NONANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_NONANO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_DECANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_DECANO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_H2S_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_H2S_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_AGUA_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_AGUA_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_HELIO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_HELIO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_OXIGENIO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_OXIGENIO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_CO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_CO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_HIDROGENIO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_HIDROGENIO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_ARGONIO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_ARGONIO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
                                             DSC_VERSAO_SOFTWARE_003 = configuracaoCv?.DSC_VERSAO_SOFTWARE_003,
 
                                             #endregion
 
                                             #region elemento primario
-                                            CE_LIMITE_SPRR_ALARME_003 = double.TryParse(elementoPrimario?.CE_LIMITE_SPRR_ALARME_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double CE_LIMITE_SPRR_ALARME_003) ? CE_LIMITE_SPRR_ALARME_003 : null,
-                                            ICE_LIMITE_INFRR_ALARME_1_003 = double.TryParse(elementoPrimario?.ICE_LIMITE_INFRR_ALARME_1_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_LIMITE_INFRR_ALARME_1_003) ? ICE_LIMITE_INFRR_ALARME_1_003 : null,
+                                            CE_LIMITE_SPRR_ALARME_003 = XmlUtils.DecimalParser(elementoPrimario?.CE_LIMITE_SPRR_ALARME_003, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
+                                            ICE_LIMITE_INFRR_ALARME_003 = XmlUtils.DecimalParser(elementoPrimario?.ICE_LIMITE_INFRR_ALARME_1_003, errorsInFormat, elementoPrimarioElement?.Name.LocalName),
                                             IND_HABILITACAO_ALARME_1_003 = elementoPrimario?.IND_HABILITACAO_ALARME_1_003,
 
                                             #endregion
 
                                             #region instrumento pressao
                                             NUM_SERIE_1_003 = instrumentoPressao?.NUM_SERIE_1_003,
-                                            MED_PRSO_LIMITE_SPRR_ALRME_1_003 = double.TryParse(instrumentoPressao?.MED_PRSO_LIMITE_SPRR_ALRME_1_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRSO_LIMITE_SPRR_ALRME_1_003) ? MED_PRSO_LIMITE_SPRR_ALRME_1_003 : null,
-                                            MED_PRSO_LMTE_INFRR_ALRME_1_003 = double.TryParse(instrumentoPressao?.MED_PRSO_LMTE_INFRR_ALRME_1_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRSO_LMTE_INFRR_ALRME_1_003) ? MED_PRSO_LMTE_INFRR_ALRME_1_003 : null,
-                                            MED_PRSO_ADOTADA_FALHA_1_003 = double.TryParse(instrumentoPressao?.MED_PRSO_ADOTADA_FALHA_1_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRSO_ADOTADA_FALHA_1_003) ? MED_PRSO_ADOTADA_FALHA_1_003 : null,
+                                            MED_PRSO_LIMITE_SPRR_ALRME_1_003 = XmlUtils.DecimalParser(instrumentoPressao?.MED_PRSO_LIMITE_SPRR_ALRME_1_003, errorsInFormat, instrumentoPressaoElement?.Name.LocalName),
+                                            MED_PRSO_LMTE_INFRR_ALRME_1_003 = XmlUtils.DecimalParser(instrumentoPressao?.MED_PRSO_LMTE_INFRR_ALRME_1_003, errorsInFormat, instrumentoPressaoElement?.Name.LocalName),
+                                            MED_PRSO_ADOTADA_FALHA_1_003 = XmlUtils.DecimalParser(instrumentoPressao?.MED_PRSO_ADOTADA_FALHA_1_003, errorsInFormat, instrumentoPressaoElement?.Name.LocalName),
                                             DSC_ESTADO_INSNO_CASO_FALHA_1_003 = instrumentoPressao?.DSC_ESTADO_INSNO_CASO_FALHA_1_003,
                                             IND_TIPO_PRESSAO_CONSIDERADA_003 = instrumentoPressao?.IND_TIPO_PRESSAO_CONSIDERADA_003,
                                             IND_HABILITACAO_ALARME_2_003 = instrumentoPressao?.IND_HABILITACAO_ALARME_2_003,
@@ -822,67 +825,67 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                             #region instrumento temperatura
                                             NUM_SERIE_2_003 = instrumentoTemperatura?.NUM_SERIE_2_003,
-                                            MED_TMPTA_SPRR_ALARME_003 = double.TryParse(instrumentoTemperatura?.MED_TMPTA_SPRR_ALARME_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TMPTA_SPRR_ALARME_003) ? MED_TMPTA_SPRR_ALARME_003 : 0,
-                                            MED_TMPTA_INFRR_ALRME_003 = double.TryParse(instrumentoTemperatura?.MED_TMPTA_INFRR_ALRME_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TMPTA_INFRR_ALRME_003) ? MED_TMPTA_INFRR_ALRME_003 : 0,
+                                            MED_TMPTA_SPRR_ALARME_003 = XmlUtils.DecimalParser(instrumentoTemperatura?.MED_TMPTA_SPRR_ALARME_003, errorsInFormat, instrumentoTemperaturaElement?.Name.LocalName),
+                                            MED_TMPTA_INFRR_ALRME_003 = XmlUtils.DecimalParser(instrumentoTemperatura?.MED_TMPTA_INFRR_ALRME_003, errorsInFormat, instrumentoTemperaturaElement?.Name.LocalName),
                                             IND_HABILITACAO_ALARME_3_003 = instrumentoTemperatura?.IND_HABILITACAO_ALARME_3_003,
-                                            MED_TMPTA_ADTTA_FALHA_003 = double.TryParse(instrumentoTemperatura?.MED_TMPTA_ADTTA_FALHA_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TMPTA_ADTTA_FALHA_003) ? MED_TMPTA_ADTTA_FALHA_003 : 0,
+                                            MED_TMPTA_ADTTA_FALHA_003 = XmlUtils.DecimalParser(instrumentoTemperatura?.MED_TMPTA_ADTTA_FALHA_003, errorsInFormat, instrumentoTemperaturaElement?.Name.LocalName),
                                             DSC_ESTADO_INSTRUMENTO_FALHA_003 = instrumentoTemperatura?.DSC_ESTADO_INSTRUMENTO_FALHA_003,
                                             #endregion
 
                                             #region placa orificio
-                                            MED_DIAMETRO_REFERENCIA_003 = double.TryParse(placaOrificio?.MED_DIAMETRO_REFERENCIA_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_DIAMETRO_REFERENCIA_003) ? MED_DIAMETRO_REFERENCIA_003 : 0,
-                                            MED_TEMPERATURA_RFRNA_003 = double.TryParse(placaOrificio?.MED_TEMPERATURA_RFRNA_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TEMPERATURA_RFRNA_003) ? MED_TEMPERATURA_RFRNA_003 : 0,
-                                            DSC_MATERIAL_CONTRUCAO_PLACA_003 = placaOrificio?.DSC_MATERIAL_CONTRUCAO_PLACA_003,
-                                            MED_DMTRO_INTRO_TRCHO_MDCO_003 = double.TryParse(placaOrificio?.MED_DMTRO_INTRO_TRCHO_MDCO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_DMTRO_INTRO_TRCHO_MDCO_003) ? MED_DMTRO_INTRO_TRCHO_MDCO_003 : 0,
-                                            MED_TMPTA_TRCHO_MDCO_003 = double.TryParse(placaOrificio?.MED_TMPTA_TRCHO_MDCO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TMPTA_TRCHO_MDCO_003) ? MED_TMPTA_TRCHO_MDCO_003 : 0,
-                                            DSC_MATERIAL_CNSTO_TRCHO_MDCO_003 = placaOrificio?.DSC_MATERIAL_CNSTO_TRCHO_MDCO_003,
+                                            MED_DIAMETRO_REFERENCIA_003 = XmlUtils.DecimalParser(placaOrificio?.MED_DIAMETRO_REFERENCIA_003, errorsInFormat, placaOrificioElement?.Name.LocalName),
+                                            MED_TEMPERATURA_RFRNA_003 = XmlUtils.DecimalParser(placaOrificio?.MED_TEMPERATURA_RFRNA_003, errorsInFormat, placaOrificioElement?.Name.LocalName),
+                                            DSC_MATERIAL_CONTRUCAO_PLACA_003 = XmlUtils.DecimalParser(placaOrificio?.DSC_MATERIAL_CONTRUCAO_PLACA_003, errorsInFormat, placaOrificioElement?.Name.LocalName),
+                                            MED_DMTRO_INTRO_TRCHO_MDCO_003 = XmlUtils.DecimalParser(placaOrificio?.MED_DMTRO_INTRO_TRCHO_MDCO_003, errorsInFormat, placaOrificioElement?.Name.LocalName),
+                                            MED_TMPTA_TRCHO_MDCO_003 = XmlUtils.DecimalParser(placaOrificio?.MED_TMPTA_TRCHO_MDCO_003, errorsInFormat, placaOrificioElement?.Name.LocalName),
+                                            DSC_MATERIAL_CNSTO_TRCHO_MDCO_003 = XmlUtils.DecimalParser(placaOrificio?.DSC_MATERIAL_CNSTO_TRCHO_MDCO_003, errorsInFormat, placaOrificioElement?.Name.LocalName),
                                             DSC_LCLZO_TMDA_PRSO_DFRNL_003 = placaOrificio?.DSC_LCLZO_TMDA_PRSO_DFRNL_003,
                                             IND_TOMADA_PRESSAO_ESTATICA_003 = placaOrificio?.IND_TOMADA_PRESSAO_ESTATICA_003,
                                             #endregion
 
                                             #region inst diferen pressao alta   
                                             NUM_SERIE_3_003 = instDiferenPressaoAlta?.NUM_SERIE_3_003,
-                                            MED_PRSO_LIMITE_SPRR_ALRME_2_003 = double.TryParse(instDiferenPressaoAlta?.MED_PRSO_LIMITE_SPRR_ALRME_2_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRSO_LIMITE_SPRR_ALRME_2_003) ? MED_PRSO_LIMITE_SPRR_ALRME_2_003 : null,
-                                            MED_PRSO_LMTE_INFRR_ALRME_2_003 = double.TryParse(instDiferenPressaoAlta?.MED_PRSO_LMTE_INFRR_ALRME_2_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRSO_LMTE_INFRR_ALRME_2_003) ? MED_PRSO_LMTE_INFRR_ALRME_2_003 : null,
+                                            MED_PRSO_LIMITE_SPRR_ALRME_2_003 = XmlUtils.DecimalParser(instDiferenPressaoAlta?.MED_PRSO_LIMITE_SPRR_ALRME_2_003, errorsInFormat, instDiferenPressaoAltaElement?.Name.LocalName),
+                                            MED_PRSO_LMTE_INFRR_ALRME_2_003 = XmlUtils.DecimalParser(instDiferenPressaoAlta?.MED_PRSO_LMTE_INFRR_ALRME_2_003, errorsInFormat, instDiferenPressaoAltaElement?.Name.LocalName),
 
                                             #endregion
 
                                             #region inst diferen pressao media
                                             NUM_SERIE_4_003 = instDiferenPressaoMedia?.NUM_SERIE_4_003,
-                                            MED_PRSO_LIMITE_SPRR_ALRME_3_003 = double.TryParse(instDiferenPressaoMedia?.MED_PRSO_LIMITE_SPRR_ALRME_3_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRSO_LIMITE_SPRR_ALRME_3_003) ? MED_PRSO_LIMITE_SPRR_ALRME_3_003 : null,
-                                            MED_PRSO_LMTE_INFRR_ALRME_3_003 = double.TryParse(instDiferenPressaoMedia?.MED_PRSO_LMTE_INFRR_ALRME_3_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRSO_LMTE_INFRR_ALRME_3_003) ? MED_PRSO_LMTE_INFRR_ALRME_3_003 : null,
+                                            MED_PRSO_LIMITE_SPRR_ALRME_3_003 = XmlUtils.DecimalParser(instDiferenPressaoMedia?.MED_PRSO_LIMITE_SPRR_ALRME_3_003, errorsInFormat, instDiferenPressaoMediaElement?.Name.LocalName),
+                                            MED_PRSO_LMTE_INFRR_ALRME_3_003 = XmlUtils.DecimalParser(instDiferenPressaoMedia?.MED_PRSO_LMTE_INFRR_ALRME_3_003, errorsInFormat, instDiferenPressaoMediaElement?.Name.LocalName),
                                             #endregion
 
                                             #region inst diferen pressao baixa
                                             NUM_SERIE_5_003 = instDiferenPressaoBaixa?.NUM_SERIE_5_003,
-                                            MED_PRSO_LIMITE_SPRR_ALRME_4_003 = double.TryParse(instDiferenPressaoBaixa?.MED_PRSO_LIMITE_SPRR_ALRME_4_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRSO_LIMITE_SPRR_ALRME_4_003) ? MED_PRSO_LIMITE_SPRR_ALRME_4_003 : null,
-                                            MED_PRSO_LMTE_INFRR_ALRME_4_003 = double.TryParse(instDiferenPressaoBaixa?.MED_PRSO_LMTE_INFRR_ALRME_4_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRSO_LMTE_INFRR_ALRME_4_003) ? MED_PRSO_LMTE_INFRR_ALRME_4_003 : null,
+                                            MED_PRSO_LIMITE_SPRR_ALRME_4_003 = XmlUtils.DecimalParser(instDiferenPressaoBaixa?.MED_PRSO_LIMITE_SPRR_ALRME_4_003, errorsInFormat, instDiferenPressaoBaixaElement?.Name.LocalName),
+                                            MED_PRSO_LMTE_INFRR_ALRME_4_003 = XmlUtils.DecimalParser(instDiferenPressaoBaixa?.MED_PRSO_LMTE_INFRR_ALRME_4_003, errorsInFormat, instDiferenPressaoBaixaElement?.Name.LocalName),
                                             IND_HABILITACAO_ALARME_4_003 = instDiferenPressaoBaixa?.IND_HABILITACAO_ALARME_4_003,
-                                            MED_PRSO_ADOTADA_FALHA_2_003 = double.TryParse(instDiferenPressaoBaixa?.MED_PRSO_ADOTADA_FALHA_2_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRSO_ADOTADA_FALHA_2_003) ? MED_PRSO_ADOTADA_FALHA_2_003 : null,
+                                            MED_PRSO_ADOTADA_FALHA_2_003 = XmlUtils.DecimalParser(instDiferenPressaoBaixa?.MED_PRSO_ADOTADA_FALHA_2_003, errorsInFormat, instDiferenPressaoBaixaElement?.Name.LocalName),
                                             DSC_ESTADO_INSNO_CASO_FALHA_2_003 = instDiferenPressaoBaixa?.DSC_ESTADO_INSNO_CASO_FALHA_2_003,
-                                            MED_CUTOFF_KPA_1_003 = double.TryParse(instDiferenPressaoBaixa?.MED_CUTOFF_KPA_1_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_CUTOFF_KPA_1_003) ? MED_CUTOFF_KPA_1_003 : null,
+                                            MED_CUTOFF_KPA_1_003 = XmlUtils.DecimalParser(instDiferenPressaoBaixa?.MED_CUTOFF_KPA_1_003, errorsInFormat, instDiferenPressaoBaixaElement?.Name.LocalName),
 
                                             #endregion
 
                                             #region inst diferen pressao principal
                                             NUM_SERIE_6_003 = instDiferenPressaoPrincipal?.NUM_SERIE_6_003,
-                                            MED_PRSO_LIMITE_SPRR_ALRME_5_003 = double.TryParse(instDiferenPressaoPrincipal?.MED_PRSO_LIMITE_SPRR_ALRME_5_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRSO_LIMITE_SPRR_ALRME_5_003) ? MED_PRSO_LIMITE_SPRR_ALRME_5_003 : null,
-                                            MED_PRSO_LMTE_INFRR_ALRME_5_003 = double.TryParse(instDiferenPressaoPrincipal?.MED_PRSO_LMTE_INFRR_ALRME_5_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRSO_LMTE_INFRR_ALRME_5_003) ? MED_PRSO_LMTE_INFRR_ALRME_5_003 : null,
+                                            MED_PRSO_LIMITE_SPRR_ALRME_5_003 = XmlUtils.DecimalParser(instDiferenPressaoPrincipal?.MED_PRSO_LIMITE_SPRR_ALRME_5_003, errorsInFormat, instDiferenPressaoPrincipalElement?.Name.LocalName),
+                                            MED_PRSO_LMTE_INFRR_ALRME_5_003 = XmlUtils.DecimalParser(instDiferenPressaoPrincipal?.MED_PRSO_LMTE_INFRR_ALRME_5_003, errorsInFormat, instDiferenPressaoPrincipalElement?.Name.LocalName),
                                             IND_HABILITACAO_ALARME_5_003 = instDiferenPressaoPrincipal?.IND_HABILITACAO_ALARME_5_003,
-                                            MED_PRSO_ADOTADA_FALHA_3_003 = double.TryParse(instDiferenPressaoPrincipal?.MED_PRSO_ADOTADA_FALHA_3_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRSO_ADOTADA_FALHA_3_003) ? MED_PRSO_ADOTADA_FALHA_3_003 : null,
+                                            MED_PRSO_ADOTADA_FALHA_3_003 = XmlUtils.DecimalParser(instDiferenPressaoPrincipal?.MED_PRSO_ADOTADA_FALHA_3_003, errorsInFormat, instDiferenPressaoPrincipalElement?.Name.LocalName),
                                             DSC_ESTADO_INSNO_CASO_FALHA_3_003 = instDiferenPressaoPrincipal?.DSC_ESTADO_INSNO_CASO_FALHA_3_003,
-                                            MED_CUTOFF_KPA_2_003 = double.TryParse(instDiferenPressaoPrincipal?.MED_CUTOFF_KPA_2_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_CUTOFF_KPA_2_003) ? MED_CUTOFF_KPA_2_003 : null,
+                                            MED_CUTOFF_KPA_2_003 = XmlUtils.DecimalParser(instDiferenPressaoPrincipal?.MED_CUTOFF_KPA_2_003, errorsInFormat, instDiferenPressaoPrincipalElement?.Name.LocalName),
                                             #endregion
 
                                             #region producao
                                             DHA_INICIO_PERIODO_MEDICAO_003 = DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_003, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var DHA_INICIO_PERIODO_MEDICAO_003) ? DHA_INICIO_PERIODO_MEDICAO_003 : null,
                                             DHA_FIM_PERIODO_MEDICAO_003 = DateTime.TryParseExact(producao?.DHA_FIM_PERIODO_MEDICAO_003, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var DHA_FIM_PERIODO_MEDICAO_003) ? DHA_FIM_PERIODO_MEDICAO_003 : null,
-                                            ICE_DENSIDADE_RELATIVA_003 = double.TryParse(producao?.ICE_DENSIDADE_RELATIVA_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double ICE_DENSIDADE_RELATIVA_003) ? ICE_DENSIDADE_RELATIVA_003 : null,
-                                            MED_DIFERENCIAL_PRESSAO_003 = double.TryParse(producao?.MED_DIFERENCIAL_PRESSAO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_DIFERENCIAL_PRESSAO_003) ? MED_DIFERENCIAL_PRESSAO_003 : null,
-                                            MED_PRESSAO_ESTATICA_003 = double.TryParse(producao?.MED_PRESSAO_ESTATICA_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_PRESSAO_ESTATICA_003) ? MED_PRESSAO_ESTATICA_003 : null,
-                                            MED_TEMPERATURA_2_003 = double.TryParse(producao?.MED_TEMPERATURA_2_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_TEMPERATURA_2_003) ? MED_TEMPERATURA_2_003 : null,
-                                            PRZ_DURACAO_FLUXO_EFETIVO_003 = double.TryParse(producao?.PRZ_DURACAO_FLUXO_EFETIVO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double PRZ_DURACAO_FLUXO_EFETIVO_003) ? PRZ_DURACAO_FLUXO_EFETIVO_003 : null,
-                                            MED_CORRIGIDO_MVMDO_003 = double.TryParse(producao?.MED_CORRIGIDO_MVMDO_003?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double MED_CORRIGIDO_MVMDO_003) ? MED_CORRIGIDO_MVMDO_003 : throw new BadRequestException($"Arquivo: {data.Files[i].FileName} campo: MED_CORRIGIDO_MVMDO não está no formato aceitável: 00000,00000, {k + 1} medição(DADOS_BASICOS)ª."),
+                                            ICE_DENSIDADE_RELATIVA_003 = XmlUtils.DecimalParser(producao?.ICE_DENSIDADE_RELATIVA_003, errorsInFormat, producaoElement?.Name.LocalName),
+                                            MED_DIFERENCIAL_PRESSAO_003 = XmlUtils.DecimalParser(producao?.MED_DIFERENCIAL_PRESSAO_003, errorsInFormat, producaoElement?.Name.LocalName),
+                                            MED_PRESSAO_ESTATICA_003 = XmlUtils.DecimalParser(producao?.MED_PRESSAO_ESTATICA_003, errorsInFormat, producaoElement?.Name.LocalName),
+                                            MED_TEMPERATURA_2_003 = XmlUtils.DecimalParser(producao?.MED_TEMPERATURA_2_003, errorsInFormat, producaoElement?.Name.LocalName),
+                                            PRZ_DURACAO_FLUXO_EFETIVO_003 = XmlUtils.DecimalParser(producao?.PRZ_DURACAO_FLUXO_EFETIVO_003, errorsInFormat, producaoElement?.Name.LocalName),
+                                            MED_CORRIGIDO_MVMDO_003 = XmlUtils.DecimalParser(producao?.MED_CORRIGIDO_MVMDO_003, errorsInFormat, producaoElement?.Name.LocalName),
                                             #endregion
 
                                             FileName = data.Files[i].FileName,
@@ -921,11 +924,11 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     }
                 }
 
+                if (errorsInImport.Count > 0)
+                    throw new BadRequestException($"Algum(s) erro(s) ocorreram durante a importação do arquivo de nome: {data.Files[i].FileName}", errors: errorsInImport);
 
-            }
-            if (errorsInImport.Count > 0)
-            {
-                throw new BadRequestException($"Algum(s) erro(s) ocorreram durante a importação do arquivo:", errors: errorsInImport);
+                if (errorsInFormat.Count > 0)
+                    throw new BadRequestException($"Algum(s) erro(s) de formatação ocorreram durante a importação do arquivo de nome: {data.Files[i].FileName}", errors: errorsInFormat);
             }
 
             return _responseResult;
@@ -1009,6 +1012,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             foreach (var file in data._003File)
             {
                 var measurement = _mapper.Map<_003DTO, Measurement>(file);
+
                 var measurementExists = await _repository.GetAnyAsync(measurement.Id);
 
                 if (measurementExists is true)
@@ -1141,9 +1145,28 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             return _responseResult;
         }
 
-        public async Task<List<string>> DownloadErrors(List<string> errors)
+        public ErrorPdfDTO DownloadErrors(List<string> errors)
         {
-            return errors;
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                PdfDocument pdfDoc = new PdfDocument(new PdfWriter(memoryStream));
+
+                Document document = new Document(pdfDoc);
+
+                foreach (string error in errors)
+                {
+                    Paragraph paragraph = new Paragraph(error);
+                    document.Add(paragraph);
+                }
+
+                document.Close();
+
+                byte[] pdfBytes = memoryStream.ToArray();
+
+                var response = new ErrorPdfDTO { ContentBase64 = Convert.ToBase64String(pdfBytes) };
+
+                return response;
+            }
         }
     }
 }
