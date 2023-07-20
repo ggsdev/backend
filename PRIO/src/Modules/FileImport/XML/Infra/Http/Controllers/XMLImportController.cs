@@ -48,7 +48,7 @@ namespace PRIO.Controllers
         //    return Ok(result);
         //}
 
-        [HttpGet("errors")]
+        [HttpPost("errors")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DTOFiles))]
         public ActionResult ErrorsDownload([FromBody] ErrorsImportViewModel data)
         {
