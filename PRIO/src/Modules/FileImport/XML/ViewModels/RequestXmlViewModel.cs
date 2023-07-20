@@ -18,4 +18,11 @@ namespace PRIO.src.Modules.FileImport.XML.ViewModels
         public string FileType { get; set; } = string.Empty;
 
     }
+
+    public class ErrorsImportViewModel
+    {
+        [Required(ErrorMessage = "Errors is required")]
+        public List<string> Errors { get; set; } = new();
+
+    }
 }
