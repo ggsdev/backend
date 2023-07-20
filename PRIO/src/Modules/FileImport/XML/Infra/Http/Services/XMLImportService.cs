@@ -275,7 +275,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                             #region configuracao cv
                                             NUM_SERIE_COMPUTADOR_VAZAO_001 = configuracaoCv?.NUM_SERIE_COMPUTADOR_VAZAO_001,
-                                            DHA_COLETA_001 = DateTime.TryParseExact(configuracaoCv?.DHA_COLETA_001, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dhaColeta) ? dhaColeta : null,
+                                            DHA_COLETA_001 = XmlUtils.DateTimeParser(configuracaoCv?.DHA_COLETA_001, errorsInFormat, configuracaoCvElement?.Name.LocalName),
                                             MED_TEMPERATURA_001 = XmlUtils.DecimalParser(configuracaoCv?.MED_TEMPERATURA_001, errorsInFormat, configuracaoCvElement?.Name.LocalName),
                                             MED_PRESSAO_ATMSA_001 = XmlUtils.DecimalParser(configuracaoCv?.MED_PRESSAO_ATMSA_001, errorsInFormat, configuracaoCvElement?.Name.LocalName),
                                             MED_PRESSAO_RFRNA_001 = XmlUtils.DecimalParser(configuracaoCv?.MED_PRESSAO_RFRNA_001, errorsInFormat, configuracaoCvElement?.Name.LocalName),
@@ -376,8 +376,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                             #region producao
 
-                                            DHA_INICIO_PERIODO_MEDICAO_001 = DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_001, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var inicioPer) ? inicioPer : null,
-                                            DHA_FIM_PERIODO_MEDICAO_001 = DateTime.TryParseExact(producao?.DHA_FIM_PERIODO_MEDICAO_001, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var fimPer) ? fimPer : null,
+                                            DHA_INICIO_PERIODO_MEDICAO_001 = XmlUtils.DateTimeParser(producao?.DHA_INICIO_PERIODO_MEDICAO_001, errorsInFormat, producaoElement?.Name.LocalName),
+                                            DHA_FIM_PERIODO_MEDICAO_001 = XmlUtils.DateTimeParser(producao?.DHA_FIM_PERIODO_MEDICAO_001, errorsInFormat, producaoElement?.Name.LocalName),
                                             ICE_DENSIDADADE_RELATIVA_001 = XmlUtils.DecimalParser(producao?.ICE_DENSIDADADE_RELATIVA_001, errorsInFormat, producaoElement.Name.LocalName),
                                             //ICE_CORRECAO_BSW_001 = XmlUtils.DecimalParser(producao?.ICE_CORRECAO_BSW_001?.Replac, errorsInFormat, producaoElement.Name.LocalName)XmlUtils.DecimalParser(producao?.ICE_CORRECAO_PRESSAO_LIQUIDO_001, errorsInFormat, producaoElement.Name.LocalName),
                                             ICE_CRRCO_TEMPERATURA_LIQUIDO_001 = XmlUtils.DecimalParser(producao?.ICE_CRRCO_TEMPERATURA_LIQUIDO_001, errorsInFormat, producaoElement.Name.LocalName),
@@ -505,7 +505,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                             #region configuracao cv
                                             NUM_SERIE_COMPUTADOR_VAZAO_002 = configuracaoCv?.NUM_SERIE_COMPUTADOR_VAZAO_002,
-                                            DHA_COLETA_002 = DateTime.TryParseExact(configuracaoCv?.DHA_COLETA_002, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var DHA_COLETA_002) ? DHA_COLETA_002 : null,
+                                            DHA_COLETA_002 = XmlUtils.DateTimeParser(configuracaoCv?.DHA_COLETA_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
                                             MED_TEMPERATURA_1_002 = XmlUtils.DecimalParser(configuracaoCv?.MED_TEMPERATURA_1_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
                                             MED_PRESSAO_ATMSA_002 = XmlUtils.DecimalParser(configuracaoCv?.MED_PRESSAO_ATMSA_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
                                             MED_PRESSAO_RFRNA_002 = XmlUtils.DecimalParser(configuracaoCv?.MED_PRESSAO_RFRNA_002, errorsInFormat, configuracaoCvElement?.Name.LocalName),
@@ -632,8 +632,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                             #endregion
 
                                             #region producao
-                                            DHA_INICIO_PERIODO_MEDICAO_002 = DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_002, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var DHA_INICIO_PERIODO_MEDICAO_002) ? DHA_INICIO_PERIODO_MEDICAO_002 : null,
-                                            DHA_FIM_PERIODO_MEDICAO_002 = DateTime.TryParseExact(producao?.DHA_FIM_PERIODO_MEDICAO_002, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var DHA_FIM_PERIODO_MEDICAO_002) ? DHA_FIM_PERIODO_MEDICAO_002 : null,
+                                            DHA_INICIO_PERIODO_MEDICAO_002 = XmlUtils.DateTimeParser(producao?.DHA_INICIO_PERIODO_MEDICAO_002, errorsInFormat, producaoElement?.Name.LocalName),
+                                            DHA_FIM_PERIODO_MEDICAO_002 = XmlUtils.DateTimeParser(producao?.DHA_FIM_PERIODO_MEDICAO_002, errorsInFormat, producaoElement?.Name.LocalName),
                                             ICE_DENSIDADE_RELATIVA_002 = XmlUtils.DecimalParser(producao?.ICE_DENSIDADE_RELATIVA_002, errorsInFormat, producaoElement?.Name.LocalName),
                                             MED_PRESSAO_ESTATICA_002 = XmlUtils.DecimalParser(producao?.MED_PRESSAO_ESTATICA_002, errorsInFormat, producaoElement?.Name.LocalName),
                                             MED_TEMPERATURA_2_002 = XmlUtils.DecimalParser(producao?.MED_TEMPERATURA_2_002, errorsInFormat, producaoElement?.Name.LocalName),
@@ -772,7 +772,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                             #region configuracao cv
 
                                             NUM_SERIE_COMPUTADOR_VAZAO_003 = configuracaoCv?.NUM_SERIE_COMPUTADOR_VAZAO_003,
-                                            DHA_COLETA_003 = DateTime.TryParseExact(configuracaoCv?.DHA_COLETA_003, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var DHA_COLETA_003) ? DHA_COLETA_003 : null,
+                                            DHA_COLETA_003 = XmlUtils.DateTimeParser(configuracaoCv?.DHA_COLETA_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
                                             MED_TEMPERATURA_1_003 = XmlUtils.DecimalParser(configuracaoCv?.MED_TEMPERATURA_1_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
                                             MED_PRESSAO_ATMSA_003 = XmlUtils.DecimalParser(configuracaoCv?.MED_PRESSAO_ATMSA_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
                                             MED_PRESSAO_RFRNA_003 = XmlUtils.DecimalParser(configuracaoCv?.MED_PRESSAO_RFRNA_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
@@ -878,8 +878,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                             #endregion
 
                                             #region producao
-                                            DHA_INICIO_PERIODO_MEDICAO_003 = DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_003, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var DHA_INICIO_PERIODO_MEDICAO_003) ? DHA_INICIO_PERIODO_MEDICAO_003 : null,
-                                            DHA_FIM_PERIODO_MEDICAO_003 = DateTime.TryParseExact(producao?.DHA_FIM_PERIODO_MEDICAO_003, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var DHA_FIM_PERIODO_MEDICAO_003) ? DHA_FIM_PERIODO_MEDICAO_003 : null,
+                                            DHA_INICIO_PERIODO_MEDICAO_003 = XmlUtils.DateTimeParser(producao?.DHA_INICIO_PERIODO_MEDICAO_003, errorsInFormat, producaoElement?.Name.LocalName),
+                                            DHA_FIM_PERIODO_MEDICAO_003 = XmlUtils.DateTimeParser(producao?.DHA_FIM_PERIODO_MEDICAO_003, errorsInFormat, producaoElement?.Name.LocalName),
                                             ICE_DENSIDADE_RELATIVA_003 = XmlUtils.DecimalParser(producao?.ICE_DENSIDADE_RELATIVA_003, errorsInFormat, producaoElement?.Name.LocalName),
                                             MED_DIFERENCIAL_PRESSAO_003 = XmlUtils.DecimalParser(producao?.MED_DIFERENCIAL_PRESSAO_003, errorsInFormat, producaoElement?.Name.LocalName),
                                             MED_PRESSAO_ESTATICA_003 = XmlUtils.DecimalParser(producao?.MED_PRESSAO_ESTATICA_003, errorsInFormat, producaoElement?.Name.LocalName),
@@ -1155,7 +1155,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                 foreach (string error in errors)
                 {
-                    Paragraph paragraph = new Paragraph(error);
+                    var paragraph = new Paragraph(error);
                     document.Add(paragraph);
                 }
 
