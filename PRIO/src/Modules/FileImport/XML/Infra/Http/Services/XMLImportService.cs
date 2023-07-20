@@ -1012,6 +1012,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             foreach (var file in data._003File)
             {
                 var measurement = _mapper.Map<_003DTO, Measurement>(file);
+
                 var measurementExists = await _repository.GetAnyAsync(measurement.Id);
 
                 if (measurementExists is true)
