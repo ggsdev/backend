@@ -33,6 +33,7 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
                 Table = tableName,
                 TypeOperation = HistoryColumns.Create,
                 CreatedBy = user?.Id,
+                UpdatedBy = user?.Id,
                 TableItemId = tableItemId,
                 CurrentData = currentData,
             };
@@ -219,6 +220,7 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
                 Table = tableName,
                 TypeOperation = HistoryColumns.Import,
                 CreatedBy = user?.Id,
+                UpdatedBy = user?.Id,
                 TableItemId = tableItemId,
                 CurrentData = currentData,
                 FieldsChanged = obj
