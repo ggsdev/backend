@@ -60,7 +60,6 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.5" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.54.1" />
     <PackageReference Include="Microsoft.Identity.Web" Version="2.12.4" />
-    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="2.12.4" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="System.DirectoryServices.AccountManagement" Version="7.0.0" />

@@ -9,6 +9,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Interfaces
         void Delete(Installation installation);
         void Restore(Installation installation);
         Task<Installation?> GetByIdAsync(Guid? id);
+        Task<Installation?> GetByIdWithCalculationsAsync(Guid? id);
         Task<Installation?> GetByCod(string? cod);
         Task<Installation?> GetInstallationMeasurementByUepAndAnpCodAsync(string codInstallation, string acronym);
         Task<Installation?> GetByIdWithFieldsMeasuringPointsAsync(Guid? id);
