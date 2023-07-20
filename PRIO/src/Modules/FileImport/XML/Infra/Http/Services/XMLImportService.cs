@@ -2,6 +2,7 @@
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
+using iText.Layout.Properties;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.Dtos;
 using PRIO.src.Modules.FileImport.XML.Dtos;
@@ -52,14 +53,13 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             #region client side validations
             for (int i = 0; i < data.Files.Count; ++i)
             {
-                var isValidExtension = data.Files[i].FileName.ToLower().EndsWith("xml");
+                var isValidExtension = data.Files[i].FileName.ToLower().EndsWith(".xml");
 
                 if (isValidExtension is false)
                     throw new BadRequestException($"Formato arquivo inválido, deve ter a extensão xml. Importação falhou arquivo com nome: {data.Files[i].FileName}");
 
                 var fileContent = data.Files[i].ContentBase64.Replace("data:@file/xml;base64,", "");
-
-                if (Decrypt.TryParseBase64String(fileContent, out byte[]? encriptedBytes) is false)
+                if (Decrypt.TryParseBase64String(fileContent, out _) is false)
                     throw new BadRequestException("Não é um base64 válido");
                 var isValidFileName = new List<string>()
                     {
@@ -83,15 +83,15 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 var fileContent = data.Files[i].ContentBase64.Replace("data:@file/xml;base64,", "");
 
                 #region pathing
-                var projectRoot = System.IO.Path.GetFullPath(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\.."));
-                var relativeSchemaPath = System.IO.Path.Combine("src", "Modules", "FileImport", "XML", "FileContent", $"_{data.Files[i].FileType}\\Schema.xsd");
-                var pathXml = System.IO.Path.GetTempPath() + "xmlImports.xml";
-                var pathSchema = System.IO.Path.GetFullPath(System.IO.Path.Combine(projectRoot, relativeSchemaPath));
+                var projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\.."));
+                var relativeSchemaPath = Path.Combine("src", "Modules", "FileImport", "XML", "FileContent", $"_{data.Files[i].FileType}\\Schema.xsd");
+                var pathXml = Path.GetTempPath() + "xmlImports.xml";
+                var pathSchema = Path.GetFullPath(Path.Combine(projectRoot, relativeSchemaPath));
                 #endregion
 
                 #region writting, parsing
 
-                await System.IO.File.WriteAllBytesAsync(pathXml, Convert.FromBase64String(fileContent));
+                await File.WriteAllBytesAsync(pathXml, Convert.FromBase64String(fileContent));
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
                 var parserContext = new XmlParserContext(null, null, null, XmlSpace.None)
@@ -223,7 +223,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                         var checkDateExists = await _repository.GetAnyByDate(dateBeginningMeasurement, XmlUtils.File001);
 
                                         if (checkDateExists)
-                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) data: {producao.DHA_INICIO_PERIODO_MEDICAO_001} já existente");
+                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) data: {producao.DHA_INICIO_PERIODO_MEDICAO_001} já existente.");
                                     }
                                     else
                                     {
@@ -234,7 +234,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                     if (measurementInDatabase is not null)
                                         //throw new ConflictException($"Medição {XmlUtils.File001} com número de série do elemento primário: {dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_001} já existente");
-                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) número de série do elemento primário: {dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_001} já existente");
+                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) número de série do elemento primário: {dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_001} já existente.");
 
                                     var installation = await _installationRepository.GetInstallationMeasurementByUepAndAnpCodAsync(dadosBasicos.COD_INSTALACAO_001, XmlUtils.File001);
 
@@ -378,15 +378,15 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                             DHA_INICIO_PERIODO_MEDICAO_001 = XmlUtils.DateTimeParser(producao?.DHA_INICIO_PERIODO_MEDICAO_001, errorsInFormat, producaoElement?.Name.LocalName),
                                             DHA_FIM_PERIODO_MEDICAO_001 = XmlUtils.DateTimeParser(producao?.DHA_FIM_PERIODO_MEDICAO_001, errorsInFormat, producaoElement?.Name.LocalName),
-                                            ICE_DENSIDADADE_RELATIVA_001 = XmlUtils.DecimalParser(producao?.ICE_DENSIDADADE_RELATIVA_001, errorsInFormat, producaoElement.Name.LocalName),
+                                            ICE_DENSIDADADE_RELATIVA_001 = XmlUtils.DecimalParser(producao?.ICE_DENSIDADADE_RELATIVA_001, errorsInFormat, producaoElement?.Name.LocalName),
                                             //ICE_CORRECAO_BSW_001 = XmlUtils.DecimalParser(producao?.ICE_CORRECAO_BSW_001?.Replac, errorsInFormat, producaoElement.Name.LocalName)XmlUtils.DecimalParser(producao?.ICE_CORRECAO_PRESSAO_LIQUIDO_001, errorsInFormat, producaoElement.Name.LocalName),
-                                            ICE_CRRCO_TEMPERATURA_LIQUIDO_001 = XmlUtils.DecimalParser(producao?.ICE_CRRCO_TEMPERATURA_LIQUIDO_001, errorsInFormat, producaoElement.Name.LocalName),
-                                            MED_PRESSAO_ESTATICA_001 = XmlUtils.DecimalParser(producao?.MED_PRESSAO_ESTATICA_001, errorsInFormat, producaoElement.Name.LocalName),
-                                            MED_TMPTA_FLUIDO_001 = XmlUtils.DecimalParser(producao?.MED_TMPTA_FLUIDO_001, errorsInFormat, producaoElement.Name.LocalName),
-                                            MED_VOLUME_BRTO_CRRGO_MVMDO_001 = XmlUtils.DecimalParser(producao?.MED_VOLUME_BRTO_CRRGO_MVMDO_001, errorsInFormat, producaoElement.Name.LocalName),
-                                            MED_VOLUME_BRUTO_MVMDO_001 = XmlUtils.DecimalParser(producao?.MED_VOLUME_BRUTO_MVMDO_001, errorsInFormat, producaoElement.Name.LocalName),
-                                            //MED_VOLUME_LIQUIDO_MVMDO_001 = XmlUtils.DecimalParser(producao?.MED_VOLUME_LIQUIDO_MVMDO_001?.Replac, errorsInFormat, producaoElement.Name.LocalName)XmlUtils.DecimalParser(producao?.MED_VOLUME_TTLZO_FIM_PRDO_001, errorsInFormat, producaoElement.Name.LocalName),
-                                            MED_VOLUME_TTLZO_INCO_PRDO_001 = XmlUtils.DecimalParser(producao?.MED_VOLUME_TTLZO_INCO_PRDO_001, errorsInFormat, producaoElement.Name.LocalName),
+                                            ICE_CRRCO_TEMPERATURA_LIQUIDO_001 = XmlUtils.DecimalParser(producao?.ICE_CRRCO_TEMPERATURA_LIQUIDO_001, errorsInFormat, producaoElement?.Name.LocalName),
+                                            MED_PRESSAO_ESTATICA_001 = XmlUtils.DecimalParser(producao?.MED_PRESSAO_ESTATICA_001, errorsInFormat, producaoElement?.Name.LocalName),
+                                            MED_TMPTA_FLUIDO_001 = XmlUtils.DecimalParser(producao?.MED_TMPTA_FLUIDO_001, errorsInFormat, producaoElement?.Name.LocalName),
+                                            MED_VOLUME_BRTO_CRRGO_MVMDO_001 = XmlUtils.DecimalParser(producao?.MED_VOLUME_BRTO_CRRGO_MVMDO_001, errorsInFormat, producaoElement?.Name.LocalName),
+                                            MED_VOLUME_BRUTO_MVMDO_001 = XmlUtils.DecimalParser(producao?.MED_VOLUME_BRUTO_MVMDO_001, errorsInFormat, producaoElement?.Name.LocalName),
+                                            //MED_VOLUME_LIQUIDO_MVMDO_001 = XmlUtils.DecimalParser(producao?.MED_VOLUME_LIQUIDO_MVMDO_001?.Replac, errorsInFormat, producaoElement?.Name.LocalName)XmlUtils.DecimalParser(producao?.MED_VOLUME_TTLZO_FIM_PRDO_001, errorsInFormat, producaoElement?.Name.LocalName),
+                                            MED_VOLUME_TTLZO_INCO_PRDO_001 = XmlUtils.DecimalParser(producao?.MED_VOLUME_TTLZO_INCO_PRDO_001, errorsInFormat, producaoElement?.Name.LocalName),
 
                                             #endregion
 
@@ -453,7 +453,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                         var checkDateExists = await _repository.GetAnyByDate(dateBeginningMeasurement, XmlUtils.File002);
 
                                         if (checkDateExists)
-                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) data: {producao.DHA_INICIO_PERIODO_MEDICAO_002} já existente");
+                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) data: {producao.DHA_INICIO_PERIODO_MEDICAO_002} já existente.");
                                     }
                                     else
                                     {
@@ -464,7 +464,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                     if (measurementInDatabase is not null)
                                         //throw new ConflictException($"Medição {XmlUtils.File002} com número de série do elemento primário: {dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_002} já existente");
-                                        errorsInImport.Add($"Medição {XmlUtils.File002} com número de série do elemento primário: {dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_002} já existente");
+                                        errorsInImport.Add($"Medição {XmlUtils.File002} com número de série do elemento primário: {dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_002} já existente.");
 
                                     var installation = await _installationRepository.GetInstallationMeasurementByUepAndAnpCodAsync(dadosBasicos.COD_INSTALACAO_002, XmlUtils.File002);
 
@@ -719,7 +719,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                         var checkDateExists = await _repository.GetAnyByDate(dateBeginningMeasurement, XmlUtils.File003);
 
                                         if (checkDateExists)
-                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) data: {producao.DHA_INICIO_PERIODO_MEDICAO_003} já existente");
+                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) data: {producao.DHA_INICIO_PERIODO_MEDICAO_003} já existente.");
                                     }
                                     else
                                     {
@@ -730,7 +730,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                     if (measurementInDatabase is not null)
                                         //throw new ConflictException($"Medição {XmlUtils.File003} com número de série do elemento primário: {dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_003} já existente");
-                                        errorsInImport.Add($"Medição {XmlUtils.File003} com número de série do elemento primário: {dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_003} já existente");
+                                        errorsInImport.Add($"Medição {XmlUtils.File003} com número de série do elemento primário: {dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_003} já existente.");
 
                                     var installation = await _installationRepository.GetInstallationMeasurementByUepAndAnpCodAsync(dadosBasicos.COD_INSTALACAO_003, XmlUtils.File003);
 
@@ -1147,26 +1147,34 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
         public ErrorPdfDTO DownloadErrors(List<string> errors)
         {
-            using (MemoryStream memoryStream = new MemoryStream())
+            using var memoryStream = new MemoryStream();
+
+            var pdfDoc = new PdfDocument(new PdfWriter(memoryStream));
+
+            var document = new Document(pdfDoc);
+
+            var titleParagraph = new Paragraph("< Erros Importação >")
+                .SetTextAlignment(TextAlignment.CENTER)
+                .SetFontSize(20);
+            document.Add(titleParagraph);
+
+            foreach (string error in errors)
             {
-                PdfDocument pdfDoc = new PdfDocument(new PdfWriter(memoryStream));
-
-                Document document = new Document(pdfDoc);
-
-                foreach (string error in errors)
-                {
-                    var paragraph = new Paragraph(error);
-                    document.Add(paragraph);
-                }
-
-                document.Close();
-
-                byte[] pdfBytes = memoryStream.ToArray();
-
-                var response = new ErrorPdfDTO { ContentBase64 = Convert.ToBase64String(pdfBytes) };
-
-                return response;
+                var listItem = new ListItem("• " + error)
+                    .SetMarginBottom(10);
+                document.Add(listItem);
             }
+
+            document.Close();
+
+            byte[] pdfBytes = memoryStream.ToArray();
+
+            var response = new ErrorPdfDTO
+            {
+                ContentBase64 = Convert.ToBase64String(pdfBytes)
+            };
+
+            return response;
         }
     }
 }
