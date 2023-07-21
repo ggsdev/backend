@@ -23,5 +23,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models
         public List<Field>? Fields { get; set; }
         public List<Measurement>? Measurements { get; set; }
         public List<GasVolumeCalculation>? GasVolumeCalculations { get; set; }
+        public bool IsProcessingUnit { get; set; }
     }
 }

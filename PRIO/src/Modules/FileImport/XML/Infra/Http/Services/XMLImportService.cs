@@ -10,6 +10,7 @@ using PRIO.src.Modules.FileImport.XML.FileContent;
 using PRIO.src.Modules.FileImport.XML.FileContent._001;
 using PRIO.src.Modules.FileImport.XML.FileContent._002;
 using PRIO.src.Modules.FileImport.XML.FileContent._003;
+using PRIO.src.Modules.FileImport.XML.FileContent._039;
 using PRIO.src.Modules.FileImport.XML.Infra.Utils;
 using PRIO.src.Modules.FileImport.XML.ViewModels;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
@@ -124,73 +125,130 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     switch (data.Files[i].FileType)
                     {
                         #region 039
-                        //case "039":
-                        //    {
-                        //        #region elementos XML
-                        //        var dadosBasicos = Functions.DeserializeXml<DADOS_BASICOS_039>(dadosBasicosElement);
-                        //        #endregion
+                        case "039":
+                            {
+                                #region elementos XML
+                                var dadosBasicos = Functions.DeserializeXml<DADOS_BASICOS_039>(dadosBasicosElement);
+                                #endregion
 
-                        //        if (dadosBasicos is not null && dadosBasicos.COD_FALHA_039 is not null && dadosBasicos.DHA_COD_INSTALACAO_039 is not null && dadosBasicos.COD_TAG_PONTO_MEDICAO_039 is not null)
-                        //        {
-                        //            var measurementInDatabase = await _repository
-                        //                .GetUnique039Async(dadosBasicos.COD_FALHA_039);
+                                if (dadosBasicos is not null && dadosBasicos.COD_FALHA_039 is not null && dadosBasicos.DHA_COD_INSTALACAO_039 is not null && dadosBasicos.COD_TAG_PONTO_MEDICAO_039 is not null)
+                                {
+                                    var measurementInDatabase = await _repository
+                                        .GetUnique039Async(dadosBasicos.COD_FALHA_039);
 
-                        //            if (measurementInDatabase is not null)
-                        //                //throw new ConflictException($"Medição {XmlUtils.File039} com código de falha: {dadosBasicos.COD_FALHA_039} já existente");
-                        //                errorsInImport.Add($"Medição {XmlUtils.File039} com código de falha: {dadosBasicos.COD_FALHA_039} já existente");
+                                    if (measurementInDatabase is not null)
+                                        //throw new ConflictException($"Medição {XmlUtils.File039} com código de falha: {dadosBasicos.COD_FALHA_039} já existente");
+                                        errorsInImport.Add($"Medição {XmlUtils.File039} com código de falha: {dadosBasicos.COD_FALHA_039} já existente.");
+
+                                    var installation = await _installationRepository
+                                      .GetInstallationMeasurementByUepAndAnpCodAsync(dadosBasicos.DHA_COD_INSTALACAO_039, XmlUtils.FileAcronym039);
+
+                                    if (installation is null)
+                                        //throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): {ErrorMessages.NotFound<Installation>()}");
+                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): {ErrorMessages.NotFound<Installation>()}");
+
+                                    var equipment = await _equipmentRepository.GetByTagMeasuringPoint(dadosBasicos.COD_TAG_PONTO_MEDICAO_039, XmlUtils.File039);
+
+                                    if (equipment is null)
+                                        //throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS),equipamento com TAG do ponto de medição {dadosBasicos.COD_TAG_PONTO_MEDICAO_039}: {ErrorMessages.NotFound<MeasuringEquipment>()}");
+                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), equipamento com TAG do ponto de medição {dadosBasicos.COD_TAG_PONTO_MEDICAO_039}: {ErrorMessages.NotFound<MeasuringEquipment>()}");
 
 
-                        //            var installation = await _installationRepository
-                        //              .GetInstallationMeasurementByUepAndAnpCodAsync(dadosBasicos.DHA_COD_INSTALACAO_039, XmlUtils.FileAcronym039);
+                                    if (installation is not null && installation.MeasuringPoints is not null)
+                                    {
+                                        bool contains = false;
 
-                        //            if (installation is null)
-                        //                //throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): {ErrorMessages.NotFound<Installation>()}");
-                        //                errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS");
+                                        foreach (var point in installation.MeasuringPoints)
+                                            if (equipment is not null && equipment.TagMeasuringPoint == point.TagPointMeasuring)
+                                                contains = true;
 
-                        //            var equipment = await _equipmentRepository.GetByTagMeasuringPoint(dadosBasicos.COD_TAG_PONTO_MEDICAO_039, XmlUtils.File039);
+                                        if (contains is false)
+                                            //throw new BadRequestException($"Problema na {k + 1}ª medição do arquivo {data.Files[i].FileName}, TAG do ponto de medição não encontrado nessa instalação");
+                                            errorsInImport.Add($"Problema na {k + 1}ª medição do arquivo {data.Files[i].FileName}, TAG do ponto de medição não encontrado nessa instalação");
 
-                        //            if (equipment is null)
-                        //                //throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS),equipamento com TAG do ponto de medição {dadosBasicos.COD_TAG_PONTO_MEDICAO_039}: {ErrorMessages.NotFound<MeasuringEquipment>()}");
-                        //                errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS),equipamento com TAG do ponto de medição {dadosBasicos.COD_TAG_PONTO_MEDICAO_039}: {ErrorMessages.NotFound<MeasuringEquipment>()}");
+                                    }
+
+                                    if (errorsInImport.Count == 0 && installation is not null && equipment is not null && equipment.MeasuringPoint is not null)
+                                    {
 
 
-                        //            if (installation is not null && installation.MeasuringPoints is not null)
-                        //            {
-                        //                bool contains = false;
+                                        //var measurement = _mapper.Map<Measurement>(dadosBasicos);
+                                        var measurement = new Measurement
+                                        {
+                                            Id = Guid.NewGuid(),
+                                            COD_FALHA_039 = dadosBasicos.COD_FALHA_039,
+                                            COD_TAG_PONTO_MEDICAO_039 = dadosBasicos.COD_TAG_PONTO_MEDICAO_039,
+                                            DHA_COD_INSTALACAO_039 = dadosBasicos.DHA_COD_INSTALACAO_039,
+                                            COD_TAG_EQUIPAMENTO_039 = dadosBasicos.COD_TAG_EQUIPAMENTO_039,
+                                            COD_FALHA_SUPERIOR_039 = dadosBasicos.COD_FALHA_SUPERIOR_039,
+                                            DSC_TIPO_FALHA_039 = XmlUtils.ShortParser(dadosBasicos.DSC_TIPO_FALHA_039, errorsInFormat, dadosBasicosElement.Name.LocalName),
+                                            IND_TIPO_NOTIFICACAO_039 = dadosBasicos.IND_TIPO_NOTIFICACAO_039,
+                                            DHA_OCORRENCIA_039 = XmlUtils.DateTimeParser(dadosBasicos.DHA_OCORRENCIA_039, errorsInFormat, dadosBasicosElement?.Element("DHA_OCORRENCIA")?.Name.LocalName),
+                                            DHA_DETECCAO_039 = XmlUtils.DateTimeParser(dadosBasicos.DHA_DETECCAO_039, errorsInFormat, dadosBasicosElement?.Element("DHA_DETECCAO")?.Name.LocalName),
+                                            DHA_RETORNO_039 = XmlUtils.DateTimeParser(dadosBasicos.DHA_RETORNO_039, errorsInFormat, dadosBasicosElement?.Element("DHA_RETORNO")?.Name.LocalName),
+                                            DHA_NUM_PREVISAO_RETORNO_DIAS_039 = dadosBasicos.DHA_NUM_PREVISAO_RETORNO_DIAS_039,
+                                            DHA_DSC_FALHA_039 = dadosBasicos.DHA_DSC_FALHA_039,
+                                            DHA_DSC_ACAO_039 = dadosBasicos.DHA_DSC_ACAO_039,
+                                            DHA_DSC_METODOLOGIA_039 = dadosBasicos.DHA_DSC_METODOLOGIA_039,
+                                            DHA_NOM_RESPONSAVEL_RELATO_039 = dadosBasicos.DHA_NOM_RESPONSAVEL_RELATO_039,
+                                            DHA_NUM_SERIE_EQUIPAMENTO_039 = dadosBasicos.DHA_NUM_SERIE_EQUIPAMENTO_039,
+                                            FileName = data.Files[i].FileName,
+                                            FileType = new FileType
+                                            {
+                                                Name = data.Files[i].FileType,
+                                                Acronym = XmlUtils.FileAcronym039,
 
-                        //                foreach (var point in installation.MeasuringPoints)
-                        //                    if (equipment is not null && equipment.TagMeasuringPoint == point.TagPointMeasuring)
-                        //                        contains = true;
+                                            },
+                                            User = user,
+                                            Installation = installation,
+                                            LISTA_BSW = new(),
+                                            LISTA_CALIBRACAO = new(),
+                                            LISTA_VOLUME = new(),
+                                        };
 
-                        //                if (contains is false)
-                        //                    //throw new BadRequestException($"Problema na {k + 1}ª medição do arquivo {data.Files[i].FileName}, TAG do ponto de medição não encontrado nessa instalação");
-                        //                    errorsInImport.Add($"Problema na {k + 1}ª medição do arquivo {data.Files[i].FileName}, TAG do ponto de medição não encontrado nessa instalação");
+                                        if (dadosBasicos.LISTA_BSW is not null && measurement.LISTA_BSW is not null)
+                                            foreach (var bsw in dadosBasicos.LISTA_BSW)
+                                            {
+                                                var bswMapped = _mapper.Map<BSW, Bsw>(bsw);
+                                                bswMapped.DHA_FALHA_BSW_039 = XmlUtils.DateTimeParser(bsw.DHA_FALHA_BSW_039, errorsInFormat, dadosBasicosElement?.Element("DHA_FALHA_BSW")?.Name.LocalName);
+                                                bswMapped.DHA_PCT_BSW_039 = XmlUtils.DecimalParser(bsw.DHA_PCT_BSW_039, errorsInFormat, dadosBasicosElement?.Element("PCT_BSW")?.Name.LocalName);
+                                                bswMapped.DHA_PCT_MAXIMO_BSW_039 = XmlUtils.DecimalParser(bsw.DHA_PCT_MAXIMO_BSW_039, errorsInFormat, dadosBasicosElement?.Element("PCT_MAXIMO_BSW")?.Name.LocalName);
 
-                        //            }
+                                                measurement.LISTA_BSW.Add(bswMapped);
+                                            }
 
-                        //            if (errorsInImport.Count == 0 && installation is not null)
-                        //            {
-                        //                var measurement = _mapper.Map<Measurement>(dadosBasicos);
-                        //                measurement.FileName = data.Files[i].FileName;
-                        //                measurement.Id = Guid.NewGuid();
-                        //                measurement.FileType = new FileType
-                        //                {
-                        //                    Name = data.Files[i].FileType,
-                        //                    Acronym = XmlUtils.FileAcronym039,
+                                        if (dadosBasicos.LISTA_VOLUME is not null && measurement.LISTA_VOLUME is not null)
+                                            foreach (var volume in dadosBasicos.LISTA_VOLUME)
+                                            {
+                                                var volumeMapped = _mapper.Map<VOLUME, Volume>(volume);
+                                                volumeMapped.DHA_MEDICAO_039 = XmlUtils.DateTimeParser(volume.DHA_MEDICAO_039, errorsInFormat, dadosBasicosElement?.Element("DHA_MEDICAO")?.Name.LocalName);
+                                                volumeMapped.DHA_MED_DECLARADO_039 = XmlUtils.DecimalParser(volume.DHA_MED_DECLARADO_039, errorsInFormat, dadosBasicosElement?.Element("MED_DECLARADO")?.Name.LocalName);
+                                                volumeMapped.DHA_MED_REGISTRADO_039 = XmlUtils.DecimalParser(volume.DHA_MED_REGISTRADO_039, errorsInFormat, dadosBasicosElement?.Element("MED_REGISTRADO")?.Name.LocalName);
 
-                        //                };
+                                                measurement.LISTA_VOLUME.Add(volumeMapped);
+                                            }
 
-                        //                measurement.User = user;
-                        //                measurement.Installation = installation;
-                        //                var measurement039DTO = _mapper.Map<Measurement, Client039DTO>(measurement);
+                                        if (dadosBasicos.LISTA_CALIBRACAO is not null && measurement.LISTA_CALIBRACAO is not null)
+                                            foreach (var calibration in dadosBasicos.LISTA_CALIBRACAO)
+                                            {
+                                                var calibrationMapped = _mapper.Map<CALIBRACAO, Calibration>(calibration);
+                                                calibrationMapped.DHA_FALHA_CALIBRACAO_039 = XmlUtils.DateTimeParser(calibration.DHA_FALHA_CALIBRACAO_039, errorsInFormat, dadosBasicosElement?.Element("DHA_FALHA_CALIBRACAO")?.Name.LocalName);
 
-                        //                _responseResult._039File ??= new List<Client039DTO>();
-                        //                _responseResult._039File?.Add(measurement039DTO);
-                        //            }
-                        //        }
+                                                calibrationMapped.DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039 = XmlUtils.DecimalParser(calibration.DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039, errorsInFormat, dadosBasicosElement?.Element("NUM_FATOR_CALIBRACAO_ANTERIOR")?.Name.LocalName);
+                                                calibrationMapped.DHA_NUM_FATOR_CALIBRACAO_ATUAL_039 = XmlUtils.DecimalParser(calibration.DHA_NUM_FATOR_CALIBRACAO_ATUAL_039, errorsInFormat, dadosBasicosElement?.Element("NUM_FATOR_CALIBRACAO_ATUAL")?.Name.LocalName);
 
-                        //        break;
-                        //    }
+                                                measurement.LISTA_CALIBRACAO.Add(calibrationMapped);
+                                            }
+
+                                        var measurement039DTO = _mapper.Map<Measurement, Client039DTO>(measurement);
+
+                                        _responseResult._039File ??= new List<Client039DTO>();
+                                        _responseResult._039File?.Add(measurement039DTO);
+                                    }
+                                }
+
+                                break;
+                            }
 
                         #endregion
 
@@ -772,35 +830,35 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                             #region configuracao cv
 
                                             NUM_SERIE_COMPUTADOR_VAZAO_003 = configuracaoCv?.NUM_SERIE_COMPUTADOR_VAZAO_003,
-                                            DHA_COLETA_003 = XmlUtils.DateTimeParser(configuracaoCv?.DHA_COLETA_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
-                                            MED_TEMPERATURA_1_003 = XmlUtils.DecimalParser(configuracaoCv?.MED_TEMPERATURA_1_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
-                                            MED_PRESSAO_ATMSA_003 = XmlUtils.DecimalParser(configuracaoCv?.MED_PRESSAO_ATMSA_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
-                                            MED_PRESSAO_RFRNA_003 = XmlUtils.DecimalParser(configuracaoCv?.MED_PRESSAO_RFRNA_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+                                            DHA_COLETA_003 = XmlUtils.DateTimeParser(configuracaoCv?.DHA_COLETA_003, errorsInFormat, configuracaoCvElement?.Element("DHA_COLETA")?.Name.LocalName),
+                                            MED_TEMPERATURA_1_003 = XmlUtils.DecimalParser(configuracaoCv?.MED_TEMPERATURA_1_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            MED_PRESSAO_ATMSA_003 = XmlUtils.DecimalParser(configuracaoCv?.MED_PRESSAO_ATMSA_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            MED_PRESSAO_RFRNA_003 = XmlUtils.DecimalParser(configuracaoCv?.MED_PRESSAO_RFRNA_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
 
-                                            MED_DENSIDADE_RELATIVA_003 = XmlUtils.DecimalParser(configuracaoCv?.MED_DENSIDADE_RELATIVA_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+                                            MED_DENSIDADE_RELATIVA_003 = XmlUtils.DecimalParser(configuracaoCv?.MED_DENSIDADE_RELATIVA_003, errorsInFormat, configuracaoCvElement?.Element("MED_DENSIDADE_RELATIVA")?.Name.LocalName),
                                             DSC_NORMA_UTILIZADA_CALCULO_003 = configuracaoCv?.DSC_NORMA_UTILIZADA_CALCULO_003,
 
-                                            PCT_CROMATOGRAFIA_NITROGENIO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_NITROGENIO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
-                                            PCT_CROMATOGRAFIA_CO2_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_CO2_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
-                                            PCT_CROMATOGRAFIA_METANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_METANO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
-                                            PCT_CROMATOGRAFIA_ETANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_ETANO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
-                                            PCT_CROMATOGRAFIA_PROPANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_PROPANO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
-                                            PCT_CROMATOGRAFIA_N_BUTANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_N_BUTANO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
-                                            PCT_CROMATOGRAFIA_I_BUTANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_I_BUTANO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
-                                            PCT_CROMATOGRAFIA_N_PENTANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_N_PENTANO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
-                                            PCT_CROMATOGRAFIA_I_PENTANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_I_PENTANO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
-                                            PCT_CROMATOGRAFIA_HEXANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_HEXANO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
-                                            PCT_CROMATOGRAFIA_HEPTANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_HEPTANO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
-                                            PCT_CROMATOGRAFIA_OCTANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_OCTANO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
-                                            PCT_CROMATOGRAFIA_NONANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_NONANO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
-                                            PCT_CROMATOGRAFIA_DECANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_DECANO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
-                                            PCT_CROMATOGRAFIA_H2S_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_H2S_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
-                                            PCT_CROMATOGRAFIA_AGUA_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_AGUA_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
-                                            PCT_CROMATOGRAFIA_HELIO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_HELIO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
-                                            PCT_CROMATOGRAFIA_OXIGENIO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_OXIGENIO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
-                                            PCT_CROMATOGRAFIA_CO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_CO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
-                                            PCT_CROMATOGRAFIA_HIDROGENIO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_HIDROGENIO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
-                                            PCT_CROMATOGRAFIA_ARGONIO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_ARGONIO_003, errorsInFormat, configuracaoCvElement.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_NITROGENIO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_NITROGENIO_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_CO2_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_CO2_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_METANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_METANO_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_ETANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_ETANO_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_PROPANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_PROPANO_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_N_BUTANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_N_BUTANO_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_I_BUTANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_I_BUTANO_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_N_PENTANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_N_PENTANO_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_I_PENTANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_I_PENTANO_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_HEXANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_HEXANO_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_HEPTANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_HEPTANO_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_OCTANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_OCTANO_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_NONANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_NONANO_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_DECANO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_DECANO_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_H2S_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_H2S_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_AGUA_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_AGUA_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_HELIO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_HELIO_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_OXIGENIO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_OXIGENIO_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_CO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_CO_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_HIDROGENIO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_HIDROGENIO_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
+                                            PCT_CROMATOGRAFIA_ARGONIO_003 = XmlUtils.DecimalParser(configuracaoCv?.PCT_CROMATOGRAFIA_ARGONIO_003, errorsInFormat, configuracaoCvElement?.Name.LocalName),
                                             DSC_VERSAO_SOFTWARE_003 = configuracaoCv?.DSC_VERSAO_SOFTWARE_003,
 
                                             #endregion
@@ -1160,7 +1218,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             foreach (string error in errors)
             {
-                var listItem = new ListItem("• " + error)
+                var listItem = new ListItem("=> " + error)
                     .SetMarginBottom(10);
                 document.Add(listItem);
             }

@@ -89,6 +89,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                 Cluster = clusterInDatabase,
                 User = user,
                 IsActive = body.IsActive is not null ? body.IsActive.Value : true,
+                IsProcessingUnit = body.UepCod == body.UepName
             };
 
             await _installationRepository.AddAsync(installation);
@@ -160,6 +161,8 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
 
             if (updatedProperties.Any() is false && (body.ClusterId is null || body.ClusterId == installation.Cluster?.Id))
                 throw new BadRequestException(ErrorMessages.UpdateToExistingValues<Installation>());
+
+            installation.IsProcessingUnit = installation.UepCod == installation.CodInstallationAnp;
 
             if (body.ClusterId is not null && installation.Cluster?.Id != body.ClusterId)
             {
