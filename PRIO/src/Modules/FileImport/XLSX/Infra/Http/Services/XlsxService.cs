@@ -180,6 +180,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                 UepName = cellInstallationNameUep,
                                 User = user,
                                 IsActive = true,
+                                IsProcessingUnit = cellInstallationCodUep == cellInstallationCod,
                                 Cluster = clusterInDatabase
                             };
                         }
@@ -194,6 +195,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                 UepName = cellInstallationNameUep,
                                 User = user,
                                 IsActive = true,
+                                IsProcessingUnit = cellInstallationCodUep == cellInstallationCod,
                                 Cluster = entityDictionary.GetValueOrDefault(cellCluster.ToLower()) as Cluster
                             };
                         }
