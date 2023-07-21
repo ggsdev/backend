@@ -213,9 +213,9 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
             var user = await _context
                 .Users
                 .Include(u => u.Session)
+                .Include(u => u.Group)
                 .FirstOrDefaultAsync(x => x.Username == body.Username);
 
-            string token;
             var userHttpAgent = Request.Headers["User-Agent"].ToString();
 
             if (user is null || user.Group is null)
