@@ -92,11 +92,12 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                 Cluster = clusterInDatabase,
                 User = user,
                 IsActive = body.IsActive is not null ? body.IsActive.Value : true,
-                IsProcessingUnit = body.UepCod == body.UepName
+                IsProcessingUnit = body.UepCod == body.CodInstallationAnp
             };
-
             await _installationRepository.AddAsync(installation);
-            await _oilVolumeCalculationRepository.AddOilVolumeCalculationAsync(installation);
+
+            if (installation.IsProcessingUnit == true)
+                await _oilVolumeCalculationRepository.AddOilVolumeCalculationAsync(installation);
 
             await _systemHistoryService
                 .Create<Installation, InstallationHistoryDTO>(_tableName, user, installationId, installation);
@@ -112,6 +113,14 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
         {
             var installations = await _installationRepository
                 .GetAsync();
+
+            var installationsDTO = _mapper.Map<List<Installation>, List<InstallationDTO>>(installations);
+            return installationsDTO;
+        }
+        public async Task<List<InstallationDTO>> GetUEPs()
+        {
+            var installations = await _installationRepository
+                .GetUEPsAsync();
 
             var installationsDTO = _mapper.Map<List<Installation>, List<InstallationDTO>>(installations);
             return installationsDTO;

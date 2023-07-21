@@ -58,8 +58,6 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Repositories
         {
             await _context.SaveChangesAsync();
         }
-
-
         #endregion
 
         #region Section
@@ -105,14 +103,13 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Repositories
                .FirstOrDefaultAsync();
             return sectionFound;
         }
-        public async Task<Section?> AddSection(OilVolumeCalculation oilVolumeCalculation, MeasuringPoint measuringPoint, string mpointName, int mpointBSW)
+        public async Task<Section?> AddSection(OilVolumeCalculation oilVolumeCalculation, MeasuringPoint measuringPoint, string mpointName)
         {
 
             var createSection = new Section
             {
                 Id = Guid.NewGuid(),
-                Name = mpointName,
-                BSW = mpointBSW,
+                DinamicLocalMeasuringPoint = mpointName,
                 OilVolumeCalculation = oilVolumeCalculation,
                 MeasuringPoint = measuringPoint
             };
@@ -176,7 +173,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Repositories
             var createTOG = new TOGRecoveredOil
             {
                 Id = Guid.NewGuid(),
-                Name = mpointName,
+                DinamicLocalMeasuringPoint = mpointName,
                 OilVolumeCalculation = oilVolumeCalculation,
                 MeasuringPoint = measuringPoint
             };
@@ -233,14 +230,13 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Repositories
             return dorFound;
         }
 
-        public async Task<DOR?> AddDOR(OilVolumeCalculation oilVolumeCalculation, MeasuringPoint measuringPoint, string mpointName, int mpointBSW)
+        public async Task<DOR?> AddDOR(OilVolumeCalculation oilVolumeCalculation, MeasuringPoint measuringPoint, string mpointName)
         {
 
             var createDOR = new DOR
             {
                 Id = Guid.NewGuid(),
-                Name = mpointName,
-                BSW = mpointBSW,
+                DinamicLocalMeasuringPoint = mpointName,
                 OilVolumeCalculation = oilVolumeCalculation,
                 MeasuringPoint = measuringPoint
             };
@@ -304,7 +300,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Repositories
             var createSection = new DrainVolume
             {
                 Id = Guid.NewGuid(),
-                Name = mpointName,
+                DinamicLocalMeasuringPoint = mpointName,
                 OilVolumeCalculation = oilVolumeCalculation,
                 MeasuringPoint = measuringPoint
             };

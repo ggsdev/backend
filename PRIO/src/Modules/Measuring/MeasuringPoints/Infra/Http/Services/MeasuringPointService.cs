@@ -95,6 +95,12 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Services
             var measuringPointDTO = _mapper.Map<List<MeasuringPoint>, List<MeasuringPointDTO>>(measuringPoints);
             return measuringPointDTO;
         }
+        public async Task<List<MeasuringPointDTO>> GetByUEPCode(string uepCode)
+        {
+            var measuringPoints = await _measuringPointRepository.GetByUEPCode(uepCode);
+            var measuringPointDTO = _mapper.Map<List<MeasuringPoint>, List<MeasuringPointDTO>>(measuringPoints);
+            return measuringPointDTO;
+        }
         public async Task<MeasuringPointDTO> Update(Guid id, UpdateMeasuringPointViewModel body, User user)
         {
             var measuringPoint = await _measuringPointRepository

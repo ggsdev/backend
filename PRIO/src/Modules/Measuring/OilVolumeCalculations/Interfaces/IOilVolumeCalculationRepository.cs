@@ -23,7 +23,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces
         Task<Section?> GetSectionOtherInstallationByIdAsync(Guid? oilCalculationId, Guid mpointId);
         Task<Section?> GetSectionInstallationByIdAsync(Guid? oilCalculationId, Guid mpointId);
 
-        Task<Section?> AddSection(OilVolumeCalculation oilVolumeCalculation, MeasuringPoint measuringPoint, string mpointName, int mpointBSW);
+        Task<Section?> AddSection(OilVolumeCalculation oilVolumeCalculation, MeasuringPoint measuringPoint, string mpointName);
         #endregion
 
         #region TOG
@@ -44,7 +44,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces
         Task<DOR?> GetDOROtherInstallationByIdAsync(Guid? oilCalculationId, Guid mpointId);
         Task<DOR?> GetDORInstallationByIdAsync(Guid? oilCalculationId, Guid mpointId);
 
-        Task<DOR?> AddDOR(OilVolumeCalculation oilVolumeCalculation, MeasuringPoint measuringPoint, string mpointName, int mpointBSW);
+        Task<DOR?> AddDOR(OilVolumeCalculation oilVolumeCalculation, MeasuringPoint measuringPoint, string mpointName);
         #endregion
 
         #region Drain

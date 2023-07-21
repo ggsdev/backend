@@ -26,6 +26,13 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Repositories
                 .Where(x => x.Installation!.Id == id)
                 .ToListAsync();
         }
+        public async Task<List<MeasuringPoint>> GetByUEPCode(string? uepCode)
+        {
+            return await _context.MeasuringPoints
+                .Include(p => p.Installation)
+                .Where(x => x.Installation!.UepCod == uepCode && x.Installation.CodInstallationAnp == uepCode)
+                .ToListAsync();
+        }
         public async Task<MeasuringPoint?> GetByTagMeasuringPoint(string? tagMeasuringPoint)
         {
             return await _context.MeasuringPoints
