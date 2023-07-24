@@ -161,7 +161,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
                 {
                     if (countSectionsActives[i] is not null)
                     {
-                        equation += $"{countSectionsActives[i].MeasuringPoint.Name} * (1 - BSW {countSectionsActives[i].MeasuringPoint.Name})";
+                        equation += $"{countSectionsActives[i].MeasuringPoint.DinamicLocalMeasuringPoint} * (1 - BSW {countSectionsActives[i].MeasuringPoint.DinamicLocalMeasuringPoint})";
 
                         if (i + 1 != countSectionsActives.Count)
                         {
@@ -188,7 +188,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
                     {
                         if (countTogsActives[i] is not null)
                         {
-                            equation += $"{countTogsActives[i].MeasuringPoint.Name}";
+                            equation += $"{countTogsActives[i].MeasuringPoint.DinamicLocalMeasuringPoint}";
 
                             if (i + 1 != countTogsActives.Count)
                             {
@@ -215,7 +215,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
                     {
                         if (countDrainsActives[i] is not null)
                         {
-                            equation += $"{countDrainsActives[i].MeasuringPoint.Name}";
+                            equation += $"{countDrainsActives[i].MeasuringPoint.DinamicLocalMeasuringPoint}";
 
                             if (i + 1 != countDrainsActives.Count)
                             {
@@ -240,7 +240,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
                     {
                         if (OilVolumeCalculation.DORs[i] is not null)
                         {
-                            equation += $"{countDorsActives[i].MeasuringPoint.Name} * (1 - BSW {countDorsActives[i].MeasuringPoint.Name})";
+                            equation += $"{countDorsActives[i].MeasuringPoint.DinamicLocalMeasuringPoint} * (1 - BSW {countDorsActives[i].MeasuringPoint.DinamicLocalMeasuringPoint})";
 
                             if (i + 1 != countDorsActives.Count)
                             {

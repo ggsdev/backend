@@ -109,7 +109,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Repositories
             var createSection = new Section
             {
                 Id = Guid.NewGuid(),
-                DinamicLocalMeasuringPoint = mpointName,
+                StaticLocalMeasuringPoint = mpointName,
                 OilVolumeCalculation = oilVolumeCalculation,
                 MeasuringPoint = measuringPoint
             };
@@ -173,7 +173,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Repositories
             var createTOG = new TOGRecoveredOil
             {
                 Id = Guid.NewGuid(),
-                DinamicLocalMeasuringPoint = mpointName,
+                StaticLocalMeasuringPoint = mpointName,
                 OilVolumeCalculation = oilVolumeCalculation,
                 MeasuringPoint = measuringPoint
             };
@@ -236,7 +236,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Repositories
             var createDOR = new DOR
             {
                 Id = Guid.NewGuid(),
-                DinamicLocalMeasuringPoint = mpointName,
+                StaticLocalMeasuringPoint = mpointName,
                 OilVolumeCalculation = oilVolumeCalculation,
                 MeasuringPoint = measuringPoint
             };
@@ -300,7 +300,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Repositories
             var createSection = new DrainVolume
             {
                 Id = Guid.NewGuid(),
-                DinamicLocalMeasuringPoint = mpointName,
+                StaticLocalMeasuringPoint = mpointName,
                 OilVolumeCalculation = oilVolumeCalculation,
                 MeasuringPoint = measuringPoint
             };

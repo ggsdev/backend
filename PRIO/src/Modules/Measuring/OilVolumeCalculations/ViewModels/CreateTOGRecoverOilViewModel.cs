@@ -3,7 +3,7 @@
     public class CreateTOGRecoverOilViewModel
     {
         public Guid MeasuringPointId { get; set; }
-        public string StaticMeasuringPointName { get; }
+        public string StaticMeasuringPointName { get; set; }
 
     }
 }

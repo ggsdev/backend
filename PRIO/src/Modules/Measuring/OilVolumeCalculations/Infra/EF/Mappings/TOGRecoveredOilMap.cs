@@ -10,7 +10,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Mappings
         {
             builder.ToTable("TOGRecoveredOils");
 
-            builder.Property(x => x.DinamicLocalMeasuringPoint)
+            builder.Property(x => x.StaticLocalMeasuringPoint)
                .HasColumnType("VARCHAR")
                .HasMaxLength(260)
                .IsRequired();

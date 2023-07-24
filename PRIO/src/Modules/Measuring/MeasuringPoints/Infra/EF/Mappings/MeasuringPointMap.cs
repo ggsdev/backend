@@ -14,7 +14,7 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Mappings
             builder.Property(x => x.Description)
                 .HasColumnType("TEXT");
 
-            builder.Property(x => x.Name)
+            builder.Property(x => x.DinamicLocalMeasuringPoint)
                .HasColumnType("VARCHAR")
                .HasMaxLength(260)
                .IsRequired();

@@ -6,7 +6,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
 public class DOR : BaseModel
 {
     public Guid Id { get; set; }
-    public string DinamicLocalMeasuringPoint { get; set; }
+    public string StaticLocalMeasuringPoint { get; set; }
     public bool IsApplicable { get; set; }
     public OilVolumeCalculation? OilVolumeCalculation { get; set; }
     public MeasuringPoint? MeasuringPoint { get; set; }

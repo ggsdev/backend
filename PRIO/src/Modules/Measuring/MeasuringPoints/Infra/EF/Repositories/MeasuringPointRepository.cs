@@ -61,12 +61,12 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Repositories
         public async Task<MeasuringPoint?> GetByMeasuringPointNameWithInstallation(string? measuringPointName, Guid installationId)
         {
             return await _context.MeasuringPoints.Include(x => x.Installation)
-                .FirstOrDefaultAsync(x => x.Name == measuringPointName && x.Installation.Id == installationId);
+                .FirstOrDefaultAsync(x => x.DinamicLocalMeasuringPoint == measuringPointName && x.Installation.Id == installationId);
         }
         public async Task<MeasuringPoint?> GetByMeasuringPointNameWithInstallationUpdate(string? measuringPointName, Guid installationId, Guid pointMeasuringId)
         {
             return await _context.MeasuringPoints.Include(x => x.Installation)
-                .FirstOrDefaultAsync(x => x.Name == measuringPointName && x.Installation.Id == installationId && x.Id != pointMeasuringId);
+                .FirstOrDefaultAsync(x => x.DinamicLocalMeasuringPoint == measuringPointName && x.Installation.Id == installationId && x.Id != pointMeasuringId);
         }
         public async Task AddAsync(MeasuringPoint measuringPoint)
         {

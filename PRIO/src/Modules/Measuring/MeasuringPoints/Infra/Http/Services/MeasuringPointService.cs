@@ -56,7 +56,7 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Services
             var measuringPoint = new MeasuringPoint
             {
                 Id = measuringPointId,
-                Name = body.Name,
+                DinamicLocalMeasuringPoint = body.Name,
                 TagPointMeasuring = body.TagPointMeasuring,
                 Description = body.Description is not null ? body.Description : null,
                 Installation = installationInDatabase,

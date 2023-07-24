@@ -47,6 +47,7 @@ using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Repositories;
+using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces;
 using PRIO.src.Shared.Auxiliaries.Infra.Http.Services;
 using PRIO.src.Shared.Errors;
@@ -198,6 +199,11 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddScoped<MenuService>();
     services.AddScoped<UserService>();
     services.AddScoped<GroupService>();
+    #endregion
+
+    #region Measuring Services
+    services.AddScoped<OilVolumeCalculationService>();
+
     #endregion
 
     services.AddScoped<XLSXService>();
