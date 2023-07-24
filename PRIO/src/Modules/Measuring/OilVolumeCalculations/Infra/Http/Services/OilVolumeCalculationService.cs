@@ -41,7 +41,6 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
                 foreach (var section in body.Sections)
                 {
                     // VERIFICAR SE PONTO DE MEDIÇÃO EXISTE
-                    Console.WriteLine(section.MeasuringPointId);
                     var MeasuringPoint = await _mpointRepository.GetByIdAsync(section.MeasuringPointId) ?? throw new NotFoundException("Ponto de medição de tramo não encontrado.");
 
                     //VERIFICAR SE PONTO DE MEDIÇÃO ESTÁ CADASTRADO EM OUTRO CALCULO
