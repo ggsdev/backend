@@ -40,6 +40,9 @@ using PRIO.src.Modules.Hierarchy.Zones.Interfaces;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Equipments.Interfaces;
+using PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Repositories;
+using PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services;
+using PRIO.src.Modules.Measuring.GasVolumeCalculations.Interfaces;
 using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.Measurements.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Measurements.Interfaces;
@@ -164,6 +167,7 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddScoped<IMeasurementRepository, MeasurementRepository>();
 
     services.AddScoped<IOilVolumeCalculationRepository, OilVolumeCalculationRepository>();
+    services.AddScoped<IGasVolumeCalculationRepository, GasVolumeCalculationRepository>();
 
     services.AddScoped<IMeasurementHistoryRepository, MeasurementHistoryRepository>();
 
@@ -203,6 +207,7 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
 
     #region Measuring Services
     services.AddScoped<OilVolumeCalculationService>();
+    services.AddScoped<GasVolumeCalculationService>();
 
     #endregion
 
