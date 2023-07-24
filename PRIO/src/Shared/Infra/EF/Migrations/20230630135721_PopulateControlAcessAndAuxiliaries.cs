@@ -164,6 +164,8 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                 new object[] { "Alfredo", "amolisani@prio3.com.br", null, "amolisani", Guid.NewGuid()},
                 new object[] { "Thais", "tgoncalves@prio3.com.br", null, "tgoncalves", Guid.NewGuid()},
                 new object[] { "Fernando", "falberdi.globalhitts@prio3.com.br", null, "falberdi.globalhitts", Guid.NewGuid()} ,
+                new object[] { "Garcia", "gabriel@prio3.com.br", null, "gabriel", Guid.NewGuid()},
+                new object[] { "Pablo Escobar", "pablo@prio3.com.br", null, "pablo", Guid.NewGuid()},
             };
 
             foreach (var user in usersData)

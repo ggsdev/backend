@@ -141,7 +141,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                         errorsInImport.Add($"Medição {XmlUtils.File039} com código de falha: {dadosBasicos.COD_FALHA_039} já existente.");
 
                                     var installation = await _installationRepository
-                                      .GetInstallationMeasurementByUepAndAnpCodAsync(dadosBasicos.DHA_COD_INSTALACAO_039, XmlUtils.FileAcronym039);
+                                      .GetInstallationMeasurementByUepAndAnpCodAsync(dadosBasicos.DHA_COD_INSTALACAO_039, XmlUtils.File039);
 
                                     if (installation is null)
                                         //throw new NotFoundException($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): {ErrorMessages.NotFound<Installation>()}");
@@ -207,35 +207,44 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                         };
 
                                         if (dadosBasicos.LISTA_BSW is not null && measurement.LISTA_BSW is not null)
-                                            foreach (var bsw in dadosBasicos.LISTA_BSW)
+                                            for (var j = 0; j < dadosBasicos.LISTA_BSW.Count; ++j)
                                             {
+                                                var bsw = dadosBasicos.LISTA_BSW[j];
+                                                var bswElement = dadosBasicosElement?.Elements("LISTA_BSW")?.ElementAt(j)?.Element("BSW");
+
                                                 var bswMapped = _mapper.Map<BSW, Bsw>(bsw);
-                                                bswMapped.DHA_FALHA_BSW_039 = XmlUtils.DateTimeParser(bsw.DHA_FALHA_BSW_039, errorsInFormat, dadosBasicosElement?.Element("DHA_FALHA_BSW")?.Name.LocalName);
-                                                bswMapped.DHA_PCT_BSW_039 = XmlUtils.DecimalParser(bsw.DHA_PCT_BSW_039, errorsInFormat, dadosBasicosElement?.Element("PCT_BSW")?.Name.LocalName);
-                                                bswMapped.DHA_PCT_MAXIMO_BSW_039 = XmlUtils.DecimalParser(bsw.DHA_PCT_MAXIMO_BSW_039, errorsInFormat, dadosBasicosElement?.Element("PCT_MAXIMO_BSW")?.Name.LocalName);
+                                                bswMapped.DHA_FALHA_BSW_039 = XmlUtils.DateTimeWithoutTimeParser(bsw.DHA_FALHA_BSW_039, errorsInFormat, bswElement?.Element("DHA_FALHA_BSW")?.Name.LocalName);
+                                                bswMapped.DHA_PCT_BSW_039 = XmlUtils.DecimalParser(bsw.DHA_PCT_BSW_039, errorsInFormat, bswElement?.Element("PCT_BSW")?.Name.LocalName);
+                                                bswMapped.DHA_PCT_MAXIMO_BSW_039 = XmlUtils.DecimalParser(bsw.DHA_PCT_MAXIMO_BSW_039, errorsInFormat, bswElement?.Element("PCT_MAXIMO_BSW")?.Name.LocalName);
 
                                                 measurement.LISTA_BSW.Add(bswMapped);
                                             }
 
                                         if (dadosBasicos.LISTA_VOLUME is not null && measurement.LISTA_VOLUME is not null)
-                                            foreach (var volume in dadosBasicos.LISTA_VOLUME)
+                                            for (var j = 0; j < dadosBasicos.LISTA_VOLUME.Count; ++j)
                                             {
+                                                var volume = dadosBasicos.LISTA_VOLUME[j];
+                                                var volumeElement = dadosBasicosElement?.Elements("LISTA_VOLUME")?.ElementAt(j)?.Element("VOLUME");
+
                                                 var volumeMapped = _mapper.Map<VOLUME, Volume>(volume);
-                                                volumeMapped.DHA_MEDICAO_039 = XmlUtils.DateTimeParser(volume.DHA_MEDICAO_039, errorsInFormat, dadosBasicosElement?.Element("DHA_MEDICAO")?.Name.LocalName);
-                                                volumeMapped.DHA_MED_DECLARADO_039 = XmlUtils.DecimalParser(volume.DHA_MED_DECLARADO_039, errorsInFormat, dadosBasicosElement?.Element("MED_DECLARADO")?.Name.LocalName);
-                                                volumeMapped.DHA_MED_REGISTRADO_039 = XmlUtils.DecimalParser(volume.DHA_MED_REGISTRADO_039, errorsInFormat, dadosBasicosElement?.Element("MED_REGISTRADO")?.Name.LocalName);
+                                                volumeMapped.DHA_MEDICAO_039 = XmlUtils.DateTimeWithoutTimeParser(volume.DHA_MEDICAO_039, errorsInFormat, volumeElement?.Element("DHA_MEDICAO")?.Name.LocalName);
+                                                volumeMapped.DHA_MED_DECLARADO_039 = XmlUtils.DecimalParser(volume.DHA_MED_DECLARADO_039, errorsInFormat, volumeElement?.Element("MED_DECLARADO")?.Name.LocalName);
+                                                volumeMapped.DHA_MED_REGISTRADO_039 = XmlUtils.DecimalParser(volume.DHA_MED_REGISTRADO_039, errorsInFormat, volumeElement?.Element("MED_REGISTRADO")?.Name.LocalName);
 
                                                 measurement.LISTA_VOLUME.Add(volumeMapped);
                                             }
 
                                         if (dadosBasicos.LISTA_CALIBRACAO is not null && measurement.LISTA_CALIBRACAO is not null)
-                                            foreach (var calibration in dadosBasicos.LISTA_CALIBRACAO)
+                                            for (var j = 0; j < dadosBasicos.LISTA_CALIBRACAO.Count; ++j)
                                             {
-                                                var calibrationMapped = _mapper.Map<CALIBRACAO, Calibration>(calibration);
-                                                calibrationMapped.DHA_FALHA_CALIBRACAO_039 = XmlUtils.DateTimeParser(calibration.DHA_FALHA_CALIBRACAO_039, errorsInFormat, dadosBasicosElement?.Element("DHA_FALHA_CALIBRACAO")?.Name.LocalName);
+                                                var calibration = dadosBasicos.LISTA_CALIBRACAO[j];
+                                                var calibrationElement = dadosBasicosElement?.Elements("LISTA_CALIBRACAO")?.ElementAt(j)?.Element("CALIBRACAO");
 
-                                                calibrationMapped.DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039 = XmlUtils.DecimalParser(calibration.DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039, errorsInFormat, dadosBasicosElement?.Element("NUM_FATOR_CALIBRACAO_ANTERIOR")?.Name.LocalName);
-                                                calibrationMapped.DHA_NUM_FATOR_CALIBRACAO_ATUAL_039 = XmlUtils.DecimalParser(calibration.DHA_NUM_FATOR_CALIBRACAO_ATUAL_039, errorsInFormat, dadosBasicosElement?.Element("NUM_FATOR_CALIBRACAO_ATUAL")?.Name.LocalName);
+                                                var calibrationMapped = _mapper.Map<CALIBRACAO, Calibration>(calibration);
+                                                calibrationMapped.DHA_FALHA_CALIBRACAO_039 = XmlUtils.DateTimeWithoutTimeParser(calibration.DHA_FALHA_CALIBRACAO_039, errorsInFormat, calibrationElement?.Element("DHA_FALHA_CALIBRACAO")?.Name.LocalName);
+
+                                                calibrationMapped.DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039 = XmlUtils.DecimalParser(calibration.DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039, errorsInFormat, calibrationElement?.Element("NUM_FATOR_CALIBRACAO_ANTERIOR")?.Name.LocalName);
+                                                calibrationMapped.DHA_NUM_FATOR_CALIBRACAO_ATUAL_039 = XmlUtils.DecimalParser(calibration.DHA_NUM_FATOR_CALIBRACAO_ATUAL_039, errorsInFormat, calibrationElement?.Element("NUM_FATOR_CALIBRACAO_ATUAL")?.Name.LocalName);
 
                                                 measurement.LISTA_CALIBRACAO.Add(calibrationMapped);
                                             }

@@ -18,6 +18,7 @@ using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Zones.Interfaces;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Interfaces;
+using PRIO.src.Modules.Measuring.GasVolumeCalculations.Interfaces;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces;
@@ -42,10 +43,11 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
         private readonly IMeasuringPointRepository _measuringPointRepository;
         private readonly IEquipmentRepository _equipmentRepository;
         private readonly IOilVolumeCalculationRepository _oilVolumeCalculationRepository;
+        private readonly IGasVolumeCalculationRepository _gasVolumeCalculationRepository;
         private readonly SystemHistoryService _systemHistoryService;
         private readonly string _tableName = HistoryColumns.TableInstallations;
 
-        public InstallationService(IMapper mapper, IInstallationRepository installationRepository, IClusterRepository clusterRepository, SystemHistoryService systemHistoryService, IFieldRepository fieldRepository, IZoneRepository zoneRepository, IWellRepository wellRepository, IReservoirRepository reservoirRepository, ICompletionRepository completionRepository, IMeasuringPointRepository measuringPointRepository, IEquipmentRepository equipmentRepository, IOilVolumeCalculationRepository oilVolumeCalculationRepository)
+        public InstallationService(IMapper mapper, IInstallationRepository installationRepository, IClusterRepository clusterRepository, SystemHistoryService systemHistoryService, IFieldRepository fieldRepository, IZoneRepository zoneRepository, IWellRepository wellRepository, IReservoirRepository reservoirRepository, ICompletionRepository completionRepository, IMeasuringPointRepository measuringPointRepository, IEquipmentRepository equipmentRepository, IOilVolumeCalculationRepository oilVolumeCalculationRepository, IGasVolumeCalculationRepository gasVolumeCalculationRepository)
         {
             _mapper = mapper;
             _clusterRepository = clusterRepository;
@@ -59,6 +61,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
             _equipmentRepository = equipmentRepository;
             _completionRepository = completionRepository;
             _systemHistoryService = systemHistoryService;
+            _gasVolumeCalculationRepository = gasVolumeCalculationRepository;
         }
 
         public async Task<CreateUpdateInstallationDTO> CreateInstallation(CreateInstallationViewModel body, User user)
@@ -97,7 +100,10 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
             await _installationRepository.AddAsync(installation);
 
             if (installation.IsProcessingUnit == true)
+            {
                 await _oilVolumeCalculationRepository.AddOilVolumeCalculationAsync(installation);
+                await _gasVolumeCalculationRepository.AddGasVolumeCalculationAsync(installation);
+            }
 
             await _systemHistoryService
                 .Create<Installation, InstallationHistoryDTO>(_tableName, user, installationId, installation);

@@ -87,6 +87,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
         {
             return await _context.Installations
                 .Include(x => x.OilVolumeCalculation)
+                .Include(x => x.GasVolumeCalculation)
                 .Where(x => x.UepCod == cod && x.CodInstallationAnp == cod)
               .FirstOrDefaultAsync();
         }

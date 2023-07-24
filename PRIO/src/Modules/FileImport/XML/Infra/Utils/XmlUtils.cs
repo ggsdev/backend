@@ -41,6 +41,19 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Utils
             return null;
         }
 
+        public static DateTime? DateTimeWithoutTimeParser(string? valueToBeParsed, List<string> errors, string? nameElement)
+        {
+            if (string.IsNullOrEmpty(valueToBeParsed))
+                return null;
+
+            if (DateTime.TryParseExact(valueToBeParsed, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var result))
+                return result;
+            else
+                errors.Add($"Formato dados inválidos, valor: {valueToBeParsed}, tag: {nameElement}, formato de data aceitável: 'dd/MM/yyyy'");
+
+            return null;
+        }
+
         public static short? ShortParser(string? valueToBeParsed, List<string> errors, string? nameElement)
         {
             if (string.IsNullOrEmpty(valueToBeParsed))

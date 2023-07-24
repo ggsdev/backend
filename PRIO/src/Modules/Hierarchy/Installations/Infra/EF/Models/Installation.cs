@@ -22,7 +22,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models
         public List<MeasuringPoint>? MeasuringPoints { get; set; }
         public List<Field>? Fields { get; set; }
         public List<Measurement>? Measurements { get; set; }
-        public List<GasVolumeCalculation>? GasVolumeCalculations { get; set; }
+        public GasVolumeCalculation GasVolumeCalculation { get; set; }
         public bool IsProcessingUnit { get; set; }
     }
 }
