@@ -10,7 +10,7 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Mappings
         {
             builder.ToTable("HpFlares");
 
-            builder.Property(x => x.Name)
+            builder.Property(x => x.StaticLocalMeasuringPoint)
                .HasColumnType("VARCHAR")
                .HasMaxLength(260)
                .IsRequired();
