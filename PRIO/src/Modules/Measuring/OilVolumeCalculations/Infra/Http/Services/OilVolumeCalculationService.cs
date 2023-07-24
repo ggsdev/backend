@@ -41,6 +41,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
                 foreach (var section in body.Sections)
                 {
                     // VERIFICAR SE PONTO DE MEDIÇÃO EXISTE
+                    Console.WriteLine(section.MeasuringPointId);
                     var MeasuringPoint = await _mpointRepository.GetByIdAsync(section.MeasuringPointId) ?? throw new NotFoundException("Ponto de medição de tramo não encontrado.");
 
                     //VERIFICAR SE PONTO DE MEDIÇÃO ESTÁ CADASTRADO EM OUTRO CALCULO
@@ -83,28 +84,28 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
                 foreach (var section in body.Sections)
                 {
                     var MeasuringPoint = await _mpointRepository.GetByIdAsync(section.MeasuringPointId);
-                    await _oilVolumeCalculationRepository.AddSection(installationInDatabase.OilVolumeCalculation, MeasuringPoint, section.StaticMeasuringPointName);
+                    await _oilVolumeCalculationRepository.AddSection(installationInDatabase.OilVolumeCalculation, MeasuringPoint, section);
                 }
 
             if (body.TOGs is not null)
                 foreach (var tog in body.TOGs)
                 {
                     var MeasuringPoint = await _mpointRepository.GetByIdAsync(tog.MeasuringPointId);
-                    await _oilVolumeCalculationRepository.AddTOG(installationInDatabase.OilVolumeCalculation, MeasuringPoint, tog.StaticMeasuringPointName);
+                    await _oilVolumeCalculationRepository.AddTOG(installationInDatabase.OilVolumeCalculation, MeasuringPoint, tog);
                 }
 
             if (body.DORs is not null)
                 foreach (var dor in body.DORs)
                 {
                     var MeasuringPoint = await _mpointRepository.GetByIdAsync(dor.MeasuringPointId);
-                    await _oilVolumeCalculationRepository.AddDOR(installationInDatabase.OilVolumeCalculation, MeasuringPoint, dor.StaticMeasuringPointName);
+                    await _oilVolumeCalculationRepository.AddDOR(installationInDatabase.OilVolumeCalculation, MeasuringPoint, dor);
                 }
 
             if (body.Drains is not null)
                 foreach (var drain in body.Drains)
                 {
                     var MeasuringPoint = await _mpointRepository.GetByIdAsync(drain.MeasuringPointId);
-                    await _oilVolumeCalculationRepository.AddDrain(installationInDatabase.OilVolumeCalculation, MeasuringPoint, drain.StaticMeasuringPointName);
+                    await _oilVolumeCalculationRepository.AddDrain(installationInDatabase.OilVolumeCalculation, MeasuringPoint, drain);
                 }
 
             await _oilVolumeCalculationRepository.SaveChangesAsync();
@@ -155,7 +156,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
 
             if (OilVolumeCalculation.Sections is not null && OilVolumeCalculation.Sections.Count > 0)
             {
-                var countSectionsActives = OilVolumeCalculation.Sections.Where(x => x.IsActive == true).ToList();
+                var countSectionsActives = OilVolumeCalculation.Sections.Where(x => x.IsActive == true && x.IsApplicable == true).ToList();
 
                 for (var i = 0; i < countSectionsActives.Count; i++)
                 {
@@ -174,7 +175,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
 
             if (OilVolumeCalculation.TOGRecoveredOils is not null && OilVolumeCalculation.TOGRecoveredOils.Count > 0)
             {
-                var countTogsActives = OilVolumeCalculation.TOGRecoveredOils.Where(x => x.IsActive == true).ToList();
+                var countTogsActives = OilVolumeCalculation.TOGRecoveredOils.Where(x => x.IsActive == true && x.IsApplicable == true).ToList();
                 if (countTogsActives.Count > 0)
                 {
                     if (!string.IsNullOrEmpty(equation) && equation[^1] != '(')
@@ -201,7 +202,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
 
             if (OilVolumeCalculation.DrainVolumes is not null && OilVolumeCalculation.DrainVolumes.Count > 0)
             {
-                var countDrainsActives = OilVolumeCalculation.DrainVolumes.Where(x => x.IsActive == true).ToList();
+                var countDrainsActives = OilVolumeCalculation.DrainVolumes.Where(x => x.IsActive == true && x.IsApplicable == true).ToList();
                 if (countDrainsActives.Count > 0)
                 {
                     if (!string.IsNullOrEmpty(equation) && equation[^1] != '(' && equation[^1] != '+')
@@ -228,7 +229,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
 
             if (OilVolumeCalculation.DORs is not null && OilVolumeCalculation.DORs.Count > 0)
             {
-                var countDorsActives = OilVolumeCalculation.DORs.Where(x => x.IsActive == true).ToList();
+                var countDorsActives = OilVolumeCalculation.DORs.Where(x => x.IsActive == true && x.IsApplicable == true).ToList();
                 if (countDorsActives.Count > 0)
                 {
                     if (!string.IsNullOrEmpty(equation) && equation[^1] != '(' && equation[^1] != '+')
@@ -252,7 +253,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
                 }
             }
 
-            var eq = new { equation };
+            var eq = new { equation = equation };
             return eq;
         }
 
@@ -328,14 +329,14 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
                 foreach (var section in body.Sections)
                 {
                     var MeasuringPoint = await _mpointRepository.GetByIdAsync(section.MeasuringPointId);
-                    var createSection = await _oilVolumeCalculationRepository.AddSection(oilCalculationInDatabase, MeasuringPoint, section.StaticMeasuringPointName);
+                    var createSection = await _oilVolumeCalculationRepository.AddSection(oilCalculationInDatabase, MeasuringPoint, section);
                 }
 
             if (body.TOGs is not null)
                 foreach (var tog in body.TOGs)
                 {
                     var MeasuringPoint = await _mpointRepository.GetByIdAsync(tog.MeasuringPointId);
-                    var createTog = await _oilVolumeCalculationRepository.AddTOG(oilCalculationInDatabase, MeasuringPoint, tog.StaticMeasuringPointName);
+                    var createTog = await _oilVolumeCalculationRepository.AddTOG(oilCalculationInDatabase, MeasuringPoint, tog);
                 }
 
             if (body.DORs is not null)
@@ -343,7 +344,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
                 {
                     var MeasuringPoint = await _mpointRepository.GetByIdAsync(dor.MeasuringPointId);
 
-                    var createDor = await _oilVolumeCalculationRepository.AddDOR(oilCalculationInDatabase, MeasuringPoint, dor.StaticMeasuringPointName);
+                    var createDor = await _oilVolumeCalculationRepository.AddDOR(oilCalculationInDatabase, MeasuringPoint, dor);
                 }
 
             if (body.Drains is not null)
@@ -351,7 +352,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
                 {
                     var MeasuringPoint = await _mpointRepository.GetByIdAsync(drain.MeasuringPointId);
 
-                    var createDrain = await _oilVolumeCalculationRepository.AddDrain(oilCalculationInDatabase, MeasuringPoint, drain.StaticMeasuringPointName);
+                    var createDrain = await _oilVolumeCalculationRepository.AddDrain(oilCalculationInDatabase, MeasuringPoint, drain);
                 }
 
             await _oilVolumeCalculationRepository.SaveChangesAsync();

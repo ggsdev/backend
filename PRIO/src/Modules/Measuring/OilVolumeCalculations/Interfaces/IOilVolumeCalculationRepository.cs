@@ -2,6 +2,7 @@
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.OilVolumeCalculations.ViewModels;
 
 namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces
 {
@@ -23,7 +24,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces
         Task<Section?> GetSectionOtherInstallationByIdAsync(Guid? oilCalculationId, Guid mpointId);
         Task<Section?> GetSectionInstallationByIdAsync(Guid? oilCalculationId, Guid mpointId);
 
-        Task<Section?> AddSection(OilVolumeCalculation oilVolumeCalculation, MeasuringPoint measuringPoint, string mpointName);
+        Task<Section?> AddSection(OilVolumeCalculation oilVolumeCalculation, MeasuringPoint measuringPoint, CreateSectionViewModel section);
         #endregion
 
         #region TOG
@@ -33,7 +34,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces
         Task<TOGRecoveredOil?> GetTOGByMeasuringPointIdAsync(Guid? id);
         Task<TOGRecoveredOil?> GetTOGOtherInstallationByIdAsync(Guid? oilCalculationId, Guid mpointId);
         Task<TOGRecoveredOil?> GetTOGInstallationByIdAsync(Guid? oilCalculationId, Guid mpointId);
-        Task<TOGRecoveredOil?> AddTOG(OilVolumeCalculation oilVolumeCalculation, MeasuringPoint measuringPoint, string mpointName);
+        Task<TOGRecoveredOil?> AddTOG(OilVolumeCalculation oilVolumeCalculation, MeasuringPoint measuringPoint, CreateTOGRecoverOilViewModel tog);
         #endregion
 
         #region DOR
@@ -44,7 +45,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces
         Task<DOR?> GetDOROtherInstallationByIdAsync(Guid? oilCalculationId, Guid mpointId);
         Task<DOR?> GetDORInstallationByIdAsync(Guid? oilCalculationId, Guid mpointId);
 
-        Task<DOR?> AddDOR(OilVolumeCalculation oilVolumeCalculation, MeasuringPoint measuringPoint, string mpointName);
+        Task<DOR?> AddDOR(OilVolumeCalculation oilVolumeCalculation, MeasuringPoint measuringPoint, CreateDorViewModel dor);
         #endregion
 
         #region Drain
@@ -55,7 +56,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces
         Task<DrainVolume?> GetDrainOtherInstallationByIdAsync(Guid? oilCalculationId, Guid mpointId);
         Task<DrainVolume?> GetDrainInstallationByIdAsync(Guid? oilCalculationId, Guid mpointId);
 
-        Task<DrainVolume?> AddDrain(OilVolumeCalculation oilVolumeCalculation, MeasuringPoint measuringPoint, string mpointName);
+        Task<DrainVolume?> AddDrain(OilVolumeCalculation oilVolumeCalculation, MeasuringPoint measuringPoint, CreateDrainVolumeViewModel drain);
         #endregion
     }
 }

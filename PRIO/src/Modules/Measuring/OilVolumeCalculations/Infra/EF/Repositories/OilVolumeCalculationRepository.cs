@@ -3,6 +3,7 @@ using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces;
+using PRIO.src.Modules.Measuring.OilVolumeCalculations.ViewModels;
 using PRIO.src.Shared.Infra.EF;
 
 namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Repositories
@@ -103,13 +104,14 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Repositories
                .FirstOrDefaultAsync();
             return sectionFound;
         }
-        public async Task<Section?> AddSection(OilVolumeCalculation oilVolumeCalculation, MeasuringPoint measuringPoint, string mpointName)
+        public async Task<Section?> AddSection(OilVolumeCalculation oilVolumeCalculation, MeasuringPoint measuringPoint, CreateSectionViewModel section)
         {
 
             var createSection = new Section
             {
                 Id = Guid.NewGuid(),
-                StaticLocalMeasuringPoint = mpointName,
+                StaticLocalMeasuringPoint = section.StaticMeasuringPointName,
+                IsApplicable = section.IsApplicable,
                 OilVolumeCalculation = oilVolumeCalculation,
                 MeasuringPoint = measuringPoint
             };
@@ -167,13 +169,14 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Repositories
             return togFound;
         }
 
-        public async Task<TOGRecoveredOil?> AddTOG(OilVolumeCalculation oilVolumeCalculation, MeasuringPoint measuringPoint, string mpointName)
+        public async Task<TOGRecoveredOil?> AddTOG(OilVolumeCalculation oilVolumeCalculation, MeasuringPoint measuringPoint, CreateTOGRecoverOilViewModel tog)
         {
 
             var createTOG = new TOGRecoveredOil
             {
                 Id = Guid.NewGuid(),
-                StaticLocalMeasuringPoint = mpointName,
+                StaticLocalMeasuringPoint = tog.StaticMeasuringPointName,
+                IsApplicable = tog.IsApplicable,
                 OilVolumeCalculation = oilVolumeCalculation,
                 MeasuringPoint = measuringPoint
             };
@@ -230,13 +233,14 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Repositories
             return dorFound;
         }
 
-        public async Task<DOR?> AddDOR(OilVolumeCalculation oilVolumeCalculation, MeasuringPoint measuringPoint, string mpointName)
+        public async Task<DOR?> AddDOR(OilVolumeCalculation oilVolumeCalculation, MeasuringPoint measuringPoint, CreateDorViewModel dor)
         {
 
             var createDOR = new DOR
             {
                 Id = Guid.NewGuid(),
-                StaticLocalMeasuringPoint = mpointName,
+                StaticLocalMeasuringPoint = dor.StaticMeasuringPointName,
+                IsApplicable = dor.IsApplicable,
                 OilVolumeCalculation = oilVolumeCalculation,
                 MeasuringPoint = measuringPoint
             };
@@ -294,13 +298,14 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Repositories
             return drainFound;
         }
 
-        public async Task<DrainVolume?> AddDrain(OilVolumeCalculation oilVolumeCalculation, MeasuringPoint measuringPoint, string mpointName)
+        public async Task<DrainVolume?> AddDrain(OilVolumeCalculation oilVolumeCalculation, MeasuringPoint measuringPoint, CreateDrainVolumeViewModel drain)
         {
 
             var createSection = new DrainVolume
             {
                 Id = Guid.NewGuid(),
-                StaticLocalMeasuringPoint = mpointName,
+                StaticLocalMeasuringPoint = drain.StaticMeasuringPointName,
+                IsApplicable = drain.IsApplicable,
                 OilVolumeCalculation = oilVolumeCalculation,
                 MeasuringPoint = measuringPoint
             };
