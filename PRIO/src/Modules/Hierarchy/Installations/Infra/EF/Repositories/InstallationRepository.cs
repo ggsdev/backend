@@ -83,6 +83,13 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
             return await _context.Installations
               .FirstOrDefaultAsync(x => x.CodInstallationAnp == cod);
         }
+        public async Task<Installation?> GetByUEPCod(string? cod)
+        {
+            return await _context.Installations
+                .Include(x => x.OilVolumeCalculation)
+                .Where(x => x.UepCod == cod && x.CodInstallationAnp == cod)
+              .FirstOrDefaultAsync();
+        }
 
         public async Task<Installation?> GetByIdWithFieldsMeasuringPointsAsync(Guid? id)
         {
@@ -103,6 +110,14 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
             return await _context.Installations
                 .Include(x => x.Cluster)
                 .Include(x => x.User)
+                .ToListAsync();
+        }
+        public async Task<List<Installation>> GetUEPsAsync()
+        {
+            return await _context.Installations
+                .Include(x => x.Cluster)
+                .Include(x => x.User)
+                .Where(x => x.IsProcessingUnit == true)
                 .ToListAsync();
         }
 

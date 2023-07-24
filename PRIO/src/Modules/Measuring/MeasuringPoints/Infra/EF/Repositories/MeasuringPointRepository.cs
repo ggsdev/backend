@@ -26,6 +26,13 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Repositories
                 .Where(x => x.Installation!.Id == id)
                 .ToListAsync();
         }
+        public async Task<List<MeasuringPoint>> GetByUEPCode(string? uepCode)
+        {
+            return await _context.MeasuringPoints
+                .Include(p => p.Installation)
+                .Where(x => x.Installation!.UepCod == uepCode && x.Installation.CodInstallationAnp == uepCode)
+                .ToListAsync();
+        }
         public async Task<MeasuringPoint?> GetByTagMeasuringPoint(string? tagMeasuringPoint)
         {
             return await _context.MeasuringPoints
@@ -54,12 +61,12 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Repositories
         public async Task<MeasuringPoint?> GetByMeasuringPointNameWithInstallation(string? measuringPointName, Guid installationId)
         {
             return await _context.MeasuringPoints.Include(x => x.Installation)
-                .FirstOrDefaultAsync(x => x.Name == measuringPointName && x.Installation.Id == installationId);
+                .FirstOrDefaultAsync(x => x.DinamicLocalMeasuringPoint == measuringPointName && x.Installation.Id == installationId);
         }
         public async Task<MeasuringPoint?> GetByMeasuringPointNameWithInstallationUpdate(string? measuringPointName, Guid installationId, Guid pointMeasuringId)
         {
             return await _context.MeasuringPoints.Include(x => x.Installation)
-                .FirstOrDefaultAsync(x => x.Name == measuringPointName && x.Installation.Id == installationId && x.Id != pointMeasuringId);
+                .FirstOrDefaultAsync(x => x.DinamicLocalMeasuringPoint == measuringPointName && x.Installation.Id == installationId && x.Id != pointMeasuringId);
         }
         public async Task AddAsync(MeasuringPoint measuringPoint)
         {

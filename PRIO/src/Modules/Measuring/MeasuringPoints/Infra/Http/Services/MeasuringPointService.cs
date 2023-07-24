@@ -56,7 +56,7 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Services
             var measuringPoint = new MeasuringPoint
             {
                 Id = measuringPointId,
-                Name = body.Name,
+                DinamicLocalMeasuringPoint = body.Name,
                 TagPointMeasuring = body.TagPointMeasuring,
                 Description = body.Description is not null ? body.Description : null,
                 Installation = installationInDatabase,
@@ -92,6 +92,12 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Services
         public async Task<List<MeasuringPointDTO>> GetByInstallationId(Guid id)
         {
             var measuringPoints = await _measuringPointRepository.GetByInstallationIdAsync(id);
+            var measuringPointDTO = _mapper.Map<List<MeasuringPoint>, List<MeasuringPointDTO>>(measuringPoints);
+            return measuringPointDTO;
+        }
+        public async Task<List<MeasuringPointDTO>> GetByUEPCode(string uepCode)
+        {
+            var measuringPoints = await _measuringPointRepository.GetByUEPCode(uepCode);
             var measuringPointDTO = _mapper.Map<List<MeasuringPoint>, List<MeasuringPointDTO>>(measuringPoints);
             return measuringPointDTO;
         }

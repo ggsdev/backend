@@ -72,6 +72,20 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Controllers
             return Ok(measuringPointDTO);
         }
 
+        [HttpGet]
+        [Route("uep/{uepCode}")]
+        public async Task<IActionResult> GetByInstallationId([FromRoute] string uepCode)
+        {
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+
+            var measuringPointDTO = await _measuringPointService.GetByUEPCode(uepCode);
+            return Ok(measuringPointDTO);
+        }
+
         [HttpPatch]
         [Route("{id}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateMeasuringPointViewModel body)

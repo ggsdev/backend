@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.src.Shared.Infra.EF.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230721202709_refactorOilcalculation")]
+    partial class refactorOilcalculation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2904,19 +2907,16 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("DinamicLocalMeasuringPoint")
-                        .IsRequired()
-                        .HasMaxLength(260)
-                        .HasColumnType("VARCHAR");
-
                     b.Property<Guid>("InstallationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<bool?>("IsUsed")
-                        .HasColumnType("bit");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(260)
+                        .HasColumnType("VARCHAR");
 
                     b.Property<string>("TagPointMeasuring")
                         .HasColumnType("nvarchar(max)");
@@ -2946,10 +2946,15 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("DinamicLocalMeasuringPoint")
+                        .IsRequired()
+                        .HasMaxLength(260)
+                        .HasColumnType("VARCHAR");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsApplicable")
+                    b.Property<bool>("IsUser")
                         .HasColumnType("bit");
 
                     b.Property<Guid?>("MeasuringPointId")
@@ -2957,11 +2962,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
                     b.Property<Guid?>("OilVolumeCalculationId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("StaticLocalMeasuringPoint")
-                        .IsRequired()
-                        .HasMaxLength(260)
-                        .HasColumnType("VARCHAR");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -2992,10 +2992,15 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("DinamicLocalMeasuringPoint")
+                        .IsRequired()
+                        .HasMaxLength(260)
+                        .HasColumnType("VARCHAR");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsApplicable")
+                    b.Property<bool>("IsUser")
                         .HasColumnType("bit");
 
                     b.Property<Guid?>("MeasuringPointId")
@@ -3003,11 +3008,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
                     b.Property<Guid?>("OilVolumeCalculationId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("StaticLocalMeasuringPoint")
-                        .IsRequired()
-                        .HasMaxLength(260)
-                        .HasColumnType("VARCHAR");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -3071,10 +3071,15 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("DinamicLocalMeasuringPoint")
+                        .IsRequired()
+                        .HasMaxLength(260)
+                        .HasColumnType("VARCHAR");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsApplicable")
+                    b.Property<bool>("IsUser")
                         .HasColumnType("bit");
 
                     b.Property<Guid?>("MeasuringPointId")
@@ -3082,11 +3087,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
                     b.Property<Guid?>("OilVolumeCalculationId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("StaticLocalMeasuringPoint")
-                        .IsRequired()
-                        .HasMaxLength(260)
-                        .HasColumnType("VARCHAR");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -3117,10 +3117,15 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("DinamicLocalMeasuringPoint")
+                        .IsRequired()
+                        .HasMaxLength(260)
+                        .HasColumnType("VARCHAR");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsApplicable")
+                    b.Property<bool>("IsUser")
                         .HasColumnType("bit");
 
                     b.Property<Guid?>("MeasuringPointId")
@@ -3128,11 +3133,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
                     b.Property<Guid?>("OilVolumeCalculationId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("StaticLocalMeasuringPoint")
-                        .IsRequired()
-                        .HasMaxLength(260)
-                        .HasColumnType("VARCHAR");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
