@@ -475,7 +475,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                         {
                                             Date = dateBeginningMeasurement,
                                             Status = true,
-                                            LocationMeasuringPoint = equipment.MeasuringPoint.Name,
+                                            LocationMeasuringPoint = equipment.MeasuringPoint.DinamicLocalMeasuringPoint,
                                             TagMeasuringPoint = equipment.TagMeasuringPoint,
                                             Volume = measurement.MED_VOLUME_BRUTO_MVMDO_001,
 
@@ -725,7 +725,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                         {
                                             Date = dateBeginningMeasurement,
                                             Status = true,
-                                            LocationMeasuringPoint = equipment.MeasuringPoint.Name,
+                                            LocationMeasuringPoint = equipment.MeasuringPoint.DinamicLocalMeasuringPoint,
                                             TagMeasuringPoint = equipment.TagMeasuringPoint,
                                             Volume = measurement.MED_CORRIGIDO_MVMDO_002,
 
@@ -972,7 +972,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                         {
                                             Date = dateBeginningMeasurement,
                                             Status = true,
-                                            LocationMeasuringPoint = equipment.MeasuringPoint.Name,
+                                            LocationMeasuringPoint = equipment.MeasuringPoint.DinamicLocalMeasuringPoint,
                                             TagMeasuringPoint = equipment.TagMeasuringPoint,
                                             Volume = measurement.MED_CORRIGIDO_MVMDO_003,
 

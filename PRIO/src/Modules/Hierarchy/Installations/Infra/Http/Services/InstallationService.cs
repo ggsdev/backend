@@ -20,6 +20,7 @@ using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Interfaces;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
+using PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
@@ -40,10 +41,11 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
         private readonly IReservoirRepository _reservoirRepository;
         private readonly IMeasuringPointRepository _measuringPointRepository;
         private readonly IEquipmentRepository _equipmentRepository;
+        private readonly IOilVolumeCalculationRepository _oilVolumeCalculationRepository;
         private readonly SystemHistoryService _systemHistoryService;
         private readonly string _tableName = HistoryColumns.TableInstallations;
 
-        public InstallationService(IMapper mapper, IInstallationRepository installationRepository, IClusterRepository clusterRepository, SystemHistoryService systemHistoryService, IFieldRepository fieldRepository, IZoneRepository zoneRepository, IWellRepository wellRepository, IReservoirRepository reservoirRepository, ICompletionRepository completionRepository, IMeasuringPointRepository measuringPointRepository, IEquipmentRepository equipmentRepository)
+        public InstallationService(IMapper mapper, IInstallationRepository installationRepository, IClusterRepository clusterRepository, SystemHistoryService systemHistoryService, IFieldRepository fieldRepository, IZoneRepository zoneRepository, IWellRepository wellRepository, IReservoirRepository reservoirRepository, ICompletionRepository completionRepository, IMeasuringPointRepository measuringPointRepository, IEquipmentRepository equipmentRepository, IOilVolumeCalculationRepository oilVolumeCalculationRepository)
         {
             _mapper = mapper;
             _clusterRepository = clusterRepository;
@@ -53,6 +55,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
             _reservoirRepository = reservoirRepository;
             _wellRepository = wellRepository;
             _measuringPointRepository = measuringPointRepository;
+            _oilVolumeCalculationRepository = oilVolumeCalculationRepository;
             _equipmentRepository = equipmentRepository;
             _completionRepository = completionRepository;
             _systemHistoryService = systemHistoryService;
@@ -89,10 +92,12 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                 Cluster = clusterInDatabase,
                 User = user,
                 IsActive = body.IsActive is not null ? body.IsActive.Value : true,
-                IsProcessingUnit = body.UepCod == body.UepName
+                IsProcessingUnit = body.UepCod == body.CodInstallationAnp
             };
-
             await _installationRepository.AddAsync(installation);
+
+            if (installation.IsProcessingUnit == true)
+                await _oilVolumeCalculationRepository.AddOilVolumeCalculationAsync(installation);
 
             await _systemHistoryService
                 .Create<Installation, InstallationHistoryDTO>(_tableName, user, installationId, installation);
@@ -108,6 +113,14 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
         {
             var installations = await _installationRepository
                 .GetAsync();
+
+            var installationsDTO = _mapper.Map<List<Installation>, List<InstallationDTO>>(installations);
+            return installationsDTO;
+        }
+        public async Task<List<InstallationDTO>> GetUEPs()
+        {
+            var installations = await _installationRepository
+                .GetUEPsAsync();
 
             var installationsDTO = _mapper.Map<List<Installation>, List<InstallationDTO>>(installations);
             return installationsDTO;

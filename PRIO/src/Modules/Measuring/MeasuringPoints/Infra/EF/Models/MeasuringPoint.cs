@@ -8,8 +8,9 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models
 {
     public class MeasuringPoint : BaseModel
     {
-        public string? Name { get; set; }
+        public string? DinamicLocalMeasuringPoint { get; set; }
         public string? TagPointMeasuring { get; set; }
+        public bool? IsUsed { get; set; } = true;
         public Section? Section { get; set; }
         public TOGRecoveredOil? TOGRecoveredOil { get; set; }
         public DrainVolume? DrainVolume { get; set; }

@@ -11,9 +11,11 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Interfaces
         Task<Installation?> GetByIdAsync(Guid? id);
         Task<Installation?> GetByIdWithCalculationsAsync(Guid? id);
         Task<Installation?> GetByCod(string? cod);
+        Task<Installation?> GetByUEPCod(string? cod);
         Task<Installation?> GetInstallationMeasurementByUepAndAnpCodAsync(string codInstallation, string acronym);
         Task<Installation?> GetByIdWithFieldsMeasuringPointsAsync(Guid? id);
         Task<List<Installation>> GetAsync();
+        Task<List<Installation>> GetUEPsAsync();
         Task<Installation?> GetInstallationAndChildren(Guid? id);
         Task SaveChangesAsync();
     }
