@@ -41,13 +41,13 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
         }
 
         [HttpGet("oil/{installationId}/equation")]
-        public async Task<object> GetEquation([FromRoute] Guid installationId)
+        public async Task<ActionResult> GetEquation([FromRoute] Guid installationId)
         {
             if (HttpContext.Items["User"] is not User user)
                 throw new UnauthorizedAccessException("User not identified, please login first");
 
-            var eq = _oilVolumeCalculationService.GetEquation(installationId);
-            return eq;
+            var eq = await _oilVolumeCalculationService.GetEquation(installationId);
+            return Ok(eq);
         }
 
         [HttpPatch("oil/{installationId}")]

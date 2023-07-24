@@ -72,10 +72,10 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
 
         public async Task<Installation?> GetByIdAsync(Guid? id)
         {
-            return await _context.Installations
-                .Include(x => x.User)
-                .Include(x => x.Cluster)
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var installation = await _context.Installations
+                .Where(x => x.Id == id)
+                .FirstOrDefaultAsync();
+            return installation;
         }
 
         public async Task<Installation?> GetByCod(string? cod)
