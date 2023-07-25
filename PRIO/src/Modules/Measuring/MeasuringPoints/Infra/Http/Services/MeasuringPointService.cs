@@ -48,7 +48,7 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Services
             if (measuringPointByTagInDatabase != null)
                 throw new ConflictException("Tag do ponto de medição já cadastrado.");
 
-            var measuringPointByNameInDatabase = await _measuringPointRepository.GetByMeasuringPointNameWithInstallation(body.Name, body.InstallationId);
+            var measuringPointByNameInDatabase = await _measuringPointRepository.GetByMeasuringPointNameWithInstallation(body.DinamicLocalMeasuringPoint, body.InstallationId);
             if (measuringPointByNameInDatabase != null)
                 throw new ConflictException("Nome do ponto de medição já cadastrado na instalação.");
 
@@ -56,7 +56,7 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Services
             var measuringPoint = new MeasuringPoint
             {
                 Id = measuringPointId,
-                DinamicLocalMeasuringPoint = body.Name,
+                DinamicLocalMeasuringPoint = body.DinamicLocalMeasuringPoint,
                 TagPointMeasuring = body.TagPointMeasuring,
                 Description = body.Description is not null ? body.Description : null,
                 Installation = installationInDatabase,
@@ -113,7 +113,7 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Services
             if (measuringPointByTagInDatabase != null)
                 throw new ConflictException("Tag do ponto de medição já cadastrado.");
 
-            var measuringPointByNameInDatabase = await _measuringPointRepository.GetByMeasuringPointNameWithInstallationUpdate(body.Name, measuringPoint.Installation.Id, measuringPoint.Id);
+            var measuringPointByNameInDatabase = await _measuringPointRepository.GetByMeasuringPointNameWithInstallationUpdate(body.DinamicLocalMeasuringPoint, measuringPoint.Installation.Id, measuringPoint.Id);
             if (measuringPointByNameInDatabase != null)
                 throw new ConflictException("Nome do ponto de medição já cadastrado na instalação.");
 

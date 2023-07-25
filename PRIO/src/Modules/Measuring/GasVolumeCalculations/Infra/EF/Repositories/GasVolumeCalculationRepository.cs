@@ -50,7 +50,6 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Repositories
             _context.GasVolumeCalculations.Update(gasVolume);
         }
 
-        #region Assistance Gas
 
         public async Task<AssistanceGas?> GetAssistanceGas(Guid id)
         {
@@ -65,20 +64,138 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Repositories
         {
             await _context.AssistanceGases.AddAsync(gas);
         }
-        #endregion
 
-        #region Export Gas
-        public async Task<ExportGas?> GetExportGas(string? staticName)
+        public async Task<ExportGas?> GetExportGas(Guid id)
         {
             return await _context.ExportGases
-                .FirstOrDefaultAsync(c => c.StaticLocalMeasuringPoint == staticName);
+               .Include(x => x.GasVolumeCalculation)
+               .ThenInclude(x => x.Installation)
+            .Include(x => x.MeasuringPoint)
+               .FirstOrDefaultAsync(x => x.MeasuringPoint.Id == id);
         }
         public async Task AddExportGas(ExportGas gas)
         {
             await _context.ExportGases.AddAsync(gas);
         }
 
-        #endregion
+        public async Task<GasVolumeCalculation?> GetGasVolumeCalculationByInstallationId(Guid id)
+        {
+            var gasVolumeCalculation = await _context.GasVolumeCalculations
+                .Include(x => x.Installation)
+                .Include(x => x.AssistanceGases)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.ExportGases)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.HighPressureGases)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.HPFlares)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.ImportGases)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.LowPressureGases)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.LPFlares)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.PilotGases)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.PurgeGases)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Where(x => x.Installation.Id == id)
+                .FirstOrDefaultAsync();
+
+            return gasVolumeCalculation;
+        }
+
+        public async Task<HighPressureGas?> GetHighPressureGas(Guid id)
+        {
+            return await _context.HighPressureGases
+               .Include(x => x.GasVolumeCalculation)
+               .ThenInclude(x => x.Installation)
+            .Include(x => x.MeasuringPoint)
+               .FirstOrDefaultAsync(x => x.MeasuringPoint.Id == id);
+        }
+        public async Task AddHighPressureGas(HighPressureGas gas)
+        {
+            await _context.HighPressureGases.AddAsync(gas);
+        }
+
+        public async Task<HPFlare?> GetHPFlare(Guid id)
+        {
+            return await _context.HPFlares
+               .Include(x => x.GasVolumeCalculation)
+               .ThenInclude(x => x.Installation)
+            .Include(x => x.MeasuringPoint)
+               .FirstOrDefaultAsync(x => x.MeasuringPoint.Id == id);
+        }
+        public async Task AddHPFlare(HPFlare gas)
+        {
+            await _context.HPFlares.AddAsync(gas);
+        }
+
+        public async Task<ImportGas?> GetImportGas(Guid id)
+        {
+            return await _context.ImportGases
+               .Include(x => x.GasVolumeCalculation)
+               .ThenInclude(x => x.Installation)
+            .Include(x => x.MeasuringPoint)
+               .FirstOrDefaultAsync(x => x.MeasuringPoint.Id == id);
+        }
+        public async Task AddImportGas(ImportGas gas)
+        {
+            await _context.ImportGases.AddAsync(gas);
+        }
+
+        public async Task<LowPressureGas?> GetLowPressureGas(Guid id)
+        {
+            return await _context.LowPressureGases
+               .Include(x => x.GasVolumeCalculation)
+               .ThenInclude(x => x.Installation)
+            .Include(x => x.MeasuringPoint)
+               .FirstOrDefaultAsync(x => x.MeasuringPoint.Id == id);
+        }
+        public async Task AddLowPressureGas(LowPressureGas gas)
+        {
+            await _context.LowPressureGases.AddAsync(gas);
+        }
+
+        public async Task<LPFlare?> GetLPFlare(Guid id)
+        {
+            return await _context.LPFlares
+               .Include(x => x.GasVolumeCalculation)
+               .ThenInclude(x => x.Installation)
+            .Include(x => x.MeasuringPoint)
+               .FirstOrDefaultAsync(x => x.MeasuringPoint.Id == id);
+        }
+        public async Task AddLPFlare(LPFlare gas)
+        {
+            await _context.LPFlares.AddAsync(gas);
+        }
+
+        public async Task<PilotGas?> GetPilotGas(Guid id)
+        {
+            return await _context.PilotGases
+               .Include(x => x.GasVolumeCalculation)
+               .ThenInclude(x => x.Installation)
+            .Include(x => x.MeasuringPoint)
+               .FirstOrDefaultAsync(x => x.MeasuringPoint.Id == id);
+        }
+        public async Task AddPilotGas(PilotGas gas)
+        {
+            await _context.PilotGases.AddAsync(gas);
+        }
+
+        public async Task<PurgeGas?> GetPurgeGas(Guid id)
+        {
+            return await _context.PurgeGases
+               .Include(x => x.GasVolumeCalculation)
+               .ThenInclude(x => x.Installation)
+            .Include(x => x.MeasuringPoint)
+               .FirstOrDefaultAsync(x => x.MeasuringPoint.Id == id);
+        }
+        public async Task AddPurgeGas(PurgeGas gas)
+        {
+            await _context.PurgeGases.AddAsync(gas);
+        }
 
         public async Task SaveChangesAsync()
         {

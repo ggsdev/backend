@@ -992,10 +992,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 }
 
                 if (errorsInImport.Count > 0)
-                    throw new BadRequestException($"Algum(s) erro(s) ocorreram durante a importação do arquivo de nome: {data.Files[i].FileName}", errors: errorsInImport);
+                    throw new BadRequestException($"Algum(s) erro(s) ocorreram durante a validação do arquivo de nome: {data.Files[i].FileName}", errors: errorsInImport);
 
                 if (errorsInFormat.Count > 0)
-                    throw new BadRequestException($"Algum(s) erro(s) de formatação ocorreram durante a importação do arquivo de nome: {data.Files[i].FileName}", errors: errorsInFormat);
+                    throw new BadRequestException($"Algum(s) erro(s) de formatação ocorreram durante a validação do arquivo de nome: {data.Files[i].FileName}", errors: errorsInFormat);
             }
 
             return _responseResult;
