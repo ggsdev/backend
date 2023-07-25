@@ -10,6 +10,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Dtos
         public string? Name { get; set; }
         public string? Description { get; set; }
 
+        public decimal? AllocationReservoir { get; set; }
         public decimal? TopOfPerforated { get; set; }
         public decimal? BaseOfPerforated { get; set; }
         public DateTime? CreatedAt { get; set; }

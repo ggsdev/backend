@@ -6,6 +6,7 @@
         public string? description { get; set; }
         public decimal? TopOfPerforated { get; set; }
         public decimal? BaseOfPerforated { get; set; }
+        public decimal? AllocationReservoir { get; set; }
         public Guid? wellId { get; set; }
         public Guid? reservoirId { get; set; }
 
