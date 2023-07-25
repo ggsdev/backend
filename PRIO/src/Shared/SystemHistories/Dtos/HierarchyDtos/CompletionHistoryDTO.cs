@@ -4,7 +4,8 @@
     {
         public string? name { get; set; }
         public string? description { get; set; }
-        public string? codCompletion { get; set; }
+        public decimal? TopOfPerforated { get; set; }
+        public decimal? BaseOfPerforated { get; set; }
         public Guid? wellId { get; set; }
         public Guid? reservoirId { get; set; }
 

@@ -34,7 +34,8 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Mappings
                 .HasColumnType("TEXT");
 
             builder.Property(x => x.GasSafetyBurnVolume)
-                .HasColumnType("decimal");
+                .HasColumnType("decimal")
+                .HasPrecision(10, 4);
 
             builder.Property(x => x.CreatedAt);
 

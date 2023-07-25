@@ -148,7 +148,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             Name = cellCluster,
                             User = user,
                             IsActive = true,
-                            CodCluster = "N/A",
                         };
 
                         await _systemHistoryService
@@ -316,7 +315,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                 Id = reservoirId,
                                 Name = columnReservoir,
                                 User = user,
-                                CodReservoir = "N/A",
                                 Zone = zoneInDatabase,
                                 IsActive = true,
                             };
@@ -328,7 +326,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                 Id = reservoirId,
                                 Name = columnReservoir,
                                 User = user,
-                                CodReservoir = "N/A",
                                 Zone = entityDictionary.GetValueOrDefault(columnZone.ToLower()) as Zone,
                                 IsActive = true,
                             };
@@ -368,8 +365,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                 StatusOperator = cellWellStatusOperatorBoolean,
                                 Type = cellWellProfile,
                                 WaterDepth = decimal.TryParse(cellWellWaterDepth?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var cellWellWaterDepthDouble) ? cellWellWaterDepthDouble : null,
-                                TopOfPerforated = decimal.TryParse(cellWellPerforationTopMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var topOfPerforated) ? topOfPerforated : null,
-                                BaseOfPerforated = decimal.TryParse(cellWellBottomPerforationMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var baseOfPerforated) ? baseOfPerforated : null,
                                 ArtificialLift = cellWellArtificialLift,
                                 Latitude4C = cellWellLatitude4c,
                                 Longitude4C = cellWellLongitude4c,
@@ -398,8 +393,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                 StatusOperator = cellWellStatusOperatorBoolean,
                                 Type = cellWellProfile,
                                 WaterDepth = decimal.TryParse(cellWellWaterDepth?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var cellWellWaterDepthDouble) ? cellWellWaterDepthDouble : null,
-                                TopOfPerforated = decimal.TryParse(cellWellPerforationTopMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var topOfPerforated) ? topOfPerforated : null,
-                                BaseOfPerforated = decimal.TryParse(cellWellBottomPerforationMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var baseOfPerforated) ? baseOfPerforated : null,
                                 ArtificialLift = cellWellArtificialLift,
                                 Latitude4C = cellWellLatitude4c,
                                 Longitude4C = cellWellLongitude4c,
@@ -439,8 +432,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             StatusOperator = cellWellStatusOperatorBoolean,
                             Type = cellWellProfile,
                             WaterDepth = decimal.TryParse(cellWellWaterDepth?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var cellWellWaterDepthDouble) ? cellWellWaterDepthDouble : 0,
-                            TopOfPerforated = decimal.TryParse(cellWellPerforationTopMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var topOfPerforated) ? topOfPerforated : 0,
-                            BaseOfPerforated = decimal.TryParse(cellWellBottomPerforationMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var baseOfPerforated) ? baseOfPerforated : 0,
                             ArtificialLift = cellWellArtificialLift,
                             Latitude4C = cellWellLatitude4c,
                             Longitude4C = cellWellLongitude4c,
@@ -487,7 +478,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                 Id = completionId,
                                 Name = columnCompletion,
                                 User = user,
-                                CodCompletion = "N/A",
+                                TopOfPerforated = decimal.TryParse(cellWellPerforationTopMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var topOfPerforated) ? topOfPerforated : null,
+                                BaseOfPerforated = decimal.TryParse(cellWellBottomPerforationMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var baseOfPerforated) ? baseOfPerforated : null,
                                 Reservoir = reservoirInDatabase is null ? entityDictionary.GetValueOrDefault(columnReservoir.ToLower()) as Reservoir : reservoirInDatabase,
                                 Well = wellInDatabase is null ? entityDictionary.GetValueOrDefault(cellWellCodeAnp.ToLower()) as Well : wellInDatabase,
                                 IsActive = true
@@ -501,7 +493,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                 Id = completionId,
                                 Name = columnCompletion,
                                 User = user,
-                                CodCompletion = "N/A",
+                                TopOfPerforated = decimal.TryParse(cellWellPerforationTopMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var topOfPerforated) ? topOfPerforated : null,
+                                BaseOfPerforated = decimal.TryParse(cellWellBottomPerforationMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var baseOfPerforated) ? baseOfPerforated : null,
                                 Reservoir = entityDictionary.GetValueOrDefault(columnReservoir.ToLower()) as Reservoir,
                                 Well = entityDictionary.GetValueOrDefault(cellWellCodeAnp.ToLower()) as Well,
                                 IsActive = true

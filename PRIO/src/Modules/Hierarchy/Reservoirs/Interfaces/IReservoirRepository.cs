@@ -9,9 +9,9 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Interfaces
         void Delete(Reservoir reservoir);
         void Restore(Reservoir reservoir);
         Task<Reservoir?> GetByIdAsync(Guid? id);
+        Task<Reservoir?> GetByNameAsync(string? name);
         Task<List<Reservoir>> GetAsync();
         Task<Reservoir?> GetWithZoneAsync(Guid? id);
-        Task<Reservoir?> GetByCode(string? cod);
         Task<Reservoir?> GetOnlyReservoirAsync(Guid? id);
         Task<Reservoir?> GetWithZoneFieldAsync(Guid? id);
         Task<Reservoir?> GetByIdWithCompletionsAsync(Guid? id);

@@ -19,10 +19,6 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Mappings
                .HasMaxLength(60)
                .IsRequired();
 
-            builder.Property(x => x.CodCluster)
-               .HasColumnType("VARCHAR")
-               .HasMaxLength(60);
-
             builder.Property(x => x.CreatedAt);
 
             builder.Property(x => x.UpdatedAt);

@@ -36,9 +36,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
 
         public async Task<CreateUpdateCompletionDTO> CreateCompletion(CreateCompletionViewModel body, User user)
         {
-            var completionExistingCode = await _completionRepository.GetByCode(body.CodCompletion);
-            if (completionExistingCode is not null)
-                throw new ConflictException(ErrorMessages.CodAlreadyExists<Completion>());
+
 
             var well = await _wellRepository.GetWithFieldAsync(body.WellId);
 
@@ -72,7 +70,6 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             {
                 Id = completionId,
                 Name = completionName,
-                CodCompletion = body.CodCompletion is not null ? body.CodCompletion : GenerateCode.Generate(completionName),
                 Description = body.Description,
                 User = user,
                 Well = well,
@@ -122,12 +119,6 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             if (completion.IsActive is false)
                 throw new ConflictException(ErrorMessages.Inactive<Completion>());
 
-            if (body.CodCompletion is not null)
-            {
-                var fieldInDatabase = await _completionRepository.GetByCode(body.CodCompletion);
-                if (fieldInDatabase is not null)
-                    throw new ConflictException(ErrorMessages.CodAlreadyExists<Completion>());
-            }
 
             var well = await _wellRepository.GetWithFieldAsync(body.WellId);
 

@@ -81,6 +81,11 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
             if (clusterInDatabase.IsActive is false)
                 throw new ConflictException(ErrorMessages.Inactive<Cluster>());
 
+            var installationSameName = await _installationRepository.GetByNameAsync(body.Name);
+            if (installationSameName is not null)
+                throw new ConflictException($"Já existe uma instalação com o nome: {body.Name}");
+
+
             var installationId = Guid.NewGuid();
 
             var installation = new Installation

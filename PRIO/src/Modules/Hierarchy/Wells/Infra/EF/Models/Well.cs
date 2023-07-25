@@ -17,8 +17,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models
         public bool? StatusOperator { get; set; }
         public string? Type { get; set; }
         public decimal? WaterDepth { get; set; }
-        public decimal? TopOfPerforated { get; set; }
-        public decimal? BaseOfPerforated { get; set; }
+
         public string? ArtificialLift { get; set; }
         public string? Latitude4C { get; set; }
         public string? Longitude4C { get; set; }

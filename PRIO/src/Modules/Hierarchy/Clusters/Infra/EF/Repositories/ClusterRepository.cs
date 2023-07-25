@@ -21,6 +21,10 @@ public class ClusterRepository : IClusterRepository
     {
         return await _context.Clusters.FirstOrDefaultAsync(c => c.Id == id);
     }
+    public async Task<Cluster?> GetClusterByNameAsync(string? name)
+    {
+        return await _context.Clusters.FirstOrDefaultAsync(c => c.Name == name);
+    }
 
     public async Task<Cluster?> GetClusterAndChildren(Guid? id)
     {
@@ -40,11 +44,6 @@ public class ClusterRepository : IClusterRepository
                 .ThenInclude(i => i.MeasuringPoints)
                     .ThenInclude(m => m.MeasuringEquipments)
             .FirstOrDefaultAsync(c => c.Id == id);
-    }
-
-    public async Task<Cluster?> GetByCod(string? cod)
-    {
-        return await _context.Clusters.FirstOrDefaultAsync(c => c.CodCluster == cod);
     }
 
     public async Task<Cluster?> GetClusterWithInstallationsAsync(Guid? id)
