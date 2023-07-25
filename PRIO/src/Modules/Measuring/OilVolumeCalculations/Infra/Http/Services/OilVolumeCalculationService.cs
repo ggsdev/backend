@@ -40,7 +40,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
             if (body.Sections is not null)
             {
                 if (body.Sections.Count == 0)
-                    throw new NotFoundException("Deve ser inseridos os Tramos da configuração.");
+                    throw new NotFoundException("Deve ser inseridos ao menos um tramo.");
 
                 foreach (var section in body.Sections)
                 {
@@ -272,7 +272,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
             if (body.Sections is not null)
             {
                 if (body.Sections.Count == 0)
-                    throw new NotFoundException("Deve ser inseridos os Tramos da configuração.");
+                    throw new NotFoundException("Deve ser inseridos ao menos um tramo.");
 
                 foreach (var section in body.Sections)
                 {
