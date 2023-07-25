@@ -54,14 +54,6 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Mappings
                 .HasColumnType("decimal")
                 .HasPrecision(10, 2);
 
-            builder.Property(e => e.TopOfPerforated)
-               .HasColumnType("decimal")
-                .HasPrecision(10, 2);
-
-            builder.Property(e => e.BaseOfPerforated)
-               .HasColumnType("decimal")
-                .HasPrecision(10, 2);
-
             builder.Property(e => e.ArtificialLift)
                .HasColumnType("VARCHAR")
                .HasMaxLength(60);

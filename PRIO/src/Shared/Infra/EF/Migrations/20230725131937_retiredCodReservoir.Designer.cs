@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.src.Shared.Infra.EF.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230725131937_retiredCodReservoir")]
+    partial class retiredCodReservoir
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -439,10 +442,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal?>("BaseOfPerforated")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal");
-
                     b.Property<string>("CodCompletion")
                         .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
@@ -466,10 +465,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
                     b.Property<Guid?>("ReservoirId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal?>("TopOfPerforated")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -662,6 +657,10 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
+                    b.Property<decimal?>("BaseOfPerforated")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal");
+
                     b.Property<string>("CategoryAnp")
                         .IsRequired()
                         .HasMaxLength(60)
@@ -741,6 +740,10 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
                     b.Property<bool?>("StatusOperator")
                         .HasColumnType("bit");
+
+                    b.Property<decimal?>("TopOfPerforated")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal");
 
                     b.Property<string>("Type")
                         .IsRequired()

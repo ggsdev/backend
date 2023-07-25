@@ -15,10 +15,6 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Mappings
               .HasMaxLength(60)
               .IsRequired();
 
-            builder.Property(x => x.CodReservoir)
-               .HasColumnType("VARCHAR")
-               .HasMaxLength(60);
-
             builder.Property(x => x.Description)
                 .HasColumnType("TEXT");
 

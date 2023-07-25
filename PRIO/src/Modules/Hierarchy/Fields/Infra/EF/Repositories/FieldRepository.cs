@@ -26,6 +26,13 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                .ThenInclude(i => i!.Cluster)
                .FirstOrDefaultAsync(x => x.Id == id);
         }
+        public async Task<Field?> GetByNameAsync(string? name)
+        {
+            return await _context.Fields
+                .Include(x => x.User)
+               .Include(x => x.Installation)
+               .FirstOrDefaultAsync(x => x.Name == name);
+        }
 
         public async Task<Field?> GetFieldAndChildren(Guid? id)
         {

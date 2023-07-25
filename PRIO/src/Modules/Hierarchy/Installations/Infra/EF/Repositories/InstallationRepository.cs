@@ -78,6 +78,14 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
             return installation;
         }
 
+        public async Task<Installation?> GetByNameAsync(string? name)
+        {
+            var installation = await _context.Installations
+                .Where(x => x.Name == name)
+                .FirstOrDefaultAsync();
+            return installation;
+        }
+
         public async Task<Installation?> GetByCod(string? cod)
         {
             return await _context.Installations

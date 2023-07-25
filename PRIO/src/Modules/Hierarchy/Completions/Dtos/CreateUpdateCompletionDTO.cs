@@ -8,7 +8,8 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Dtos
         public Guid Id { get; set; }
         public string? Name { get; set; }
         public string? Description { get; set; }
-        public string? CodCompletion { get; set; }
+        public decimal? TopOfPerforated { get; set; }
+        public decimal? BaseOfPerforated { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public WellWithoutCompletionDTO? Well { get; set; }

@@ -30,6 +30,14 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
                 .ThenInclude(i => i.Cluster)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
+        public async Task<Well?> GetByNameAsync(string? name)
+        {
+            return await _context.Wells
+                .Include(x => x.User)
+                .Include(x => x.Completions)
+                .Include(x => x.Field)
+                .FirstOrDefaultAsync(x => x.Name == name);
+        }
 
         public async Task<Well?> GetWellAndChildren(Guid? id)
         {

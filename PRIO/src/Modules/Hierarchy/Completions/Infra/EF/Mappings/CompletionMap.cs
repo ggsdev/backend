@@ -17,12 +17,16 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Mappings
                .HasMaxLength(60)
                .IsRequired();
 
-            builder.Property(x => x.CodCompletion)
-               .HasColumnType("VARCHAR")
-               .HasMaxLength(60);
-
             builder.Property(x => x.Description)
                 .HasColumnType("TEXT");
+
+            builder.Property(e => e.TopOfPerforated)
+               .HasColumnType("decimal")
+                .HasPrecision(10, 2);
+
+            builder.Property(e => e.BaseOfPerforated)
+               .HasColumnType("decimal")
+                .HasPrecision(10, 2);
 
             builder.Property(x => x.CreatedAt);
 

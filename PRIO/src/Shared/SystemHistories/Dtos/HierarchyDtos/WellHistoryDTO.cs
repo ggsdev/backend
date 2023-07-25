@@ -12,8 +12,6 @@
         public bool? statusOperator { get; set; }
         public string? type { get; set; }
         public decimal? waterDepth { get; set; }
-        public decimal? topOfPerforated { get; set; }
-        public decimal? baseOfPerforated { get; set; }
         public string? artificialLift { get; set; }
         public string? latitude4C { get; set; }
         public string? longitude4C { get; set; }
