@@ -588,5 +588,387 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
 
             return equationReturned;
         }
+
+
+        public async Task<GasVolumeCalculationDto> UpdateGasCalculationByInstallationId(Guid installationId, UpdateGasVolumeCalculationViewModel body)
+        {
+            var installation = await _installationRepository
+                .GetByIdWithCalculationsAsync(installationId);
+
+            if (installation is null)
+                throw new NotFoundException(ErrorMessages.NotFound<Installation>());
+
+            if (installation.OilVolumeCalculation is null)
+                throw new NotFoundException("Instalação não possui cálculo para ser atualizado");
+
+            var gasCalculationInDatabase = await _repository
+                .GetGasVolumeCalculationByIdAsync(installation.GasVolumeCalculation.Id);
+
+            if (gasCalculationInDatabase is null)
+                throw new NotFoundException("Instalação não possui cálculo para ser atualizado");
+
+            if (body.AssistanceGases is not null)
+            {
+                foreach (var assistanceGas in body.AssistanceGases)
+                {
+                    var measuringPoint = await _measuringPointRepository.GetByIdAsync(assistanceGas.MeasuringPointId);
+                    if (measuringPoint is null)
+                        throw new NotFoundException($"Ponto de medição {assistanceGas.StaticMeasuringPointName} não encontrado.");
+
+                    var assistanceGasFound = await _repository
+                        .GetOtherAssistanceGas(installation.GasVolumeCalculation.Id, assistanceGas.MeasuringPointId);
+
+                    if (assistanceGasFound is not null)
+                        throw new ConflictException($"Ponto de medição para ser atualizado possui relação com outra instalação ({assistanceGasFound.GasVolumeCalculation.Installation.Name}).");
+                }
+
+                _repository.RemoveRange(gasCalculationInDatabase.AssistanceGases);
+
+                foreach (var assistanceGas in body.AssistanceGases)
+                {
+                    var measuringPoint = await _measuringPointRepository
+                        .GetByIdAsync(assistanceGas.MeasuringPointId);
+
+                    if (measuringPoint is not null)
+                    {
+                        var createdAssistanceGas = new AssistanceGas
+                        {
+                            Id = Guid.NewGuid(),
+                            MeasuringPoint = measuringPoint,
+                            StaticLocalMeasuringPoint = assistanceGas.StaticMeasuringPointName,
+                            GasVolumeCalculation = installation.GasVolumeCalculation,
+                            IsApplicable = assistanceGas.IsApplicable
+
+                        };
+
+                        await _repository.AddAssistanceGas(createdAssistanceGas);
+                    }
+                }
+            }
+
+            if (body.ExportGases is not null)
+            {
+                foreach (var exportGas in body.ExportGases)
+                {
+                    var measuringPoint = await _measuringPointRepository.GetByIdAsync(exportGas.MeasuringPointId);
+                    if (measuringPoint is null)
+                        throw new NotFoundException($"Ponto de medição {exportGas.StaticMeasuringPointName} não encontrado.");
+
+                    var exportGasFound = await _repository
+                        .GetOtherExportGas(installation.GasVolumeCalculation.Id, exportGas.MeasuringPointId);
+
+                    if (exportGasFound is not null)
+                        throw new ConflictException($"Ponto de medição para ser atualizado possui relação com outra instalação ({exportGasFound.GasVolumeCalculation.Installation.Name}).");
+                }
+
+                _repository.RemoveRange(gasCalculationInDatabase.ExportGases);
+
+                foreach (var exportGas in body.ExportGases)
+                {
+                    var measuringPoint = await _measuringPointRepository
+                        .GetByIdAsync(exportGas.MeasuringPointId);
+
+                    if (measuringPoint is not null)
+                    {
+                        var createdExportGas = new ExportGas
+                        {
+                            Id = Guid.NewGuid(),
+                            MeasuringPoint = measuringPoint,
+                            StaticLocalMeasuringPoint = exportGas.StaticMeasuringPointName,
+                            GasVolumeCalculation = installation.GasVolumeCalculation,
+                            IsApplicable = exportGas.IsApplicable
+
+                        };
+
+                        await _repository.AddExportGas(createdExportGas);
+                    }
+                }
+            }
+
+            if (body.HighPressureGases is not null)
+            {
+                foreach (var highPressureGas in body.HighPressureGases)
+                {
+                    var measuringPoint = await _measuringPointRepository.GetByIdAsync(highPressureGas.MeasuringPointId);
+                    if (measuringPoint is null)
+                        throw new NotFoundException($"Ponto de medição {highPressureGas.StaticMeasuringPointName} não encontrado.");
+
+                    var highPressureGasFound = await _repository
+                        .GetOtherHighPressureGas(installation.GasVolumeCalculation.Id, highPressureGas.MeasuringPointId);
+
+                    if (highPressureGasFound is not null)
+                        throw new ConflictException($"Ponto de medição para ser atualizado possui relação com outra instalação ({highPressureGasFound.GasVolumeCalculation.Installation.Name}).");
+                }
+
+                _repository.RemoveRange(gasCalculationInDatabase.HighPressureGases);
+
+                foreach (var highPressureGas in body.HighPressureGases)
+                {
+                    var measuringPoint = await _measuringPointRepository
+                        .GetByIdAsync(highPressureGas.MeasuringPointId);
+
+                    if (measuringPoint is not null)
+                    {
+                        var createdHighPressureGas = new HighPressureGas
+                        {
+                            Id = Guid.NewGuid(),
+                            MeasuringPoint = measuringPoint,
+                            StaticLocalMeasuringPoint = highPressureGas.StaticMeasuringPointName,
+                            GasVolumeCalculation = installation.GasVolumeCalculation,
+                            IsApplicable = highPressureGas.IsApplicable
+
+                        };
+
+                        await _repository.AddHighPressureGas(createdHighPressureGas);
+                    }
+                }
+            }
+
+            if (body.HPFlares is not null)
+            {
+                foreach (var hpFlare in body.HPFlares)
+                {
+                    var measuringPoint = await _measuringPointRepository.GetByIdAsync(hpFlare.MeasuringPointId);
+
+                    if (measuringPoint is null)
+                        throw new NotFoundException($"Ponto de medição {hpFlare.StaticMeasuringPointName} não encontrado.");
+
+                    var hpFlareFound = await _repository
+                        .GetOtherHPFlare(installation.GasVolumeCalculation.Id, hpFlare.MeasuringPointId);
+
+                    if (hpFlareFound is not null)
+                        throw new ConflictException($"Ponto de medição para ser atualizado possui relação com outra instalação ({hpFlareFound.GasVolumeCalculation.Installation.Name}).");
+                }
+
+                _repository.RemoveRange(gasCalculationInDatabase.HPFlares);
+
+                foreach (var hpFlare in body.HPFlares)
+                {
+                    var measuringPoint = await _measuringPointRepository
+                        .GetByIdAsync(hpFlare.MeasuringPointId);
+
+                    if (measuringPoint is not null)
+                    {
+                        var createdHPFlare = new HPFlare
+                        {
+                            Id = Guid.NewGuid(),
+                            MeasuringPoint = measuringPoint,
+                            StaticLocalMeasuringPoint = hpFlare.StaticMeasuringPointName,
+                            GasVolumeCalculation = installation.GasVolumeCalculation,
+                            IsApplicable = hpFlare.IsApplicable
+
+                        };
+
+                        await _repository.AddHPFlare(createdHPFlare);
+                    }
+                }
+            }
+
+            if (body.ImportGases is not null)
+            {
+                foreach (var importGas in body.ImportGases)
+                {
+                    var measuringPoint = await _measuringPointRepository.GetByIdAsync(importGas.MeasuringPointId);
+
+                    if (measuringPoint is null)
+                        throw new NotFoundException($"Ponto de medição {importGas.StaticMeasuringPointName} não encontrado.");
+
+                    var importGasFound = await _repository
+                        .GetOtherImportGas(installation.GasVolumeCalculation.Id, importGas.MeasuringPointId);
+
+                    if (importGasFound is not null)
+                        throw new ConflictException($"Ponto de medição para ser atualizado possui relação com outra instalação ({importGasFound.GasVolumeCalculation.Installation.Name}).");
+                }
+
+                _repository.RemoveRange(gasCalculationInDatabase.ImportGases);
+
+                foreach (var importGas in body.ImportGases)
+                {
+                    var measuringPoint = await _measuringPointRepository
+                        .GetByIdAsync(importGas.MeasuringPointId);
+
+                    if (measuringPoint is not null)
+                    {
+                        var createdImportGas = new ImportGas
+                        {
+                            Id = Guid.NewGuid(),
+                            MeasuringPoint = measuringPoint,
+                            StaticLocalMeasuringPoint = importGas.StaticMeasuringPointName,
+                            GasVolumeCalculation = installation.GasVolumeCalculation,
+                            IsApplicable = importGas.IsApplicable
+
+                        };
+
+                        await _repository.AddImportGas(createdImportGas);
+                    }
+                }
+            }
+
+            if (body.LowPressureGases is not null)
+            {
+                foreach (var lowPressureGas in body.LowPressureGases)
+                {
+                    var measuringPoint = await _measuringPointRepository.GetByIdAsync(lowPressureGas.MeasuringPointId);
+
+                    if (measuringPoint is null)
+                        throw new NotFoundException($"Ponto de medição {lowPressureGas.StaticMeasuringPointName} não encontrado.");
+
+                    var lowPressureGasFound = await _repository
+                        .GetOtherLowPressureGas(installation.GasVolumeCalculation.Id, lowPressureGas.MeasuringPointId);
+
+                    if (lowPressureGasFound is not null)
+                        throw new ConflictException($"Ponto de medição para ser atualizado possui relação com outra instalação ({lowPressureGasFound.GasVolumeCalculation.Installation.Name}).");
+                }
+
+                _repository.RemoveRange(gasCalculationInDatabase.LowPressureGases);
+
+                foreach (var lowPressureGas in body.LowPressureGases)
+                {
+                    var measuringPoint = await _measuringPointRepository
+                        .GetByIdAsync(lowPressureGas.MeasuringPointId);
+
+                    if (measuringPoint is not null)
+                    {
+                        var createdLowPressureGas = new LowPressureGas
+                        {
+                            Id = Guid.NewGuid(),
+                            MeasuringPoint = measuringPoint,
+                            StaticLocalMeasuringPoint = lowPressureGas.StaticMeasuringPointName,
+                            GasVolumeCalculation = installation.GasVolumeCalculation,
+                            IsApplicable = lowPressureGas.IsApplicable
+
+                        };
+
+                        await _repository.AddLowPressureGas(createdLowPressureGas);
+                    }
+                }
+            }
+
+            if (body.LPFlares is not null)
+            {
+                foreach (var lpFlare in body.LPFlares)
+                {
+                    var measuringPoint = await _measuringPointRepository.GetByIdAsync(lpFlare.MeasuringPointId);
+
+                    if (measuringPoint is null)
+                        throw new NotFoundException($"Ponto de medição {lpFlare.StaticMeasuringPointName} não encontrado.");
+
+                    var lpFlareFound = await _repository
+                        .GetOtherLPFlare(installation.GasVolumeCalculation.Id, lpFlare.MeasuringPointId);
+
+                    if (lpFlareFound is not null)
+                        throw new ConflictException($"Ponto de medição para ser atualizado possui relação com outra instalação ({lpFlareFound.GasVolumeCalculation.Installation.Name}).");
+                }
+
+                _repository.RemoveRange(gasCalculationInDatabase.LPFlares);
+
+                foreach (var lpFlare in body.LPFlares)
+                {
+                    var measuringPoint = await _measuringPointRepository
+                        .GetByIdAsync(lpFlare.MeasuringPointId);
+
+                    if (measuringPoint is not null)
+                    {
+                        var createdLPFlare = new LPFlare
+                        {
+                            Id = Guid.NewGuid(),
+                            MeasuringPoint = measuringPoint,
+                            StaticLocalMeasuringPoint = lpFlare.StaticMeasuringPointName,
+                            GasVolumeCalculation = installation.GasVolumeCalculation,
+                            IsApplicable = lpFlare.IsApplicable
+
+                        };
+
+                        await _repository.AddLPFlare(createdLPFlare);
+                    }
+                }
+            }
+
+            if (body.PilotGases is not null)
+            {
+                foreach (var pilotGas in body.PilotGases)
+                {
+                    var measuringPoint = await _measuringPointRepository.GetByIdAsync(pilotGas.MeasuringPointId);
+
+                    if (measuringPoint is null)
+                        throw new NotFoundException($"Ponto de medição {pilotGas.StaticMeasuringPointName} não encontrado.");
+
+                    var pilotGasFound = await _repository
+                        .GetOtherPilotGas(installation.GasVolumeCalculation.Id, pilotGas.MeasuringPointId);
+
+                    if (pilotGasFound is not null)
+                        throw new ConflictException($"Ponto de medição para ser atualizado possui relação com outra instalação ({pilotGasFound.GasVolumeCalculation.Installation.Name}).");
+                }
+
+                _repository.RemoveRange(gasCalculationInDatabase.PilotGases);
+
+                foreach (var pilotGas in body.PilotGases)
+                {
+                    var measuringPoint = await _measuringPointRepository
+                        .GetByIdAsync(pilotGas.MeasuringPointId);
+
+                    if (measuringPoint is not null)
+                    {
+                        var createdPilotGas = new PilotGas
+                        {
+                            Id = Guid.NewGuid(),
+                            MeasuringPoint = measuringPoint,
+                            StaticLocalMeasuringPoint = pilotGas.StaticMeasuringPointName,
+                            GasVolumeCalculation = installation.GasVolumeCalculation,
+                            IsApplicable = pilotGas.IsApplicable
+
+                        };
+
+                        await _repository.AddPilotGas(createdPilotGas);
+                    }
+                }
+            }
+
+            if (body.PilotGases is not null)
+            {
+                foreach (var pilotGas in body.PilotGases)
+                {
+                    var measuringPoint = await _measuringPointRepository.GetByIdAsync(pilotGas.MeasuringPointId);
+
+                    if (measuringPoint is null)
+                        throw new NotFoundException($"Ponto de medição {pilotGas.StaticMeasuringPointName} não encontrado.");
+
+                    var pilotGasFound = await _repository
+                        .GetOtherPilotGas(installation.GasVolumeCalculation.Id, pilotGas.MeasuringPointId);
+
+                    if (pilotGasFound is not null)
+                        throw new ConflictException($"Ponto de medição para ser atualizado possui relação com outra instalação ({pilotGasFound.GasVolumeCalculation.Installation.Name}).");
+                }
+
+                _repository.RemoveRange(gasCalculationInDatabase.PilotGases);
+
+                foreach (var pilotGas in body.PilotGases)
+                {
+                    var measuringPoint = await _measuringPointRepository
+                        .GetByIdAsync(pilotGas.MeasuringPointId);
+
+                    if (measuringPoint is not null)
+                    {
+                        var createdPilotGas = new PilotGas
+                        {
+                            Id = Guid.NewGuid(),
+                            MeasuringPoint = measuringPoint,
+                            StaticLocalMeasuringPoint = pilotGas.StaticMeasuringPointName,
+                            GasVolumeCalculation = installation.GasVolumeCalculation,
+                            IsApplicable = pilotGas.IsApplicable
+
+                        };
+
+                        await _repository.AddPilotGas(createdPilotGas);
+                    }
+                }
+            }
+
+            await _repository.SaveChangesAsync();
+
+            var gasVolumeCalculationDTO = _mapper.Map<GasVolumeCalculation, GasVolumeCalculationDto>(gasCalculationInDatabase);
+
+            return gasVolumeCalculationDTO;
+        }
     }
 }

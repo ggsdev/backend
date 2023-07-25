@@ -47,5 +47,14 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Controller
             var gasEquation = await _service.GetGasEquationByInstallationId(installationId);
             return Ok(gasEquation);
         }
+
+        [HttpPatch("{installationId}")]
+        public async Task<IActionResult> Update([FromBody] UpdateGasVolumeCalculationViewModel body, [FromRoute] Guid installationId)
+        {
+            //if (HttpContext.Items["User"] is not User user)
+            //    throw new UnauthorizedAccessException("User not identified, please login first");
+            var gasCalculation = await _service.UpdateGasCalculationByInstallationId(installationId, body);
+            return Ok(gasCalculation);
+        }
     }
 }
