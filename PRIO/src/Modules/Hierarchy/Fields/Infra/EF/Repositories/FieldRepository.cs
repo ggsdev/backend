@@ -22,6 +22,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
         {
             return await _context.Fields
                 .Include(x => x.User)
+               .Include(x => x.Wells)
                .Include(x => x.Installation)
                .ThenInclude(i => i!.Cluster)
                .FirstOrDefaultAsync(x => x.Id == id);
@@ -69,6 +70,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
         {
             return await _context.Fields
                .Include(x => x.Installation)
+               .Include(x => x.Wells)
                .ThenInclude(i => i!.Cluster)
                .Include(x => x.User)
                .ToListAsync();
