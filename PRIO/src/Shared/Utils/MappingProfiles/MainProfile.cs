@@ -26,6 +26,8 @@ using PRIO.src.Modules.Hierarchy.Zones.Dtos;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Dtos;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.GasVolumeCalculations.Dtos;
+using PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Dtos;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Dtos;
@@ -193,6 +195,18 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<DrainVolume, DrainVolumeWithEquipmentDTO>();
             CreateMap<TOGRecoveredOil, TOGRecoveredOilWithEquipmentDTO>();
             CreateMap<DOR, DORWithEquipmentDTO>();
+
+
+            CreateMap<GasVolumeCalculation, GasVolumeCalculationDto>();
+            CreateMap<AssistanceGas, AssistanceGasDto>();
+            CreateMap<ExportGas, ExportGasDto>();
+            CreateMap<HighPressureGas, HighPressureGasDto>();
+            CreateMap<HPFlare, HPFlareDto>();
+            CreateMap<ImportGas, ImportGasDto>();
+            CreateMap<LowPressureGas, LowPressureGasDto>();
+            CreateMap<LPFlare, LPFlareDto>();
+            CreateMap<PilotGas, PilotGasDto>();
+            CreateMap<PurgeGas, PurgeGasDto>();
             #endregion
 
         }

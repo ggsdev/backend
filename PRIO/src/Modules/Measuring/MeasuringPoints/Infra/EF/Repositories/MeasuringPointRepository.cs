@@ -17,6 +17,15 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Repositories
         {
             return await _context.MeasuringPoints
                 .Include(p => p.Installation)
+                .Include(x => x.AssistanceGas)
+                .Include(x => x.ImportGas)
+                .Include(x => x.ExportGas)
+                .Include(x => x.HPFlare)
+                .Include(x => x.LPFlare)
+                .Include(x => x.HighPressureGas)
+                .Include(x => x.LowPressureGas)
+                .Include(x => x.PurgeGas)
+                .Include(x => x.PilotGas)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
         public async Task<List<MeasuringPoint>> GetByInstallationIdAsync(Guid? id)
