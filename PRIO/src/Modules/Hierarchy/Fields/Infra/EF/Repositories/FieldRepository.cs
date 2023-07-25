@@ -70,8 +70,8 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
         {
             return await _context.Fields
                .Include(x => x.Installation)
-               .Include(x => x.Wells)
                .ThenInclude(i => i!.Cluster)
+               .Include(x => x.Wells)
                .Include(x => x.User)
                .ToListAsync();
         }
