@@ -21,5 +21,6 @@ namespace PRIO.src.Modules.Measuring.Measurements.Interfaces
         Task SaveChangesAsync();
         int CountAdded();
         Task<bool> GetAnyImported(Guid? id);
+        Task AddRangeAsync(List<Measurement> measurements);
     }
 }

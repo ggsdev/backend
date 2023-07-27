@@ -18,6 +18,9 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.Http.Services
 
         public async Task<MeasurementHistory> Import(User user, FileBasicInfoDTO File, string base64)
         {
+            var existingHistory = await _measurementHistoryRepository
+                .GetAnyByContent(base64);
+
             var history = new MeasurementHistory
             {
                 Id = Guid.NewGuid(),
@@ -29,11 +32,10 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.Http.Services
                 FileType = File.Type,
                 FileContent = base64,
             };
-
-            await _measurementHistoryRepository.AddAsync(history);
+            if (existingHistory is false)
+                await _measurementHistoryRepository.AddAsync(history);
 
             return history;
         }
-
     }
 }
