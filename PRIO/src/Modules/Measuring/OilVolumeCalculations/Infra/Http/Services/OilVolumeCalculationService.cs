@@ -148,6 +148,13 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
             var oilVolumeCalculationDTO = _mapper.Map<OilVolumeCalculation, OilVolumeCalculationDTO>(oilVolumeCalculation);
             return oilVolumeCalculationDTO;
         }
+        public async Task<List<OilVolumeCalculationDTO>> GetAll()
+        {
+            var oilVolumeCalculation = await _oilVolumeCalculationRepository.GetAllOils();
+
+            var oilVolumeCalculationDTO = _mapper.Map<List<OilVolumeCalculation>, List<OilVolumeCalculationDTO>>(oilVolumeCalculation);
+            return oilVolumeCalculationDTO;
+        }
 
         public async Task<object> GetEquation(Guid installationId)
         {

@@ -10,6 +10,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces
     {
         #region OilVolumeCalculation
         Task<OilVolumeCalculation?> AddOilVolumeCalculationAsync(Installation installation);
+        Task<List<OilVolumeCalculation?>> GetAllOils();
 
         Task<OilVolumeCalculation?> GetOilVolumeCalculationByInstallationId(Guid id);
         Task<OilVolumeCalculation?> GetOilVolumeCalculationById(Guid id);

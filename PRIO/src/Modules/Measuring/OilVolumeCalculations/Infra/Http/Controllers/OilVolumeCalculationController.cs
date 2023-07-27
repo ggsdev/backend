@@ -18,6 +18,16 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
             _oilVolumeCalculationService = oilVolumeCalculationService;
         }
 
+        [HttpGet("oil")]
+        public async Task<List<OilVolumeCalculationDTO>> Get([FromBody] CreateOilVolumeCalculationViewModel body)
+        {
+            if (HttpContext.Items["User"] is not User user)
+                throw new UnauthorizedAccessException("User not identified, please login first");
+
+            var OilVolumeCalculationDTO = await _oilVolumeCalculationService.GetAll();
+
+            return OilVolumeCalculationDTO;
+        }
         [HttpPost("oil")]
         public async Task<OilVolumeCalculationDTO?> Create([FromBody] CreateOilVolumeCalculationViewModel body)
         {

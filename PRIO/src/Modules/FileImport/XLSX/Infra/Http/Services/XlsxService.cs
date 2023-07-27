@@ -187,6 +187,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                 IsProcessingUnit = cellInstallationCodUep == cellInstallationCod,
                                 Cluster = clusterInDatabase
                             };
+
                             if (cellInstallationCodUep == cellInstallationCod)
                             {
 
@@ -195,12 +196,14 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                     Id = Guid.NewGuid(),
                                     Installation = installation as Installation
                                 };
+                                await _context.OilVolumeCalculations.AddAsync(createOilVolumeCalculation);
 
                                 var gasCalculation = new GasVolumeCalculation
                                 {
                                     Id = Guid.NewGuid(),
                                     Installation = installation as Installation,
                                 };
+                                await _context.GasVolumeCalculations.AddAsync(gasCalculation);
 
                             }
                         }
@@ -218,6 +221,25 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                 IsProcessingUnit = cellInstallationCodUep == cellInstallationCod,
                                 Cluster = entityDictionary.GetValueOrDefault(cellCluster.ToLower()) as Cluster
                             };
+
+                            if (cellInstallationCodUep == cellInstallationCod)
+                            {
+
+                                var createOilVolumeCalculation = new OilVolumeCalculation
+                                {
+                                    Id = Guid.NewGuid(),
+                                    Installation = installation as Installation
+                                };
+                                await _context.OilVolumeCalculations.AddAsync(createOilVolumeCalculation);
+
+                                var gasCalculation = new GasVolumeCalculation
+                                {
+                                    Id = Guid.NewGuid(),
+                                    Installation = installation as Installation,
+                                };
+                                await _context.GasVolumeCalculations.AddAsync(gasCalculation);
+
+                            }
                         }
                         if (installation is not null)
                         {
