@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.src.Shared.Infra.EF.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230726202531_Fixes")]
+    partial class Fixes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -76,7 +79,7 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
                     b.HasIndex("GroupPermissionId");
 
-                    b.ToTable("GroupOperations", (string)null);
+                    b.ToTable("GroupOperations");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.GroupPermission", b =>
@@ -215,7 +218,7 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GlobalOperations", (string)null);
+                    b.ToTable("GlobalOperations");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.Session", b =>
@@ -925,7 +928,7 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("ImportId")
+                    b.Property<Guid>("ImportId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsActive")
@@ -1759,9 +1762,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<Guid>("MeasurementHistoryId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("MeasuringPointId")
                         .HasColumnType("uniqueidentifier");
 
@@ -2288,8 +2288,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.HasIndex("FileTypeId");
 
                     b.HasIndex("InstallationId");
-
-                    b.HasIndex("MeasurementHistoryId");
 
                     b.HasIndex("MeasuringPointId");
 
@@ -2901,6 +2899,9 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Property<Guid>("ImportedById")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("MeasurementId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("TypeOperation")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -2909,6 +2910,8 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ImportedById");
+
+                    b.HasIndex("MeasurementId");
 
                     b.ToTable("MeasurementsHistories", (string)null);
                 });
@@ -3192,7 +3195,7 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Auxiliaries", (string)null);
+                    b.ToTable("Auxiliaries");
                 });
 
             modelBuilder.Entity("PRIO.src.Shared.SystemHistories.Infra.EF.Models.SystemHistory", b =>
@@ -3501,12 +3504,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models.MeasurementHistory", "MeasurementHistory")
-                        .WithMany("Measurements")
-                        .HasForeignKey("MeasurementHistoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
                         .WithMany("Measurements")
                         .HasForeignKey("MeasuringPointId")
@@ -3522,8 +3519,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Navigation("FileType");
 
                     b.Navigation("Installation");
-
-                    b.Navigation("MeasurementHistory");
 
                     b.Navigation("MeasuringPoint");
 
@@ -3748,7 +3743,15 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Measurement", "Measurement")
+                        .WithMany("MeasurementHistories")
+                        .HasForeignKey("MeasurementId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("ImportedBy");
+
+                    b.Navigation("Measurement");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", b =>
@@ -3962,6 +3965,8 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Navigation("LISTA_CALIBRACAO");
 
                     b.Navigation("LISTA_VOLUME");
+
+                    b.Navigation("MeasurementHistories");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", b =>
@@ -3983,11 +3988,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Navigation("PilotGases");
 
                     b.Navigation("PurgeGases");
-                });
-
-            modelBuilder.Entity("PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models.MeasurementHistory", b =>
-                {
-                    b.Navigation("Measurements");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", b =>

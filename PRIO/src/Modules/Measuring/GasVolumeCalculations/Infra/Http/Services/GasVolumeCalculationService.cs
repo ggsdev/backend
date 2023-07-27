@@ -114,7 +114,6 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
                 if (measuringPoint.AssistanceGas is not null || measuringPoint.ExportGas is not null || measuringPoint.ImportGas is not null || measuringPoint.PilotGas is not null || measuringPoint.HighPressureGas is not null || measuringPoint.HPFlare is not null || measuringPoint.PurgeGas is not null || measuringPoint.LowPressureGas is not null || measuringPoint.LPFlare is not null)
                     throw new ConflictException("Já existe um ponto de medição para essa configuração de cálculo");
             }
-
             foreach (var importGas in body.ImportGases)
             {
                 var measuringPoint = await _measuringPointRepository
@@ -131,7 +130,6 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
                 if (measuringPoint.AssistanceGas is not null || measuringPoint.ExportGas is not null || measuringPoint.ImportGas is not null || measuringPoint.PilotGas is not null || measuringPoint.HighPressureGas is not null || measuringPoint.HPFlare is not null || measuringPoint.PurgeGas is not null || measuringPoint.LowPressureGas is not null || measuringPoint.LPFlare is not null)
                     throw new ConflictException("Já existe um ponto de medição para essa configuração de cálculo");
             }
-
             foreach (var lowPressureGas in body.LowPressureGases)
             {
                 var measuringPoint = await _measuringPointRepository
@@ -166,6 +164,7 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
 
                 if (measuringPoint.AssistanceGas is not null || measuringPoint.ExportGas is not null || measuringPoint.ImportGas is not null || measuringPoint.PilotGas is not null || measuringPoint.HighPressureGas is not null || measuringPoint.HPFlare is not null || measuringPoint.PurgeGas is not null || measuringPoint.LowPressureGas is not null || measuringPoint.LPFlare is not null)
                     throw new ConflictException("Já existe um ponto de medição para essa configuração de cálculo");
+
             }
 
             foreach (var pilotGas in body.PilotGases)
@@ -186,6 +185,7 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
                     throw new ConflictException("Já existe um ponto de medição para essa configuração de cálculo");
             }
 
+
             foreach (var purgeGas in body.PurgeGases)
             {
                 var measuringPoint = await _measuringPointRepository
@@ -202,6 +202,7 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
 
                 if (measuringPoint.AssistanceGas is not null || measuringPoint.ExportGas is not null || measuringPoint.ImportGas is not null || measuringPoint.PilotGas is not null || measuringPoint.HighPressureGas is not null || measuringPoint.HPFlare is not null || measuringPoint.PurgeGas is not null || measuringPoint.LowPressureGas is not null || measuringPoint.LPFlare is not null)
                     throw new ConflictException("Já existe um ponto de medição para essa configuração de cálculo");
+
             }
 
             foreach (var assistanceGas in body.AssistanceGases)
@@ -223,6 +224,7 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
 
                     await _repository.AddAssistanceGas(createdAssistanceGas);
                 }
+
             }
 
             foreach (var exportGas in body.ExportGases)
@@ -246,8 +248,9 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
 
             foreach (var highPressureGas in body.HighPressureGases)
             {
+
                 var measuringPoint = await _measuringPointRepository
-                        .GetByIdAsync(highPressureGas.MeasuringPointId);
+                    .GetByIdAsync(highPressureGas.MeasuringPointId);
                 if (measuringPoint is not null)
                 {
                     var createdHighPressureGas = new HighPressureGas
@@ -281,6 +284,7 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
                     await _repository.AddHPFlare(createdHPFlare);
                 }
             }
+
             foreach (var importGas in body.ImportGases)
             {
                 var measuringPoint = await _measuringPointRepository
@@ -299,6 +303,7 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
                     await _repository.AddImportGas(createdImportGas);
                 }
             }
+
             foreach (var lowPressureGas in body.LowPressureGases)
             {
                 var measuringPoint = await _measuringPointRepository
@@ -335,6 +340,7 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
 
                     await _repository.AddLPFlare(createdLPFlare);
                 }
+
             }
 
             foreach (var pilotGas in body.PilotGases)
@@ -354,6 +360,7 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
 
                     await _repository.AddPilotGas(createdPilotGas);
                 }
+
             }
 
             foreach (var purgeGas in body.PurgeGases)
@@ -374,6 +381,7 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
                     await _repository.AddPurgeGas(createdPurgeGas);
                 }
             }
+
 
             await _repository.SaveChangesAsync();
             var gasVolumeCalculationDto = _mapper.Map<GasVolumeCalculationDto>(installation.GasVolumeCalculation);

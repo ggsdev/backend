@@ -114,6 +114,7 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Repositories
         {
             var gasVolumeCalculation = await _context.GasVolumeCalculations
                 .Include(x => x.Installation)
+                    .ThenInclude(x => x.MeasuringPoints)
                 .Include(x => x.AssistanceGases)
                     .ThenInclude(x => x.MeasuringPoint)
                 .Include(x => x.ExportGases)
@@ -132,6 +133,47 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Repositories
                     .ThenInclude(x => x.MeasuringPoint)
                 .Include(x => x.PurgeGases)
                     .ThenInclude(x => x.MeasuringPoint)
+                .Where(x => x.Installation.Id == id)
+                .FirstOrDefaultAsync();
+
+            return gasVolumeCalculation;
+        }
+
+
+        public async Task<GasVolumeCalculation?> GetGasVolumeCalculationByInstallationUEP(string uepCode)
+        {
+            var gasVolumeCalculation = await _context.GasVolumeCalculations
+                .Include(x => x.Installation)
+                    .ThenInclude(x => x.MeasuringPoints)
+                .Include(x => x.AssistanceGases)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.ExportGases)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.HighPressureGases)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.HPFlares)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.ImportGases)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.LowPressureGases)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.LPFlares)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.PilotGases)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.PurgeGases)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Where(x => x.Installation.UepCod == uepCode)
+                .FirstOrDefaultAsync();
+
+            return gasVolumeCalculation;
+        }
+
+        public async Task<GasVolumeCalculation?> GetGasVolumeCalculationByInstallationIdXML(Guid id)
+        {
+            var gasVolumeCalculation = await _context.GasVolumeCalculations
+                .Include(x => x.Installation)
+                    .ThenInclude(x => x.MeasuringPoints)
                 .Where(x => x.Installation.Id == id)
                 .FirstOrDefaultAsync();
 

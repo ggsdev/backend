@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.src.Shared.Infra.EF.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230725195312_MeasurementRelationWithPointMeasuring")]
+    partial class MeasurementRelationWithPointMeasuring
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -76,7 +79,7 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
                     b.HasIndex("GroupPermissionId");
 
-                    b.ToTable("GroupOperations", (string)null);
+                    b.ToTable("GroupOperations");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.GroupPermission", b =>
@@ -215,7 +218,7 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GlobalOperations", (string)null);
+                    b.ToTable("GlobalOperations");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.Session", b =>
@@ -924,9 +927,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
-
-                    b.Property<Guid?>("ImportId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -1759,9 +1759,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<Guid>("MeasurementHistoryId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("MeasuringPointId")
                         .HasColumnType("uniqueidentifier");
 
@@ -2288,8 +2285,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.HasIndex("FileTypeId");
 
                     b.HasIndex("InstallationId");
-
-                    b.HasIndex("MeasurementHistoryId");
 
                     b.HasIndex("MeasuringPointId");
 
@@ -2881,10 +2876,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("varchar");
 
-                    b.Property<string>("FileContent")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("FileName")
                         .IsRequired()
                         .HasMaxLength(800)
@@ -2901,6 +2892,9 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Property<Guid>("ImportedById")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("MeasurementId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("TypeOperation")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -2909,6 +2903,8 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ImportedById");
+
+                    b.HasIndex("MeasurementId");
 
                     b.ToTable("MeasurementsHistories", (string)null);
                 });
@@ -2943,9 +2939,7 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("TagPointMeasuring")
-                        .IsRequired()
-                        .HasMaxLength(260)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -2978,10 +2972,10 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Property<bool>("IsApplicable")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("MeasuringPointId")
+                    b.Property<Guid?>("MeasuringPointId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("OilVolumeCalculationId")
+                    b.Property<Guid?>("OilVolumeCalculationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("StaticLocalMeasuringPoint")
@@ -2995,7 +2989,8 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("MeasuringPointId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[MeasuringPointId] IS NOT NULL");
 
                     b.HasIndex("OilVolumeCalculationId");
 
@@ -3023,10 +3018,10 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Property<bool>("IsApplicable")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("MeasuringPointId")
+                    b.Property<Guid?>("MeasuringPointId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("OilVolumeCalculationId")
+                    b.Property<Guid?>("OilVolumeCalculationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("StaticLocalMeasuringPoint")
@@ -3040,7 +3035,8 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("MeasuringPointId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[MeasuringPointId] IS NOT NULL");
 
                     b.HasIndex("OilVolumeCalculationId");
 
@@ -3062,7 +3058,7 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("InstallationId")
+                    b.Property<Guid?>("InstallationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsActive")
@@ -3074,7 +3070,8 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("InstallationId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[InstallationId] IS NOT NULL");
 
                     b.ToTable("OilVoumeCalculations", (string)null);
                 });
@@ -3100,10 +3097,10 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Property<bool>("IsApplicable")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("MeasuringPointId")
+                    b.Property<Guid?>("MeasuringPointId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("OilVolumeCalculationId")
+                    b.Property<Guid?>("OilVolumeCalculationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("StaticLocalMeasuringPoint")
@@ -3117,7 +3114,8 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("MeasuringPointId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[MeasuringPointId] IS NOT NULL");
 
                     b.HasIndex("OilVolumeCalculationId");
 
@@ -3145,10 +3143,10 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Property<bool>("IsApplicable")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("MeasuringPointId")
+                    b.Property<Guid?>("MeasuringPointId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("OilVolumeCalculationId")
+                    b.Property<Guid?>("OilVolumeCalculationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("StaticLocalMeasuringPoint")
@@ -3162,7 +3160,8 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("MeasuringPointId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[MeasuringPointId] IS NOT NULL");
 
                     b.HasIndex("OilVolumeCalculationId");
 
@@ -3192,7 +3191,7 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Auxiliaries", (string)null);
+                    b.ToTable("Auxiliaries");
                 });
 
             modelBuilder.Entity("PRIO.src.Shared.SystemHistories.Infra.EF.Models.SystemHistory", b =>
@@ -3501,12 +3500,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models.MeasurementHistory", "MeasurementHistory")
-                        .WithMany("Measurements")
-                        .HasForeignKey("MeasurementHistoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
                         .WithMany("Measurements")
                         .HasForeignKey("MeasuringPointId")
@@ -3522,8 +3515,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Navigation("FileType");
 
                     b.Navigation("Installation");
-
-                    b.Navigation("MeasurementHistory");
 
                     b.Navigation("MeasuringPoint");
 
@@ -3748,7 +3739,15 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Measurement", "Measurement")
+                        .WithMany("MeasurementHistories")
+                        .HasForeignKey("MeasurementId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("ImportedBy");
+
+                    b.Navigation("Measurement");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", b =>
@@ -3766,15 +3765,11 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                 {
                     b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
                         .WithOne("DOR")
-                        .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.DOR", "MeasuringPointId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.DOR", "MeasuringPointId");
 
                     b.HasOne("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", "OilVolumeCalculation")
                         .WithMany("DORs")
-                        .HasForeignKey("OilVolumeCalculationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("OilVolumeCalculationId");
 
                     b.Navigation("MeasuringPoint");
 
@@ -3785,15 +3780,11 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                 {
                     b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
                         .WithOne("DrainVolume")
-                        .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.DrainVolume", "MeasuringPointId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.DrainVolume", "MeasuringPointId");
 
                     b.HasOne("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", "OilVolumeCalculation")
                         .WithMany("DrainVolumes")
-                        .HasForeignKey("OilVolumeCalculationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("OilVolumeCalculationId");
 
                     b.Navigation("MeasuringPoint");
 
@@ -3804,9 +3795,7 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                 {
                     b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
                         .WithOne("OilVolumeCalculation")
-                        .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", "InstallationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", "InstallationId");
 
                     b.Navigation("Installation");
                 });
@@ -3815,15 +3804,11 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                 {
                     b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
                         .WithOne("Section")
-                        .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.Section", "MeasuringPointId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.Section", "MeasuringPointId");
 
                     b.HasOne("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", "OilVolumeCalculation")
                         .WithMany("Sections")
-                        .HasForeignKey("OilVolumeCalculationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("OilVolumeCalculationId");
 
                     b.Navigation("MeasuringPoint");
 
@@ -3834,15 +3819,11 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                 {
                     b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
                         .WithOne("TOGRecoveredOil")
-                        .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.TOGRecoveredOil", "MeasuringPointId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.TOGRecoveredOil", "MeasuringPointId");
 
                     b.HasOne("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", "OilVolumeCalculation")
                         .WithMany("TOGRecoveredOils")
-                        .HasForeignKey("OilVolumeCalculationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("OilVolumeCalculationId");
 
                     b.Navigation("MeasuringPoint");
 
@@ -3962,6 +3943,8 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Navigation("LISTA_CALIBRACAO");
 
                     b.Navigation("LISTA_VOLUME");
+
+                    b.Navigation("MeasurementHistories");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", b =>
@@ -3983,11 +3966,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Navigation("PilotGases");
 
                     b.Navigation("PurgeGases");
-                });
-
-            modelBuilder.Entity("PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models.MeasurementHistory", b =>
-                {
-                    b.Navigation("Measurements");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", b =>

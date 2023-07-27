@@ -105,6 +105,7 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
                     {
                         CreatedAt = history.CreatedAt,
                         CreatedBy = history.CreatedBy,
+                        UpdatedBy = history.UpdatedBy,
                         FileName = fileName,
                     });
 
