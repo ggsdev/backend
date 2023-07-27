@@ -17,6 +17,7 @@ using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.GasVolumeCalculations.Interfaces;
+using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Measurements.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Measurements.Interfaces;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
@@ -41,10 +42,11 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
         private readonly IOilVolumeCalculationRepository _oilCalculationRepository;
         private readonly IMeasuringPointRepository _measuringPointRepository;
         private readonly IMeasurementRepository _repository;
+        private readonly IMeasurementHistoryRepository _measurementHistoryRepository;
 
         [GeneratedRegex("(?<=data:@file/xml;base64,)\\w+")]
         private static partial Regex XmlRegex();
-        public XMLImportService(IMapper mapper, IInstallationRepository installationRepository, IMeasurementRepository xMLImportRepository, MeasurementService measurementService, IGasVolumeCalculationRepository gasVolumeCalculationRepository, IMeasuringPointRepository measuringPointRepository, IOilVolumeCalculationRepository oilVolumeCalculationRepository)
+        public XMLImportService(IMapper mapper, IInstallationRepository installationRepository, IMeasurementRepository xMLImportRepository, MeasurementService measurementService, IGasVolumeCalculationRepository gasVolumeCalculationRepository, IMeasuringPointRepository measuringPointRepository, IOilVolumeCalculationRepository oilVolumeCalculationRepository, IMeasurementHistoryRepository measurementHistoryRepository)
         {
             _mapper = mapper;
             _responseResult = new();
@@ -54,6 +56,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             _measurementService = measurementService;
             _gasCalculationRepository = gasVolumeCalculationRepository;
             _oilCalculationRepository = oilVolumeCalculationRepository;
+            _measurementHistoryRepository = measurementHistoryRepository;
         }
 
         public async Task<DTOFilesClient> Validate(RequestXmlViewModel data, User user)
@@ -98,7 +101,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 var pathSchema = Path.GetFullPath(Path.Combine(projectRoot, relativeSchemaPath));
                 #endregion
 
-                Console.WriteLine(pathXml);
+                Console.WriteLine(pathXml + "aaaaaaaaaa");
 
                 #region writting, parsing
 
@@ -539,9 +542,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                 Volume = measurement.MED_VOLUME_BRUTO_MVMDO_001,
 
                                             };
+                                            measurement001DTO.ImportId = importId;
+
                                             _responseResult._001File ??= new List<Client001DTO>();
                                             _responseResult._001File?.Add(measurement001DTO);
-                                            //_responseResult._001ImportId = importId;
                                         }
                                     }
                                 }
@@ -881,9 +885,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                 Volume = measurement.MED_CORRIGIDO_MVMDO_002,
 
                                             };
+                                            measurement002DTO.ImportId = importId;
                                             _responseResult._002File ??= new List<Client002DTO>();
                                             _responseResult._002File?.Add(measurement002DTO);
-                                            //_responseResult._002ImportId = importId;
 
                                         }
                                     }
@@ -2074,14 +2078,12 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
         }
         public async Task<ImportResponseDTO> Import(DTOFilesClient data, User user)
         {
-            var importedAdded = new List<string?>();
 
-            //var path001Xml = Path.GetTempPath() + data._001ImportId + ".xml";
-            //var path002Xml = Path.GetTempPath() + data._002ImportId + ".xml";
-            //var path039Xml = Path.GetTempPath() + data._039ImportId + ".xml";
+            var measurements001 = new List<Measurement>();
+            var measurements002 = new List<Measurement>();
+            var measurements003 = new List<Measurement>();
 
-            //var file001 = data._001File.FirstOrDefault(x => x.FileName == data._001ImportId + ".xml");
-            //var file002 = data._002File.FirstOrDefault(x => x.FileName == data._002ImportId + ".xml");
+            var base64HistoryMap = new Dictionary<string, MeasurementHistory>();
 
             foreach (var file in data._001File)
             {
@@ -2102,48 +2104,60 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                 if (measuringPoint is null)
                     throw new NotFoundException($"{ErrorMessages.NotFound<MeasuringPoint>()} TAG: {measurement.COD_TAG_PONTO_MEDICAO_001}");
-
-                if (file.Summary is not null && file.Summary.Status is true)
+                if (file.ImportId is not null)
                 {
+                    var file001 = data._001File
+                        .FirstOrDefault(x => x.FileName == file.ImportId + ".xml");
+
                     var fileInfo = new FileBasicInfoDTO
                     {
                         Acronym = XmlUtils.FileAcronym001,
                         Name = file.FileName,
                         Type = XmlUtils.File001
                     };
-
                     measurement.User = user;
-                    //measurement.FileName = file001 is not null ? file001.FileName : "";
+
                     measurement.FileType = new FileType
                     {
+                        Id = Guid.NewGuid(),
                         Name = fileInfo.Type,
                         Acronym = fileInfo.Acronym,
-                        //ImportId = data._001ImportId
+                        ImportId = file.ImportId
                     };
 
                     measurement.Installation = installation;
                     measurement.MeasuringPoint = measuringPoint;
 
-                    //var path001Xml = Path.GetTempPath() + data._001ImportId + ".xml";
+                    var path001Xml = Path.GetTempPath() + file.ImportId + ".xml";
 
-                    //if (File.Exists(path001Xml))
-                    //{
-                    //    var documentXml = XDocument.Load(path001Xml);
-                    //    byte[] xmlBytes;
-                    //    using (var memoryStream = new MemoryStream())
-                    //    using (var xmlWriter = XmlWriter.Create(memoryStream, new XmlWriterSettings { Encoding = Encoding.UTF8 }))
-                    //    {
-                    //        documentXml.Save(xmlWriter);
-                    //        xmlWriter.Flush();
-                    //        xmlBytes = memoryStream.ToArray();
-                    //    }
+                    if (File.Exists(path001Xml))
+                    {
+                        var documentXml = XDocument.Load(path001Xml);
+                        byte[] xmlBytes;
+                        using (var memoryStream = new MemoryStream())
+                        using (var xmlWriter = XmlWriter.Create(memoryStream, new XmlWriterSettings { Encoding = Encoding.UTF8 }))
+                        {
+                            documentXml.Save(xmlWriter);
+                            xmlWriter.Flush();
+                            xmlBytes = memoryStream.ToArray();
+                        }
 
-                    //    var base64String = Convert.ToBase64String(xmlBytes);
-                    //    await _measurementService.Import(measurement, user, fileInfo, base64String);
-                    //}
+                        var base64String = Convert.ToBase64String(xmlBytes);
+
+                        if (base64HistoryMap.TryGetValue(base64String, out var history) is false)
+                        {
+                            history = await _measurementService.Import(user, fileInfo, base64String);
+                            base64HistoryMap.Add(base64String, history);
+                        }
+
+                        measurement.MeasurementHistory = history;
+                    }
+
                     await _repository.AddAsync(measurement);
                 }
             }
+
+            //await _repository.AddRangeAsync(measurements001);
 
             foreach (var file in data._002File)
             {
@@ -2164,119 +2178,60 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 if (measuringPoint is null)
                     throw new NotFoundException($"{ErrorMessages.NotFound<MeasuringPoint>()} TAG: {measurement.COD_TAG_PONTO_MEDICAO_002}");
 
-                if (file.Summary is not null && file.Summary.Status is true)
+                if (file.ImportId is not null)
                 {
+                    var file002 = data._002File
+                        .FirstOrDefault(x => x.FileName == file.ImportId + ".xml");
+
                     var fileInfo = new FileBasicInfoDTO
                     {
                         Acronym = XmlUtils.FileAcronym002,
                         Name = file.FileName,
                         Type = XmlUtils.File002
                     };
-
                     measurement.User = user;
+
                     measurement.FileType = new FileType
                     {
+                        Id = Guid.NewGuid(),
                         Name = fileInfo.Type,
                         Acronym = fileInfo.Acronym,
+                        ImportId = file.ImportId
                     };
-                    //measurement.FileName = file002 is not null ? file001.FileName : "";
-                    measurement.MeasuringPoint = measuringPoint;
+
                     measurement.Installation = installation;
-                    //var path002Xml = Path.GetTempPath() + data._002ImportId + ".xml";
+                    measurement.MeasuringPoint = measuringPoint;
 
-                    //if (File.Exists(path002Xml))
-                    //{
-                    //    var documentXml = XDocument.Load(path002Xml);
-                    //    byte[] xmlBytes;
-                    //    using (var memoryStream = new MemoryStream())
-                    //    using (var xmlWriter = XmlWriter.Create(memoryStream, new XmlWriterSettings { Encoding = Encoding.UTF8 }))
-                    //    {
-                    //        documentXml.Save(xmlWriter);
-                    //        xmlWriter.Flush();
-                    //        xmlBytes = memoryStream.ToArray();
-                    //    }
+                    var path002Xml = Path.GetTempPath() + file.ImportId + ".xml";
 
-                    //    var base64String = Convert.ToBase64String(xmlBytes);
-                    //    await _measurementService.Import(measurement, user, fileInfo, base64String);
-                    //}
-                    await _repository.AddAsync(measurement);
+                    if (File.Exists(path002Xml))
+                    {
+                        var documentXml = XDocument.Load(path002Xml);
+                        byte[] xmlBytes;
+                        using (var memoryStream = new MemoryStream())
+                        using (var xmlWriter = XmlWriter.Create(memoryStream, new XmlWriterSettings { Encoding = Encoding.UTF8 }))
+                        {
+                            documentXml.Save(xmlWriter);
+                            xmlWriter.Flush();
+                            xmlBytes = memoryStream.ToArray();
+                        }
+
+                        var base64String = Convert.ToBase64String(xmlBytes);
+
+                        if (base64HistoryMap.TryGetValue(base64String, out var history) is false)
+                        {
+                            history = await _measurementService.Import(user, fileInfo, base64String);
+                            base64HistoryMap.Add(base64String, history);
+                        }
+
+                        measurement.MeasurementHistory = history;
+                    }
+
+                    measurements002.Add(measurement);
                 }
             }
 
-            //foreach (var file in data._003File)
-            //{
-            //    var measurement = _mapper.Map<Client003DTO, Measurement>(file);
-
-            //    var measurementExists = await _repository
-            //        .GetAnyByDate(measurement.DHA_INICIO_PERIODO_MEDICAO_003, XmlUtils.File003);
-
-            //    if (measurementExists is true)
-            //        throw new ConflictException($"Medição na data: {measurement.DHA_INICIO_PERIODO_MEDICAO_003} já cadastrada.");
-
-            //    var installation = await _installationRepository.GetInstallationMeasurementByUepAndAnpCodAsync(file.COD_INSTALACAO_003, XmlUtils.File003);
-
-            //    if (installation is null)
-            //        throw new NotFoundException($"{ErrorMessages.NotFound<Installation>()} Código: {measurement.COD_INSTALACAO_003}");
-
-            //    var measuringPoint = await _measuringPointRepository.GetByTagMeasuringPointXML(file.COD_TAG_PONTO_MEDICAO_003, XmlUtils.File003);
-
-            //    if (measuringPoint is null)
-            //        throw new NotFoundException($"{ErrorMessages.NotFound<MeasuringPoint>()} TAG: {measurement.COD_TAG_PONTO_MEDICAO_003}");
-
-            //    if (file.ImportId is not null)
-            //    {
-            //        var file003 = data._003File
-            //            .FirstOrDefault(x => x.FileName == file.ImportId + ".xml");
-
-            //        var fileInfo = new FileBasicInfoDTO
-            //        {
-            //            Acronym = XmlUtils.FileAcronym003,
-            //            Name = file.FileName,
-            //            Type = XmlUtils.File003
-            //        };
-            //        measurement.User = user;
-
-            //        measurement.FileType = new FileType
-            //        {
-            //            Id = Guid.NewGuid(),
-            //            Name = fileInfo.Type,
-            //            Acronym = fileInfo.Acronym,
-            //            ImportId = file.ImportId
-
-            //        };
-
-            //        measurement.Installation = installation;
-            //        measurement.MeasuringPoint = measuringPoint;
-
-            //        var checkImportExists = await _repository.GetAnyImported(file.ImportId);
-            //        var path003Xml = Path.GetTempPath() + file.ImportId + ".xml";
-
-            //        if (File.Exists(path003Xml) && importedAdded.Contains(file.ImportId.ToString()) is false)
-            //        {
-            //            var documentXml = XDocument.Load(path003Xml);
-            //            byte[] xmlBytes;
-            //            using (var memoryStream = new MemoryStream())
-            //            using (var xmlWriter = XmlWriter.Create(memoryStream, new XmlWriterSettings { Encoding = Encoding.UTF8 }))
-            //            {
-            //                documentXml.Save(xmlWriter);
-            //                xmlWriter.Flush();
-            //                xmlBytes = memoryStream.ToArray();
-            //            }
-
-            //            var base64String = Convert.ToBase64String(xmlBytes);
-
-            //            var history = await _measurementService.Import(user, fileInfo, base64String);
-            //            measurement.MeasurementHistory = history;
-
-            //            importedAdded.Add(file.ImportId.ToString());
-            //        }
-
-            //        measurements003.Add(measurement);
-            //        //await _repository.AddAsync(measurement);
-            //    }
-            //}
-
-            var measurements003 = new List<Measurement>();
+            await _repository.AddRangeAsync(measurements002);
 
             foreach (var file in data._003File)
             {
@@ -2321,10 +2276,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     measurement.Installation = installation;
                     measurement.MeasuringPoint = measuringPoint;
 
-                    var checkImportExists = await _repository.GetAnyImported(file.ImportId);
                     var path003Xml = Path.GetTempPath() + file.ImportId + ".xml";
 
-                    if (File.Exists(path003Xml) && importedAdded.Contains(file.ImportId.ToString()) is false)
+                    if (File.Exists(path003Xml))
                     {
                         var documentXml = XDocument.Load(path003Xml);
                         byte[] xmlBytes;
@@ -2338,30 +2292,20 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                         var base64String = Convert.ToBase64String(xmlBytes);
 
-                        var history = await _measurementService.Import(user, fileInfo, base64String);
-                        measurement.MeasurementHistory = history;
+                        if (base64HistoryMap.TryGetValue(base64String, out var history) is false)
+                        {
+                            history = await _measurementService.Import(user, fileInfo, base64String);
+                            base64HistoryMap.Add(base64String, history);
+                        }
 
-                        importedAdded.Add(file.ImportId.ToString());
+                        measurement.MeasurementHistory = history;
                     }
 
                     measurements003.Add(measurement);
                 }
             }
 
-            // After the loop ends, create the MeasurementHistory and set the same MeasurementHistory for each measurement in the list.
-            //if (measurements003.Count > 0)
-            //{
-            //    var history = await _measurementService.Import(user, fileInfo, base64String, measurements003);
-
-            //    // Set the same MeasurementHistory for each measurement in the list.
-            //    foreach (var measurement in measurements003)
-            //    {
-            //        measurement.MeasurementHistory = history;
-            //    }
-
-            //    // Now add all measurements to the repository in a single batch
-            //    await _repository.AddRangeAsync(measurements003);
-            //}
+            await _repository.AddRangeAsync(measurements003);
 
             foreach (var file in data._039File)
             {
@@ -2417,7 +2361,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             }
 
 
-            //await _repository.SaveChangesAsync();
+            await _repository.SaveChangesAsync();
 
             if (_repository.CountAdded() == 0)
                 throw new BadRequestException("Nenhuma medição foi adicionada", status: "Error");
@@ -2460,19 +2404,30 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 switch (measurement.FileType?.Name)
                 {
                     case "001":
-                        _responseResult._001File ??= new List<Client001DTO>();
-                        _responseResult._001File.Add(_mapper.Map<Client001DTO>(measurement));
-                        break;
+                        {
+                            _responseResult._001File ??= new List<Client001DTO>();
+                            _responseResult._001File.Add(_mapper.Map<Client001DTO>(measurement));
+                            break;
+
+                        }
 
                     case "002":
-                        _responseResult._002File ??= new List<Client002DTO>();
-                        _responseResult._002File.Add(_mapper.Map<Client002DTO>(measurement));
-                        break;
+                        {
+                            _responseResult._002File ??= new List<Client002DTO>();
+                            var mappedMeasurement = _mapper.Map<Client002DTO>(measurement);
+
+                            _responseResult._002File.Add(mappedMeasurement);
+                            break;
+                        }
 
                     case "003":
-                        _responseResult._003File ??= new List<Client003DTO>();
-                        _responseResult._003File.Add(_mapper.Map<Client003DTO>(measurement));
-                        break;
+                        {
+                            _responseResult._003File ??= new List<Client003DTO>();
+                            var mappedMeasurement = _mapper.Map<Client003DTO>(measurement);
+                            _responseResult._003File.Add(mappedMeasurement);
+                            break;
+
+                        }
 
                         //case "039":
                         //    _responseResult._039File ??= new List<Client039DTO>();
@@ -2484,7 +2439,15 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             return _responseResult;
         }
 
-        public ErrorPdfDTO DownloadErrors(List<string> errors)
+        public async Task<List<MeasurementHistoryDto>> GetLastUpdatedFiles(string fileType)
+        {
+            var histories = await _measurementHistoryRepository.GetLastUpdatedHistoriesXML(fileType);
+
+            var historiesDto = _mapper.Map<List<MeasurementHistoryDto>>(histories);
+
+            return historiesDto;
+        }
+        public FileContentResponse DownloadErrors(List<string> errors)
         {
             using var memoryStream = new MemoryStream();
 
@@ -2508,12 +2471,17 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             byte[] pdfBytes = memoryStream.ToArray();
 
-            var response = new ErrorPdfDTO
+            var response = new FileContentResponse
             {
                 ContentBase64 = Convert.ToBase64String(pdfBytes)
             };
 
             return response;
         }
+
+        //public async Task<FileContentResponse> DownloadProductionXml(DownloadXMLViewModel body)
+        //{
+
+        //}
     }
 }

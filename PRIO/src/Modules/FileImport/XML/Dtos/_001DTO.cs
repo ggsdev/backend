@@ -122,7 +122,7 @@
 
     public class Client001DTO
     {
-        public Guid ImportId { get; set; }
+        public Guid? ImportId { get; set; }
         public ClientInfo? Summary { get; set; }
         public Guid Id { get; set; }
         public string FileName { get; set; } = string.Empty;

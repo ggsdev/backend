@@ -56,6 +56,15 @@ namespace PRIO.Controllers
 
             return Ok(result);
         }
+
+        [HttpGet("histories")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DTOFiles))]
+        public async Task<ActionResult> GetLastImported([FromQuery] string fileType)
+        {
+            var result = await _service.GetLastUpdatedFiles(fileType);
+
+            return Ok(result);
+        }
     }
 }
 

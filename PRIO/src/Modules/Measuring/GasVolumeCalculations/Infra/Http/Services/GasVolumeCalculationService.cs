@@ -932,42 +932,42 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
                 }
             }
 
-            if (body.PilotGases is not null)
+            if (body.PurgeGases is not null)
             {
-                foreach (var pilotGas in body.PilotGases)
+                foreach (var purgeGas in body.PurgeGases)
                 {
-                    var measuringPoint = await _measuringPointRepository.GetByIdAsync(pilotGas.MeasuringPointId);
+                    var measuringPoint = await _measuringPointRepository.GetByIdAsync(purgeGas.MeasuringPointId);
 
                     if (measuringPoint is null)
-                        throw new NotFoundException($"Ponto de medição {pilotGas.StaticMeasuringPointName} não encontrado.");
+                        throw new NotFoundException($"Ponto de medição {purgeGas.StaticMeasuringPointName} não encontrado.");
 
-                    var pilotGasFound = await _repository
-                        .GetOtherPilotGas(installation.GasVolumeCalculation.Id, pilotGas.MeasuringPointId);
+                    var purgeGasFound = await _repository
+                        .GetOtherPurgeGas(installation.GasVolumeCalculation.Id, purgeGas.MeasuringPointId);
 
-                    if (pilotGasFound is not null)
-                        throw new ConflictException($"Ponto de medição para ser atualizado possui relação com outra instalação ({pilotGasFound.GasVolumeCalculation.Installation.Name}).");
+                    if (purgeGasFound is not null)
+                        throw new ConflictException($"Ponto de medição para ser atualizado possui relação com outra instalação ({purgeGasFound.GasVolumeCalculation.Installation.Name}).");
                 }
 
-                _repository.RemoveRange(gasCalculationInDatabase.PilotGases);
+                _repository.RemoveRange(gasCalculationInDatabase.PurgeGases);
 
-                foreach (var pilotGas in body.PilotGases)
+                foreach (var purgeGas in body.PurgeGases)
                 {
                     var measuringPoint = await _measuringPointRepository
-                        .GetByIdAsync(pilotGas.MeasuringPointId);
+                        .GetByIdAsync(purgeGas.MeasuringPointId);
 
                     if (measuringPoint is not null)
                     {
-                        var createdPilotGas = new PilotGas
+                        var createdPurgeGas = new PurgeGas
                         {
                             Id = Guid.NewGuid(),
                             MeasuringPoint = measuringPoint,
-                            StaticLocalMeasuringPoint = pilotGas.StaticMeasuringPointName,
+                            StaticLocalMeasuringPoint = purgeGas.StaticMeasuringPointName,
                             GasVolumeCalculation = installation.GasVolumeCalculation,
-                            IsApplicable = pilotGas.IsApplicable
+                            IsApplicable = purgeGas.IsApplicable
 
                         };
 
-                        await _repository.AddPilotGas(createdPilotGas);
+                        await _repository.AddPurgeGas(createdPurgeGas);
                     }
                 }
             }

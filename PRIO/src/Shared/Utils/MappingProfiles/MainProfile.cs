@@ -28,6 +28,7 @@ using PRIO.src.Modules.Measuring.Equipments.Dtos;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.GasVolumeCalculations.Dtos;
 using PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Dtos;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Dtos;
@@ -88,6 +89,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<Client001DTO, Measurement>();
             CreateMap<Client003DTO, Measurement>();
             CreateMap<Client039DTO, Measurement>();
+            CreateMap<MeasurementHistory, MeasurementHistoryDto>();
 
             #endregion
 
