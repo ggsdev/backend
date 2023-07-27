@@ -101,7 +101,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 var pathSchema = Path.GetFullPath(Path.Combine(projectRoot, relativeSchemaPath));
                 #endregion
 
-                Console.WriteLine(pathXml);
+                Console.WriteLine(pathXml + "aaaaaaaaaa");
 
                 #region writting, parsing
 
@@ -542,9 +542,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                 Volume = measurement.MED_VOLUME_BRUTO_MVMDO_001,
 
                                             };
+                                            measurement001DTO.ImportId = importId;
+
                                             _responseResult._001File ??= new List<Client001DTO>();
                                             _responseResult._001File?.Add(measurement001DTO);
-                                            //_responseResult._001ImportId = importId;
                                         }
                                     }
                                 }
@@ -884,9 +885,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                 Volume = measurement.MED_CORRIGIDO_MVMDO_002,
 
                                             };
+                                            measurement002DTO.ImportId = importId;
                                             _responseResult._002File ??= new List<Client002DTO>();
                                             _responseResult._002File?.Add(measurement002DTO);
-                                            //_responseResult._002ImportId = importId;
 
                                         }
                                     }
@@ -2103,64 +2104,60 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                 if (measuringPoint is null)
                     throw new NotFoundException($"{ErrorMessages.NotFound<MeasuringPoint>()} TAG: {measurement.COD_TAG_PONTO_MEDICAO_001}");
-
-                if (file.Summary is not null && file.Summary.Status is true)
+                if (file.ImportId is not null)
                 {
-                    if (file.ImportId is not null)
+                    var file001 = data._001File
+                        .FirstOrDefault(x => x.FileName == file.ImportId + ".xml");
+
+                    var fileInfo = new FileBasicInfoDTO
                     {
-                        var file001 = data._001File
-                            .FirstOrDefault(x => x.FileName == file.ImportId + ".xml");
+                        Acronym = XmlUtils.FileAcronym001,
+                        Name = file.FileName,
+                        Type = XmlUtils.File001
+                    };
+                    measurement.User = user;
 
-                        var fileInfo = new FileBasicInfoDTO
+                    measurement.FileType = new FileType
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = fileInfo.Type,
+                        Acronym = fileInfo.Acronym,
+                        ImportId = file.ImportId
+                    };
+
+                    measurement.Installation = installation;
+                    measurement.MeasuringPoint = measuringPoint;
+
+                    var path001Xml = Path.GetTempPath() + file.ImportId + ".xml";
+
+                    if (File.Exists(path001Xml))
+                    {
+                        var documentXml = XDocument.Load(path001Xml);
+                        byte[] xmlBytes;
+                        using (var memoryStream = new MemoryStream())
+                        using (var xmlWriter = XmlWriter.Create(memoryStream, new XmlWriterSettings { Encoding = Encoding.UTF8 }))
                         {
-                            Acronym = XmlUtils.FileAcronym001,
-                            Name = file.FileName,
-                            Type = XmlUtils.File001
-                        };
-                        measurement.User = user;
-
-                        measurement.FileType = new FileType
-                        {
-                            Id = Guid.NewGuid(),
-                            Name = fileInfo.Type,
-                            Acronym = fileInfo.Acronym,
-                            ImportId = file.ImportId
-                        };
-
-                        measurement.Installation = installation;
-                        measurement.MeasuringPoint = measuringPoint;
-
-                        var path001Xml = Path.GetTempPath() + file.ImportId + ".xml";
-
-                        if (File.Exists(path001Xml))
-                        {
-                            var documentXml = XDocument.Load(path001Xml);
-                            byte[] xmlBytes;
-                            using (var memoryStream = new MemoryStream())
-                            using (var xmlWriter = XmlWriter.Create(memoryStream, new XmlWriterSettings { Encoding = Encoding.UTF8 }))
-                            {
-                                documentXml.Save(xmlWriter);
-                                xmlWriter.Flush();
-                                xmlBytes = memoryStream.ToArray();
-                            }
-
-                            var base64String = Convert.ToBase64String(xmlBytes);
-
-                            if (base64HistoryMap.TryGetValue(base64String, out var history) is false)
-                            {
-                                history = await _measurementService.Import(user, fileInfo, base64String);
-                                base64HistoryMap.Add(base64String, history);
-                            }
-
-                            measurement.MeasurementHistory = history;
+                            documentXml.Save(xmlWriter);
+                            xmlWriter.Flush();
+                            xmlBytes = memoryStream.ToArray();
                         }
 
-                        measurements001.Add(measurement);
+                        var base64String = Convert.ToBase64String(xmlBytes);
+
+                        if (base64HistoryMap.TryGetValue(base64String, out var history) is false)
+                        {
+                            history = await _measurementService.Import(user, fileInfo, base64String);
+                            base64HistoryMap.Add(base64String, history);
+                        }
+
+                        measurement.MeasurementHistory = history;
                     }
+
+                    await _repository.AddAsync(measurement);
                 }
             }
 
-            await _repository.AddRangeAsync(measurements001);
+            //await _repository.AddRangeAsync(measurements001);
 
             foreach (var file in data._002File)
             {
