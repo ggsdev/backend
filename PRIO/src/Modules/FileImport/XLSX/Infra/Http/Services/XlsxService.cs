@@ -8,6 +8,7 @@ using PRIO.src.Modules.FileImport.XLSX.Utils;
 using PRIO.src.Modules.FileImport.XLSX.ViewModels;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Completions.ViewModels;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Models;
@@ -124,6 +125,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                 var columnZone = worksheetTab.Cells[row, columnPositions[XlsUtils.ZoneCodeColumnName]].Value?.ToString()?.Trim();
 
                 var columnReservoir = worksheetTab.Cells[row, columnPositions[XlsUtils.ReservoirColumnName]].Value?.ToString()?.Trim();
+
+                var columnAllocationByReservoir = worksheetTab.Cells[row, columnPositions[XlsUtils.AllocationByReservoirColumnName]].Value?.ToString()?.Trim();
 
                 var columnCompletion = worksheetTab.Cells[row, columnPositions[XlsUtils.CompletionColumnName]].Value?.ToString()?.Trim();
 
@@ -479,52 +482,80 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                     completion = await _context.Completions
                     .FirstOrDefaultAsync(x => x.Name == columnCompletion);
 
-                    if (completion is null && columnCompletion is not null)
+
+                    if (completion is null)
                     {
-                        var wellInDatabase = await _context.Wells
-                            .FirstOrDefaultAsync(x => x.CodWellAnp == cellWellCodeAnp);
-
-                        var reservoirInDatabase = await _context.Reservoirs
-                            .FirstOrDefaultAsync(x => x.Name.ToUpper() == columnReservoir.ToUpper());
-
-                        var completionId = Guid.NewGuid();
-
-                        if ((wellInDatabase is not null && wellInDatabase.IsActive) || (reservoirInDatabase is not null && reservoirInDatabase.IsActive))
+                        if (columnCompletion is not null)
                         {
-                            completion = new Completion
+                            var wellInDatabase = await _context.Wells
+                                .FirstOrDefaultAsync(x => x.CodWellAnp == cellWellCodeAnp);
+
+                            var reservoirInDatabase = await _context.Reservoirs
+                                .FirstOrDefaultAsync(x => x.Name.ToUpper() == columnReservoir.ToUpper());
+
+                            var completionId = Guid.NewGuid();
+
+                            if ((wellInDatabase is not null && wellInDatabase.IsActive) || (reservoirInDatabase is not null && reservoirInDatabase.IsActive))
                             {
-                                Id = completionId,
-                                Name = columnCompletion,
-                                User = user,
-                                TopOfPerforated = decimal.TryParse(cellWellPerforationTopMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var topOfPerforated) ? topOfPerforated : null,
-                                BaseOfPerforated = decimal.TryParse(cellWellBottomPerforationMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var baseOfPerforated) ? baseOfPerforated : null,
-                                Reservoir = reservoirInDatabase is null ? entityDictionary.GetValueOrDefault(columnReservoir.ToLower()) as Reservoir : reservoirInDatabase,
-                                Well = wellInDatabase is null ? entityDictionary.GetValueOrDefault(cellWellCodeAnp.ToLower()) as Well : wellInDatabase,
-                                IsActive = true
-                            };
-                        }
+                                completion = new Completion
+                                {
+                                    Id = completionId,
+                                    Name = columnCompletion,
+                                    User = user,
+                                    AllocationReservoir = decimal.TryParse(columnAllocationByReservoir?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var allocation) ? allocation : 1,
+                                    TopOfPerforated = decimal.TryParse(cellWellPerforationTopMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var topOfPerforated) ? topOfPerforated : null,
+                                    BaseOfPerforated = decimal.TryParse(cellWellBottomPerforationMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var baseOfPerforated) ? baseOfPerforated : null,
+                                    Reservoir = reservoirInDatabase is null ? entityDictionary.GetValueOrDefault(columnReservoir.ToLower()) as Reservoir : reservoirInDatabase,
+                                    Well = wellInDatabase is null ? entityDictionary.GetValueOrDefault(cellWellCodeAnp.ToLower()) as Well : wellInDatabase,
+                                    IsActive = true
+                                };
+                            }
 
-                        else if ((wellInDatabase is null && entityDictionary.GetValueOrDefault(cellWellCodeAnp.ToLower()) is not null) && (entityDictionary.GetValueOrDefault(columnReservoir.ToLower()) is not null && reservoirInDatabase is null))
-                        {
-                            completion = new Completion
+                            else if ((wellInDatabase is null && entityDictionary.GetValueOrDefault(cellWellCodeAnp.ToLower()) is not null) && (entityDictionary.GetValueOrDefault(columnReservoir.ToLower()) is not null && reservoirInDatabase is null))
                             {
-                                Id = completionId,
-                                Name = columnCompletion,
-                                User = user,
-                                TopOfPerforated = decimal.TryParse(cellWellPerforationTopMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var topOfPerforated) ? topOfPerforated : null,
-                                BaseOfPerforated = decimal.TryParse(cellWellBottomPerforationMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var baseOfPerforated) ? baseOfPerforated : null,
-                                Reservoir = entityDictionary.GetValueOrDefault(columnReservoir.ToLower()) as Reservoir,
-                                Well = entityDictionary.GetValueOrDefault(cellWellCodeAnp.ToLower()) as Well,
-                                IsActive = true
-                            };
-                        }
 
-                        if (completion is not null)
+                                completion = new Completion
+                                {
+                                    Id = completionId,
+                                    Name = columnCompletion,
+                                    User = user,
+                                    AllocationReservoir = decimal.TryParse(columnAllocationByReservoir?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var allocation) ? allocation : 1,
+                                    TopOfPerforated = decimal.TryParse(cellWellPerforationTopMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var topOfPerforated) ? topOfPerforated : null,
+                                    BaseOfPerforated = decimal.TryParse(cellWellBottomPerforationMd?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var baseOfPerforated) ? baseOfPerforated : null,
+                                    Reservoir = entityDictionary.GetValueOrDefault(columnReservoir.ToLower()) as Reservoir,
+                                    Well = entityDictionary.GetValueOrDefault(cellWellCodeAnp.ToLower()) as Well,
+                                    IsActive = true
+                                };
+                            }
+
+                            if (completion is not null)
+                            {
+                                await _systemHistoryService
+                                     .Import<Completion, CompletionHistoryDTO>(HistoryColumns.TableCompletions, user, data.FileName, completion.Id, (Completion)completion);
+
+                                entityDictionary[columnCompletion.ToLower()] = completion;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var completionConverted = (Completion)completion;
+
+                        var beforeChangesCompletion = _mapper.Map<CompletionHistoryDTO>(completionConverted);
+
+                        var propertiesToUpdate = new UpdateCompletionViewModel
                         {
+                            AllocationReservoir = decimal.TryParse(columnAllocationByReservoir?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var allocation) ? allocation : 1,
+                        };
+
+                        var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(completionConverted, propertiesToUpdate);
+
+                        if (updatedProperties.Any() is true)
+                        {
+                            updatedDictionary[cellWellCodeAnp.ToLower()] = completion;
+
                             await _systemHistoryService
-                                 .Import<Completion, CompletionHistoryDTO>(HistoryColumns.TableCompletions, user, data.FileName, completion.Id, (Completion)completion);
-
-                            entityDictionary[columnCompletion.ToLower()] = completion;
+                                .ImportUpdate(HistoryColumns.TableWells, user, data.FileName, updatedProperties, completionConverted.Id, completionConverted, beforeChangesCompletion);
                         }
                     }
                 }
