@@ -32,38 +32,26 @@ namespace PRIO.src.Modules.Hierarchy.Wells.ViewModels
         public string? Type { get; set; }
         [DecimalPrecision(12)]
         public decimal WaterDepth { get; set; }
-        [DecimalPrecision(12)]
-        public decimal TopOfPerforated { get; set; }
-        [DecimalPrecision(12)]
-        public decimal BaseOfPerforated { get; set; }
         public string? ArtificialLift { get; set; }
-        [Required(ErrorMessage = "Latitude4C is required")]
         [RegularExpression(@"^-\d{2}:\d{2}:\d{2},\d{3}$",
         ErrorMessage = "Invalid latitude. Please use the format '-dd:mm:ss,sss'.")]
         public string? Latitude4C { get; set; }
-        [Required(ErrorMessage = "Longitude4C is required")]
         [RegularExpression(@"^-\d{2}:\d{2}:\d{2},\d{3}$",
         ErrorMessage = "Invalid longitude. Please use the format '-dd:mm:ss,sss'.")]
         public string? Longitude4C { get; set; }
-        [Required(ErrorMessage = "LatitudeDD is required")]
         [RegularExpression(@"^-\d{1,2},\d{10}$",
         ErrorMessage = "Invalid latitude. Please use the format '-dd,dddddddddd'.")]
         public string? LatitudeDD { get; set; }
-        [Required(ErrorMessage = "LongitudeDD is required")]
         [RegularExpression(@"^-\d{1,2},\d{10}$",
         ErrorMessage = "Invalid latitude. Please use the format '-dd,dddddddddd'.")]
         public string? LongitudeDD { get; set; }
-        [Required(ErrorMessage = "DatumHorizontal is required")]
         [StringLength(60, ErrorMessage = "DatumHorizontal cannot exceed 60 characters.")]
         public string? DatumHorizontal { get; set; }
-        [Required(ErrorMessage = "TypeBaseCoordinate is required")]
         [StringLength(60, ErrorMessage = "TypeBaseCoordinate cannot exceed 60 characters.")]
         public string? TypeBaseCoordinate { get; set; }
-        [Required(ErrorMessage = "CoordX is required")]
         [RegularExpression(@"^-\d{1,2},\d{10}$",
         ErrorMessage = "Invalid CoordinatesX format. Please use the decimal format '-dd,dddddddddd'.")]
         public string? CoordX { get; set; }
-        [Required(ErrorMessage = "CoordY is required")]
         [RegularExpression(@"^(-\d{1,2},\d{10})$",
         ErrorMessage = "Invalid CoordinatesY format. Please use the decimal format '-dd,dddddddddd'.")]
         public string? CoordY { get; set; }

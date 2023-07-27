@@ -73,8 +73,8 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Controllers
         }
 
         [HttpGet]
-        [Route("uep/{uepCode}")]
-        public async Task<IActionResult> GetByInstallationId([FromRoute] string uepCode)
+        [Route("uep")]
+        public async Task<IActionResult> GetByUEPCod([FromQuery] string uepCode)
         {
             if (HttpContext.Items["User"] is not User user)
                 return Unauthorized(new ErrorResponseDTO

@@ -13,6 +13,8 @@ using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.Infra.EF.Models;
@@ -182,6 +184,22 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                 IsProcessingUnit = cellInstallationCodUep == cellInstallationCod,
                                 Cluster = clusterInDatabase
                             };
+                            if (cellInstallationCodUep == cellInstallationCod)
+                            {
+
+                                var createOilVolumeCalculation = new OilVolumeCalculation
+                                {
+                                    Id = Guid.NewGuid(),
+                                    Installation = installation as Installation
+                                };
+
+                                var gasCalculation = new GasVolumeCalculation
+                                {
+                                    Id = Guid.NewGuid(),
+                                    Installation = installation as Installation,
+                                };
+
+                            }
                         }
                         else if (clusterInDatabase is null && entityDictionary.GetValueOrDefault(cellCluster.ToLower()) is not null)
                         {

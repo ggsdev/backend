@@ -113,7 +113,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
             if (cluster.IsActive is false)
                 throw new ConflictException(ErrorMessages.Inactive<Cluster>());
 
-            if (cluster.Installations is not null)
+            if (cluster.Installations is not null && cluster.Installations.Count != 0)
                 throw new ConflictException("Cluster não pode ser alterado.");
 
             if (body.Name is not null)

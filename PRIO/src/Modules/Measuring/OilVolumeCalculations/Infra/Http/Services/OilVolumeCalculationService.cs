@@ -38,6 +38,10 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
             var installationInDatabase = await _installationRepository.GetByUEPCod(body.UEPCode) ?? throw new NotFoundException("UEP is not found.");
 
             if (body.Sections is not null)
+            {
+                if (body.Sections.Count == 0)
+                    throw new NotFoundException("Deve ser inseridos ao menos um tramo.");
+
                 foreach (var section in body.Sections)
                 {
                     // VERIFICAR SE PONTO DE MEDIÇÃO EXISTE
@@ -48,6 +52,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
                     if (sectionFound is not null)
                         throw new ConflictException($"Equipamento já possui relação com o cálculo da instalação {sectionFound.OilVolumeCalculation.Installation.Name}");
                 }
+            }
 
             if (body.TOGs is not null)
                 foreach (var tog in body.TOGs)
@@ -265,6 +270,10 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
                 throw new NotFoundException("Intalação não possui cálculo para ser atualizado");
 
             if (body.Sections is not null)
+            {
+                if (body.Sections.Count == 0)
+                    throw new NotFoundException("Deve ser inseridos ao menos um tramo.");
+
                 foreach (var section in body.Sections)
                 {
                     var measuringPoint = await _mpointRepository.GetByIdAsync(section.MeasuringPointId) ?? throw new NotFoundException("Equipment section is not found.");
@@ -272,6 +281,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
                     if (sectionFound is not null)
                         throw new ConflictException($"Equipamento para ser atualizado possui relação com outra instalação ({sectionFound.OilVolumeCalculation.Installation.Name}).");
                 }
+            }
 
             if (body.TOGs is not null)
                 foreach (var tog in body.TOGs)

@@ -20,6 +20,10 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Mappings
             builder.Property(x => x.Description)
                 .HasColumnType("TEXT");
 
+            builder.Property(e => e.AllocationReservoir)
+               .HasColumnType("decimal")
+                .HasPrecision(3, 2);
+
             builder.Property(e => e.TopOfPerforated)
                .HasColumnType("decimal")
                 .HasPrecision(10, 2);

@@ -46,6 +46,16 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             if (well.IsActive is false && well.StatusOperator is false)
                 throw new ConflictException(ErrorMessages.Inactive<Well>());
 
+            if (well.Completions is not null && well.Completions.Count == 2)
+                throw new ConflictException("Este poço já possui duas completações.");
+
+            if (well.Completions is not null && well.Completions.Count == 1)
+            {
+                var result = well.Completions[0].AllocationReservoir + body.AllocationReservoir;
+                if (result != 1)
+                    throw new ConflictException("A soma das alocações por reservatório deve ser 1.");
+            }
+
             var reservoir = await _reservoirRepository.GetWithZoneFieldAsync(body.ReservoirId);
 
             if (reservoir is null)
@@ -75,6 +85,92 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
                 Well = well,
                 Reservoir = reservoir,
                 IsActive = body.IsActive is not null ? body.IsActive.Value : true,
+                AllocationReservoir = body.AllocationReservoir is not null ? body.AllocationReservoir : 1,
+            };
+
+            await _systemHistoryService
+                .Create<Completion, CompletionHistoryDTO>(_tableName, user, completionId, completion);
+
+            await _completionRepository.AddAsync(completion);
+
+            await _completionRepository.SaveChangesAsync();
+
+            var completionDTO = _mapper.Map<Completion, CreateUpdateCompletionDTO>(completion);
+
+            return completionDTO;
+        }
+        public async Task<CreateUpdateCompletionDTO> CreateDoubleCompletion(CreateDoubleCompletionViewModel body, User user)
+        {
+
+            var well = await _wellRepository.GetWithFieldAsync(body.WellId);
+
+            if (well is null)
+                throw new NotFoundException(ErrorMessages.NotFound<Well>());
+
+            if (well.IsActive is false && well.StatusOperator is false)
+                throw new ConflictException(ErrorMessages.Inactive<Well>());
+
+            if (well.Completions is not null && well.Completions.Count == 2)
+                throw new ConflictException("Este poço já possui duas completações.");
+
+            var reservoir = await _reservoirRepository.GetWithZoneFieldAsync(body.ReservoirId);
+
+            if (reservoir is null)
+                throw new NotFoundException(ErrorMessages.NotFound<Reservoir>());
+
+            if (reservoir.IsActive is false)
+                throw new ConflictException(ErrorMessages.Inactive<Reservoir>());
+
+            if (reservoir.Zone?.Field?.Id != well.Field?.Id)
+                throw new ConflictException(ErrorMessages.DifferentFieldsCompletion());
+
+            var completion = await _completionRepository
+                .GetExistingCompletionAsync(well.Id, reservoir.Id);
+
+            if (completion is not null)
+                throw new ConflictException(ErrorMessages.WellAndReservoirAlreadyCompletion());
+
+            if (body.AllocationReservoir is null || body.AllocationReservoirUpdate is null)
+                throw new NotFoundException("Dados de alocações incompletos.");
+
+            //VERIFICAR SOMA
+            var result = body.AllocationReservoir + body.AllocationReservoirUpdate;
+            if (result != 1)
+                throw new ConflictException("Soma das alocações deve representar 1");
+
+            //VERIFICAR SE OUTRRA COMPLETACAO EXISTE
+            var completionUpdate = await _completionRepository.GetByIdAsync(body.CompletionUpdateId) ?? throw new NotFoundException("Completação não encontrada");
+
+            //UPDATE COMPLETACAO 1
+            var beforeChangesCompletion = _mapper.Map<CompletionHistoryDTO>(completionUpdate);
+            var bodyUpdated = new UpdateCompletionViewModel
+            {
+                AllocationReservoir = body.AllocationReservoirUpdate
+            };
+
+            var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(completionUpdate, bodyUpdated);
+
+            _completionRepository.Update(completionUpdate);
+            if (updatedProperties.Any() is true)
+            {
+                await _systemHistoryService
+                    .Update(_tableName, user, updatedProperties, completionUpdate.Id, completionUpdate, beforeChangesCompletion);
+            }
+
+            //CREATE COMPLETACAO 2
+            var completionName = $"{well.Name}_{reservoir.Zone?.CodZone}";
+            var completionId = Guid.NewGuid();
+
+            completion = new Completion
+            {
+                Id = completionId,
+                Name = completionName,
+                Description = body.Description,
+                User = user,
+                Well = well,
+                Reservoir = reservoir,
+                IsActive = body.IsActive is not null ? body.IsActive.Value : true,
+                AllocationReservoir = body.AllocationReservoir
             };
 
             await _systemHistoryService

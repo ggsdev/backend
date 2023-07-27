@@ -23,6 +23,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateClusterViewModel body)
         {
+
             if (HttpContext.Items["User"] is not User user)
                 return Unauthorized(new ErrorResponseDTO
                 {

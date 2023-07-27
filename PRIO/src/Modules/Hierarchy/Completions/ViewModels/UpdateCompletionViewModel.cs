@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using PRIO.src.Shared.Utils.Validators;
+using System.ComponentModel.DataAnnotations;
 
 namespace PRIO.src.Modules.Hierarchy.Completions.ViewModels
 {
@@ -6,6 +7,8 @@ namespace PRIO.src.Modules.Hierarchy.Completions.ViewModels
     {
         [StringLength(60, ErrorMessage = "CodCompletion cannot exceed 60 characters.")]
         public string? Description { get; set; }
+        [DecimalPrecision(3)]
+        public decimal? AllocationReservoir { get; set; }
         public Guid? ReservoirId { get; set; }
         public Guid? WellId { get; set; }
     }
