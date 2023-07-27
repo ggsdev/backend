@@ -61,34 +61,34 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Mappings
             builder.Property(e => e.Latitude4C)
               .HasColumnType("VARCHAR")
               .HasMaxLength(60)
-              .IsRequired();
+              ;
 
             builder.Property(e => e.Longitude4C)
               .HasColumnType("VARCHAR")
-              .HasMaxLength(60).IsRequired();
+              .HasMaxLength(60);
 
             builder.Property(e => e.LatitudeDD)
               .HasColumnType("VARCHAR")
-              .HasMaxLength(60).IsRequired();
+              .HasMaxLength(60);
             builder.Property(e => e.LongitudeDD)
               .HasColumnType("VARCHAR")
-              .HasMaxLength(60).IsRequired();
+              .HasMaxLength(60);
 
             builder.Property(e => e.TypeBaseCoordinate)
               .HasColumnType("VARCHAR")
-              .HasMaxLength(60).IsRequired();
+              .HasMaxLength(60);
 
             builder.Property(e => e.CoordX)
                .HasColumnType("VARCHAR")
-               .HasMaxLength(60).IsRequired();
+               .HasMaxLength(60);
 
             builder.Property(e => e.CoordY)
                .HasColumnType("VARCHAR")
-               .HasMaxLength(60).IsRequired();
+               .HasMaxLength(60);
 
             builder.Property(e => e.DatumHorizontal)
                .HasColumnType("VARCHAR")
-               .HasMaxLength(60).IsRequired();
+               .HasMaxLength(60);
 
             builder.Property(e => e.IsActive);
 
