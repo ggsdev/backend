@@ -22,10 +22,8 @@ namespace PRIO.src.Shared.Utils.Validators
 
             if (value is decimal decimalValue)
             {
-                Console.WriteLine(decimalValue);
                 var precision = GetPrecision(decimalValue);
 
-                Console.WriteLine(precision);
                 if (precision <= _maxPrecision)
                     return ValidationResult.Success;
             }
