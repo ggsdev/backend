@@ -22,7 +22,7 @@ namespace PRIO.Controllers
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ImportResponseDTO))]
-        public async Task<ActionResult> ImportFiles([FromBody] DTOFiles data)
+        public async Task<ActionResult> ImportFiles([FromBody] DTOFilesClient data)
         {
             var user = HttpContext.Items["User"] as User;
             var result = await _service.Import(data, user);
@@ -40,13 +40,13 @@ namespace PRIO.Controllers
             return Ok(result);
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetAll([FromQuery] string? acronym, [FromQuery] string? name)
-        //{
-        //    var result = await _service.GetAll(acronym, name);
+        [HttpGet]
+        public async Task<IActionResult> GetAll([FromQuery] string? acronym, [FromQuery] string? name)
+        {
+            var result = await _service.GetAll(acronym, name);
 
-        //    return Ok(result);
-        //}
+            return Ok(result);
+        }
 
         [HttpPost("errors")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DTOFiles))]

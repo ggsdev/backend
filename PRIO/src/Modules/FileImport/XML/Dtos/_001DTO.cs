@@ -122,12 +122,13 @@
 
     public class Client001DTO
     {
+        public Guid ImportId { get; set; }
         public ClientInfo? Summary { get; set; }
         public Guid Id { get; set; }
         public string FileName { get; set; } = string.Empty;
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_001 { get; set; }
         public string COD_INSTALACAO_001 { get; set; } = string.Empty;
-        public string? COD_TAG_PONTO_MEDICAO_001 { get; set; }
+        public string COD_TAG_PONTO_MEDICAO_001 { get; set; } = string.Empty;
         public string? NUM_SERIE_COMPUTADOR_VAZAO_001 { get; set; }
         public DateTime? DHA_COLETA_001 { get; set; }
         public decimal? MED_TEMPERATURA_001 { get; set; }

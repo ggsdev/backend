@@ -44,6 +44,21 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Repositories
 
             return oilVolumeCalculation;
         }
+
+        public async Task<OilVolumeCalculation?> GetOilVolumeCalculationByInstallationUEP(string uepCode)
+        {
+            return await _context.OilVolumeCalculations.Include(x => x.Installation)
+                .Include(x => x.DrainVolumes)
+                .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.DORs)
+                .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.Sections)
+                .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.TOGRecoveredOils)
+                .ThenInclude(x => x.MeasuringPoint)
+                .Where(x => x.Installation.UepCod == uepCode)
+                .FirstOrDefaultAsync();
+        }
         public async Task<OilVolumeCalculation?> GetOilVolumeCalculationById(Guid id)
         {
             var oilVolumeCalculation = await _context.OilVolumeCalculations

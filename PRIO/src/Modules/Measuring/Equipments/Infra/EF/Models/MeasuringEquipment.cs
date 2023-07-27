@@ -21,6 +21,5 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models
         public string? Fluid { get; set; }
         public MeasuringPoint? MeasuringPoint { get; set; }
         public User? User { get; set; }
-        public List<Measurement>? Measurements { get; set; }
     }
 }

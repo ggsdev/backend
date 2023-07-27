@@ -1,6 +1,7 @@
 ﻿using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models
@@ -409,8 +410,8 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models
 
         public FileType? FileType { get; set; }
         public User? User { get; set; }
-        public List<MeasurementHistory>? MeasurementHistories { get; set; }
-
+        public MeasurementHistory? MeasurementHistory { get; set; }
+        public MeasuringPoint MeasuringPoint { get; set; }
         public Installation Installation { get; set; }
     }
 }

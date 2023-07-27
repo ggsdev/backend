@@ -12,7 +12,7 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Interfaces
         void DeleteGasVolumeCalculation(GasVolumeCalculation gasVolume);
         void RestoreGasVolumeCalculation(GasVolumeCalculation gasVolume);
         Task<GasVolumeCalculation?> GetGasVolumeCalculationByInstallationId(Guid id);
-
+        Task<GasVolumeCalculation?> GetGasVolumeCalculationByInstallationUEP(string uepCode);
 
         Task<ExportGas?> GetExportGas(Guid id);
         Task AddExportGas(ExportGas gas);
@@ -21,6 +21,7 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Interfaces
         Task<AssistanceGas?> GetAssistanceGas(Guid id);
         Task AddAssistanceGas(AssistanceGas gas);
         Task<AssistanceGas?> GetOtherAssistanceGas(Guid mpointId, Guid assistanceGasId);
+        Task<GasVolumeCalculation?> GetGasVolumeCalculationByInstallationIdXML(Guid id);
 
         void RemoveRange<T>(IEnumerable<T> entities) where T : class;
 

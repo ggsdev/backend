@@ -15,12 +15,14 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Mappings
                .HasMaxLength(260)
                .IsRequired();
 
+
             builder.HasOne(x => x.MeasuringPoint)
                 .WithOne(d => d.DOR)
-                .HasForeignKey<DOR>("MeasuringPointId");
+                .HasForeignKey<DOR>("MeasuringPointId")
+                .IsRequired();
 
             builder.HasOne(x => x.OilVolumeCalculation)
-                .WithMany(d => d.DORs);
+                .WithMany(d => d.DORs).IsRequired();
         }
     }
 

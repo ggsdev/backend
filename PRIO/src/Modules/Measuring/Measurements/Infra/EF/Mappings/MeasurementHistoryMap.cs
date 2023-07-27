@@ -11,10 +11,6 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Mappings
         {
             builder.ToTable("MeasurementsHistories");
 
-            builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id)
-                .ValueGeneratedOnAdd();
-
             builder.Property(x => x.ImportedAt)
                 .HasColumnType("date");
 
@@ -40,11 +36,6 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Mappings
 
             builder.HasOne(x => x.ImportedBy)
             .WithMany(m => m.MeasurementsHistories)
-            .OnDelete(DeleteBehavior.Restrict)
-            .IsRequired();
-
-            builder.HasOne(x => x.Measurement)
-            .WithMany(m => m.MeasurementHistories)
             .OnDelete(DeleteBehavior.Restrict)
             .IsRequired();
         }

@@ -12,7 +12,7 @@ namespace PRIO.src.Modules.Measuring.Measurements.Interfaces
         Task<Measurement?> GetUnique001Async(string numSerie);
         Task<Measurement?> GetUnique002Async(string numSerie);
         Task<Measurement?> GetUnique003Async(string numSerie);
-        Task<bool> GetAnyByDate(DateTime date, string fileType);
+        Task<bool> GetAnyByDate(DateTime? date, string fileType);
         IIncludableQueryable<FileType, User?> FileTypeBuilderByName(string name);
         IIncludableQueryable<FileType, User?> FileTypeBuilderByAcronym(string acronym);
         IIncludableQueryable<FileType, User?> FileTypeBuilder();
@@ -20,6 +20,6 @@ namespace PRIO.src.Modules.Measuring.Measurements.Interfaces
         Task<bool> GetAnyAsync(Guid id);
         Task SaveChangesAsync();
         int CountAdded();
-
+        Task<bool> GetAnyImported(Guid? id);
     }
 }
