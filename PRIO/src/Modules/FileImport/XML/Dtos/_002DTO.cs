@@ -132,7 +132,7 @@
 
     public class Client002DTO
     {
-        public Guid ImportId { get; set; }
+        public Guid? ImportId { get; set; }
         public ClientInfo? Summary { get; set; }
         public DateTime? DHA_INICIO_PERIODO_MEDICAO_002 { get; set; }
         public string COD_INSTALACAO_002 { get; set; } = string.Empty;
