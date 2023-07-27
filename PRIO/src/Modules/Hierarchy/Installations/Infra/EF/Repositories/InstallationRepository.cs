@@ -67,7 +67,10 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
         }
         public async Task<Installation?> GetByIdWithCalculationsAsync(Guid? id)
         {
-            return await _context.Installations.Include(x => x.OilVolumeCalculation).FirstOrDefaultAsync(x => x.Id == id);
+            return await _context.Installations
+                .Include(x => x.OilVolumeCalculation)
+                .Include(x => x.GasVolumeCalculation)
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<Installation?> GetByIdAsync(Guid? id)

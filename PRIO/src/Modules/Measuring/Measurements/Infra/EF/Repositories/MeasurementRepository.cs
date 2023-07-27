@@ -18,12 +18,16 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories
         {
             await _context.AddAsync(measurement);
         }
-
+        public async Task<bool> GetAnyImported(Guid? id)
+        {
+            return await _context.MeasurementHistories
+                .AnyAsync(x => x.Id == id);
+        }
         public async Task<Measurement?> GetUnique039Async(string codFailure)
         {
             return await _context.Measurements.FirstOrDefaultAsync(x => x.COD_FALHA_039 == codFailure);
         }
-        public async Task<bool> GetAnyByDate(DateTime date, string fileType)
+        public async Task<bool> GetAnyByDate(DateTime? date, string fileType)
         {
             switch (fileType)
             {

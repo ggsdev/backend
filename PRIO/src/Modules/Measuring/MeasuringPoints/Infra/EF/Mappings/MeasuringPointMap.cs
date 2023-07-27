@@ -19,6 +19,11 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Mappings
                .HasMaxLength(260)
                .IsRequired();
 
+            builder.Property(x => x.TagPointMeasuring)
+               .HasColumnType("VARCHAR")
+               .HasMaxLength(260)
+               .IsRequired();
+
             builder.Property(x => x.CreatedAt);
 
             builder.Property(x => x.UpdatedAt);

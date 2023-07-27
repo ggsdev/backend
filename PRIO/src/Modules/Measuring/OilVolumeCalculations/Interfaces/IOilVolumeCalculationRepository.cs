@@ -35,6 +35,9 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces
         Task<TOGRecoveredOil?> GetTOGOtherInstallationByIdAsync(Guid? oilCalculationId, Guid mpointId);
         Task<TOGRecoveredOil?> GetTOGInstallationByIdAsync(Guid? oilCalculationId, Guid mpointId);
         Task<TOGRecoveredOil?> AddTOG(OilVolumeCalculation oilVolumeCalculation, MeasuringPoint measuringPoint, CreateTOGRecoverOilViewModel tog);
+        Task<OilVolumeCalculation?> GetOilVolumeCalculationByInstallationUEP(string uepCode);
+
+
         #endregion
 
         #region DOR

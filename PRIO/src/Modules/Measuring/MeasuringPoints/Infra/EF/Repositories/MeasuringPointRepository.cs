@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
+using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 
 namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Repositories
@@ -17,6 +18,15 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Repositories
         {
             return await _context.MeasuringPoints
                 .Include(p => p.Installation)
+                .Include(x => x.AssistanceGas)
+                .Include(x => x.ImportGas)
+                .Include(x => x.ExportGas)
+                .Include(x => x.HPFlare)
+                .Include(x => x.LPFlare)
+                .Include(x => x.HighPressureGas)
+                .Include(x => x.LowPressureGas)
+                .Include(x => x.PurgeGas)
+                .Include(x => x.PilotGas)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
         public async Task<List<MeasuringPoint>> GetByInstallationIdAsync(Guid? id)
@@ -49,6 +59,31 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Repositories
                //.Include(x => x.Section)
                //.Include(x => x.DrainVolume)
                .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task<MeasuringPoint?> GetByTagMeasuringPointXML(string tagPoint, string acronym)
+        {
+            switch (acronym)
+            {
+                case "039":
+                    return await _context.MeasuringPoints
+                     .FirstOrDefaultAsync(x => x.TagPointMeasuring == tagPoint);
+
+                case "001":
+                    return await _context.MeasuringPoints
+                        .FirstOrDefaultAsync(x => x.TagPointMeasuring == tagPoint);
+
+                case "002":
+                    return await _context.MeasuringPoints
+                        .FirstOrDefaultAsync(x => x.TagPointMeasuring == tagPoint);
+
+                case "003":
+                    return await _context.MeasuringPoints
+                        .FirstOrDefaultAsync(x => x.TagPointMeasuring == tagPoint);
+
+                default:
+                    throw new BadRequestException("Acronym values are: 001, 002, 003, 039");
+            }
         }
 
         public async Task<MeasuringPoint?> GetByTagMeasuringPointUpdate(string? tagMeasuringPoint, Guid installationId, Guid pointMeasuringId)

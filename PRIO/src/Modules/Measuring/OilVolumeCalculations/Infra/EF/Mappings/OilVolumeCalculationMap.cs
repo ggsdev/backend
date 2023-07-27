@@ -12,7 +12,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Mappings
 
             builder.HasOne(x => x.Installation)
                .WithOne(d => d.OilVolumeCalculation)
-               .HasForeignKey<OilVolumeCalculation>("InstallationId");
+               .HasForeignKey<OilVolumeCalculation>("InstallationId").IsRequired();
         }
     }
 }

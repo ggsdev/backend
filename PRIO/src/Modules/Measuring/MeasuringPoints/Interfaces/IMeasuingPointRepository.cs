@@ -18,6 +18,7 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces
         Task Restore(MeasuringPoint measuringPoint);
         Task AddAsync(MeasuringPoint measuringPoint);
         Task<MeasuringPoint?> GetMeasuringPointWithChildren(Guid? id);
+        Task<MeasuringPoint?> GetByTagMeasuringPointXML(string tagPoint, string acronym);
         Task SaveChangesAsync();
     }
 }

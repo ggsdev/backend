@@ -17,10 +17,10 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Mappings
 
             builder.HasOne(x => x.MeasuringPoint)
                .WithOne(d => d.Section)
-               .HasForeignKey<Section>("MeasuringPointId");
+               .HasForeignKey<Section>("MeasuringPointId").IsRequired();
 
             builder.HasOne(x => x.OilVolumeCalculation)
-               .WithMany(d => d.Sections);
+               .WithMany(d => d.Sections).IsRequired();
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XML.Dtos;
-using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Measurements.Interfaces;
 using PRIO.src.Shared.Utils;
@@ -17,20 +16,23 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.Http.Services
 
         }
 
-        public async Task Import(Measurement measurement, User user, FileBasicInfoDTO File)
+        public async Task<MeasurementHistory> Import(User user, FileBasicInfoDTO File, string base64)
         {
             var history = new MeasurementHistory
             {
+                Id = Guid.NewGuid(),
                 TypeOperation = HistoryColumns.Import,
                 ImportedBy = user,
                 ImportedAt = DateTime.UtcNow,
-                Measurement = measurement,
                 FileAcronym = File.Acronym,
                 FileName = File.Name,
                 FileType = File.Type,
+                FileContent = base64,
             };
 
             await _measurementHistoryRepository.AddAsync(history);
+
+            return history;
         }
 
     }
