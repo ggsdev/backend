@@ -18,7 +18,7 @@ namespace PRIO.src.Shared.Auxiliaries.Infra.Http.Services
         {
             var validTables = new List<string>
             {
-                "clusters", "installations", "fields", "zones", "reservoirs", "wells", "completions", "measuringequipments"
+                "clusters", "installations", "fields", "zones", "reservoirs", "wells", "completions", "measuringequipments", "elemento primário", "elemento secundário"
             };
 
             if (validTables.Contains(table.ToLower()) is false)

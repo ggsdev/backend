@@ -439,13 +439,13 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal?>("AllocationReservoir")
-                        .HasPrecision(3, 2)
-                        .HasColumnType("decimal");
-
                     b.Property<decimal?>("BaseOfPerforated")
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal");
+
+                    b.Property<string>("CodCompletion")
+                        .HasMaxLength(60)
+                        .HasColumnType("VARCHAR");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
