@@ -19,7 +19,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Controller
         }
 
         [HttpGet("oil")]
-        public async Task<List<OilVolumeCalculationDTO>> Get([FromBody] CreateOilVolumeCalculationViewModel body)
+        public async Task<List<OilVolumeCalculationDTO>> Get()
         {
             if (HttpContext.Items["User"] is not User user)
                 throw new UnauthorizedAccessException("User not identified, please login first");
