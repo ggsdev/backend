@@ -140,6 +140,34 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Repositories
         }
 
 
+        public async Task<List<GasVolumeCalculation>> GetAll()
+        {
+            var gasVolumeCalculation = await _context.GasVolumeCalculations
+                .Include(x => x.Installation)
+                    .ThenInclude(x => x.MeasuringPoints)
+                .Include(x => x.AssistanceGases)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.ExportGases)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.HighPressureGases)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.HPFlares)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.ImportGases)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.LowPressureGases)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.LPFlares)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.PilotGases)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .Include(x => x.PurgeGases)
+                    .ThenInclude(x => x.MeasuringPoint)
+                .ToListAsync();
+
+            return gasVolumeCalculation;
+        }
+
         public async Task<GasVolumeCalculation?> GetGasVolumeCalculationByInstallationUEP(string uepCode)
         {
             var gasVolumeCalculation = await _context.GasVolumeCalculations

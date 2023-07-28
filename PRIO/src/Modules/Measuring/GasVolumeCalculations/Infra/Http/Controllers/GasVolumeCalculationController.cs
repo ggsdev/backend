@@ -56,5 +56,13 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Controller
             var gasCalculation = await _service.UpdateGasCalculationByInstallationId(installationId, body);
             return Ok(gasCalculation);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var gasVolumeCalculation = await _service.GetAll();
+            return Ok(gasVolumeCalculation);
+        }
+
     }
 }

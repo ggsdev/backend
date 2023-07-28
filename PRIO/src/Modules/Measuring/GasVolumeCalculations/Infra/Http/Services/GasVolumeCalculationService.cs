@@ -603,6 +603,8 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
             var installation = await _installationRepository
                 .GetByIdWithCalculationsAsync(installationId);
 
+            Console.WriteLine(installation.UepCod);
+
             if (installation is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Installation>());
 
@@ -976,6 +978,20 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
 
             var gasVolumeCalculationDTO = _mapper.Map<GasVolumeCalculation, GasVolumeCalculationDto>(gasCalculationInDatabase);
 
+            return gasVolumeCalculationDTO;
+        }
+
+
+        //public async Task<GasVolumeCalculationDto> CalculateGasProduction(Guid installationId, UpdateGasVolumeCalculationViewModel body)
+        //{
+
+        //}
+
+        public async Task<List<GasVolumeCalculationDto>> GetAll()
+        {
+            var gasVolumeCalculation = await _repository.GetAll();
+
+            var gasVolumeCalculationDTO = _mapper.Map<List<GasVolumeCalculation>, List<GasVolumeCalculationDto>>(gasVolumeCalculation);
             return gasVolumeCalculationDTO;
         }
     }

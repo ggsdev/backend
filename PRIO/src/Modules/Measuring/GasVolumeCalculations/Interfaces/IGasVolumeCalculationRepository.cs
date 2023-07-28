@@ -13,7 +13,7 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Interfaces
         void RestoreGasVolumeCalculation(GasVolumeCalculation gasVolume);
         Task<GasVolumeCalculation?> GetGasVolumeCalculationByInstallationId(Guid id);
         Task<GasVolumeCalculation?> GetGasVolumeCalculationByInstallationUEP(string uepCode);
-
+        Task<List<GasVolumeCalculation>> GetAll();
         Task<ExportGas?> GetExportGas(Guid id);
         Task AddExportGas(ExportGas gas);
         Task<ExportGas?> GetOtherExportGas(Guid mpointId, Guid exportGas);
