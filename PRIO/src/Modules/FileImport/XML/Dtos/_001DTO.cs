@@ -122,10 +122,10 @@
 
     public class Client001DTO
     {
+        public Guid? Id { get; set; }
+        public ClientInfo Summary { get; set; }
         public Guid? ImportId { get; set; }
-        public ClientInfo? Summary { get; set; }
-        public Guid Id { get; set; }
-        public string FileName { get; set; } = string.Empty;
+        public string FileName { get; set; } = "";
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_001 { get; set; }
         public string COD_INSTALACAO_001 { get; set; } = string.Empty;
         public string COD_TAG_PONTO_MEDICAO_001 { get; set; } = string.Empty;
@@ -249,5 +249,30 @@
         public DateTime? Date { get; set; }
         public decimal? Volume { get; set; }
         public bool? Status { get; set; }
+    }
+
+    public class Response001DTO
+    {
+        public MeasurementHistoryDto? File { get; set; }
+        public List<Client001DTO> Measurements { get; set; } = new();
+    }
+
+    public class Response002DTO
+    {
+        public MeasurementHistoryDto? File { get; set; }
+        public List<Client002DTO> Measurements { get; set; } = new();
+    }
+
+    public class Response003DTO
+    {
+        public MeasurementHistoryDto? File { get; set; }
+        public List<Client003DTO> Measurements { get; set; } = new();
+    }
+
+    public class ResponseXmlDto
+    {
+        public List<Response001DTO> _001File { get; set; } = new();
+        public List<Response002DTO> _002File { get; set; } = new();
+        public List<Response003DTO> _003File { get; set; } = new();
     }
 }

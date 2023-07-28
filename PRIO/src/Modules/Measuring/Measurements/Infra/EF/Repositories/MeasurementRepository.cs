@@ -106,6 +106,5 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories
         {
             return _context.Measurements.Count();
         }
-
     }
 }

@@ -10,6 +10,8 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models
     {
         public string FileName { get; set; } = string.Empty;
 
+        public bool IsCalculated { get; set; } = false;
+
         #region 001
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_001 { get; set; }
         public string? COD_INSTALACAO_001 { get; set; }
@@ -410,7 +412,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models
 
         public FileType? FileType { get; set; }
         public User? User { get; set; }
-        public MeasurementHistory? MeasurementHistory { get; set; }
+        public MeasurementHistory MeasurementHistory { get; set; }
         public MeasuringPoint MeasuringPoint { get; set; }
         public Installation Installation { get; set; }
     }

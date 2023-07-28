@@ -2,6 +2,6 @@
 {
     public class DownloadXMLViewModel
     {
-        public Guid? ImportId { get; set; }
+        public Guid ImportId { get; set; }
     }
 }

@@ -89,7 +89,9 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<Client001DTO, Measurement>();
             CreateMap<Client003DTO, Measurement>();
             CreateMap<Client039DTO, Measurement>();
-            CreateMap<MeasurementHistory, MeasurementHistoryDto>();
+            CreateMap<MeasurementHistory, MeasurementHistoryDto>()
+                .ForMember(dest => dest.ImportId, opt => opt.MapFrom(src =>
+                src.Id));
 
             #endregion
 
