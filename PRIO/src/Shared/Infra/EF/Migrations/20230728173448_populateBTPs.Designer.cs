@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.src.Shared.Infra.EF.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230728173448_populateBTPs")]
+    partial class populateBTPs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -470,133 +473,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("BTPs", (string)null);
-                });
-
-            modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPBase64", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileContent")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Filename")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("BTPBases64", (string)null);
-                });
-
-            modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPData", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("BTPBase64Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("BTPNumber")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Duration")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("Filename")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("FinalDate")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("InitialDate")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("PotencialGas")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("PotencialOil")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("PotencialWater")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("WellId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BTPBase64Id")
-                        .IsUnique();
-
-                    b.HasIndex("WellId");
-
-                    b.ToTable("BTPDatas", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models.Cluster", b =>
@@ -3567,36 +3443,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPBase64", b =>
-                {
-                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
-                        .WithMany("BTPBases64")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPData", b =>
-                {
-                    b.HasOne("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPBase64", "BTPBase64")
-                        .WithOne("BTPData")
-                        .HasForeignKey("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPData", "BTPBase64Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.Well", "Well")
-                        .WithMany("BTPDatas")
-                        .HasForeignKey("WellId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("BTPBase64");
-
-                    b.Navigation("Well");
-                });
-
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models.Cluster", b =>
                 {
                     b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
@@ -4162,8 +4008,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", b =>
                 {
-                    b.Navigation("BTPBases64");
-
                     b.Navigation("Clusters");
 
                     b.Navigation("Completions");
@@ -4197,12 +4041,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTP", b =>
                 {
                     b.Navigation("BTPs");
-                });
-
-            modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPBase64", b =>
-                {
-                    b.Navigation("BTPData")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models.Cluster", b =>
@@ -4240,8 +4078,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.Well", b =>
                 {
-                    b.Navigation("BTPDatas");
-
                     b.Navigation("Completions");
                 });
 
