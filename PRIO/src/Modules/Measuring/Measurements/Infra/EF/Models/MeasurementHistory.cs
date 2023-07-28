@@ -6,9 +6,10 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models
 {
     public class MeasurementHistory
     {
-        public Guid? Id { get; set; }
+        public Guid Id { get; set; }
         public DateTime ImportedAt { get; set; } = DateTime.UtcNow;
-        public User? ImportedBy { get; set; }
+        public DateTime? MeasuredAt { get; set; }
+        public User ImportedBy { get; set; }
         public List<Measurement>? Measurements { get; set; }
         public string TypeOperation { get; set; } = HistoryColumns.Import;
         public string FileName { get; set; } = string.Empty;

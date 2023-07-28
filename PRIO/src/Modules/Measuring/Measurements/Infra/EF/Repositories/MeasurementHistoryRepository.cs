@@ -25,17 +25,10 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories
             return await _context.MeasurementHistories.AnyAsync(x => x.FileContent == base64);
         }
 
-        public async Task<MeasurementHistory?> GetHistoryByImportId(Guid importId)
-        {
-            return await _context.MeasurementHistories
-                .Include(x => x.FileType)
-                .FirstOrDefaultAsync(x => x.Id == importId);
-        }
         public async Task<List<MeasurementHistory>> GetLastUpdatedHistoriesXML(string fileType)
         {
             switch (fileType)
             {
-
                 case "001":
                     {
                         var lastImportedDate = await _context.MeasurementHistories
@@ -111,6 +104,15 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories
             }
 
 
+        }
+
+
+        public async Task<List<MeasurementHistory>> GetProductionOfTheDayByImportId(Guid importId)
+        {
+            return await _context.MeasurementHistories
+                .Include(x => x.Measurements)
+                .Where(x => x.Id == importId)
+                .ToListAsync();
         }
     }
 }

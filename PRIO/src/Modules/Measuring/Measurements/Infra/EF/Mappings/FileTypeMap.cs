@@ -34,6 +34,9 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
             builder.Property(x => x.UpdatedAt);
 
             builder.Property(x => x.DeletedAt);
+
+            builder.HasMany(x => x.Measurements)
+                .WithOne(x => x.FileType);
         }
     }
 }
