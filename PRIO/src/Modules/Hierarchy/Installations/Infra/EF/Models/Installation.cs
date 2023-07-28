@@ -17,6 +17,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models
         public string? CodInstallationAnp { get; set; }
         public double? GasSafetyBurnVolume { get; set; }
         public User? User { get; set; }
+        public List<InstallationBTP>? BTPs { get; set; }
         public Cluster? Cluster { get; set; }
         public OilVolumeCalculation? OilVolumeCalculation { get; set; }
         public List<MeasuringPoint>? MeasuringPoints { get; set; }
