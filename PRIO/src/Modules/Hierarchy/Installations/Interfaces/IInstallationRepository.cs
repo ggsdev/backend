@@ -6,10 +6,12 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Interfaces
     public interface IInstallationRepository
     {
         Task AddAsync(Installation installation);
+        Task AddFRAsync(FieldFR fr);
         void Update(Installation installation);
         void Delete(Installation installation);
         void Restore(Installation installation);
         Task<Installation?> GetByIdAsync(Guid? id);
+        Task<List<FieldFR?>> GetFRsByUEPAsync(string? uep);
         Task<List<FieldFR?>> GetFRsByIdAsync(Guid? id);
         Task<Installation?> GetByNameAsync(string? name);
         Task<Installation?> GetByIdWithCalculationsAsync(Guid? id);

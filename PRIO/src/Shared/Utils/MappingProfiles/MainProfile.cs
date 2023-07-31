@@ -143,6 +143,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<Installation, InstallationWithFieldsEquipmentsDTO>();
 
             CreateMap<Field, FieldDTO>();
+            CreateMap<Field, FieldWithoutWellDTO>();
             CreateMap<Field, CreateUpdateFieldDTO>();
             CreateMap<Field, FieldHistoryDTO>();
             CreateMap<Field, FieldWithoutInstallationDTO>();
@@ -220,6 +221,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             #endregion
 
             CreateMap<BTP, BTPDTO>();
+            CreateMap<FieldFR, FRFieldDTO>();
         }
 
         private static decimal? TruncateTwoDecimals(decimal? value)
