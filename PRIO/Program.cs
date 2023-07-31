@@ -17,6 +17,9 @@ using PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Interfaces;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
+using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories;
+using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services;
+using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
 using PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XML.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces;
@@ -170,6 +173,7 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddScoped<IGasVolumeCalculationRepository, GasVolumeCalculationRepository>();
 
     services.AddScoped<IMeasurementHistoryRepository, MeasurementHistoryRepository>();
+    services.AddScoped<IBTPRepository, BTPRepository>();
 
     #endregion
 
@@ -210,6 +214,8 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddScoped<GasVolumeCalculationService>();
 
     #endregion
+
+    services.AddScoped<BTPService>();
 
     services.AddScoped<XLSXService>();
 
