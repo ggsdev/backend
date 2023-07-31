@@ -14,12 +14,17 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Mappings
                .HasColumnType("DECIMAL")
                .HasPrecision(10, 5);
 
+            builder.Property(x => x.TotalWater)
+               .HasColumnType("DECIMAL")
+               .HasPrecision(10, 5);
+
             builder.Property(x => x.TotalGas)
               .HasColumnType("DECIMAL")
               .HasPrecision(10, 5);
 
             builder.HasOne(x => x.CalculatedImportedBy)
                 .WithMany(d => d.Productions)
+                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
         }
     }
