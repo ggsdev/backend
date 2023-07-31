@@ -2302,7 +2302,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             if (_repository.CountAdded() == 0)
                 throw new BadRequestException("Nenhuma medição foi adicionada", status: "Error");
 
-
             return new ImportResponseDTO { Status = "Success", Message = $"Arquivo importado com sucesso, {_repository.CountAdded()} medições importadas" };
         }
 

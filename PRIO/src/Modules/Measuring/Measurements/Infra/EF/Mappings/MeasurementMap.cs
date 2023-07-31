@@ -1496,6 +1496,11 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
             .WithMany(m => m.Measurements)
             .OnDelete(DeleteBehavior.Restrict)
             .IsRequired();
+
+            builder.HasOne(x => x.Production)
+            .WithMany(m => m.Measurements)
+            .OnDelete(DeleteBehavior.NoAction)
+            .IsRequired();
         }
     }
 }

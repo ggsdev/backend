@@ -2,6 +2,7 @@
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models
@@ -11,6 +12,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models
         public string FileName { get; set; } = string.Empty;
 
         public bool IsCalculated { get; set; } = false;
+        public Production Production { get; set; }
 
         #region 001
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_001 { get; set; }
