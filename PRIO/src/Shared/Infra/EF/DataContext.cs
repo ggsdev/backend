@@ -79,7 +79,11 @@ namespace PRIO.src.Shared.Infra.EF
         #region Measurement & Relations
         public DbSet<MeasurementHistory> MeasurementHistories { get; set; }
         public DbSet<MeasuringEquipment> MeasuringEquipments { get; set; }
+
         public DbSet<Production> Productions { get; set; }
+        public DbSet<Oil> Oils { get; set; }
+        public DbSet<Gas> Gases { get; set; }
+
         public DbSet<MeasuringPoint> MeasuringPoints { get; set; }
         public DbSet<OilVolumeCalculation> OilVolumeCalculations { get; set; }
         public DbSet<Section> Sections { get; set; }
@@ -210,6 +214,8 @@ namespace PRIO.src.Shared.Infra.EF
             modelBuilder.ApplyConfiguration(new MeasuringEquipmentMap());
             modelBuilder.ApplyConfiguration(new MeasurementHistoryMap());
             modelBuilder.ApplyConfiguration(new ProductionMap());
+            modelBuilder.ApplyConfiguration(new OilMap());
+            modelBuilder.ApplyConfiguration(new GasMap());
             modelBuilder.ApplyConfiguration(new MeasuringPointMap());
             modelBuilder.ApplyConfiguration(new BTPMap());
             modelBuilder.ApplyConfiguration(new BTPDataMap());

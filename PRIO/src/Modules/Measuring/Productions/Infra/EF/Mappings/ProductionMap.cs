@@ -10,22 +10,25 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Mappings
         {
             builder.ToTable("Productions");
 
-            builder.Property(x => x.TotalOil)
-               .HasColumnType("DECIMAL")
-               .HasPrecision(10, 5);
+            builder.HasOne(x => x.Oil)
+                .WithOne(d => d.Production)
+                .HasForeignKey<Production>("OilId")
+               .OnDelete(DeleteBehavior.NoAction);
 
-            builder.Property(x => x.TotalWater)
-               .HasColumnType("DECIMAL")
-               .HasPrecision(10, 5);
+            builder.HasOne(x => x.Gas)
+                .WithOne(d => d.Production)
+                .HasForeignKey<Production>("GasId")
+               .OnDelete(DeleteBehavior.NoAction);
 
-            builder.Property(x => x.TotalGas)
-              .HasColumnType("DECIMAL")
-              .HasPrecision(10, 5);
+            //builder.HasOne(x => x.Water)
+            //  .WithOne(d => d.Production)
+            //  .HasForeignKey<Production>("WaterId")
+            // .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(x => x.CalculatedImportedBy)
-                .WithMany(d => d.Productions)
-                .OnDelete(DeleteBehavior.NoAction)
-                .IsRequired();
+               .WithMany(d => d.Productions)
+               .OnDelete(DeleteBehavior.NoAction);
+
         }
     }
 }

@@ -1424,6 +1424,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 }
             }
 
+
+            decimal totalBurnetGas = 0;
+            decimal totalFuelGas = 0;
+            decimal totalExportedGas = 0;
+            decimal totalImportedGas = 0;
+
+
+
             foreach (var file002 in response._002File)
             {
                 var gasCalculationByUepCode = await _gasCalculationRepository
@@ -1431,6 +1439,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                 if (gasCalculationByUepCode is null)
                     throw new NotFoundException("Cálculo de gás não encontrado");
+
+                for (int i = 0; i < file002.Measurements.Count; ++i)
+                {
+                    var measurementResponse = file002.Measurements[i];
+
+
+                }
+
 
                 var containAssistanceGas = false;
 
@@ -1442,6 +1458,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                         if (assistanceGas.IsApplicable && assistanceGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
                         {
+                            totalBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
+
                             containAssistanceGas = true;
                             break;
                         }
@@ -1477,6 +1495,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                         if (exportGas.IsApplicable && exportGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
                         {
+                            totalExportedGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
                             containExportGas = true;
                             break;
                         }
@@ -1512,6 +1531,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                         if (highPressureGas.IsApplicable && highPressureGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
                         {
+                            totalFuelGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
                             containHighPressureGas = true;
                             break;
                         }
@@ -1547,6 +1567,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                         if (hpFlare.IsApplicable && hpFlare.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
                         {
+                            totalBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
+
                             containHPFlare = true;
                             break;
                         }
@@ -1582,6 +1604,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                         if (importGas.IsApplicable && importGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
                         {
+                            totalImportedGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
+
                             containImportGas = true;
                             break;
                         }
@@ -1617,6 +1641,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                         if (lowPressure.IsApplicable && lowPressure.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
                         {
+                            totalFuelGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
+
                             containLowPressureGas = true;
                             break;
                         }
@@ -1651,6 +1677,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                         if (lpFlare.IsApplicable && lpFlare.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
                         {
+                            totalBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
+
                             containLPFlare = true;
                             break;
                         }
@@ -1686,6 +1714,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                         if (pilotGas.IsApplicable && pilotGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
                         {
+                            totalBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
+                            totalFuelGas -= measurementResponse.MED_CORRIGIDO_MVMDO_002;
+
                             containPilotGas = true;
                             break;
                         }
@@ -1720,6 +1751,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                         if (purgeGas.IsApplicable && purgeGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
                         {
+                            totalBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
+                            totalFuelGas -= measurementResponse.MED_CORRIGIDO_MVMDO_002;
+
                             containPurgeGas = true;
                             break;
                         }
@@ -1745,6 +1779,13 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     }
                 }
 
+                var totalGas = totalBurnetGas + totalFuelGas + (totalExportedGas - totalImportedGas);
+
+                file002.TotalGasProduction = totalGas;
+                file002.TotalGasBurnt = totalBurnetGas;
+                file002.TotalGasFuel = totalFuelGas;
+                file002.TotalGasExported = totalExportedGas;
+                file002.TotalGasImported = totalImportedGas;
             }
 
             foreach (var file003 in response._003File)
@@ -1765,6 +1806,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                         if (assistanceGas.IsApplicable && assistanceGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
                         {
+                            totalBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
+
                             containAssistanceGas = true;
                             break;
                         }
@@ -1800,6 +1843,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                         if (exportGas.IsApplicable && exportGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
                         {
+                            totalExportedGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
+
                             containExportGas = true;
                             break;
                         }
@@ -1835,6 +1880,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                         if (highPressureGas.IsApplicable && highPressureGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
                         {
+                            totalFuelGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
+
                             containHighPressureGas = true;
                             break;
                         }
@@ -1870,6 +1917,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                         if (hpFlare.IsApplicable && hpFlare.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
                         {
+                            totalBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
+
                             containHPFlare = true;
                             break;
                         }
@@ -1905,6 +1954,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                         if (importGas.IsApplicable && importGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
                         {
+                            totalImportedGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
+
                             containImportGas = true;
                             break;
                         }
@@ -1940,6 +1991,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                         if (lowPressure.IsApplicable && lowPressure.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
                         {
+                            totalFuelGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
+
                             containLowPressureGas = true;
                             break;
                         }
@@ -1974,6 +2027,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                         if (lpFlare.IsApplicable && lpFlare.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
                         {
+                            totalBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
+
                             containLPFlare = true;
                             break;
                         }
@@ -2009,6 +2064,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                         if (pilotGas.IsApplicable && pilotGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
                         {
+                            totalBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
+                            totalFuelGas -= measurementResponse.MED_CORRIGIDO_MVMDO_003;
+
                             containPilotGas = true;
                             break;
                         }
@@ -2043,6 +2101,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                         if (purgeGas.IsApplicable && purgeGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
                         {
+                            totalBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
+                            totalFuelGas -= measurementResponse.MED_CORRIGIDO_MVMDO_003;
                             containPurgeGas = true;
                             break;
                         }
@@ -2068,6 +2128,13 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     }
                 }
 
+                var totalGas = totalBurnetGas + totalFuelGas + (totalExportedGas - totalImportedGas);
+
+                file003.TotalGasProduction = totalGas;
+                file003.TotalGasBurnt = totalBurnetGas;
+                file003.TotalGasFuel = totalFuelGas;
+                file003.TotalGasExported = totalExportedGas;
+                file003.TotalGasImported = totalImportedGas;
             }
 
             return response;
@@ -2078,8 +2145,18 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             foreach (var file in data._001File)
             {
+                var totalOilProduction = 0;
+
+
                 foreach (var bodyMeasurement in file.Measurements)
                 {
+
+                    if (bodyMeasurement.BswManual is null)
+                        throw new BadRequestException("É obrigatório preencher o BSW.");
+
+                    if (bodyMeasurement.ImportId is null)
+                        throw new BadRequestException("Arquivo não encontrado.");
+
                     var measurement = _mapper.Map<Client001DTO, Measurement>(bodyMeasurement);
 
                     var measurementExists = await _repository.GetAnyByDate(measurement.DHA_INICIO_PERIODO_MEDICAO_001, XmlUtils.File001);
@@ -2098,54 +2175,53 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     if (measuringPoint is null)
                         throw new NotFoundException($"{ErrorMessages.NotFound<MeasuringPoint>()} TAG: {measurement.COD_TAG_PONTO_MEDICAO_001}");
 
-                    if (bodyMeasurement.ImportId is not null)
+
+
+                    var fileInfo = new FileBasicInfoDTO
                     {
-                        var fileInfo = new FileBasicInfoDTO
+                        Acronym = XmlUtils.FileAcronym001,
+                        Name = bodyMeasurement.FileName,
+                        Type = XmlUtils.File001
+                    };
+                    measurement.User = user;
+
+                    measurement.FileType = new FileType
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = fileInfo.Type,
+                        Acronym = fileInfo.Acronym,
+                        ImportId = bodyMeasurement.ImportId
+                    };
+
+                    measurement.Installation = installation;
+                    measurement.MeasuringPoint = measuringPoint;
+
+                    var path001Xml = Path.GetTempPath() + bodyMeasurement.ImportId + ".xml";
+
+                    if (File.Exists(path001Xml))
+                    {
+                        var documentXml = XDocument.Load(path001Xml);
+                        byte[] xmlBytes;
+                        using (var memoryStream = new MemoryStream())
+                        using (var xmlWriter = XmlWriter.Create(memoryStream, new XmlWriterSettings { Encoding = Encoding.UTF8 }))
                         {
-                            Acronym = XmlUtils.FileAcronym001,
-                            Name = bodyMeasurement.FileName,
-                            Type = XmlUtils.File001
-                        };
-                        measurement.User = user;
-
-                        measurement.FileType = new FileType
-                        {
-                            Id = Guid.NewGuid(),
-                            Name = fileInfo.Type,
-                            Acronym = fileInfo.Acronym,
-                            ImportId = bodyMeasurement.ImportId
-                        };
-
-                        measurement.Installation = installation;
-                        measurement.MeasuringPoint = measuringPoint;
-
-                        var path001Xml = Path.GetTempPath() + bodyMeasurement.ImportId + ".xml";
-
-                        if (File.Exists(path001Xml))
-                        {
-                            var documentXml = XDocument.Load(path001Xml);
-                            byte[] xmlBytes;
-                            using (var memoryStream = new MemoryStream())
-                            using (var xmlWriter = XmlWriter.Create(memoryStream, new XmlWriterSettings { Encoding = Encoding.UTF8 }))
-                            {
-                                documentXml.Save(xmlWriter);
-                                xmlWriter.Flush();
-                                xmlBytes = memoryStream.ToArray();
-                            }
-
-                            var base64String = "data:@file/xml;base64," + Convert.ToBase64String(xmlBytes);
-
-                            if (base64HistoryMap.TryGetValue(base64String, out var history) is false)
-                            {
-                                history = await _measurementService.Import(user, fileInfo, base64String, measurement.DHA_INICIO_PERIODO_MEDICAO_001);
-                                base64HistoryMap.Add(base64String, history);
-                            }
-
-                            measurement.MeasurementHistory = history;
+                            documentXml.Save(xmlWriter);
+                            xmlWriter.Flush();
+                            xmlBytes = memoryStream.ToArray();
                         }
 
-                        await _repository.AddAsync(measurement);
+                        var base64String = "data:@file/xml;base64," + Convert.ToBase64String(xmlBytes);
+
+                        if (base64HistoryMap.TryGetValue(base64String, out var history) is false)
+                        {
+                            history = await _measurementService.Import(user, fileInfo, base64String, measurement.DHA_INICIO_PERIODO_MEDICAO_001);
+                            base64HistoryMap.Add(base64String, history);
+                        }
+
+                        measurement.MeasurementHistory = history;
                     }
+
+                    await _repository.AddAsync(measurement);
                 }
             }
 

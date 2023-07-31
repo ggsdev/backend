@@ -981,12 +981,6 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
             return gasVolumeCalculationDTO;
         }
 
-
-        //public async Task<GasVolumeCalculationDto> CalculateGasProduction(Guid installationId, UpdateGasVolumeCalculationViewModel body)
-        //{
-
-        //}
-
         public async Task<List<GasVolumeCalculationDto>> GetAll()
         {
             var gasVolumeCalculation = await _repository.GetAll();
@@ -994,5 +988,11 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
             var gasVolumeCalculationDTO = _mapper.Map<List<GasVolumeCalculation>, List<GasVolumeCalculationDto>>(gasVolumeCalculation);
             return gasVolumeCalculationDTO;
         }
+
+
+        //public async Task<GasVolumeCalculationDto> CalculateGasProduction(Guid installationId, UpdateGasVolumeCalculationViewModel body)
+        //{
+
+        //}
     }
 }

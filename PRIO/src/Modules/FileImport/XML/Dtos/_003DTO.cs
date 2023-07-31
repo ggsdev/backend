@@ -92,7 +92,7 @@
         public decimal? MED_PRESSAO_ESTATICA_003 { get; set; }
         public decimal? MED_TEMPERATURA_2_003 { get; set; }
         public decimal? PRZ_DURACAO_FLUXO_EFETIVO_003 { get; set; }
-        public decimal? MED_CORRIGIDO_MVMDO_003 { get; set; }
+        public decimal MED_CORRIGIDO_MVMDO_003 { get; set; }
     }
 
 
@@ -190,6 +190,6 @@
         public decimal? MED_PRESSAO_ESTATICA_003 { get; set; }
         public decimal? MED_TEMPERATURA_2_003 { get; set; }
         public decimal? PRZ_DURACAO_FLUXO_EFETIVO_003 { get; set; }
-        public decimal? MED_CORRIGIDO_MVMDO_003 { get; set; }
+        public decimal MED_CORRIGIDO_MVMDO_003 { get; set; }
     }
 }

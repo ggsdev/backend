@@ -122,6 +122,7 @@
 
     public class Client001DTO
     {
+        public decimal? BswManual { get; set; }
         public Guid? Id { get; set; }
         public ClientInfo Summary { get; set; }
         public Guid? ImportId { get; set; }
@@ -259,12 +260,23 @@
 
     public class Response002DTO
     {
+        public decimal TotalGasProduction { get; set; }
+        public decimal TotalGasBurnt { get; set; }
+        public decimal TotalGasFuel { get; set; }
+        public decimal TotalGasExported { get; set; }
+        public decimal TotalGasImported { get; set; }
         public MeasurementHistoryDto? File { get; set; }
         public List<Client002DTO> Measurements { get; set; } = new();
+
     }
 
     public class Response003DTO
     {
+        public decimal TotalGasProduction { get; set; }
+        public decimal TotalGasBurnt { get; set; }
+        public decimal TotalGasFuel { get; set; }
+        public decimal TotalGasExported { get; set; }
+        public decimal TotalGasImported { get; set; }
         public MeasurementHistoryDto? File { get; set; }
         public List<Client003DTO> Measurements { get; set; } = new();
     }

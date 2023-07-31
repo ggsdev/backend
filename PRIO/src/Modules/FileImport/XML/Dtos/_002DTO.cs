@@ -125,7 +125,7 @@
         public decimal? MED_TEMPERATURA_2_002 { get; set; }
         public decimal? PRZ_DURACAO_FLUXO_EFETIVO_002 { get; set; }
         public decimal? MED_BRUTO_MOVIMENTADO_002 { get; set; }
-        public decimal? MED_CORRIGIDO_MVMDO_002 { get; set; }
+        public decimal MED_CORRIGIDO_MVMDO_002 { get; set; }
 
     }
 
@@ -258,7 +258,7 @@
         public decimal? MED_TEMPERATURA_2_002 { get; set; }
         public decimal? PRZ_DURACAO_FLUXO_EFETIVO_002 { get; set; }
         public decimal? MED_BRUTO_MOVIMENTADO_002 { get; set; }
-        public decimal? MED_CORRIGIDO_MVMDO_002 { get; set; }
+        public decimal MED_CORRIGIDO_MVMDO_002 { get; set; }
 
     }
 }
