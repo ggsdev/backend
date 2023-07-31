@@ -83,6 +83,8 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
                 Description = body.Description,
                 User = user,
                 Well = well,
+                TopOfPerforated = body.TopOfPerforated is not null ? body.TopOfPerforated : null,
+                BaseOfPerforated = body.BaseOfPerforated is not null ? body.BaseOfPerforated : null,
                 Reservoir = reservoir,
                 IsActive = body.IsActive is not null ? body.IsActive.Value : true,
                 AllocationReservoir = body.AllocationReservoir is not null ? body.AllocationReservoir : 1,

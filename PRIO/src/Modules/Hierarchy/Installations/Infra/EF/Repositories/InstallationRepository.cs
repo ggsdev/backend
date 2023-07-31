@@ -53,6 +53,19 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                .Where(x => x.Field.Installation.Id == id)
                .ToListAsync();
         }
+        public async Task<List<FieldFR?>> GetFRsByUEPAsync(string? uep)
+        {
+            var Frs = await _context.FieldsFRs
+                .Include(x => x.Field)
+                .ThenInclude(x => x.Installation)
+                .Where(x => x.Field.Installation.UepCod == uep)
+                .ToListAsync();
+            return Frs;
+        }
+        public async Task AddFRAsync(FieldFR fr)
+        {
+            await _context.FieldsFRs.AddAsync(fr);
+        }
 
         public async Task<Installation?> GetInstallationAndChildren(Guid? id)
         {
@@ -133,7 +146,8 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
         {
             return await _context.Installations
                 .Include(x => x.Fields)
-                .Where(x => x.UepCod == cod && x.CodInstallationAnp == cod)
+                .ThenInclude(x => x.FRs)
+                .Where(x => x.UepCod == cod)
               .ToListAsync();
         }
 
