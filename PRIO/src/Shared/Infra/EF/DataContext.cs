@@ -118,6 +118,8 @@ namespace PRIO.src.Shared.Infra.EF
 
         #endregion
 
+        public DbSet<FieldFR> FieldsFRs { get; set; }
+
         public DbSet<SystemHistory> SystemHistories { get; set; }
         public DbSet<Auxiliary> Auxiliaries { get; set; }
 

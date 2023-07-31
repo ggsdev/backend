@@ -5,6 +5,8 @@ using PRIO.src.Modules.ControlAccess.Menus.Dtos;
 using PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.FileImport.XLSX.BTPS.Dtos;
+using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XML.Dtos;
 using PRIO.src.Modules.FileImport.XML.FileContent._001;
 using PRIO.src.Modules.FileImport.XML.FileContent._002;
@@ -217,6 +219,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<PurgeGas, PurgeGasDto>();
             #endregion
 
+            CreateMap<BTP, BTPDTO>();
         }
 
         private static decimal? TruncateTwoDecimals(decimal? value)

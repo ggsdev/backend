@@ -17,5 +17,6 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models
         public Installation? Installation { get; set; }
         public List<Zone>? Zones { get; set; }
         public List<Well>? Wells { get; set; }
+        public List<FieldFR>? FRs { get; set; }
     }
 }

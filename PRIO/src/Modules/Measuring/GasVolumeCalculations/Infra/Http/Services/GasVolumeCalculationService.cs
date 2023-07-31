@@ -617,6 +617,43 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
             if (gasCalculationInDatabase is null)
                 throw new NotFoundException("Instalação não possui cálculo para ser atualizado");
 
+            if (installation.GasVolumeCalculation.HPFlares.Any())
+            {
+                _repository.RemoveRange(installation.GasVolumeCalculation.HPFlares);
+            }
+            if (installation.GasVolumeCalculation.LPFlares.Any())
+            {
+                _repository.RemoveRange(installation.GasVolumeCalculation.LPFlares);
+            }
+            if (installation.GasVolumeCalculation.AssistanceGases.Any())
+            {
+                _repository.RemoveRange(installation.GasVolumeCalculation.AssistanceGases);
+            }
+            if (installation.GasVolumeCalculation.ExportGases.Any())
+            {
+                _repository.RemoveRange(installation.GasVolumeCalculation.ExportGases);
+            }
+            if (installation.GasVolumeCalculation.HighPressureGases.Any())
+            {
+                _repository.RemoveRange(installation.GasVolumeCalculation.HighPressureGases);
+            }
+            if (installation.GasVolumeCalculation.LowPressureGases.Any())
+            {
+                _repository.RemoveRange(installation.GasVolumeCalculation.LowPressureGases);
+            }
+            if (installation.GasVolumeCalculation.ImportGases.Any())
+            {
+                _repository.RemoveRange(installation.GasVolumeCalculation.ImportGases);
+            }
+            if (installation.GasVolumeCalculation.PilotGases.Any())
+            {
+                _repository.RemoveRange(installation.GasVolumeCalculation.PilotGases);
+            }
+            if (installation.GasVolumeCalculation.PurgeGases.Any())
+            {
+                _repository.RemoveRange(installation.GasVolumeCalculation.PurgeGases);
+            }
+
             if (body.AssistanceGases is not null)
             {
                 foreach (var assistanceGas in body.AssistanceGases)
@@ -631,8 +668,6 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
                     if (assistanceGasFound is not null)
                         throw new ConflictException($"Ponto de medição para ser atualizado possui relação com outra instalação ({assistanceGasFound.GasVolumeCalculation.Installation.Name}).");
                 }
-
-                _repository.RemoveRange(gasCalculationInDatabase.AssistanceGases);
 
                 foreach (var assistanceGas in body.AssistanceGases)
                 {
@@ -671,8 +706,6 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
                         throw new ConflictException($"Ponto de medição para ser atualizado possui relação com outra instalação ({exportGasFound.GasVolumeCalculation.Installation.Name}).");
                 }
 
-                _repository.RemoveRange(gasCalculationInDatabase.ExportGases);
-
                 foreach (var exportGas in body.ExportGases)
                 {
                     var measuringPoint = await _measuringPointRepository
@@ -709,8 +742,6 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
                     if (highPressureGasFound is not null)
                         throw new ConflictException($"Ponto de medição para ser atualizado possui relação com outra instalação ({highPressureGasFound.GasVolumeCalculation.Installation.Name}).");
                 }
-
-                _repository.RemoveRange(gasCalculationInDatabase.HighPressureGases);
 
                 foreach (var highPressureGas in body.HighPressureGases)
                 {
@@ -750,8 +781,6 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
                         throw new ConflictException($"Ponto de medição para ser atualizado possui relação com outra instalação ({hpFlareFound.GasVolumeCalculation.Installation.Name}).");
                 }
 
-                _repository.RemoveRange(gasCalculationInDatabase.HPFlares);
-
                 foreach (var hpFlare in body.HPFlares)
                 {
                     var measuringPoint = await _measuringPointRepository
@@ -789,8 +818,6 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
                     if (importGasFound is not null)
                         throw new ConflictException($"Ponto de medição para ser atualizado possui relação com outra instalação ({importGasFound.GasVolumeCalculation.Installation.Name}).");
                 }
-
-                _repository.RemoveRange(gasCalculationInDatabase.ImportGases);
 
                 foreach (var importGas in body.ImportGases)
                 {
@@ -830,8 +857,6 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
                         throw new ConflictException($"Ponto de medição para ser atualizado possui relação com outra instalação ({lowPressureGasFound.GasVolumeCalculation.Installation.Name}).");
                 }
 
-                _repository.RemoveRange(gasCalculationInDatabase.LowPressureGases);
-
                 foreach (var lowPressureGas in body.LowPressureGases)
                 {
                     var measuringPoint = await _measuringPointRepository
@@ -869,8 +894,6 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
                     if (lpFlareFound is not null)
                         throw new ConflictException($"Ponto de medição para ser atualizado possui relação com outra instalação ({lpFlareFound.GasVolumeCalculation.Installation.Name}).");
                 }
-
-                _repository.RemoveRange(gasCalculationInDatabase.LPFlares);
 
                 foreach (var lpFlare in body.LPFlares)
                 {
@@ -910,8 +933,6 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
                         throw new ConflictException($"Ponto de medição para ser atualizado possui relação com outra instalação ({pilotGasFound.GasVolumeCalculation.Installation.Name}).");
                 }
 
-                _repository.RemoveRange(gasCalculationInDatabase.PilotGases);
-
                 foreach (var pilotGas in body.PilotGases)
                 {
                     var measuringPoint = await _measuringPointRepository
@@ -949,8 +970,6 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
                     if (purgeGasFound is not null)
                         throw new ConflictException($"Ponto de medição para ser atualizado possui relação com outra instalação ({purgeGasFound.GasVolumeCalculation.Installation.Name}).");
                 }
-
-                _repository.RemoveRange(gasCalculationInDatabase.PurgeGases);
 
                 foreach (var purgeGas in body.PurgeGases)
                 {
