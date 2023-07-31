@@ -70,6 +70,23 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
             return await _context.Installations
                 .Include(x => x.OilVolumeCalculation)
                 .Include(x => x.GasVolumeCalculation)
+                    .ThenInclude(x => x.AssistanceGases)
+                .Include(x => x.GasVolumeCalculation)
+                    .ThenInclude(x => x.ExportGases)
+                .Include(x => x.GasVolumeCalculation)
+                    .ThenInclude(x => x.ImportGases)
+                .Include(x => x.GasVolumeCalculation)
+                    .ThenInclude(x => x.LowPressureGases)
+                .Include(x => x.GasVolumeCalculation)
+                    .ThenInclude(x => x.HighPressureGases)
+                .Include(x => x.GasVolumeCalculation)
+                    .ThenInclude(x => x.HPFlares)
+                .Include(x => x.GasVolumeCalculation)
+                        .ThenInclude(x => x.LPFlares)
+                .Include(x => x.GasVolumeCalculation)
+                        .ThenInclude(x => x.PilotGases)
+                .Include(x => x.GasVolumeCalculation)
+                        .ThenInclude(x => x.PurgeGases)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 

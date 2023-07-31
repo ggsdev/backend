@@ -603,8 +603,6 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
             var installation = await _installationRepository
                 .GetByIdWithCalculationsAsync(installationId);
 
-            Console.WriteLine(installation.UepCod);
-
             if (installation is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Installation>());
 
