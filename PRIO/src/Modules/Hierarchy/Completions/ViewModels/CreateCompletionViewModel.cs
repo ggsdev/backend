@@ -12,6 +12,10 @@ namespace PRIO.src.Modules.Hierarchy.Completions.ViewModels
         public Guid? ReservoirId { get; set; }
         [Required(ErrorMessage = "WellId is required")]
         public Guid? WellId { get; set; }
+        [DecimalPrecision(12)]
+        public decimal? TopOfPerforated { get; set; }
+        [DecimalPrecision(12)]
+        public decimal? BaseOfPerforated { get; set; }
         public bool? IsActive { get; set; }
     }
 }

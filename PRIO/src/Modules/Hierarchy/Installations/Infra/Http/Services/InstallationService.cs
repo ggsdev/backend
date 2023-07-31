@@ -5,6 +5,7 @@ using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Completions.Interfaces;
+using PRIO.src.Modules.Hierarchy.Fields.Dtos;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Dtos;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
@@ -120,7 +121,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
             return installationDTO;
         }
 
-        public async Task<InstallationDTO> ApplyFR(CreateFRsFieldsViewModel body, User user)
+        public async Task<List<FRFieldDTO>> ApplyFR(CreateFRsFieldsViewModel body, User user)
         {
             var installation = await _installationRepository.GetByIdAsync(body.InstallationId);
 
@@ -146,14 +147,18 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                 }
             }
 
+            foreach (var item in body.Fields)
+            {
+                var field = await _fieldRepository.GetByIdAsync(item.FieldId);
+                if (field is null)
+                    throw new NotFoundException("Campo não encontrado");
+            }
+
             if (body.isApplicableFROil is true)
             {
                 decimal? sumOil = 0;
                 foreach (var item in body.Fields)
                 {
-                    var field = await _fieldRepository.GetByIdAsync(item.FieldId);
-                    if (field is null)
-                        throw new NotFoundException("Campo não encontrado");
                     if (item.OilFR is null)
                         throw new ConflictException("Fator de rateio do campo não encontrado.");
 
@@ -161,6 +166,15 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                 }
                 if (sumOil != 1)
                     throw new ConflictException("Óleo: Soma dos fatores deve ser 100%.");
+            }
+            else
+            {
+                foreach (var item in body.Fields)
+                {
+
+                    if (item.OilFR is not null)
+                        throw new ConflictException("Óleo: Fator de rateio não se aplica.");
+                }
             }
 
             if (body.isApplicableFRGas is true)
@@ -176,6 +190,14 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                 if (sumGas != 1)
                     throw new ConflictException("Gás: Soma dos fatores deve ser 100%.");
             }
+            else
+            {
+                foreach (var item in body.Fields)
+                {
+                    if (item.GasFR is not null)
+                        throw new ConflictException("Gás: Fator de rateio não se aplica.");
+                }
+            }
 
             if (body.isApplicableFRWater is true)
             {
@@ -190,12 +212,24 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                 if (sumWater != 1)
                     throw new ConflictException("Água: Soma dos fatores deve ser 100%.");
             }
-
-            var frsField = await _installationRepository.GetFRsByIdAsync(body.InstallationId);
-
-            foreach (var item in frsField)
+            else
             {
-                item.IsActive = false;
+                foreach (var item in body.Fields)
+                {
+                    if (item.WaterFR is not null)
+                        throw new ConflictException("Água: Fator de rateio não se aplica.");
+                }
+            }
+
+            foreach (var installationUEP in installationsWithFields)
+            {
+                foreach (var field in installationUEP.Fields)
+                {
+                    foreach (var fr in field.FRs)
+                    {
+                        fr.IsActive = false;
+                    }
+                }
             }
 
             foreach (var item in body.Fields)
@@ -210,13 +244,15 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                     FRWater = item.WaterFR,
                     IsActive = true,
                 };
+                await _installationRepository.AddFRAsync(createOilFr);
             }
-
             await _installationRepository.SaveChangesAsync();
 
-            var installationDTO = _mapper.Map<Installation, InstallationDTO>(installation);
+            var frs = await _installationRepository.GetFRsByUEPAsync(installation.UepCod);
 
-            return installationDTO;
+            var frsDTO = _mapper.Map<List<FieldFR>, List<FRFieldDTO>>(frs);
+
+            return frsDTO;
         }
 
         public async Task<List<InstallationDTO>> GetInstallations()
