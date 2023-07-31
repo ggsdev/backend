@@ -22,10 +22,6 @@ namespace PRIO.src.Modules.Hierarchy.Wells.ViewModels
         public string? Type { get; set; }
         [DecimalPrecision(12, isRequired: false)]
         public decimal? WaterDepth { get; set; }
-        [DecimalPrecision(12, isRequired: false)]
-        public decimal? TopOfPerforated { get; set; }
-        [DecimalPrecision(12, isRequired: false)]
-        public decimal? BaseOfPerforated { get; set; }
         public string? ArtificialLift { get; set; }
         [RegularExpression(@"^-?\d{2}:\d{2}:\d{2},\d{3}$",
             ErrorMessage = "Invalid latitude. Please use the format 'dd:mm:ss,sss'.")]

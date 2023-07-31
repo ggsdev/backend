@@ -14,7 +14,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Mappings
                .HasColumnType("DECIMAL")
                .HasPrecision(10, 5);
 
-            builder.Property(x => x.Bsw)
+            builder.Property(x => x.BswAverage)
                .HasColumnType("DECIMAL")
                .HasPrecision(4, 2);
         }

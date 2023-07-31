@@ -4,11 +4,11 @@ using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Mappings
 {
-    public class GasMap : IEntityTypeConfiguration<Gas>
+    public class GasLinearMap : IEntityTypeConfiguration<GasLinear>
     {
-        public void Configure(EntityTypeBuilder<Gas> builder)
+        public void Configure(EntityTypeBuilder<GasLinear> builder)
         {
-            builder.ToTable("Gases");
+            builder.ToTable("GasesLinears");
 
             builder.Property(x => x.TotalGas)
               .HasColumnType("DECIMAL")

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.src.Shared.Infra.EF.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230731184859_CalculateOilAndGas")]
+    partial class CalculateOilAndGas
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3577,7 +3580,7 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Property<bool>("StatusOil")
                         .HasColumnType("bit");
 
-                    b.Property<decimal>("TotalOil")
+                    b.Property<decimal?>("TotalOil")
                         .HasPrecision(10, 5)
                         .HasColumnType("DECIMAL");
 
@@ -3615,9 +3618,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
                     b.Property<bool>("StatusProduction")
                         .HasColumnType("bit");
-
-                    b.Property<decimal>("TotalProduction")
-                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 

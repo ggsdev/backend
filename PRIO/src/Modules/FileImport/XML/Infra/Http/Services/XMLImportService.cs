@@ -23,6 +23,8 @@ using PRIO.src.Modules.Measuring.Measurements.Interfaces;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces;
+using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.Productions.Interfaces;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Utils;
 using System.Globalization;
@@ -39,13 +41,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
         private readonly IInstallationRepository _installationRepository;
         private readonly IGasVolumeCalculationRepository _gasCalculationRepository;
         private readonly IOilVolumeCalculationRepository _oilCalculationRepository;
+        private readonly IProductionRepository _productionRepository;
         private readonly IMeasuringPointRepository _measuringPointRepository;
         private readonly IMeasurementRepository _repository;
         private readonly IMeasurementHistoryRepository _measurementHistoryRepository;
 
         [GeneratedRegex("(?<=data:@file/xml;base64,)\\w+")]
         private static partial Regex XmlRegex();
-        public XMLImportService(IMapper mapper, IInstallationRepository installationRepository, IMeasurementRepository xMLImportRepository, MeasurementService measurementService, IGasVolumeCalculationRepository gasVolumeCalculationRepository, IMeasuringPointRepository measuringPointRepository, IOilVolumeCalculationRepository oilVolumeCalculationRepository, IMeasurementHistoryRepository measurementHistoryRepository)
+        public XMLImportService(IMapper mapper, IInstallationRepository installationRepository, IMeasurementRepository xMLImportRepository, MeasurementService measurementService, IGasVolumeCalculationRepository gasVolumeCalculationRepository, IMeasuringPointRepository measuringPointRepository, IOilVolumeCalculationRepository oilVolumeCalculationRepository, IMeasurementHistoryRepository measurementHistoryRepository, IProductionRepository productionRepository)
         {
             _mapper = mapper;
             _installationRepository = installationRepository;
@@ -55,6 +58,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             _gasCalculationRepository = gasVolumeCalculationRepository;
             _oilCalculationRepository = oilVolumeCalculationRepository;
             _measurementHistoryRepository = measurementHistoryRepository;
+            _productionRepository = productionRepository;
         }
 
         public async Task<ResponseXmlDto> Validate(RequestXmlViewModel data, User user)
@@ -667,6 +671,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                         applicable = true;
                                                 }
 
+
                                             foreach (var highPressure in gasCalculation.HighPressureGases)
                                                 if (highPressure.IsActive && highPressure.MeasuringPoint.TagPointMeasuring == measuringPoint.TagPointMeasuring)
                                                 {
@@ -1275,6 +1280,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     response._001File.Add(response001);
             }
 
+
             foreach (var file001 in response._001File)
             {
                 var oilCalculationByUepCode = await _oilCalculationRepository
@@ -1363,6 +1369,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                         if (section.IsApplicable && section.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_001)
                         {
+
                             containSection = true;
                             break;
                         }
@@ -1424,13 +1431,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 }
             }
 
-
             decimal totalBurnetGas = 0;
             decimal totalFuelGas = 0;
             decimal totalExportedGas = 0;
             decimal totalImportedGas = 0;
-
-
 
             foreach (var file002 in response._002File)
             {
@@ -1439,14 +1443,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                 if (gasCalculationByUepCode is null)
                     throw new NotFoundException("Cálculo de gás não encontrado");
-
-                for (int i = 0; i < file002.Measurements.Count; ++i)
-                {
-                    var measurementResponse = file002.Measurements[i];
-
-
-                }
-
 
                 var containAssistanceGas = false;
 
@@ -2143,16 +2139,27 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
         {
             var base64HistoryMap = new Dictionary<string, MeasurementHistory>();
 
+            var dailyProduction = await _productionRepository.GetExistingByDate(DateTime.UtcNow.AddHours(-3).ToString("dd/MM/yyyy"));
+            var measurementsAdded = new List<Measurement>();
+
+            if (dailyProduction is null)
+                dailyProduction = new Production
+                {
+                    Id = Guid.NewGuid(),
+                    CalculatedImportedBy = user,
+                    CalculatedImportedAt = DateTime.UtcNow.AddHours(-3),
+                };
+
+            var totalProduction = 0m;
+
             foreach (var file in data._001File)
             {
-                var totalOilProduction = 0;
 
+                decimal totalOilWithBsw = 0;
+                decimal? bswAverage = 0;
 
                 foreach (var bodyMeasurement in file.Measurements)
                 {
-
-                    if (bodyMeasurement.BswManual is null)
-                        throw new BadRequestException("É obrigatório preencher o BSW.");
 
                     if (bodyMeasurement.ImportId is null)
                         throw new BadRequestException("Arquivo não encontrado.");
@@ -2175,7 +2182,41 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     if (measuringPoint is null)
                         throw new NotFoundException($"{ErrorMessages.NotFound<MeasuringPoint>()} TAG: {measurement.COD_TAG_PONTO_MEDICAO_001}");
 
+                    bswAverage += bodyMeasurement.BswManual;
 
+                    var gasCalculation = await _oilCalculationRepository.GetOilVolumeCalculationByInstallationId(installation.Id);
+
+                    foreach (var tog in gasCalculation.TOGRecoveredOils)
+                    {
+                        if (tog.IsApplicable && tog.MeasuringPoint.TagPointMeasuring == bodyMeasurement.COD_TAG_PONTO_MEDICAO_001)
+                        {
+                            totalOilWithBsw += bodyMeasurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001;
+                        }
+                    }
+
+                    foreach (var drain in gasCalculation.DrainVolumes)
+                    {
+                        if (drain.IsApplicable && drain.MeasuringPoint.TagPointMeasuring == bodyMeasurement.COD_TAG_PONTO_MEDICAO_001)
+                        {
+                            totalOilWithBsw += bodyMeasurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001;
+                        }
+                    }
+
+                    foreach (var section in gasCalculation.Sections)
+                    {
+                        if (section.IsApplicable && section.MeasuringPoint.TagPointMeasuring == bodyMeasurement.COD_TAG_PONTO_MEDICAO_001)
+                        {
+                            totalOilWithBsw += bodyMeasurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001 * (1 - bodyMeasurement.BswManual);
+                        }
+                    }
+
+                    foreach (var dor in gasCalculation.DORs)
+                    {
+                        if (dor.IsApplicable && dor.MeasuringPoint.TagPointMeasuring == bodyMeasurement.COD_TAG_PONTO_MEDICAO_001)
+                        {
+                            totalOilWithBsw -= bodyMeasurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001 * (1 - bodyMeasurement.BswManual);
+                        }
+                    }
 
                     var fileInfo = new FileBasicInfoDTO
                     {
@@ -2221,8 +2262,26 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         measurement.MeasurementHistory = history;
                     }
 
-                    await _repository.AddAsync(measurement);
+                    file.TotalOil = totalOilWithBsw;
+                    measurementsAdded.Add(measurement);
                 }
+
+                if (dailyProduction.Oil is null)
+                {
+                    bswAverage = bswAverage / file.Measurements.Count;
+
+                    var oil = new Oil
+                    {
+                        StatusOil = true,
+                        TotalOil = file.TotalOil,
+                        Production = dailyProduction,
+                        BswAverage = bswAverage,
+                    };
+
+                    dailyProduction.Oil = oil;
+                }
+
+                totalProduction += file.TotalOil;
             }
 
             foreach (var file in data._002File)
@@ -2293,10 +2352,25 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                             measurement.MeasurementHistory = history;
                         }
 
-                        await _repository.AddAsync(measurement);
+                        measurementsAdded.Add(measurement);
                     }
                 }
+                if (dailyProduction.GasLinear is null)
+                {
+                    var gasLinear = new GasLinear
+                    {
+                        StatusGas = true,
+                        TotalGas = file.TotalGasProduction,
+                        ExportedGas = file.TotalGasExported,
+                        ImportedGas = file.TotalGasImported,
+                        BurntGas = file.TotalGasBurnt,
+                        FuelGas = file.TotalGasFuel,
+                    };
 
+                    dailyProduction.GasLinear = gasLinear;
+                }
+
+                totalProduction += file.TotalGasProduction;
             }
 
             foreach (var file in data._003File)
@@ -2367,18 +2441,52 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                             measurement.MeasurementHistory = history;
                         }
 
-                        await _repository.AddAsync(measurement);
+                        measurementsAdded.Add(measurement);
+
                     }
                 }
 
+                if (dailyProduction.GasDiferencial is null)
+                {
+                    var gasDiferencial = new GasDiferencial
+                    {
+                        StatusGas = true,
+                        TotalGas = file.TotalGasProduction,
+                        ExportedGas = file.TotalGasExported,
+                        ImportedGas = file.TotalGasImported,
+                        BurntGas = file.TotalGasBurnt,
+                        FuelGas = file.TotalGasFuel,
+                    };
+
+                    dailyProduction.GasDiferencial = gasDiferencial;
+                }
+
+                totalProduction += file.TotalGasProduction;
             }
+
+            if (dailyProduction.GasDiferencial is not null && dailyProduction.GasLinear is not null && dailyProduction.Oil is not null)
+            {
+                dailyProduction.StatusProduction = true;
+
+            }
+            dailyProduction.TotalProduction = totalProduction;
+
+            foreach (var measuring in measurementsAdded)
+            {
+
+                measuring.Production = dailyProduction;
+            }
+
+            await _productionRepository.AddOrUpdateProduction(dailyProduction);
+            await _repository.AddRangeAsync(measurementsAdded);
+
 
             await _repository.SaveChangesAsync();
 
             if (_repository.CountAdded() == 0)
                 throw new BadRequestException("Nenhuma medição foi adicionada", status: "Error");
 
-            return new ImportResponseDTO { Status = "Success", Message = $"Arquivo importado com sucesso, {_repository.CountAdded()} medições importadas" };
+            return new ImportResponseDTO { Status = "Success", Message = $"Arquivo importado com sucesso, {measurementsAdded.Count} medições importadas" };
         }
 
         //public async Task<DTOFilesClient> GetAll(string? acronym, string? name)
@@ -2462,7 +2570,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
         //        var
 
         //    }
-
 
         public FileContentResponse DownloadErrors(List<string> errors)
         {

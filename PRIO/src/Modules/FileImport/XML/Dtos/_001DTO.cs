@@ -1,4 +1,6 @@
-﻿namespace PRIO.src.Modules.FileImport.XML.Dtos
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace PRIO.src.Modules.FileImport.XML.Dtos
 {
     public class _001DTO
     {
@@ -112,8 +114,8 @@
         public decimal? ICE_CRRCO_TEMPERATURA_LIQUIDO_001 { get; set; }
         public decimal? MED_PRESSAO_ESTATICA_001 { get; set; }
         public decimal? MED_TMPTA_FLUIDO_001 { get; set; }
-        public decimal? MED_VOLUME_BRTO_CRRGO_MVMDO_001 { get; set; }
-        public decimal? MED_VOLUME_BRUTO_MVMDO_001 { get; set; }
+        public decimal MED_VOLUME_BRTO_CRRGO_MVMDO_001 { get; set; }
+        public decimal MED_VOLUME_BRUTO_MVMDO_001 { get; set; }
         public decimal? MED_VOLUME_LIQUIDO_MVMDO_001 { get; set; }
         public decimal? MED_VOLUME_TTLZO_FIM_PRDO_001 { get; set; }
         public decimal? MED_VOLUME_TTLZO_INCO_PRDO_001 { get; set; }
@@ -122,7 +124,8 @@
 
     public class Client001DTO
     {
-        public decimal? BswManual { get; set; }
+        [Required(ErrorMessage = "Bsw manual é obrigatório")]
+        public decimal BswManual { get; set; }
         public Guid? Id { get; set; }
         public ClientInfo Summary { get; set; }
         public Guid? ImportId { get; set; }
@@ -235,8 +238,8 @@
         public decimal? ICE_CRRCO_TEMPERATURA_LIQUIDO_001 { get; set; }
         public decimal? MED_PRESSAO_ESTATICA_001 { get; set; }
         public decimal? MED_TMPTA_FLUIDO_001 { get; set; }
-        public decimal? MED_VOLUME_BRTO_CRRGO_MVMDO_001 { get; set; }
-        public decimal? MED_VOLUME_BRUTO_MVMDO_001 { get; set; }
+        public decimal MED_VOLUME_BRTO_CRRGO_MVMDO_001 { get; set; }
+        public decimal MED_VOLUME_BRUTO_MVMDO_001 { get; set; }
         public decimal? MED_VOLUME_LIQUIDO_MVMDO_001 { get; set; }
         public decimal? MED_VOLUME_TTLZO_FIM_PRDO_001 { get; set; }
         public decimal? MED_VOLUME_TTLZO_INCO_PRDO_001 { get; set; }
@@ -254,6 +257,8 @@
 
     public class Response001DTO
     {
+
+        public decimal TotalOil { get; set; }
         public MeasurementHistoryDto? File { get; set; }
         public List<Client001DTO> Measurements { get; set; } = new();
     }
