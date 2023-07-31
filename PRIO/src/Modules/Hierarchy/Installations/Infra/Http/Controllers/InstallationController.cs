@@ -31,6 +31,19 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Controllers
 
             return Created($"installations/{installationDTO.Id}", installationDTO);
         }
+        [HttpPost]
+        public async Task<IActionResult> ApplyFR([FromBody] CreateFRsFieldsViewModel body)
+        {
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+
+            var installationDTO = await _installationService.ApplyFR(body, user);
+
+            return Created($"installations/{installationDTO.Id}", installationDTO);
+        }
 
         [HttpGet]
         public async Task<IActionResult> Get()

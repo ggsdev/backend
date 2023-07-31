@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Shared.Errors;
@@ -42,6 +43,15 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                     throw new BadRequestException("Acronym values are: 001, 002, 003, 039");
             }
 
+        }
+
+        public async Task<List<FieldFR?>> GetFRsByIdAsync(Guid? id)
+        {
+            return await _context.FieldsFRs
+                .Include(x => x.Field)
+               .ThenInclude(x => x.Installation)
+               .Where(x => x.Field.Installation.Id == id)
+               .ToListAsync();
         }
 
         public async Task<Installation?> GetInstallationAndChildren(Guid? id)
@@ -118,6 +128,13 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                 .Include(x => x.GasVolumeCalculation)
                 .Where(x => x.UepCod == cod && x.CodInstallationAnp == cod)
               .FirstOrDefaultAsync();
+        }
+        public async Task<List<Installation?>> GetByUEPWithFieldsCod(string? cod)
+        {
+            return await _context.Installations
+                .Include(x => x.Fields)
+                .Where(x => x.UepCod == cod && x.CodInstallationAnp == cod)
+              .ToListAsync();
         }
 
         public async Task<Installation?> GetByIdWithFieldsMeasuringPointsAsync(Guid? id)

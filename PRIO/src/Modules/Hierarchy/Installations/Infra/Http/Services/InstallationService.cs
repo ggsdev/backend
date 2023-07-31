@@ -120,6 +120,105 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
             return installationDTO;
         }
 
+        public async Task<InstallationDTO> ApplyFR(CreateFRsFieldsViewModel body, User user)
+        {
+            var installation = await _installationRepository.GetByIdAsync(body.InstallationId);
+
+            if (installation is null)
+                throw new NotFoundException("Instalação não encontrada.");
+
+            if (installation.IsProcessingUnit == false)
+                throw new ConflictException("Instalação não é uma unidade de processamento.");
+
+            var installationsWithFields = await _installationRepository.GetByUEPWithFieldsCod(installation.UepCod);
+
+            foreach (var installationUEP in installationsWithFields)
+            {
+                foreach (var field in installationUEP.Fields)
+                {
+                    if (body.Fields.Any(x => x.FieldId == field.Id))
+                    {
+                    }
+                    else
+                    {
+                        throw new ConflictException("Não encontrado");
+                    }
+                }
+            }
+
+            if (body.isApplicableFROil is true)
+            {
+                decimal? sumOil = 0;
+                foreach (var item in body.Fields)
+                {
+                    var field = await _fieldRepository.GetByIdAsync(item.FieldId);
+                    if (field is null)
+                        throw new NotFoundException("Campo não encontrado");
+                    if (item.OilFR is null)
+                        throw new ConflictException("Fator de rateio do campo não encontrado.");
+
+                    sumOil += item.OilFR;
+                }
+                if (sumOil != 1)
+                    throw new ConflictException("Óleo: Soma dos fatores deve ser 100%.");
+            }
+
+            if (body.isApplicableFRGas is true)
+            {
+                decimal? sumGas = 0;
+                foreach (var item in body.Fields)
+                {
+                    if (item.GasFR is null)
+                        throw new ConflictException("Fator de rateio do campo não encontrado.");
+
+                    sumGas += item.GasFR;
+                }
+                if (sumGas != 1)
+                    throw new ConflictException("Gás: Soma dos fatores deve ser 100%.");
+            }
+
+            if (body.isApplicableFRWater is true)
+            {
+                decimal? sumWater = 0;
+                foreach (var item in body.Fields)
+                {
+                    if (item.WaterFR is null)
+                        throw new ConflictException("Fator de rateio do campo não encontrado.");
+
+                    sumWater += item.WaterFR;
+                }
+                if (sumWater != 1)
+                    throw new ConflictException("Água: Soma dos fatores deve ser 100%.");
+            }
+
+            var frsField = await _installationRepository.GetFRsByIdAsync(body.InstallationId);
+
+            foreach (var item in frsField)
+            {
+                item.IsActive = false;
+            }
+
+            foreach (var item in body.Fields)
+            {
+                var field = await _fieldRepository.GetByIdAsync(item.FieldId);
+                var createOilFr = new FieldFR
+                {
+                    Id = Guid.NewGuid(),
+                    Field = field,
+                    FROil = item.OilFR,
+                    FRGas = item.GasFR,
+                    FRWater = item.WaterFR,
+                    IsActive = true,
+                };
+            }
+
+            await _installationRepository.SaveChangesAsync();
+
+            var installationDTO = _mapper.Map<Installation, InstallationDTO>(installation);
+
+            return installationDTO;
+        }
+
         public async Task<List<InstallationDTO>> GetInstallations()
         {
             var installations = await _installationRepository
