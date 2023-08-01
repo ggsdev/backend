@@ -24,6 +24,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models
         public string CellFinalDate { get; set; }
         public string CellDuration { get; set; }
         public string CellBTPNumber { get; set; }
+        public string CellRGO { get; set; }
+        public string CellBSW { get; set; }
         public List<InstallationBTP>? BTPs { get; set; }
     }
 }

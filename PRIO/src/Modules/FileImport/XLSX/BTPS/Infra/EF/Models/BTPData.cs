@@ -22,6 +22,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models
         public string FinalDate { get; set; }
         public string Duration { get; set; }
         public string BTPNumber { get; set; }
+        public string RGO { get; set; }
+        public string BSW { get; set; }
         public BTPBase64 BTPBase64 { get; set; }
         public Well? Well { get; set; }
     }
