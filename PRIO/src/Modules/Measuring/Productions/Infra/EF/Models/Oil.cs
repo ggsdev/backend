@@ -7,6 +7,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Models
         public bool StatusOil { get; set; } = false;
         public decimal TotalOil { get; set; }
         public Production Production { get; set; }
-        public decimal Bsw { get; set; }
+        public decimal? BswAverage { get; set; }
     }
 }
