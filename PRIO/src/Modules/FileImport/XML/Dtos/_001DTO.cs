@@ -257,19 +257,12 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
 
     public class Response001DTO
     {
-
-        public decimal TotalOil { get; set; }
         public MeasurementHistoryDto? File { get; set; }
         public List<Client001DTO> Measurements { get; set; } = new();
     }
 
     public class Response002DTO
     {
-        public decimal TotalGasProduction { get; set; }
-        public decimal TotalGasBurnt { get; set; }
-        public decimal TotalGasFuel { get; set; }
-        public decimal TotalGasExported { get; set; }
-        public decimal TotalGasImported { get; set; }
         public MeasurementHistoryDto? File { get; set; }
         public List<Client002DTO> Measurements { get; set; } = new();
 
@@ -277,19 +270,53 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
 
     public class Response003DTO
     {
-        public decimal TotalGasProduction { get; set; }
-        public decimal TotalGasBurnt { get; set; }
-        public decimal TotalGasFuel { get; set; }
-        public decimal TotalGasExported { get; set; }
-        public decimal TotalGasImported { get; set; }
         public MeasurementHistoryDto? File { get; set; }
         public List<Client003DTO> Measurements { get; set; } = new();
     }
 
     public class ResponseXmlDto
     {
+        public GasDto? Gas { get; set; }
+        public OilDto? Oil { get; set; }
+        public GasLinearDto? GasLinear { get; set; }
+        public GasDiferencialDto? GasDiferencial { get; set; }
+
         public List<Response001DTO> _001File { get; set; } = new();
         public List<Response002DTO> _002File { get; set; } = new();
         public List<Response003DTO> _003File { get; set; } = new();
+    }
+
+    public class GasDto
+    {
+        public decimal TotalGasProduction { get; set; }
+        public decimal TotalGasBurnt { get; set; }
+        public decimal TotalGasFuel { get; set; }
+        public decimal TotalGasExported { get; set; }
+        public decimal TotalGasImported { get; set; }
+    }
+
+    public class OilDto
+    {
+        public decimal TotalOilProduction { get; set; }
+
+    }
+
+    public class GasLinearDto
+    {
+        public decimal TotalGas { get; set; }
+        public decimal TotalGasBurnt { get; set; }
+        public decimal TotalGasFuel { get; set; }
+        public decimal TotalGasExported { get; set; }
+        public decimal TotalGasImported { get; set; }
+    }
+
+    public class GasDiferencialDto
+    {
+        public decimal TotalGas { get; set; }
+        public decimal TotalGasBurnt { get; set; }
+        public decimal TotalGasFuel { get; set; }
+        public decimal TotalGasExported { get; set; }
+        public decimal TotalGasImported { get; set; }
+        public decimal TotalOil { get; set; }
     }
 }

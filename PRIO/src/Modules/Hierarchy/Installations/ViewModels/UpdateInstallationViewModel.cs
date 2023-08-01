@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using PRIO.src.Shared.Utils.Validators;
+using System.ComponentModel.DataAnnotations;
 
 namespace PRIO.src.Modules.Hierarchy.Installations.ViewModels
 {
@@ -13,6 +14,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.ViewModels
         public string? UepName { get; set; }
         [StringLength(60, ErrorMessage = "CodInstallationAnp cannot exceed 60 characters.")]
         public string? CodInstallationAnp { get; set; }
+        [DecimalPrecision(12)]
         public double? GasSafetyBurnVolume { get; set; }
         public string? Description { get; set; }
     }

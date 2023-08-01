@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PRIO.src.Modules.Measuring.Productions.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Productions.ViewModels;
+using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.Http.Filters;
 using System.Globalization;
 
@@ -23,7 +24,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Controllers
         public async Task<IActionResult> GetByDate([FromBody] GetProductionByDateViewModel body)
         {
             if (!DateTime.TryParseExact(body.Date, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
-                return BadRequest("Formato de data inválido. Formato correto: 'dd/MM/yyyy'.");
+                throw new BadRequestException("Formato de data inválido. Formato correto: 'dd/MM/yyyy'.");
 
             var production = await _productionService.GetByDate(date);
 
