@@ -255,6 +255,24 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
             return frsDTO;
         }
 
+        public async Task<List<FRFieldDTO>> GetFRsField(Guid installationId)
+        {
+            var installation = await _installationRepository.GetByIdAsync(installationId);
+
+            if (installation is null)
+                throw new NotFoundException("Instalação não encontrada.");
+
+            if (installation.IsProcessingUnit == false)
+                throw new ConflictException("Instalação não é uma unidade de processamento.");
+
+            var frs = await _installationRepository.GetFRsByUEPAsync(installation.UepCod);
+
+            var frsDTO = _mapper.Map<List<FieldFR>, List<FRFieldDTO>>(frs);
+
+            return frsDTO;
+
+        }
+
         public async Task<List<InstallationDTO>> GetInstallations()
         {
             var installations = await _installationRepository

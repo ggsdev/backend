@@ -59,6 +59,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                 .Include(x => x.Field)
                 .ThenInclude(x => x.Installation)
                 .Where(x => x.Field.Installation.UepCod == uep)
+                .Where(x => x.IsActive == true)
                 .ToListAsync();
             return Frs;
         }

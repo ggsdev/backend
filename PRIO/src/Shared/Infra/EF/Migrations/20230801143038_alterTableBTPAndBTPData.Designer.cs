@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.src.Shared.Infra.EF.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230801143038_alterTableBTPAndBTPData")]
+    partial class alterTableBTPAndBTPData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -407,10 +410,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CellBSW")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("CellBTPNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -457,10 +456,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("VARCHAR");
-
-                    b.Property<string>("CellRGO")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CellWellAlignmentData")
                         .IsRequired()
@@ -563,10 +558,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("BSW")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid>("BTPBase64Id")
                         .HasColumnType("uniqueidentifier");
 
@@ -641,10 +632,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
-
-                    b.Property<string>("RGO")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Type")
                         .IsRequired()

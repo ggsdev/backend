@@ -168,6 +168,8 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
                 Id = completionId,
                 Name = completionName,
                 Description = body.Description,
+                TopOfPerforated = body.TopOfPerforated,
+                BaseOfPerforated = body.BaseOfPerforated,
                 User = user,
                 Well = well,
                 Reservoir = reservoir,
