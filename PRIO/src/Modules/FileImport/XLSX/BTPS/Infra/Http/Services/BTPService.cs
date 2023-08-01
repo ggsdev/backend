@@ -57,9 +57,16 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             using var stream = new MemoryStream(Convert.FromBase64String(contentBase64!));
             using ExcelPackage package = new(stream);
             var workbook = package.Workbook;
-            var worksheet = workbook.Worksheets
-                .FirstOrDefault(x => x.Name.ToLower().Trim() == "BTP");
-            worksheet ??= workbook.Worksheets[0];
+            var worksheet = BTP.BTPSheet is not null ? workbook.Worksheets[BTP.BTPSheet] : workbook.Worksheets[0];
+
+            double fractionOfHour = double.Parse(worksheet.Cells[BTP.CellWellAlignmentHour].Value.ToString());
+            TimeSpan timeSpan = TimeSpan.FromHours(fractionOfHour);
+
+            int hours = timeSpan.Hours;
+            int minutes = timeSpan.Minutes;
+
+            string time = $"{hours:D2}:{minutes:D2}";
+
 
             var data = new BTPData
             {
@@ -71,15 +78,20 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 InitialDate = worksheet.Cells[BTP.CellInitialDate].Value.ToString(),
                 FinalDate = worksheet.Cells[BTP.CellFinalDate].Value.ToString(),
                 BTPNumber = worksheet.Cells[BTP.CellBTPNumber].Value.ToString(),
+                MPointGas = worksheet.Cells[BTP.CellMPointGas].Value.ToString(),
+                MPointOil = worksheet.Cells[BTP.CellMPointOil].Value.ToString(),
+                MPointWater = worksheet.Cells[BTP.CellMPointWater].Value.ToString(),
+                BSW = worksheet.Cells[BTP.CellBSW].Value.ToString(),
+                RGO = worksheet.Cells[BTP.CellRGO].Value.ToString(),
+                PotencialLiquid = worksheet.Cells[BTP.CellPotencialLiquid].Value.ToString(),
+                WellAlignmentData = worksheet.Cells[BTP.CellWellAlignmentData].Value.ToString(),
+                WellAlignmentHour = worksheet.Cells[BTP.CellWellAlignmentHour].Value.ToString(),
+                WellName = worksheet.Cells[BTP.CellWellName].Value.ToString(),
+                BTPSheet = BTP.BTPSheet,
+                Id = Guid.NewGuid(),
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
             };
-
-            Console.WriteLine(data.PotencialGas);
-            Console.WriteLine(data.PotencialOil);
-            Console.WriteLine(data.PotencialWater);
-            Console.WriteLine(data.Duration);
-            Console.WriteLine(data.InitialDate);
-            Console.WriteLine(data.FinalDate);
-            Console.WriteLine(data.BTPNumber);
 
             return data;
         }
