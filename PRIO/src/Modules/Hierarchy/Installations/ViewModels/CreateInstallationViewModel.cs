@@ -20,7 +20,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.ViewModels
         [StringLength(60, ErrorMessage = "CodInstallationAnp cannot exceed 60 characters.")]
         public string? CodInstallationAnp { get; set; }
         [DecimalPrecision(12, isRequired: false)]
-        public double? GasSafetyBurnVolume { get; set; }
+        public decimal? GasSafetyBurnVolume { get; set; }
         public string? Description { get; set; }
         public bool? IsActive { get; set; }
     }
