@@ -7,7 +7,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.ViewModels
     {
         [StringLength(60, ErrorMessage = "CodCompletion cannot exceed 60 characters.")]
         public string? Description { get; set; }
-        [DecimalPrecision(3)]
+        [DecimalPrecision(5)]
         public decimal? AllocationReservoir { get; set; }
         [DecimalPrecision(12)]
         public decimal? TopOfPerforated { get; set; }
