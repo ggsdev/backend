@@ -15,7 +15,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models
         public string? UepCod { get; set; }
         public string? UepName { get; set; }
         public string? CodInstallationAnp { get; set; }
-        public double? GasSafetyBurnVolume { get; set; }
+        public decimal? GasSafetyBurnVolume { get; set; }
         public User? User { get; set; }
         public List<InstallationBTP>? BTPs { get; set; }
         public Cluster? Cluster { get; set; }
