@@ -68,7 +68,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
             if (measuringPointInDatabase == null)
                 throw new NotFoundException("Ponto de medição não encontrado.");
 
-            if (body.Type == "CV" || body.Type == "EP")
+            if (body.Type == "Elemento Primário")
             {
                 var checkUniqueEquipment = await _equipmentRepository.GetByTypeWithMeasuringPointAsync(measuringPointInDatabase.Id, body.Type);
                 if (checkUniqueEquipment != null)
