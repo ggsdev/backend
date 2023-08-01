@@ -30,7 +30,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
         };
         private readonly List<string> _typesAllowed = new()
         {
-            "EP","ES","CV","EC"
+            "Elemento Primário","Elemento Secundário"
         };
 
         public EquipmentService(IMapper mapper, IEquipmentRepository equipmentRepository, IInstallationRepository installationRepository, SystemHistoryService systemHistoryService, IMeasuringPointRepository measuringPoint)
@@ -48,7 +48,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
                 throw new BadRequestException("Fluidos permitidos são: gás, óleo, água");
 
             if (body.Type is not null && !_typesAllowed.Contains(body.Type))
-                throw new BadRequestException("Tipos permitidos são: CV, EP, ES, EC.");
+                throw new BadRequestException("Tipos permitidos são: Elemento Primário ou Elemento Secundário.");
 
             var existingMeasuringEquipment = await _equipmentRepository.GetExistingEquipment(body.SerieNumber, body.TagEquipment);
 
