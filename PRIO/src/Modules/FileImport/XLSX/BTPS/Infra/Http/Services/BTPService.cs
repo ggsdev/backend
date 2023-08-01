@@ -59,14 +59,22 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             var workbook = package.Workbook;
             var worksheet = BTP.BTPSheet is not null ? workbook.Worksheets[BTP.BTPSheet] : workbook.Worksheets[0];
 
-            double fractionOfHour = double.Parse(worksheet.Cells[BTP.CellWellAlignmentHour].Value.ToString());
-            TimeSpan timeSpan = TimeSpan.FromHours(fractionOfHour);
+            //aligmentHour
+            string valorDaCelula = worksheet.Cells[BTP.CellWellAlignmentHour].Value.ToString();
+            bool checkAlignHour = decimal.TryParse(valorDaCelula, out var valor);
+            string? align = "";
+            if (checkAlignHour is true)
+            {
+                decimal x = valor * 24 * 60;
+                int horas = (int)x / 60;
+                int minutos = (int)x % 60;
+                TimeSpan horaMinuto = new TimeSpan(horas, minutos, 0);
+                align = horaMinuto.ToString();
+            }
 
-            int hours = timeSpan.Hours;
-            int minutes = timeSpan.Minutes;
-
-            string time = $"{hours:D2}:{minutes:D2}";
-
+            //Duration
+            string[] duration = worksheet.Cells[BTP.CellDuration].Value.ToString().Split(' ');
+            string valorTempo = duration[1];
 
             var data = new BTPData
             {
@@ -74,7 +82,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 PotencialGas = worksheet.Cells[BTP.CellPotencialGas].Value.ToString(),
                 PotencialOil = worksheet.Cells[BTP.CellPotencialOil].Value.ToString(),
                 PotencialWater = worksheet.Cells[BTP.CellPotencialWater].Value.ToString(),
-                Duration = worksheet.Cells[BTP.CellDuration].Value.ToString(),
+                Duration = valorTempo,
                 InitialDate = worksheet.Cells[BTP.CellInitialDate].Value.ToString(),
                 FinalDate = worksheet.Cells[BTP.CellFinalDate].Value.ToString(),
                 BTPNumber = worksheet.Cells[BTP.CellBTPNumber].Value.ToString(),
@@ -85,7 +93,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 RGO = worksheet.Cells[BTP.CellRGO].Value.ToString(),
                 PotencialLiquid = worksheet.Cells[BTP.CellPotencialLiquid].Value.ToString(),
                 WellAlignmentData = worksheet.Cells[BTP.CellWellAlignmentData].Value.ToString(),
-                WellAlignmentHour = worksheet.Cells[BTP.CellWellAlignmentHour].Value.ToString(),
+                WellAlignmentHour = align,
                 WellName = worksheet.Cells[BTP.CellWellName].Value.ToString(),
                 BTPSheet = BTP.BTPSheet,
                 Id = Guid.NewGuid(),

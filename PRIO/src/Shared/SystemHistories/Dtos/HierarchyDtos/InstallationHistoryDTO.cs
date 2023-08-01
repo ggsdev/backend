@@ -7,6 +7,7 @@
         public string? uepCod { get; set; }
         public string? uepName { get; set; }
         public string? description { get; set; }
+        public double? gasSafetyBurnVolume { get; set; }
         public DateTime createdAt { get; set; }
         public Guid clusterId { get; set; }
         public DateTime updatedAt { get; set; }
