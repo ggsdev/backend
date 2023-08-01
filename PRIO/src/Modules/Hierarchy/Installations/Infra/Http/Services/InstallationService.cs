@@ -86,6 +86,33 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
             if (installationSameName is not null)
                 throw new ConflictException($"Já existe uma instalação com o nome: {body.Name}");
 
+            decimal? tratedDecimal = null;
+            if (body.GasSafetyBurnVolume is not null)
+            {
+                var trated = body.GasSafetyBurnVolume.ToString();
+                string[] partes = trated.Split('.');
+                if (partes.Length == 2)
+                {
+                    string quatroPrimeirosCaracteres = partes[1].Substring(0, 4);
+                    if (partes[0].Length > 6)
+                        throw new ConflictException("Formato não aceito. a (xxxxxx,xxxx)");
+
+                    string? resultado = partes[0] + "." + quatroPrimeirosCaracteres;
+                    tratedDecimal = decimal.Parse(resultado);
+
+                }
+                else if (partes.Length == 1)
+                {
+                    if (partes[0].Length > 6)
+                        throw new ConflictException("Formato não aceito. b (xxxxxx,xxxx)");
+
+                    string? resultado = partes[0] + "." + "0000";
+                    tratedDecimal = decimal.Parse(resultado);
+
+                }
+
+            }
+            Console.WriteLine(tratedDecimal);
 
             var installationId = Guid.NewGuid();
 
