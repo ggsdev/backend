@@ -4,9 +4,9 @@
     {
         public string? name { get; set; }
         public string? description { get; set; }
-        public decimal? TopOfPerforated { get; set; }
-        public decimal? BaseOfPerforated { get; set; }
-        public decimal? AllocationReservoir { get; set; }
+        public decimal? topOfPerforated { get; set; }
+        public decimal? baseOfPerforated { get; set; }
+        public decimal? allocationReservoir { get; set; }
         public Guid? wellId { get; set; }
         public Guid? reservoirId { get; set; }
 
