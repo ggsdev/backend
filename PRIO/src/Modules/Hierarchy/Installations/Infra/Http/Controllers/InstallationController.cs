@@ -51,6 +51,12 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Controllers
             var installationsDTO = await _installationService.GetInstallations();
             return Ok(installationsDTO);
         }
+        [HttpGet("fr/{installationId}")]
+        public async Task<IActionResult> GetFR([FromRoute] Guid installationId)
+        {
+            var installationsDTO = await _installationService.GetFRsField(installationId);
+            return Ok(installationsDTO);
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
