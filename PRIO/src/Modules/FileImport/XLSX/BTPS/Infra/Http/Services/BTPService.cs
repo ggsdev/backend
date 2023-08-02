@@ -84,6 +84,19 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             //Verify Well
             string? message = well.Name == worksheet.Cells[BTP.CellWellName].Value.ToString() ? "Sucess: Nome do poço encontrado corresponde ao xls" : "Warning: Nome do poço encontrado não corresponde ao xls";
 
+            //Datas per hour
+            var oilPerHourCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialOil].Value.ToString(), out var oilPerHourOut);
+            decimal? oilPerHour = oilPerHourCheck is true ? oilPerHourOut / 24 : null;
+
+            var gasPerHourCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialGas].Value.ToString(), out var gasPerHourOut);
+            decimal? gaslPerHour = gasPerHourCheck is true ? gasPerHourOut / 24 : null;
+
+            var waterPerHourCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialWater].Value.ToString(), out var waterPerHourOut);
+            decimal? waterPerHour = waterPerHourCheck is true ? waterPerHourOut / 24 : null;
+
+            var liquidPerHourCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialLiquid].Value.ToString(), out var liquidPerHourOut);
+            decimal? liquidPerHour = liquidPerHourCheck is true ? liquidPerHourOut / 24 : null;
+
             var content = new BTPBase64
             {
                 Filename = body.FileName,
@@ -98,9 +111,16 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             {
                 Filename = body.FileName,
                 Type = body.Type,
-                PotencialGas = worksheet.Cells[BTP.CellPotencialGas].Value.ToString(),
+                IsValid = body.isValid,
+                ApplicationDate = body.applicationDate,
+                PotencialLiquid = worksheet.Cells[BTP.CellPotencialLiquid].Value.ToString(),
+                PotencialLiquidPerHour = liquidPerHour != null ? liquidPerHour.ToString() : "0",
                 PotencialOil = worksheet.Cells[BTP.CellPotencialOil].Value.ToString(),
+                PotencialOilPerHour = oilPerHour != null ? oilPerHour.ToString() : "0",
+                PotencialGas = worksheet.Cells[BTP.CellPotencialGas].Value.ToString(),
+                PotencialGasPerHour = gaslPerHour != null ? gaslPerHour.ToString() : "0",
                 PotencialWater = worksheet.Cells[BTP.CellPotencialWater].Value.ToString(),
+                PotencialWaterPerHour = waterPerHour != null ? waterPerHour.ToString() : "0",
                 Duration = valorTempo,
                 InitialDate = worksheet.Cells[BTP.CellInitialDate].Value.ToString(),
                 FinalDate = worksheet.Cells[BTP.CellFinalDate].Value.ToString(),
@@ -110,7 +130,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 MPointWater = worksheet.Cells[BTP.CellMPointWater].Value.ToString(),
                 BSW = worksheet.Cells[BTP.CellBSW].Value.ToString(),
                 RGO = worksheet.Cells[BTP.CellRGO].Value.ToString(),
-                PotencialLiquid = worksheet.Cells[BTP.CellPotencialLiquid].Value.ToString(),
                 WellAlignmentData = worksheet.Cells[BTP.CellWellAlignmentData].Value.ToString(),
                 WellAlignmentHour = align,
                 WellName = worksheet.Cells[BTP.CellWellName].Value.ToString(),

@@ -25,12 +25,27 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Mappings
              .HasMaxLength(60)
              .IsRequired();
 
+            builder.Property(x => x.PotencialOilPerHour)
+             .HasColumnType("VARCHAR")
+             .HasMaxLength(60)
+             .IsRequired();
+
             builder.Property(x => x.PotencialGas)
              .HasColumnType("VARCHAR")
              .HasMaxLength(60)
              .IsRequired();
 
+            builder.Property(x => x.PotencialGasPerHour)
+             .HasColumnType("VARCHAR")
+             .HasMaxLength(60)
+             .IsRequired();
+
             builder.Property(x => x.PotencialWater)
+             .HasColumnType("VARCHAR")
+             .HasMaxLength(60)
+             .IsRequired();
+
+            builder.Property(x => x.PotencialWaterPerHour)
              .HasColumnType("VARCHAR")
              .HasMaxLength(60)
              .IsRequired();
@@ -49,6 +64,14 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Mappings
             builder.Property(x => x.Duration)
              .HasColumnType("VARCHAR")
              .HasMaxLength(60)
+             .IsRequired();
+
+            builder.Property(x => x.ApplicationDate)
+             .HasColumnType("VARCHAR")
+             .HasMaxLength(60)
+             .IsRequired();
+
+            builder.Property(x => x.IsValid)
              .IsRequired();
 
             builder.Property(x => x.BTPNumber)

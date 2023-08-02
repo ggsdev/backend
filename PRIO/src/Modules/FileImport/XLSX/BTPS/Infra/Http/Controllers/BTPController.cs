@@ -57,7 +57,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Controllers
                     Message = "User not identified, please login first"
                 });
 
-            var result = await _BTPService.GetImportFiles(body, user);
+            var result = await _BTPService.PostImportFiles(body, user);
 
             return Ok(result);
         }
