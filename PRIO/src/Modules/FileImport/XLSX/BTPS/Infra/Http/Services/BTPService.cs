@@ -85,12 +85,18 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             string? message = well.Name == worksheet.Cells[BTP.CellWellName].Value.ToString() ? "Sucess: Nome do poço encontrado corresponde ao xls" : "Warning: Nome do poço encontrado não corresponde ao xls";
 
             //ToDecimal
-            var oilPerHourCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialOil].Value.ToString(), out var oilDecimal);
-            var gasPerHourCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialGas].Value.ToString(), out var gasDecimal);
-            var waterPerHourCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialWater].Value.ToString(), out var waterDecimal);
-            var liquidPerHourCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialLiquid].Value.ToString(), out var liquidDecimal);
-            var rgoCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialLiquid].Value.ToString(), out var rgoDecimal);
-            var bswCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialLiquid].Value.ToString(), out var bswDecimal);
+            var oilCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialOil].Value.ToString(), out var oilDecimal);
+            decimal oilDecimalFormated = Math.Round(oilDecimal, 5, MidpointRounding.AwayFromZero);
+            var gasCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialGas].Value.ToString(), out var gasDecimal);
+            decimal gasDecimalFormated = Math.Round(gasDecimal, 5, MidpointRounding.AwayFromZero);
+            var waterCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialWater].Value.ToString(), out var waterDecimal);
+            decimal waterDecimalFormated = Math.Round(waterDecimal, 5, MidpointRounding.AwayFromZero);
+            var liquidCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialLiquid].Value.ToString(), out var liquidDecimal);
+            decimal liquidDecimalFormated = Math.Round(liquidDecimal, 5, MidpointRounding.AwayFromZero);
+            var rgoCheck = decimal.TryParse(worksheet.Cells[BTP.CellRGO].Value.ToString(), out var rgoDecimal);
+            decimal rgoDecimalFormated = Math.Round(rgoDecimal, 5, MidpointRounding.AwayFromZero);
+            var bswCheck = decimal.TryParse(worksheet.Cells[BTP.CellBSW].Value.ToString(), out var bswDecimal);
+            decimal bswDecimalFormated = Math.Round(bswDecimal, 5, MidpointRounding.AwayFromZero);
 
             var content = new BTPBase64
             {
@@ -110,13 +116,13 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 Type = body.Type,
                 IsValid = body.isValid,
                 ApplicationDate = body.applicationDate,
-                PotencialLiquid = liquidDecimal,
+                PotencialLiquid = liquidDecimalFormated,
                 PotencialLiquidPerHour = liquidDecimal / 24,
-                PotencialOil = oilDecimal,
+                PotencialOil = oilDecimalFormated,
                 PotencialOilPerHour = oilDecimal / 24,
-                PotencialGas = gasDecimal,
+                PotencialGas = gasDecimalFormated,
                 PotencialGasPerHour = gasDecimal / 24,
-                PotencialWater = waterDecimal,
+                PotencialWater = waterDecimalFormated,
                 PotencialWaterPerHour = waterDecimal / 24,
                 Duration = valorTempo,
                 InitialDate = worksheet.Cells[BTP.CellInitialDate].Value.ToString(),
@@ -125,8 +131,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 MPointGas = worksheet.Cells[BTP.CellMPointGas].Value.ToString(),
                 MPointOil = worksheet.Cells[BTP.CellMPointOil].Value.ToString(),
                 MPointWater = worksheet.Cells[BTP.CellMPointWater].Value.ToString(),
-                BSW = bswDecimal,
-                RGO = rgoDecimal,
+                BSW = bswDecimalFormated,
+                RGO = rgoDecimalFormated,
                 WellAlignmentData = worksheet.Cells[BTP.CellWellAlignmentData].Value.ToString(),
                 WellAlignmentHour = align,
                 WellName = worksheet.Cells[BTP.CellWellName].Value.ToString(),

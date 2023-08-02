@@ -39,26 +39,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Fields", "UF", "SÃO PAULO",  DateTime.UtcNow },
                     new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Fields", "UF", "SERGIPE",  DateTime.UtcNow },
                     new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Fields", "UF", "TOCANTINS",  DateTime.UtcNow },
-                };
-
-            foreach (var item in data)
-            {
-                var id = item[0];
-                var route = item[1];
-                var table = item[2];
-                var select = item[3];
-                var option = item[4];
-                var updatedAt = item[5];
-
-                migrationBuilder.InsertData(
-                    table: "Auxiliaries",
-                    columns: new[] { "Id", "Route", "Table", "Select", "Option", "UpdatedAt" },
-                    values: new object[] { id, route, table, select, option, updatedAt }
-                );
-            }
-
-            var data2 = new List<object[]>
-                {
                     new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Fields", "Basin", "ACRE",  DateTime.UtcNow },
                     new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Fields", "Basin", "AFOGADOS DA INGAZEIRA",  DateTime.UtcNow },
                     new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Fields", "Basin", "ÁGUA BONITA",  DateTime.UtcNow },
@@ -140,7 +120,7 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Fields", "Basin", "TUPANACI",  DateTime.UtcNow }
                 };
 
-            foreach (var item in data2)
+            foreach (var item in data)
             {
                 var id = item[0];
                 var route = item[1];
@@ -155,7 +135,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     values: new object[] { id, route, table, select, option, updatedAt }
                 );
             }
-
         }
 
         /// <inheritdoc />
