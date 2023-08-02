@@ -42,11 +42,20 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
             var dailyProduction = new DailyProduction
             {
                 Status = production.StatusProduction,
-                TotalGasBBL = (production.GasDiferencial is not null ? production.GasDiferencial.TotalGas * ProductionUtils.m3ToBBLConversionMultiplier : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas * ProductionUtils.m3ToBBLConversionMultiplier : 0),
-                TotalGasM3 = (production.GasDiferencial is not null ? production.GasDiferencial.TotalGas : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas : 0),
-
-                TotalOilBBL = production.Oil is not null ? production.Oil.TotalOil : 0,
-                TotalOilM3 = production.Oil is not null ? production.Oil.TotalOil * ProductionUtils.m3ToBBLConversionMultiplier : 0,
+                TotalGasBBL = Math.Round(
+                    (production.GasDiferencial is not null ? production.GasDiferencial.TotalGas * ProductionUtils.m3ToBBLConversionMultiplier : 0) +
+                    (production.GasLinear is not null ? production.GasLinear.TotalGas * ProductionUtils.m3ToBBLConversionMultiplier : 0),
+                    5),
+                TotalGasM3 = Math.Round(
+                    (production.GasDiferencial is not null ? production.GasDiferencial.TotalGas : 0) +
+                    (production.GasLinear is not null ? production.GasLinear.TotalGas : 0),
+                    5),
+                TotalOilBBL = Math.Round(
+                    production.Oil is not null ? production.Oil.TotalOil : 0,
+                    5),
+                TotalOilM3 = Math.Round(
+                    production.Oil is not null ? production.Oil.TotalOil * ProductionUtils.m3ToBBLConversionMultiplier : 0,
+                    5),
             };
 
             var gasBurnt = new GasBurntDto

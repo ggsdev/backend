@@ -144,7 +144,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     FileContent = data.Files[i].ContentBase64,
                     FileName = data.Files[i].FileName,
                     FileType = data.Files[i].FileType,
-                    ImportedAt = DateTime.Now.ToString("dd/MM/yyyy"),
+                    ImportedAt = DateTime.UtcNow.ToString("dd/MM/yyyy"),
                     ImportedBy = userDto,
                     ImportId = importId
                 };
@@ -2190,12 +2190,12 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             var gasTotalResponse = new GasDto
             {
-                TotalGasProductionM3 = gasLinear.TotalGas + gasDiferencial.TotalGas,
-                TotalGasProductionBBL = (gasLinear.TotalGas + gasDiferencial.TotalGas) * ProductionUtils.m3ToBBLConversionMultiplier,
-                TotalGasBurnt = gasLinear.TotalGasBurnt + gasDiferencial.TotalGasBurnt,
-                TotalGasFuel = gasLinear.TotalGasFuel + gasDiferencial.TotalGasFuel,
-                TotalGasExported = gasLinear.TotalGasExported + gasDiferencial.TotalGasExported,
-                TotalGasImported = gasLinear.TotalGasImported + gasDiferencial.TotalGasImported,
+                TotalGasProductionM3 = Math.Round(gasLinear.TotalGas + gasDiferencial.TotalGas, 5),
+                TotalGasProductionBBL = Math.Round((gasLinear.TotalGas + gasDiferencial.TotalGas) * ProductionUtils.m3ToBBLConversionMultiplier, 5),
+                TotalGasBurnt = Math.Round(gasLinear.TotalGasBurnt + gasDiferencial.TotalGasBurnt, 5),
+                TotalGasFuel = Math.Round(gasLinear.TotalGasFuel + gasDiferencial.TotalGasFuel, 5),
+                TotalGasExported = Math.Round(gasLinear.TotalGasExported + gasDiferencial.TotalGasExported, 5),
+                TotalGasImported = Math.Round(gasLinear.TotalGasImported + gasDiferencial.TotalGasImported, 5),
             };
 
             if (response._001File.Count > 0)
@@ -2283,7 +2283,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             var measurementsAdded = new List<Measurement>();
 
-            DateTime measuredAt = DateTime.Now;
+            DateTime measuredAt = DateTime.UtcNow;
 
             if (data._001File.Count > 0)
                 measuredAt = data._001File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001;

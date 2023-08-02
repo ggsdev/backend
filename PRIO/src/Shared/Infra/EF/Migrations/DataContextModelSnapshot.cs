@@ -76,7 +76,7 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
                     b.HasIndex("GroupPermissionId");
 
-                    b.ToTable("GroupOperations");
+                    b.ToTable("GroupOperations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.GroupPermission", b =>
@@ -215,7 +215,7 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GlobalOperations");
+                    b.ToTable("GlobalOperations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.Session", b =>
@@ -885,7 +885,7 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
                     b.HasIndex("FieldId");
 
-                    b.ToTable("FieldsFRs");
+                    b.ToTable("FieldsFRs", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", b =>
@@ -3780,9 +3780,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Property<Guid?>("GasDiferencialId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("GasId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid?>("GasLinearId")
                         .HasColumnType("uniqueidentifier");
 
@@ -3806,10 +3803,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.HasIndex("GasDiferencialId")
                         .IsUnique()
                         .HasFilter("[GasDiferencialId] IS NOT NULL");
-
-                    b.HasIndex("GasId")
-                        .IsUnique()
-                        .HasFilter("[GasId] IS NOT NULL");
 
                     b.HasIndex("GasLinearId")
                         .IsUnique()
@@ -3845,7 +3838,7 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Auxiliaries");
+                    b.ToTable("Auxiliaries", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Shared.SystemHistories.Infra.EF.Models.SystemHistory", b =>
@@ -4595,14 +4588,14 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.GasDiferencial", "GasDiferencial")
+                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Gas", "Gas")
                         .WithOne("Production")
                         .HasForeignKey("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "GasDiferencialId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Gas", "Gas")
+                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.GasDiferencial", "GasDiferencial")
                         .WithOne("Production")
-                        .HasForeignKey("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "GasId")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "GasDiferencialId")
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.GasLinear", "GasLinear")
