@@ -3,6 +3,7 @@ using PRIO.src.Modules.FileImport.XML.Dtos;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Measuring.GasVolumeCalculations.Interfaces;
 using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.Measurements.Interfaces;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces;
 using PRIO.src.Modules.Measuring.Productions.Dtos;
 using PRIO.src.Modules.Measuring.Productions.Interfaces;
@@ -16,16 +17,18 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
         private readonly IProductionRepository _repository;
         private readonly IGasVolumeCalculationRepository _gasRepository;
         private readonly IOilVolumeCalculationRepository _oilRepository;
+        private readonly IMeasurementHistoryRepository _fileHistoryRepository;
         private readonly IInstallationRepository _installationRepository;
         private readonly IMapper _mapper;
 
-        public ProductionService(IProductionRepository productionRepository, IMapper mapper, IGasVolumeCalculationRepository gasVolumeCalculationRepository, IInstallationRepository installationRepository, IOilVolumeCalculationRepository oilVolumeCalculationRepository)
+        public ProductionService(IProductionRepository productionRepository, IMapper mapper, IGasVolumeCalculationRepository gasVolumeCalculationRepository, IInstallationRepository installationRepository, IOilVolumeCalculationRepository oilVolumeCalculationRepository, IMeasurementHistoryRepository measurementHistoryRepository)
         {
             _repository = productionRepository;
             _mapper = mapper;
             _gasRepository = gasVolumeCalculationRepository;
             _installationRepository = installationRepository;
             _oilRepository = oilVolumeCalculationRepository;
+            _fileHistoryRepository = measurementHistoryRepository;
 
         }
 
@@ -66,6 +69,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 TotalGasExported = (production.GasLinear is not null ? production.GasLinear.ExportedGas : 0) + (production.GasDiferencial is not null ? production.GasDiferencial.ExportedGas : 0),
             };
 
+            //var files = new List<MeasurementHistoryWithMeasurementsDto>();
             var files = new List<MeasurementHistoryDto>();
             var oilPoints = new List<LocalOilPointDto>();
             var burnetGasPoints = new List<LocalGasPointDto>();
@@ -73,11 +77,58 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
             var importedGasPoints = new List<LocalGasPointDto>();
             var exportedGasPoints = new List<LocalGasPointDto>();
 
+            //foreach (var measurement in production.Measurements)
+            //{
+            //    Console.WriteLine(measurement.COD_TAG_PONTO_MEDICAO_003);
+
+            //    var historyDto = _mapper.Map<MeasurementHistory, MeasurementHistoryWithMeasurementsDto>(measurement.MeasurementHistory);
+
+            //    if (historyDto.FileType == XmlUtils.File001)
+            //    {
+            //        historyDto.Summary.Add(new ClientInfoOil
+            //        {
+            //            DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_001,
+            //            LocationMeasuringPoint = measurement.COD_TAG_PONTO_MEDICAO_001,
+            //            StatusMeasuringPoint = measurement.StatusMeasuringPoint,
+            //            TagMeasuringPoint = measurement.MeasuringPoint.TagPointMeasuring,
+            //            VolumeBeforeBsw = measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001,
+            //            Bsw = measurement.BswManual_001,
+            //            VolumeAfterBsw = measurement.VolumeAfterManualBsw_001,
+            //        });
+            //    }
+            //    else if (historyDto.FileType == XmlUtils.File002)
+            //    {
+            //        historyDto.Summary.Add(new ClientInfoGas
+            //        {
+            //            DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_002,
+            //            LocationMeasuringPoint = measurement.COD_TAG_PONTO_MEDICAO_002,
+            //            StatusMeasuringPoint = measurement.StatusMeasuringPoint,
+            //            TagMeasuringPoint = measurement.MeasuringPoint.TagPointMeasuring,
+            //            Volume = measurement.MED_CORRIGIDO_MVMDO_002,
+            //        });
+            //    }
+            //    else if (historyDto.FileType == XmlUtils.File003)
+            //    {
+            //        historyDto.Summary.Add(new ClientInfoGas
+            //        {
+            //            DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_003,
+            //            LocationMeasuringPoint = measurement.COD_TAG_PONTO_MEDICAO_003,
+            //            StatusMeasuringPoint = measurement.StatusMeasuringPoint,
+            //            TagMeasuringPoint = measurement.MeasuringPoint.TagPointMeasuring,
+            //            Volume = measurement.MED_CORRIGIDO_MVMDO_003,
+            //        });
+            //    }
+
+            //    if (!files.Any(file => file.ImportId == historyDto.ImportId))
+            //    {
+            //        files.Add(historyDto);
+            //    }
+            //}
+
             foreach (var measurement in production.Measurements)
             {
                 var historyDto = _mapper.Map<MeasurementHistory, MeasurementHistoryDto>(measurement.MeasurementHistory);
-
-                if (!files.Any(history => history.ImportId == historyDto.ImportId))
+                if (!files.Any(file => file.ImportId == historyDto.ImportId))
                 {
                     files.Add(historyDto);
                 }
@@ -523,6 +574,19 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 }
 
             }
+
+            //foreach (var file in files)
+            //{
+            //    var fileHistoryInDatabase = await _fileHistoryRepository.GetById(file.ImportId);
+            //    var historyDto = _mapper.Map<MeasurementHistory, MeasurementHistoryWithMeasurementsDto>(fileHistoryInDatabase);
+
+            //    foreach (var summary in file.Summary)
+            //    {
+            //        summary.Volume = historyDto.
+
+            //    }
+            //}
+
             var oilDto = new OilConsultingDto
             {
                 TotalOilProduction = production.Oil is not null ? production.Oil.TotalOil : 0,

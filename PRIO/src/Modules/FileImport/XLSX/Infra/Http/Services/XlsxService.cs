@@ -8,7 +8,6 @@ using PRIO.src.Modules.FileImport.XLSX.Utils;
 using PRIO.src.Modules.FileImport.XLSX.ViewModels;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models;
-using PRIO.src.Modules.Hierarchy.Completions.ViewModels;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Models;
@@ -460,43 +459,43 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                         }
                     }
 
-                    else
-                    {
-                        var wellConverted = (Well)well;
+                    //else
+                    //{
+                    //    var wellConverted = (Well)well;
 
-                        var beforeChangesWell = _mapper.Map<WellHistoryDTO>(wellConverted);
+                    //    var beforeChangesWell = _mapper.Map<WellHistoryDTO>(wellConverted);
 
-                        var propertiesToUpdate = new WellUpdateImportViewModel
-                        {
-                            WellOperatorName = cellWellOperatorName,
-                            CategoryAnp = cellWellCategoryAnp,
-                            CategoryReclassificationAnp = cellWellCategoryReclassification,
-                            CategoryOperator = cellWellCategoryOperator,
-                            StatusOperator = cellWellStatusOperatorBoolean,
-                            Type = cellWellProfile,
-                            WaterDepth = decimal.TryParse(cellWellWaterDepth?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var cellWellWaterDepthDouble) ? cellWellWaterDepthDouble : 0,
-                            ArtificialLift = cellWellArtificialLift,
-                            Latitude4C = cellWellLatitude4c,
-                            Longitude4C = cellWellLongitude4c,
-                            LatitudeDD = cellcolumnWellLatitudeDD,
-                            LongitudeDD = cellWellLongitudeDD,
-                            DatumHorizontal = cellWellDatumHorizontal,
-                            TypeBaseCoordinate = cellWellTypeCoordinate,
-                            CoordX = cellWellCoordX,
-                            CoordY = cellWellCoordY,
-                            IsActive = cellWellStatusOperatorBoolean
-                        };
+                    //    var propertiesToUpdate = new WellUpdateImportViewModel
+                    //    {
+                    //        WellOperatorName = cellWellOperatorName,
+                    //        CategoryAnp = cellWellCategoryAnp,
+                    //        CategoryReclassificationAnp = cellWellCategoryReclassification,
+                    //        CategoryOperator = cellWellCategoryOperator,
+                    //        StatusOperator = cellWellStatusOperatorBoolean,
+                    //        Type = cellWellProfile,
+                    //        WaterDepth = decimal.TryParse(cellWellWaterDepth?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var cellWellWaterDepthDouble) ? cellWellWaterDepthDouble : 0,
+                    //        ArtificialLift = cellWellArtificialLift,
+                    //        Latitude4C = cellWellLatitude4c,
+                    //        Longitude4C = cellWellLongitude4c,
+                    //        LatitudeDD = cellcolumnWellLatitudeDD,
+                    //        LongitudeDD = cellWellLongitudeDD,
+                    //        DatumHorizontal = cellWellDatumHorizontal,
+                    //        TypeBaseCoordinate = cellWellTypeCoordinate,
+                    //        CoordX = cellWellCoordX,
+                    //        CoordY = cellWellCoordY,
+                    //        IsActive = cellWellStatusOperatorBoolean
+                    //    };
 
-                        var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(wellConverted, propertiesToUpdate);
+                    //    var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(wellConverted, propertiesToUpdate);
 
-                        if (updatedProperties.Any() is true)
-                        {
-                            updatedDictionary[cellWellCodeAnp.ToLower()] = well;
+                    //    if (updatedProperties.Any() is true)
+                    //    {
+                    //        updatedDictionary[cellWellCodeAnp.ToLower()] = well;
 
-                            await _systemHistoryService
-                                .ImportUpdate(HistoryColumns.TableWells, user, data.FileName, updatedProperties, wellConverted.Id, wellConverted, beforeChangesWell);
-                        }
-                    }
+                    //        await _systemHistoryService
+                    //            .ImportUpdate(HistoryColumns.TableWells, user, data.FileName, updatedProperties, wellConverted.Id, wellConverted, beforeChangesWell);
+                    //    }
+                    //}
                 }
 
                 if (!string.IsNullOrWhiteSpace(columnCompletion) && !string.IsNullOrWhiteSpace(columnReservoir) && !string.IsNullOrWhiteSpace(cellWellCodeAnp) && !entityDictionary.TryGetValue(columnCompletion.ToLower(), out var completion))
@@ -559,27 +558,27 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                             }
                         }
                     }
-                    else
-                    {
-                        var completionConverted = (Completion)completion;
+                    //else
+                    //{
+                    //    var completionConverted = (Completion)completion;
 
-                        var beforeChangesCompletion = _mapper.Map<CompletionHistoryDTO>(completionConverted);
+                    //    var beforeChangesCompletion = _mapper.Map<CompletionHistoryDTO>(completionConverted);
 
-                        var propertiesToUpdate = new UpdateCompletionViewModel
-                        {
-                            AllocationReservoir = decimal.TryParse(columnAllocationByReservoir?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var allocation) ? allocation : 1,
-                        };
+                    //    var propertiesToUpdate = new UpdateCompletionViewModel
+                    //    {
+                    //        AllocationReservoir = decimal.TryParse(columnAllocationByReservoir?.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var allocation) ? allocation : 1,
+                    //    };
 
-                        var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(completionConverted, propertiesToUpdate);
+                    //    var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(completionConverted, propertiesToUpdate);
 
-                        if (updatedProperties.Any() is true)
-                        {
-                            updatedDictionary[cellWellCodeAnp.ToLower()] = completion;
+                    //    if (updatedProperties.Any() is true)
+                    //    {
+                    //        updatedDictionary[cellWellCodeAnp.ToLower()] = completion;
 
-                            await _systemHistoryService
-                                .ImportUpdate(HistoryColumns.TableWells, user, data.FileName, updatedProperties, completionConverted.Id, completionConverted, beforeChangesCompletion);
-                        }
-                    }
+                    //        await _systemHistoryService
+                    //            .ImportUpdate(HistoryColumns.TableWells, user, data.FileName, updatedProperties, completionConverted.Id, completionConverted, beforeChangesCompletion);
+                    //    }
+                    //}
                 }
             }
 
