@@ -9,9 +9,9 @@ namespace PRIO.src.Modules.Hierarchy.Completions.ViewModels
         public string? Description { get; set; }
         [DecimalPrecision(5)]
         public decimal? AllocationReservoir { get; set; }
-        [DecimalPrecision(12)]
+        [DecimalPrecision(12, isRequired: false)]
         public decimal? TopOfPerforated { get; set; }
-        [DecimalPrecision(12)]
+        [DecimalPrecision(12, isRequired: false)]
         public decimal? BaseOfPerforated { get; set; }
         public Guid? ReservoirId { get; set; }
         public Guid? WellId { get; set; }

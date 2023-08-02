@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.src.Shared.Infra.EF.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230802194839_changeColumnsInBTPDataToDecimal")]
+    partial class changeColumnsInBTPDataToDecimal
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3780,9 +3783,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Property<Guid?>("GasDiferencialId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("GasId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid?>("GasLinearId")
                         .HasColumnType("uniqueidentifier");
 
@@ -3806,10 +3806,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.HasIndex("GasDiferencialId")
                         .IsUnique()
                         .HasFilter("[GasDiferencialId] IS NOT NULL");
-
-                    b.HasIndex("GasId")
-                        .IsUnique()
-                        .HasFilter("[GasId] IS NOT NULL");
 
                     b.HasIndex("GasLinearId")
                         .IsUnique()
@@ -4595,14 +4591,14 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.GasDiferencial", "GasDiferencial")
+                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Gas", "Gas")
                         .WithOne("Production")
                         .HasForeignKey("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "GasDiferencialId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Gas", "Gas")
+                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.GasDiferencial", "GasDiferencial")
                         .WithOne("Production")
-                        .HasForeignKey("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "GasId")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "GasDiferencialId")
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.GasLinear", "GasLinear")

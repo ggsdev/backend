@@ -17,37 +17,46 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Mappings
 
             builder.Property(x => x.Type)
              .HasColumnType("VARCHAR")
-             .HasMaxLength(60)
              .IsRequired();
 
             builder.Property(x => x.PotencialOil)
-             .HasColumnType("VARCHAR")
-             .HasMaxLength(60)
+             .HasColumnType("decimal")
+             .HasPrecision(15, 5)
              .IsRequired();
 
             builder.Property(x => x.PotencialOilPerHour)
-             .HasColumnType("VARCHAR")
-             .HasMaxLength(60)
+             .HasColumnType("decimal")
+             .HasPrecision(15, 5)
              .IsRequired();
 
             builder.Property(x => x.PotencialGas)
-             .HasColumnType("VARCHAR")
-             .HasMaxLength(60)
+             .HasColumnType("decimal")
+                .HasPrecision(15, 5)
+             .IsRequired();
+
+            builder.Property(x => x.RGO)
+             .HasColumnType("decimal")
+                .HasPrecision(15, 5)
+             .IsRequired();
+
+            builder.Property(x => x.BSW)
+             .HasColumnType("decimal")
+                .HasPrecision(15, 5)
              .IsRequired();
 
             builder.Property(x => x.PotencialGasPerHour)
-             .HasColumnType("VARCHAR")
-             .HasMaxLength(60)
+             .HasColumnType("decimal")
+             .HasPrecision(15, 5)
              .IsRequired();
 
             builder.Property(x => x.PotencialWater)
-             .HasColumnType("VARCHAR")
-             .HasMaxLength(60)
+             .HasColumnType("decimal")
+             .HasPrecision(15, 5)
              .IsRequired();
 
             builder.Property(x => x.PotencialWaterPerHour)
-             .HasColumnType("VARCHAR")
-             .HasMaxLength(60)
+             .HasColumnType("decimal")
+             .HasPrecision(15, 5)
              .IsRequired();
 
             builder.Property(x => x.InitialDate)
