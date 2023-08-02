@@ -1279,6 +1279,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 if (response001.Measurements.Count > 0)
                     response._001File.Add(response001);
             }
+
             decimal totalLinearBurnetGas = 0;
             decimal totalLinearFuelGas = 0;
             decimal totalLinearExportedGas = 0;
@@ -1797,7 +1798,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 }
             }
 
-
             foreach (var file003 in response._003File)
             {
                 var gasCalculationByUepCode = await _gasCalculationRepository
@@ -2150,7 +2150,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 TotalGas = totalDiferencialGas,
                 TotalGasExported = totalDiferencialExportedGas,
                 TotalGasFuel = totalDiferencialFuelGas,
-                TotalGasImported = totalDiferencialFuelGas
+                TotalGasImported = totalDiferencialImportedGas
 
             };
 
@@ -2161,7 +2161,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 TotalGas = totalLinearGas,
                 TotalGasExported = totalLinearExportedGas,
                 TotalGasFuel = totalLinearFuelGas,
-                TotalGasImported = totalLinearFuelGas
+                TotalGasImported = totalLinearImportedGas
 
             };
 
@@ -2197,11 +2197,11 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
         }
         public async Task<ImportResponseDTO> Import(ResponseXmlDto data, User user)
         {
-            var date001 = data._001File.Count > 0 ? data._001File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001 : null;
-            var date002 = data._002File.Count > 0 ? data._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002 : null;
-            var date003 = data._003File.Count > 0 ? data._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003 : null;
+            var date001 = data._001File.Count > 0 ? data._001File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001 : DateTime.MinValue;
+            var date002 = data._002File.Count > 0 ? data._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002 : DateTime.MinValue;
+            var date003 = data._003File.Count > 0 ? data._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003 : DateTime.MinValue;
 
-            if ((date001 != date002 && date001 != null && date002 != null) || (date001 != date003 && date001 != null && date003 != null) || (date002 != date003 && date002 != null && date003 != null))
+            if ((date001 != date002 && date001 != DateTime.MinValue && date002 != DateTime.MinValue) || (date001 != date003 && date001 != DateTime.MinValue && date003 != DateTime.MinValue) || (date002 != date003 && date002 != DateTime.MinValue && date003 != DateTime.MinValue))
                 throw new BadRequestException("Datas incompatíveis entre medições, data de inicio da medição deve ser igual.");
 
             foreach (var file in data._001File)
@@ -2239,10 +2239,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             var base64HistoryMap = new Dictionary<string, MeasurementHistory>();
 
-            var dailyProduction = await _productionRepository.GetExistingByDate(DateTime.UtcNow.AddHours(-3).ToString("dd/MM/yyyy"));
             var measurementsAdded = new List<Measurement>();
 
-            DateTime? measuredAt = DateTime.Now;
+            DateTime measuredAt = DateTime.Now;
 
             if (data._001File.Count > 0)
                 measuredAt = data._001File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001;
@@ -2252,6 +2251,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             if (data._003File.Count > 0)
                 measuredAt = data._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003;
 
+            var dailyProduction = await _productionRepository.GetExistingByDate(measuredAt);
 
             if (dailyProduction is null)
                 dailyProduction = new Production
@@ -2350,6 +2350,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     measurement.Installation = installation;
                     measurement.MeasuringPoint = measuringPoint;
+                    measurement.BswManual_001 = bodyMeasurement.BswManual;
 
                     var path001Xml = Path.GetTempPath() + bodyMeasurement.ImportId + ".xml";
 
@@ -2720,7 +2721,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             return response;
         }
-
 
     }
 }

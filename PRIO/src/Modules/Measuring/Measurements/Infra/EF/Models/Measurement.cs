@@ -15,6 +15,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models
         public Production Production { get; set; }
 
         #region 001
+        public decimal BswManual_001 { get; set; }
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_001 { get; set; }
         public string? COD_INSTALACAO_001 { get; set; }
         public string? COD_TAG_PONTO_MEDICAO_001 { get; set; }

@@ -982,6 +982,10 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
 
             #region 001
 
+            builder.Property(x => x.BswManual_001)
+                .HasColumnType("decimal")
+                .HasPrecision(8, 4);
+
             builder.Property(x => x.NUM_SERIE_ELEMENTO_PRIMARIO_001)
                 .HasColumnType("varchar")
                 .HasMaxLength(30)

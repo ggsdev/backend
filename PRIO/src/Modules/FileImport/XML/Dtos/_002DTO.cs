@@ -118,7 +118,7 @@
         public string? IND_HABILITACAO_ALARME_3_002 { get; set; }
         public decimal? MED_TMPTA_ADTTA_FALHA_002 { get; set; }
         public string? DSC_ESTADO_INSTRUMENTO_FALHA_002 { get; set; }
-        public DateTime? DHA_INICIO_PERIODO_MEDICAO_002 { get; set; }
+        public DateTime DHA_INICIO_PERIODO_MEDICAO_002 { get; set; }
         public DateTime? DHA_FIM_PERIODO_MEDICAO_002 { get; set; }
         public decimal? ICE_DENSIDADE_RELATIVA_002 { get; set; }
         public decimal? MED_PRESSAO_ESTATICA_002 { get; set; }
@@ -136,7 +136,7 @@
         public ClientInfo Summary { get; set; }
 
         public Guid? ImportId { get; set; }
-        public DateTime? DHA_INICIO_PERIODO_MEDICAO_002 { get; set; }
+        public DateTime DHA_INICIO_PERIODO_MEDICAO_002 { get; set; }
         public string COD_INSTALACAO_002 { get; set; } = string.Empty;
         public string COD_TAG_PONTO_MEDICAO_002 { get; set; } = string.Empty;
 

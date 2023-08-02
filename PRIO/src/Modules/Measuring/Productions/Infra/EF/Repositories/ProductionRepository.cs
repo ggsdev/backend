@@ -2,7 +2,6 @@
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Productions.Interfaces;
 using PRIO.src.Shared.Infra.EF;
-using System.Globalization;
 
 namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
 {
@@ -20,27 +19,27 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
             await _context.Productions.AddAsync(production);
         }
 
-        public async Task<Production?> GetExistingByDate(string date)
+        public async Task<Production?> GetExistingByDate(DateTime date)
         {
 
-            Console.WriteLine(date);
-            if (!DateTime.TryParseExact(date, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDate))
-            {
-                return null;
-            }
-
-            DateTime targetDate = parsedDate;
             return await _context.Productions
-                .Where(x => x.CalculatedImportedAt.Year == parsedDate.Year &&
-                            x.CalculatedImportedAt.Month == parsedDate.Month &&
-                            x.CalculatedImportedAt.Day == parsedDate.Day)
+                .Include(x => x.GasLinear)
+                .Include(x => x.GasDiferencial)
+                .Include(x => x.Oil)
+                .Include(x => x.Measurements)
+                    .ThenInclude(m => m.MeasurementHistory)
+                .Include(x => x.Measurements)
+                    .ThenInclude(d => d.MeasuringPoint)
+                .Where(x => x.MeasuredAt.Year == date.Year &&
+                            x.MeasuredAt.Month == date.Month &&
+                            x.MeasuredAt.Day == date.Day)
                 .FirstOrDefaultAsync();
         }
 
         public async Task AddOrUpdateProduction(Production production)
         {
             var existingProduction = await _context.Productions
-                .FirstOrDefaultAsync(p => p.CalculatedImportedAt.Date == production.CalculatedImportedAt.Date);
+                .FirstOrDefaultAsync(p => p.MeasuredAt.Date == production.MeasuredAt.Date);
 
             if (existingProduction == null)
             {

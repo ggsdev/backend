@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PRIO.src.Modules.Measuring.Productions.Infra.Http.Services;
-using PRIO.src.Modules.Measuring.Productions.ViewModels;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.Http.Filters;
 using System.Globalization;
@@ -20,13 +19,15 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Controllers
         }
 
 
-        [HttpGet]
-        public async Task<IActionResult> GetByDate([FromBody] GetProductionByDateViewModel body)
+        [HttpGet("total-daily")]
+        public async Task<IActionResult> GetByDate([FromQuery] string date)
         {
-            if (!DateTime.TryParseExact(body.Date, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
-                throw new BadRequestException("Formato de data inválido. Formato correto: 'dd/MM/yyyy'.");
+            if (!DateTime.TryParseExact(date, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDate))
+            {
+                throw new BadRequestException("Invalid date format. The date should be in the format 'dd/MM/yyyy'.");
+            }
 
-            var production = await _productionService.GetByDate(date);
+            var production = await _productionService.GetByDate(parsedDate);
 
             return Ok(production);
         }

@@ -23,7 +23,6 @@ namespace PRIO.src.Shared.Utils.Validators
             if (value is decimal decimalValue)
             {
                 var precision = GetPrecision(decimalValue);
-
                 if (precision <= _maxPrecision)
                     return ValidationResult.Success;
             }
