@@ -11,23 +11,23 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models
         public string WellName { get; set; }
         public string WellAlignmentData { get; set; }
         public string WellAlignmentHour { get; set; }
-        public string PotencialLiquid { get; set; }
-        public string PotencialLiquidPerHour { get; set; }
+        public decimal PotencialLiquid { get; set; }
+        public decimal PotencialLiquidPerHour { get; set; }
         public string MPointOil { get; set; }
-        public string PotencialOil { get; set; }
-        public string PotencialOilPerHour { get; set; }
+        public decimal PotencialOil { get; set; }
+        public decimal PotencialOilPerHour { get; set; }
         public string MPointGas { get; set; }
-        public string PotencialGas { get; set; }
-        public string PotencialGasPerHour { get; set; }
+        public decimal PotencialGas { get; set; }
+        public decimal PotencialGasPerHour { get; set; }
         public string MPointWater { get; set; }
-        public string PotencialWater { get; set; }
-        public string PotencialWaterPerHour { get; set; }
+        public decimal PotencialWater { get; set; }
+        public decimal PotencialWaterPerHour { get; set; }
         public string InitialDate { get; set; }
         public string FinalDate { get; set; }
         public string Duration { get; set; }
         public string BTPNumber { get; set; }
-        public string RGO { get; set; }
-        public string BSW { get; set; }
+        public decimal RGO { get; set; }
+        public decimal BSW { get; set; }
         public string ApplicationDate { get; set; }
         public bool IsValid { get; set; }
         public BTPBase64 BTPBase64 { get; set; }
