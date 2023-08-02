@@ -207,6 +207,9 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<TOGRecoveredOil, TOGRecoveredOilWithEquipmentDTO>();
             CreateMap<DOR, DORWithEquipmentDTO>();
 
+            CreateMap<MeasurementHistory, MeasurementHistoryWithMeasurementsDto>()
+                .ForMember(dest => dest.ImportId, opt => opt.MapFrom(src =>
+                src.Id));
 
             CreateMap<GasVolumeCalculation, GasVolumeCalculationDto>();
             CreateMap<AssistanceGas, AssistanceGasDto>();

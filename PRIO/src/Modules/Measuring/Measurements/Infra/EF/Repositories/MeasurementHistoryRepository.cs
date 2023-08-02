@@ -24,6 +24,12 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories
         {
             return await _context.MeasurementHistories.AnyAsync(x => x.FileContent == base64);
         }
+        public async Task<MeasurementHistory?> GetById(Guid id)
+        {
+            return await _context.MeasurementHistories
+                    .Include(x => x.Measurements)
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
 
         public async Task<List<MeasurementHistory>> GetLastUpdatedHistoriesXML(string fileType)
         {

@@ -13,7 +13,8 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models
 
         public bool IsCalculated { get; set; } = false;
         public Production Production { get; set; }
-
+        public bool? StatusMeasuringPoint { get; set; }
+        public decimal? VolumeAfterManualBsw_001 { get; set; }
         #region 001
         public decimal BswManual_001 { get; set; }
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_001 { get; set; }

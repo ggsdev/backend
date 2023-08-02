@@ -2313,6 +2313,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         if (drain.IsApplicable && drain.MeasuringPoint.TagPointMeasuring == bodyMeasurement.COD_TAG_PONTO_MEDICAO_001)
                         {
                             totalOilWithBsw += bodyMeasurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001;
+
                         }
                     }
 
@@ -2321,6 +2322,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         if (section.IsApplicable && section.MeasuringPoint.TagPointMeasuring == bodyMeasurement.COD_TAG_PONTO_MEDICAO_001)
                         {
                             totalOilWithBsw += bodyMeasurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001 * (1 - bodyMeasurement.BswManual);
+
                         }
                     }
 
@@ -2351,6 +2353,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     measurement.Installation = installation;
                     measurement.MeasuringPoint = measuringPoint;
                     measurement.BswManual_001 = bodyMeasurement.BswManual;
+                    measurement.StatusMeasuringPoint = bodyMeasurement.Summary.Status;
+                    measurement.VolumeAfterManualBsw_001 = totalOilWithBsw;
 
                     var path001Xml = Path.GetTempPath() + bodyMeasurement.ImportId + ".xml";
 
