@@ -46,7 +46,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
 
             return btpsDTO;
         }
-        public async Task<CreateDataBTODTO> GetImportFiles(RequestWellTestXls body, User user)
+        public async Task<ValidateDataBTPDTO> GetImportFiles(RequestWellTestXls body, User user)
         {
             var BTP = await _BTPRepository.GetByIdAsync(body.BTPId) ?? throw new NotFoundException("BTP não encontrado.");
 
@@ -99,6 +99,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
 
             var content = new BTPBase64
             {
+                Id = Guid.NewGuid(),
                 Filename = body.FileName,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
@@ -109,6 +110,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             };
             var data = new BTPData
             {
+                Id = Guid.NewGuid(),
                 Filename = body.FileName,
                 Type = body.Type,
                 IsValid = body.isValid,
@@ -141,7 +143,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             };
 
             var BTPdataDTO = _mapper.Map<BTPData, BTPDataDTO>(data);
-            var createDataDTO = new CreateDataBTODTO
+            var createDataDTO = new ValidateDataBTPDTO
             {
                 Message = message,
                 Data = BTPdataDTO
@@ -149,7 +151,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
 
             return createDataDTO;
         }
-        public async Task<CreateDataBTODTO> PostImportFiles(RequestWellTestXls body, User user)
+        public async Task<ValidateDataBTPDTO> PostImportFiles(RequestWellTestXls body, User user)
         {
             var BTP = await _BTPRepository.GetByIdAsync(body.BTPId) ?? throw new NotFoundException("BTP não encontrado.");
 
@@ -227,7 +229,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             };
 
             var BTPdataDTO = _mapper.Map<BTPData, BTPDataDTO>(data);
-            var createDataDTO = new CreateDataBTODTO
+            var createDataDTO = new ValidateDataBTPDTO
             {
                 Message = message,
                 Data = BTPdataDTO
