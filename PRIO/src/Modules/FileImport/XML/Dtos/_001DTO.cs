@@ -106,7 +106,7 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public decimal? PCT_ADOTADO_CASO_FALHA_2_001 { get; set; }
         public decimal? DSC_ESTADO_INSTRUMENTO_FALHA_3_001 { get; set; }
         public string? DSC_ESTADO_INSTRUMENTO_FALHA_2_001 { get; set; }
-        public DateTime? DHA_INICIO_PERIODO_MEDICAO_001 { get; set; }
+        public DateTime DHA_INICIO_PERIODO_MEDICAO_001 { get; set; }
         public DateTime? DHA_FIM_PERIODO_MEDICAO_001 { get; set; }
         public decimal? ICE_DENSIDADADE_RELATIVA_001 { get; set; }
         public decimal? ICE_CORRECAO_BSW_001 { get; set; }
@@ -230,7 +230,7 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public decimal? PCT_ADOTADO_CASO_FALHA_2_001 { get; set; }
         public decimal? DSC_ESTADO_INSTRUMENTO_FALHA_3_001 { get; set; }
         public string? DSC_ESTADO_INSTRUMENTO_FALHA_2_001 { get; set; }
-        public DateTime? DHA_INICIO_PERIODO_MEDICAO_001 { get; set; }
+        public DateTime DHA_INICIO_PERIODO_MEDICAO_001 { get; set; }
         public DateTime? DHA_FIM_PERIODO_MEDICAO_001 { get; set; }
         public decimal? ICE_DENSIDADADE_RELATIVA_001 { get; set; }
         public decimal? ICE_CORRECAO_BSW_001 { get; set; }
@@ -295,11 +295,14 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public decimal TotalGasImported { get; set; }
     }
 
+
     public class OilDto
     {
         public decimal TotalOilProduction { get; set; }
 
     }
+
+
 
     public class GasLinearDto
     {

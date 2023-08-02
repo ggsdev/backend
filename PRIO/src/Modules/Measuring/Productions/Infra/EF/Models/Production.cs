@@ -7,7 +7,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Models
     {
         public Guid Id { get; set; }
         public List<Measurement> Measurements { get; set; } = new();
-        public DateTime? MeasuredAt { get; set; }
+        public DateTime MeasuredAt { get; set; }
         public DateTime CalculatedImportedAt { get; set; } = DateTime.UtcNow.AddHours(-3);
 
         public Oil? Oil { get; set; }

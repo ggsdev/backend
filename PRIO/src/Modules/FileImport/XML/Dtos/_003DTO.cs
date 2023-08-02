@@ -84,7 +84,7 @@
         public string? DSC_ESTADO_INSNO_CASO_FALHA_3_003 { get; set; }
         public string? NUM_SERIE_6_003 { get; set; }
         public decimal? MED_CUTOFF_KPA_2_003 { get; set; }
-        public DateTime? DHA_INICIO_PERIODO_MEDICAO_003 { get; set; }
+        public DateTime DHA_INICIO_PERIODO_MEDICAO_003 { get; set; }
         public DateTime? DHA_FIM_PERIODO_MEDICAO_003 { get; set; }
         public decimal? ICE_DENSIDADE_RELATIVA_003 { get; set; }
         public decimal? MED_DIFERENCIAL_PRESSAO_003 { get; set; }
@@ -102,7 +102,7 @@
         public ClientInfo Summary { get; set; }
         public Guid? ImportId { get; set; }
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_003 { get; set; }
-        public DateTime? DHA_INICIO_PERIODO_MEDICAO_003 { get; set; }
+        public DateTime DHA_INICIO_PERIODO_MEDICAO_003 { get; set; }
         public string COD_INSTALACAO_003 { get; set; } = string.Empty;
         public string COD_TAG_PONTO_MEDICAO_003 { get; set; } = string.Empty;
         public string? NUM_SERIE_COMPUTADOR_VAZAO_003 { get; set; }
