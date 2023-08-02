@@ -76,7 +76,6 @@
     <Folder Include="src\Modules\ControlAccess\Operations\Infra\Http\Controllers\" />
     <Folder Include="src\Modules\ControlAccess\Operations\Infra\Http\Services\" />
     <Folder Include="src\Modules\ControlAccess\Operations\ViewModels\" />
-    <Folder Include="src\Modules\FileImport\XLSX\BTPS\Dtos\" />
     <Folder Include="src\Modules\FileImport\XLSX\BTPS\Infra\EF\Repositories\" />
     <Folder Include="src\Modules\FileImport\XLSX\BTPS\Infra\Http\Controllers\" />
     <Folder Include="src\Modules\FileImport\XLSX\BTPS\Infra\Http\Services\" />

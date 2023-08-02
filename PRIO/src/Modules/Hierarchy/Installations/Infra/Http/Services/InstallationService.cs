@@ -102,7 +102,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                     tratedDecimal = partes[1];
 
                     if (partes[0].Length > 6)
-                        throw new ConflictException("Formato não aceito. a (xxxxxx,xxxx)");
+                        throw new ConflictException("Formato não aceito. (000000,0000)");
 
                     string? resultado = partes[0] + "," + tratedDecimal;
                     tratedNumber = decimal.Parse(resultado);
@@ -110,7 +110,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                 else
                 {
                     if (trated.Length > 6)
-                        throw new ConflictException("Formato não aceito. b (xxxxxx,xxxx)");
+                        throw new ConflictException("Formato não aceito. (000000,0000)");
 
                     string? resultado = trated + "," + "0000";
                     tratedNumber = decimal.Parse(resultado);
@@ -118,7 +118,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                 }
 
             }
-            Console.WriteLine(tratedNumber);
 
             var installationId = Guid.NewGuid();
 
