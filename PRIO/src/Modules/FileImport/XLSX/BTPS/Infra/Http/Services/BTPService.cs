@@ -87,16 +87,25 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             //ToDecimal
             var oilCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialOil].Value.ToString(), out var oilDecimal);
             decimal oilDecimalFormated = Math.Round(oilDecimal, 5, MidpointRounding.AwayFromZero);
+            decimal oilPerHourDecimalFormated = Math.Round(oilDecimal / 24, 5, MidpointRounding.AwayFromZero);
             var gasCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialGas].Value.ToString(), out var gasDecimal);
             decimal gasDecimalFormated = Math.Round(gasDecimal, 5, MidpointRounding.AwayFromZero);
+            decimal gasPerHourDecimalFormated = Math.Round(gasDecimal / 24, 5, MidpointRounding.AwayFromZero);
             var waterCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialWater].Value.ToString(), out var waterDecimal);
             decimal waterDecimalFormated = Math.Round(waterDecimal, 5, MidpointRounding.AwayFromZero);
+            decimal waterPerHourDecimalFormated = Math.Round(waterDecimal / 24, 5, MidpointRounding.AwayFromZero);
             var liquidCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialLiquid].Value.ToString(), out var liquidDecimal);
             decimal liquidDecimalFormated = Math.Round(liquidDecimal, 5, MidpointRounding.AwayFromZero);
+            decimal liquidPerHourDecimalFormated = Math.Round(liquidDecimal / 24, 5, MidpointRounding.AwayFromZero);
             var rgoCheck = decimal.TryParse(worksheet.Cells[BTP.CellRGO].Value.ToString(), out var rgoDecimal);
             decimal rgoDecimalFormated = Math.Round(rgoDecimal, 5, MidpointRounding.AwayFromZero);
             var bswCheck = decimal.TryParse(worksheet.Cells[BTP.CellBSW].Value.ToString(), out var bswDecimal);
             decimal bswDecimalFormated = Math.Round(bswDecimal, 5, MidpointRounding.AwayFromZero);
+
+            if (oilCheck is false || gasCheck is false || waterCheck is false || liquidCheck is false || rgoCheck is false || bswCheck is false)
+            {
+                throw new ConflictException("Dados decimais não podem ser convertidos.");
+            }
 
             var content = new BTPBase64
             {
@@ -117,13 +126,13 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 IsValid = body.isValid,
                 ApplicationDate = body.applicationDate,
                 PotencialLiquid = liquidDecimalFormated,
-                PotencialLiquidPerHour = liquidDecimal / 24,
+                PotencialLiquidPerHour = liquidPerHourDecimalFormated,
                 PotencialOil = oilDecimalFormated,
-                PotencialOilPerHour = oilDecimal / 24,
+                PotencialOilPerHour = oilPerHourDecimalFormated,
                 PotencialGas = gasDecimalFormated,
-                PotencialGasPerHour = gasDecimal / 24,
+                PotencialGasPerHour = gasPerHourDecimalFormated,
                 PotencialWater = waterDecimalFormated,
-                PotencialWaterPerHour = waterDecimal / 24,
+                PotencialWaterPerHour = waterPerHourDecimalFormated,
                 Duration = valorTempo,
                 InitialDate = worksheet.Cells[BTP.CellInitialDate].Value.ToString(),
                 FinalDate = worksheet.Cells[BTP.CellFinalDate].Value.ToString(),
@@ -139,8 +148,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 BTPSheet = BTP.BTPSheet,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
-                BTPBase64 = content,
-                Well = well
+                Well = well,
+                BTPBase64 = content
             };
 
             var BTPdataDTO = _mapper.Map<BTPData, BTPDataDTO>(data);

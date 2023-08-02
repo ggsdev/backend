@@ -23,8 +23,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Dtos
         public string MPointGas { get; set; }
         public string MPointOil { get; set; }
         public string MPointWater { get; set; }
-        public string BSW { get; set; }
-        public string RGO { get; set; }
+        public decimal BSW { get; set; }
+        public decimal RGO { get; set; }
         public string WellAlignmentData { get; set; }
         public string WellAlignmentHour { get; set; }
         public string WellName { get; set; }
@@ -32,7 +32,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Dtos
         public string ApplicationDate { get; set; }
         public bool IsActive { get; set; }
         public bool IsValid { get; set; }
-        public BTPBase64DTO BTPBase64 { get; set; }
         public WellWithoutFieldDTO Well { get; set; }
+        public BTPBase64DTO BTPBase64 { get; set; }
     }
 }
