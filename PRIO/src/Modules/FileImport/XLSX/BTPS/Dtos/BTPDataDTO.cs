@@ -9,14 +9,14 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Dtos
         public string BTPSheet { get; set; }
         public string Type { get; set; }
         public string BTPNumber { get; set; }
-        public string PotencialLiquid { get; set; }
-        public string PotencialLiquidPerHour { get; set; }
-        public string PotencialOil { get; set; }
-        public string PotencialOilPerHour { get; set; }
-        public string PotencialGas { get; set; }
-        public string PotencialGasPerHour { get; set; }
-        public string PotencialWater { get; set; }
-        public string PotencialWaterPerHour { get; set; }
+        public decimal PotencialLiquid { get; set; }
+        public decimal PotencialLiquidPerHour { get; set; }
+        public decimal PotencialOil { get; set; }
+        public decimal PotencialOilPerHour { get; set; }
+        public decimal PotencialGas { get; set; }
+        public decimal PotencialGasPerHour { get; set; }
+        public decimal PotencialWater { get; set; }
+        public decimal PotencialWaterPerHour { get; set; }
         public string InitialDate { get; set; }
         public string FinalDate { get; set; }
         public string Duration { get; set; }
