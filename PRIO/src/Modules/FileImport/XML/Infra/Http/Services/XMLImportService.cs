@@ -2269,6 +2269,16 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 }
             }
 
+            if (data.GasSummary is not null)
+            {
+                var sumOfDetailedBurnedGas = data.GasSummary.DetailedBurnedGas.WellTestBurn + data.GasSummary.DetailedBurnedGas.LimitOperacionalBurn + data.GasSummary.DetailedBurnedGas.ForCommissioningBurn + data.GasSummary.DetailedBurnedGas.ScheduledStopBurn + data.GasSummary.DetailedBurnedGas.EmergencialBurn + data.GasSummary.DetailedBurnedGas.VentedGas;
+
+                if (data.Gas is not null && data.Gas.TotalGasBurnt < sumOfDetailedBurnedGas)
+                {
+                    throw new BadRequestException($"Somatório do detalhamento de queima não pode ultrapassar o total de queima: {data.Gas.TotalGasBurnt}");
+                }
+            }
+
             var base64HistoryMap = new Dictionary<string, MeasurementHistory>();
 
             var measurementsAdded = new List<Measurement>();
@@ -2285,18 +2295,41 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             var dailyProduction = await _productionRepository.GetExistingByDate(measuredAt);
 
-
             if (dailyProduction is null)
-
+            {
                 dailyProduction = new Production
                 {
                     Id = Guid.NewGuid(),
                     CalculatedImportedBy = user,
                     CalculatedImportedAt = DateTime.UtcNow,
                     MeasuredAt = measuredAt,
+                    Gas = new Gas
+                    {
+                        EmergencialBurn = data.GasSummary.DetailedBurnedGas.EmergencialBurn,
+                        LimitOperacionalBurn = data.GasSummary.DetailedBurnedGas.LimitOperacionalBurn,
+                        ScheduledStopBurn = data.GasSummary.DetailedBurnedGas.ScheduledStopBurn,
+                        ForCommissioningBurn = data.GasSummary.DetailedBurnedGas.ForCommissioningBurn,
+                        VentedGas = data.GasSummary.DetailedBurnedGas.VentedGas,
+                        WellTestBurn = data.GasSummary.DetailedBurnedGas.WellTestBurn,
+                        OthersBurn = data.GasSummary.DetailedBurnedGas.OthersBurn,
+
+                    },
                 };
+            }
+            if (dailyProduction is not null && dailyProduction.Gas is null)
+            {
+                dailyProduction.Gas = new Gas
+                {
+                    EmergencialBurn = data.GasSummary.DetailedBurnedGas.EmergencialBurn,
+                    LimitOperacionalBurn = data.GasSummary.DetailedBurnedGas.LimitOperacionalBurn,
+                    ScheduledStopBurn = data.GasSummary.DetailedBurnedGas.ScheduledStopBurn,
+                    ForCommissioningBurn = data.GasSummary.DetailedBurnedGas.ForCommissioningBurn,
+                    VentedGas = data.GasSummary.DetailedBurnedGas.VentedGas,
+                    WellTestBurn = data.GasSummary.DetailedBurnedGas.WellTestBurn,
+                    OthersBurn = data.GasSummary.DetailedBurnedGas.OthersBurn,
 
-
+                };
+            }
 
             var dividirBsw = 1;
 
@@ -2515,8 +2548,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             }
 
 
-
-
             foreach (var file in data._003File)
             {
                 foreach (var bodyMeasurement in file.Measurements)
@@ -2593,25 +2624,12 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             }
 
 
-
             if (dailyProduction.GasDiferencial is not null && dailyProduction.GasLinear is not null && dailyProduction.Oil is not null)
             {
                 dailyProduction.StatusProduction = true;
             }
             if (data.GasSummary is not null)
             {
-                var gasCreated = new Gas
-                {
-                    EmergencialBurn = data.GasSummary.DetailedBurnedGas.EmergencialBurn,
-                    LimitOperacionalBurn = data.GasSummary.DetailedBurnedGas.LimitOperacionalBurn,
-                    ScheduledStopBurn = data.GasSummary.DetailedBurnedGas.ScheduledStopBurn,
-                    ForCommissioningBurn = data.GasSummary.DetailedBurnedGas.ForCommissioningBurn,
-                    VentedGas = data.GasSummary.DetailedBurnedGas.VentedGas,
-                    WellTestBurn = data.GasSummary.DetailedBurnedGas.WellTestBurn,
-                    OthersBurn = data.GasSummary.DetailedBurnedGas.OthersBurn,
-
-                };
-
                 if (dailyProduction.GasDiferencial is null && data.GasDiferencial is not null)
                 {
                     var gasDiferencial = new GasDiferencial
@@ -2627,7 +2645,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     dailyProduction.GasDiferencial = gasDiferencial;
                     totalProduction += gasDiferencial.TotalGas;
 
-                    gasCreated.GasDiferencial = gasDiferencial;
+                    dailyProduction.Gas.GasDiferencial = gasDiferencial;
                 }
 
                 if (dailyProduction.GasLinear is null && data.GasLinear is not null)
@@ -2646,12 +2664,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     totalProduction += gasLinear.TotalGas;
 
-                    gasCreated.GasLinear = gasLinear;
+                    dailyProduction.Gas.GasLinear = gasLinear;
+
                 }
-
-                await _productionRepository.AddGas(gasCreated);
-
-                dailyProduction.Gas = gasCreated;
             }
 
             dailyProduction.TotalProduction = totalProduction;

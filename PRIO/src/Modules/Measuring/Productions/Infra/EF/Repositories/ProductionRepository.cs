@@ -44,17 +44,15 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
 
             if (existingProduction == null)
             {
-                _context.Productions.Add(production);
+                await _context.AddAsync(production);
             }
             else
             {
                 existingProduction.StatusProduction = production.StatusProduction;
                 existingProduction.TotalProduction = production.TotalProduction;
 
-                _context.Productions.Update(existingProduction);
+                _context.Update(existingProduction);
             }
-
-            await _context.SaveChangesAsync();
         }
 
         public void Update(Production production)
