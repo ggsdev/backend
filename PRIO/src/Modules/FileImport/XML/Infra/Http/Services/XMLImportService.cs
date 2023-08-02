@@ -25,6 +25,7 @@ using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Productions.Interfaces;
+using PRIO.src.Modules.Measuring.Productions.Utils;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Utils;
 using System.Globalization;
@@ -93,6 +94,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             var userDto = _mapper.Map<UserDTO>(user);
             var response = new ResponseXmlDto();
+
+            var gasResume = new GasSummary();
 
             for (int i = 0; i < data.Files.Count; ++i)
             {
@@ -1466,7 +1469,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         if (assistanceGas.IsApplicable && assistanceGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
                         {
                             totalLinearBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
-
+                            gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
 
                             containAssistanceGas = true;
                             break;
@@ -1504,6 +1507,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         if (exportGas.IsApplicable && exportGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
                         {
                             totalLinearExportedGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
+                            gasResume.ExportedGas.MeasuringPoints.Add(measurementResponse.Summary);
 
                             containExportGas = true;
                             break;
@@ -1542,8 +1546,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         {
                             totalLinearFuelGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
 
-
                             containHighPressureGas = true;
+
+                            gasResume.FuelGas.MeasuringPoints.Add(measurementResponse.Summary);
+
                             break;
                         }
                     }
@@ -1566,6 +1572,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         };
                         file002.Measurements.Add(measurementWrong);
                     }
+
+
                 }
 
                 var containHPFlare = false;
@@ -1580,6 +1588,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         {
                             totalLinearBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
 
+                            gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
 
                             containHPFlare = true;
                             break;
@@ -1618,6 +1627,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         {
                             totalLinearImportedGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
 
+                            gasResume.ImportedGas.MeasuringPoints.Add(measurementResponse.Summary);
 
                             containImportGas = true;
                             break;
@@ -1656,6 +1666,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         {
                             totalLinearFuelGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
 
+                            gasResume.FuelGas.MeasuringPoints.Add(measurementResponse.Summary);
 
                             containLowPressureGas = true;
                             break;
@@ -1692,6 +1703,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         if (lpFlare.IsApplicable && lpFlare.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
                         {
                             totalLinearBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
+                            gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
 
                             containLPFlare = true;
                             break;
@@ -1731,8 +1743,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                             totalLinearBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
                             totalLinearFuelGas -= measurementResponse.MED_CORRIGIDO_MVMDO_002;
 
-
-
+                            gasResume.FuelGas.MeasuringPoints.Add(measurementResponse.Summary);
+                            gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
 
                             containPilotGas = true;
                             break;
@@ -1771,6 +1783,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                             totalLinearBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
                             totalLinearFuelGas -= measurementResponse.MED_CORRIGIDO_MVMDO_002;
 
+                            gasResume.FuelGas.MeasuringPoints.Add(measurementResponse.Summary);
+                            gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
 
                             containPurgeGas = true;
                             break;
@@ -1816,6 +1830,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         if (assistanceGas.IsApplicable && assistanceGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
                         {
                             totalDiferencialBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
+                            gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
 
                             containAssistanceGas = true;
                             break;
@@ -1853,6 +1868,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         if (exportGas.IsApplicable && exportGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
                         {
                             totalDiferencialExportedGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
+                            gasResume.ExportedGas.MeasuringPoints.Add(measurementResponse.Summary);
 
                             containExportGas = true;
                             break;
@@ -1890,6 +1906,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         if (highPressureGas.IsApplicable && highPressureGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
                         {
                             totalDiferencialFuelGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
+                            gasResume.FuelGas.MeasuringPoints.Add(measurementResponse.Summary);
 
                             containHighPressureGas = true;
                             break;
@@ -1927,6 +1944,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         if (hpFlare.IsApplicable && hpFlare.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
                         {
                             totalDiferencialBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
+                            gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
 
                             containHPFlare = true;
                             break;
@@ -1964,6 +1982,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         if (importGas.IsApplicable && importGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
                         {
                             totalDiferencialImportedGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
+                            gasResume.ImportedGas.MeasuringPoints.Add(measurementResponse.Summary);
 
                             containImportGas = true;
                             break;
@@ -2001,6 +2020,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         if (lowPressure.IsApplicable && lowPressure.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
                         {
                             totalDiferencialFuelGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
+                            gasResume.FuelGas.MeasuringPoints.Add(measurementResponse.Summary);
 
                             containLowPressureGas = true;
                             break;
@@ -2037,6 +2057,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         if (lpFlare.IsApplicable && lpFlare.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
                         {
                             totalDiferencialBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
+                            gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
 
                             containLPFlare = true;
                             break;
@@ -2076,6 +2097,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                             totalDiferencialBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
                             totalDiferencialFuelGas -= measurementResponse.MED_CORRIGIDO_MVMDO_003;
 
+                            gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
+                            gasResume.FuelGas.MeasuringPoints.Add(measurementResponse.Summary);
 
                             containPilotGas = true;
                             break;
@@ -2113,7 +2136,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         {
                             totalDiferencialBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
                             totalDiferencialFuelGas -= measurementResponse.MED_CORRIGIDO_MVMDO_003;
-
+                            gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
+                            gasResume.FuelGas.MeasuringPoints.Add(measurementResponse.Summary);
                             containPurgeGas = true;
                             break;
                         }
@@ -2141,7 +2165,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             }
 
-
             var totalDiferencialGas = totalDiferencialBurnetGas + totalDiferencialFuelGas + (totalDiferencialExportedGas - totalDiferencialImportedGas);
 
             var gasDiferencial = new GasDiferencialDto
@@ -2167,7 +2190,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             var gasTotalResponse = new GasDto
             {
-                TotalGasProduction = gasLinear.TotalGas + gasDiferencial.TotalGas,
+                TotalGasProductionM3 = gasLinear.TotalGas + gasDiferencial.TotalGas,
+                TotalGasProductionBBL = (gasLinear.TotalGas + gasDiferencial.TotalGas) * ProductionUtils.m3ToBBLConversionMultiplier,
                 TotalGasBurnt = gasLinear.TotalGasBurnt + gasDiferencial.TotalGasBurnt,
                 TotalGasFuel = gasLinear.TotalGasFuel + gasDiferencial.TotalGasFuel,
                 TotalGasExported = gasLinear.TotalGasExported + gasDiferencial.TotalGasExported,
@@ -2191,7 +2215,15 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 response.GasDiferencial = gasDiferencial;
 
             if (response._002File.Count > 0 || response._003File.Count > 0)
+            {
                 response.Gas = gasTotalResponse;
+                gasResume.BurnedGas.TotalBurnedGas = gasLinear.TotalGasBurnt + gasDiferencial.TotalGasBurnt;
+                gasResume.FuelGas.TotalFuelGas = gasLinear.TotalGasFuel + gasDiferencial.TotalGasFuel;
+                gasResume.ExportedGas.TotalExportedGas = gasLinear.TotalGasExported + gasDiferencial.TotalGasExported;
+                gasResume.ImportedGas.TotalImportedGas = gasLinear.TotalGasImported + gasDiferencial.TotalGasImported;
+
+                response.GasSummary = gasResume;
+            }
 
             return response;
         }
@@ -2253,19 +2285,29 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             var dailyProduction = await _productionRepository.GetExistingByDate(measuredAt);
 
+
             if (dailyProduction is null)
+            {
+                //var gasCreated = new Gas
+                //{
+                //    EmergencialBurn =
+
+                //};
+
+
                 dailyProduction = new Production
                 {
                     Id = Guid.NewGuid(),
                     CalculatedImportedBy = user,
-                    CalculatedImportedAt = DateTime.UtcNow.AddHours(-3),
-                    MeasuredAt = measuredAt
+                    CalculatedImportedAt = DateTime.UtcNow,
+                    MeasuredAt = measuredAt,
                 };
+
+            }
 
             var dividirBsw = 1;
 
             var totalOilWithBsw = 0m;
-
             var totalProduction = 0m;
             decimal? bswAverage = 0;
 
@@ -2492,6 +2534,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 };
 
                 dailyProduction.GasLinear = gasLinear;
+                dailyProduction.Gas.GasLinear = gasLinear;
 
                 totalProduction += gasLinear.TotalGas;
             }

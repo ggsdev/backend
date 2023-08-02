@@ -305,6 +305,7 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
     {
         public GasDto? Gas { get; set; }
         public OilDto? Oil { get; set; }
+        public GasSummary? GasSummary { get; set; }
         public GasLinearDto? GasLinear { get; set; }
         public GasDiferencialDto? GasDiferencial { get; set; }
 
@@ -313,9 +314,62 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public List<Response003DTO> _003File { get; set; } = new();
     }
 
+    public class GasSummary
+    {
+        public BurnedGasResume BurnedGas { get; set; } = new();
+        public FuelGasResume FuelGas { get; set; } = new();
+        public ExportedGasResume ExportedGas { get; set; } = new();
+        public ImportedGasResume ImportedGas { get; set; } = new();
+        public DetailBurn DetailedBurnedGas { get; set; } = new();
+    }
+    public class DetailBurn
+    {
+        public decimal LimitOperacionalBurn { get; set; }
+        public decimal ScheduledStopBurn { get; set; }
+        public decimal ForCommissioningBurn { get; set; }
+        public decimal VentedGas { get; set; }
+        public decimal WellTestBurn { get; set; }
+        public decimal EmergencialBurn { get; set; }
+        public decimal OthersBurn { get; set; }
+
+    }
+
+    public class BurnedGasResume
+    {
+        public decimal TotalBurnedGas { get; set; }
+        public List<ClientInfo> MeasuringPoints { get; set; } = new();
+
+    }
+
+    public class FuelGasResume
+    {
+        public decimal TotalFuelGas { get; set; }
+
+        public List<ClientInfo> MeasuringPoints { get; set; } = new();
+
+    }
+
+    public class ExportedGasResume
+    {
+        public decimal TotalExportedGas { get; set; }
+
+        public List<ClientInfo> MeasuringPoints { get; set; } = new();
+
+    }
+
+    public class ImportedGasResume
+    {
+        public decimal TotalImportedGas { get; set; }
+
+        public List<ClientInfo> MeasuringPoints { get; set; } = new();
+
+    }
+
     public class GasDto
     {
-        public decimal TotalGasProduction { get; set; }
+        public decimal TotalGasProductionM3 { get; set; }
+
+        public decimal TotalGasProductionBBL { get; set; }
         public decimal TotalGasBurnt { get; set; }
         public decimal TotalGasFuel { get; set; }
         public decimal TotalGasExported { get; set; }
@@ -328,8 +382,6 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public decimal TotalOilProduction { get; set; }
 
     }
-
-
 
     public class GasLinearDto
     {

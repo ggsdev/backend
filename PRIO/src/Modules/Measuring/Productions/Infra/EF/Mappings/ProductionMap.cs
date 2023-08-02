@@ -25,6 +25,11 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Mappings
                 .HasForeignKey<Production>("GasDiferencialId")
                .OnDelete(DeleteBehavior.NoAction);
 
+            builder.HasOne(x => x.Gas)
+                .WithOne(d => d.Production)
+                .HasForeignKey<Production>("GasDiferencialId")
+               .OnDelete(DeleteBehavior.NoAction);
+
             builder.Property(x => x.TotalProduction)
                 .HasColumnType("decimal")
                 .HasPrecision(10, 5);

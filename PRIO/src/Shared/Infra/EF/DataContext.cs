@@ -83,6 +83,7 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<Production> Productions { get; set; }
         public DbSet<Oil> Oils { get; set; }
         public DbSet<GasLinear> GasesLinears { get; set; }
+        public DbSet<Gas> Gases { get; set; }
         public DbSet<GasDiferencial> GasesDiferencials { get; set; }
 
         public DbSet<MeasuringPoint> MeasuringPoints { get; set; }
@@ -220,6 +221,7 @@ namespace PRIO.src.Shared.Infra.EF
             modelBuilder.ApplyConfiguration(new OilMap());
             modelBuilder.ApplyConfiguration(new GasLinearMap());
             modelBuilder.ApplyConfiguration(new GasDiferencialMap());
+            modelBuilder.ApplyConfiguration(new GasMap());
             modelBuilder.ApplyConfiguration(new MeasuringPointMap());
             modelBuilder.ApplyConfiguration(new BTPMap());
             modelBuilder.ApplyConfiguration(new BTPDataMap());
