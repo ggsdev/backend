@@ -2287,13 +2287,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
 
             if (dailyProduction is null)
-            {
-                //var gasCreated = new Gas
-                //{
-                //    EmergencialBurn =
-
-                //};
-
 
                 dailyProduction = new Production
                 {
@@ -2303,7 +2296,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     MeasuredAt = measuredAt,
                 };
 
-            }
+
 
             var dividirBsw = 1;
 
@@ -2521,23 +2514,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             }
 
-            if (dailyProduction.GasLinear is null && data.GasLinear is not null)
-            {
-                var gasLinear = new GasLinear
-                {
-                    StatusGas = true,
-                    TotalGas = data.GasLinear.TotalGas,
-                    ExportedGas = data.GasLinear.TotalGasExported,
-                    ImportedGas = data.GasLinear.TotalGasImported,
-                    BurntGas = data.GasLinear.TotalGasBurnt,
-                    FuelGas = data.GasLinear.TotalGasFuel,
-                };
 
-                dailyProduction.GasLinear = gasLinear;
-                dailyProduction.Gas.GasLinear = gasLinear;
-
-                totalProduction += gasLinear.TotalGas;
-            }
 
 
             foreach (var file in data._003File)
@@ -2615,25 +2592,66 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             }
 
-            if (dailyProduction.GasDiferencial is null && data.GasDiferencial is not null)
-            {
-                var gasDiferencial = new GasDiferencial
-                {
-                    StatusGas = true,
-                    TotalGas = data.GasDiferencial.TotalGas,
-                    ExportedGas = data.GasDiferencial.TotalGasExported,
-                    ImportedGas = data.GasDiferencial.TotalGasImported,
-                    BurntGas = data.GasDiferencial.TotalGasBurnt,
-                    FuelGas = data.GasDiferencial.TotalGasFuel,
-                };
 
-                dailyProduction.GasDiferencial = gasDiferencial;
-                totalProduction += gasDiferencial.TotalGas;
-            }
 
             if (dailyProduction.GasDiferencial is not null && dailyProduction.GasLinear is not null && dailyProduction.Oil is not null)
             {
                 dailyProduction.StatusProduction = true;
+            }
+            if (data.GasSummary is not null)
+            {
+                var gasCreated = new Gas
+                {
+                    EmergencialBurn = data.GasSummary.DetailedBurnedGas.EmergencialBurn,
+                    LimitOperacionalBurn = data.GasSummary.DetailedBurnedGas.LimitOperacionalBurn,
+                    ScheduledStopBurn = data.GasSummary.DetailedBurnedGas.ScheduledStopBurn,
+                    ForCommissioningBurn = data.GasSummary.DetailedBurnedGas.ForCommissioningBurn,
+                    VentedGas = data.GasSummary.DetailedBurnedGas.VentedGas,
+                    WellTestBurn = data.GasSummary.DetailedBurnedGas.WellTestBurn,
+                    OthersBurn = data.GasSummary.DetailedBurnedGas.OthersBurn,
+
+                };
+
+                if (dailyProduction.GasDiferencial is null && data.GasDiferencial is not null)
+                {
+                    var gasDiferencial = new GasDiferencial
+                    {
+                        StatusGas = true,
+                        TotalGas = data.GasDiferencial.TotalGas,
+                        ExportedGas = data.GasDiferencial.TotalGasExported,
+                        ImportedGas = data.GasDiferencial.TotalGasImported,
+                        BurntGas = data.GasDiferencial.TotalGasBurnt,
+                        FuelGas = data.GasDiferencial.TotalGasFuel,
+                    };
+
+                    dailyProduction.GasDiferencial = gasDiferencial;
+                    totalProduction += gasDiferencial.TotalGas;
+
+                    gasCreated.GasDiferencial = gasDiferencial;
+                }
+
+                if (dailyProduction.GasLinear is null && data.GasLinear is not null)
+                {
+                    var gasLinear = new GasLinear
+                    {
+                        StatusGas = true,
+                        TotalGas = data.GasLinear.TotalGas,
+                        ExportedGas = data.GasLinear.TotalGasExported,
+                        ImportedGas = data.GasLinear.TotalGasImported,
+                        BurntGas = data.GasLinear.TotalGasBurnt,
+                        FuelGas = data.GasLinear.TotalGasFuel,
+                    };
+
+                    dailyProduction.GasLinear = gasLinear;
+
+                    totalProduction += gasLinear.TotalGas;
+
+                    gasCreated.GasLinear = gasLinear;
+                }
+
+                await _productionRepository.AddGas(gasCreated);
+
+                dailyProduction.Gas = gasCreated;
             }
 
             dailyProduction.TotalProduction = totalProduction;

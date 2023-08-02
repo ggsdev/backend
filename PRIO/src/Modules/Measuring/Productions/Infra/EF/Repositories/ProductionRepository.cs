@@ -61,5 +61,9 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
         {
             _context.Update(production);
         }
+        public async Task AddGas(Gas gas)
+        {
+            await _context.Gases.AddAsync(gas);
+        }
     }
 }

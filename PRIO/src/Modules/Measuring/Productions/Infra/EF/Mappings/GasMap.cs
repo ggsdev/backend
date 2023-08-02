@@ -40,12 +40,12 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Mappings
 
             builder.HasOne(x => x.GasLinear)
                 .WithOne(d => d.Gas)
-                .HasForeignKey<Gas>("GasId")
+                .HasForeignKey<Gas>("GasLinearId")
                .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(x => x.GasDiferencial)
                 .WithOne(d => d.Gas)
-                .HasForeignKey<Gas>("GasId")
+                .HasForeignKey<Gas>("GasDiferencialId")
                .OnDelete(DeleteBehavior.NoAction);
         }
     }
