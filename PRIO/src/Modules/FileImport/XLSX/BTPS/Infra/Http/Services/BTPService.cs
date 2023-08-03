@@ -46,9 +46,9 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
 
             return btpsDTO;
         }
-        public async Task<BTPDataDTO> GetByDate(string date)
+        public async Task<BTPDataDTO> GetByDate(string date, Guid wellId)
         {
-            var BTPdata = await _BTPRepository.GetByDateAsync(date);
+            var BTPdata = await _BTPRepository.GetByDateAsync(date, wellId);
             if (BTPdata is null)
                 throw new NotFoundException("Dados do BTP não encontrado.");
             var btpsDTO = _mapper.Map<BTPData, BTPDataDTO>(BTPdata);
