@@ -8,4 +8,10 @@
         public bool isApplicableFROil { get; set; }
         public List<FRFieldsViewModel> Fields { get; set; }
     }
+
+    public class FRViewModel
+    {
+        public bool IsApplicable { get; set; }
+        public List<FRFieldsViewModel> Fields { get; set; }
+    }
 }

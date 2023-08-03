@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using PRIO.src.Modules.Hierarchy.Installations.ViewModels;
+using System.ComponentModel.DataAnnotations;
 
 namespace PRIO.src.Modules.FileImport.XML.Dtos
 {
@@ -372,7 +373,7 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
     public class GasDto
     {
         public decimal TotalGasProductionM3 { get; set; }
-
+        public FRViewModel FRViewModel { get; set; }
         public decimal TotalGasProductionBBL { get; set; }
         public decimal TotalGasBurnt { get; set; }
         public decimal TotalGasFuel { get; set; }
@@ -383,6 +384,7 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
 
     public class OilDto
     {
+        public FRViewModel FRViewModel { get; set; }
         public decimal TotalOilProduction { get; set; }
 
     }
