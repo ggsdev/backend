@@ -170,19 +170,19 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
 
             return createDataDTO;
         }
-        public async Task<ValidateDataBTPDTO> PostImportFiles(RequestWellTestXls body, User user)
+        public async Task<ValidateDataBTPDTO> PostImportFiles(ImportViewModel body, User user)
         {
-            var BTP = await _BTPRepository.GetByIdAsync(body.BTPId) ?? throw new NotFoundException("BTP não encontrado.");
+            var BTP = await _BTPRepository.GetByIdAsync(body.Validate.BTPId) ?? throw new NotFoundException("BTP não encontrado.");
 
-            if (body.FileName.EndsWith(".xlsx") is false)
+            if (body.Data.Filename.EndsWith(".xlsx") is false)
                 throw new BadRequestException("O arquivo deve ter a extensão .xlsx", status: "Error");
 
-            if (body.Type != BTP.Type)
-                throw new ConflictException($"O modelo do arquivo não corresponde ao tipo {body.Type}");
+            if (body.Data.Type != BTP.Type)
+                throw new ConflictException($"O modelo do arquivo não corresponde ao tipo {body.Data.Type}");
 
-            var well = await _wellRepository.GetByIdAsync(body.WellId) ?? throw new NotFoundException("Poço não encontrado.");
+            var well = await _wellRepository.GetByIdAsync(body.Data.Well.Id) ?? throw new NotFoundException("Poço não encontrado.");
 
-            var contentBase64 = body.ContentBase64?.Replace("data:@file/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,", "");
+            var contentBase64 = body.Data.BTPBase64.FileContent?.Replace("data:@file/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,", "");
             using var stream = new MemoryStream(Convert.FromBase64String(contentBase64!));
             using ExcelPackage package = new(stream);
             var workbook = package.Workbook;
@@ -234,21 +234,21 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             var content = new BTPBase64
             {
                 Id = Guid.NewGuid(),
-                Filename = body.FileName,
+                Filename = body.Data.Filename,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
-                Type = body.Type,
-                FileContent = body.ContentBase64,
+                Type = body.Data.Type,
+                FileContent = body.Data.BTPBase64.FileContent,
                 IsActive = true,
                 User = user
             };
             var data = new BTPData
             {
                 Id = Guid.NewGuid(),
-                Filename = body.FileName,
-                Type = body.Type,
-                IsValid = body.IsValid,
-                ApplicationDate = body.ApplicationDate,
+                Filename = body.Data.Filename,
+                Type = body.Data.Type,
+                IsValid = body.Data.IsValid,
+                ApplicationDate = body.Data.ApplicationDate,
                 PotencialLiquid = liquidDecimalFormated,
                 PotencialLiquidPerHour = liquidPerHourDecimalFormated,
                 PotencialOil = oilDecimalFormated,

@@ -12,8 +12,8 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.src.Shared.Infra.EF.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230802181007_populateAuxiliariesWithBTPDatas")]
-    partial class populateAuxiliariesWithBTPDatas
+    [Migration("20230803185733_adjusts")]
+    partial class adjusts
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -571,9 +571,9 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
-                    b.Property<string>("BSW")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal>("BSW")
+                        .HasPrecision(15, 5)
+                        .HasColumnType("decimal");
 
                     b.Property<Guid>("BTPBase64Id")
                         .HasColumnType("uniqueidentifier");
@@ -634,47 +634,39 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PotencialGas")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("VARCHAR");
+                    b.Property<decimal>("PotencialGas")
+                        .HasPrecision(15, 5)
+                        .HasColumnType("decimal");
 
-                    b.Property<string>("PotencialGasPerHour")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("VARCHAR");
+                    b.Property<decimal>("PotencialGasPerHour")
+                        .HasPrecision(15, 5)
+                        .HasColumnType("decimal");
 
-                    b.Property<string>("PotencialLiquid")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal>("PotencialLiquid")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("PotencialLiquidPerHour")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal>("PotencialLiquidPerHour")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("PotencialOil")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("VARCHAR");
+                    b.Property<decimal>("PotencialOil")
+                        .HasPrecision(15, 5)
+                        .HasColumnType("decimal");
 
-                    b.Property<string>("PotencialOilPerHour")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("VARCHAR");
+                    b.Property<decimal>("PotencialOilPerHour")
+                        .HasPrecision(15, 5)
+                        .HasColumnType("decimal");
 
-                    b.Property<string>("PotencialWater")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("VARCHAR");
+                    b.Property<decimal>("PotencialWater")
+                        .HasPrecision(15, 5)
+                        .HasColumnType("decimal");
 
-                    b.Property<string>("PotencialWaterPerHour")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("VARCHAR");
+                    b.Property<decimal>("PotencialWaterPerHour")
+                        .HasPrecision(15, 5)
+                        .HasColumnType("decimal");
 
-                    b.Property<string>("RGO")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal>("RGO")
+                        .HasPrecision(15, 5)
+                        .HasColumnType("decimal");
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -869,6 +861,9 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("DailyProductionId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
@@ -876,13 +871,16 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("FRGas")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(4, 2)
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("FROil")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(4, 2)
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("FRWater")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(4, 2)
+                        .HasColumnType("decimal");
 
                     b.Property<Guid>("FieldId")
                         .HasColumnType("uniqueidentifier");
@@ -890,14 +888,20 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<decimal>("ProductionInField")
+                        .HasPrecision(10, 5)
+                        .HasColumnType("decimal");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DailyProductionId");
+
                     b.HasIndex("FieldId");
 
-                    b.ToTable("FieldsFRs");
+                    b.ToTable("FieldsFRs", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", b =>
@@ -3792,7 +3796,13 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Property<Guid?>("GasDiferencialId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("GasId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("GasLinearId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("InstallationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("MeasuredAt")
@@ -3816,9 +3826,15 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .IsUnique()
                         .HasFilter("[GasDiferencialId] IS NOT NULL");
 
+                    b.HasIndex("GasId")
+                        .IsUnique()
+                        .HasFilter("[GasId] IS NOT NULL");
+
                     b.HasIndex("GasLinearId")
                         .IsUnique()
                         .HasFilter("[GasLinearId] IS NOT NULL");
+
+                    b.HasIndex("InstallationId");
 
                     b.HasIndex("OilId")
                         .IsUnique()
@@ -4079,11 +4095,19 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models.FieldFR", b =>
                 {
+                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "DailyProduction")
+                        .WithMany("FieldsFR")
+                        .HasForeignKey("DailyProductionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models.Field", "Field")
                         .WithMany("FRs")
                         .HasForeignKey("FieldId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("DailyProduction");
 
                     b.Navigation("Field");
                 });
@@ -4600,20 +4624,26 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Gas", "Gas")
+                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.GasDiferencial", "GasDiferencial")
                         .WithOne("Production")
                         .HasForeignKey("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "GasDiferencialId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.GasDiferencial", "GasDiferencial")
+                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Gas", "Gas")
                         .WithOne("Production")
-                        .HasForeignKey("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "GasDiferencialId")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "GasId")
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.GasLinear", "GasLinear")
                         .WithOne("Production")
                         .HasForeignKey("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "GasLinearId")
                         .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
+                        .WithMany("Productions")
+                        .HasForeignKey("InstallationId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Oil", "Oil")
                         .WithOne("Production")
@@ -4627,6 +4657,8 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Navigation("GasDiferencial");
 
                     b.Navigation("GasLinear");
+
+                    b.Navigation("Installation");
 
                     b.Navigation("Oil");
                 });
@@ -4734,6 +4766,8 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Navigation("MeasuringPoints");
 
                     b.Navigation("OilVolumeCalculation");
+
+                    b.Navigation("Productions");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Models.Reservoir", b =>
@@ -4869,6 +4903,8 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", b =>
                 {
+                    b.Navigation("FieldsFR");
+
                     b.Navigation("Measurements");
                 });
 #pragma warning restore 612, 618

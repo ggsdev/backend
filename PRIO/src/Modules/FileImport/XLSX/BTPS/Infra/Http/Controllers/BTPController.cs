@@ -49,7 +49,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Controllers
         }
 
         [HttpPost("xls/import")]
-        public async Task<IActionResult> PostData([FromBody] RequestWellTestXls body)
+        public async Task<IActionResult> PostData([FromBody] ImportViewModel body)
         {
             if (HttpContext.Items["User"] is not User user)
                 return Unauthorized(new ErrorResponseDTO
