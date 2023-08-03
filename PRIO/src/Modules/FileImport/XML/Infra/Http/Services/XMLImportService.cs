@@ -77,14 +77,13 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     throw new BadRequestException("Não é um base64 válido");
                 var isValidFileName = new List<string>()
                     {
-                        "039",
                         "001",
                         "002",
                         "003"
                     }.Contains(data.Files[i].FileType);
 
                 if (!isValidFileName)
-                    throw new BadRequestException($"Deve pertencer a uma das categorias: 001, 002, 003, 039. Importação falhou, arquivo com nome: {data.Files[i].FileName}");
+                    throw new BadRequestException($"Deve pertencer a uma das categorias: 001, 002 e 003. Importação falhou, arquivo com nome: {data.Files[i].FileName}");
             }
 
             #endregion
@@ -576,6 +575,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                             };
 
+                                            response.UepName = installation.UepName;
+                                            response.DateProduction = dateBeginningMeasurement;
+
                                             response001.Measurements.Add(measurement001DTO);
                                         }
                                     }
@@ -920,6 +922,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                             };
 
+                                            response.UepName = installation.UepName;
+                                            response.DateProduction = dateBeginningMeasurement;
                                             response002.Measurements.Add(measurement002DTO);
                                         }
                                     }
@@ -1254,7 +1258,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                 Volume = measurement.MED_CORRIGIDO_MVMDO_003,
 
                                             };
-
+                                            response.UepName = installation.UepName;
+                                            response.DateProduction = dateBeginningMeasurement;
                                             response003.Measurements.Add(measurement003DTO);
                                         }
                                     }
@@ -2209,7 +2214,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             }
 
             if (response._002File.Count > 0)
+            {
                 response.GasLinear = gasLinear;
+            }
 
             if (response._003File.Count > 0)
                 response.GasDiferencial = gasDiferencial;
@@ -2224,6 +2231,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                 response.GasSummary = gasResume;
             }
+
+            var productionOfTheDay = await _productionRepository
+                .GetExistingByDate(response.DateProduction);
+
+            if (productionOfTheDay is null)
+                response.StatusProduction = false;
+            else
+                response.StatusProduction = productionOfTheDay.StatusProduction;
 
             return response;
         }
@@ -2623,11 +2638,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             }
 
-
-            if (dailyProduction.GasDiferencial is not null && dailyProduction.GasLinear is not null && dailyProduction.Oil is not null)
-            {
-                dailyProduction.StatusProduction = true;
-            }
             if (data.GasSummary is not null)
             {
                 if (dailyProduction.GasDiferencial is null && data.GasDiferencial is not null)
@@ -2676,8 +2686,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 measuring.Production = dailyProduction;
             }
 
+            if (dailyProduction.GasDiferencial is not null && dailyProduction.GasLinear is not null && dailyProduction.Oil is not null)
+            {
+                dailyProduction.StatusProduction = true;
+            }
+
             await _productionRepository.AddOrUpdateProduction(dailyProduction);
             await _repository.AddRangeAsync(measurementsAdded);
+
 
             await _repository.SaveChangesAsync();
 

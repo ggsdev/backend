@@ -13,7 +13,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models
     {
         public string? Name { get; set; }
         public string? UepCod { get; set; }
-        public string? UepName { get; set; }
+        public string UepName { get; set; }
         public string? CodInstallationAnp { get; set; }
         public decimal? GasSafetyBurnVolume { get; set; }
         public User? User { get; set; }

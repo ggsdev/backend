@@ -500,7 +500,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                     foreach (var section in oilCalculus.Sections)
                     {
                         var measurementFound = measurement.MeasuringPoint.TagPointMeasuring == section.MeasuringPoint.TagPointMeasuring;
-                        Console.WriteLine(section.MeasuringPoint.TagPointMeasuring);
                         if (!oilPoints.Any(measuring => measuring.TagMeasuringPoint == section.MeasuringPoint.TagPointMeasuring) && measurementFound)
                         {
                             var measuringPoint = new LocalOilPointDto

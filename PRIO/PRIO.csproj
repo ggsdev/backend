@@ -85,6 +85,7 @@
     <Folder Include="src\Modules\FileImport\XLSX\Infra\EF\Mappings\" />
     <Folder Include="src\Modules\FileImport\XML\Infra\EF\Models\" />
     <Folder Include="src\Modules\FileImport\XML\Infra\EF\Mappings\" />
+    <Folder Include="src\Modules\FileImport\XML\NFSM\Dtos\" />
     <Folder Include="src\Modules\Measuring\Measurements\Dtos\" />
     <Folder Include="src\Modules\Measuring\Measurements\Infra\Http\Controllers\" />
     <Folder Include="src\Modules\Measuring\Measurements\ViewModels\" />
