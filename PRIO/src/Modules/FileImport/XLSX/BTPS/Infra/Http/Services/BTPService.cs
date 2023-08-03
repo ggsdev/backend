@@ -46,6 +46,15 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
 
             return btpsDTO;
         }
+        public async Task<BTPDataDTO> GetByDate(string date, Guid wellId)
+        {
+            var BTPdata = await _BTPRepository.GetByDateAsync(date, wellId);
+            if (BTPdata is null)
+                throw new NotFoundException("Dados do BTP não encontrado.");
+            var btpsDTO = _mapper.Map<BTPData, BTPDataDTO>(BTPdata);
+
+            return btpsDTO;
+        }
         public async Task<ValidateDataBTPDTO> GetImportFiles(RequestWellTestXls body, User user)
         {
             var BTP = await _BTPRepository.GetByIdAsync(body.BTPId) ?? throw new NotFoundException("BTP não encontrado.");
@@ -199,6 +208,29 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             //Verify Well
             string? message = well.Name == worksheet.Cells[BTP.CellWellName].Value.ToString() ? "Sucess: Nome do poço encontrado corresponde ao xls" : "Warning: Nome do poço encontrado não corresponde ao xls";
 
+            //ToDecimal
+            var oilCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialOil].Value.ToString(), out var oilDecimal);
+            decimal oilDecimalFormated = Math.Round(oilDecimal, 5, MidpointRounding.AwayFromZero);
+            decimal oilPerHourDecimalFormated = Math.Round(oilDecimal / 24, 5, MidpointRounding.AwayFromZero);
+            var gasCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialGas].Value.ToString(), out var gasDecimal);
+            decimal gasDecimalFormated = Math.Round(gasDecimal, 5, MidpointRounding.AwayFromZero);
+            decimal gasPerHourDecimalFormated = Math.Round(gasDecimal / 24, 5, MidpointRounding.AwayFromZero);
+            var waterCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialWater].Value.ToString(), out var waterDecimal);
+            decimal waterDecimalFormated = Math.Round(waterDecimal, 5, MidpointRounding.AwayFromZero);
+            decimal waterPerHourDecimalFormated = Math.Round(waterDecimal / 24, 5, MidpointRounding.AwayFromZero);
+            var liquidCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialLiquid].Value.ToString(), out var liquidDecimal);
+            decimal liquidDecimalFormated = Math.Round(liquidDecimal, 5, MidpointRounding.AwayFromZero);
+            decimal liquidPerHourDecimalFormated = Math.Round(liquidDecimal / 24, 5, MidpointRounding.AwayFromZero);
+            var rgoCheck = decimal.TryParse(worksheet.Cells[BTP.CellRGO].Value.ToString(), out var rgoDecimal);
+            decimal rgoDecimalFormated = Math.Round(rgoDecimal, 5, MidpointRounding.AwayFromZero);
+            var bswCheck = decimal.TryParse(worksheet.Cells[BTP.CellBSW].Value.ToString(), out var bswDecimal);
+            decimal bswDecimalFormated = Math.Round(bswDecimal, 5, MidpointRounding.AwayFromZero);
+
+            if (oilCheck is false || gasCheck is false || waterCheck is false || liquidCheck is false || rgoCheck is false || bswCheck is false)
+            {
+                throw new ConflictException("Dados decimais não podem ser convertidos.");
+            }
+
             var content = new BTPBase64
             {
                 Id = Guid.NewGuid(),
@@ -212,33 +244,44 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             };
             var data = new BTPData
             {
+                Id = Guid.NewGuid(),
                 Filename = body.FileName,
                 Type = body.Type,
-                //PotencialGas = worksheet.Cells[BTP.CellPotencialGas].Value.ToString(),
-                //PotencialOil = worksheet.Cells[BTP.CellPotencialOil].Value.ToString(),
-                //PotencialWater = worksheet.Cells[BTP.CellPotencialWater].Value.ToString(),
+                IsValid = body.isValid,
+                ApplicationDate = body.applicationDate,
+                PotencialLiquid = liquidDecimalFormated,
+                PotencialLiquidPerHour = liquidPerHourDecimalFormated,
+                PotencialOil = oilDecimalFormated,
+                PotencialOilPerHour = oilPerHourDecimalFormated,
+                PotencialGas = gasDecimalFormated,
+                PotencialGasPerHour = gasPerHourDecimalFormated,
+                PotencialWater = waterDecimalFormated,
+                PotencialWaterPerHour = waterPerHourDecimalFormated,
                 Duration = valorTempo,
                 InitialDate = worksheet.Cells[BTP.CellInitialDate].Value.ToString(),
                 FinalDate = worksheet.Cells[BTP.CellFinalDate].Value.ToString(),
                 BTPNumber = worksheet.Cells[BTP.CellBTPNumber].Value.ToString(),
                 MPointGas = worksheet.Cells[BTP.CellMPointGas].Value.ToString(),
                 MPointOil = worksheet.Cells[BTP.CellMPointOil].Value.ToString(),
-                //MPointWater = worksheet.Cells[BTP.CellMPointWater].Value.ToString(),
-                //BSW = worksheet.Cells[BTP.CellBSW].Value.ToString(),
-                //RGO = worksheet.Cells[BTP.CellRGO].Value.ToString(),
-                //PotencialLiquid = worksheet.Cells[BTP.CellPotencialLiquid].Value.ToString(),
+                MPointWater = worksheet.Cells[BTP.CellMPointWater].Value.ToString(),
+                BSW = bswDecimalFormated,
+                RGO = rgoDecimalFormated,
                 WellAlignmentData = worksheet.Cells[BTP.CellWellAlignmentData].Value.ToString(),
                 WellAlignmentHour = align,
                 WellName = worksheet.Cells[BTP.CellWellName].Value.ToString(),
                 BTPSheet = BTP.BTPSheet,
-                Id = Guid.NewGuid(),
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
-                BTPBase64 = content,
-                Well = well
+                Well = well,
+                BTPBase64 = content
             };
+            await _BTPRepository.AddBTPAsync(data);
+            await _BTPRepository.AddBTPBase64Async(content);
 
             var BTPdataDTO = _mapper.Map<BTPData, BTPDataDTO>(data);
+
+            await _BTPRepository.SaveChangesAsync();
+
             var createDataDTO = new ValidateDataBTPDTO
             {
                 Message = message,
