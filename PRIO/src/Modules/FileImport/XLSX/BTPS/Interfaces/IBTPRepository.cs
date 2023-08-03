@@ -5,6 +5,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces
     public interface IBTPRepository
     {
         Task<List<BTP>> GetAllBTPsAsync();
+        Task<List<BTPData>> GetAllBTPsDataAsync();
+        Task<List<BTPData>> GetAllBTPsDataByWellIdAsync(Guid wellId);
         Task<List<BTP>> GetAllBTPsByTypeAsync(string type);
         Task<BTP?> GetByIdAsync(Guid id);
         Task<BTPData?> GetByDateAsync(string date, Guid wellId);

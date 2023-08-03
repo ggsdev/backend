@@ -88,5 +88,33 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Controllers
 
             return Ok(btpDTO);
         }
+
+        [HttpGet("data")]
+        public async Task<IActionResult> RenderBTPData()
+        {
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+
+            var result = await _BTPService.GetBTPData();
+
+            return Ok(result);
+        }
+
+        [HttpGet("data/{wellId}")]
+        public async Task<IActionResult> RenderBTPDataByWellId([FromRoute] Guid wellId)
+        {
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+
+            var result = await _BTPService.GetBTPDataByWellId(wellId);
+
+            return Ok(result);
+        }
     }
 }
