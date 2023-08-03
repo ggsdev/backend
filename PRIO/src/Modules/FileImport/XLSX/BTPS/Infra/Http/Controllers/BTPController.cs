@@ -75,5 +75,18 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Controllers
 
             return Ok(btpDTO);
         }
+        [HttpGet("date")]
+        public async Task<IActionResult> GetByDate([FromQuery] string date)
+        {
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+
+            var btpDTO = await _BTPService.GetByDate(date);
+
+            return Ok(btpDTO);
+        }
     }
 }

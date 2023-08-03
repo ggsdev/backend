@@ -26,6 +26,22 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
         {
             return await _context.BTPs.Where(x => x.Id == id).FirstOrDefaultAsync();
         }
+        public async Task<BTPData?> GetByDateAsync(string date)
+        {
+            return await _context.BTPDatas.Include(x => x.BTPBase64).ThenInclude(x => x.User).Include(x => x.Well).Where(x => x.ApplicationDate == date).FirstOrDefaultAsync();
+        }
+        public async Task AddBTPAsync(BTPData data)
+        {
+            await _context.BTPDatas.AddAsync(data);
+        }
+        public async Task AddBTPBase64Async(BTPBase64 data)
+        {
+            await _context.BTPBases64.AddAsync(data);
+        }
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
 
     }
 }

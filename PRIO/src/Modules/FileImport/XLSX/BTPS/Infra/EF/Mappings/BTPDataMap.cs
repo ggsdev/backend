@@ -17,6 +17,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Mappings
 
             builder.Property(x => x.Type)
              .HasColumnType("VARCHAR")
+             .HasMaxLength(60)
              .IsRequired();
 
             builder.Property(x => x.PotencialOil)
