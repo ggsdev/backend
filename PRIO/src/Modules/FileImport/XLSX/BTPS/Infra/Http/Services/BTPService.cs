@@ -290,5 +290,19 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
 
             return createDataDTO;
         }
+        public async Task<List<BTPDataDTO>> GetBTPData()
+        {
+            var BTPs = await _BTPRepository.GetAllBTPsDataAsync();
+            var btpsDTO = _mapper.Map<List<BTPData>, List<BTPDataDTO>>(BTPs);
+
+            return btpsDTO;
+        }
+        public async Task<List<BTPDataDTO>> GetBTPDataByWellId(Guid wellId)
+        {
+            var BTPs = await _BTPRepository.GetAllBTPsDataByWellIdAsync(wellId);
+            var btpsDTO = _mapper.Map<List<BTPData>, List<BTPDataDTO>>(BTPs);
+
+            return btpsDTO;
+        }
     }
 }

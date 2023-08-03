@@ -18,6 +18,14 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
         {
             return await _context.BTPs.ToListAsync();
         }
+        public async Task<List<BTPData>> GetAllBTPsDataAsync()
+        {
+            return await _context.BTPDatas.Include(x => x.Well).ToListAsync();
+        }
+        public async Task<List<BTPData>> GetAllBTPsDataByWellIdAsync(Guid wellId)
+        {
+            return await _context.BTPDatas.Include(x => x.Well).Where(x => x.Well.Id == wellId).ToListAsync();
+        }
         public async Task<List<BTP>> GetAllBTPsByTypeAsync(string type)
         {
             return await _context.BTPs.Where(x => x.Type == type).ToListAsync();
