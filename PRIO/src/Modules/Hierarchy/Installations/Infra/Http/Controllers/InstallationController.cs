@@ -31,19 +31,19 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Controllers
 
             return Created($"installations/{installationDTO.Id}", installationDTO);
         }
-        [HttpPost("fr")]
-        public async Task<IActionResult> ApplyFR([FromBody] CreateFRsFieldsViewModel body)
-        {
-            if (HttpContext.Items["User"] is not User user)
-                return Unauthorized(new ErrorResponseDTO
-                {
-                    Message = "User not identified, please login first"
-                });
+        //[HttpPost("fr")]
+        //public async Task<IActionResult> ApplyFR([FromBody] CreateFRsFieldsViewModel body)
+        //{
+        //    if (HttpContext.Items["User"] is not User user)
+        //        return Unauthorized(new ErrorResponseDTO
+        //        {
+        //            Message = "User not identified, please login first"
+        //        });
 
-            var frsDTO = await _installationService.ApplyFR(body, user);
+        //    var frsDTO = await _installationService.ApplyFR(body, user);
 
-            return Created($"installations/{frsDTO}", frsDTO);
-        }
+        //    return Created($"installations/{frsDTO}", frsDTO);
+        //}
 
         [HttpGet]
         public async Task<IActionResult> Get()
