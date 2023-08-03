@@ -63,6 +63,16 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                 .ToListAsync();
             return Frs;
         }
+
+        public async Task<List<FieldFR>> GetFRsByIdAsync(Guid id)
+        {
+            return await _context.FieldsFRs
+                .Include(x => x.Field)
+                .ThenInclude(x => x.Installation)
+                .Where(x => x.Field.Installation.Id == id)
+                .Where(x => x.IsActive == true)
+                .ToListAsync();
+        }
         public async Task AddFRAsync(FieldFR fr)
         {
             await _context.FieldsFRs.AddAsync(fr);
@@ -150,6 +160,15 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                 .Include(x => x.Fields)
                 .ThenInclude(x => x.FRs)
                 .Where(x => x.UepCod == cod)
+              .ToListAsync();
+        }
+
+        public async Task<List<Installation>> GetByIdWithFieldsCod(Guid id)
+        {
+            return await _context.Installations
+                .Include(x => x.Fields)
+                .ThenInclude(x => x.FRs)
+                .Where(x => x.Id == id)
               .ToListAsync();
         }
 

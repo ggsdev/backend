@@ -2241,6 +2241,21 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             else
                 response.StatusProduction = productionOfTheDay.StatusProduction;
 
+
+            var fieldsFrs = await _installationRepository.GetFRsByIdAsync(response.InstallationId);
+            //var fieldsViewModel = _mapper.Map<FRFieldsViewModel>(fieldsFrs);
+
+            //var frProduction = new CreateFRsFieldsViewModel
+            //{
+            //    Fields = fields,
+            //    InstallationId = response.InstallationId,
+
+
+
+            //};
+
+
+
             return response;
         }
         public async Task<ImportResponseDTO> Import(ResponseXmlDto data, User user)
