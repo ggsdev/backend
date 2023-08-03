@@ -93,7 +93,6 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<DrainVolume> DrainVolumes { get; set; }
         public DbSet<DOR> DORs { get; set; }
 
-
         public DbSet<AssistanceGas> AssistanceGases { get; set; }
         public DbSet<ExportGas> ExportGases { get; set; }
         public DbSet<HighPressureGas> HighPressureGases { get; set; }
@@ -228,6 +227,7 @@ namespace PRIO.src.Shared.Infra.EF
             modelBuilder.ApplyConfiguration(new BTPBase64Map());
             modelBuilder.ApplyConfiguration(new BTPMap());
             modelBuilder.ApplyConfiguration(new InstallationBTPMap());
+            modelBuilder.ApplyConfiguration(new FieldFRsMap());
 
 
             modelBuilder.ApplyConfiguration(new GroupMap());

@@ -5,6 +5,7 @@ using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models
@@ -25,5 +26,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models
         public List<Measurement>? Measurements { get; set; }
         public GasVolumeCalculation GasVolumeCalculation { get; set; }
         public bool IsProcessingUnit { get; set; }
+        public List<Production>? Productions { get; set; }
     }
 }
