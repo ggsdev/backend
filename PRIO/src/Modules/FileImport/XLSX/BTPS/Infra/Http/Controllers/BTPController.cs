@@ -34,8 +34,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Controllers
             return Ok(btpsDTO);
         }
 
-        [HttpGet("xls")]
-        public async Task<IActionResult> Render([FromBody] RequestWellTestXls body)
+        [HttpPost("xls/validate")]
+        public async Task<IActionResult> Validate([FromBody] RequestWellTestXls body)
         {
             if (HttpContext.Items["User"] is not User user)
                 return Unauthorized(new ErrorResponseDTO
@@ -43,12 +43,12 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Controllers
                     Message = "User not identified, please login first"
                 });
 
-            var result = await _BTPService.GetImportFiles(body, user);
+            var result = await _BTPService.ValidateImportFiles(body, user);
 
             return Ok(result);
         }
 
-        [HttpPost("xls")]
+        [HttpPost("xls/import")]
         public async Task<IActionResult> PostData([FromBody] RequestWellTestXls body)
         {
             if (HttpContext.Items["User"] is not User user)

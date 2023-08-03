@@ -10,8 +10,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.ViewModels
         public string FileName { get; set; } = string.Empty;
         [Required(ErrorMessage = "Type is required")]
         public string Type { get; set; }
-        public string applicationDate { get; set; }
-        public bool isValid { get; set; }
+        public string ApplicationDate { get; set; }
+        public bool IsValid { get; set; }
         [Required(ErrorMessage = "BTPId is required")]
         public Guid BTPId { get; set; }
         [Required(ErrorMessage = "WellId is required")]

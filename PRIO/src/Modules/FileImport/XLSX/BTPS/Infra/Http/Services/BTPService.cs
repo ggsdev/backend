@@ -55,7 +55,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
 
             return btpsDTO;
         }
-        public async Task<ValidateDataBTPDTO> GetImportFiles(RequestWellTestXls body, User user)
+        public async Task<ValidateDataBTPDTO> ValidateImportFiles(RequestWellTestXls body, User user)
         {
             var BTP = await _BTPRepository.GetByIdAsync(body.BTPId) ?? throw new NotFoundException("BTP não encontrado.");
 
@@ -132,8 +132,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 Id = Guid.NewGuid(),
                 Filename = body.FileName,
                 Type = body.Type,
-                IsValid = body.isValid,
-                ApplicationDate = body.applicationDate,
+                IsValid = body.IsValid,
+                ApplicationDate = body.ApplicationDate,
                 PotencialLiquid = liquidDecimalFormated,
                 PotencialLiquidPerHour = liquidPerHourDecimalFormated,
                 PotencialOil = oilDecimalFormated,
@@ -247,8 +247,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 Id = Guid.NewGuid(),
                 Filename = body.FileName,
                 Type = body.Type,
-                IsValid = body.isValid,
-                ApplicationDate = body.applicationDate,
+                IsValid = body.IsValid,
+                ApplicationDate = body.ApplicationDate,
                 PotencialLiquid = liquidDecimalFormated,
                 PotencialLiquidPerHour = liquidPerHourDecimalFormated,
                 PotencialOil = oilDecimalFormated,
