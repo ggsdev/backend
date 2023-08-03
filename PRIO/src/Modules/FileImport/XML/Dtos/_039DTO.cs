@@ -32,7 +32,6 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
 
     public class Client039DTO
     {
-        public ClientInfo? Summary { get; set; }
         public Guid Id { get; set; }
         public string COD_TAG_EQUIPAMENTO_039 { get; set; } = string.Empty;
         public string? COD_FALHA_SUPERIOR_039 { get; set; }
