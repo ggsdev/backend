@@ -5,7 +5,7 @@ namespace PRIO.src.Modules.FileImport.XML.ViewModels
     public class RequestXmlViewModel
     {
         [Required]
-        public List<FileContent> Files { get; set; } = new();
+        public List<FileContent> Files { get; set; }
     }
 
     public class NFSMViewModel

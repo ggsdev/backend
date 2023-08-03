@@ -43,6 +43,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Mappings
                .WithMany(d => d.Productions)
                .OnDelete(DeleteBehavior.NoAction);
 
+            builder.HasOne(x => x.Installation)
+               .WithMany(d => d.Productions)
+               .OnDelete(DeleteBehavior.NoAction)
+               .IsRequired();
         }
     }
 }

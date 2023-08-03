@@ -1,4 +1,6 @@
 ﻿using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Models
@@ -19,5 +21,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Models
         public User CalculatedImportedBy { get; set; }
         public bool StatusProduction { get; set; } = false;
         public decimal TotalProduction { get; set; }
+        public Installation Installation { get; set; }
+        public List<FieldFR>? FieldsFR { get; set; }
     }
 }
