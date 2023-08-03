@@ -76,7 +76,7 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
                     b.HasIndex("GroupPermissionId");
 
-                    b.ToTable("GroupOperations", (string)null);
+                    b.ToTable("GroupOperations");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.GroupPermission", b =>
@@ -215,7 +215,7 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GlobalOperations", (string)null);
+                    b.ToTable("GlobalOperations");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.Session", b =>
@@ -3863,7 +3863,7 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Auxiliaries", (string)null);
+                    b.ToTable("Auxiliaries");
                 });
 
             modelBuilder.Entity("PRIO.src.Shared.SystemHistories.Infra.EF.Models.SystemHistory", b =>
@@ -4095,7 +4095,7 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "DailyProduction")
                         .WithMany("FieldsFR")
                         .HasForeignKey("DailyProductionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models.Field", "Field")

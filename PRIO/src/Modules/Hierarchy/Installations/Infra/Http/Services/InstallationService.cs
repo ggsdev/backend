@@ -33,9 +33,9 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
 {
     public class InstallationService
     {
-        private readonly IMapper _mapper;
         private readonly IClusterRepository _clusterRepository;
         private readonly IInstallationRepository _installationRepository;
+        private readonly IMapper _mapper;
         private readonly IFieldRepository _fieldRepository;
         private readonly IZoneRepository _zoneRepository;
         private readonly IWellRepository _wellRepository;

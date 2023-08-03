@@ -15,6 +15,7 @@ using PRIO.src.Modules.FileImport.XML.Infra.Utils;
 using PRIO.src.Modules.FileImport.XML.ViewModels;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
+using PRIO.src.Modules.Hierarchy.Installations.ViewModels;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.GasVolumeCalculations.Interfaces;
 using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models;
@@ -2204,11 +2205,33 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 TotalGasImported = Math.Round(gasLinear.TotalGasImported + gasDiferencial.TotalGasImported, 5),
             };
 
+            var fieldsFrs = await _installationRepository.GetFRsByIdAsync(response.InstallationId);
+
+            var fieldsFrsConverted = new List<FRFieldsViewModel>();
+
+            foreach (var fieldFr in fieldsFrs)
+            {
+                var fieldViewModel = new FRFieldsViewModel
+                {
+                    FieldId = fieldFr.Field.Id,
+                    FluidFr = 0
+                };
+
+                fieldsFrsConverted.Add(fieldViewModel);
+            }
+
+            var frProduction = new FRViewModel
+            {
+                Fields = fieldsFrsConverted,
+                IsApplicable = false,
+            };
+
             if (response._001File.Count > 0)
             {
                 var oilResponse = new OilDto
                 {
-                    TotalOilProduction = totalOil
+                    TotalOilProduction = totalOil,
+                    FRViewModel = frProduction,
                 };
 
                 response.Oil = oilResponse;
@@ -2231,6 +2254,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 gasResume.ImportedGas.TotalImportedGas = gasLinear.TotalGasImported + gasDiferencial.TotalGasImported;
 
                 response.GasSummary = gasResume;
+                response.Gas.FRViewModel = frProduction;
             }
 
             var productionOfTheDay = await _productionRepository
@@ -2240,6 +2264,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 response.StatusProduction = false;
             else
                 response.StatusProduction = productionOfTheDay.StatusProduction;
+
 
             return response;
         }
@@ -2329,7 +2354,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                 };
             }
-            if (dailyProduction is not null && dailyProduction.Gas is null && data.GasSummary is not null)
+            if (dailyProduction.Gas is null && data.GasSummary is not null)
             {
                 dailyProduction.Gas = new Gas
                 {

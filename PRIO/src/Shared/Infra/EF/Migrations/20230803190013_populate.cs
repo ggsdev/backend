@@ -5,12 +5,11 @@
 namespace PRIO.src.Shared.Infra.EF.Migrations
 {
     /// <inheritdoc />
-    public partial class populateAuxiliariesWithBTPDatas : Migration
+    public partial class populate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-
             var data = new List<object[]>
                 {
                     new object[] { Guid.NewGuid(), "/importarDadosTestePoco", "Teste", "Tipo de Teste", "T = Separador de teste",  DateTime.UtcNow },
@@ -37,7 +36,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     values: new object[] { id, route, table, select, option, updatedAt }
                 );
             }
-
         }
 
         /// <inheritdoc />

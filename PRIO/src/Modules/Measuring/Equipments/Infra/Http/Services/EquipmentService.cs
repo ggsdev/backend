@@ -140,7 +140,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
                 throw new BadRequestException("Fluidos permitidos são: gás, óleo, água");
 
             if (body.Type is not null && !_typesAllowed.Contains(body.Type))
-                throw new BadRequestException("Tipos permitidos são: CV, EP, ES, EC.");
+                throw new BadRequestException("Tipos permitidos são: Elemento Primário, Elemento Secundário.");
 
             if (body.SerieNumber is not null || body.TagEquipment is not null)
             {
@@ -159,6 +159,13 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
                 }
             }
 
+            if (body.Type == "Elemento Primário" && equipment.MeasuringPoint is not null)
+            {
+                var checkUniqueEquipment = await _equipmentRepository.GetByTypeWithMeasuringPointAsync(equipment.MeasuringPoint.Id, body.Type);
+                if (checkUniqueEquipment != null)
+                    throw new ConflictException($"Já existe um {body.Type} nesse ponto de medição.");
+            }
+
             var beforeChangesEquipment = _mapper.Map<MeasuringEquipmentHistoryDTO>(equipment);
 
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(equipment, body);
@@ -171,7 +178,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services
                 if (measuringPointByTagMeasuringPointInDatabase == null)
                     throw new NotFoundException("Ponto de medição não encontrado.");
 
-                if (body.Type == "CV" || body.Type == "EP")
+                if (body.Type == "Elemento Primário")
                 {
                     var checkUniqueEquipment = await _equipmentRepository.GetByTypeWithMeasuringPointAsync(measuringPointByTagMeasuringPointInDatabase.Id, body.Type);
                     if (checkUniqueEquipment != null)

@@ -29,6 +29,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Mappings
 
             builder.HasOne(x => x.DailyProduction)
                .WithMany(x => x.FieldsFR)
+               .OnDelete(DeleteBehavior.NoAction)
                .IsRequired();
 
             builder.HasOne(x => x.Field)
