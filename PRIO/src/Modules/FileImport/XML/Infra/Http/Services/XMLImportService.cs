@@ -577,7 +577,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                             response.UepName = installation.UepName;
                                             response.DateProduction = dateBeginningMeasurement;
-
+                                            response.InstallationId = installation.Id;
                                             response001.Measurements.Add(measurement001DTO);
                                         }
                                     }
@@ -921,7 +921,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                 Volume = measurement.MED_CORRIGIDO_MVMDO_002,
 
                                             };
-
+                                            response.InstallationId = installation.Id;
                                             response.UepName = installation.UepName;
                                             response.DateProduction = dateBeginningMeasurement;
                                             response002.Measurements.Add(measurement002DTO);
@@ -1258,6 +1258,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                 Volume = measurement.MED_CORRIGIDO_MVMDO_003,
 
                                             };
+                                            response.InstallationId = installation.Id;
                                             response.UepName = installation.UepName;
                                             response.DateProduction = dateBeginningMeasurement;
                                             response003.Measurements.Add(measurement003DTO);
@@ -2284,6 +2285,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 }
             }
 
+
             if (data.GasSummary is not null)
             {
                 var sumOfDetailedBurnedGas = data.GasSummary.DetailedBurnedGas.WellTestBurn + data.GasSummary.DetailedBurnedGas.LimitOperacionalBurn + data.GasSummary.DetailedBurnedGas.ForCommissioningBurn + data.GasSummary.DetailedBurnedGas.ScheduledStopBurn + data.GasSummary.DetailedBurnedGas.EmergencialBurn + data.GasSummary.DetailedBurnedGas.VentedGas;
@@ -2308,6 +2310,11 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             if (data._003File.Count > 0)
                 measuredAt = data._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003;
 
+            var installation = await _installationRepository.GetByIdAsync(data.InstallationId);
+
+            if (installation is null)
+                throw new NotFoundException("Instalação não encontrada");
+
             var dailyProduction = await _productionRepository.GetExistingByDate(measuredAt);
 
             if (dailyProduction is null)
@@ -2318,20 +2325,11 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     CalculatedImportedBy = user,
                     CalculatedImportedAt = DateTime.UtcNow,
                     MeasuredAt = measuredAt,
-                    Gas = new Gas
-                    {
-                        EmergencialBurn = data.GasSummary.DetailedBurnedGas.EmergencialBurn,
-                        LimitOperacionalBurn = data.GasSummary.DetailedBurnedGas.LimitOperacionalBurn,
-                        ScheduledStopBurn = data.GasSummary.DetailedBurnedGas.ScheduledStopBurn,
-                        ForCommissioningBurn = data.GasSummary.DetailedBurnedGas.ForCommissioningBurn,
-                        VentedGas = data.GasSummary.DetailedBurnedGas.VentedGas,
-                        WellTestBurn = data.GasSummary.DetailedBurnedGas.WellTestBurn,
-                        OthersBurn = data.GasSummary.DetailedBurnedGas.OthersBurn,
+                    Installation = installation,
 
-                    },
                 };
             }
-            if (dailyProduction is not null && dailyProduction.Gas is null)
+            if (dailyProduction is not null && dailyProduction.Gas is null && data.GasSummary is not null)
             {
                 dailyProduction.Gas = new Gas
                 {
@@ -2366,12 +2364,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     if (measurementExists is true)
                         throw new ConflictException($"Medição na data: {measurement.DHA_INICIO_PERIODO_MEDICAO_001} já cadastrada.");
-
-                    var installation = await _installationRepository
-                        .GetInstallationMeasurementByUepAndAnpCodAsync(bodyMeasurement.COD_INSTALACAO_001, XmlUtils.File001);
-
-                    if (installation is null)
-                        throw new NotFoundException($"{ErrorMessages.NotFound<Installation>()} Código: {measurement.COD_INSTALACAO_001}");
 
                     var measuringPoint = await _measuringPointRepository.GetByTagMeasuringPointXML(bodyMeasurement.COD_TAG_PONTO_MEDICAO_001, XmlUtils.File001);
 
@@ -2499,12 +2491,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     if (measurementExists is true)
                         throw new ConflictException($"Medição na data: {measurement.DHA_INICIO_PERIODO_MEDICAO_002} já cadastrada.");
 
-                    var installation = await _installationRepository
-                        .GetInstallationMeasurementByUepAndAnpCodAsync(bodyMeasurement.COD_INSTALACAO_002, XmlUtils.File002);
-
-                    if (installation is null)
-                        throw new NotFoundException($"{ErrorMessages.NotFound<Installation>()} Código: {measurement.COD_INSTALACAO_002}");
-
                     var measuringPoint = await _measuringPointRepository.GetByTagMeasuringPointXML(bodyMeasurement.COD_TAG_PONTO_MEDICAO_002, XmlUtils.File002);
 
                     if (measuringPoint is null)
@@ -2562,7 +2548,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             }
 
-
             foreach (var file in data._003File)
             {
                 foreach (var bodyMeasurement in file.Measurements)
@@ -2573,12 +2558,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     if (measurementExists is true)
                         throw new ConflictException($"Medição na data: {measurement.DHA_INICIO_PERIODO_MEDICAO_003} já cadastrada.");
-
-                    var installation = await _installationRepository
-                        .GetInstallationMeasurementByUepAndAnpCodAsync(bodyMeasurement.COD_INSTALACAO_003, XmlUtils.File003);
-
-                    if (installation is null)
-                        throw new NotFoundException($"{ErrorMessages.NotFound<Installation>()} Código: {measurement.COD_INSTALACAO_003}");
 
                     var measuringPoint = await _measuringPointRepository.GetByTagMeasuringPointXML(bodyMeasurement.COD_TAG_PONTO_MEDICAO_003, XmlUtils.File003);
 

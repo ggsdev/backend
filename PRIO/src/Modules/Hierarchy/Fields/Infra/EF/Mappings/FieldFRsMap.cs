@@ -12,15 +12,28 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Mappings
 
             builder.Property(x => x.FRWater)
                .HasColumnType("decimal")
-               .HasPrecision(3, 2);
+               .HasPrecision(4, 2);
 
             builder.Property(x => x.FROil)
                .HasColumnType("decimal")
-               .HasPrecision(3, 2);
+               .HasPrecision(4, 2);
 
             builder.Property(x => x.FRGas)
                .HasColumnType("decimal")
-               .HasPrecision(3, 2);
+               .HasPrecision(4, 2);
+
+            builder.Property(x => x.ProductionInField)
+               .HasColumnType("decimal")
+               .HasPrecision(10, 5);
+
+
+            builder.HasOne(x => x.DailyProduction)
+               .WithMany(x => x.FieldsFR)
+               .IsRequired();
+
+            builder.HasOne(x => x.Field)
+               .WithMany(x => x.FRs)
+               .IsRequired();
 
             builder.Property(x => x.CreatedAt);
 
