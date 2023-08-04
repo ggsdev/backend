@@ -120,5 +120,14 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories
                 .Where(x => x.Id == importId)
                 .ToListAsync();
         }
+
+        public async Task<List<MeasurementHistory>> GetAllFilesByDate(DateTime date)
+        {
+            return await _context.MeasurementHistories
+                .Where(x => x.MeasuredAt.Year == date.Year &&
+                            x.MeasuredAt.Month == date.Month &&
+                            x.MeasuredAt.Day == date.Day)
+                .ToListAsync();
+        }
     }
 }

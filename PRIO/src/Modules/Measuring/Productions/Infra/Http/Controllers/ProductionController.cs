@@ -32,5 +32,21 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Controllers
             return Ok(production);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var productions = await _productionService.GetAllProductions();
+            return Ok(productions);
+
+        }
+
+        [HttpGet("{id}/files")]
+        public async Task<IActionResult> DownloadFiles([FromRoute] Guid id)
+        {
+            var files = await _productionService
+                .DownloadAllProductionFiles(id);
+
+            return Ok(files);
+        }
     }
 }

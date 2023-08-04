@@ -25,13 +25,33 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
 
     public class GetAllProductionsDto
     {
+        public Guid Id { get; set; }
         public bool Status { get; set; }
         public string UepName { get; set; }
         public DateTime DateProduction { get; set; }
-        public Guid ImportId { get; set; }
-        public OilTotalDto Oil { get; set; }
-        public GasTotalDto Gas { get; set; }
-        public WaterTotalDto Water { get; set; }
+        public List<ProductionFilesDto> Files { get; set; }
+        public OilTotalDto? Oil { get; set; }
+        public GasTotalDto? Gas { get; set; }
+        public WaterTotalDto? Water { get; set; }
+    }
+
+    public class ProductionFilesDto
+    {
+        public Guid FileId { get; set; }
+        public string FileName { get; set; }
+        public string FileType { get; set; }
+        public DateTime? ImportedAt { get; set; }
+
+    }
+
+    public class ProductionFilesDtoWithBase64
+    {
+        public Guid FileId { get; set; }
+        public string FileName { get; set; }
+        public string FileType { get; set; }
+        public DateTime? ImportedAt { get; set; }
+        public string Base64 { get; set; }
+
     }
 
     public class OilTotalDto

@@ -37,13 +37,24 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<Production?> GetById(Guid id)
+        {
+            return await _context.Productions
+                .Include(x => x.Measurements)
+                    .ThenInclude(m => m.MeasurementHistory)
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public async Task<List<Production>> GetAllProductions()
         {
             return await _context.Productions
-                .Include(x => x.Gas)
+                .Include(x => x.Installation)
+                .Include(x => x.GasLinear)
+                .Include(x => x.GasDiferencial)
                 .Include(x => x.Oil)
                 .Include(x => x.Measurements)
                     .ThenInclude(m => m.MeasurementHistory)
+                .OrderBy(x => x.MeasuredAt)
                     .ToListAsync();
         }
 

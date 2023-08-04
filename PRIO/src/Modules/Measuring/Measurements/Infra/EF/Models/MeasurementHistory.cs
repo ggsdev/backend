@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models
     {
         public Guid Id { get; set; }
         public DateTime ImportedAt { get; set; } = DateTime.UtcNow;
-        public DateTime? MeasuredAt { get; set; }
+        public DateTime MeasuredAt { get; set; }
         public User ImportedBy { get; set; }
         public List<Measurement>? Measurements { get; set; }
         public string TypeOperation { get; set; } = HistoryColumns.Import;
