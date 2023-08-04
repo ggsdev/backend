@@ -52,6 +52,20 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
         {
             await _context.BTPBases64.AddAsync(data);
         }
+        public async Task AddBTPValidateAsync(ValidateBTP data)
+        {
+            await _context.Validates.AddAsync(data);
+        }
+        public async Task<ValidateBTP> GetValidate(Guid WellId, Guid BTPId, Guid ContentId, Guid DataId)
+        {
+            return await _context.Validates
+                .Where(x => x.WellId == WellId)
+                .Where(x => x.BTPId == BTPId)
+                .Where(x => x.ContentId == ContentId)
+                .Where(x => x.DataId == DataId)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();

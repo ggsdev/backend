@@ -123,6 +123,7 @@ namespace PRIO.src.Shared.Infra.EF
 
         public DbSet<SystemHistory> SystemHistories { get; set; }
         public DbSet<Auxiliary> Auxiliaries { get; set; }
+        public DbSet<ValidateBTP> Validates { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
