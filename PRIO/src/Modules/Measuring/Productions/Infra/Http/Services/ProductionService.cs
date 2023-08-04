@@ -630,5 +630,11 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
             return productionDto;
         }
+
+
+        public async Task<List<ProductionDto>> GetAllProductions(DateTime date)
+        {
+
+        }
     }
 }

@@ -37,6 +37,16 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<List<Production>> GetAllProductions()
+        {
+            return await _context.Productions
+                .Include(x => x.Gas)
+                .Include(x => x.Oil)
+                .Include(x => x.Measurements)
+                    .ThenInclude(m => m.MeasurementHistory)
+                    .ToListAsync();
+        }
+
         public async Task AddOrUpdateProduction(Production production)
         {
             var existingProduction = await _context.Productions

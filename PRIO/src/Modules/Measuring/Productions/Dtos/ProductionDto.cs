@@ -23,6 +23,36 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
         public bool Status { get; set; }
     }
 
+    public class GetAllProductionsDto
+    {
+        public bool Status { get; set; }
+        public string UepName { get; set; }
+        public DateTime DateProduction { get; set; }
+        public Guid ImportId { get; set; }
+        public OilTotalDto Oil { get; set; }
+        public GasTotalDto Gas { get; set; }
+        public WaterTotalDto Water { get; set; }
+    }
+
+    public class OilTotalDto
+    {
+        public decimal TotalOilM3 { get; set; }
+        public decimal TotalOilBBL { get; set; }
+    }
+
+    public class GasTotalDto
+    {
+        public decimal TotalGasBBL { get; set; }
+        public decimal TotalGasM3 { get; set; }
+    }
+
+    public class WaterTotalDto
+    {
+        public decimal TotalWaterM3 { get; set; }
+        public decimal TotalWaterSFC { get; set; }
+    }
+
+
     public class LocalGasPointDto
     {
         public string? LocalPoint { get; set; }

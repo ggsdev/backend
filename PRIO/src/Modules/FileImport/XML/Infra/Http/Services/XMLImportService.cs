@@ -2281,6 +2281,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             {
                 foreach (var measurement in file.Measurements)
                 {
+
+                    if (measurement.BswManual < 0 || measurement.BswManual > 1)
+                        throw new BadRequestException("BSW deve ser um valor entre 0 e 1");
+
                     if (measurement.DHA_INICIO_PERIODO_MEDICAO_001 != date001)
                     {
                         throw new BadRequestException("Datas incompatíveis entre medições, data de inicio da medição deve ser igual.");
