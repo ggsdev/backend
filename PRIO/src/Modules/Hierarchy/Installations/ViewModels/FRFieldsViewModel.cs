@@ -3,6 +3,7 @@
     public class FRFieldsViewModel
     {
         public Guid FieldId { get; set; }
-        public decimal? FluidFr { get; set; }
+        public decimal FluidFr { get; set; }
+        public string FieldName { get; set; }
     }
 }

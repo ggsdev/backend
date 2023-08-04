@@ -24,7 +24,9 @@ using PRIO.src.Modules.Measuring.Measurements.Interfaces;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces;
+using PRIO.src.Modules.Measuring.Productions.Dtos;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.Productions.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Productions.Interfaces;
 using PRIO.src.Modules.Measuring.Productions.Utils;
 using PRIO.src.Shared.Errors;
@@ -41,16 +43,18 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
         private readonly IMapper _mapper;
         private readonly MeasurementService _measurementService;
         private readonly IInstallationRepository _installationRepository;
+        private readonly IFieldRepository _fieldRepository;
         private readonly IGasVolumeCalculationRepository _gasCalculationRepository;
         private readonly IOilVolumeCalculationRepository _oilCalculationRepository;
         private readonly IProductionRepository _productionRepository;
         private readonly IMeasuringPointRepository _measuringPointRepository;
         private readonly IMeasurementRepository _repository;
         private readonly IMeasurementHistoryRepository _measurementHistoryRepository;
+        private readonly FieldFRService _fieldFRService;
 
         [GeneratedRegex("(?<=data:@file/xml;base64,)\\w+")]
         private static partial Regex XmlRegex();
-        public XMLImportService(IMapper mapper, IInstallationRepository installationRepository, IMeasurementRepository xMLImportRepository, MeasurementService measurementService, IGasVolumeCalculationRepository gasVolumeCalculationRepository, IMeasuringPointRepository measuringPointRepository, IOilVolumeCalculationRepository oilVolumeCalculationRepository, IMeasurementHistoryRepository measurementHistoryRepository, IProductionRepository productionRepository)
+        public XMLImportService(IMapper mapper, IInstallationRepository installationRepository, IMeasurementRepository xMLImportRepository, MeasurementService measurementService, IGasVolumeCalculationRepository gasVolumeCalculationRepository, IMeasuringPointRepository measuringPointRepository, IOilVolumeCalculationRepository oilVolumeCalculationRepository, IMeasurementHistoryRepository measurementHistoryRepository, IProductionRepository productionRepository, IFieldRepository fieldRepository, FieldFRService fieldFRService)
         {
             _mapper = mapper;
             _installationRepository = installationRepository;
@@ -61,6 +65,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             _oilCalculationRepository = oilVolumeCalculationRepository;
             _measurementHistoryRepository = measurementHistoryRepository;
             _productionRepository = productionRepository;
+            _fieldRepository = fieldRepository;
+            _fieldFRService = fieldFRService;
         }
 
         public async Task<ResponseXmlDto> Validate(RequestXmlViewModel data, User user)
@@ -2205,24 +2211,25 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 TotalGasImported = Math.Round(gasLinear.TotalGasImported + gasDiferencial.TotalGasImported, 5),
             };
 
-            var fieldsFrs = await _installationRepository.GetFRsByIdAsync(response.InstallationId);
+            var fields = await _fieldRepository.GetFieldsByInstallationId(response.InstallationId);
 
-            var fieldsFrsConverted = new List<FRFieldsViewModel>();
+            var fieldsConverted = new List<FRFieldsViewModel>();
 
-            foreach (var fieldFr in fieldsFrs)
+            foreach (var field in fields)
             {
                 var fieldViewModel = new FRFieldsViewModel
                 {
-                    FieldId = fieldFr.Field.Id,
-                    FluidFr = 0
+                    FieldId = field.Id,
+                    FluidFr = 0,
+                    FieldName = field.Name
                 };
 
-                fieldsFrsConverted.Add(fieldViewModel);
+                fieldsConverted.Add(fieldViewModel);
             }
 
             var frProduction = new FRViewModel
             {
-                Fields = fieldsFrsConverted,
+                Fields = fieldsConverted,
                 IsApplicable = false,
             };
 
@@ -2230,8 +2237,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             {
                 var oilResponse = new OilDto
                 {
-                    TotalOilProduction = totalOil,
-                    FRViewModel = frProduction,
+                    TotalOilProductionM3 = totalOil,
+                    TotalOilProductionBBL = Math.Round(totalOil * ProductionUtils.m3ToBBLConversionMultiplier, 5),
+                    FR = frProduction,
                 };
 
                 response.Oil = oilResponse;
@@ -2254,7 +2262,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 gasResume.ImportedGas.TotalImportedGas = gasLinear.TotalGasImported + gasDiferencial.TotalGasImported;
 
                 response.GasSummary = gasResume;
-                response.Gas.FRViewModel = frProduction;
+                response.Gas.FR = frProduction;
             }
 
             var productionOfTheDay = await _productionRepository
@@ -2314,7 +2322,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 }
             }
 
-
             if (data.GasSummary is not null)
             {
                 var sumOfDetailedBurnedGas = data.GasSummary.DetailedBurnedGas.WellTestBurn + data.GasSummary.DetailedBurnedGas.LimitOperacionalBurn + data.GasSummary.DetailedBurnedGas.ForCommissioningBurn + data.GasSummary.DetailedBurnedGas.ScheduledStopBurn + data.GasSummary.DetailedBurnedGas.EmergencialBurn + data.GasSummary.DetailedBurnedGas.VentedGas;
@@ -2333,6 +2340,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             if (data._001File.Count > 0)
                 measuredAt = data._001File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001;
+
             if (data._002File.Count > 0)
                 measuredAt = data._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002;
 
@@ -2369,8 +2377,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     VentedGas = data.GasSummary.DetailedBurnedGas.VentedGas,
                     WellTestBurn = data.GasSummary.DetailedBurnedGas.WellTestBurn,
                     OthersBurn = data.GasSummary.DetailedBurnedGas.OthersBurn,
-
                 };
+
             }
 
             var dividirBsw = 1;
@@ -2492,7 +2500,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             if (dailyProduction.Oil is null && data.Oil is not null)
             {
-                data.Oil.TotalOilProduction = totalOilWithBsw;
+                data.Oil.TotalOilProductionM3 = totalOilWithBsw;
 
                 bswAverage = bswAverage / dividirBsw;
 
@@ -2693,6 +2701,20 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             {
                 measuring.Production = dailyProduction;
             }
+            var bothGasFiles = false;
+            if (dailyProduction.GasDiferencial is not null && dailyProduction.GasLinear is not null)
+                bothGasFiles = true;
+
+            var fieldFrViewModel = new FieldFRBodyService
+            {
+                Oil = data.Oil,
+                Gas = data.Gas,
+                InstallationId = installation.Id,
+                Production = dailyProduction,
+                BothGas = bothGasFiles
+            };
+
+            await _fieldFRService.ApplyFR(fieldFrViewModel);
 
             if (dailyProduction.GasDiferencial is not null && dailyProduction.GasLinear is not null && dailyProduction.Oil is not null)
             {
@@ -2701,7 +2723,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             await _productionRepository.AddOrUpdateProduction(dailyProduction);
             await _repository.AddRangeAsync(measurementsAdded);
-
 
             await _repository.SaveChangesAsync();
 

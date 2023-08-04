@@ -372,20 +372,22 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
 
     public class GasDto
     {
+
         public decimal TotalGasProductionM3 { get; set; }
-        public FRViewModel FRViewModel { get; set; }
         public decimal TotalGasProductionBBL { get; set; }
         public decimal TotalGasBurnt { get; set; }
         public decimal TotalGasFuel { get; set; }
         public decimal TotalGasExported { get; set; }
         public decimal TotalGasImported { get; set; }
+        public FRViewModel FR { get; set; }
     }
 
 
     public class OilDto
     {
-        public FRViewModel FRViewModel { get; set; }
-        public decimal TotalOilProduction { get; set; }
+        public decimal TotalOilProductionM3 { get; set; }
+        public decimal TotalOilProductionBBL { get; set; }
+        public FRViewModel FR { get; set; }
 
     }
 

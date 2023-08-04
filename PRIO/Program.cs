@@ -217,6 +217,7 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddScoped<OilVolumeCalculationService>();
     services.AddScoped<GasVolumeCalculationService>();
     services.AddScoped<ProductionService>();
+    services.AddScoped<FieldFRService>();
 
 
     #endregion
