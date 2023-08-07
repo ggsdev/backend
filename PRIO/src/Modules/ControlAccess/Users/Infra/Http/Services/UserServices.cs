@@ -67,6 +67,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                 Id = userId,
                 Name = body.Name,
                 Username = treatedUsername,
+                Email = body.Email is not null ? body.Email : null,
                 Description = body.Description is not null ? body.Description : null,
             };
 
