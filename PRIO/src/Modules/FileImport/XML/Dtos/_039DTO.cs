@@ -31,6 +31,11 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
 
     }
 
+    public class ResponseNFSMDTO
+    {
+        public List<Client039DTO> NFSMs { get; set; } = new();
+        public MeasurementHistoryDto File { get; set; }
+    }
     public class Client039DTO
     {
 

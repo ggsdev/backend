@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.FileImport.XLSX.Dtos;
 using PRIO.src.Modules.FileImport.XML.Dtos;
 using PRIO.src.Modules.FileImport.XML.FileContent;
 using PRIO.src.Modules.FileImport.XML.FileContent._039;
@@ -9,6 +10,7 @@ using PRIO.src.Modules.FileImport.XML.NFSM.ViewModels;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.Measurements.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Measurements.Interfaces;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
@@ -31,9 +33,11 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
         private readonly IProductionRepository _productionRepository;
         private readonly IMeasurementHistoryRepository _measurementHistoryRepository;
         private readonly IOilVolumeCalculationRepository _oilRepository;
-        public List<Client039DTO> _responseResult = new();
+        private readonly MeasurementService _measurementService;
 
-        public NFSMService(IMapper mapper, IMeasurementHistoryRepository measurementHistoryRepository, IMeasurementRepository measurementRepository, IInstallationRepository installationRepository, IMeasuringPointRepository measuringPointRepository, IProductionRepository productionRepository, IOilVolumeCalculationRepository oilVolumeCalculation)
+        public ResponseNFSMDTO _responseResult = new();
+
+        public NFSMService(IMapper mapper, IMeasurementHistoryRepository measurementHistoryRepository, IMeasurementRepository measurementRepository, IInstallationRepository installationRepository, IMeasuringPointRepository measuringPointRepository, IProductionRepository productionRepository, IOilVolumeCalculationRepository oilVolumeCalculation, MeasurementService measurementService)
         {
             _mapper = mapper;
             _repository = measurementRepository;
@@ -42,9 +46,10 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
             _measuringPointRepository = measuringPointRepository;
             _productionRepository = productionRepository;
             _oilRepository = oilVolumeCalculation;
+            _measurementService = measurementService;
         }
 
-        public async Task<List<Client039DTO>> Validate(NFSMImportViewModel data, User user)
+        public async Task<ResponseNFSMDTO> Validate(NFSMImportViewModel data, User user)
         {
             #region client side validations
 
@@ -105,18 +110,20 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                 throw new BadRequestException("LISTA_DADOS_BASICOS XML element cant be null");
             #endregion
 
-            #region response
-            var genericFile = new MeasurementHistoryDto
+            var responseResult = new ResponseNFSMDTO
             {
-                FileContent = data.File.ContentBase64,
-                FileName = data.File.FileName,
-                FileType = data.File.FileType,
-                ImportedAt = DateTime.UtcNow.ToString("dd/MM/yyyy"),
-                ImportedBy = userDto,
-                ImportId = importId
-            };
+                File = new MeasurementHistoryDto
+                {
 
-            #endregion
+                    FileContent = data.File.ContentBase64,
+                    FileName = data.File.FileName,
+                    FileType = data.File.FileType,
+                    ImportedAt = DateTime.UtcNow.ToString("dd/MM/yyyy"),
+                    ImportedBy = userDto,
+                    ImportId = importId
+                },
+
+            };
 
             for (int k = 0; k < dadosBasicosElements.Count(); ++k)
             {
@@ -270,7 +277,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                             MeasurementsFixed = measurementsFixed,
                         };
 
-                        _responseResult.Add(measurement039DTO);
+                        responseResult.NFSMs.Add(measurement039DTO);
                     }
 
                 }
@@ -283,12 +290,14 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                 throw new BadRequestException($"Algum(s) erro(s) de formatação ocorreram durante a validação do arquivo de nome: {data.File.FileName}", errors: errorsInFormat);
 
 
-            return _responseResult;
+
+
+            return responseResult;
         }
 
-        public async Task ImportAndFix(List<Client039DTO> body)
+        public async Task<ImportResponseDTO> ImportAndFix(ResponseNFSMDTO body, User user)
         {
-            foreach (var nfsm in body)
+            foreach (var nfsm in body.NFSMs)
             {
                 var installation = await _installationRepository
                     .GetByUEPCod(nfsm.DHA_COD_INSTALACAO_039);
@@ -314,6 +323,12 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     if (productionInDatabase is null)
                         throw new NotFoundException($"Medição não encontrada para esta data: {productionDate}");
 
+                    if (production.DHA_MEDICAO_039 > nfsm.DHA_DETECCAO_039)
+                        throw new ConflictException("Data da medição não pode ser maior do que a data da detecção TAG: DHA_DETECÇÃO.");
+
+                    if (production.DHA_MEDICAO_039 > nfsm.DHA_RETORNO_039)
+                        throw new ConflictException("Data da medição não pode ser maior do que a data que a falha foi corrigida, TAG: DHA_RETORNO.");
+
                     //if (Math.Round(productionInDatabase.TotalProduction, 2) != Math.Round(production.DHA_MED_REGISTRADO_039, 2)
                     //    throw new ConflictException($"Valor de produção anterior, difere da MED_REGISTRADO, para data {productionDate}, esperado:{productionInDatabase.TotalProduction} | recebido: {production.DHA_MED_DECLARADO_039}");
                 }
@@ -325,12 +340,67 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     var productionInDatabase = await _productionRepository
                         .GetExistingByDate(productionDate);
 
-                    //var totalGas = (productionInDatabase.GasLinear is not null ? productionInDatabase.GasLinear.TotalGas : 0) + (productionInDatabase.GasDiferencial is not null ? productionInDatabase.GasDiferencial.TotalGas : 0);
+                    decimal totalOil = 0m;
+                    decimal totalLinear = 0m;
+                    decimal totalDiferencial = 0m;
 
-                    //var totalOil = productionInDatabase.Oil is not null ? productionInDatabase.Oil.TotalOil : 0;
+                    foreach (var measurement in productionInDatabase.Measurements)
+                    {
+                        if (measurement.MeasuringPoint.TagPointMeasuring == measuringPoint.TagPointMeasuring && measurement.DHA_INICIO_PERIODO_MEDICAO_002 is not null)
+                        {
+                            measurement.MED_CORRIGIDO_MVMDO_002 = production.DHA_MED_DECLARADO_039;
+                            totalLinear += production.DHA_MED_DECLARADO_039 ?? 0;
+                            _repository.UpdateMeasurement(measurement);
+                        }
 
+                        if (measurement.MeasuringPoint.TagPointMeasuring == measuringPoint.TagPointMeasuring && measurement.DHA_INICIO_PERIODO_MEDICAO_001 is not null)
+                        {
+                            Console.WriteLine(measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001);
+                            measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001 = production.DHA_MED_DECLARADO_039;
+                            measurement.MED_VOLUME_LIQUIDO_MVMDO_001 = production.DHA_MED_DECLARADO_039;
+                            Console.WriteLine(measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001);
+
+                            totalOil += production.DHA_MED_DECLARADO_039 ?? 0;
+
+                            _repository.UpdateMeasurement(measurement);
+                        }
+
+                        if (measurement.MeasuringPoint.TagPointMeasuring == measuringPoint.TagPointMeasuring && measurement.DHA_INICIO_PERIODO_MEDICAO_003 is not null)
+                        {
+                            measurement.MED_CORRIGIDO_MVMDO_003 = production.DHA_MED_DECLARADO_039;
+                            totalDiferencial += production.DHA_MED_DECLARADO_039 ?? 0;
+
+                            _repository.UpdateMeasurement(measurement);
+                        }
+
+                        productionInDatabase.TotalProduction = totalOil + totalLinear + totalDiferencial;
+
+                        if (productionInDatabase.GasLinear is not null)
+                            productionInDatabase.GasLinear.TotalGas = totalLinear;
+
+                        if (productionInDatabase.GasDiferencial is not null)
+                            productionInDatabase.GasDiferencial.TotalGas = totalDiferencial;
+
+                        if (productionInDatabase.Oil is not null)
+                            productionInDatabase.Oil.TotalOil = totalDiferencial;
+                        _productionRepository.Update(productionInDatabase);
+                    }
                 }
+
             }
+
+            var fileInfo = new FileBasicInfoDTO
+            {
+                Acronym = XmlUtils.FileAcronym039,
+                Type = XmlUtils.File039,
+                Name = body.File.FileName
+            };
+
+            await _measurementService.Import(user, fileInfo, body.File.FileContent, body.NFSMs[0].DHA_OCORRENCIA_039);
+
+            await _repository.SaveChangesAsync();
+
+            return new ImportResponseDTO { Status = "Success", Message = "Arquivo importado com sucesso, medições corrigidas." };
         }
 
         private string? CleanString(string? input)

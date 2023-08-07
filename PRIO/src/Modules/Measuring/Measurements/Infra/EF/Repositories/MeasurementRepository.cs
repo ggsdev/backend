@@ -57,6 +57,11 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories
             return await _context.Measurements.FirstOrDefaultAsync(x => x.NUM_SERIE_ELEMENTO_PRIMARIO_001 == numSerie);
         }
 
+        public void UpdateMeasurement(Measurement measurement)
+        {
+            _context.Update(measurement);
+        }
+
         public async Task<Measurement?> GetUnique002Async(string numSerie)
         {
             return await _context.Measurements.FirstOrDefaultAsync(x => x.NUM_SERIE_ELEMENTO_PRIMARIO_002 == numSerie);
