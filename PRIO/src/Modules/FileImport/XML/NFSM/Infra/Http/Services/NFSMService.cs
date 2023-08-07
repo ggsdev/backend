@@ -5,7 +5,7 @@ using PRIO.src.Modules.FileImport.XML.Dtos;
 using PRIO.src.Modules.FileImport.XML.FileContent;
 using PRIO.src.Modules.FileImport.XML.FileContent._039;
 using PRIO.src.Modules.FileImport.XML.Infra.Utils;
-using PRIO.src.Modules.FileImport.XML.ViewModels;
+using PRIO.src.Modules.FileImport.XML.NFSM.ViewModels;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
@@ -27,7 +27,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
         private readonly IMeasuringPointRepository _measuringPointRepository;
         private readonly IInstallationRepository _installationRepository;
         private readonly IMeasurementHistoryRepository _measurementHistoryRepository;
-        public Client039DTO _responseResult = new();
+        public List<Client039DTO> _responseResult = new();
 
         public NFSMService(IMapper mapper, IMeasurementHistoryRepository measurementHistoryRepository, IMeasurementRepository measurementRepository, IInstallationRepository installationRepository, IMeasuringPointRepository measuringPointRepository)
         {
@@ -38,7 +38,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
             _measuringPointRepository = measuringPointRepository;
         }
 
-        public async Task<Client039DTO> Validate(NFSMViewModel data, User user)
+        public async Task<List<Client039DTO>> Validate(NFSMImportViewModel data, User user)
         {
             #region client side validations
 
@@ -52,12 +52,9 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
             if (Decrypt.TryParseBase64String(fileContent, out _) is false)
                 throw new BadRequestException("Não é um base64 válido");
 
-            var isValidFileName = new List<string>()
-                    {
-                        "039",
-                    }.Contains(data.File.FileType);
+            var isValidFileType = XmlUtils.File039 == data.File.FileType;
 
-            if (!isValidFileName)
+            if (isValidFileType is false)
                 throw new BadRequestException($"Deve pertencer a categoria 039. Importação falhou, arquivo com nome: {data.File.FileName}");
 
             #endregion
@@ -125,10 +122,10 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                 if (dadosBasicos is not null && dadosBasicos.COD_FALHA_039 is not null && dadosBasicos.DHA_COD_INSTALACAO_039 is not null && dadosBasicos.COD_TAG_PONTO_MEDICAO_039 is not null)
                 {
-                    var measurementInDatabase = await _repository
+                    var nfsmInDatabase = await _repository
                         .GetUnique039Async(dadosBasicos.COD_FALHA_039);
 
-                    if (measurementInDatabase is not null)
+                    if (nfsmInDatabase is not null)
                         errorsInImport.Add($"Arquivo {data.File.FileName}, {k + 1}ª notificação(DADOS_BASICOS) com código de falha: {dadosBasicos.COD_FALHA_039} já existente.");
 
                     var installation = await _installationRepository
@@ -157,6 +154,10 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                     if (errorsInImport.Count == 0 && installation is not null && measuringPoint is not null)
                     {
+                        var cleanedDscFalha = CleanString(dadosBasicos.DHA_DSC_FALHA_039);
+                        var cleanedDscAcao = CleanString(dadosBasicos.DHA_DSC_ACAO_039);
+                        var cleanedDscMetodologia = CleanString(dadosBasicos.DHA_DSC_METODOLOGIA_039);
+
                         var measurement = new Measurement
                         {
                             Id = Guid.NewGuid(),
@@ -171,9 +172,9 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                             DHA_DETECCAO_039 = XmlUtils.DateTimeParser(dadosBasicos.DHA_DETECCAO_039, errorsInFormat, dadosBasicosElement?.Element("DHA_DETECCAO")?.Name.LocalName),
                             DHA_RETORNO_039 = XmlUtils.DateTimeParser(dadosBasicos.DHA_RETORNO_039, errorsInFormat, dadosBasicosElement?.Element("DHA_RETORNO")?.Name.LocalName),
                             DHA_NUM_PREVISAO_RETORNO_DIAS_039 = dadosBasicos.DHA_NUM_PREVISAO_RETORNO_DIAS_039,
-                            DHA_DSC_FALHA_039 = dadosBasicos.DHA_DSC_FALHA_039,
-                            DHA_DSC_ACAO_039 = dadosBasicos.DHA_DSC_ACAO_039,
-                            DHA_DSC_METODOLOGIA_039 = dadosBasicos.DHA_DSC_METODOLOGIA_039,
+                            DHA_DSC_FALHA_039 = cleanedDscFalha,
+                            DHA_DSC_ACAO_039 = cleanedDscAcao,
+                            DHA_DSC_METODOLOGIA_039 = cleanedDscMetodologia,
                             DHA_NOM_RESPONSAVEL_RELATO_039 = dadosBasicos.DHA_NOM_RESPONSAVEL_RELATO_039,
                             DHA_NUM_SERIE_EQUIPAMENTO_039 = dadosBasicos.DHA_NUM_SERIE_EQUIPAMENTO_039,
                             FileName = data.File.FileName,
@@ -205,7 +206,9 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                                 measurement.LISTA_BSW.Add(bswMapped);
                             }
 
+                        var measurementsFixed = new List<VolumeFixedNfsm>();
                         if (dadosBasicos.LISTA_VOLUME is not null && measurement.LISTA_VOLUME is not null)
+                        {
                             for (var j = 0; j < dadosBasicos.LISTA_VOLUME.Count; ++j)
                             {
                                 var volume = dadosBasicos.LISTA_VOLUME[j];
@@ -216,8 +219,17 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                                 volumeMapped.DHA_MED_DECLARADO_039 = XmlUtils.DecimalParser(volume.DHA_MED_DECLARADO_039, errorsInFormat, volumeElement?.Element("MED_DECLARADO")?.Name.LocalName);
                                 volumeMapped.DHA_MED_REGISTRADO_039 = XmlUtils.DecimalParser(volume.DHA_MED_REGISTRADO_039, errorsInFormat, volumeElement?.Element("MED_REGISTRADO")?.Name.LocalName);
 
+                                var measurementFixed = new VolumeFixedNfsm
+                                {
+                                    MeasuredAt = volumeMapped.DHA_MEDICAO_039,
+                                    VolumeAfter = volumeMapped.DHA_MED_DECLARADO_039,
+                                    VolumeBefore = volumeMapped.DHA_MED_REGISTRADO_039
+                                };
+
                                 measurement.LISTA_VOLUME.Add(volumeMapped);
+                                measurementsFixed.Add(measurementFixed);
                             }
+                        }
 
                         if (dadosBasicos.LISTA_CALIBRACAO is not null && measurement.LISTA_CALIBRACAO is not null)
                             for (var j = 0; j < dadosBasicos.LISTA_CALIBRACAO.Count; ++j)
@@ -236,8 +248,23 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                         var measurement039DTO = _mapper.Map<Measurement, Client039DTO>(measurement);
 
-                        _responseResult = measurement039DTO;
-                        //_responseResult._039File?.Add(measurement039DTO);
+                        measurement039DTO.Summary = new SummaryNfsmDto
+                        {
+                            UepName = installation.UepName,
+                            MeasuringPoint = measurement039DTO.COD_TAG_PONTO_MEDICAO_039,
+                            Equipment = measurement039DTO.COD_TAG_EQUIPAMENTO_039,
+                            TypeOfFailure = measurement039DTO.DSC_TIPO_FALHA_039,
+                            CodeFailure = measurement039DTO.COD_FALHA_039,
+                            DateOfOcurrence = measurement039DTO.DHA_OCORRENCIA_039,
+                            DetectionDate = measurement039DTO.DHA_DETECCAO_039,
+                            ReturnDate = measurement039DTO.DHA_RETORNO_039,
+                            DescriptionFailure = measurement039DTO.DHA_DSC_FALHA_039,
+                            Action = measurement039DTO.DHA_DSC_ACAO_039,
+                            Methodology = measurement039DTO.DHA_DSC_METODOLOGIA_039,
+                            MeasurementsFixed = measurementsFixed,
+                        };
+
+                        _responseResult.Add(measurement039DTO);
                     }
 
                 }
@@ -252,5 +279,21 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
             return _responseResult;
         }
+
+        public async Task ImportAndFix(List<ClientInfo> body)
+        {
+
+
+        }
+
+        private string? CleanString(string? input)
+        {
+            if (input is null)
+                return null;
+
+            string cleanedValue = input.Replace("\n", "").Replace("\t", "").Trim();
+            return cleanedValue;
+        }
     }
+
 }

@@ -22,6 +22,7 @@ using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
 using PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XML.Infra.Http.Services;
+using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Repositories;
@@ -218,6 +219,7 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddScoped<GasVolumeCalculationService>();
     services.AddScoped<ProductionService>();
     services.AddScoped<FieldFRService>();
+    services.AddScoped<NFSMService>();
 
 
     #endregion
