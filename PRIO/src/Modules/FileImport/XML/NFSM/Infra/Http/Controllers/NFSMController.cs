@@ -35,11 +35,17 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Controllers
         }
 
         [HttpPost()]
-        public async Task<IActionResult> Import([FromBody] List<Client039DTO> body)
+        public async Task<IActionResult> Import([FromBody] ResponseNFSMDTO body)
         {
-            await _service.ImportAndFix(body);
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
 
-            return Ok("boa");
+            var result = await _service.ImportAndFix(body, user);
+
+            return Ok(result);
         }
     }
 }
