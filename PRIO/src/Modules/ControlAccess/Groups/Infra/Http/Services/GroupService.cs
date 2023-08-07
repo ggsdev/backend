@@ -239,28 +239,68 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
         {
             var group = await _groupRepository.GetGroupByIdAsync(id) ?? throw new NotFoundException("Group not found");
 
-            if (body.Menus is not null)
-            {
-                await _groupRepository.ValidateMenu(body);
-            }
-
+            //REMOVE USER PERMISSIONS
             var users = group.User;
             foreach (var user in users)
             {
                 var operationsUser = await _userOperationRepository.GetUserOperationsByUserId(user.Id);
                 await _userOperationRepository.RemoveUserOperations(operationsUser);
-
                 var permissionsUser = await _userPermissionRepository.GetUserPermissionsByUserId(user.Id);
                 await _userPermissionRepository.RemoveUserPermissions(permissionsUser);
             }
 
+            //REMOVE GROUP PERMISSIONS
             var gOperations = await _groupOperationRepository.GetGroupOperationsByGroupId(id);
             await _groupOperationRepository.RemoveGroupOperations(gOperations);
             var gPermissions = await _groupPermissionRepository.GetGroupPermissionsByGroupId(id);
             await _groupPermissionRepository.RemoveGroupPermissions(gPermissions);
 
+            //ADD GROUP PERMISSIONS
             await _groupRepository.NewGroupPermissionsAsync(group, body);
+            var groupPermissions = await _groupPermissionRepository.GetGroupPermissionsByGroupId(id);
 
+            //ADD USER PERMISSIONS
+            var changedDate = DateTime.UtcNow;
+            foreach (var user in users)
+            {
+                user.Group = group;
+
+                for (int i = 0; i < groupPermissions.Count; ++i)
+                {
+                    var userPermission = new UserPermission
+                    {
+                        Id = Guid.NewGuid(),
+                        CreatedAt = DateTime.UtcNow,
+                        GroupId = group.Id,
+                        GroupName = group.Name,
+                        GroupMenu = groupPermissions[i],
+                        MenuIcon = groupPermissions[i].MenuIcon,
+                        MenuId = groupPermissions[i].Menu?.Id,
+                        MenuName = groupPermissions[i].Menu?.Name,
+                        MenuOrder = groupPermissions[i].Menu?.Order,
+                        MenuRoute = groupPermissions[i].Menu?.Route,
+                        hasChildren = groupPermissions[i].hasChildren,
+                        hasParent = groupPermissions[i].hasParent,
+                        User = user,
+                    };
+                    await _userPermissionRepository.AddUserPermission(userPermission);
+
+                    foreach (var operation in groupPermissions[i].Operations)
+                    {
+                        var userOperation = new UserOperation
+                        {
+                            Id = Guid.NewGuid(),
+                            OperationName = operation?.OperationName,
+                            GlobalOperation = operation?.GlobalOperation,
+                            UserPermission = userPermission,
+                        };
+
+                        await _userOperationRepository.AddUserOperation(userOperation);
+                    }
+                }
+            }
+
+            await _groupRepository.SaveChangesAsync();
             var groupDTO = _mapper.Map<Group, GroupDTO>(group);
 
             return groupDTO;
