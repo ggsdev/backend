@@ -8,12 +8,6 @@ namespace PRIO.src.Modules.FileImport.XML.ViewModels
         public List<FileContent> Files { get; set; }
     }
 
-    public class NFSMViewModel
-    {
-        [Required]
-        public FileContent File { get; set; }
-    }
-
     public class FileContent
     {
         [Required(ErrorMessage = "Base64 string is required")]
