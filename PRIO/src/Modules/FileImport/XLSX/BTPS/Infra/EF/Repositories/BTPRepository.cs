@@ -22,6 +22,14 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
         {
             return await _context.BTPDatas.Include(x => x.Well).ToListAsync();
         }
+        public async Task<BTPData?> GetByWellAndDateXls(Guid wellId, string dateXls)
+        {
+            return await _context.BTPDatas.Include(x => x.Well).Where(x => x.Well.Id == wellId && x.FinalDate == dateXls).FirstOrDefaultAsync();
+        }
+        public async Task<BTPData?> GetByWellAndApplicationDateXls(Guid wellId, string appDateXls)
+        {
+            return await _context.BTPDatas.Include(x => x.Well).Where(x => x.Well.Id == wellId && x.ApplicationDate == appDateXls).FirstOrDefaultAsync();
+        }
         public async Task<List<BTPData>> GetAllBTPsDataByWellIdAsync(Guid wellId)
         {
             return await _context.BTPDatas.Include(x => x.Well).Where(x => x.Well.Id == wellId).ToListAsync();
@@ -56,7 +64,11 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
         {
             await _context.Validates.AddAsync(data);
         }
-        public async Task<ValidateBTP> GetValidate(Guid WellId, Guid BTPId, Guid ContentId, Guid DataId)
+        public async Task RemoveValidate(ValidateBTP validate)
+        {
+            _context.Validates.Remove(validate);
+        }
+        public async Task<ValidateBTP?> GetValidate(Guid WellId, Guid BTPId, Guid ContentId, Guid DataId)
         {
             return await _context.Validates
                 .Where(x => x.WellId == WellId)
@@ -65,7 +77,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
                 .Where(x => x.DataId == DataId)
                 .FirstOrDefaultAsync();
         }
-
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();

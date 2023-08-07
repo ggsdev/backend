@@ -138,6 +138,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
             await _groupRepository.SaveChangesAsync();
 
         }
+
         public async Task<List<GroupDTO>> GetGroups()
         {
             var groups = await _groupRepository.GetGroups();
