@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.src.Shared.Infra.EF.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230803191106_createValidateTable")]
+    partial class createValidateTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -704,10 +707,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ApplicationDate")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid>("BTPId")
                         .HasColumnType("uniqueidentifier");
 
@@ -719,13 +718,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
                     b.Property<Guid>("DataId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Filename")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsValid")
-                        .HasColumnType("bit");
 
                     b.Property<Guid>("WellId")
                         .HasColumnType("uniqueidentifier");

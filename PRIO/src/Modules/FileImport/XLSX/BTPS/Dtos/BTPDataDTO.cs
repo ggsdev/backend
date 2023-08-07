@@ -28,7 +28,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Dtos
         public string WellAlignmentData { get; set; }
         public string WellAlignmentHour { get; set; }
         public string WellName { get; set; }
-        public string CreatedAt { get; set; }
         public string ApplicationDate { get; set; }
         public bool IsActive { get; set; }
         public bool IsValid { get; set; }
