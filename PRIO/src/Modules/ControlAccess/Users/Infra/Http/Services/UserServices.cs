@@ -173,9 +173,9 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             {
                 var username = await _userRepository.GetUserByUsername(body.Username);
                 if (username != null)
-                    throw new ConflictException("Já existe um usuário com este nome de usuário")
+                    throw new ConflictException("Já existe um usuário com este nome de usuário");
 
-            }
+            };
 
             user.Name = body.Name is not null ? body.Name : user.Name;
             user.Password = body.Password is not null ? BCrypt.Net.BCrypt.HashPassword(body.Password) : user.Password;
