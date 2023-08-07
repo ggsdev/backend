@@ -12,6 +12,8 @@ using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Measurements.Interfaces;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
+using PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces;
+using PRIO.src.Modules.Measuring.Productions.Interfaces;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Utils;
 using System.Text;
@@ -26,16 +28,20 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
         private readonly IMeasurementRepository _repository;
         private readonly IMeasuringPointRepository _measuringPointRepository;
         private readonly IInstallationRepository _installationRepository;
+        private readonly IProductionRepository _productionRepository;
         private readonly IMeasurementHistoryRepository _measurementHistoryRepository;
+        private readonly IOilVolumeCalculationRepository _oilRepository;
         public List<Client039DTO> _responseResult = new();
 
-        public NFSMService(IMapper mapper, IMeasurementHistoryRepository measurementHistoryRepository, IMeasurementRepository measurementRepository, IInstallationRepository installationRepository, IMeasuringPointRepository measuringPointRepository)
+        public NFSMService(IMapper mapper, IMeasurementHistoryRepository measurementHistoryRepository, IMeasurementRepository measurementRepository, IInstallationRepository installationRepository, IMeasuringPointRepository measuringPointRepository, IProductionRepository productionRepository, IOilVolumeCalculationRepository oilVolumeCalculation)
         {
             _mapper = mapper;
             _repository = measurementRepository;
             _measurementHistoryRepository = measurementHistoryRepository;
             _installationRepository = installationRepository;
             _measuringPointRepository = measuringPointRepository;
+            _productionRepository = productionRepository;
+            _oilRepository = oilVolumeCalculation;
         }
 
         public async Task<List<Client039DTO>> Validate(NFSMImportViewModel data, User user)
@@ -280,10 +286,51 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
             return _responseResult;
         }
 
-        public async Task ImportAndFix(List<ClientInfo> body)
+        public async Task ImportAndFix(List<Client039DTO> body)
         {
+            foreach (var nfsm in body)
+            {
+                var installation = await _installationRepository
+                    .GetByUEPCod(nfsm.DHA_COD_INSTALACAO_039);
 
+                if (installation is null)
+                    throw new NotFoundException(ErrorMessages.NotFound<Installation>());
 
+                var measuringPoint = await _measuringPointRepository
+                    .GetByTagMeasuringPoint(nfsm.COD_TAG_PONTO_MEDICAO_039);
+
+                if (measuringPoint is null)
+                    throw new NotFoundException(ErrorMessages.NotFound<MeasuringPoint>());
+
+                var oilCalculation = await _oilRepository
+                    .GetOilVolumeCalculationByInstallationId(installation.Id);
+
+                foreach (var production in nfsm.LISTA_VOLUME)
+                {
+                    DateTime productionDate = production.DHA_MEDICAO_039 is not null ? production.DHA_MEDICAO_039.Value : DateTime.MinValue;
+
+                    var productionInDatabase = await _productionRepository.GetExistingByDate(productionDate);
+
+                    if (productionInDatabase is null)
+                        throw new NotFoundException($"Medição não encontrada para esta data: {productionDate}");
+
+                    //if (Math.Round(productionInDatabase.TotalProduction, 2) != Math.Round(production.DHA_MED_REGISTRADO_039, 2)
+                    //    throw new ConflictException($"Valor de produção anterior, difere da MED_REGISTRADO, para data {productionDate}, esperado:{productionInDatabase.TotalProduction} | recebido: {production.DHA_MED_DECLARADO_039}");
+                }
+
+                foreach (var production in nfsm.LISTA_VOLUME)
+                {
+                    DateTime productionDate = production.DHA_MEDICAO_039 is not null ? production.DHA_MEDICAO_039.Value : DateTime.MinValue;
+
+                    var productionInDatabase = await _productionRepository
+                        .GetExistingByDate(productionDate);
+
+                    //var totalGas = (productionInDatabase.GasLinear is not null ? productionInDatabase.GasLinear.TotalGas : 0) + (productionInDatabase.GasDiferencial is not null ? productionInDatabase.GasDiferencial.TotalGas : 0);
+
+                    //var totalOil = productionInDatabase.Oil is not null ? productionInDatabase.Oil.TotalOil : 0;
+
+                }
+            }
         }
 
         private string? CleanString(string? input)
