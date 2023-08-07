@@ -40,6 +40,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Controllers
             await _service.RemoveUserInGroup(groupId, userId, userLoggedIn);
             return NoContent();
         }
+
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -58,6 +59,12 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Controllers
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateGroupViewModel body)
         {
             var groupDTO = await _service.UpdateGroup(id, body);
+            return Ok(groupDTO);
+        }
+        [HttpPatch("{id}/permissions")]
+        public async Task<IActionResult> EditPermissionGroup([FromRoute] Guid id, [FromBody] InsertGroupPermission body)
+        {
+            var groupDTO = await _service.EditPermissionGroup(id, body);
             return Ok(groupDTO);
         }
 

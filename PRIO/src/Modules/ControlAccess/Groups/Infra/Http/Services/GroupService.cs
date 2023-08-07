@@ -235,6 +235,54 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
 
             return groupDTO;
         }
+        public async Task<GroupDTO> EditPermissionGroup(Guid id, InsertGroupPermission body)
+        {
+            var group = await _groupRepository.GetGroupByIdAsync(id);
+
+            if (group is null)
+                throw new NotFoundException("Group not found");
+
+            var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(group, body);
+
+            if (updatedProperties.Any() is false)
+                throw new BadRequestException("No properties were updated, try other values");
+
+            if (updatedProperties.TryGetValue("name", out var groupName))
+            {
+                var userPermissions = await _userPermissionRepository.GetUserPermissionsByGroupId();
+
+                for (int i = 0; i < userPermissions.Count; ++i)
+                    userPermissions[i].GroupName = groupName.ToString();
+
+                var groupPermissions = await _groupPermissionRepository.GetGroupPermissionsByGroupId(id);
+
+                for (int i = 0; i < groupPermissions.Count; ++i)
+                    groupPermissions[i].GroupName = groupName.ToString();
+
+                var groupOperations = await _groupOperationRepository.GetGroupOperationsByGroupId(id);
+
+                for (int i = 0; i < groupOperations.Count; ++i)
+                    groupOperations[i].GroupName = groupName.ToString();
+
+                var userOperations = await _userOperationRepository.GetUserOperationsByGroupId(id);
+
+                for (int i = 0; i < userOperations.Count; ++i)
+                    userOperations[i].GroupName = groupName.ToString();
+
+                _userPermissionRepository.UpdateUserPermissions(userPermissions);
+                _groupPermissionRepository.UpdateGroupPermissions(groupPermissions);
+                _groupOperationRepository.UpdateGroupOperations(groupOperations);
+                _userOperationRepository.UpdateUserOperations(userOperations);
+                await _groupRepository.SaveChangesAsync();
+            }
+
+            _groupRepository.UpdateGroup(group);
+            await _groupRepository.SaveChangesAsync();
+
+            var groupDTO = _mapper.Map<Group, GroupDTO>(group);
+
+            return groupDTO;
+        }
 
         public async Task DeleteGroup(Guid id)
         {
