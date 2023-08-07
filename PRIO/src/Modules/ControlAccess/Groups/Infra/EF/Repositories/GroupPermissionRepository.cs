@@ -14,6 +14,8 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
             _context = context;
         }
 
+
+
         public async Task<List<GroupPermission>> GetGroupPermissionsByGroupId(Guid groupId)
         {
             return await _context.GroupPermissions
@@ -22,6 +24,12 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
                 .Include(x => x.Group)
                 .Where(x => x.Group.Id == groupId)
                 .ToListAsync();
+        }
+
+        public async Task RemoveGroupPermissions(List<GroupPermission> groupPermissions)
+        {
+            _context.RemoveRange(groupPermissions);
+            await _context.SaveChangesAsync();
         }
         public void UpdateGroupPermissions(List<GroupPermission> groupPermissions)
         {

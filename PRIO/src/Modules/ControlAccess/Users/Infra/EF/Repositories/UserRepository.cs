@@ -27,7 +27,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
         }
         public async Task<List<User>> GetUsers()
         {
-            var users = await _context.Users.ToListAsync();
+            var users = await _context.Users.Include(x => x.Group).ToListAsync();
             return users;
         }
         public async Task<User?> GetUsersByEmail(string email)
