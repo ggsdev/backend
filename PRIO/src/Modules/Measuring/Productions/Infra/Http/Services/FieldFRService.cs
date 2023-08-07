@@ -23,7 +23,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
             _productionRepository = productionRepository;
         }
 
-        public async Task ApplyFR(FieldFRBodyService body)
+        public async Task ApplyFR(FieldFRBodyService body, DateTime dateProduction)
         {
             var installation = await _installationRepository.GetByIdAsync(body.InstallationId);
 
@@ -35,7 +35,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
             //var installationsWithFields = await _installationRepository.GetByIdWithFieldsCod(body.InstallationId);
 
-            if (body.Gas is not null && body.BothGas)
+            if (body.Gas is not null)
             {
                 foreach (var field in body.Gas.FR.Fields)
                 {
@@ -63,26 +63,44 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 if (sumGas != 1 && body.Gas.FR.IsApplicable)
                     throw new ConflictException("Gás: Soma dos fatores deve ser 1.");
 
-                foreach (var field in body.Gas.FR.Fields)
+                if (body.BothGas && body.Gas.FR.IsApplicable)
                 {
-
-                    if (body.Production is not null && body.Production.Gas is null)
+                    foreach (var field in body.Gas.FR.Fields)
                     {
                         var fieldInDatabase = await _fieldRepository.GetByIdAsync(field.FieldId);
 
-                        var fr = new FieldFR
+                        if (fieldInDatabase is null)
+                            throw new NotFoundException(ErrorMessages.NotFound<Field>());
+
+                        if (body.Production is not null)
                         {
-                            Id = Guid.NewGuid(),
-                            DailyProduction = body.Production,
-                            Field = fieldInDatabase,
-                            FRGas = field.FluidFr,
-                            ProductionInField = body.Gas.TotalGasProductionM3 * field.FluidFr,
+                            var existingFr = await _installationRepository.GetFrByDateMeasuredAndFieldId(body.Production.MeasuredAt, field.FieldId);
 
-                        };
+                            if (existingFr is null)
+                            {
+                                var fr = new FieldFR
+                                {
+                                    Id = Guid.NewGuid(),
+                                    DailyProduction = body.Production,
+                                    Field = fieldInDatabase,
+                                    FRGas = field.FluidFr,
+                                    ProductionInField = ((body.Production.GasLinear is not null ? body.Production.GasLinear.TotalGas : 0) + (body.Production.GasDiferencial is not null ? body.Production.GasDiferencial.TotalGas : 0)) * field.FluidFr,
+                                };
 
-                        await _installationRepository.AddFRAsync(fr);
+                                await _installationRepository.AddFRAsync(fr);
+                            }
+                            else
+                            {
+                                existingFr.ProductionInField += ((body.Production.GasLinear is not null ? body.Production.GasLinear.TotalGas : 0) + (body.Production.GasDiferencial is not null ? body.Production.GasDiferencial.TotalGas : 0)) * field.FluidFr;
+                                existingFr.FRGas = field.FluidFr;
+
+
+                                _installationRepository.UpdateFr(existingFr);
+                            }
+                        }
                     }
                 }
+
             }
 
             if (body.Oil is not null)
@@ -115,24 +133,43 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 if (body.Oil.FR.IsApplicable)
                     foreach (var field in body.Oil.FR.Fields)
                     {
-                        if (body.Production is not null && body.Production.Oil is null)
+                        if (body.Production is not null)
                         {
+                            var existingFr = await _installationRepository.GetFrByDateMeasuredAndFieldId(body.Production.MeasuredAt, field.FieldId);
+
                             var fieldInDatabase = await _fieldRepository.GetByIdAsync(field.FieldId);
 
-                            var fr = new FieldFR
+                            if (fieldInDatabase is null)
+                                throw new NotFoundException(ErrorMessages.NotFound<Field>());
+
+                            if (existingFr is null)
                             {
-                                Id = Guid.NewGuid(),
-                                DailyProduction = body.Production,
-                                Field = fieldInDatabase,
-                                FROil = field.FluidFr,
-                                ProductionInField = body.Oil.TotalOilProductionM3 * field.FluidFr,
+                                var fr = new FieldFR
+                                {
+                                    Id = Guid.NewGuid(),
+                                    DailyProduction = body.Production,
+                                    Field = fieldInDatabase,
+                                    FROil = field.FluidFr,
+                                    ProductionInField = body.Oil.TotalOilProductionM3 * field.FluidFr,
 
-                            };
+                                };
 
-                            await _installationRepository.AddFRAsync(fr);
+                                await _installationRepository.AddFRAsync(fr);
+                            }
+                            else
+                            {
+
+                                existingFr.ProductionInField += body.Oil.TotalOilProductionM3 * field.FluidFr;
+                                existingFr.FROil = field.FluidFr;
+
+                                _installationRepository.UpdateFr(existingFr);
+                            }
                         }
                     }
             }
+
+            //await _installationRepository.SaveChangesAsync();
+
 
             //foreach (var installationUEP in installationsWithFields)
             //{
@@ -270,7 +307,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
             //    };
             //    await _installationRepository.AddFRAsync(createOilFr);
             //}
-            //await _installationRepository.SaveChangesAsync();
 
         }
 

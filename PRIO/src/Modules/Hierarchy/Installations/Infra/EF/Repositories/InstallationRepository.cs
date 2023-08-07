@@ -53,6 +53,22 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                .Where(x => x.Field.Installation.Id == id)
                .ToListAsync();
         }
+
+        public async Task<FieldFR?> GetFrByDateMeasuredAndFieldId(DateTime date, Guid fieldId)
+        {
+            return await _context.FieldsFRs
+                .Include(x => x.DailyProduction)
+                .Include(x => x.Field)
+                .Where(x => (x.DailyProduction.MeasuredAt.Year == date.Year &&
+                            x.DailyProduction.MeasuredAt.Month == date.Month &&
+                            x.DailyProduction.MeasuredAt.Day == date.Day) && x.Field.Id == fieldId)
+                .FirstOrDefaultAsync();
+        }
+
+        public void UpdateFr(FieldFR fieldFr)
+        {
+            _context.Update(fieldFr);
+        }
         public async Task<List<FieldFR?>> GetFRsByUEPAsync(string? uep)
         {
             var Frs = await _context.FieldsFRs

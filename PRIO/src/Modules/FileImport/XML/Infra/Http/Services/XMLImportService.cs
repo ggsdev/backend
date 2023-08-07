@@ -2701,6 +2701,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             {
                 measuring.Production = dailyProduction;
             }
+
             var bothGasFiles = false;
             if (dailyProduction.GasDiferencial is not null && dailyProduction.GasLinear is not null)
                 bothGasFiles = true;
@@ -2714,7 +2715,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 BothGas = bothGasFiles
             };
 
-            await _fieldFRService.ApplyFR(fieldFrViewModel);
+            await _fieldFRService.ApplyFR(fieldFrViewModel, data.DateProduction);
 
             if (dailyProduction.GasDiferencial is not null && dailyProduction.GasLinear is not null && dailyProduction.Oil is not null)
             {
