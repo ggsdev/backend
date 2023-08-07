@@ -41,7 +41,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
             var dailyProduction = new DailyProduction
             {
-                Status = production.StatusProduction,
+                StatusProduction = production.StatusProduction,
                 TotalGasBBL = Math.Round(
                     (production.GasDiferencial is not null ? production.GasDiferencial.TotalGas * ProductionUtils.m3ToBBLConversionMultiplier : 0) +
                     (production.GasLinear is not null ? production.GasLinear.TotalGas * ProductionUtils.m3ToBBLConversionMultiplier : 0),
@@ -56,6 +56,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 TotalOilM3 = Math.Round(
                     production.Oil is not null ? production.Oil.TotalOil * ProductionUtils.m3ToBBLConversionMultiplier : 0,
                     5),
+                StatusGas = (production.GasDiferencial is not null ? production.GasDiferencial.StatusGas : false) && (production.GasLinear is not null ? production.GasLinear.StatusGas : false),
+                StatusOil = production.Oil is not null ? production.Oil.StatusOil : false,
             };
 
             var gasBurnt = new GasBurntDto
@@ -78,61 +80,12 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 TotalGasExported = (production.GasLinear is not null ? production.GasLinear.ExportedGas : 0) + (production.GasDiferencial is not null ? production.GasDiferencial.ExportedGas : 0),
             };
 
-            //var files = new List<MeasurementHistoryWithMeasurementsDto>();
             var files = new List<MeasurementHistoryDto>();
             var oilPoints = new List<LocalOilPointDto>();
             var burnetGasPoints = new List<LocalGasPointDto>();
             var fuelGasPoints = new List<LocalGasPointDto>();
             var importedGasPoints = new List<LocalGasPointDto>();
             var exportedGasPoints = new List<LocalGasPointDto>();
-
-            //foreach (var measurement in production.Measurements)
-            //{
-            //    Console.WriteLine(measurement.COD_TAG_PONTO_MEDICAO_003);
-
-            //    var historyDto = _mapper.Map<MeasurementHistory, MeasurementHistoryWithMeasurementsDto>(measurement.MeasurementHistory);
-
-            //    if (historyDto.FileType == XmlUtils.File001)
-            //    {
-            //        historyDto.Summary.Add(new ClientInfoOil
-            //        {
-            //            DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_001,
-            //            LocationMeasuringPoint = measurement.COD_TAG_PONTO_MEDICAO_001,
-            //            StatusMeasuringPoint = measurement.StatusMeasuringPoint,
-            //            TagMeasuringPoint = measurement.MeasuringPoint.TagPointMeasuring,
-            //            VolumeBeforeBsw = measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001,
-            //            Bsw = measurement.BswManual_001,
-            //            VolumeAfterBsw = measurement.VolumeAfterManualBsw_001,
-            //        });
-            //    }
-            //    else if (historyDto.FileType == XmlUtils.File002)
-            //    {
-            //        historyDto.Summary.Add(new ClientInfoGas
-            //        {
-            //            DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_002,
-            //            LocationMeasuringPoint = measurement.COD_TAG_PONTO_MEDICAO_002,
-            //            StatusMeasuringPoint = measurement.StatusMeasuringPoint,
-            //            TagMeasuringPoint = measurement.MeasuringPoint.TagPointMeasuring,
-            //            Volume = measurement.MED_CORRIGIDO_MVMDO_002,
-            //        });
-            //    }
-            //    else if (historyDto.FileType == XmlUtils.File003)
-            //    {
-            //        historyDto.Summary.Add(new ClientInfoGas
-            //        {
-            //            DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_003,
-            //            LocationMeasuringPoint = measurement.COD_TAG_PONTO_MEDICAO_003,
-            //            StatusMeasuringPoint = measurement.StatusMeasuringPoint,
-            //            TagMeasuringPoint = measurement.MeasuringPoint.TagPointMeasuring,
-            //            Volume = measurement.MED_CORRIGIDO_MVMDO_003,
-            //        });
-            //    }
-
-            //    if (!files.Any(file => file.ImportId == historyDto.ImportId))
-            //    {
-            //        files.Add(historyDto);
-            //    }
-            //}
 
             foreach (var measurement in production.Measurements)
             {
@@ -141,6 +94,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 {
                     files.Add(historyDto);
                 }
+
+                var measurementDateOil = measurement.DHA_INICIO_PERIODO_MEDICAO_001 is not null ? measurement.DHA_INICIO_PERIODO_MEDICAO_001.Value.ToString("dd/MM/yyyy") : string.Empty;
+                var measurementDateGasLinear = measurement.DHA_INICIO_PERIODO_MEDICAO_002 is not null ? measurement.DHA_INICIO_PERIODO_MEDICAO_002.Value.ToString("dd/MM/yyyy") : string.Empty;
+                var measurementDateGasDiferencial = measurement.DHA_INICIO_PERIODO_MEDICAO_003 is not null ? measurement.DHA_INICIO_PERIODO_MEDICAO_003.Value.ToString("dd/MM/yyyy") : string.Empty;
 
                 if (measurement.DHA_INICIO_PERIODO_MEDICAO_002 is not null && measurement.COD_INSTALACAO_002 is not null)
                 {
@@ -157,7 +114,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measuringPoint = new LocalGasPointDto
                             {
-                                DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_002,
+                                DateMeasuring = measurementDateGasLinear,
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_002,
                                 LocalPoint = assistanceGas.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = assistanceGas.MeasuringPoint.TagPointMeasuring,
@@ -175,7 +132,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measuringPoint = new LocalGasPointDto
                             {
-                                DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_002,
+                                DateMeasuring = measurementDateGasLinear,
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_002,
                                 LocalPoint = hpFlare.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = hpFlare.MeasuringPoint.TagPointMeasuring,
@@ -193,7 +150,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measuringPoint = new LocalGasPointDto
                             {
-                                DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_002,
+                                DateMeasuring = measurementDateGasLinear,
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_002,
                                 LocalPoint = lpFlare.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = lpFlare.MeasuringPoint.TagPointMeasuring,
@@ -210,7 +167,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measuringPoint = new LocalGasPointDto
                             {
-                                DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_002,
+                                DateMeasuring = measurementDateGasLinear,
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_002,
                                 LocalPoint = pilot.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = pilot.MeasuringPoint.TagPointMeasuring,
@@ -230,7 +187,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measuringPoint = new LocalGasPointDto
                             {
-                                DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_002,
+                                DateMeasuring = measurementDateGasLinear,
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_002,
                                 LocalPoint = purge.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = purge.MeasuringPoint.TagPointMeasuring,
@@ -250,7 +207,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measuringPoint = new LocalGasPointDto
                             {
-                                DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_002,
+                                DateMeasuring = measurementDateGasLinear,
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_002,
                                 LocalPoint = lowPressure.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = lowPressure.MeasuringPoint.TagPointMeasuring,
@@ -268,7 +225,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measuringPoint = new LocalGasPointDto
                             {
-                                DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_002,
+                                DateMeasuring = measurementDateGasLinear,
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_002,
                                 LocalPoint = highPressure.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = highPressure.MeasuringPoint.TagPointMeasuring,
@@ -285,7 +242,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measuringPoint = new LocalGasPointDto
                             {
-                                DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_002,
+                                DateMeasuring = measurementDateGasLinear,
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_002,
                                 LocalPoint = import.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = import.MeasuringPoint.TagPointMeasuring,
@@ -303,7 +260,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measuringPoint = new LocalGasPointDto
                             {
-                                DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_002,
+                                DateMeasuring = measurementDateGasLinear,
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_002,
                                 LocalPoint = export.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = export.MeasuringPoint.TagPointMeasuring,
@@ -330,7 +287,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measuringPoint = new LocalGasPointDto
                             {
-                                DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_003,
+                                DateMeasuring = measurementDateGasDiferencial,
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_003,
                                 LocalPoint = assistanceGas.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = assistanceGas.MeasuringPoint.TagPointMeasuring,
@@ -347,7 +304,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measuringPoint = new LocalGasPointDto
                             {
-                                DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_003,
+                                DateMeasuring = measurementDateGasDiferencial,
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_003,
                                 LocalPoint = hpFlare.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = hpFlare.MeasuringPoint.TagPointMeasuring,
@@ -364,7 +321,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measuringPoint = new LocalGasPointDto
                             {
-                                DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_003,
+                                DateMeasuring = measurementDateGasDiferencial,
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_003,
                                 LocalPoint = lpFlare.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = lpFlare.MeasuringPoint.TagPointMeasuring,
@@ -382,7 +339,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measuringPoint = new LocalGasPointDto
                             {
-                                DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_003,
+                                DateMeasuring = measurementDateGasDiferencial,
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_003,
                                 LocalPoint = pilot.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = pilot.MeasuringPoint.TagPointMeasuring,
@@ -400,7 +357,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measuringPoint = new LocalGasPointDto
                             {
-                                DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_003,
+                                DateMeasuring = measurementDateGasDiferencial,
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_003,
                                 LocalPoint = purge.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = purge.MeasuringPoint.TagPointMeasuring,
@@ -420,7 +377,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measuringPoint = new LocalGasPointDto
                             {
-                                DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_003,
+                                DateMeasuring = measurementDateGasDiferencial,
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_003,
                                 LocalPoint = lowPressure.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = lowPressure.MeasuringPoint.TagPointMeasuring,
@@ -437,7 +394,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measuringPoint = new LocalGasPointDto
                             {
-                                DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_003,
+                                DateMeasuring = measurementDateGasDiferencial,
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_003,
                                 LocalPoint = highPressure.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = highPressure.MeasuringPoint.TagPointMeasuring,
@@ -455,7 +412,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measuringPoint = new LocalGasPointDto
                             {
-                                DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_003,
+                                DateMeasuring = measurementDateGasDiferencial,
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_003,
                                 LocalPoint = import.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = import.MeasuringPoint.TagPointMeasuring,
@@ -473,7 +430,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measuringPoint = new LocalGasPointDto
                             {
-                                DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_003,
+                                DateMeasuring = measurementDateGasDiferencial,
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_003,
                                 LocalPoint = export.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = export.MeasuringPoint.TagPointMeasuring,
@@ -504,7 +461,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measuringPoint = new LocalOilPointDto
                             {
-                                DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_001,
+                                DateMeasuring = measurementDateOil,
                                 VolumeAfterBsw = measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001 * (1 - measurement.BswManual_001),
                                 VolumeBeforeBsw = measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001,
                                 LocalPoint = section.StaticLocalMeasuringPoint,
@@ -524,7 +481,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measuringPoint = new LocalOilPointDto
                             {
-                                DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_001,
+                                DateMeasuring = measurementDateOil,
                                 VolumeAfterBsw = measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001 * (1 - measurement.BswManual_001),
                                 VolumeBeforeBsw = measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001,
                                 LocalPoint = dor.StaticLocalMeasuringPoint,
@@ -545,7 +502,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measuringPoint = new LocalOilPointDto
                             {
-                                DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_001,
+                                DateMeasuring = measurementDateOil,
                                 VolumeAfterBsw = measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001,
                                 VolumeBeforeBsw = measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001,
                                 LocalPoint = drain.StaticLocalMeasuringPoint,
@@ -566,7 +523,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measuringPoint = new LocalOilPointDto
                             {
-                                DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_001,
+                                DateMeasuring = measurementDateOil,
                                 VolumeAfterBsw = measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001,
                                 VolumeBeforeBsw = measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001,
                                 LocalPoint = tog.StaticLocalMeasuringPoint,
@@ -577,8 +534,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             oilPoints.Add(measuringPoint);
                         }
                     }
-
-
                 }
 
             }
@@ -661,7 +616,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 var productionDto = new GetAllProductionsDto
                 {
                     Id = production.Id,
-                    DateProduction = production.MeasuredAt,
+                    DateProduction = production.MeasuredAt.ToString("dd/MM/yyyy"),
                     Gas = new GasTotalDto
                     {
                         TotalGasBBL = Math.Round((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas * ProductionUtils.m3ToBBLConversionMultiplier : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas * ProductionUtils.m3ToBBLConversionMultiplier : 0), 2),

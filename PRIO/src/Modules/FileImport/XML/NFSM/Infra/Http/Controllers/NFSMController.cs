@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.FileImport.XML.Dtos;
 using PRIO.src.Modules.FileImport.XML.NFSM.ViewModels;
 using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services;
 using PRIO.src.Shared.Errors;
@@ -20,7 +21,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Controllers
         }
 
         [HttpPost("validate")]
-        public async Task<IActionResult> Import([FromBody] NFSMImportViewModel body)
+        public async Task<IActionResult> Validate([FromBody] NFSMImportViewModel body)
         {
             if (HttpContext.Items["User"] is not User user)
                 return Unauthorized(new ErrorResponseDTO
@@ -32,6 +33,13 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Controllers
 
             return Created($"import-nfsm", result);
         }
-    }
 
+        [HttpPost()]
+        public async Task<IActionResult> Import([FromBody] List<Client039DTO> body)
+        {
+            await _service.ImportAndFix(body);
+
+            return Ok("boa");
+        }
+    }
 }

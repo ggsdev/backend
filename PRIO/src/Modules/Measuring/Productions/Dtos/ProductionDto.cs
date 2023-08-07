@@ -20,8 +20,9 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
 
         public decimal TotalOilBBL { get; set; }
         public decimal TotalOilM3 { get; set; }
-
-        public bool Status { get; set; }
+        public bool StatusGas { get; set; }
+        public bool StatusOil { get; set; }
+        public bool StatusProduction { get; set; }
     }
 
     public class GetAllProductionsDto
@@ -29,7 +30,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
         public Guid Id { get; set; }
         public bool Status { get; set; }
         public string UepName { get; set; }
-        public DateTime DateProduction { get; set; }
+        public string DateProduction { get; set; }
         public List<ProductionFilesDto> Files { get; set; }
         public OilTotalDto? Oil { get; set; }
         public GasTotalDto? Gas { get; set; }
@@ -86,7 +87,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
     {
         public string? LocalPoint { get; set; }
         public string? TagMeasuringPoint { get; set; }
-        public DateTime? DateMeasuring { get; set; }
+        public string? DateMeasuring { get; set; }
         public decimal? IndividualProduction { get; set; }
 
     }
@@ -95,7 +96,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
     {
         public string? LocalPoint { get; set; }
         public string? TagMeasuringPoint { get; set; }
-        public DateTime? DateMeasuring { get; set; }
+        public string? DateMeasuring { get; set; }
         public decimal? VolumeAfterBsw { get; set; }
         public decimal? VolumeBeforeBsw { get; set; }
         public decimal? Bsw { get; set; }
