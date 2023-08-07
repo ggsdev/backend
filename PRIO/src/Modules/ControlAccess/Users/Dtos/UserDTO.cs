@@ -11,6 +11,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Dtos
         public bool? IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public GroupDTO? Group { get; set; }
     }
 
     public class LoginDTO
