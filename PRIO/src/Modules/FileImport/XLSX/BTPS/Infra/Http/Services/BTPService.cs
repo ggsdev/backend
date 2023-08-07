@@ -186,8 +186,14 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             var Validate = await _BTPRepository.GetValidate(body.Validate.WellId, body.Validate.BTPId, body.Validate.ContentId, body.Validate.DataId) ?? throw new NotFoundException("Validação não autorizada.");
             var well = await _wellRepository.GetByIdAsync(body.Validate.WellId) ?? throw new NotFoundException("Poço não encontrado.");
             var BTP = await _BTPRepository.GetByIdAsync(body.Validate.BTPId) ?? throw new NotFoundException("BTP não encontrado");
-            _ = await _BTPRepository.GetByWellAndDateXls(body.Validate.WellId, body.Data.FinalDate) ?? throw new ConflictException("Já existe um teste para este poço nesta data");
-            _ = await _BTPRepository.GetByWellAndApplicationDateXls(body.Validate.WellId, body.Data.ApplicationDate) ?? throw new ConflictException("Já existe um teste para este poço nesta data de aplicaçao");
+
+            var foundDate = await _BTPRepository.GetByWellAndDateXls(body.Validate.WellId, body.Data.FinalDate);
+            if (foundDate is not null)
+                throw new ConflictException("Já existe um teste para este poço nesta data");
+
+            var foundApllicationDate = await _BTPRepository.GetByWellAndApplicationDateXls(body.Validate.WellId, body.Data.ApplicationDate);
+            if (foundApllicationDate is not null)
+                throw new ConflictException("Já existe um teste para este poço nesta data");
 
             if (body.Data.Filename.EndsWith(".xlsx") is false)
                 throw new BadRequestException("O arquivo deve ter a extensão .xlsx", status: "Error");
