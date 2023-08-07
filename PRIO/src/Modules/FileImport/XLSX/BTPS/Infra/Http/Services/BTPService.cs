@@ -22,7 +22,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             _BTPRepository = btpRepository;
             _wellRepository = wellRepository;
         }
-
         public async Task<List<BTPDTO>> Get()
         {
             var BTPs = await _BTPRepository.GetAllBTPsAsync();
