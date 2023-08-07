@@ -8,7 +8,7 @@
     <FileVersion>1.0.0.1</FileVersion>
     <SignAssembly>False</SignAssembly>
     <PackageIcon>prioImage.jpg</PackageIcon>
-    <Version>0.1.3</Version>
+    <Version>0.1.8</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -80,7 +80,6 @@
     <Folder Include="src\Modules\FileImport\XLSX\BTPS\Infra\Http\Controllers\" />
     <Folder Include="src\Modules\FileImport\XLSX\BTPS\Infra\Http\Services\" />
     <Folder Include="src\Modules\FileImport\XLSX\BTPS\Interfaces\" />
-    <Folder Include="src\Modules\FileImport\XLSX\BTPS\ViewModels\" />
     <Folder Include="src\Modules\FileImport\XLSX\Infra\EF\Entities\" />
     <Folder Include="src\Modules\FileImport\XLSX\Infra\EF\Mappings\" />
     <Folder Include="src\Modules\FileImport\XML\Infra\EF\Models\" />

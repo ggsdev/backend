@@ -241,7 +241,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                 //PROCURANDO PERMISSAO NO GRUPO
                 var verifyRelationMenuParent = await _groupPermissionRepository.GetGroupPermissionByMenuIdAndGroupId(menu.MenuId, userWithPermissions.Group.Id);
 
-
                 // EXISTE A PERMISSAO NO GRUPO
                 if (verifyRelationMenuParent is not null)
                 {
@@ -628,6 +627,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             return userDTO;
 
         }
+
         //public async Task<List<UserDTO>> RetrieveAllUsersAndMap()
         //{
 
