@@ -9,5 +9,6 @@ namespace PRIO.src.Modules.Measuring.Measurements.Interfaces
         Task<MeasurementHistory?> GetById(Guid id);
         Task<List<MeasurementHistory>> GetLastUpdatedHistoriesXML(string fileType);
         Task<List<MeasurementHistory>> GetProductionOfTheDayByImportId(Guid importId);
+        Task<List<MeasurementHistory>> GetAllFilesByDate(DateTime date);
     }
 }

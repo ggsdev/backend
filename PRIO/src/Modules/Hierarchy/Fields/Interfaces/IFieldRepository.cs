@@ -16,5 +16,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Interfaces
         Task<List<Field>> GetAsync();
         Task<Field?> GetOnlyField(Guid? id);
         Task SaveChangesAsync();
+        Task<List<Field>> GetFieldsByInstallationId(Guid id);
     }
 }

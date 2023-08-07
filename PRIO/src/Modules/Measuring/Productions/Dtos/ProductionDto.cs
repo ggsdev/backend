@@ -1,4 +1,5 @@
 ﻿using PRIO.src.Modules.FileImport.XML.Dtos;
+using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Measuring.Productions.Dtos
 {
@@ -22,6 +23,64 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
 
         public bool Status { get; set; }
     }
+
+    public class GetAllProductionsDto
+    {
+        public Guid Id { get; set; }
+        public bool Status { get; set; }
+        public string UepName { get; set; }
+        public DateTime DateProduction { get; set; }
+        public List<ProductionFilesDto> Files { get; set; }
+        public OilTotalDto? Oil { get; set; }
+        public GasTotalDto? Gas { get; set; }
+        public WaterTotalDto? Water { get; set; }
+    }
+
+    public class ProductionFilesDto
+    {
+        public Guid FileId { get; set; }
+        public string FileName { get; set; }
+        public string FileType { get; set; }
+        public DateTime? ImportedAt { get; set; }
+
+    }
+
+    public class ProductionFilesDtoWithBase64
+    {
+        public Guid FileId { get; set; }
+        public string FileName { get; set; }
+        public string FileType { get; set; }
+        public DateTime? ImportedAt { get; set; }
+        public string Base64 { get; set; }
+
+    }
+
+    public class OilTotalDto
+    {
+        public decimal TotalOilM3 { get; set; }
+        public decimal TotalOilBBL { get; set; }
+    }
+
+    public class GasTotalDto
+    {
+        public decimal TotalGasBBL { get; set; }
+        public decimal TotalGasM3 { get; set; }
+    }
+
+    public class WaterTotalDto
+    {
+        public decimal TotalWaterM3 { get; set; }
+        public decimal TotalWaterSFC { get; set; }
+    }
+    public class FieldFRBodyService
+    {
+        public GasDto? Gas { get; set; }
+        public bool BothGas { get; set; }
+        public OilDto? Oil { get; set; }
+        public Production Production { get; set; }
+        public Guid InstallationId { get; set; }
+    }
+
 
     public class LocalGasPointDto
     {

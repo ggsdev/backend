@@ -92,6 +92,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\..\..\..\Downloads\prioImage.jpg">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="prioImage.jpg">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>

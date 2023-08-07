@@ -7,6 +7,8 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Interfaces
     {
         Task AddAsync(Installation installation);
         Task AddFRAsync(FieldFR fr);
+        Task<FieldFR?> GetFrByDateMeasuredAndFieldId(DateTime date, Guid id);
+        void UpdateFr(FieldFR fieldFr);
         void Update(Installation installation);
         void Delete(Installation installation);
         void Restore(Installation installation);

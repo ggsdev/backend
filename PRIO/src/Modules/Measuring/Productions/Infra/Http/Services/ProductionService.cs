@@ -630,5 +630,86 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
             return productionDto;
         }
+
+
+        public async Task<List<GetAllProductionsDto>> GetAllProductions()
+        {
+            var productions = await _repository
+                .GetAllProductions();
+
+            var productionsDto = new List<GetAllProductionsDto>();
+
+            foreach (var production in productions)
+            {
+                var files = await _fileHistoryRepository
+                    .GetAllFilesByDate(production.MeasuredAt);
+                var filesDto = new List<ProductionFilesDto>();
+
+                foreach (var file in files)
+                {
+                    var fileDto = new ProductionFilesDto
+                    {
+                        FileName = file.FileName,
+                        FileType = file.FileType,
+                        ImportedAt = file.ImportedAt,
+                        FileId = file.Id
+                    };
+
+                    filesDto.Add(fileDto);
+                }
+
+                var productionDto = new GetAllProductionsDto
+                {
+                    Id = production.Id,
+                    DateProduction = production.MeasuredAt,
+                    Gas = new GasTotalDto
+                    {
+                        TotalGasBBL = Math.Round((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas * ProductionUtils.m3ToBBLConversionMultiplier : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas * ProductionUtils.m3ToBBLConversionMultiplier : 0), 2),
+                        TotalGasM3 = Math.Round((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas : 0), 2),
+                    },
+                    Oil = new OilTotalDto
+                    {
+                        TotalOilBBL = production.Oil is not null ? Math.Round(production.Oil.TotalOil * ProductionUtils.m3ToBBLConversionMultiplier, 2) : 0,
+                        TotalOilM3 = production.Oil is not null ? Math.Round(production.Oil.TotalOil, 2) : 0,
+                    },
+                    Status = production.StatusProduction,
+                    UepName = production.Installation.UepName,
+                    Files = filesDto
+                };
+
+                productionsDto.Add(productionDto);
+            }
+
+            return productionsDto;
+        }
+
+        public async Task<List<ProductionFilesDtoWithBase64>> DownloadAllProductionFiles(Guid productionId)
+        {
+            var production = await _repository
+                .GetById(productionId);
+
+            if (production is null)
+                throw new NotFoundException("Produção não encontrada");
+
+            var files = await _fileHistoryRepository
+                .GetAllFilesByDate(production.MeasuredAt);
+
+            var filesDto = new List<ProductionFilesDtoWithBase64>();
+
+            foreach (var file in files)
+            {
+                var fileDto = new ProductionFilesDtoWithBase64
+                {
+                    FileName = file.FileName,
+                    FileType = file.FileType,
+                    ImportedAt = file.ImportedAt,
+                    FileId = file.Id,
+                    Base64 = file.FileContent
+                };
+
+                filesDto.Add(fileDto);
+            }
+            return filesDto;
+        }
     }
 }
