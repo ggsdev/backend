@@ -10,5 +10,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.ViewModels
         public string Username { get; set; }
         public string? Email { get; set; }
         public string? Description { get; set; }
+        public bool IsActive { get; set; }
     }
 }

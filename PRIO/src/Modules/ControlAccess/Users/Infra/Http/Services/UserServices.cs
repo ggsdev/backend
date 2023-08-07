@@ -68,6 +68,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                 Name = body.Name,
                 Username = treatedUsername,
                 Email = body.Email is not null ? body.Email : null,
+                IsActive = body.IsActive,
                 Description = body.Description is not null ? body.Description : null,
             };
 
@@ -167,6 +168,14 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             //    {
             //        Message = $"User is not found"
             //    });            
+
+            if (body.Username is not null)
+            {
+                var username = await _userRepository.GetUserByUsername(body.Username);
+                if (username != null)
+                    throw new ConflictException("Já existe um usuário com este nome de usuário")
+
+            }
 
             user.Name = body.Name is not null ? body.Name : user.Name;
             user.Password = body.Password is not null ? BCrypt.Net.BCrypt.HashPassword(body.Password) : user.Password;
