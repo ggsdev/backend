@@ -58,7 +58,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
         public async Task UpdateUser(User userHasGroup)
         {
             _context.Update(userHasGroup);
-            await _context.SaveChangesAsync();
         }
         public async Task UpdateUsers(List<User> users)
         {
