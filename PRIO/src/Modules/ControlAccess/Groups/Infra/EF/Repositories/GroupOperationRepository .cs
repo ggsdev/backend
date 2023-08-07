@@ -14,6 +14,12 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
             _context = context;
         }
 
+        public async Task RemoveGroupOperations(List<GroupOperation> groupOperations)
+        {
+            _context.RemoveRange(groupOperations);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<List<GroupOperation>> GetGroupOperationsByGroupId(Guid groupId)
         {
             return await _context.GroupOperations
