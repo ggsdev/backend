@@ -20,7 +20,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
         }
         public async Task<List<BTPData>> GetAllBTPsDataAsync()
         {
-            return await _context.BTPDatas.Include(x => x.Well).ToListAsync();
+            return await _context.BTPDatas.Include(x => x.Well).Include(x => x.BTPBase64).ThenInclude(x => x.User).ToListAsync();
         }
         public async Task<BTPData?> GetByWellAndDateXls(Guid wellId, string dateXls)
         {
