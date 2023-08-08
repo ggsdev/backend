@@ -14,10 +14,22 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
             _context = context;
         }
 
+        #region BTP
         public async Task<List<BTP>> GetAllBTPsAsync()
         {
             return await _context.BTPs.ToListAsync();
         }
+        public async Task<List<BTP>> GetAllBTPsByTypeAsync(string type)
+        {
+            return await _context.BTPs.Where(x => x.Type == type).ToListAsync();
+        }
+        public async Task<BTP?> GetByIdAsync(Guid id)
+        {
+            return await _context.BTPs.Where(x => x.Id == id).FirstOrDefaultAsync();
+        }
+        #endregion
+
+        #region BTPData
         public async Task<List<BTPData>> GetAllBTPsDataAsync()
         {
             return await _context.BTPDatas.Include(x => x.Well).Include(x => x.BTPBase64).ThenInclude(x => x.User).ToListAsync();
@@ -34,13 +46,9 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
         {
             return await _context.BTPDatas.Include(x => x.Well).Where(x => x.Well.Id == wellId).ToListAsync();
         }
-        public async Task<List<BTP>> GetAllBTPsByTypeAsync(string type)
+        public async Task<BTPData?> GetByDataIdAsync(Guid id)
         {
-            return await _context.BTPs.Where(x => x.Type == type).ToListAsync();
-        }
-        public async Task<BTP?> GetByIdAsync(Guid id)
-        {
-            return await _context.BTPs.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return await _context.BTPDatas.Where(x => x.Id == id).FirstOrDefaultAsync();
         }
         public async Task<BTPData?> GetByDateAsync(string date, Guid wellId)
         {
@@ -56,10 +64,16 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
         {
             await _context.BTPDatas.AddAsync(data);
         }
+        #endregion
+
+        #region Base64
         public async Task AddBTPBase64Async(BTPBase64 data)
         {
             await _context.BTPBases64.AddAsync(data);
         }
+        #endregion
+
+        #region Validate
         public async Task AddBTPValidateAsync(ValidateBTP data)
         {
             await _context.Validates.AddAsync(data);
@@ -77,6 +91,13 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
                 .Where(x => x.DataId == DataId)
                 .FirstOrDefaultAsync();
         }
+        #endregion
+
+        public void Update(BTPData data)
+        {
+            _context.BTPDatas.Update(data);
+        }
+
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
