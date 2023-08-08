@@ -289,9 +289,6 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
             if (errorsInFormat.Count > 0)
                 throw new BadRequestException($"Algum(s) erro(s) de formatação ocorreram durante a validação do arquivo de nome: {data.File.FileName}", errors: errorsInFormat);
 
-
-
-
             return responseResult;
         }
 
@@ -314,31 +311,31 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                 var oilCalculation = await _oilRepository
                     .GetOilVolumeCalculationByInstallationId(installation.Id);
 
-                foreach (var production in nfsm.LISTA_VOLUME)
+                foreach (var productionInXml in nfsm.LISTA_VOLUME)
                 {
-                    DateTime productionDate = production.DHA_MEDICAO_039 is not null ? production.DHA_MEDICAO_039.Value : DateTime.MinValue;
+                    DateTime productionInXmlDate = productionInXml.DHA_MEDICAO_039 is not null ? productionInXml.DHA_MEDICAO_039.Value : DateTime.MinValue;
 
-                    var productionInDatabase = await _productionRepository.GetExistingByDate(productionDate);
+                    var productionInDatabase = await _productionRepository.GetExistingByDate(productionInXmlDate);
 
                     if (productionInDatabase is null)
-                        throw new NotFoundException($"Medição não encontrada para esta data: {productionDate}");
+                        throw new NotFoundException($"Medição não encontrada para esta data: {productionInXmlDate}");
 
-                    if (production.DHA_MEDICAO_039 > nfsm.DHA_DETECCAO_039)
+                    if (productionInXml.DHA_MEDICAO_039 > nfsm.DHA_DETECCAO_039)
                         throw new ConflictException("Data da medição não pode ser maior do que a data da detecção TAG: DHA_DETECÇÃO.");
 
-                    if (production.DHA_MEDICAO_039 > nfsm.DHA_RETORNO_039)
+                    if (productionInXml.DHA_MEDICAO_039 > nfsm.DHA_RETORNO_039)
                         throw new ConflictException("Data da medição não pode ser maior do que a data que a falha foi corrigida, TAG: DHA_RETORNO.");
 
                     //if (Math.Round(productionInDatabase.TotalProduction, 2) != Math.Round(production.DHA_MED_REGISTRADO_039, 2)
                     //    throw new ConflictException($"Valor de produção anterior, difere da MED_REGISTRADO, para data {productionDate}, esperado:{productionInDatabase.TotalProduction} | recebido: {production.DHA_MED_DECLARADO_039}");
                 }
 
-                foreach (var production in nfsm.LISTA_VOLUME)
+                foreach (var productionInXml in nfsm.LISTA_VOLUME)
                 {
-                    DateTime productionDate = production.DHA_MEDICAO_039 is not null ? production.DHA_MEDICAO_039.Value : DateTime.MinValue;
+                    DateTime productionInXmlDate = productionInXml.DHA_MEDICAO_039 is not null ? productionInXml.DHA_MEDICAO_039.Value : DateTime.MinValue;
 
                     var productionInDatabase = await _productionRepository
-                        .GetExistingByDate(productionDate);
+                        .GetExistingByDate(productionInXmlDate);
 
                     decimal totalOil = 0m;
                     decimal totalLinear = 0m;
@@ -348,25 +345,25 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     {
                         if (measurement.MeasuringPoint.TagPointMeasuring == measuringPoint.TagPointMeasuring && measurement.DHA_INICIO_PERIODO_MEDICAO_002 is not null)
                         {
-                            measurement.MED_CORRIGIDO_MVMDO_002 = production.DHA_MED_DECLARADO_039;
-                            totalLinear += production.DHA_MED_DECLARADO_039 ?? 0;
+                            measurement.MED_CORRIGIDO_MVMDO_002 = productionInXml.DHA_MED_DECLARADO_039;
+                            totalLinear += productionInXml.DHA_MED_DECLARADO_039 ?? 0;
                             _repository.UpdateMeasurement(measurement);
                         }
 
                         if (measurement.MeasuringPoint.TagPointMeasuring == measuringPoint.TagPointMeasuring && measurement.DHA_INICIO_PERIODO_MEDICAO_001 is not null)
                         {
-                            measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001 = production.DHA_MED_DECLARADO_039;
-                            measurement.MED_VOLUME_LIQUIDO_MVMDO_001 = production.DHA_MED_DECLARADO_039;
+                            measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001 = productionInXml.DHA_MED_DECLARADO_039;
+                            measurement.MED_VOLUME_LIQUIDO_MVMDO_001 = productionInXml.DHA_MED_DECLARADO_039;
 
-                            totalOil += production.DHA_MED_DECLARADO_039 ?? 0;
+                            totalOil += productionInXml.DHA_MED_DECLARADO_039 ?? 0;
 
                             _repository.UpdateMeasurement(measurement);
                         }
 
                         if (measurement.MeasuringPoint.TagPointMeasuring == measuringPoint.TagPointMeasuring && measurement.DHA_INICIO_PERIODO_MEDICAO_003 is not null)
                         {
-                            measurement.MED_CORRIGIDO_MVMDO_003 = production.DHA_MED_DECLARADO_039;
-                            totalDiferencial += production.DHA_MED_DECLARADO_039 ?? 0;
+                            measurement.MED_CORRIGIDO_MVMDO_003 = productionInXml.DHA_MED_DECLARADO_039;
+                            totalDiferencial += productionInXml.DHA_MED_DECLARADO_039 ?? 0;
 
                             _repository.UpdateMeasurement(measurement);
                         }
@@ -380,11 +377,20 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                             productionInDatabase.GasDiferencial.TotalGas = totalDiferencial;
 
                         if (productionInDatabase.Oil is not null)
-                            productionInDatabase.Oil.TotalOil = totalDiferencial;
+                            productionInDatabase.Oil.TotalOil = totalOil;
+
                         _productionRepository.Update(productionInDatabase);
                     }
-                }
 
+                    if (productionInDatabase.FieldsFR is not null)
+                        foreach (var fieldFr in productionInDatabase.FieldsFR)
+                        {
+                            fieldFr.ProductionInField += fieldFr.FROil is not null ? totalOil * fieldFr.FROil.Value : 0;
+                            fieldFr.ProductionInField += fieldFr.FRGas is not null ? (totalDiferencial + totalLinear) * fieldFr.FRGas.Value : 0;
+
+                            _installationRepository.UpdateFr(fieldFr);
+                        }
+                }
             }
 
             var fileInfo = new FileBasicInfoDTO
@@ -397,6 +403,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
             await _measurementService.Import(user, fileInfo, body.File.FileContent, body.NFSMs[0].DHA_OCORRENCIA_039);
 
             await _repository.SaveChangesAsync();
+
+
 
             return new ImportResponseDTO { Status = "Success", Message = "Arquivo importado com sucesso, medições corrigidas." };
         }

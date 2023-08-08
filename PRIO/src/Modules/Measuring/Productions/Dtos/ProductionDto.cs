@@ -115,6 +115,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
         public GasFuelDto GasFuel { get; set; }
         public GasExportedDto GasExported { get; set; }
         public GasImportedDto GasImported { get; set; }
+
+        public DetailBurn DetailedBurnedGas { get; set; }
     }
 
     public class GasBurntDto

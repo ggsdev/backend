@@ -625,9 +625,21 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
             gasExported.MeasuringPoints = exportedGasPoints;
             oilDto.MeasuringPoints = oilPoints;
 
+
             var gasDto = new GasConsultingDto
             {
                 TotalGasProduction = (production.GasLinear is not null ? production.GasLinear.TotalGas : 0) + (production.GasDiferencial is not null ? production.GasDiferencial.TotalGas : 0),
+                DetailedBurnedGas = production.Gas is not null ? new DetailBurn
+                {
+                    EmergencialBurn = production.Gas.EmergencialBurn,
+                    ForCommissioningBurn = production.Gas.ForCommissioningBurn,
+                    LimitOperacionalBurn = production.Gas.LimitOperacionalBurn,
+                    OthersBurn = production.Gas.OthersBurn,
+                    ScheduledStopBurn = production.Gas.ScheduledStopBurn,
+                    VentedGas = production.Gas.VentedGas,
+                    WellTestBurn = production.Gas.WellTestBurn
+
+                } : new DetailBurn { },
 
                 GasBurnt = gasBurnt,
                 GasFuel = gasFuel,
