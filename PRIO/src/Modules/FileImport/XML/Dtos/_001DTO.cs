@@ -260,29 +260,21 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
     {
         public string? LocationMeasuringPoint { get; set; }
         public string? TagMeasuringPoint { get; set; }
-        public DateTime? DateMeasuring { get; set; }
+        public string? DateMeasuring { get; set; }
         public bool? StatusMeasuringPoint { get; set; }
-
-    }
-
-    public class ClientInfoGas : IClientInfo
-    {
-        public string? LocationMeasuringPoint { get; set; }
-        public string? TagMeasuringPoint { get; set; }
-        public DateTime? DateMeasuring { get; set; }
         public decimal? Volume { get; set; }
-        public bool? StatusMeasuringPoint { get; set; }
     }
-    public class ClientInfoOil : IClientInfo
+
+    public class SummaryGeneric : IClientInfo
     {
         public string? LocationMeasuringPoint { get; set; }
         public string? TagMeasuringPoint { get; set; }
-        public DateTime? DateMeasuring { get; set; }
-        public decimal? VolumeBeforeBsw { get; set; }
-        public decimal? VolumeAfterBsw { get; set; }
-        public decimal? Bsw { get; set; }
+        public string? DateMeasuring { get; set; }
         public bool? StatusMeasuringPoint { get; set; }
+        public decimal? Volume { get; set; }
     }
+
+
     public class Response001DTO
     {
         public MeasurementHistoryDto? File { get; set; }
