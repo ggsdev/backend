@@ -355,10 +355,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                         if (measurement.MeasuringPoint.TagPointMeasuring == measuringPoint.TagPointMeasuring && measurement.DHA_INICIO_PERIODO_MEDICAO_001 is not null)
                         {
-                            Console.WriteLine(measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001);
                             measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001 = production.DHA_MED_DECLARADO_039;
                             measurement.MED_VOLUME_LIQUIDO_MVMDO_001 = production.DHA_MED_DECLARADO_039;
-                            Console.WriteLine(measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001);
 
                             totalOil += production.DHA_MED_DECLARADO_039 ?? 0;
 

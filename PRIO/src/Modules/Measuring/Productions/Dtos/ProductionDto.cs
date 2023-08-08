@@ -7,7 +7,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
     {
         public DailyProduction DailyProduction { get; set; }
 
-        public List<MeasurementHistoryDto> Files { get; set; }
+        public List<MeasurementHistoryWithMeasurementsDto> Files { get; set; }
 
         public GasConsultingDto Gas { get; set; }
         public OilConsultingDto Oil { get; set; }
@@ -89,6 +89,9 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
         public string? TagMeasuringPoint { get; set; }
         public string? DateMeasuring { get; set; }
         public decimal? IndividualProduction { get; set; }
+        //public Guid ImportId { get; set; }
+        //public string FileName { get; set; }
+        //public string FileType { get; set; }
 
     }
 
@@ -100,6 +103,9 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
         public decimal? VolumeAfterBsw { get; set; }
         public decimal? VolumeBeforeBsw { get; set; }
         public decimal? Bsw { get; set; }
+        //public Guid ImportId { get; set; }
+        //public string FileName { get; set; }
+        //public string FileType { get; set; }
     }
 
     public class GasConsultingDto
