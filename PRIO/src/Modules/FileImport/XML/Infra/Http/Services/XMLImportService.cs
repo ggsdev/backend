@@ -176,136 +176,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     switch (data.Files[i].FileType)
                     {
-                        #region 039
-                        //case "039":
-                        //    {
-                        //        #region elementos XML
-                        //        var dadosBasicos = Functions.DeserializeXml<DADOS_BASICOS_039>(dadosBasicosElement);
-                        //        #endregion
-
-                        //        if (dadosBasicos is not null && dadosBasicos.COD_FALHA_039 is not null && dadosBasicos.DHA_COD_INSTALACAO_039 is not null && dadosBasicos.COD_TAG_PONTO_MEDICAO_039 is not null)
-                        //        {
-                        //            var measurementInDatabase = await _repository
-                        //                .GetUnique039Async(dadosBasicos.COD_FALHA_039);
-
-                        //            if (measurementInDatabase is not null)
-                        //                errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) com código de falha: {dadosBasicos.COD_FALHA_039} já existente.");
-
-                        //            var installation = await _installationRepository
-                        //              .GetInstallationMeasurementByUepAndAnpCodAsync(dadosBasicos.DHA_COD_INSTALACAO_039, XmlUtils.File039);
-
-                        //            if (installation is null)
-                        //                errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): {ErrorMessages.NotFound<Installation>()}");
-
-                        //            var measuringPoint = await _measuringPointRepository
-                        //                .GetByTagMeasuringPointXML(dadosBasicos.COD_TAG_PONTO_MEDICAO_039, XmlUtils.File039);
-
-                        //            if (measuringPoint is null)
-                        //                errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), ponto de medição TAG: {dadosBasicos.COD_TAG_PONTO_MEDICAO_039}: {ErrorMessages.NotFound<MeasuringPoint>()}");
-
-                        //            if (installation is not null && installation.MeasuringPoints is not null)
-                        //            {
-                        //                bool contains = false;
-
-                        //                foreach (var point in installation.MeasuringPoints)
-                        //                    if (measuringPoint is not null && measuringPoint.TagPointMeasuring == point.TagPointMeasuring)
-                        //                        contains = true;
-
-                        //                if (contains is false)
-                        //                    errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), TAG do ponto de medição não encontrado nessa instalação");
-                        //            }
-
-                        //            if (errorsInImport.Count == 0 && installation is not null && measuringPoint is not null)
-                        //            {
-                        //                var measurement = new Measurement
-                        //                {
-                        //                    Id = Guid.NewGuid(),
-                        //                    COD_FALHA_039 = dadosBasicos.COD_FALHA_039,
-                        //                    COD_TAG_PONTO_MEDICAO_039 = dadosBasicos.COD_TAG_PONTO_MEDICAO_039,
-                        //                    DHA_COD_INSTALACAO_039 = dadosBasicos.DHA_COD_INSTALACAO_039,
-                        //                    COD_TAG_EQUIPAMENTO_039 = dadosBasicos.COD_TAG_EQUIPAMENTO_039,
-                        //                    COD_FALHA_SUPERIOR_039 = dadosBasicos.COD_FALHA_SUPERIOR_039,
-                        //                    DSC_TIPO_FALHA_039 = XmlUtils.ShortParser(dadosBasicos.DSC_TIPO_FALHA_039, errorsInFormat, dadosBasicosElement.Name.LocalName),
-                        //                    IND_TIPO_NOTIFICACAO_039 = dadosBasicos.IND_TIPO_NOTIFICACAO_039,
-                        //                    DHA_OCORRENCIA_039 = XmlUtils.DateTimeParser(dadosBasicos.DHA_OCORRENCIA_039, errorsInFormat, dadosBasicosElement?.Element("DHA_OCORRENCIA")?.Name.LocalName),
-                        //                    DHA_DETECCAO_039 = XmlUtils.DateTimeParser(dadosBasicos.DHA_DETECCAO_039, errorsInFormat, dadosBasicosElement?.Element("DHA_DETECCAO")?.Name.LocalName),
-                        //                    DHA_RETORNO_039 = XmlUtils.DateTimeParser(dadosBasicos.DHA_RETORNO_039, errorsInFormat, dadosBasicosElement?.Element("DHA_RETORNO")?.Name.LocalName),
-                        //                    DHA_NUM_PREVISAO_RETORNO_DIAS_039 = dadosBasicos.DHA_NUM_PREVISAO_RETORNO_DIAS_039,
-                        //                    DHA_DSC_FALHA_039 = dadosBasicos.DHA_DSC_FALHA_039,
-                        //                    DHA_DSC_ACAO_039 = dadosBasicos.DHA_DSC_ACAO_039,
-                        //                    DHA_DSC_METODOLOGIA_039 = dadosBasicos.DHA_DSC_METODOLOGIA_039,
-                        //                    DHA_NOM_RESPONSAVEL_RELATO_039 = dadosBasicos.DHA_NOM_RESPONSAVEL_RELATO_039,
-                        //                    DHA_NUM_SERIE_EQUIPAMENTO_039 = dadosBasicos.DHA_NUM_SERIE_EQUIPAMENTO_039,
-                        //                    FileName = data.Files[i].FileName,
-                        //                    FileType = new FileType
-                        //                    {
-                        //                        Name = data.Files[i].FileType,
-                        //                        Acronym = XmlUtils.FileAcronym039,
-
-                        //                    },
-                        //                    User = user,
-                        //                    MeasuringPoint = measuringPoint,
-                        //                    Installation = installation,
-                        //                    LISTA_BSW = new(),
-                        //                    LISTA_CALIBRACAO = new(),
-                        //                    LISTA_VOLUME = new(),
-                        //                };
-
-                        //                if (dadosBasicos.LISTA_BSW is not null && measurement.LISTA_BSW is not null)
-                        //                    for (var j = 0; j < dadosBasicos.LISTA_BSW.Count; ++j)
-                        //                    {
-                        //                        var bsw = dadosBasicos.LISTA_BSW[j];
-                        //                        var bswElement = dadosBasicosElement?.Elements("LISTA_BSW")?.ElementAt(j)?.Element("BSW");
-
-                        //                        var bswMapped = _mapper.Map<BSW, Bsw>(bsw);
-                        //                        bswMapped.DHA_FALHA_BSW_039 = XmlUtils.DateTimeWithoutTimeParser(bsw.DHA_FALHA_BSW_039, errorsInFormat, bswElement?.Element("DHA_FALHA_BSW")?.Name.LocalName);
-                        //                        bswMapped.DHA_PCT_BSW_039 = XmlUtils.DecimalParser(bsw.DHA_PCT_BSW_039, errorsInFormat, bswElement?.Element("PCT_BSW")?.Name.LocalName);
-                        //                        bswMapped.DHA_PCT_MAXIMO_BSW_039 = XmlUtils.DecimalParser(bsw.DHA_PCT_MAXIMO_BSW_039, errorsInFormat, bswElement?.Element("PCT_MAXIMO_BSW")?.Name.LocalName);
-
-                        //                        measurement.LISTA_BSW.Add(bswMapped);
-                        //                    }
-
-                        //                if (dadosBasicos.LISTA_VOLUME is not null && measurement.LISTA_VOLUME is not null)
-                        //                    for (var j = 0; j < dadosBasicos.LISTA_VOLUME.Count; ++j)
-                        //                    {
-                        //                        var volume = dadosBasicos.LISTA_VOLUME[j];
-                        //                        var volumeElement = dadosBasicosElement?.Elements("LISTA_VOLUME")?.ElementAt(j)?.Element("VOLUME");
-
-                        //                        var volumeMapped = _mapper.Map<VOLUME, Volume>(volume);
-                        //                        volumeMapped.DHA_MEDICAO_039 = XmlUtils.DateTimeWithoutTimeParser(volume.DHA_MEDICAO_039, errorsInFormat, volumeElement?.Element("DHA_MEDICAO")?.Name.LocalName);
-                        //                        volumeMapped.DHA_MED_DECLARADO_039 = XmlUtils.DecimalParser(volume.DHA_MED_DECLARADO_039, errorsInFormat, volumeElement?.Element("MED_DECLARADO")?.Name.LocalName);
-                        //                        volumeMapped.DHA_MED_REGISTRADO_039 = XmlUtils.DecimalParser(volume.DHA_MED_REGISTRADO_039, errorsInFormat, volumeElement?.Element("MED_REGISTRADO")?.Name.LocalName);
-
-                        //                        measurement.LISTA_VOLUME.Add(volumeMapped);
-                        //                    }
-
-                        //                if (dadosBasicos.LISTA_CALIBRACAO is not null && measurement.LISTA_CALIBRACAO is not null)
-                        //                    for (var j = 0; j < dadosBasicos.LISTA_CALIBRACAO.Count; ++j)
-                        //                    {
-                        //                        var calibration = dadosBasicos.LISTA_CALIBRACAO[j];
-                        //                        var calibrationElement = dadosBasicosElement?.Elements("LISTA_CALIBRACAO")?.ElementAt(j)?.Element("CALIBRACAO");
-
-                        //                        var calibrationMapped = _mapper.Map<CALIBRACAO, Calibration>(calibration);
-                        //                        calibrationMapped.DHA_FALHA_CALIBRACAO_039 = XmlUtils.DateTimeWithoutTimeParser(calibration.DHA_FALHA_CALIBRACAO_039, errorsInFormat, calibrationElement?.Element("DHA_FALHA_CALIBRACAO")?.Name.LocalName);
-
-                        //                        calibrationMapped.DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039 = XmlUtils.DecimalParser(calibration.DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039, errorsInFormat, calibrationElement?.Element("NUM_FATOR_CALIBRACAO_ANTERIOR")?.Name.LocalName);
-                        //                        calibrationMapped.DHA_NUM_FATOR_CALIBRACAO_ATUAL_039 = XmlUtils.DecimalParser(calibration.DHA_NUM_FATOR_CALIBRACAO_ATUAL_039, errorsInFormat, calibrationElement?.Element("NUM_FATOR_CALIBRACAO_ATUAL")?.Name.LocalName);
-
-                        //                        measurement.LISTA_CALIBRACAO.Add(calibrationMapped);
-                        //                    }
-
-                        //                var measurement039DTO = _mapper.Map<Measurement, Client039DTO>(measurement);
-
-                        //                _responseResult._039File ??= new List<Client039DTO>();
-                        //                _responseResult._039File?.Add(measurement039DTO);
-                        //            }
-                        //        }
-
-                        //        break;
-                        //    }
-
-                        #endregion
-
                         #region 001
                         case "001":
                             {
@@ -2326,10 +2196,11 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             {
                 var sumOfDetailedBurnedGas = data.GasSummary.DetailedBurnedGas.WellTestBurn + data.GasSummary.DetailedBurnedGas.LimitOperacionalBurn + data.GasSummary.DetailedBurnedGas.ForCommissioningBurn + data.GasSummary.DetailedBurnedGas.ScheduledStopBurn + data.GasSummary.DetailedBurnedGas.EmergencialBurn + data.GasSummary.DetailedBurnedGas.VentedGas;
 
-                if (data.Gas is not null && data.Gas.TotalGasBurnt < sumOfDetailedBurnedGas)
+                if (data.Gas is not null && data.Gas.TotalGasBurnt != sumOfDetailedBurnedGas)
                 {
-                    throw new BadRequestException($"Somatório do detalhamento de queima não pode ultrapassar o total de queima: {data.Gas.TotalGasBurnt}");
+                    throw new BadRequestException($"Somatório do detalhamento de queima deve ser igual ao total de gás de queima: {data.Gas.TotalGasBurnt}");
                 }
+
             }
 
             var base64HistoryMap = new Dictionary<string, MeasurementHistory>();
@@ -2366,6 +2237,18 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                 };
             }
+            if (dailyProduction.Gas is not null && data.GasSummary is not null)
+            {
+                dailyProduction.Gas.EmergencialBurn += data.GasSummary.DetailedBurnedGas.EmergencialBurn;
+                dailyProduction.Gas.LimitOperacionalBurn += data.GasSummary.DetailedBurnedGas.LimitOperacionalBurn;
+                dailyProduction.Gas.ScheduledStopBurn += data.GasSummary.DetailedBurnedGas.ScheduledStopBurn;
+                dailyProduction.Gas.ForCommissioningBurn += data.GasSummary.DetailedBurnedGas.ForCommissioningBurn;
+                dailyProduction.Gas.VentedGas += data.GasSummary.DetailedBurnedGas.VentedGas;
+                dailyProduction.Gas.WellTestBurn += data.GasSummary.DetailedBurnedGas.WellTestBurn;
+                dailyProduction.Gas.OthersBurn += data.GasSummary.DetailedBurnedGas.OthersBurn;
+
+            }
+
             if (dailyProduction.Gas is null && data.GasSummary is not null)
             {
                 dailyProduction.Gas = new Gas
@@ -2380,6 +2263,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 };
 
             }
+
+
 
             var dividirBsw = 1;
 
