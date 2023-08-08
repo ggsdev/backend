@@ -103,6 +103,20 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Controllers
             return Ok(result);
         }
 
+        [HttpPatch("data/{dataId}")]
+        public async Task<IActionResult> RenderBTPData([FromRoute] Guid dataId)
+        {
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+
+            var result = await _BTPService.UpdateByDataId(dataId);
+
+            return Ok(result);
+        }
+
         [HttpGet("data/{wellId}")]
         public async Task<IActionResult> RenderBTPDataByWellId([FromRoute] Guid wellId)
         {
