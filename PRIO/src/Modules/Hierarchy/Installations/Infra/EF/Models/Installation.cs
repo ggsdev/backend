@@ -1,4 +1,5 @@
 ﻿using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
@@ -13,7 +14,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models
     public class Installation : BaseModel
     {
         public string? Name { get; set; }
-        public string? UepCod { get; set; }
+        public string UepCod { get; set; }
         public string UepName { get; set; }
         public string? CodInstallationAnp { get; set; }
         public decimal? GasSafetyBurnVolume { get; set; }
@@ -27,5 +28,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models
         public GasVolumeCalculation GasVolumeCalculation { get; set; }
         public bool IsProcessingUnit { get; set; }
         public List<Production>? Productions { get; set; }
+        public List<NFSM>? NFSMs { get; set; }
     }
 }

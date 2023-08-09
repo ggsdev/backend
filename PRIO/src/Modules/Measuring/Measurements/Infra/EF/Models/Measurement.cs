@@ -1,4 +1,5 @@
 ﻿using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
@@ -9,6 +10,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models
 {
     public class Measurement : BaseModel
     {
+        public NFSM? NFSM { get; set; }
         public string FileName { get; set; } = string.Empty;
 
         public bool IsCalculated { get; set; } = false;

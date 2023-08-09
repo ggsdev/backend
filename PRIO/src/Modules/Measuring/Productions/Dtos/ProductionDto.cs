@@ -5,6 +5,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
 {
     public class ProductionDto
     {
+        public string InstallationName { get; set; }
+        public string UepName { get; set; }
         public DailyProduction DailyProduction { get; set; }
 
         public List<MeasurementHistoryWithMeasurementsDto> Files { get; set; }

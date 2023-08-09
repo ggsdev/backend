@@ -1,4 +1,5 @@
-﻿using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
+﻿using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
@@ -29,5 +30,6 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models
         public LPFlare? LPFlare { get; set; }
         public PilotGas? PilotGas { get; set; }
         public PurgeGas? PurgeGas { get; set; }
+        public List<NFSM>? NFSMs { get; set; }
     }
 }
