@@ -2269,8 +2269,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             }
 
-
-
             var dividirBsw = 1;
 
             var totalOilWithBsw = 0m;
