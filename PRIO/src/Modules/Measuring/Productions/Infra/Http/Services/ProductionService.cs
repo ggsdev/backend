@@ -521,6 +521,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         var measurementFound = measurement.MeasuringPoint.TagPointMeasuring == section.MeasuringPoint.TagPointMeasuring;
                         if (!oilPoints.Any(measuring => measuring.TagMeasuringPoint == section.MeasuringPoint.TagPointMeasuring) && measurementFound)
                         {
+                            Console.WriteLine(section.Id);
+
                             var measuringPoint = new LocalOilPointDto
                             {
                                 DateMeasuring = measurementDateOil,
@@ -650,6 +652,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
             var productionDto = new ProductionDto
             {
+                InstallationName = production.Installation.Name,
+                UepName = production.Installation.UepName,
                 DailyProduction = dailyProduction,
                 Gas = gasDto,
                 Oil = oilDto,
@@ -664,56 +668,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
             foreach (var file in productionDto.Files)
             {
-                //foreach (var measurement in production.Measurements)
-                // 
-                //{
-                //    if (file.ImportId == measurement.MeasurementHistory.Id)
-                //    {
-                //        if (measurement.DHA_INICIO_PERIODO_MEDICAO_001 is not null)
-                //        {
-                //            var summary = new SummaryGeneric
-                //            {
-                //                DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_001.Value.ToString("dd/MM/yyyy"),
-                //                LocationMeasuringPoint = measurement.MeasuringPoint.DinamicLocalMeasuringPoint,
-                //                StatusMeasuringPoint = true,
-                //                TagMeasuringPoint = measurement.COD_TAG_PONTO_MEDICAO_001,
-                //                Volume = measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001,
-
-                //            };
-                //            file.Summary.Add(summary);
-                //        }
-
-                //        if (measurement.DHA_INICIO_PERIODO_MEDICAO_002 is not null)
-                //        {
-                //            var summary = new SummaryGeneric
-                //            {
-                //                DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_002.Value.ToString("dd/MM/yyyy"),
-                //                LocationMeasuringPoint = measurement.MeasuringPoint.DinamicLocalMeasuringPoint,
-                //                StatusMeasuringPoint = true,
-                //                TagMeasuringPoint = measurement.COD_TAG_PONTO_MEDICAO_002,
-                //                Volume = measurement.MED_CORRIGIDO_MVMDO_002,
-
-                //            };
-                //            file.Summary.Add(summary);
-                //        }
-
-                //        if (measurement.DHA_INICIO_PERIODO_MEDICAO_003 is not null)
-                //        {
-                //            var summary = new SummaryGeneric
-                //            {
-                //                DateMeasuring = measurement.DHA_INICIO_PERIODO_MEDICAO_003.Value.ToString("dd/MM/yyyy"),
-                //                LocationMeasuringPoint = measurement.MeasuringPoint.DinamicLocalMeasuringPoint,
-                //                StatusMeasuringPoint = true,
-                //                TagMeasuringPoint = measurement.COD_TAG_PONTO_MEDICAO_003,
-                //                Volume = measurement.MED_CORRIGIDO_MVMDO_003,
-
-                //            };
-
-                //            file.Summary.Add(summary);
-                //        }
-                //}
-                //}
-
                 if (gasCalculationByUepCode is not null && file.FileType == XmlUtils.File002)
                 {
                     var containAssistanceGas = false;

@@ -22,6 +22,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
         public async Task<Production?> GetExistingByDate(DateTime date)
         {
             return await _context.Productions
+                .Include(x => x.Installation)
                 .Include(x => x.GasLinear)
                 .Include(x => x.GasDiferencial)
                 .Include(x => x.Gas)

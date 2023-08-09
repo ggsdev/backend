@@ -297,6 +297,7 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
     public class ResponseXmlDto
     {
         public string UepName { get; set; }
+        public string UepCode { get; set; }
         public Guid InstallationId { get; set; }
         public bool StatusProduction { get; set; }
         public DateTime DateProduction { get; set; }

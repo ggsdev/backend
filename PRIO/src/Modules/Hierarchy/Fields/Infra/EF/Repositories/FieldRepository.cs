@@ -27,6 +27,16 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                .ThenInclude(i => i!.Cluster)
                .FirstOrDefaultAsync(x => x.Id == id);
         }
+
+        public async Task<List<Field>> GetFieldsByUepCode(string code)
+        {
+            return await _context.Fields
+                .Include(x => x.Installation)
+                .Where(x => x.Installation.UepCod == code && x.IsActive)
+                .ToListAsync();
+        }
+
+
         public async Task<List<Field>> GetFieldsByInstallationId(Guid id)
         {
             return await _context.Fields

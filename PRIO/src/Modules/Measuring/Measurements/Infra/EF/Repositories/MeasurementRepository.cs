@@ -29,7 +29,11 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories
             await _context.Measurements
                 .AddRangeAsync(measurements);
         }
+        //public async Task<Measurement?> GetMeasurementByDate(DateTime? date, string tagMeasuringPoint)
+        //{
+        //    return await _context.Measurements.FirstOrDefaultAsync(x => x.DHA_)
 
+        //}
         public async Task<Measurement?> GetUnique039Async(string codFailure)
         {
             return await _context.Measurements.FirstOrDefaultAsync(x => x.COD_FALHA_039 == codFailure);

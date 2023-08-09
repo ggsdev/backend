@@ -453,6 +453,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                             };
 
                                             response.UepName = installation.UepName;
+                                            response.UepCode = installation.UepCod;
                                             response.DateProduction = dateBeginningMeasurement;
                                             response.InstallationId = installation.Id;
                                             response001.Measurements.Add(measurement001DTO);
@@ -798,6 +799,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                 Volume = measurement.MED_CORRIGIDO_MVMDO_002,
 
                                             };
+                                            response.UepCode = installation.UepCod;
                                             response.InstallationId = installation.Id;
                                             response.UepName = installation.UepName;
                                             response.DateProduction = dateBeginningMeasurement;
@@ -1137,6 +1139,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                             };
                                             response.InstallationId = installation.Id;
                                             response.UepName = installation.UepName;
+                                            response.UepCode = installation.UepCod;
                                             response.DateProduction = dateBeginningMeasurement;
                                             response003.Measurements.Add(measurement003DTO);
                                         }
@@ -2081,7 +2084,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 TotalGasImported = Math.Round(gasLinear.TotalGasImported + gasDiferencial.TotalGasImported, 5),
             };
 
-            var fields = await _fieldRepository.GetFieldsByInstallationId(response.InstallationId);
+            var fields = await _fieldRepository
+                .GetFieldsByUepCode(response.UepCode);
 
             var fieldsConverted = new List<FRFieldsViewModel>();
 
