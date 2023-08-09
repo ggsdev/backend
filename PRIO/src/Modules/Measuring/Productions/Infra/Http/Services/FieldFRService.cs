@@ -44,8 +44,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                     if (fieldInDatabase is null)
                         throw new NotFoundException(ErrorMessages.NotFound<Field>());
 
-                    if (fieldInDatabase.Installation.Id != body.InstallationId)
-                        throw new BadRequestException("Poço não pertence a instalação.");
+                    //if (fieldInDatabase.Installation.Id != body.InstallationId)
+                    //    throw new BadRequestException("Poço não pertence a instalação.");
 
                 }
 

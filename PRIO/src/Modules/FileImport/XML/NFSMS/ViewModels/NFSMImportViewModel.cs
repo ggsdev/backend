@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PRIO.src.Modules.FileImport.XML.NFSMs.ViewModels
+namespace PRIO.src.Modules.FileImport.XML.NFSMS.ViewModels
 {
     public class NFSMImportViewModel
     {
