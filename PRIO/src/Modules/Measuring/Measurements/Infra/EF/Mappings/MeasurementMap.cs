@@ -320,8 +320,6 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
           ;
 
             builder.Property(x => x.DSC_MATERIAL_CONTRUCAO_PLACA_003)
-          .HasColumnType("decimal")
-          .HasPrecision(22, 14)
           ;
 
             builder.Property(x => x.MED_DMTRO_INTRO_TRCHO_MDCO_003)
@@ -335,8 +333,6 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
              ;
 
             builder.Property(x => x.DSC_MATERIAL_CNSTO_TRCHO_MDCO_003)
-           .HasColumnType("decimal")
-          .HasPrecision(22, 14)
            ;
 
             builder.Property(x => x.DSC_LCLZO_TMDA_PRSO_DFRNL_003)

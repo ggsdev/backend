@@ -6,19 +6,24 @@ using PRIO.src.Modules.FileImport.XML.Dtos;
 using PRIO.src.Modules.FileImport.XML.FileContent;
 using PRIO.src.Modules.FileImport.XML.FileContent._039;
 using PRIO.src.Modules.FileImport.XML.Infra.Utils;
-using PRIO.src.Modules.FileImport.XML.NFSMs.ViewModels;
+using PRIO.src.Modules.FileImport.XML.NFSMS.Dtos;
+using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XML.NFSMS.Interfaces;
+using PRIO.src.Modules.FileImport.XML.NFSMS.ViewModels;
+using PRIO.src.Modules.Hierarchy.Installations.Dtos;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Measurements.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Measurements.Interfaces;
+using PRIO.src.Modules.Measuring.MeasuringPoints.Dtos;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces;
 using PRIO.src.Modules.Measuring.Productions.Interfaces;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Utils;
+using System.Globalization;
 using System.Text;
 using System.Web;
 using System.Xml;
@@ -306,6 +311,12 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
         public async Task<ImportResponseDTO> ImportAndFix(ResponseNFSMDTO body, User user)
         {
+            var fileInDatabase = await _measurementHistoryRepository
+                .GetAnyByContent(body.File.FileContent);
+
+            if (fileInDatabase is true)
+                throw new ConflictException("Notificação de falha já importada");
+
             foreach (var nfsm in body.NFSMs)
             {
                 var installation = await _installationRepository
@@ -319,6 +330,9 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                 if (measuringPoint is null)
                     throw new NotFoundException(ErrorMessages.NotFound<MeasuringPoint>());
+
+                var measurementsFixed = new List<Measurement>();
+                var nfsmsProductionList = new List<NFSMsProductions>();
 
                 foreach (var productionInXml in nfsm.LISTA_VOLUME)
                 {
@@ -357,6 +371,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                             measurement.MED_CORRIGIDO_MVMDO_002 = productionInXml.DHA_MED_DECLARADO_039;
                             totalLinear += productionInXml.DHA_MED_DECLARADO_039 ?? 0;
                             _measurementRepository.UpdateMeasurement(measurement);
+                            measurementsFixed.Add(measurement);
                         }
 
                         if (measurement.MeasuringPoint.TagPointMeasuring == measuringPoint.TagPointMeasuring && measurement.DHA_INICIO_PERIODO_MEDICAO_001 is not null)
@@ -367,6 +382,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                             totalOil += productionInXml.DHA_MED_DECLARADO_039 ?? 0;
 
                             _measurementRepository.UpdateMeasurement(measurement);
+                            measurementsFixed.Add(measurement);
                         }
 
                         if (measurement.MeasuringPoint.TagPointMeasuring == measuringPoint.TagPointMeasuring && measurement.DHA_INICIO_PERIODO_MEDICAO_003 is not null)
@@ -375,6 +391,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                             totalDiferencial += productionInXml.DHA_MED_DECLARADO_039 ?? 0;
 
                             _measurementRepository.UpdateMeasurement(measurement);
+                            measurementsFixed.Add(measurement);
                         }
 
                         productionInDatabase.TotalProduction = totalOil + totalLinear + totalDiferencial;
@@ -389,6 +406,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                             productionInDatabase.Oil.TotalOil = totalOil;
 
                         _productionRepository.Update(productionInDatabase);
+                        measurementsFixed.Add(measurement);
                     }
 
                     if (productionInDatabase.FieldsFR is not null)
@@ -399,29 +417,46 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                             _installationRepository.UpdateFr(fieldFr);
                         }
+
+                    nfsmsProductionList.Add(new NFSMsProductions
+                    {
+                        Production = productionInDatabase,
+                        MeasuredAt = productionInXmlDate,
+                        VolumeAfter = productionInXml.DHA_MED_DECLARADO_039,
+                        VolumeBefore = productionInXml.DHA_MED_REGISTRADO_039,
+                    });
                 }
 
+                var fileInfo = new FileBasicInfoDTO
+                {
+                    Acronym = XmlUtils.FileAcronym039,
+                    Type = XmlUtils.File039,
+                    Name = body.File.FileName
+                };
 
-                var measurements = new List<Measurement>();
+                var importHistory = await ImportNfsm(user, fileInfo, body.File.FileContent, body.NFSMs[0].DHA_DETECCAO_039);
 
-                //foreach(var measurementToBeFixed in nfsm.Summary.MeasurementsFixed)
-                //{
-                //    var measurementInDatabase = await _measurementRepository.Get
+                var createdNfsm = new NFSM
+                {
+                    Id = Guid.NewGuid(),
+                    Action = nfsm.DHA_DSC_ACAO_039,
+                    CodeFailure = nfsm.COD_FALHA_039,
+                    DescriptionFailure = nfsm.DHA_DSC_FALHA_039,
+                    TypeOfFailure = nfsm.DSC_TIPO_FALHA_039,
+                    DateOfOcurrence = nfsm.DHA_OCORRENCIA_039,
+                    Methodology = nfsm.DHA_DSC_METODOLOGIA_039,
+                    Measurements = measurementsFixed,
+                    Installation = installation,
+                    MeasuringPoint = measuringPoint,
+                    Productions = nfsmsProductionList,
+                    ImportHistory = importHistory,
+                };
 
 
-                //}
+                nfsmsProductionList.ForEach(nfsmsProduction => nfsmsProduction.NFSM = createdNfsm);
 
-                //var createdNfsm = new NFSM
-                //{
-                //    Id = Guid.NewGuid(),
-                //    Action = nfsm.DHA_DSC_ACAO_039,
-                //    CodeFailure = nfsm.COD_FALHA_039,
-                //    DateOfOcurrence = nfsm.DHA_OCORRENCIA_039,
-                //    Methodology = nfsm.DHA_DSC_METODOLOGIA_039,
-                //    Measurements = nfsm.Summary.MeasurementsFixed
-                //};
-
-                //await _repository.AddAsync(createdNfsm);
+                await _repository.AddAsync(createdNfsm);
+                await _repository.AddRangeNFSMsProductionsAsync(nfsmsProductionList);
 
                 //try
                 //{
@@ -434,25 +469,87 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                 //}
             }
 
-            var fileInfo = new FileBasicInfoDTO
-            {
-                Acronym = XmlUtils.FileAcronym039,
-                Type = XmlUtils.File039,
-                Name = body.File.FileName
-            };
 
-            await _measurementService.Import(user, fileInfo, body.File.FileContent, body.NFSMs[0].DHA_OCORRENCIA_039);
 
             await _repository.SaveChangesAsync();
 
             return new ImportResponseDTO { Status = "Success", Message = "Arquivo importado com sucesso, medições corrigidas." };
         }
 
-        //public async Task<NFSMGetAllDto> GetAll()
-        //{
+        public async Task<NFSMHistory> ImportNfsm(User user, FileBasicInfoDTO file, string base64, DateTime dateDetected)
+        {
+            DateTime result;
 
+            if (!DateTime.TryParseExact(dateDetected.ToString("dd/MM/yyyy HH:mm:ss"), "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+            {
+                throw new BadRequestException("Formato de data de detecção de falha inválido, formato aceitável: dd/MM/yyyy HH:mm:ss");
+            }
 
-        //}
+            var history = new NFSMHistory
+            {
+                Id = Guid.NewGuid(),
+                TypeOperation = HistoryColumns.Import,
+                ImportedBy = user,
+                ImportedAt = DateTime.UtcNow,
+                FileAcronym = file.Acronym,
+                FileName = file.Name,
+                FileType = file.Type,
+                FileContent = base64,
+                MeasuredAt = result,
+            };
+
+            await _repository.AddHistoryAsync(history);
+
+            return history;
+        }
+
+        public async Task<List<NFSMGetAllDto>> GetAll()
+        {
+            var nfsms = await _repository.GetAll();
+
+            var nfsmsDTO = new List<NFSMGetAllDto>();
+
+            foreach (var nfsm in nfsms)
+            {
+                var measurementsFixed = new List<NFSMsProductionsDto>();
+
+                if (nfsm.Productions is not null)
+                    foreach (var measurementFixed in nfsm.Productions)
+                    {
+                        measurementsFixed.Add(new NFSMsProductionsDto
+                        {
+                            Id = measurementFixed.Id,
+                            MeasuredAt = measurementFixed.MeasuredAt.ToString("dd/MM/yyyy"),
+                            VolumeAfter = measurementFixed.VolumeAfter,
+                            VolumeBefore = measurementFixed.VolumeBefore,
+                        });
+                    }
+
+                var nfsmDTO = new NFSMGetAllDto
+                {
+                    Action = nfsm.Action,
+                    CodeFailure = nfsm.CodeFailure,
+                    DateOfOcurrence = nfsm.DateOfOcurrence,
+                    DescriptionFailure = nfsm.DescriptionFailure,
+                    Methodology = nfsm.Methodology,
+                    TypeOfFailure = nfsm.TypeOfFailure,
+                    Installation = _mapper.Map<CreateUpdateInstallationDTO>(nfsm.Installation),
+                    MeasuringPoint = _mapper.Map<MeasuringPointWithoutInstallationDTO>(nfsm.MeasuringPoint),
+                    MeasurementsFixed = measurementsFixed,
+                    File = new FailureNotificationFilesDto
+                    {
+                        FileId = nfsm.ImportHistory.Id,
+                        FileName = nfsm.ImportHistory.FileName,
+                        FileType = nfsm.ImportHistory.FileType,
+                        ImportedAt = nfsm.ImportHistory.ImportedAt
+                    }
+                };
+
+                nfsmsDTO.Add(nfsmDTO);
+            }
+
+            return nfsmsDTO;
+        }
 
         private string? CleanString(string? input)
         {
@@ -463,5 +560,4 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
             return cleanedValue;
         }
     }
-
 }

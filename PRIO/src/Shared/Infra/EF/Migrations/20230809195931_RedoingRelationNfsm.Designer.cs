@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.src.Shared.Infra.EF.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230809195931_RedoingRelationNfsm")]
+    partial class RedoingRelationNfsm
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1691,11 +1694,13 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar");
 
-                    b.Property<string>("DSC_MATERIAL_CNSTO_TRCHO_MDCO_003")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal?>("DSC_MATERIAL_CNSTO_TRCHO_MDCO_003")
+                        .HasPrecision(22, 14)
+                        .HasColumnType("decimal");
 
-                    b.Property<string>("DSC_MATERIAL_CONTRUCAO_PLACA_003")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal?>("DSC_MATERIAL_CONTRUCAO_PLACA_003")
+                        .HasPrecision(22, 14)
+                        .HasColumnType("decimal");
 
                     b.Property<string>("DSC_NORMA_UTILIZADA_CALCULO_002")
                         .HasMaxLength(50)

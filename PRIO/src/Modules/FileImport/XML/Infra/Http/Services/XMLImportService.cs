@@ -1059,10 +1059,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                 #region placa orificio
                                                 MED_DIAMETRO_REFERENCIA_003 = XmlUtils.DecimalParser(placaOrificio?.MED_DIAMETRO_REFERENCIA_003, errorsInFormat, placaOrificioElement?.Name.LocalName),
                                                 MED_TEMPERATURA_RFRNA_003 = XmlUtils.DecimalParser(placaOrificio?.MED_TEMPERATURA_RFRNA_003, errorsInFormat, placaOrificioElement?.Name.LocalName),
-                                                DSC_MATERIAL_CONTRUCAO_PLACA_003 = XmlUtils.DecimalParser(placaOrificio?.DSC_MATERIAL_CONTRUCAO_PLACA_003, errorsInFormat, placaOrificioElement?.Name.LocalName),
+                                                DSC_MATERIAL_CONTRUCAO_PLACA_003 = placaOrificio?.DSC_MATERIAL_CONTRUCAO_PLACA_003,
                                                 MED_DMTRO_INTRO_TRCHO_MDCO_003 = XmlUtils.DecimalParser(placaOrificio?.MED_DMTRO_INTRO_TRCHO_MDCO_003, errorsInFormat, placaOrificioElement?.Name.LocalName),
                                                 MED_TMPTA_TRCHO_MDCO_003 = XmlUtils.DecimalParser(placaOrificio?.MED_TMPTA_TRCHO_MDCO_003, errorsInFormat, placaOrificioElement?.Name.LocalName),
-                                                DSC_MATERIAL_CNSTO_TRCHO_MDCO_003 = XmlUtils.DecimalParser(placaOrificio?.DSC_MATERIAL_CNSTO_TRCHO_MDCO_003, errorsInFormat, placaOrificioElement?.Name.LocalName),
+                                                DSC_MATERIAL_CNSTO_TRCHO_MDCO_003 = placaOrificio?.DSC_MATERIAL_CNSTO_TRCHO_MDCO_003,
                                                 DSC_LCLZO_TMDA_PRSO_DFRNL_003 = placaOrificio?.DSC_LCLZO_TMDA_PRSO_DFRNL_003,
                                                 IND_TOMADA_PRESSAO_ESTATICA_003 = placaOrificio?.IND_TOMADA_PRESSAO_ESTATICA_003,
                                                 #endregion
@@ -2136,6 +2136,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 gasResume.ImportedGas.TotalImportedGas = gasLinear.TotalGasImported + gasDiferencial.TotalGasImported;
 
                 response.GasSummary = gasResume;
+                response.GasSummary.DetailedBurnedGas.OthersBurn = gasResume.BurnedGas.TotalBurnedGas;
                 response.Gas.FR = frProduction;
             }
 
@@ -2198,7 +2199,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             if (data.GasSummary is not null)
             {
-                var sumOfDetailedBurnedGas = data.GasSummary.DetailedBurnedGas.WellTestBurn + data.GasSummary.DetailedBurnedGas.LimitOperacionalBurn + data.GasSummary.DetailedBurnedGas.ForCommissioningBurn + data.GasSummary.DetailedBurnedGas.ScheduledStopBurn + data.GasSummary.DetailedBurnedGas.EmergencialBurn + data.GasSummary.DetailedBurnedGas.VentedGas;
+                var sumOfDetailedBurnedGas = data.GasSummary.DetailedBurnedGas.WellTestBurn + data.GasSummary.DetailedBurnedGas.LimitOperacionalBurn + data.GasSummary.DetailedBurnedGas.ForCommissioningBurn + data.GasSummary.DetailedBurnedGas.ScheduledStopBurn + data.GasSummary.DetailedBurnedGas.EmergencialBurn + data.GasSummary.DetailedBurnedGas.VentedGas + data.GasSummary.DetailedBurnedGas.OthersBurn;
 
                 if (data.Gas is not null && data.Gas.TotalGasBurnt != sumOfDetailedBurnedGas)
                 {
@@ -2225,7 +2226,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             var installation = await _installationRepository.GetByIdAsync(data.InstallationId);
 
             if (installation is null)
-                throw new NotFoundException("Instalação não encontrada");
+                throw new NotFoundException(ErrorMessages.NotFound<Installation>());
 
             var dailyProduction = await _productionRepository.GetExistingByDate(measuredAt);
 

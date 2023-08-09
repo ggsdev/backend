@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models;
 
-namespace PRIO.src.Modules.FileImport.XML.NFSMs.Infra.EF.Mappings
+namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Mappings
 {
     public class NFSMMap : IEntityTypeConfiguration<NFSM>
     {
@@ -25,8 +25,17 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMs.Infra.EF.Mappings
                 .HasColumnType("varchar")
                 .HasMaxLength(1000);
 
+            builder.Property(x => x.TypeOfFailure)
+                .IsRequired();
+
             builder.HasOne(x => x.Installation)
                   .WithMany(x => x.NFSMs)
+                  .OnDelete(DeleteBehavior.NoAction)
+                  .IsRequired();
+
+            builder.HasOne(x => x.ImportHistory)
+                  .WithOne(x => x.NFSM)
+                  .HasForeignKey<NFSM>("ImportId")
                   .OnDelete(DeleteBehavior.NoAction)
                   .IsRequired();
 

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XML.Dtos;
-using PRIO.src.Modules.FileImport.XML.NFSMs.ViewModels;
 using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services;
+using PRIO.src.Modules.FileImport.XML.NFSMS.ViewModels;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.Http.Filters;
 
@@ -48,12 +48,14 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Controllers
             return Ok(result);
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetAll()
-        //{
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var result = await _service.GetAll();
 
-        //    var result = await _service
+            return Ok(result);
+        }
 
-        //}
+
     }
 }

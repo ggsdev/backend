@@ -324,10 +324,10 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models
         #region placa orificio
         public decimal? MED_DIAMETRO_REFERENCIA_003 { get; set; }
         public decimal? MED_TEMPERATURA_RFRNA_003 { get; set; }
-        public decimal? DSC_MATERIAL_CONTRUCAO_PLACA_003 { get; set; }
+        public string? DSC_MATERIAL_CONTRUCAO_PLACA_003 { get; set; }
         public decimal? MED_DMTRO_INTRO_TRCHO_MDCO_003 { get; set; }
         public decimal? MED_TMPTA_TRCHO_MDCO_003 { get; set; }
-        public decimal? DSC_MATERIAL_CNSTO_TRCHO_MDCO_003 { get; set; }
+        public string? DSC_MATERIAL_CNSTO_TRCHO_MDCO_003 { get; set; }
         public string? DSC_LCLZO_TMDA_PRSO_DFRNL_003 { get; set; }
         public string? IND_TOMADA_PRESSAO_ESTATICA_003 { get; set; }
         #endregion

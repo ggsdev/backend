@@ -10,7 +10,7 @@ using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Mappings;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Mappings;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models;
-using PRIO.src.Modules.FileImport.XML.NFSMs.Infra.EF.Mappings;
+using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Mappings;
 using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Mappings;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
@@ -128,7 +128,7 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<ValidateBTP> Validates { get; set; }
         public DbSet<NFSMsProductions> NFSMsProductions { get; set; }
         public DbSet<NFSM> NFSMs { get; set; }
-
+        public DbSet<NFSMHistory> NFSMImportHistories { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -236,7 +236,7 @@ namespace PRIO.src.Shared.Infra.EF
             modelBuilder.ApplyConfiguration(new FieldFRsMap());
             modelBuilder.ApplyConfiguration(new NFSMMap());
             modelBuilder.ApplyConfiguration(new NFSMsProductionsMap());
-
+            modelBuilder.ApplyConfiguration(new NFSMHistoryMap());
 
             modelBuilder.ApplyConfiguration(new GroupMap());
             modelBuilder.ApplyConfiguration(new MenuMap());

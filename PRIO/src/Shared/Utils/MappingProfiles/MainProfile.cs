@@ -73,7 +73,6 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<Measurement, Client039DTO>();
             CreateMap<Measurement, Client001DTO>();
             CreateMap<Measurement, Client002DTO>();
-            CreateMap<Measurement, Client003DTO>();
             #endregion
 
             #region 001
@@ -101,6 +100,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<_003PMGD, Measurement>();
             CreateMap<Measurement, _003DTO>();
             CreateMap<_003DTO, Measurement>();
+            CreateMap<Measurement, Client003DTO>();
 
             #endregion
 

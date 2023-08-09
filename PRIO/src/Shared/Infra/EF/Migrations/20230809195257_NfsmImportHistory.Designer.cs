@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.src.Shared.Infra.EF.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230809195257_NfsmImportHistory")]
+    partial class NfsmImportHistory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -770,9 +773,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                     b.Property<string>("DescriptionFailure")
                         .HasColumnType("text");
 
-                    b.Property<Guid>("ImportId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("InstallationId")
                         .HasColumnType("uniqueidentifier");
 
@@ -795,9 +795,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ImportId")
-                        .IsUnique();
 
                     b.HasIndex("InstallationId");
 
@@ -831,6 +828,9 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .HasMaxLength(3)
                         .HasColumnType("char");
 
+                    b.Property<Guid>("ImportId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("ImportedAt")
                         .HasColumnType("datetime2");
 
@@ -846,6 +846,9 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ImportId")
+                        .IsUnique();
 
                     b.HasIndex("ImportedById");
 
@@ -1691,11 +1694,13 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar");
 
-                    b.Property<string>("DSC_MATERIAL_CNSTO_TRCHO_MDCO_003")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal?>("DSC_MATERIAL_CNSTO_TRCHO_MDCO_003")
+                        .HasPrecision(22, 14)
+                        .HasColumnType("decimal");
 
-                    b.Property<string>("DSC_MATERIAL_CONTRUCAO_PLACA_003")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal?>("DSC_MATERIAL_CONTRUCAO_PLACA_003")
+                        .HasPrecision(22, 14)
+                        .HasColumnType("decimal");
 
                     b.Property<string>("DSC_NORMA_UTILIZADA_CALCULO_002")
                         .HasMaxLength(50)
@@ -4240,12 +4245,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSM", b =>
                 {
-                    b.HasOne("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSMHistory", "ImportHistory")
-                        .WithOne("NFSM")
-                        .HasForeignKey("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSM", "ImportId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
                         .WithMany("NFSMs")
                         .HasForeignKey("InstallationId")
@@ -4258,8 +4257,6 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("ImportHistory");
-
                     b.Navigation("Installation");
 
                     b.Navigation("MeasuringPoint");
@@ -4267,6 +4264,12 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSMHistory", b =>
                 {
+                    b.HasOne("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSM", "NFSM")
+                        .WithOne("ImportHistory")
+                        .HasForeignKey("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSMHistory", "ImportId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "ImportedBy")
                         .WithMany("NFSMImportedHistories")
                         .HasForeignKey("ImportedById")
@@ -4274,6 +4277,8 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                         .IsRequired();
 
                     b.Navigation("ImportedBy");
+
+                    b.Navigation("NFSM");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSMsProductions", b =>
@@ -5006,15 +5011,12 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSM", b =>
                 {
+                    b.Navigation("ImportHistory")
+                        .IsRequired();
+
                     b.Navigation("Measurements");
 
                     b.Navigation("Productions");
-                });
-
-            modelBuilder.Entity("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSMHistory", b =>
-                {
-                    b.Navigation("NFSM")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models.Cluster", b =>
