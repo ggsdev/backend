@@ -521,7 +521,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         var measurementFound = measurement.MeasuringPoint.TagPointMeasuring == section.MeasuringPoint.TagPointMeasuring;
                         if (!oilPoints.Any(measuring => measuring.TagMeasuringPoint == section.MeasuringPoint.TagPointMeasuring) && measurementFound)
                         {
-                            Console.WriteLine(section.Id);
 
                             var measuringPoint = new LocalOilPointDto
                             {
