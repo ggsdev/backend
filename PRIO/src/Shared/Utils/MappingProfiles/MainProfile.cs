@@ -12,6 +12,8 @@ using PRIO.src.Modules.FileImport.XML.FileContent._001;
 using PRIO.src.Modules.FileImport.XML.FileContent._002;
 using PRIO.src.Modules.FileImport.XML.FileContent._003;
 using PRIO.src.Modules.FileImport.XML.FileContent._039;
+using PRIO.src.Modules.FileImport.XML.NFSMS.Dtos;
+using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Clusters.Dtos;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Completions.Dtos;
@@ -206,6 +208,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<DrainVolume, DrainVolumeWithEquipmentDTO>();
             CreateMap<TOGRecoveredOil, TOGRecoveredOilWithEquipmentDTO>();
             CreateMap<DOR, DORWithEquipmentDTO>();
+            CreateMap<NFSM, NFSMGetAllDto>();
 
             CreateMap<MeasurementHistory, MeasurementHistoryWithMeasurementsDto>()
                 .ForMember(dest => dest.ImportId, opt => opt.MapFrom(src =>

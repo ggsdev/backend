@@ -55,7 +55,19 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Controllers
 
             return Ok(result);
         }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOneById([FromRoute] Guid id)
+        {
+            return Ok(await _service.GetOne(id));
 
+        }
 
+        [HttpGet("download/{id}")]
+        public async Task<IActionResult> DownloadNfsm([FromRoute] Guid id)
+        {
+            var nfsm = await _service.DownloadNfsm(id);
+
+            return Ok(nfsm);
+        }
     }
 }
