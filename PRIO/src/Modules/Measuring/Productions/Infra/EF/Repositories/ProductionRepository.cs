@@ -18,6 +18,15 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
         {
             await _context.Productions.AddAsync(production);
         }
+        public async Task<Production?> GetProductionGasByDate(DateTime date)
+        {
+            return await _context.Productions
+                .Include(x => x.Gas)
+                .Where(x => x.MeasuredAt.Year == date.Year &&
+                            x.MeasuredAt.Month == date.Month &&
+                            x.MeasuredAt.Day == date.Day)
+                .FirstOrDefaultAsync();
+        }
 
         public async Task<Production?> GetExistingByDate(DateTime date)
         {

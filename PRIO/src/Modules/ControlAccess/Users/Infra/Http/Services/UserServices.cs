@@ -638,6 +638,12 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
 
         }
 
+        public async Task<List<User>> GetAllEncryptedAdminUsers()
+        {
+            return await _userRepository.GetAdminUsers();
+        }
+
+
         //public async Task<List<UserDTO>> RetrieveAllUsersAndMap()
         //{
 

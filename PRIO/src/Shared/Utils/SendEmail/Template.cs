@@ -14,7 +14,6 @@ namespace PRIO.src.Shared.Utils.SendEmail
                 </head>
                 <body>
                     <h2>Notificação de Falha</h2>
-                  
                     <ul>
                         <li>Ponto de medição: {nfsm.COD_TAG_PONTO_MEDICAO_039}</li>
                         <li>Equipamento: {nfsm.COD_TAG_EQUIPAMENTO_039}</li>

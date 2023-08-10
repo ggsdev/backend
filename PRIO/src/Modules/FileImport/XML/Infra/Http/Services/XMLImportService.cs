@@ -497,6 +497,12 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                         if (checkDateExists)
                                             errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) data: {producao.DHA_INICIO_PERIODO_MEDICAO_002} já existente.");
+
+
+                                        var checkGasProductionExists = await _productionRepository.GetProductionGasByDate(dateBeginningMeasurement);
+                                        if (checkGasProductionExists is not null && checkGasProductionExists.Gas is not null)
+                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) já existe produção de gás na data: {producao.DHA_INICIO_PERIODO_MEDICAO_002}");
+
                                     }
                                     else
                                     {
@@ -861,6 +867,13 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                         if (checkDateExists)
                                             errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) data: {producao.DHA_INICIO_PERIODO_MEDICAO_003} já existente.");
+
+                                        var checkGasProductionExists = await _productionRepository
+                                            .GetProductionGasByDate(dateBeginningMeasurement);
+
+                                        if (checkGasProductionExists is not null && checkGasProductionExists.Gas is not null)
+                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) já existe produção de gás na data: {producao.DHA_INICIO_PERIODO_MEDICAO_003}");
+
                                     }
                                     else
                                     {
@@ -2242,17 +2255,18 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                 };
             }
-            if (dailyProduction.Gas is not null && data.GasSummary is not null)
-            {
-                dailyProduction.Gas.EmergencialBurn += data.GasSummary.DetailedBurnedGas.EmergencialBurn;
-                dailyProduction.Gas.LimitOperacionalBurn += data.GasSummary.DetailedBurnedGas.LimitOperacionalBurn;
-                dailyProduction.Gas.ScheduledStopBurn += data.GasSummary.DetailedBurnedGas.ScheduledStopBurn;
-                dailyProduction.Gas.ForCommissioningBurn += data.GasSummary.DetailedBurnedGas.ForCommissioningBurn;
-                dailyProduction.Gas.VentedGas += data.GasSummary.DetailedBurnedGas.VentedGas;
-                dailyProduction.Gas.WellTestBurn += data.GasSummary.DetailedBurnedGas.WellTestBurn;
-                dailyProduction.Gas.OthersBurn += data.GasSummary.DetailedBurnedGas.OthersBurn;
 
-            }
+            //if (dailyProduction.Gas is not null && data.GasSummary is not null)
+            //{
+            //    dailyProduction.Gas.EmergencialBurn += data.GasSummary.DetailedBurnedGas.EmergencialBurn;
+            //    dailyProduction.Gas.LimitOperacionalBurn += data.GasSummary.DetailedBurnedGas.LimitOperacionalBurn;
+            //    dailyProduction.Gas.ScheduledStopBurn += data.GasSummary.DetailedBurnedGas.ScheduledStopBurn;
+            //    dailyProduction.Gas.ForCommissioningBurn += data.GasSummary.DetailedBurnedGas.ForCommissioningBurn;
+            //    dailyProduction.Gas.VentedGas += data.GasSummary.DetailedBurnedGas.VentedGas;
+            //    dailyProduction.Gas.WellTestBurn += data.GasSummary.DetailedBurnedGas.WellTestBurn;
+            //    dailyProduction.Gas.OthersBurn += data.GasSummary.DetailedBurnedGas.OthersBurn;
+
+            //}
 
             if (dailyProduction.Gas is null && data.GasSummary is not null)
             {
@@ -2590,9 +2604,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 measuring.Production = dailyProduction;
             }
 
-            var bothGasFiles = false;
-            if (dailyProduction.GasDiferencial is not null && dailyProduction.GasLinear is not null)
-                bothGasFiles = true;
+            //var bothGasFiles = false;
+            //if (dailyProduction.GasDiferencial is not null && dailyProduction.GasLinear is not null)
+            //    bothGasFiles = true;
 
             var fieldFrViewModel = new FieldFRBodyService
             {
@@ -2600,15 +2614,15 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 Gas = data.Gas,
                 InstallationId = installation.Id,
                 Production = dailyProduction,
-                BothGas = bothGasFiles
+                //BothGas = bothGasFiles
             };
 
             await _fieldFRService.ApplyFR(fieldFrViewModel, data.DateProduction);
 
-            if (dailyProduction.GasDiferencial is not null && dailyProduction.GasLinear is not null && dailyProduction.Oil is not null)
-            {
-                dailyProduction.StatusProduction = true;
-            }
+            //if (dailyProduction.GasDiferencial is not null && dailyProduction.GasLinear is not null && dailyProduction.Oil is not null)
+            //{
+            //    dailyProduction.StatusProduction = true;
+            //}
 
             await _productionRepository.AddOrUpdateProduction(dailyProduction);
             await _repository.AddRangeAsync(measurementsAdded);
