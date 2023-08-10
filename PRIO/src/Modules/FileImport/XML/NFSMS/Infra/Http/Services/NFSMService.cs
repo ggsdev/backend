@@ -147,8 +147,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                 if (dadosBasicos is not null && dadosBasicos.COD_FALHA_039 is not null && dadosBasicos.DHA_COD_INSTALACAO_039 is not null && dadosBasicos.COD_TAG_PONTO_MEDICAO_039 is not null)
                 {
-                    var nfsmInDatabase = await _measurementRepository
-                        .GetUnique039Async(dadosBasicos.COD_FALHA_039);
+                    var nfsmInDatabase = await _repository
+                        .GetOneByCode(dadosBasicos.COD_FALHA_039);
 
                     if (nfsmInDatabase is not null)
                         errorsInImport.Add($"Arquivo {data.File.FileName}, {k + 1}ª notificação(DADOS_BASICOS) com código de falha: {dadosBasicos.COD_FALHA_039} já existente.");

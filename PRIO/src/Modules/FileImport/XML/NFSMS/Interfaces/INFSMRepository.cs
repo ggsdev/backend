@@ -6,6 +6,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Interfaces
     {
         Task<List<NFSM>> GetAll();
         Task<NFSM?> GetOneById(Guid id);
+        Task<NFSM?> GetOneByCode(string code);
         Task<NFSMHistory?> DownloadFile(Guid id);
         Task AddAsync(NFSM nfsm);
         Task AddHistoryAsync(NFSMHistory history);

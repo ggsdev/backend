@@ -18,6 +18,11 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Respositories
         {
             await _context.AddRangeAsync(nfsmProductions);
         }
+        public async Task<NFSM?> GetOneByCode(string code)
+        {
+            return await _context.NFSMs
+                .FirstOrDefaultAsync(x => x.CodeFailure == code);
+        }
 
         public async Task AddAsync(NFSM nfsm)
         {
