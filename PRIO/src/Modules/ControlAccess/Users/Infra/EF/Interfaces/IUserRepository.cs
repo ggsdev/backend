@@ -16,6 +16,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Interfaces
         Task UpdateUsers(List<User> users);
         Task<User> GetUserWithGroupAndPermissionsAsync(Guid userId);
         Task<List<User>> GetUsersByLastGroupId(Guid groupId);
+        Task<List<User>> GetAdminUsers();
         Task SaveChangesAsync();
     }
 }

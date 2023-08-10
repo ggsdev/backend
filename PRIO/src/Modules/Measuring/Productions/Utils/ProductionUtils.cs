@@ -2,6 +2,6 @@
 {
     public static class ProductionUtils
     {
-        public static readonly decimal m3ToBBLConversionMultiplier = 6.28981077m;
+        public static readonly decimal m3ToBBLConversionMultiplier = 6.289811m;
     }
 }

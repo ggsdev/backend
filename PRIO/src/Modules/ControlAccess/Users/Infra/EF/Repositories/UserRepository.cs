@@ -20,6 +20,14 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
             await _context.AddAsync(user);
             await _context.SaveChangesAsync();
         }
+        public async Task<List<User>> GetAdminUsers()
+        {
+            return await _context.Users
+                .Include(x => x.Group)
+                .Where(x => x.Group.Name.ToLower() == "master")
+                .ToListAsync();
+        }
+
         public async Task AddUserPermission(UserPermission userPermission)
         {
             await _context.AddAsync(userPermission);

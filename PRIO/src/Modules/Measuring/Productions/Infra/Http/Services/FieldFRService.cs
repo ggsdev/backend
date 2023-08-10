@@ -63,7 +63,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 if (sumGas != 1 && body.Gas.FR.IsApplicable)
                     throw new ConflictException("Gás: Soma dos fatores deve ser 1.");
 
-                if (body.BothGas && body.Gas.FR.IsApplicable)
+                if (/*body.BothGas &&*/ body.Gas.FR.IsApplicable)
                 {
                     foreach (var field in body.Gas.FR.Fields)
                     {
@@ -89,7 +89,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
                                 await _installationRepository.AddFRAsync(fr);
                             }
-                            else
+
+                            if (existingFr is not null && existingFr.FRGas is null)
                             {
                                 existingFr.ProductionInField += ((body.Production.GasLinear is not null ? body.Production.GasLinear.TotalGas : 0) + (body.Production.GasDiferencial is not null ? body.Production.GasDiferencial.TotalGas : 0)) * field.FluidFr;
                                 existingFr.FRGas = field.FluidFr;
@@ -100,7 +101,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         }
                     }
                 }
-
             }
 
             if (body.Oil is not null)
@@ -112,8 +112,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                     if (fieldInDatabase is null)
                         throw new NotFoundException(ErrorMessages.NotFound<Field>());
 
-                    if (fieldInDatabase.Installation.Id != body.InstallationId)
-                        throw new BadRequestException("Poço não pertence a instalação.");
+                    //if (fieldInDatabase.Installation.Id != body.InstallationId)
+                    //    throw new BadRequestException("Poço não pertence a instalação.");
                 }
 
                 var sumOil = 0m;
@@ -168,147 +168,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                     }
             }
 
-            //await _installationRepository.SaveChangesAsync();
-
-
-            //foreach (var installationUEP in installationsWithFields)
-            //{
-            //    foreach (var field in installationUEP.Fields)
-            //    {
-            //        foreach (var fr in field.FRs)
-            //        {
-            //            fr.IsActive = false;
-            //        }
-            //    }
-            //}
-
-            //foreach (var field in body.Fields)
-            //{
-            //    var field = await _fieldRepository.GetByIdAsync(field.FieldId);
-
-            //    var createOilFr = new FieldFR
-            //    {
-            //        Id = Guid.NewGuid(),
-            //        Field = field,
-            //        FROil = field.OilFR,
-            //        FRGas = field.GasFR,
-            //        FRWater = field.WaterFR,
-            //        IsActive = true,
-            //    };
-            //    await _installationRepository.AddFRAsync(createOilFr);
-            //}
-
-
-            //foreach (var installationUEP in installationsWithFields)
-            //{
-            //    foreach (var field in installationUEP.Fields)
-            //    {
-            //        if (!body.Fields.Any(x => x.FieldId == field.Id))
-            //            throw new ConflictException(ErrorMessages.NotFound<Field>());
-            //    }
-            //}
-
-            //foreach (var item in body.Fields)
-            //{
-            //    var field = await _fieldRepository.GetByIdAsync(item.FieldId);
-            //    if (field is null)
-            //        throw new NotFoundException(ErrorMessages.NotFound<Field>());
-            //}
-
-            //if (body.isApplicableFROil is true)
-            //{
-            //    decimal? sumOil = 0;
-            //    foreach (var item in body.Fields)
-            //    {
-            //        if (item.OilFR is null)
-            //            throw new ConflictException("Fator de rateio do campo não encontrado.");
-
-            //        sumOil += item.OilFR;
-            //    }
-            //    if (sumOil != 1)
-            //        throw new ConflictException("Óleo: Soma dos fatores deve ser 100%.");
-            //}
-            //else
-            //{
-            //    foreach (var item in body.Fields)
-            //    {
-
-            //        if (item.OilFR is not null)
-            //            throw new ConflictException("Óleo: Fator de rateio não se aplica.");
-            //    }
-            //}
-
-            //if (body.isApplicableFRGas is true)
-            //{
-            //    decimal? sumGas = 0;
-            //    foreach (var item in body.Fields)
-            //    {
-            //        if (item.GasFR is null)
-            //            throw new ConflictException("Fator de rateio do campo não encontrado.");
-
-            //        sumGas += item.GasFR;
-            //    }
-            //    if (sumGas != 1)
-            //        throw new ConflictException("Gás: Soma dos fatores deve ser 100%.");
-            //}
-            //else
-            //{
-            //    foreach (var item in body.Fields)
-            //    {
-            //        if (item.GasFR is not null)
-            //            throw new ConflictException("Gás: Fator de rateio não se aplica.");
-            //    }
-            //}
-
-            //if (body.isApplicableFRWater is true)
-            //{
-            //    decimal? sumWater = 0;
-            //    foreach (var item in body.Fields)
-            //    {
-            //        if (item.WaterFR is null)
-            //            throw new ConflictException("Fator de rateio do campo não encontrado.");
-
-            //        sumWater += item.WaterFR;
-            //    }
-            //    if (sumWater != 1)
-            //        throw new ConflictException("Água: Soma dos fatores deve ser 100%.");
-            //}
-            //else
-            //{
-            //    foreach (var item in body.Fields)
-            //    {
-            //        if (item.WaterFR is not null)
-            //            throw new ConflictException("Água: Fator de rateio não se aplica.");
-            //    }
-            //}
-
-            //foreach (var installationUEP in installationsWithFields)
-            //{
-            //    foreach (var field in installationUEP.Fields)
-            //    {
-            //        foreach (var fr in field.FRs)
-            //        {
-            //            fr.IsActive = false;
-            //        }
-            //    }
-            //}
-
-            //foreach (var item in body.Fields)
-            //{
-            //    var field = await _fieldRepository.GetByIdAsync(item.FieldId);
-            //    var createOilFr = new FieldFR
-            //    {
-            //        Id = Guid.NewGuid(),
-            //        Field = field,
-            //        FROil = item.OilFR,
-            //        FRGas = item.GasFR,
-            //        FRWater = item.WaterFR,
-            //        IsActive = true,
-            //    };
-            //    await _installationRepository.AddFRAsync(createOilFr);
-            //}
-
         }
-
     }
 }

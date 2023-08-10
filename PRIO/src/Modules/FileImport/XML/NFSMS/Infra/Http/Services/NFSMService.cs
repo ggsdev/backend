@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XLSX.Dtos;
 using PRIO.src.Modules.FileImport.XML.Dtos;
 using PRIO.src.Modules.FileImport.XML.FileContent;
@@ -23,9 +24,9 @@ using PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces;
 using PRIO.src.Modules.Measuring.Productions.Interfaces;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Utils;
+using PRIO.src.Shared.Utils.SendEmail;
 using System.Globalization;
 using System.Text;
-using System.Web;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -41,11 +42,12 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
         private readonly IProductionRepository _productionRepository;
         private readonly IMeasurementHistoryRepository _measurementHistoryRepository;
         private readonly IOilVolumeCalculationRepository _oilRepository;
+        private readonly UserService _userService;
         private readonly MeasurementService _measurementService;
 
         public ResponseNFSMDTO _responseResult = new();
 
-        public NFSMService(IMapper mapper, IMeasurementHistoryRepository measurementHistoryRepository, IMeasurementRepository measurementRepository, IInstallationRepository installationRepository, IMeasuringPointRepository measuringPointRepository, IProductionRepository productionRepository, IOilVolumeCalculationRepository oilVolumeCalculation, MeasurementService measurementService, INFSMRepository repository)
+        public NFSMService(IMapper mapper, IMeasurementHistoryRepository measurementHistoryRepository, IMeasurementRepository measurementRepository, IInstallationRepository installationRepository, IMeasuringPointRepository measuringPointRepository, IProductionRepository productionRepository, IOilVolumeCalculationRepository oilVolumeCalculation, MeasurementService measurementService, INFSMRepository repository, UserService userService)
         {
             _mapper = mapper;
             _measurementRepository = measurementRepository;
@@ -56,6 +58,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
             _oilRepository = oilVolumeCalculation;
             _measurementService = measurementService;
             _repository = repository;
+            _userService = userService;
         }
 
         public async Task<ResponseNFSMDTO> Validate(NFSMImportViewModel data, User user)
@@ -175,18 +178,9 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     }
                     if (errorsInImport.Count == 0 && installation is not null && measuringPoint is not null)
                     {
-                        var cleanedDscFalha = CleanString(dadosBasicos.DHA_DSC_FALHA_039);
-                        var cleanedDscAcao = CleanString(dadosBasicos.DHA_DSC_ACAO_039);
-                        var cleanedDscMetodologia = CleanString(dadosBasicos.DHA_DSC_METODOLOGIA_039);
-
-                        //var inputEncoding = Encoding.GetEncoding("iso-8859-1");
-                        var decodedDscFalha = HttpUtility.HtmlDecode(cleanedDscFalha);
-                        var decodedDscAcao = HttpUtility.HtmlDecode(cleanedDscAcao);
-                        var decodedDscMetodologia = HttpUtility.HtmlDecode(cleanedDscMetodologia);
-
-                        //var text = inputEncoding.GetString(input);
-                        //var output = Encoding.UTF8.GetBytes(text);
-
+                        var decodedFalha = dadosBasicos.DHA_DSC_FALHA_039 is not null ? CleanAndDecode(dadosBasicos.DHA_DSC_FALHA_039) : string.Empty;
+                        var decodedAcao = dadosBasicos.DHA_DSC_ACAO_039 is not null ? CleanAndDecode(dadosBasicos.DHA_DSC_ACAO_039) : string.Empty;
+                        var decodedMetodologia = dadosBasicos.DHA_DSC_METODOLOGIA_039 is not null ? CleanAndDecode(dadosBasicos.DHA_DSC_METODOLOGIA_039) : string.Empty;
 
                         var measurement = new Measurement
                         {
@@ -202,9 +196,9 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                             DHA_DETECCAO_039 = XmlUtils.DateTimeParser(dadosBasicos.DHA_DETECCAO_039, errorsInFormat, dadosBasicosElement?.Element("DHA_DETECCAO")?.Name.LocalName),
                             DHA_RETORNO_039 = XmlUtils.DateTimeParser(dadosBasicos.DHA_RETORNO_039, errorsInFormat, dadosBasicosElement?.Element("DHA_RETORNO")?.Name.LocalName),
                             DHA_NUM_PREVISAO_RETORNO_DIAS_039 = dadosBasicos.DHA_NUM_PREVISAO_RETORNO_DIAS_039,
-                            DHA_DSC_FALHA_039 = decodedDscFalha,
-                            DHA_DSC_ACAO_039 = decodedDscAcao,
-                            DHA_DSC_METODOLOGIA_039 = decodedDscMetodologia,
+                            DHA_DSC_FALHA_039 = decodedFalha,
+                            DHA_DSC_ACAO_039 = decodedAcao,
+                            DHA_DSC_METODOLOGIA_039 = decodedMetodologia,
                             DHA_NOM_RESPONSAVEL_RELATO_039 = dadosBasicos.DHA_NOM_RESPONSAVEL_RELATO_039,
                             DHA_NUM_SERIE_EQUIPAMENTO_039 = dadosBasicos.DHA_NUM_SERIE_EQUIPAMENTO_039,
                             FileName = data.File.FileName,
@@ -346,19 +340,11 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     if (productionInXml.DHA_MEDICAO_039 > nfsm.DHA_DETECCAO_039)
                         throw new ConflictException("Data da medição não pode ser maior do que a data da detecção TAG: DHA_DETECÇÃO.");
 
-                    if (productionInXml.DHA_MEDICAO_039 > nfsm.DHA_RETORNO_039)
-                        throw new ConflictException("Data da medição não pode ser maior do que a data que a falha foi corrigida, TAG: DHA_RETORNO.");
+                    //if (productionInXml.DHA_MEDICAO_039 > nfsm.DHA_RETORNO_039)
+                    //    throw new ConflictException("Data da medição não pode ser maior do que a data que a falha foi corrigida, TAG: DHA_RETORNO.");
 
                     //if (Math.Round(productionInDatabase.TotalProduction, 2) != Math.Round(production.DHA_MED_REGISTRADO_039, 2)
                     //    throw new ConflictException($"Valor de produção anterior, difere da MED_REGISTRADO, para data {productionDate}, esperado:{productionInDatabase.TotalProduction} | recebido: {production.DHA_MED_DECLARADO_039}");
-                }
-
-                foreach (var productionInXml in nfsm.LISTA_VOLUME)
-                {
-                    DateTime productionInXmlDate = productionInXml.DHA_MEDICAO_039 is not null ? productionInXml.DHA_MEDICAO_039.Value : DateTime.MinValue;
-
-                    var productionInDatabase = await _productionRepository
-                        .GetExistingByDate(productionInXmlDate);
 
                     decimal totalOil = 0m;
                     decimal totalLinear = 0m;
@@ -427,6 +413,16 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     });
                 }
 
+                //foreach (var productionInXml in nfsm.LISTA_VOLUME)
+                //{
+                //    DateTime productionInXmlDate = productionInXml.DHA_MEDICAO_039 is not null ? productionInXml.DHA_MEDICAO_039.Value : DateTime.MinValue;
+
+                //    var productionInDatabase = await _productionRepository
+                //        .GetExistingByDate(productionInXmlDate);
+
+
+                //}
+
                 var fileInfo = new FileBasicInfoDTO
                 {
                     Acronym = XmlUtils.FileAcronym039,
@@ -458,18 +454,20 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                 await _repository.AddAsync(createdNfsm);
                 await _repository.AddRangeNFSMsProductionsAsync(nfsmsProductionList);
 
-                //try
-                //{
-                //    SendEmail.Send(nfsm);
-                //}
-                //catch (Exception ex)
-                //{
-                //    Console.WriteLine(ex);
+                var users = await _userService.GetAllEncryptedAdminUsers();
 
-                //}
+                foreach (var admin in users)
+                {
+                    try
+                    {
+                        SendEmail.Send(nfsm, admin);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+                }
             }
-
-
 
             await _repository.SaveChangesAsync();
 
@@ -551,10 +549,20 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
             return nfsmsDTO;
         }
 
-        private string? CleanString(string? input)
+        private string CleanAndDecode(string input)
+        {
+            byte[] isoBytes = Encoding.GetEncoding("iso-8859-1").GetBytes(input);
+            string utf8String = Encoding.UTF8.GetString(isoBytes);
+
+            utf8String = CleanString(utf8String);
+
+            return utf8String;
+        }
+
+        private string CleanString(string? input)
         {
             if (input is null)
-                return null;
+                return string.Empty;
 
             string cleanedValue = input.Replace("\n", "").Replace("\t", "").Trim();
             return cleanedValue;
