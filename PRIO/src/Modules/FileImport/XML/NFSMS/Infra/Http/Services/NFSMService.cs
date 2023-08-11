@@ -512,6 +512,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                 //        Console.WriteLine(ex);
                 //    }
                 //});
+
                 await _repository.SaveChangesAsync();
                 return new NFSMImportResponseDto { Id = createdNfsm.Id, Status = "Success", Message = "Arquivo importado com sucesso, medições corrigidas." };
             }

@@ -21,7 +21,9 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateGroupViewModel body)
         {
-            var returnGroupDTO = await _service.CreateGroup(body);
+            var userLoggedIn = HttpContext.Items["User"] as User;
+
+            var returnGroupDTO = await _service.CreateGroup(body, userLoggedIn);
             return Created($"groups/{returnGroupDTO.Id}", returnGroupDTO);
         }
 
@@ -58,7 +60,9 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Controllers
         [HttpPatch("{id}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateGroupViewModel body)
         {
-            var groupDTO = await _service.UpdateGroup(id, body);
+            var userLoggedIn = HttpContext.Items["User"] as User;
+
+            var groupDTO = await _service.UpdateGroup(id, body, userLoggedIn);
             return Ok(groupDTO);
         }
         [HttpPatch("{id}/permissions")]

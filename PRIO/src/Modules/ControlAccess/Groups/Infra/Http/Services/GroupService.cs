@@ -7,6 +7,8 @@ using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Interfaces;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Shared.Errors;
+using PRIO.src.Shared.SystemHistories.Dtos.UserDtos;
+using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
 using PRIO.src.Shared.Utils;
 
 namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
@@ -19,9 +21,10 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
         private readonly IUserRepository _userRepository;
         private readonly IUserPermissionRepository _userPermissionRepository;
         private readonly IUserOperationRepository _userOperationRepository;
+        private readonly SystemHistoryService _systemHistoryService;
         private readonly IMapper _mapper;
 
-        public GroupService(IGroupRepository groupRepository, IMapper mapper, IGroupPermissionRepository groupPermissionRepository, IUserRepository userRespository, IUserPermissionRepository userPermissionRepository, IUserOperationRepository userOperationRepository, IGroupOperationRepository groupOperationRepository)
+        public GroupService(IGroupRepository groupRepository, IMapper mapper, IGroupPermissionRepository groupPermissionRepository, IUserRepository userRespository, IUserPermissionRepository userPermissionRepository, IUserOperationRepository userOperationRepository, IGroupOperationRepository groupOperationRepository, SystemHistoryService systemHistoryService)
         {
             _groupRepository = groupRepository;
             _groupPermissionRepository = groupPermissionRepository;
@@ -30,9 +33,10 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
             _userPermissionRepository = userPermissionRepository;
             _userOperationRepository = userOperationRepository;
             _mapper = mapper;
+            _systemHistoryService = systemHistoryService;
         }
 
-        public async Task<GroupWithMenusDTO> CreateGroup(CreateGroupViewModel body)
+        public async Task<GroupWithMenusDTO> CreateGroup(CreateGroupViewModel body, User loggedUser)
         {
             if (body.GroupName is null)
                 throw new ConflictException("Group Name is Required.");
@@ -46,6 +50,8 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
 
             var returnGroup = await _groupRepository.GetGroupWithPermissionsAndOperationsByIdAsync(group.Id);
             var returnGroupDTO = _mapper.Map<Group, GroupWithMenusDTO>(returnGroup);
+
+            await _systemHistoryService.Create<Group, GroupHistoryDTO>(HistoryColumns.TableGroups, loggedUser, group.Id, group);
 
             return returnGroupDTO;
         }
@@ -90,6 +96,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
                 userHasGroup.IsPermissionDefault = true;
                 userHasGroup.Group = group;
                 _userRepository.UpdateUser(userHasGroup);
+
                 await _groupRepository.SaveChangesAsync();
                 var userDTO = _mapper.Map<User, UserGroupDTO>(userHasGroup);
                 return userDTO;
@@ -187,13 +194,14 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
             return groupDTO;
         }
 
-        public async Task<GroupDTO> UpdateGroup(Guid id, UpdateGroupViewModel body)
+        public async Task<GroupDTO> UpdateGroup(Guid id, UpdateGroupViewModel body, User loggedUser)
         {
             var group = await _groupRepository.GetGroupByIdAsync(id);
 
             if (group is null)
                 throw new NotFoundException("Group not found");
 
+            var beforeChanges = _mapper.Map<Group, GroupHistoryDTO>(group);
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(group, body);
 
             if (updatedProperties.Any() is false)
@@ -227,6 +235,8 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
                 _userOperationRepository.UpdateUserOperations(userOperations);
                 await _groupRepository.SaveChangesAsync();
             }
+
+            await _systemHistoryService.Update(HistoryColumns.TableGroups, loggedUser, updatedProperties, group.Id, group, beforeChanges);
 
             _groupRepository.UpdateGroup(group);
             await _groupRepository.SaveChangesAsync();
