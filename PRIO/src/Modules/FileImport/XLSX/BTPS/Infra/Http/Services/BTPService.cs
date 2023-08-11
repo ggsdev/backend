@@ -87,6 +87,14 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 erros.Add("Erro: Valor da célula não é um DateTime na célula " + BTP.CellFinalDate);
             }
 
+            DateTime initialDate = (DateTime)initialDateValue;
+            DateTime finalDate = (DateTime)finalDateValue;
+
+            if (initialDate > finalDate)
+            {
+                erros.Add("Erro: Data inicial não pode ser maior do que a data final.");
+            }
+
             object DurationValue = worksheet.Cells[BTP.CellDuration].Value;
             if (!(DurationValue is DateTime))
             {
@@ -325,7 +333,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
 
             var foundApllicationDate = await _BTPRepository.GetByWellAndApplicationDateXls(body.Validate.WellId, body.Data.ApplicationDate);
             if (foundApllicationDate is not null)
-                throw new ConflictException("Já existe um teste para este poço nesta data");
+                throw new ConflictException("Já existe um teste para este poço nesta data de aplicação");
 
             if (body.Data.Filename.EndsWith(".xlsx") is false)
                 throw new BadRequestException("O arquivo deve ter a extensão .xlsx", status: "Error");
