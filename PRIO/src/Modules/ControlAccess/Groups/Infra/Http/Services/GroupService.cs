@@ -89,7 +89,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
 
                 userHasGroup.IsPermissionDefault = true;
                 userHasGroup.Group = group;
-                await _userRepository.UpdateUser(userHasGroup);
+                _userRepository.UpdateUser(userHasGroup);
                 await _groupRepository.SaveChangesAsync();
                 var userDTO = _mapper.Map<User, UserGroupDTO>(userHasGroup);
                 return userDTO;

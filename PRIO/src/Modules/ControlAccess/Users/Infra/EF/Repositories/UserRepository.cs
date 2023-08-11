@@ -63,7 +63,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
         {
             await MenuErrors.ValidateMenu(_context, body);
         }
-        public async Task UpdateUser(User userHasGroup)
+        public void UpdateUser(User userHasGroup)
         {
             _context.Update(userHasGroup);
         }

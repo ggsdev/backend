@@ -18,8 +18,6 @@ namespace PRIO.src.Shared.Utils.SendEmail
                 var message = new MailMessage();
                 message.From = new MailAddress("gabriel.garcia@dbit.srv.br");
 
-                Console.WriteLine(user.Email);
-
                 if (user.Email is not null)
                     message.To.Add(user.Email);
                 else

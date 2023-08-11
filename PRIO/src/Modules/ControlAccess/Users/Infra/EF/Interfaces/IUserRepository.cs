@@ -12,7 +12,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Interfaces
         Task<User?> GetUserByUsername(string username);
         Task<User> GetUserById(Guid id);
         Task ValidateMenu(InsertUserPermissionViewModel body);
-        Task UpdateUser(User userHasGroup);
+        void UpdateUser(User userHasGroup);
         Task UpdateUsers(List<User> users);
         Task<User> GetUserWithGroupAndPermissionsAsync(Guid userId);
         Task<List<User>> GetUsersByLastGroupId(Guid groupId);
