@@ -55,10 +55,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                     (production.GasLinear is not null ? production.GasLinear.TotalGas : 0),
                     5),
                 TotalOilBBL = Math.Round(
-                    production.Oil is not null ? production.Oil.TotalOil : 0,
+                    production.Oil is not null ? production.Oil.TotalOil * ProductionUtils.m3ToBBLConversionMultiplier : 0,
                     5),
                 TotalOilM3 = Math.Round(
-                    production.Oil is not null ? production.Oil.TotalOil * ProductionUtils.m3ToBBLConversionMultiplier : 0,
+                    production.Oil is not null ? production.Oil.TotalOil : 0,
                     5),
                 StatusGas = (production.GasDiferencial is not null ? production.GasDiferencial.StatusGas : false) || (production.GasLinear is not null ? production.GasLinear.StatusGas : false),
                 StatusOil = production.Oil is not null ? production.Oil.StatusOil : false,
