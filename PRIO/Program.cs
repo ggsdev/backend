@@ -195,7 +195,7 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddScoped<CompletionService>();
     services.AddScoped<EquipmentService>();
     services.AddScoped<MeasuringPointService>();
-    //services.AddScoped<SystemHistoryService>();
+    services.AddScoped<SystemHistoryService>();
     services.AddScoped<AuxiliaryService>();
     services.AddScoped<XMLImportService>();
     services.AddScoped<MeasurementService>();
@@ -213,11 +213,7 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
 
     #region Control Access Services
     services.AddScoped<MenuService>();
-    //services.AddScoped<UserService>();
     services.AddScoped<UserService>();
-    services.AddScoped<SystemHistoryService>();
-    services.AddScoped<Func<UserService>>(sp => sp.GetRequiredService<UserService>);
-    services.AddScoped<Func<SystemHistoryService>>(sp => sp.GetRequiredService<SystemHistoryService>);
 
     services.AddScoped<GroupService>();
     #endregion

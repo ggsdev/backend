@@ -102,6 +102,7 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public string UepName { get; set; } = string.Empty;
         public string MeasuringPoint { get; set; } = string.Empty;
         public string Equipment { get; set; } = string.Empty;
+        public string ResponsibleReport { get; set; } = string.Empty;
         public short? TypeOfFailure { get; set; }
         public string CodeFailure { get; set; } = string.Empty;
         public DateTime DateOfOcurrence { get; set; }
@@ -109,7 +110,7 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public DateTime ReturnDate { get; set; }
         public string DescriptionFailure { get; set; } = string.Empty;
         public string Action { get; set; } = string.Empty;
-        public string Methodology { get; set; }
+        public string Methodology { get; set; } = string.Empty;
         public List<VolumeFixedNfsm> MeasurementsFixed { get; set; } = new();
     }
 

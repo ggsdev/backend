@@ -7,6 +7,9 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Dtos
     {
         public string CodeFailure { get; set; }
         public DateTime DateOfOcurrence { get; set; }
+        public DateTime DetectionDate { get; set; }
+        public DateTime ReturnDateDetected { get; set; }
+        public string ResponsibleReport { get; set; }
         public string? DescriptionFailure { get; set; }
         public short? TypeOfFailure { get; set; }
         public string Action { get; set; }
@@ -14,7 +17,6 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Dtos
         public CreateUpdateInstallationDTO Installation { get; set; }
         public List<NFSMsProductionsDto>? MeasurementsFixed { get; set; }
         public MeasuringPointWithoutInstallationDTO MeasuringPoint { get; set; }
-
 
         public FailureNotificationFilesDto File { get; set; }
     }

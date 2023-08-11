@@ -2,7 +2,6 @@
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
-using PRIO.src.Modules.FileImport.XLSX.Dtos;
 using PRIO.src.Modules.FileImport.XML.Dtos;
 using PRIO.src.Modules.FileImport.XML.FileContent;
 using PRIO.src.Modules.FileImport.XML.FileContent._039;
@@ -331,6 +330,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                             Action = measurement039DTO.DHA_DSC_ACAO_039,
                             Methodology = measurement039DTO.DHA_DSC_METODOLOGIA_039,
                             MeasurementsFixed = measurementsFixed,
+                            ResponsibleReport = measurement039DTO.DHA_NOM_RESPONSAVEL_RELATO_039,
                         };
 
                         responseResult.NFSMs.Add(measurement039DTO);
@@ -348,7 +348,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
             return responseResult;
         }
 
-        public async Task<ImportResponseDTO> ImportAndFix(ResponseNFSMDTO body, User user)
+        public async Task<NFSMImportResponseDto> ImportAndFix(ResponseNFSMDTO body, User user)
         {
             foreach (var nfsm in body.NFSMs)
             {
@@ -499,8 +499,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                 await _repository.AddAsync(createdNfsm);
                 await _repository.AddRangeNFSMsProductionsAsync(nfsmsProductionList);
 
-                var users = await _userService.GetAllEncryptedAdminUsers();
-
+                //var users = await _userService.GetAllEncryptedAdminUsers();
                 //Parallel.ForEach(users, async admin =>
                 //{
                 //    try
@@ -513,11 +512,11 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                 //        Console.WriteLine(ex);
                 //    }
                 //});
+                await _repository.SaveChangesAsync();
+                return new NFSMImportResponseDto { Id = createdNfsm.Id, Status = "Success", Message = "Arquivo importado com sucesso, medições corrigidas." };
             }
 
-            await _repository.SaveChangesAsync();
-
-            return new ImportResponseDTO { Status = "Success", Message = "Arquivo importado com sucesso, medições corrigidas." };
+            return new NFSMImportResponseDto { Id = Guid.Empty, Status = "Error", Message = "Nenhum dado foi importado." };
         }
 
         public async Task<NFSMHistory> CreateNfsmFileHistory(User user, FileBasicInfoDTO file, string base64, DateTime dateDetected)
@@ -586,7 +585,10 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                         FileName = nfsm.ImportHistory.FileName,
                         FileType = nfsm.ImportHistory.FileType,
                         ImportedAt = nfsm.ImportHistory.ImportedAt
-                    }
+                    },
+                    DetectionDate = nfsm.DetectionDate,
+                    ReturnDateDetected = nfsm.ReturnDate,
+                    ResponsibleReport = nfsm.ReponsibleReport,
                 };
 
                 nfsmsDTO.Add(nfsmDTO);
@@ -633,7 +635,11 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     FileName = nfsm.ImportHistory.FileName,
                     FileType = nfsm.ImportHistory.FileType,
                     ImportedAt = nfsm.ImportHistory.ImportedAt
-                }
+                },
+                DetectionDate = nfsm.DetectionDate,
+                ReturnDateDetected = nfsm.ReturnDate,
+                ResponsibleReport = nfsm.ReponsibleReport,
+
             };
             return nfsmDTO;
 

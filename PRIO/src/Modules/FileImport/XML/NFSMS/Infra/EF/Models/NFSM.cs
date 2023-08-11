@@ -10,8 +10,11 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models
     {
         public string CodeFailure { get; set; }
         public DateTime DateOfOcurrence { get; set; }
+        public DateTime DetectionDate { get; set; }
+        public DateTime ReturnDate { get; set; }
         public string? DescriptionFailure { get; set; }
         public short? TypeOfFailure { get; set; }
+        public string ReponsibleReport { get; set; }
         public string Action { get; set; }
         public string Methodology { get; set; }
         public Installation Installation { get; set; }
