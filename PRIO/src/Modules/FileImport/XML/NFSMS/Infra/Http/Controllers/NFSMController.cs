@@ -3,6 +3,7 @@ using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XML.Dtos;
 using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XML.NFSMS.ViewModels;
+using PRIO.src.Modules.FileImport.XML.ViewModels;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.Http.Filters;
 
@@ -67,6 +68,14 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Controllers
             var nfsm = await _service.DownloadNfsm(id);
 
             return Ok(nfsm);
+        }
+
+        [HttpGet("import-nfsm/errors")]
+        public ActionResult ErrorsDownload([FromBody] ErrorsImportViewModel data)
+        {
+            var result = _service.DownloadErrors(data.Errors);
+
+            return Ok(result);
         }
     }
 }

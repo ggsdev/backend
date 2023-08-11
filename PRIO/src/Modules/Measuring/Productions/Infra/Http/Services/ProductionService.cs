@@ -1653,8 +1653,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
             return productionDto;
         }
-
-
         public async Task<List<GetAllProductionsDto>> GetAllProductions()
         {
             var productions = await _repository
@@ -1705,7 +1703,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
             return productionsDto;
         }
-
         public async Task<List<ProductionFilesDtoWithBase64>> DownloadAllProductionFiles(Guid productionId)
         {
             var production = await _repository

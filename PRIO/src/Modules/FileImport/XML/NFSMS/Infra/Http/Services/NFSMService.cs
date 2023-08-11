@@ -1,4 +1,8 @@
 ﻿using AutoMapper;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
+using iText.Layout.Properties;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
@@ -667,6 +671,39 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
             return result;
         }
+
+        public FileContentResponse DownloadErrors(List<string> errors)
+        {
+            using var memoryStream = new MemoryStream();
+
+            var pdfDoc = new PdfDocument(new PdfWriter(memoryStream));
+
+            var document = new Document(pdfDoc);
+
+            var titleParagraph = new Paragraph("< Erros Importação >")
+                .SetTextAlignment(TextAlignment.CENTER)
+                .SetFontSize(20);
+            document.Add(titleParagraph);
+
+            foreach (string error in errors)
+            {
+                var listItem = new ListItem("=> " + error)
+                    .SetMarginBottom(10);
+                document.Add(listItem);
+            }
+
+            document.Close();
+
+            byte[] pdfBytes = memoryStream.ToArray();
+
+            var response = new FileContentResponse
+            {
+                ContentBase64 = Convert.ToBase64String(pdfBytes)
+            };
+
+            return response;
+        }
+
 
         //private string CleanAndDecode(string input)
         //{
