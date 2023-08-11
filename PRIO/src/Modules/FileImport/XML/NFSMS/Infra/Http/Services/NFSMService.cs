@@ -231,17 +231,31 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                         var volumesListElements = dadosBasicosElement?.Elements("LISTA_VOLUME")?.ToList();
 
-                        if (dadosBasicos.LISTA_VOLUME is not null && measurement.LISTA_VOLUME is not null && volumesListElements is not null && volumesListElements.Count == dadosBasicos.LISTA_VOLUME.Count)
+                        if (dadosBasicos.LISTA_VOLUME is not null && measurement.LISTA_VOLUME is not null && volumesListElements is not null)
                         {
                             for (var j = 0; j < dadosBasicos.LISTA_VOLUME.Count; ++j)
                             {
+
+                                var dateString = dadosBasicos.LISTA_VOLUME[j].DHA_MEDICAO_039;
+
+                                if (DateTime.TryParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
+                                {
+                                    var productionInDatabase = await _productionRepository.AnyByDate(date);
+
+                                    if (productionInDatabase is false)
+                                        throw new NotFoundException($"Medição não encontrada para esta data: {date}");
+                                }
+                                else
+                                {
+                                    throw new BadRequestException("Formato de data da medição(DHA_MEDIÇÂO) inválido, deve ser: dd/MM/yyyy");
+                                }
+
                                 var volume = dadosBasicos.LISTA_VOLUME[j];
-                                var volumeElement = volumesListElements[j]?.Element("VOLUME");
 
                                 var volumeMapped = _mapper.Map<VOLUME, Volume>(volume);
-                                volumeMapped.DHA_MEDICAO_039 = XmlUtils.DateTimeWithoutTimeParser(volume.DHA_MEDICAO_039, errorsInFormat, volumeElement?.Element("DHA_MEDICAO")?.Name.LocalName);
-                                volumeMapped.DHA_MED_DECLARADO_039 = XmlUtils.DecimalParser(volume.DHA_MED_DECLARADO_039, errorsInFormat, volumeElement?.Element("MED_DECLARADO")?.Name.LocalName);
-                                volumeMapped.DHA_MED_REGISTRADO_039 = XmlUtils.DecimalParser(volume.DHA_MED_REGISTRADO_039, errorsInFormat, volumeElement?.Element("MED_REGISTRADO")?.Name.LocalName);
+                                volumeMapped.DHA_MEDICAO_039 = XmlUtils.DateTimeWithoutTimeParser(volume.DHA_MEDICAO_039, errorsInFormat, "");
+                                volumeMapped.DHA_MED_DECLARADO_039 = XmlUtils.DecimalParser(volume.DHA_MED_DECLARADO_039, errorsInFormat, "");
+                                volumeMapped.DHA_MED_REGISTRADO_039 = XmlUtils.DecimalParser(volume.DHA_MED_REGISTRADO_039, errorsInFormat, "");
 
                                 var measurementFixed = new VolumeFixedNfsm
                                 {
@@ -271,6 +285,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                                 measurement.LISTA_CALIBRACAO.Add(calibrationMapped);
                             }
+
 
                         var measurement039DTO = _mapper.Map<Measurement, Client039DTO>(measurement);
 
@@ -339,8 +354,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     if (productionInDatabase is null)
                         throw new NotFoundException($"Medição não encontrada para esta data: {productionInXmlDate}");
 
-                    if (productionInXml.DHA_MEDICAO_039 > nfsm.DHA_DETECCAO_039)
-                        throw new ConflictException("Data da medição não pode ser maior do que a data da detecção TAG: DHA_DETECÇÃO.");
+                    //if (productionInXml.DHA_MEDICAO_039 > nfsm.DHA_DETECCAO_039)
+                    //    throw new ConflictException("Data da medição não pode ser maior do que a data da detecção TAG: DHA_DETECÇÃO.");
 
                     //if (productionInXml.DHA_MEDICAO_039 > nfsm.DHA_RETORNO_039)
                     //    throw new ConflictException("Data da medição não pode ser maior do que a data que a falha foi corrigida, TAG: DHA_RETORNO.");
@@ -458,17 +473,18 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                 var users = await _userService.GetAllEncryptedAdminUsers();
 
-                //foreach (var admin in users)
+                //Parallel.ForEach(users, async admin =>
                 //{
                 //    try
                 //    {
-                //        SendEmail.Send(nfsm, admin);
+
+                //        await SendEmail.Send(nfsm, admin);
                 //    }
                 //    catch (Exception ex)
                 //    {
                 //        Console.WriteLine(ex);
                 //    }
-                //}
+                //});
             }
 
             await _repository.SaveChangesAsync();

@@ -7,7 +7,7 @@ namespace PRIO.src.Shared.Utils.SendEmail
 {
     public static class SendEmail
     {
-        public static void Send(Client039DTO nfsm, User user)
+        public static async Task Send(Client039DTO nfsm, User user)
         {
             using (var smtpClient = new SmtpClient("smtp.zoho.com"))
             {
@@ -19,6 +19,7 @@ namespace PRIO.src.Shared.Utils.SendEmail
                 message.From = new MailAddress("gabriel.garcia@dbit.srv.br");
 
                 Console.WriteLine(user.Email);
+
                 if (user.Email is not null)
                     message.To.Add(user.Email);
                 else
@@ -27,7 +28,7 @@ namespace PRIO.src.Shared.Utils.SendEmail
                 message.Subject = "Test Email";
                 message.Body = Template.GenerateNotificationEmail(nfsm);
                 message.IsBodyHtml = true;
-                smtpClient.Send(message);
+                await smtpClient.SendMailAsync(message);
             }
         }
     }

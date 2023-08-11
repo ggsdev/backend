@@ -62,13 +62,40 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public string DHA_NUM_SERIE_EQUIPAMENTO_039 { get; set; }
         public string DHA_COD_INSTALACAO_039 { get; set; } = string.Empty;
 
-        public List<Calibration> LISTA_CALIBRACAO { get; set; } = new();
-        public List<Bsw> LISTA_BSW { get; set; } = new();
-        public List<Volume> LISTA_VOLUME { get; set; } = new();
+        public List<CalibrationDto> LISTA_CALIBRACAO { get; set; } = new();
+        public List<BswDto> LISTA_BSW { get; set; } = new();
+        public List<VolumeDto> LISTA_VOLUME { get; set; } = new();
         public Guid ImportId { get; set; }
 
     }
+    public class CalibrationDto
+    {
+        public DateTime? DHA_FALHA_CALIBRACAO_039 { get; set; }
 
+        public decimal? DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039 { get; set; }
+
+        public decimal? DHA_NUM_FATOR_CALIBRACAO_ATUAL_039 { get; set; }
+
+        public string? DHA_CERTIFICADO_ATUAL_039 { get; set; }
+
+        public string? DHA_CERTIFICADO_ANTERIOR_039 { get; set; }
+    }
+
+    public class VolumeDto
+    {
+        public DateTime? DHA_MEDICAO_039 { get; set; }
+        public decimal? DHA_MED_DECLARADO_039 { get; set; }
+        public decimal? DHA_MED_REGISTRADO_039 { get; set; }
+    }
+
+    public class BswDto
+    {
+        public DateTime? DHA_FALHA_BSW_039 { get; set; }
+
+        public decimal? DHA_PCT_BSW_039 { get; set; }
+
+        public decimal? DHA_PCT_MAXIMO_BSW_039 { get; set; }
+    }
 
     public class SummaryNfsmDto
     {

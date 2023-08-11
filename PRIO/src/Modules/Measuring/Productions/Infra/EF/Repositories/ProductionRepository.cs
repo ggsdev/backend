@@ -27,6 +27,14 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                             x.MeasuredAt.Day == date.Day)
                 .FirstOrDefaultAsync();
         }
+        public async Task<bool> AnyByDate(DateTime date)
+        {
+            return await _context.Productions
+                .Where(x => x.MeasuredAt.Year == date.Year &&
+                            x.MeasuredAt.Month == date.Month &&
+                            x.MeasuredAt.Day == date.Day)
+                .AnyAsync();
+        }
 
         public async Task<Production?> GetExistingByDate(DateTime date)
         {

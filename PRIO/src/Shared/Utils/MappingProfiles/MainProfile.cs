@@ -73,6 +73,14 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<Measurement, _039DTO>();
             CreateMap<_039DTO, Measurement>();
             CreateMap<Measurement, Client039DTO>();
+            CreateMap<Volume, VolumeDto>();
+            CreateMap<Calibration, CalibrationDto>();
+            CreateMap<Bsw, BswDto>();
+
+
+
+
+
             CreateMap<Measurement, Client001DTO>();
             CreateMap<Measurement, Client002DTO>();
             #endregion
