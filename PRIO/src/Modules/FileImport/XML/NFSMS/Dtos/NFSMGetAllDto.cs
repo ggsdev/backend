@@ -12,6 +12,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Dtos
         public string ResponsibleReport { get; set; }
         public string? DescriptionFailure { get; set; }
         public short? TypeOfFailure { get; set; }
+        public string? TypeOfNotification { get; set; }
         public string Action { get; set; }
         public string Methodology { get; set; }
         public CreateUpdateInstallationDTO Installation { get; set; }

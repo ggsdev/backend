@@ -104,6 +104,7 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public string Equipment { get; set; } = string.Empty;
         public string ResponsibleReport { get; set; } = string.Empty;
         public short? TypeOfFailure { get; set; }
+        public string? TypeOfNotification { get; set; }
         public string CodeFailure { get; set; } = string.Empty;
         public DateTime DateOfOcurrence { get; set; }
         public DateTime DetectionDate { get; set; }

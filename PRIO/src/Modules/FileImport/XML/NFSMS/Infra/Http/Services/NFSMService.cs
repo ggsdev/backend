@@ -335,6 +335,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                             Methodology = measurement039DTO.DHA_DSC_METODOLOGIA_039,
                             MeasurementsFixed = measurementsFixed,
                             ResponsibleReport = measurement039DTO.DHA_NOM_RESPONSAVEL_RELATO_039,
+                            TypeOfNotification = measurement039DTO.IND_TIPO_NOTIFICACAO_039
                         };
 
                         responseResult.NFSMs.Add(measurement039DTO);
@@ -497,7 +498,9 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     ImportHistory = importHistory,
                     ReponsibleReport = nfsm.DHA_NOM_RESPONSAVEL_RELATO_039,
                     DetectionDate = nfsm.DHA_DETECCAO_039,
-                    ReturnDate = nfsm.DHA_RETORNO_039
+                    ReturnDate = nfsm.DHA_RETORNO_039,
+                    TypeOfNotification = nfsm.IND_TIPO_NOTIFICACAO_039
+
                 };
 
 
@@ -597,6 +600,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     DetectionDate = nfsm.DetectionDate,
                     ReturnDateDetected = nfsm.ReturnDate,
                     ResponsibleReport = nfsm.ReponsibleReport,
+                    TypeOfNotification = nfsm.TypeOfNotification
                 };
 
                 nfsmsDTO.Add(nfsmDTO);
@@ -647,6 +651,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                 DetectionDate = nfsm.DetectionDate,
                 ReturnDateDetected = nfsm.ReturnDate,
                 ResponsibleReport = nfsm.ReponsibleReport,
+                TypeOfNotification = nfsm.TypeOfNotification
 
             };
             return nfsmDTO;
