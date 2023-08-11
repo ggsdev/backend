@@ -222,11 +222,11 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                                     var productionInDatabase = await _productionRepository.AnyByDate(date);
 
                                     if (productionInDatabase is false)
-                                        throw new NotFoundException($"BSW não encontrado para esta data: {date}");
+                                        errorsInImport.Add($"BSW não encontrado para esta data: {date}");
                                 }
                                 else
                                 {
-                                    throw new BadRequestException("Formato de data da medição do bsw(DHA_FALHA_BSW) inválido, deve ser: dd/MM/yyyy");
+                                    errorsInImport.Add("Formato de data da medição do bsw(DHA_FALHA_BSW) inválido, deve ser: dd/MM/yyyy");
                                 }
 
                                 var bsw = dadosBasicos.LISTA_BSW[j];
@@ -256,11 +256,11 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                                     var productionInDatabase = await _productionRepository.AnyByDate(date);
 
                                     if (productionInDatabase is false)
-                                        throw new NotFoundException($"Medição não encontrada para esta data: {date}");
+                                        errorsInImport.Add($"Medição não encontrada para esta data: {date}");
                                 }
                                 else
                                 {
-                                    throw new BadRequestException("Formato de data da medição(DHA_MEDIÇÂO) inválido, deve ser: dd/MM/yyyy");
+                                    errorsInImport.Add("Formato de data da medição(DHA_MEDIÇÂO) inválido, deve ser: dd/MM/yyyy");
                                 }
 
                                 var volume = dadosBasicos.LISTA_VOLUME[j];
