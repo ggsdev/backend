@@ -2635,89 +2635,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             return new ImportResponseDTO { Status = "Success", Message = $"Arquivo importado com sucesso, {measurementsAdded.Count} medições importadas" };
         }
-
-        //public async Task<DTOFilesClient> GetAll(string? acronym, string? name)
-        //{
-        //    var filesQuery = _repository.FileTypeBuilder();
-
-        //    if (!string.IsNullOrEmpty(acronym))
-        //    {
-        //        var possibleAcronymValues = new List<string> { "PMO", "PMGL", "PMGD", "EFM" };
-        //        var isValidValue = possibleAcronymValues.Contains(acronym.ToUpper().Trim());
-        //        if (!isValidValue)
-        //            throw new BadRequestException("Acronym valid values are: PMO, PMGL, PMGD, EFM"
-        //            );
-
-        //        filesQuery = _repository.FileTypeBuilderByAcronym(acronym);
-        //    }
-
-        //    if (!string.IsNullOrEmpty(name))
-        //    {
-        //        var possibleNameValues = new List<string> { "001", "002", "003", "039" };
-        //        var isValidValue = possibleNameValues.Contains(name.ToUpper().Trim());
-        //        if (!isValidValue)
-        //            throw new BadRequestException("Name valid values are: 001, 002, 003, 039"
-        //           );
-
-        //        filesQuery = _repository.FileTypeBuilderByName(name);
-        //    }
-
-        //    var files = await _repository.FilesToListAsync(filesQuery);
-        //    var measurements = files.SelectMany(file => file.Measurements);
-
-        //    foreach (var measurement in measurements)
-        //    {
-        //        switch (measurement.FileType?.Name)
-        //        {
-        //            case "001":
-        //                {
-        //                    response._001File ??= new List<Client001DTO>();
-        //                    response._001File.Add(_mapper.Map<Client001DTO>(measurement));
-        //                    break;
-
-        //                }
-
-        //            case "002":
-        //                {
-        //                    response._002File ??= new List<Client002DTO>();
-        //                    var mappedMeasurement = _mapper.Map<Client002DTO>(measurement);
-
-        //                    response._002File.Add(mappedMeasurement);
-        //                    break;
-        //                }
-
-        //            case "003":
-        //                {
-        //                    response._003File ??= new List<Client003DTO>();
-        //                    var mappedMeasurement = _mapper.Map<Client003DTO>(measurement);
-        //                    response._003File.Add(mappedMeasurement);
-        //                    break;
-
-        //                }
-
-        //                //case "039":
-        //                //    response._039File ??= new List<Client039DTO>();
-        //                //    response._039File.Add(_mapper.Map<Client039DTO>(measurement));
-        //                //    break;
-        //        }
-        //    }
-
-        //    return response;
-        //}
-
-        //public async Task<List<MeasurementHistoryDto>> GetLastUpdatedFiles(Guid importId)
-        //{
-        //    var measurementsInDatabase = await _repository
-        //        .GetProductionOfTheDayByImportId(importId);
-
-        //    var measurementsDto = new List<MeasurementHistoryDto>();
-
-        //    foreach (var measurement in measurementsInDatabase)
-        //    {
-        //        var
-
-        //    }
-
         public FileContentResponse DownloadErrors(List<string> errors)
         {
             using var memoryStream = new MemoryStream();
@@ -2749,6 +2666,5 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             return response;
         }
-
     }
 }

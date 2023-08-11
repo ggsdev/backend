@@ -495,6 +495,9 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     MeasuringPoint = measuringPoint,
                     Productions = nfsmsProductionList,
                     ImportHistory = importHistory,
+                    ReponsibleReport = nfsm.DHA_NOM_RESPONSAVEL_RELATO_039,
+                    DetectionDate = nfsm.DHA_DETECCAO_039,
+                    ReturnDate = nfsm.DHA_RETORNO_039
                 };
 
 
