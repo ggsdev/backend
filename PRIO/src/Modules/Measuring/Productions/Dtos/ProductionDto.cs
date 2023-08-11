@@ -1,4 +1,6 @@
 ﻿using PRIO.src.Modules.FileImport.XML.Dtos;
+using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Installations.ViewModels;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Measuring.Productions.Dtos
@@ -113,12 +115,47 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
     public class GasConsultingDto
     {
         public decimal TotalGasProduction { get; set; }
+        public FRViewModel FR { get; set; }
+
         public GasBurntDto GasBurnt { get; set; }
         public GasFuelDto GasFuel { get; set; }
         public GasExportedDto GasExported { get; set; }
         public GasImportedDto GasImported { get; set; }
 
         public DetailBurn DetailedBurnedGas { get; set; }
+    }
+
+    public class GasConsultingDtoFrsNull
+    {
+        public decimal TotalGasProduction { get; set; }
+        public FRViewModelNull FR { get; set; }
+
+        public GasBurntDto GasBurnt { get; set; }
+        public GasFuelDto GasFuel { get; set; }
+        public GasExportedDto GasExported { get; set; }
+        public GasImportedDto GasImported { get; set; }
+
+        public DetailBurn DetailedBurnedGas { get; set; }
+    }
+
+    public class OilConsultingDtoFrsNull
+    {
+        public decimal TotalOilProduction { get; set; }
+        public List<LocalOilPointDto>? MeasuringPoints { get; set; }
+        public FRViewModelNull FR { get; set; }
+
+    }
+
+    public class ProductionDtoWithNullableDecimals
+    {
+        public string InstallationName { get; set; }
+        public string UepName { get; set; }
+        public DailyProduction DailyProduction { get; set; }
+
+        public List<MeasurementHistoryWithMeasurementsDto> Files { get; set; }
+
+        public GasConsultingDtoFrsNull Gas { get; set; }
+        public OilConsultingDtoFrsNull Oil { get; set; }
     }
 
     public class GasBurntDto
@@ -148,8 +185,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
     {
         public decimal TotalOilProduction { get; set; }
         public List<LocalOilPointDto>? MeasuringPoints { get; set; }
+        public FRViewModel FR { get; set; }
 
     }
-
-
 }

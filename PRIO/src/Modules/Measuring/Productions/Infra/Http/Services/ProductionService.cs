@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using PRIO.src.Modules.FileImport.XML.Dtos;
 using PRIO.src.Modules.FileImport.XML.Infra.Utils;
+using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Measuring.GasVolumeCalculations.Interfaces;
 using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models;
@@ -19,10 +20,11 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
         private readonly IGasVolumeCalculationRepository _gasRepository;
         private readonly IOilVolumeCalculationRepository _oilRepository;
         private readonly IMeasurementHistoryRepository _fileHistoryRepository;
+        private readonly IFieldRepository _fieldRepository;
         private readonly IInstallationRepository _installationRepository;
         private readonly IMapper _mapper;
 
-        public ProductionService(IProductionRepository productionRepository, IMapper mapper, IGasVolumeCalculationRepository gasVolumeCalculationRepository, IInstallationRepository installationRepository, IOilVolumeCalculationRepository oilVolumeCalculationRepository, IMeasurementHistoryRepository measurementHistoryRepository)
+        public ProductionService(IProductionRepository productionRepository, IMapper mapper, IGasVolumeCalculationRepository gasVolumeCalculationRepository, IInstallationRepository installationRepository, IOilVolumeCalculationRepository oilVolumeCalculationRepository, IMeasurementHistoryRepository measurementHistoryRepository, IFieldRepository fieldRepository)
         {
             _repository = productionRepository;
             _mapper = mapper;
@@ -30,10 +32,11 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
             _installationRepository = installationRepository;
             _oilRepository = oilVolumeCalculationRepository;
             _fileHistoryRepository = measurementHistoryRepository;
+            _fieldRepository = fieldRepository;
 
         }
 
-        public async Task<ProductionDto> GetByDate(DateTime date)
+        public async Task<ProductionDtoWithNullableDecimals> GetByDate(DateTime date)
         {
             var production = await _repository.GetExistingByDate(date);
 
@@ -614,7 +617,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
             }
 
-            var oilDto = new OilConsultingDto
+            var oilDto = new OilConsultingDtoFrsNull
             {
                 TotalOilProduction = production.Oil is not null ? production.Oil.TotalOil : 0,
                 MeasuringPoints = oilPoints
@@ -627,7 +630,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
             oilDto.MeasuringPoints = oilPoints;
 
 
-            var gasDto = new GasConsultingDto
+            var gasDto = new GasConsultingDtoFrsNull
             {
                 TotalGasProduction = (production.GasLinear is not null ? production.GasLinear.TotalGas : 0) + (production.GasDiferencial is not null ? production.GasDiferencial.TotalGas : 0),
                 DetailedBurnedGas = production.Gas is not null ? new DetailBurn
@@ -649,7 +652,57 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
             };
 
-            var productionDto = new ProductionDto
+            var oilFrs = new FRViewModelNull
+            {
+                Fields = new(),
+            };
+            var gasFrs = new FRViewModelNull
+            {
+                Fields = new(),
+
+            };
+
+            if (production.FieldsFR is not null)
+            {
+                foreach (var fr in production.FieldsFR)
+                {
+                    if (fr.FROil is not null)
+                    {
+                        var createdFr = new FRFieldsViewModelNull
+                        {
+                            FieldId = fr.Field.Id,
+                            FieldName = fr.Field.Name,
+                            FluidFr = fr.FROil,
+                            ProductionInField = fr.ProductionInField
+
+                        };
+
+                        oilFrs.Fields.Add(createdFr);
+
+                    }
+                }
+                foreach (var fr in production.FieldsFR)
+                {
+                    if (fr.FRGas is not null)
+                    {
+                        var createdFr = new FRFieldsViewModelNull
+                        {
+                            FieldId = fr.Field.Id,
+                            FieldName = fr.Field.Name,
+                            FluidFr = fr.FRGas,
+                            ProductionInField = fr.ProductionInField
+                        };
+
+                        gasFrs.Fields.Add(createdFr);
+                    }
+                }
+
+            }
+
+            gasDto.FR = gasFrs;
+            oilDto.FR = oilFrs;
+
+            var productionDto = new ProductionDtoWithNullableDecimals
             {
                 InstallationName = production.Installation.Name,
                 UepName = production.Installation.UepName,
