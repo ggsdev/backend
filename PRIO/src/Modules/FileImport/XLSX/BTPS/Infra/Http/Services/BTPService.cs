@@ -86,14 +86,25 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             {
                 erros.Add("Erro: Valor da célula não é um DateTime na célula " + BTP.CellFinalDate);
             }
-
             DateTime initialDate = (DateTime)initialDateValue;
             DateTime finalDate = (DateTime)finalDateValue;
-
             if (initialDate > finalDate)
             {
-                erros.Add("Erro: Data inicial não pode ser maior do que a data final.");
+                erros.Add("Erro: Data inicial do teste não pode ser maior do que a data final do teste.");
             }
+            try
+            {
+                DateTime applicationDate = DateTime.Parse(body.ApplicationDate);
+                if (finalDate > applicationDate)
+                {
+                    erros.Add("Erro: Data inicial do teste não pode ser maior do que a data final do teste.");
+                }
+            }
+            catch
+            {
+                throw new NotFoundException("Data da Aplicação não é valida");
+            }
+
 
             object DurationValue = worksheet.Cells[BTP.CellDuration].Value;
             if (!(DurationValue is DateTime))
