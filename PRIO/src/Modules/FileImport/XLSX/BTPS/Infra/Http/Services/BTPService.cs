@@ -54,10 +54,9 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
 
             return btpsDTO;
         }
-        public async Task<ValidateDataBTPDTO> ValidateImportFiles(RequestWellTestXls body, User user)
+        public async Task<ValidateDataBTPDTO?> ValidateImportFiles(RequestWellTestXls body, User user)
         {
             var BTP = await _BTPRepository.GetByIdAsync(body.BTPId) ?? throw new NotFoundException("BTP não encontrado.");
-
             if (body.FileName.EndsWith(".xlsx") is false)
                 throw new BadRequestException("O arquivo deve ter a extensão .xlsx", status: "Error");
 
@@ -70,7 +69,137 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             using var stream = new MemoryStream(Convert.FromBase64String(contentBase64!));
             using ExcelPackage package = new(stream);
             var workbook = package.Workbook;
+
+            if (workbook.Worksheets[BTP.BTPSheet] is null)
+                throw new NotFoundException("Arquivo não corresponde ao modelo.");
             var worksheet = BTP.BTPSheet is not null ? workbook.Worksheets[BTP.BTPSheet] : workbook.Worksheets[0];
+
+            List<string> erros = new List<string>();
+            object initialDateValue = worksheet.Cells[BTP.CellInitialDate].Value is not null ? worksheet.Cells[BTP.CellInitialDate].Value : null;
+            if (!(initialDateValue is DateTime))
+            {
+                erros.Add("Erro: Valor da célula não é um DateTime na célula " + BTP.CellInitialDate);
+            }
+
+            object finalDateValue = worksheet.Cells[BTP.CellFinalDate].Value;
+            if (!(finalDateValue is DateTime))
+            {
+                erros.Add("Erro: Valor da célula não é um DateTime na célula " + BTP.CellFinalDate);
+            }
+
+            object DurationValue = worksheet.Cells[BTP.CellDuration].Value;
+            if (!(DurationValue is DateTime))
+            {
+                erros.Add("Erro: Valor da célula não é um double na célula " + BTP.CellDuration);
+            }
+            object btpNumberValue = worksheet.Cells[BTP.CellBTPNumber].Value;
+            if (!(btpNumberValue is double))
+            {
+                erros.Add("Erro: Valor da célula não é um double na célula " + BTP.CellBTPNumber);
+            }
+
+            object? wellNameValue = worksheet.Cells[BTP.CellWellName].Value;
+            if (!(wellNameValue is string))
+            {
+                erros.Add("Erro: Valor da célula não é uma string na célula " + BTP.CellWellName);
+            }
+
+            object? wellAlignmentHourValue = worksheet.Cells[BTP.CellWellAlignmentHour].Value;
+            if (!(wellAlignmentHourValue is double))
+            {
+                erros.Add("Erro: Valor da célula não é um double na célula " + BTP.CellWellAlignmentHour);
+            }
+
+            object? wellAlignmentDataValue = worksheet.Cells[BTP.CellWellAlignmentData].Value;
+            if (!(wellAlignmentDataValue is DateTime))
+            {
+                erros.Add("Erro: Valor da célula não é um DateTime na célula " + BTP.CellWellAlignmentData);
+            }
+
+            object? CellPotencialLiquidValue = worksheet.Cells[BTP.CellPotencialLiquid].Value;
+            if (!(CellPotencialLiquidValue is double))
+            {
+                erros.Add("Erro: Valor da célula não é um double na célula " + BTP.CellPotencialLiquid);
+            }
+
+            object? potencialOilValue = worksheet.Cells[BTP.CellPotencialOil].Value;
+            if (!(potencialOilValue is double))
+            {
+                erros.Add("Erro: Valor da célula não é um double na célula " + BTP.CellPotencialOil);
+            }
+
+            object? potencialGasValue = worksheet.Cells[BTP.CellPotencialGas].Value;
+            if (!(potencialGasValue is double))
+            {
+                erros.Add("Erro: Valor da célula não é um double na célula " + BTP.CellPotencialGas);
+            }
+
+            object? potencialWaterValue = worksheet.Cells[BTP.CellPotencialWater].Value;
+            if (!(potencialWaterValue is double))
+            {
+                erros.Add("Erro: Valor da célula não é um double na célula " + BTP.CellPotencialWater);
+            }
+
+            string[] parts = BTP.CellMPointOil.Split(',');
+            List<string> concatenatedValues = new List<string>();
+
+            if (parts.Length > 1)
+            {
+                foreach (string part in parts)
+                {
+                    object? MPointOilValue = worksheet.Cells[part].Value;
+                    if (!(part is string))
+                    {
+                        erros.Add("Erro: Valor da célula não é uma string na célula " + part);
+                    }
+                    else
+                    {
+                        concatenatedValues.Add(MPointOilValue.ToString());
+                    }
+                }
+            }
+            else
+            {
+                object? MPointOilValue = worksheet.Cells[parts[0]].Value;
+                if (!(parts[0] is string))
+                {
+                    erros.Add("Erro: Valor da célula não é uma string na célula " + parts[0]);
+                }
+                else
+                {
+                    concatenatedValues.Add(MPointOilValue.ToString());
+                }
+            }
+            string concatenatedString = string.Join(", ", concatenatedValues);
+
+            object? MPointGasValue = worksheet.Cells[BTP.CellMPointGas].Value;
+            if (!(MPointGasValue is string))
+            {
+                erros.Add("Erro: Valor da célula não é uma string na célula " + BTP.CellMPointGas);
+            }
+
+            object? MPointWaterValue = worksheet.Cells[BTP.CellMPointWater].Value;
+            if (!(MPointWaterValue is string))
+            {
+                erros.Add("Erro: Valor da célula não é uma string na célula " + BTP.CellMPointWater);
+            }
+
+            object? RGOValue = worksheet.Cells[BTP.CellRGO].Value;
+            if (!(RGOValue is double))
+            {
+                erros.Add("Erro: Valor da célula não é um double na célula " + BTP.CellRGO);
+            }
+
+            object? BSWValue = worksheet.Cells[BTP.CellBSW].Value;
+            if (!(BSWValue is double))
+            {
+                erros.Add("Erro: Valor da célula não é um double na célula " + BTP.CellBSW);
+            }
+
+            if (erros.Count > 0)
+            {
+                throw new BadRequestException("Foram encontrados os seguintes erros.", erros);
+            }
 
             //Trated aligmentHour
             string valorDaCelula = worksheet.Cells[BTP.CellWellAlignmentHour].Value.ToString();
@@ -87,10 +216,12 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
 
             //Trated Duration
             string[] duration = worksheet.Cells[BTP.CellDuration].Value.ToString().Split(' ');
+            if (duration[1] is null)
+                throw new ConflictException("Conteúdo da célula duração é inválido");
             string valorTempo = duration[1];
 
             //Verify Well
-            string? message = well.Name == worksheet.Cells[BTP.CellWellName].Value.ToString() ? "Sucess: Nome do poço encontrado corresponde ao xls" : "Warning: Nome do poço encontrado não corresponde ao xls";
+            string? message = well.Name == worksheet.Cells[BTP.CellWellName].Value.ToString() ? "Sucesso: Nome do poço encontrado corresponde ao xls" : "Atenção: Nome do poço encontrado não corresponde ao xls";
 
             //ToDecimal
             var oilCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialOil].Value.ToString(), out var oilDecimal);
@@ -110,7 +241,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             var bswCheck = decimal.TryParse(worksheet.Cells[BTP.CellBSW].Value.ToString(), out var bswDecimal);
             decimal bswDecimalFormated = Math.Round(bswDecimal, 5, MidpointRounding.AwayFromZero);
 
-            if (oilCheck is false || gasCheck is false || waterCheck is false || liquidCheck is false || rgoCheck is false || bswCheck is false)
+            if (oilCheck is false || gasCheck is false || waterCheck is false || liquidCheck is false || rgoCheck is false || bswCheck is false || checkAlignHour is false)
             {
                 throw new ConflictException("Dados decimais não podem ser convertidos.");
             }
@@ -146,7 +277,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 FinalDate = worksheet.Cells[BTP.CellFinalDate].Value.ToString(),
                 BTPNumber = worksheet.Cells[BTP.CellBTPNumber].Value.ToString(),
                 MPointGas = worksheet.Cells[BTP.CellMPointGas].Value.ToString(),
-                MPointOil = worksheet.Cells[BTP.CellMPointOil].Value.ToString(),
+                MPointOil = concatenatedString,
                 MPointWater = worksheet.Cells[BTP.CellMPointWater].Value.ToString(),
                 BSW = bswDecimalFormated,
                 RGO = rgoDecimalFormated,
@@ -181,6 +312,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             await _BTPRepository.SaveChangesAsync();
             return createDataDTO;
         }
+
         public async Task<ValidateDataBTPDTO> PostImportFiles(ImportViewModel body, User user)
         {
             var Validate = await _BTPRepository.GetValidate(body.Validate.WellId, body.Validate.BTPId, body.Validate.ContentId, body.Validate.DataId) ?? throw new NotFoundException("Validação não autorizada.");
