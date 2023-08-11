@@ -32,6 +32,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models
         public DateTime MeasuredAt { get; set; }
         public decimal? VolumeAfter { get; set; }
         public decimal? VolumeBefore { get; set; }
+        public decimal? Bsw { get; set; }
+        public decimal? BswMax { get; set; }
     }
 
 }
