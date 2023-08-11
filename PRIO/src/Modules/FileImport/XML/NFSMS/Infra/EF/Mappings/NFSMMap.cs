@@ -21,6 +21,10 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Mappings
                 .HasColumnType("varchar")
                 .HasMaxLength(1000);
 
+            builder.Property(x => x.ReponsibleReport)
+                .HasColumnType("varchar")
+                .HasMaxLength(200);
+
             builder.Property(x => x.Methodology)
                 .HasColumnType("varchar")
                 .HasMaxLength(1000);
