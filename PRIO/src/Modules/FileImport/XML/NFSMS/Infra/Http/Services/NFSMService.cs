@@ -213,16 +213,30 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                         };
                         var listaBswElements = dadosBasicosElement?.Elements("LISTA_BSW")?.ToList();
 
-                        if (dadosBasicos.LISTA_BSW is not null && measurement.LISTA_BSW is not null && listaBswElements is not null && listaBswElements.Count == dadosBasicos.LISTA_BSW.Count)
+                        if (dadosBasicos.LISTA_BSW is not null && measurement.LISTA_BSW is not null && listaBswElements is not null)
                             for (var j = 0; j < dadosBasicos.LISTA_BSW.Count; ++j)
                             {
+                                var dateString = dadosBasicos.LISTA_BSW[j].DHA_FALHA_BSW_039;
+
+                                if (DateTime.TryParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
+                                {
+                                    var productionInDatabase = await _productionRepository.AnyByDate(date);
+
+                                    if (productionInDatabase is false)
+                                        throw new NotFoundException($"BSW não encontrado para esta data: {date}");
+                                }
+                                else
+                                {
+                                    throw new BadRequestException("Formato de data da medição do bsw(DHA_FALHA_BSW) inválido, deve ser: dd/MM/yyyy");
+                                }
+
                                 var bsw = dadosBasicos.LISTA_BSW[j];
-                                var bswElement = listaBswElements[j]?.Element("BSW");
+                                //var bswElement = listaBswElements[j]?.Element("BSW");
 
                                 var bswMapped = _mapper.Map<BSW, Bsw>(bsw);
-                                bswMapped.DHA_FALHA_BSW_039 = XmlUtils.DateTimeWithoutTimeParser(bsw.DHA_FALHA_BSW_039, errorsInFormat, bswElement?.Element("DHA_FALHA_BSW")?.Name.LocalName);
-                                bswMapped.DHA_PCT_BSW_039 = XmlUtils.DecimalParser(bsw.DHA_PCT_BSW_039, errorsInFormat, bswElement?.Element("PCT_BSW")?.Name.LocalName);
-                                bswMapped.DHA_PCT_MAXIMO_BSW_039 = XmlUtils.DecimalParser(bsw.DHA_PCT_MAXIMO_BSW_039, errorsInFormat, bswElement?.Element("PCT_MAXIMO_BSW")?.Name.LocalName);
+                                bswMapped.DHA_FALHA_BSW_039 = XmlUtils.DateTimeWithoutTimeParser(bsw.DHA_FALHA_BSW_039, errorsInFormat, "");
+                                bswMapped.DHA_PCT_BSW_039 = XmlUtils.DecimalParser(bsw.DHA_PCT_BSW_039, errorsInFormat, "");
+                                bswMapped.DHA_PCT_MAXIMO_BSW_039 = XmlUtils.DecimalParser(bsw.DHA_PCT_MAXIMO_BSW_039, errorsInFormat, "");
 
                                 measurement.LISTA_BSW.Add(bswMapped);
                             }
@@ -271,17 +285,31 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                         var calibrationListElements = dadosBasicosElement?.Elements("LISTA_CALIBRACAO")?.ToList();
 
-                        if (dadosBasicos.LISTA_CALIBRACAO is not null && measurement.LISTA_CALIBRACAO is not null && calibrationListElements is not null && calibrationListElements.Count == dadosBasicos.LISTA_CALIBRACAO.Count)
+                        if (dadosBasicos.LISTA_CALIBRACAO is not null && measurement.LISTA_CALIBRACAO is not null && calibrationListElements is not null)
                             for (var j = 0; j < dadosBasicos.LISTA_CALIBRACAO.Count; ++j)
                             {
+                                //var dateString = dadosBasicos.LISTA_CALIBRACAO[j].;
+
+                                //if (DateTime.TryParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
+                                //{
+                                //    var productionInDatabase = await _productionRepository.AnyByDate(date);
+
+                                //    if (productionInDatabase is false)
+                                //        throw new NotFoundException($"Medição não encontrada para esta data: {date}");
+                                //}
+                                //else
+                                //{
+                                //    throw new BadRequestException("Formato de data da medição(DHA_MEDIÇÂO) inválido, deve ser: dd/MM/yyyy");
+                                //}
+
                                 var calibration = dadosBasicos.LISTA_CALIBRACAO[j];
-                                var calibrationElement = calibrationListElements[j]?.Element("CALIBRACAO");
+                                //var calibrationElement = calibrationListElements[j]?.Element("CALIBRACAO");
 
                                 var calibrationMapped = _mapper.Map<CALIBRACAO, Calibration>(calibration);
-                                calibrationMapped.DHA_FALHA_CALIBRACAO_039 = XmlUtils.DateTimeWithoutTimeParser(calibration.DHA_FALHA_CALIBRACAO_039, errorsInFormat, calibrationElement?.Element("DHA_FALHA_CALIBRACAO")?.Name.LocalName);
+                                calibrationMapped.DHA_FALHA_CALIBRACAO_039 = XmlUtils.DateTimeWithoutTimeParser(calibration.DHA_FALHA_CALIBRACAO_039, errorsInFormat, string.Empty);
 
-                                calibrationMapped.DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039 = XmlUtils.DecimalParser(calibration.DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039, errorsInFormat, calibrationElement?.Element("NUM_FATOR_CALIBRACAO_ANTERIOR")?.Name.LocalName);
-                                calibrationMapped.DHA_NUM_FATOR_CALIBRACAO_ATUAL_039 = XmlUtils.DecimalParser(calibration.DHA_NUM_FATOR_CALIBRACAO_ATUAL_039, errorsInFormat, calibrationElement?.Element("NUM_FATOR_CALIBRACAO_ATUAL")?.Name.LocalName);
+                                calibrationMapped.DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039 = XmlUtils.DecimalParser(calibration.DHA_NUM_FATOR_CALIBRACAO_ANTERIOR_039, errorsInFormat, string.Empty);
+                                calibrationMapped.DHA_NUM_FATOR_CALIBRACAO_ATUAL_039 = XmlUtils.DecimalParser(calibration.DHA_NUM_FATOR_CALIBRACAO_ATUAL_039, errorsInFormat, string.Empty);
 
                                 measurement.LISTA_CALIBRACAO.Add(calibrationMapped);
                             }
@@ -354,8 +382,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     if (productionInDatabase is null)
                         throw new NotFoundException($"Medição não encontrada para esta data: {productionInXmlDate}");
 
-                    //if (productionInXml.DHA_MEDICAO_039 > nfsm.DHA_DETECCAO_039)
-                    //    throw new ConflictException("Data da medição não pode ser maior do que a data da detecção TAG: DHA_DETECÇÃO.");
+                    if (productionInXml.DHA_MEDICAO_039 > nfsm.DHA_DETECCAO_039)
+                        throw new ConflictException("Data da medição não pode ser maior do que a data da detecção TAG: DHA_DETECÇÃO.");
 
                     //if (productionInXml.DHA_MEDICAO_039 > nfsm.DHA_RETORNO_039)
                     //    throw new ConflictException("Data da medição não pode ser maior do que a data que a falha foi corrigida, TAG: DHA_RETORNO.");
