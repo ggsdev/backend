@@ -113,6 +113,7 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public string Action { get; set; } = string.Empty;
         public string Methodology { get; set; } = string.Empty;
         public List<VolumeFixedNfsm> MeasurementsFixed { get; set; } = new();
+        public List<BswFixedNfsm> BswsFixed { get; set; } = new();
     }
 
     public class VolumeFixedNfsm
@@ -120,5 +121,13 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public DateTime? MeasuredAt { get; set; }
         public decimal? VolumeAfter { get; set; }
         public decimal? VolumeBefore { get; set; }
+    }
+
+    public class BswFixedNfsm
+    {
+        public decimal? MaxBsw { get; set; }
+        public decimal? Bsw { get; set; }
+        public DateTime? Date { get; set; }
+
     }
 }

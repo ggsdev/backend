@@ -216,6 +216,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                         };
                         var listaBswElements = dadosBasicosElement?.Elements("LISTA_BSW")?.ToList();
 
+                        var bswsFixed = new List<BswFixedNfsm>();
+
                         if (dadosBasicos.LISTA_BSW is not null && measurement.LISTA_BSW is not null && listaBswElements is not null)
                             for (var j = 0; j < dadosBasicos.LISTA_BSW.Count; ++j)
                             {
@@ -237,10 +239,19 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                                 //var bswElement = listaBswElements[j]?.Element("BSW");
 
                                 var bswMapped = _mapper.Map<BSW, Bsw>(bsw);
-                                bswMapped.DHA_FALHA_BSW_039 = XmlUtils.DateTimeWithoutTimeParser(bsw.DHA_FALHA_BSW_039, errorsInFormat, "");
-                                bswMapped.DHA_PCT_BSW_039 = XmlUtils.DecimalParser(bsw.DHA_PCT_BSW_039, errorsInFormat, "");
-                                bswMapped.DHA_PCT_MAXIMO_BSW_039 = XmlUtils.DecimalParser(bsw.DHA_PCT_MAXIMO_BSW_039, errorsInFormat, "");
 
+                                bswMapped.DHA_FALHA_BSW_039 = XmlUtils.DateTimeWithoutTimeParser(bsw.DHA_FALHA_BSW_039, errorsInFormat, "");
+                                bswMapped.DHA_PCT_MAXIMO_BSW_039 = XmlUtils.DecimalParser(bsw.DHA_PCT_MAXIMO_BSW_039, errorsInFormat, "");
+                                bswMapped.DHA_PCT_BSW_039 = XmlUtils.DecimalParser(bsw.DHA_PCT_BSW_039, errorsInFormat, "");
+
+                                var bswFixed = new BswFixedNfsm
+                                {
+                                    Bsw = bswMapped.DHA_PCT_BSW_039,
+                                    Date = bswMapped.DHA_FALHA_BSW_039,
+                                    MaxBsw = bswMapped.DHA_PCT_MAXIMO_BSW_039
+                                };
+
+                                bswsFixed.Add(bswFixed);
                                 measurement.LISTA_BSW.Add(bswMapped);
                             }
 
@@ -281,8 +292,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                                     VolumeBefore = volumeMapped.DHA_MED_REGISTRADO_039
                                 };
 
-                                measurement.LISTA_VOLUME.Add(volumeMapped);
                                 measurementsFixed.Add(measurementFixed);
+                                measurement.LISTA_VOLUME.Add(volumeMapped);
                             }
                         }
 
@@ -335,7 +346,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                             Methodology = measurement039DTO.DHA_DSC_METODOLOGIA_039,
                             MeasurementsFixed = measurementsFixed,
                             ResponsibleReport = measurement039DTO.DHA_NOM_RESPONSAVEL_RELATO_039,
-                            TypeOfNotification = measurement039DTO.IND_TIPO_NOTIFICACAO_039
+                            TypeOfNotification = measurement039DTO.IND_TIPO_NOTIFICACAO_039,
+                            BswsFixed = bswsFixed
                         };
 
                         responseResult.NFSMs.Add(measurement039DTO);
