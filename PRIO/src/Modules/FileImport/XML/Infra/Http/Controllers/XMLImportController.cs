@@ -40,14 +40,6 @@ namespace PRIO.Controllers
             return Ok(result);
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetAll([FromQuery] string? acronym, [FromQuery] string? name)
-        //{
-        //    var result = await _service.GetAll(acronym, name);
-
-        //    return Ok(result);
-        //}
-
         [HttpPost("errors")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DTOFiles))]
         public ActionResult ErrorsDownload([FromBody] ErrorsImportViewModel data)
@@ -57,14 +49,6 @@ namespace PRIO.Controllers
             return Ok(result);
         }
 
-        //[HttpGet("download/{importId}")]
-        //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DTOFiles))]
-        //public async Task<ActionResult> DownloadProduction([FromRoute] Guid importId)
-        //{
-        //    var result = await _service.DownloadProductionXml(importId);
-
-        //    return Ok(result);
-        //}
     }
 }
 

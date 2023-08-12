@@ -14,6 +14,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models
         public DateTime ReturnDate { get; set; }
         public string? DescriptionFailure { get; set; }
         public short? TypeOfFailure { get; set; }
+        public string? TypeOfNotification { get; set; }
         public string ReponsibleReport { get; set; }
         public string Action { get; set; }
         public string Methodology { get; set; }
@@ -31,6 +32,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models
         public DateTime MeasuredAt { get; set; }
         public decimal? VolumeAfter { get; set; }
         public decimal? VolumeBefore { get; set; }
+        public decimal? Bsw { get; set; }
+        public decimal? BswMax { get; set; }
     }
 
 }
