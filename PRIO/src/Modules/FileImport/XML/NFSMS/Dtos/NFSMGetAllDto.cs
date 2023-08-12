@@ -6,6 +6,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Dtos
 {
     public class NFSMGetAllDto
     {
+        public Guid Id { get; set; }
         public string CodeFailure { get; set; }
         public DateTime DateOfOcurrence { get; set; }
         public DateTime DetectionDate { get; set; }

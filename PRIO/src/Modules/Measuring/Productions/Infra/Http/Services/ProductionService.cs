@@ -38,10 +38,12 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
         public async Task<ProductionDtoWithNullableDecimals> GetByDate(DateTime date)
         {
+            Console.WriteLine(date.ToString());
             var production = await _repository.GetExistingByDate(date);
 
+
             if (production is null)
-                throw new NotFoundException($"Produção na data: {date.ToString("dd/mm/yyyy")} não encontrada");
+                throw new NotFoundException($"Produção na data: {date.ToString("dd/MM/yyyy")} não encontrada");
 
             var dailyProduction = new DailyProduction
             {

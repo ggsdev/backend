@@ -616,6 +616,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                 var nfsmDTO = new NFSMGetAllDto
                 {
+                    Id = nfsm.Id,
                     Action = nfsm.Action,
                     CodeFailure = nfsm.CodeFailure,
                     DateOfOcurrence = nfsm.DateOfOcurrence,

@@ -75,6 +75,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Controllers
 
             return Ok(btpDTO);
         }
+
         [HttpGet("{wellId}/date")]
         public async Task<IActionResult> GetByDate([FromQuery] string date, [FromRoute] Guid wellId)
         {

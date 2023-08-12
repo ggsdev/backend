@@ -190,6 +190,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
             }
 
 
+
             groupDTO.GroupPermissions.RemoveAll(permission => permission.MenuOrder.Contains("."));
             return groupDTO;
         }
