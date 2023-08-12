@@ -30,7 +30,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models
         public decimal BSW { get; set; }
         public string ApplicationDate { get; set; }
         public bool IsValid { get; set; }
-        public BTPBase64 BTPBase64 { get; set; }
+        public BTPBase64? BTPBase64 { get; set; }
         public Well? Well { get; set; }
     }
 }
