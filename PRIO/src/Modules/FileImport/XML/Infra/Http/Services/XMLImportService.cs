@@ -2568,6 +2568,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         ImportedGas = data.GasDiferencial.TotalGasImported,
                         BurntGas = data.GasDiferencial.TotalGasBurnt,
                         FuelGas = data.GasDiferencial.TotalGasFuel,
+
                     };
 
                     dailyProduction.GasDiferencial = gasDiferencial;
