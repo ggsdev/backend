@@ -151,7 +151,6 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
                 }
             }
 
-            await _context.SaveChangesAsync();
 
             return group;
         }
