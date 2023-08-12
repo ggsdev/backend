@@ -169,16 +169,21 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             }
             else
             {
-                Console.WriteLine("o4");
                 object? MPointOilValue = worksheet.Cells[BTP.CellMPointOil].Value;
-                Console.WriteLine(BTP.CellMPointOil);
                 if (!(parts[0] is string))
                 {
-                    erros.Add("Erro: Valor da célula para ponto de medição do óleo não é uma string na célula " + parts[0]);
+                    erros.Add("Erro: Valor da célula para ponto de medição do óleo não é uma string na célula " + BTP.CellMPointOil);
                 }
                 else
                 {
-                    concatenatedValues.Add(MPointOilValue.ToString());
+                    if (MPointOilValue is not null)
+                    {
+                        concatenatedValues.Add(MPointOilValue.ToString());
+                    }
+                    else
+                    {
+                        erros.Add("Erro: Valor da célula para ponto de medição do óleo não é uma string na célula " + BTP.CellMPointOil);
+                    }
                 }
             }
             string concatenatedString = string.Join(", ", concatenatedValues);
