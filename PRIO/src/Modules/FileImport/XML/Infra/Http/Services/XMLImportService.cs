@@ -2660,6 +2660,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
         }
         public FileContentResponse DownloadErrors(List<string> errors)
         {
+
             using var memoryStream = new MemoryStream();
 
             var pdfDoc = new PdfDocument(new PdfWriter(memoryStream));

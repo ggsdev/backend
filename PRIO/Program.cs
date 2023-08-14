@@ -128,9 +128,9 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
         options.AddPolicy("CorsPolicy", builder =>
         {
             builder
-                .SetIsOriginAllowed(origin => true) // allow any origin
+                .AllowAnyOrigin()
           .AllowAnyHeader()
-          .AllowCredentials()
+          //.AllowCredentials()
           .WithMethods("GET", "PATCH", "POST", "DELETE", "OPTIONS")
           .SetPreflightMaxAge(TimeSpan.FromSeconds(3600));
         });
