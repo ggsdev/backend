@@ -161,13 +161,13 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                               .GetInstallationMeasurementByUepAndAnpCodAsync(dadosBasicos.DHA_COD_INSTALACAO_039, XmlUtils.File039);
 
                     if (installation is null)
-                        errorsInImport.Add($"Arquivo {data.File.FileName}, {k + 1}ª medição(DADOS_BASICOS): {ErrorMessages.NotFound<Installation>()}");
+                        errorsInImport.Add($"Arquivo {data.File.FileName}, {k + 1}ª notificação(DADOS_BASICOS): {ErrorMessages.NotFound<Installation>()}");
 
                     var measuringPoint = await _measuringPointRepository
                         .GetByTagMeasuringPointXML(dadosBasicos.COD_TAG_PONTO_MEDICAO_039, XmlUtils.File039);
 
                     if (measuringPoint is null)
-                        errorsInImport.Add($"Arquivo {data.File.FileName}, {k + 1}ª medição(DADOS_BASICOS), ponto de medição TAG: {dadosBasicos.COD_TAG_PONTO_MEDICAO_039}: {ErrorMessages.NotFound<MeasuringPoint>()}");
+                        errorsInImport.Add($"Arquivo {data.File.FileName}, {k + 1}ª notificação(DADOS_BASICOS), ponto de medição TAG: {dadosBasicos.COD_TAG_PONTO_MEDICAO_039}: {ErrorMessages.NotFound<MeasuringPoint>()}");
 
                     if (installation is not null && installation.MeasuringPoints is not null)
                     {
@@ -178,7 +178,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                                 contains = true;
 
                         if (contains is false)
-                            errorsInImport.Add($"Arquivo {data.File.FileName}, {k + 1}ª medição(DADOS_BASICOS), TAG do ponto de medição não encontrado nessa instalação");
+                            errorsInImport.Add($"Arquivo {data.File.FileName}, {k + 1}ª notificação(DADOS_BASICOS), TAG do ponto de medição não encontrado nessa instalação");
                     }
                     if (errorsInImport.Count == 0 && installation is not null && measuringPoint is not null)
                     {
@@ -266,23 +266,28 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                             {
 
                                 var dateString = dadosBasicos.LISTA_VOLUME[j].DHA_MEDICAO_039;
+                                var dateElement = volumesListElements.ElementAt(j).Element("DHA_MEDICAO");
+
+                                //var dateElement = volumesListElements.ElementAt(j).Element("DHA_MEDICAO");
+
+                                //var dateElement = volumesListElements.ElementAt(j).Element("DHA_MEDICAO");
 
                                 if (DateTime.TryParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
                                 {
                                     var productionInDatabase = await _productionRepository.AnyByDate(date);
 
                                     if (productionInDatabase is false)
-                                        errorsInImport.Add($"Medição não encontrada para esta data: {date}");
+                                        errorsInImport.Add($"Notificação de falha não encontrada para data: {date}");
                                 }
                                 else
                                 {
-                                    errorsInImport.Add("Formato de data da medição(DHA_MEDIÇÂO) inválido, deve ser: dd/MM/yyyy");
+                                    errorsInImport.Add("Formato de data da notificação de falha(DHA_MEDIÇÂO) inválido, deve ser: dd/MM/yyyy");
                                 }
 
                                 var volume = dadosBasicos.LISTA_VOLUME[j];
 
                                 var volumeMapped = _mapper.Map<VOLUME, Volume>(volume);
-                                volumeMapped.DHA_MEDICAO_039 = XmlUtils.DateTimeWithoutTimeParser(volume.DHA_MEDICAO_039, errorsInFormat, "");
+                                volumeMapped.DHA_MEDICAO_039 = XmlUtils.DateTimeWithoutTimeParser(volume.DHA_MEDICAO_039, errorsInFormat, dateElement?.Name.LocalName);
                                 volumeMapped.DHA_MED_DECLARADO_039 = XmlUtils.DecimalParser(volume.DHA_MED_DECLARADO_039, errorsInFormat, "");
                                 volumeMapped.DHA_MED_REGISTRADO_039 = XmlUtils.DecimalParser(volume.DHA_MED_REGISTRADO_039, errorsInFormat, "");
 
