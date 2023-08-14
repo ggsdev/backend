@@ -510,6 +510,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             var data = new BTPData
             {
                 Id = body.Validate.DataId,
+                BTPId = body.Validate.BTPId,
                 Type = body.Data.Type,
                 Filename = body.Data.Filename,
                 IsValid = body.Data.IsValid,
