@@ -70,7 +70,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Controllers
             return Ok(nfsm);
         }
 
-        [HttpGet("import-nfsm/errors")]
+        [HttpPost("import-nfsms/errors")]
         public ActionResult ErrorsDownload([FromBody] ErrorsImportViewModel data)
         {
             var result = _service.DownloadErrors(data.Errors);
