@@ -12,6 +12,7 @@
         private static readonly string _user = "User";
         private static readonly string _equipment = "MeasuringEquipment";
         private static readonly string _measuringPoint = "MeasuringPoint";
+        private static readonly string _production = "Production";
 
         //private readonly IStringLocalizer<ErrorMessages> _localizer;
 
@@ -53,6 +54,9 @@
             if (typeof(TModel).Name == _user)
                 return "Usuário" + message;
 
+            if (typeof(TModel).Name == _production)
+                return "Produção" + message;
+
             return message;
 
             //return _localizer[$"{typeof(TModel).Name}NotFound"];
@@ -86,6 +90,9 @@
             if (typeof(TModel).Name == _equipment)
                 return "Equipamento de medição" + message;
 
+            if (typeof(TModel).Name == _production)
+                return "Produção" + message;
+
             return message;
         }
 
@@ -117,6 +124,8 @@
             if (typeof(TModel).Name == _equipment)
                 return "Equipamento de medição" + message;
 
+
+
             return message;
         }
 
@@ -147,6 +156,8 @@
 
             if (typeof(TModel).Name == _equipment)
                 return "Esse Equipamento de medição" + message;
+
+
 
             return message;
         }

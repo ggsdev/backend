@@ -2620,7 +2620,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 }
             }
 
-            dailyProduction.TotalProduction = totalProduction;
+
+
+            dailyProduction.TotalProduction += totalProduction;
 
             foreach (var measuring in measurementsAdded)
             {
