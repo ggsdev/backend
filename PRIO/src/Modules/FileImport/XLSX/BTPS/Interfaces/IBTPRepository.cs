@@ -9,6 +9,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces
         Task<BTPData?> GetByWellAndDateXls(Guid wellId, string dateXls);
         Task<BTPData?> GetByWellAndApplicationDateXls(Guid wellId, string appDateXls);
         Task<List<BTPData>> GetAllBTPsDataByWellIdAsync(Guid wellId);
+        Task<BTPData?> GetAllBTPsDataByDataIdAsync(Guid dataId);
         Task<List<BTP>> GetAllBTPsByTypeAsync(string type);
         Task<BTP?> GetByIdAsync(Guid id);
         Task<BTPData?> GetByDataIdAsync(Guid id);

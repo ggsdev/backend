@@ -44,7 +44,11 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
         }
         public async Task<List<BTPData>> GetAllBTPsDataByWellIdAsync(Guid wellId)
         {
-            return await _context.BTPDatas.Include(x => x.Well).Include(x => x.BTPBase64).ThenInclude(x => x.User).ToListAsync();
+            return await _context.BTPDatas.Include(x => x.Well).Where(x => x.Well.Id == wellId).Include(x => x.BTPBase64).ThenInclude(x => x.User).ToListAsync();
+        }
+        public async Task<BTPData?> GetAllBTPsDataByDataIdAsync(Guid dataId)
+        {
+            return await _context.BTPDatas.Include(x => x.Well).Include(x => x.BTPBase64).ThenInclude(x => x.User).Where(x => x.Id == dataId).FirstOrDefaultAsync();
         }
         public async Task<BTPData?> GetByDataIdAsync(Guid id)
         {

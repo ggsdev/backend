@@ -510,6 +510,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             var data = new BTPData
             {
                 Id = body.Validate.DataId,
+                BTPId = body.Validate.BTPId,
                 Type = body.Data.Type,
                 Filename = body.Data.Filename,
                 IsValid = body.Data.IsValid,
@@ -581,6 +582,13 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
         {
             var BTPs = await _BTPRepository.GetAllBTPsDataByWellIdAsync(wellId);
             var btpsDTO = _mapper.Map<List<BTPData>, List<BTPDataDTO>>(BTPs);
+
+            return btpsDTO;
+        }
+        public async Task<BTPDataDTO> GetBTPDataByDataId(Guid dataId)
+        {
+            var BTPs = await _BTPRepository.GetAllBTPsDataByDataIdAsync(dataId);
+            var btpsDTO = _mapper.Map<BTPData, BTPDataDTO>(BTPs);
 
             return btpsDTO;
         }
