@@ -321,6 +321,14 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
             var installationsDTO = _mapper.Map<List<Installation>, List<InstallationDTO>>(installations);
             return installationsDTO;
         }
+        public async Task<List<InstallationDTO>> GetUEPsCreate(string table)
+        {
+            var installations = await _installationRepository
+                .GetUEPsCreateAsync(table);
+
+            var installationsDTO = _mapper.Map<List<Installation>, List<InstallationDTO>>(installations);
+            return installationsDTO;
+        }
 
         public async Task<InstallationWithFieldsEquipmentsDTO> GetInstallationById(Guid id)
         {
