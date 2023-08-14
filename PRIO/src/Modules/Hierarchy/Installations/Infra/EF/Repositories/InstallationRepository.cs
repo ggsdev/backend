@@ -192,6 +192,8 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
         {
             return await _context.Installations
                 .Include(x => x.Fields)
+                .Include(x => x.OilVolumeCalculation)
+                .Include(x => x.GasVolumeCalculation)
                 .Include(x => x.MeasuringPoints)
                 .Include(x => x.Cluster)
                 .FirstOrDefaultAsync(x => x.Id == id);

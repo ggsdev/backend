@@ -24,6 +24,10 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories
                 .AnyAsync(x => x.Id == id);
         }
 
+        public void UpdateAny<T>(T entity)
+        {
+            _context.Update(entity);
+        }
         public async Task AddRangeAsync(List<Measurement> measurements)
         {
             await _context.Measurements

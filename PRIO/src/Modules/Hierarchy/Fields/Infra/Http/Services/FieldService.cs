@@ -133,7 +133,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
             if (body.CodField is not null)
             {
                 var fieldInDatabase = await _fieldRepository.GetByCod(body.CodField);
-                if (fieldInDatabase is not null)
+                if (fieldInDatabase is not null && fieldInDatabase.Id != field.Id)
                     throw new ConflictException(ErrorMessages.CodAlreadyExists<Field>());
             }
 

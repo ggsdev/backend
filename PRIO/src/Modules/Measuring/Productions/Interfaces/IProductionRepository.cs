@@ -9,6 +9,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Interfaces
         Task<bool> AnyByDate(DateTime date);
         Task<Production?> GetProductionGasByDate(DateTime date);
         void Update(Production production);
+        Task SaveChangesAsync();
         Task AddOrUpdateProduction(Production production);
         Task AddGas(Gas gas);
         Task<List<Production>> GetAllProductions();

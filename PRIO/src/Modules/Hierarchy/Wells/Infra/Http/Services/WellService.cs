@@ -136,7 +136,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             if (body.CodWellAnp is not null)
             {
                 var wellInDatabase = await _wellRepository.GetByCode(body.CodWellAnp);
-                if (wellInDatabase is not null)
+                if (wellInDatabase is not null && wellInDatabase.Id != well.Id)
                     throw new ConflictException(ErrorMessages.CodAlreadyExists<Well>());
 
             }

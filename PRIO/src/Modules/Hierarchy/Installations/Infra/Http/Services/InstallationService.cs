@@ -360,7 +360,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
             if (body.CodInstallationAnp is not null)
             {
                 var installationInDatabase = await _installationRepository.GetByCod(body.CodInstallationAnp);
-                if (installationInDatabase is not null)
+                if (installationInDatabase is not null && installationInDatabase.Id != installation.Id)
                     throw new ConflictException(ErrorMessages.CodAlreadyExists<Installation>());
             }
 
@@ -372,6 +372,13 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                 throw new BadRequestException(ErrorMessages.UpdateToExistingValues<Installation>());
 
             installation.IsProcessingUnit = installation.UepCod == installation.CodInstallationAnp;
+
+            if (installation.IsProcessingUnit && installation.GasVolumeCalculation is null && installation.OilVolumeCalculation is null)
+            {
+                await _oilVolumeCalculationRepository.AddOilVolumeCalculationAsync(installation);
+                await _gasVolumeCalculationRepository.AddGasVolumeCalculationAsync(installation);
+            }
+
 
             if (body.ClusterId is not null && installation.Cluster?.Id != body.ClusterId)
             {

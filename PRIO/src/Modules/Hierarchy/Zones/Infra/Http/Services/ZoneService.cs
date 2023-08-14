@@ -125,7 +125,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
             if (body.CodZone is not null)
             {
                 var zoneInDatabase = await _zoneRepository.GetByCode(body.CodZone);
-                if (zoneInDatabase is not null)
+                if (zoneInDatabase is not null && zoneInDatabase.Id != zone.Id)
                     throw new ConflictException(ErrorMessages.CodAlreadyExists<Zone>());
             }
 

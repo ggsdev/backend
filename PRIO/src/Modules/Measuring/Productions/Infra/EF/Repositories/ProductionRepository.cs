@@ -14,6 +14,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
             _context = context;
         }
 
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
         public async Task AddProduction(Production production)
         {
             await _context.Productions.AddAsync(production);

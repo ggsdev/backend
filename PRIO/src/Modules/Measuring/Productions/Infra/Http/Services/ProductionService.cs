@@ -38,9 +38,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
         public async Task<ProductionDtoWithNullableDecimals> GetByDate(DateTime date)
         {
-            Console.WriteLine(date.ToString());
             var production = await _repository.GetExistingByDate(date);
-
 
             if (production is null)
                 throw new NotFoundException($"Produção na data: {date.ToString("dd/MM/yyyy")} não encontrada");
@@ -1733,5 +1731,48 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
             }
             return filesDto;
         }
+
+        //public async Task DeleteProduction(Guid id)
+        //{
+        //    var production = await _repository.GetById(id);
+
+        //    if (production is null)
+        //        throw new NotFoundException(ErrorMessages.NotFound<Production>());
+
+        //    if (production.IsActive is false)
+        //        throw new ConflictException(ErrorMessages.InactiveAlready<Production>());
+
+        //    production.IsActive = false;
+        //    production.DeletedAt = DateTime.UtcNow;
+
+        //    if (production.GasLinear is not null)
+        //    {
+        //        production.GasLinear.IsActive = false;
+        //        production.GasLinear.DeletedAt = DateTime.UtcNow;
+        //    }
+
+        //    if (production.GasDiferencial is not null)
+        //    {
+        //        production.GasDiferencial.IsActive = false;
+        //        production.GasDiferencial.DeletedAt = DateTime.UtcNow;
+        //    }
+
+        //    if (production.Gas is not null)
+        //    {
+        //        production.Gas.IsActive = false;
+        //        production.Gas.DeletedAt = DateTime.UtcNow;
+        //    }
+
+        //    if (production.Oil is not null)
+        //    {
+        //        production.Oil.IsActive = false;
+        //        production.Oil.DeletedAt = DateTime.UtcNow;
+        //    }
+
+
+        //    _repository.Update(production);
+
+        //    await _repository.SaveChangesAsync();
+        //}
     }
 }

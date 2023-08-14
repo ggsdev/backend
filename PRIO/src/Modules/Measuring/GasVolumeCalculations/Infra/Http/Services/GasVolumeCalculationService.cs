@@ -128,7 +128,7 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services
                 if (importGasInDatabase is not null)
                     throw new ConflictException($"Ponto de medição já possui relação com o cálculo da instalação {importGasInDatabase.GasVolumeCalculation.Installation.Name}");
                 if (measuringPoint.AssistanceGas is not null || measuringPoint.ExportGas is not null || measuringPoint.ImportGas is not null || measuringPoint.PilotGas is not null || measuringPoint.HighPressureGas is not null || measuringPoint.HPFlare is not null || measuringPoint.PurgeGas is not null || measuringPoint.LowPressureGas is not null || measuringPoint.LPFlare is not null)
-                    throw new ConflictException("Já existe um ponto de medição para essa configuração de cálculo");
+                    throw new ConflictException($"Já existe um ponto de medição para essa configuração de cálculo: {importGasInDatabase.StaticLocalMeasuringPoint}");
             }
             foreach (var lowPressureGas in body.LowPressureGases)
             {

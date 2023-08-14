@@ -6,7 +6,7 @@ using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Models
 {
-    public class Production
+    public class Production /*: BaseModel*/
     {
         public Guid Id { get; set; }
         public List<Measurement> Measurements { get; set; } = new();
