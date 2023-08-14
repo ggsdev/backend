@@ -106,14 +106,36 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             for (int i = 0; i < data.Files.Count; ++i)
             {
 
+                var relativeSchemaPath = string.Empty;
+
                 var fileContent = data.Files[i].ContentBase64.Replace("data:@file/xml;base64,", "");
 
+                switch (data.Files[i].FileType)
+                {
+
+                    case "001":
+                        relativeSchemaPath = Path.Combine("schemasXsd", "001.xsd");
+                        break;
+
+                    case "002":
+                        relativeSchemaPath = Path.Combine("schemasXsd", "002.xsd");
+                        break;
+
+                    case "003":
+                        relativeSchemaPath = Path.Combine("schemasXsd", "003.xsd");
+                        break;
+
+                }
+
+
                 #region pathing
-                var projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\.."));
-                var relativeSchemaPath = Path.Combine("src", "Modules", "FileImport", "XML", "FileContent", $"_{data.Files[i].FileType}\\Schema.xsd");
+                //var projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\.."));
+                //var relativeSchemaPath = Path.Combine("src", "Modules", "FileImport", "XML", "FileContent", $"_{data.Files[i].FileType}\\Schema.xsd");
                 var importId = Guid.NewGuid();
                 var pathXml = Path.GetTempPath() + importId + ".xml";
-                var pathSchema = Path.GetFullPath(Path.Combine(projectRoot, relativeSchemaPath));
+                //var pathSchema = Path.GetFullPath(Path.Combine(projectRoot, relativeSchemaPath)); 
+                var pathSchema = relativeSchemaPath;
+
                 #endregion
 
                 #region writting, parsing

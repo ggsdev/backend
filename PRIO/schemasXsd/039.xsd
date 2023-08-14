@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="a039">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LISTA_DADOS_BASICOS">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="DADOS_BASICOS">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="COD_TAG_EQUIPAMENTO" />
+                    <xs:element name="COD_FALHA_SUPERIOR" />
+                    <xs:element name="DSC_TIPO_FALHA" />
+                    <xs:element name="IND_TIPO_NOTIFICACAO" />
+                    <xs:element name="DHA_OCORRENCIA" />
+                    <xs:element name="DHA_DETECCAO" />
+                    <xs:element name="DHA_RETORNO" />
+                    <xs:element name="NUM_PREVISAO_RETORNO_DIAS" />
+                    <xs:element name="DSC_FALHA" />
+                    <xs:element name="DSC_ACAO" />
+                    <xs:element name="DSC_METODOLOGIA" />
+                    <xs:element name="NOM_RESPONSAVEL_RELATO" />
+                    <xs:element name="NUM_SERIE_EQUIPAMENTO" />
+                    <xs:element name="LISTA_BSW">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element minOccurs="0" maxOccurs="unbounded" name="BSW">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="DHA_FALHA_BSW" />
+                                <xs:element name="PCT_BSW" />
+                                <xs:element name="PCT_MAXIMO_BSW" />
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="LISTA_VOLUME">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element minOccurs="0" maxOccurs="unbounded" name="VOLUME">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="DHA_MEDICAO" />
+                                <xs:element name="MED_DECLARADO" />
+                                <xs:element name="MED_REGISTRADO" />
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="LISTA_CALIBRACAO">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element minOccurs="0" maxOccurs="unbounded" name="CALIBRACAO">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="DHA_FALHA_CALIBRACAO" />
+                                <xs:element name="NUM_FATOR_CALIBRACAO_ANTERIOR" />
+                                <xs:element name="NUM_FATOR_CALIBRACAO_ATUAL" />
+                                <xs:element name="NUM_CERTIFICADO_ANTERIOR" />
+                                <xs:element name="NUM_CERTIFICADO_ATUAL" />
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="COD_FALHA" use="required" />
+                  <xs:attribute name="COD_TAG_PONTO_MEDICAO" use="required" />
+                  <xs:attribute name="COD_INSTALACAO" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

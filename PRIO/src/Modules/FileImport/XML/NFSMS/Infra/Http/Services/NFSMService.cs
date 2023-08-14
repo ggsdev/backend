@@ -90,11 +90,12 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
             var errorsInFormat = new List<string>();
 
             #region pathing
-            var projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\.."));
-            var relativeSchemaPath = Path.Combine("src", "Modules", "FileImport", "XML", "FileContent", $"_039\\Schema.xsd");
+            //var projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\.."));
+            var relativeSchemaPath = Path.Combine("schemasXsd", "039.xsd");
             var importId = Guid.NewGuid();
             var pathXml = Path.GetTempPath() + importId + ".xml";
-            var pathSchema = Path.GetFullPath(Path.Combine(projectRoot, relativeSchemaPath));
+            //var pathSchema = Path.GetFullPath(Path.Combine(projectRoot, relativeSchemaPath));
+            var pathSchema = relativeSchemaPath;
             #endregion
 
             #region writting, parsing
