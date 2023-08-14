@@ -217,6 +217,82 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                 .Where(x => x.IsProcessingUnit == true)
                 .ToListAsync();
         }
+        public async Task<List<Installation>> GetUEPsCreateAsync(string table)
+        {
+            if (table == "oil")
+            {
+
+                return await _context.Installations
+                    .Include(x => x.Cluster)
+                    .Include(x => x.User)
+                    .Include(x => x.OilVolumeCalculation)
+                    .ThenInclude(x => x.Sections)
+                    .Include(x => x.OilVolumeCalculation)
+                    .ThenInclude(x => x.DrainVolumes)
+                    .Include(x => x.OilVolumeCalculation)
+                    .ThenInclude(x => x.DORs)
+                    .Include(x => x.OilVolumeCalculation)
+                    .ThenInclude(x => x.TOGRecoveredOils)
+                    .Include(x => x.GasVolumeCalculation)
+                    .Where(x => x.IsProcessingUnit == true)
+                    .Where(x => x.OilVolumeCalculation.Sections.Count == 0 &&
+                        x.OilVolumeCalculation.DrainVolumes.Count == 0 &&
+                        x.OilVolumeCalculation.DORs.Count == 0 &&
+                        x.OilVolumeCalculation.TOGRecoveredOils.Count == 0)
+                    .ToListAsync();
+            }
+            else if (table == "gas")
+            {
+                return await _context.Installations
+                    .Include(x => x.Cluster)
+                    .Include(x => x.User)
+                    .Include(x => x.GasVolumeCalculation)
+                    .ThenInclude(x => x.AssistanceGases)
+                    .Include(x => x.GasVolumeCalculation)
+                    .ThenInclude(x => x.LowPressureGases)
+                    .Include(x => x.GasVolumeCalculation)
+                    .ThenInclude(x => x.HighPressureGases)
+                    .Include(x => x.GasVolumeCalculation)
+                    .ThenInclude(x => x.HPFlares)
+                    .Include(x => x.GasVolumeCalculation)
+                    .ThenInclude(x => x.LPFlares)
+                    .Include(x => x.GasVolumeCalculation)
+                    .ThenInclude(x => x.ExportGases)
+                    .Include(x => x.GasVolumeCalculation)
+                    .ThenInclude(x => x.ImportGases)
+                    .Include(x => x.GasVolumeCalculation)
+                    .ThenInclude(x => x.PilotGases)
+                    .Include(x => x.GasVolumeCalculation)
+                    .ThenInclude(x => x.PurgeGases)
+                    .Where(x => x.IsProcessingUnit == true)
+                    .Where(x => x.GasVolumeCalculation.AssistanceGases.Count == 0 &&
+                        x.GasVolumeCalculation.LowPressureGases.Count == 0 &&
+                        x.GasVolumeCalculation.HighPressureGases.Count == 0 &&
+                        x.GasVolumeCalculation.LPFlares.Count == 0 &&
+                        x.GasVolumeCalculation.ExportGases.Count == 0 &&
+                        x.GasVolumeCalculation.ImportGases.Count == 0 &&
+                        x.GasVolumeCalculation.PilotGases.Count == 0 &&
+                        x.GasVolumeCalculation.PurgeGases.Count == 0 &&
+                        x.GasVolumeCalculation.HPFlares.Count == 0
+
+                        )
+                    .ToListAsync();
+            }
+            return await _context.Installations
+                    .Include(x => x.Cluster)
+                    .Include(x => x.User)
+                    .Include(x => x.OilVolumeCalculation)
+                    .ThenInclude(x => x.Sections)
+                    .Include(x => x.OilVolumeCalculation)
+                    .ThenInclude(x => x.DrainVolumes)
+                    .Include(x => x.OilVolumeCalculation)
+                    .ThenInclude(x => x.DORs)
+                    .Include(x => x.OilVolumeCalculation)
+                    .ThenInclude(x => x.TOGRecoveredOils)
+                    .Include(x => x.GasVolumeCalculation)
+                    .Where(x => x.IsProcessingUnit == true)
+                    .ToListAsync();
+        }
 
         public void Update(Installation installation)
         {
