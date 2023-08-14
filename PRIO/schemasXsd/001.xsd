@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<xs:schema id="a001" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xs:element name="a001">
+    <xs:complexType>      
+      <xs:sequence>
+        <xs:element name="LISTA_DADOS_BASICOS" minOccurs="1" maxOccurs="1">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="DADOS_BASICOS" minOccurs="1" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="LISTA_CONFIGURACAO_CV" minOccurs="1" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="CONFIGURACAO_CV" minOccurs="1" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="NUM_SERIE_COMPUTADOR_VAZAO" type="xs:string" minOccurs="1" />
+                                <xs:element name="DHA_COLETA" type="xs:string" minOccurs="1" />
+                                <xs:element name="MED_TEMPERATURA" type="xs:string" minOccurs="1" />
+                                <xs:element name="MED_PRESSAO_ATMSA" type="xs:string" minOccurs="1" />
+                                <xs:element name="MED_PRESSAO_RFRNA" type="xs:string" minOccurs="1" />
+                                <xs:element name="MED_DENSIDADE_RELATIVA" type="xs:string" minOccurs="0" />
+                                <xs:element name="DSC_VERSAO_SOFTWARE" type="xs:string" minOccurs="1" />
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="LISTA_ELEMENTO_PRIMARIO" minOccurs="1" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="ELEMENTO_PRIMARIO" minOccurs="1" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="ICE_METER_FACTOR_1" type="xs:string" minOccurs="1" />
+                                <xs:element name="ICE_METER_FACTOR_2" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_METER_FACTOR_3" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_METER_FACTOR_4" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_METER_FACTOR_5" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_METER_FACTOR_6" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_METER_FACTOR_7" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_METER_FACTOR_8" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_METER_FACTOR_9" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_METER_FACTOR_10" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_METER_FACTOR_11" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_METER_FACTOR_12" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_METER_FACTOR_13" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_METER_FACTOR_14" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_METER_FACTOR_15" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_METER_FACTOR_1" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_METER_FACTOR_2" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_METER_FACTOR_3" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_METER_FACTOR_4" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_METER_FACTOR_5" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_METER_FACTOR_6" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_METER_FACTOR_7" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_METER_FACTOR_8" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_METER_FACTOR_9" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_METER_FACTOR_10" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_METER_FACTOR_11" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_METER_FACTOR_12" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_METER_FACTOR_13" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_METER_FACTOR_14" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_METER_FACTOR_15" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_K_FACTOR_1" type="xs:string" minOccurs="1" />
+                                <xs:element name="ICE_K_FACTOR_2" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_K_FACTOR_3" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_K_FACTOR_4" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_K_FACTOR_5" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_K_FACTOR_6" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_K_FACTOR_7" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_K_FACTOR_8" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_K_FACTOR_9" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_K_FACTOR_10" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_K_FACTOR_11" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_K_FACTOR_12" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_K_FACTOR_13" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_K_FACTOR_14" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_K_FACTOR_15" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_K_FACTOR_1" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_K_FACTOR_2" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_K_FACTOR_3" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_K_FACTOR_4" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_K_FACTOR_5" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_K_FACTOR_6" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_K_FACTOR_7" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_K_FACTOR_8" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_K_FACTOR_9" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_K_FACTOR_10" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_K_FACTOR_11" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_K_FACTOR_12" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_K_FACTOR_13" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_K_FACTOR_14" type="xs:string" minOccurs="0" />
+                                <xs:element name="QTD_PULSOS_K_FACTOR_15" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_CUTOFF" type="xs:string" minOccurs="1" />
+                                <xs:element name="ICE_LIMITE_SPRR_ALARME" type="xs:string" minOccurs="1" />
+                                <xs:element name="ICE_LIMITE_INFRR_ALARME" type="xs:string" minOccurs="1" />
+                                <xs:element name="IND_HABILITACAO_ALARME" type="xs:string" minOccurs="1" />
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="LISTA_INSTRUMENTO_PRESSAO" minOccurs="1" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="INSTRUMENTO_PRESSAO" minOccurs="1" maxOccurs="unbounded">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="NUM_SERIE" type="xs:string" minOccurs="1" />
+                                <xs:element name="MED_PRSO_LIMITE_SPRR_ALRME" type="xs:string" minOccurs="1" />
+                                <xs:element name="MED_PRSO_LMTE_INFRR_ALRME" type="xs:string" minOccurs="1" />
+                                <xs:element name="IND_HABILITACAO_ALARME" type="xs:string" minOccurs="1" />
+                                <xs:element name="MED_PRSO_ADOTADA_FALHA" type="xs:string" minOccurs="1" />
+                                <xs:element name="DSC_ESTADO_INSNO_CASO_FALHA" type="xs:string" minOccurs="1" />
+                                <xs:element name="IND_TIPO_PRESSAO_CONSIDERADA" type="xs:string" minOccurs="1" />
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="LISTA_INSTRUMENTO_TEMPERATURA" minOccurs="1" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="INSTRUMENTO_TEMPERATURA" minOccurs="1" maxOccurs="unbounded">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="NUM_SERIE" type="xs:string" minOccurs="1" />
+                                <xs:element name="MED_TMPTA_SPRR_ALARME" type="xs:string" minOccurs="1" />
+                                <xs:element name="MED_TMPTA_INFRR_ALRME" type="xs:string" minOccurs="1" />
+                                <xs:element name="IND_HABILITACAO_ALARME" type="xs:string" minOccurs="1" />
+                                <xs:element name="MED_TMPTA_ADTTA_FALHA" type="xs:string" minOccurs="1" />
+                                <xs:element name="DSC_ESTADO_INSTRUMENTO_FALHA" type="xs:string" minOccurs="1" />
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="LISTA_ANALISADOR_DENSIDADE" minOccurs="0" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="ANALISADOR_DENSIDADE" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="NUM_SERIE" type="xs:string" minOccurs="1" />
+                                <xs:element name="PCT_LIMITE_SUPERIOR" type="xs:string" minOccurs="0" />
+                                <xs:element name="PCT_LIMITE_INFERIOR" type="xs:string" minOccurs="0" />
+                                <xs:element name="IND_HABILITACAO_ALARME" type="xs:string" minOccurs="0" />
+                                <xs:element name="PCT_ADOTADO_CASO_FALHA" type="xs:string" minOccurs="0" />
+                                <xs:element name="DSC_ESTADO_INSTRUMENTO_FALHA" type="xs:string" minOccurs="0" />
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="LISTA_ANALISADOR_BSW" minOccurs="0" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="ANALISADOR_BSW" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="NUM_SERIE" type="xs:string" minOccurs="1" />
+                                <xs:element name="PCT_LIMITE_SUPERIOR" type="xs:string" minOccurs="0" />
+                                <xs:element name="PCT_LIMITE_INFERIOR" type="xs:string" minOccurs="0" />
+                                <xs:element name="IND_HABILITACAO_ALARME" type="xs:string" minOccurs="0" />
+                                <xs:element name="PCT_ADOTADO_CASO_FALHA" type="xs:string" minOccurs="0" />
+                                <xs:element name="DSC_ESTADO_INSTRUMENTO_FALHA" type="xs:string" minOccurs="0" />
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="LISTA_PRODUCAO" minOccurs="1" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="PRODUCAO" minOccurs="1" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="DHA_INICIO_PERIODO_MEDICAO" type="xs:string" minOccurs="1" />
+                                <xs:element name="DHA_FIM_PERIODO_MEDICAO" type="xs:string" minOccurs="1" />
+                                <xs:element name="ICE_DENSIDADADE_RELATIVA" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_CORRECAO_BSW" type="xs:string" minOccurs="0" />
+                                <xs:element name="ICE_CORRECAO_PRESSAO_LIQUIDO" type="xs:string" minOccurs="1" />
+                                <xs:element name="ICE_CRRCO_TEMPERATURA_LIQUIDO" type="xs:string" minOccurs="1" />
+                                <xs:element name="MED_PRESSAO_ESTATICA" type="xs:string" minOccurs="1" />
+                                <xs:element name="MED_TMPTA_FLUIDO" type="xs:string" minOccurs="1" />
+                                <xs:element name="MED_VOLUME_BRTO_CRRGO_MVMDO" type="xs:string" minOccurs="1" />
+                                <xs:element name="MED_VOLUME_BRUTO_MVMDO" type="xs:string" minOccurs="1" />
+                                <xs:element name="MED_VOLUME_LIQUIDO_MVMDO" type="xs:string" minOccurs="1" />
+                                <xs:element name="MED_VOLUME_TTLZO_FIM_PRDO" type="xs:string" minOccurs="1" />
+                                <xs:element name="MED_VOLUME_TTLZO_INCO_PRDO" type="xs:string" minOccurs="1" />
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="NUM_SERIE_ELEMENTO_PRIMARIO" type="xs:string" use="required" />
+                  <xs:attribute name="COD_INSTALACAO" type="xs:string" use="required" />
+                  <xs:attribute name="COD_TAG_PONTO_MEDICAO" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="DADOS_ADICIONAIS_GERACAO_XML" minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="VERSAO_GERADOR" type="xs:string" minOccurs="1" maxOccurs="1" />
+              <xs:element name="NOME_MAQUINA" type="xs:string" minOccurs="1" maxOccurs="1" />
+              <xs:element name="ENDERECO_IP" type="xs:string" minOccurs="1" maxOccurs="1" />
+              <xs:element name="ENDERECO_MAC" type="xs:string" minOccurs="1" maxOccurs="1" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>      
+    </xs:complexType>    
+  </xs:element>
+</xs:schema>

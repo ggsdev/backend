@@ -4,12 +4,16 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.ViewModels
 {
     public class CreateGasVolumeCalculationViewModel
     {
-        //public Installation Installation { get; set; }
-        [Required(ErrorMessage = "LocalPoint is required")]
-        public string LocalPoint { get; set; }
-        [Required(ErrorMessage = "TagMeasuringPoint is required")]
-        public string TagMeasuringPoint { get; set; }
-        [Required(ErrorMessage = "Applicable is required")]
-        public bool Applicable { get; set; }
+        [Required(ErrorMessage = "UepCode is required")]
+        public string UepCode { get; set; }
+        public List<AssistanceGasViewModel> AssistanceGases { get; set; } = new();
+        public List<ExportGasViewModel> ExportGases { get; set; } = new();
+        public List<HighPressureGasViewModel> HighPressureGases { get; set; } = new();
+        public List<HPFlareViewModel> HPFlares { get; set; } = new();
+        public List<ImportGasViewModel> ImportGases { get; set; } = new();
+        public List<LowPressureGasViewModel> LowPressureGases { get; set; } = new();
+        public List<LPFlareViewModel> LPFlares { get; set; } = new();
+        public List<PilotGasViewModel> PilotGases { get; set; } = new();
+        public List<PurgeGasViewModel> PurgeGases { get; set; } = new();
     }
 }

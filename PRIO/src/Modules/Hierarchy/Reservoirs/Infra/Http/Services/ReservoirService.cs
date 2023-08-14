@@ -34,9 +34,6 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
 
         public async Task<CreateUpdateReservoirDTO> CreateReservoir(CreateReservoirViewModel body, User user)
         {
-            var reservoirExistingCode = await _reservoirRepository.GetByCode(body.CodReservoir);
-            if (reservoirExistingCode is not null)
-                throw new ConflictException(ErrorMessages.CodAlreadyExists<Reservoir>());
 
             var zoneInDatabase = await _zoneRepository.GetOnlyZone(body.ZoneId);
 
@@ -46,6 +43,10 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
             if (zoneInDatabase.IsActive is false)
                 throw new ConflictException(ErrorMessages.Inactive<Zone>());
 
+            var reservoirSameName = await _reservoirRepository.GetByNameAsync(body.Name);
+            if (reservoirSameName is not null)
+                throw new ConflictException($"Já existe um reservatório com o nome: {body.Name}.");
+
             var reservoirId = Guid.NewGuid();
 
             var reservoir = new Reservoir
@@ -53,7 +54,6 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
                 Id = reservoirId,
                 Name = body.Name,
                 Description = body.Description,
-                CodReservoir = body.CodReservoir is not null ? body.CodReservoir : GenerateCode.Generate(body.Name),
                 Zone = zoneInDatabase,
                 User = user,
                 IsActive = body.IsActive is not null ? body.IsActive.Value : true,
@@ -102,17 +102,6 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
             if (reservoir.IsActive is false)
                 throw new ConflictException(ErrorMessages.Inactive<Reservoir>());
 
-            if (reservoir.Completions.Count > 0)
-                if (body.CodReservoir is not null)
-                    if (body.CodReservoir != reservoir.CodReservoir)
-                        throw new ConflictException(ErrorMessages.CodCantBeUpdated<Reservoir>());
-
-            if (body.CodReservoir is not null)
-            {
-                var reservoirInDatabase = await _reservoirRepository.GetByCode(body.CodReservoir);
-                if (reservoirInDatabase is not null)
-                    throw new ConflictException(ErrorMessages.CodAlreadyExists<Reservoir>());
-            }
 
             var beforeChangesReservoir = _mapper.Map<ReservoirHistoryDTO>(reservoir);
 

@@ -5,11 +5,15 @@ using PRIO.src.Modules.ControlAccess.Menus.Dtos;
 using PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.FileImport.XLSX.BTPS.Dtos;
+using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XML.Dtos;
 using PRIO.src.Modules.FileImport.XML.FileContent._001;
 using PRIO.src.Modules.FileImport.XML.FileContent._002;
 using PRIO.src.Modules.FileImport.XML.FileContent._003;
 using PRIO.src.Modules.FileImport.XML.FileContent._039;
+using PRIO.src.Modules.FileImport.XML.NFSMS.Dtos;
+using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Clusters.Dtos;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Completions.Dtos;
@@ -26,6 +30,9 @@ using PRIO.src.Modules.Hierarchy.Zones.Dtos;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Dtos;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.GasVolumeCalculations.Dtos;
+using PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Dtos;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Dtos;
@@ -66,9 +73,16 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<Measurement, _039DTO>();
             CreateMap<_039DTO, Measurement>();
             CreateMap<Measurement, Client039DTO>();
+            CreateMap<Volume, VolumeDto>();
+            CreateMap<Calibration, CalibrationDto>();
+            CreateMap<Bsw, BswDto>();
+
+
+
+
+
             CreateMap<Measurement, Client001DTO>();
             CreateMap<Measurement, Client002DTO>();
-            CreateMap<Measurement, Client003DTO>();
             #endregion
 
             #region 001
@@ -82,6 +96,13 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<_002PMGL, Measurement>();
             CreateMap<Measurement, _002DTO>();
             CreateMap<_002DTO, Measurement>();
+            CreateMap<Client002DTO, Measurement>();
+            CreateMap<Client001DTO, Measurement>();
+            CreateMap<Client003DTO, Measurement>();
+            CreateMap<Client039DTO, Measurement>();
+            CreateMap<MeasurementHistory, MeasurementHistoryDto>()
+                .ForMember(dest => dest.ImportId, opt => opt.MapFrom(src =>
+                src.Id));
 
             #endregion
 
@@ -89,6 +110,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<_003PMGD, Measurement>();
             CreateMap<Measurement, _003DTO>();
             CreateMap<_003DTO, Measurement>();
+            CreateMap<Measurement, Client003DTO>();
 
             #endregion
 
@@ -131,6 +153,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<Installation, InstallationWithFieldsEquipmentsDTO>();
 
             CreateMap<Field, FieldDTO>();
+            CreateMap<Field, FieldWithoutWellDTO>();
             CreateMap<Field, CreateUpdateFieldDTO>();
             CreateMap<Field, FieldHistoryDTO>();
             CreateMap<Field, FieldWithoutInstallationDTO>();
@@ -151,23 +174,23 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<Well, WellDTO>();
             CreateMap<Well, WellHistoryDTO>();
             CreateMap<Well, CreateUpdateWellDTO>()
-                .ForMember(dest => dest.WaterDepth, opt => opt.MapFrom(src => TruncateTwoDecimals(src.WaterDepth)))
-                .ForMember(dest => dest.TopOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.TopOfPerforated)))
-                .ForMember(dest => dest.BaseOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.BaseOfPerforated)));
+                .ForMember(dest => dest.WaterDepth, opt => opt.MapFrom(src => TruncateTwoDecimals(src.WaterDepth)));
+            //.ForMember(dest => dest.TopOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.TopOfPerforated)))
+            //.ForMember(dest => dest.BaseOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.BaseOfPerforated)));
 
             CreateMap<Well, WellWithoutFieldDTO>()
-                .ForMember(dest => dest.WaterDepth, opt => opt.MapFrom(src => TruncateTwoDecimals(src.WaterDepth)))
-                .ForMember(dest => dest.TopOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.TopOfPerforated)))
-                .ForMember(dest => dest.BaseOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.BaseOfPerforated)));
+                .ForMember(dest => dest.WaterDepth, opt => opt.MapFrom(src => TruncateTwoDecimals(src.WaterDepth)));
+            //.ForMember(dest => dest.TopOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.TopOfPerforated)))
+            //.ForMember(dest => dest.BaseOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.BaseOfPerforated)));
 
             CreateMap<Well, WellWithoutCompletionDTO>()
-                .ForMember(dest => dest.WaterDepth, opt => opt.MapFrom(src => TruncateTwoDecimals(src.WaterDepth)))
-                .ForMember(dest => dest.TopOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.TopOfPerforated)))
-                .ForMember(dest => dest.BaseOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.BaseOfPerforated)));
+                .ForMember(dest => dest.WaterDepth, opt => opt.MapFrom(src => TruncateTwoDecimals(src.WaterDepth)));
+            //.ForMember(dest => dest.TopOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.TopOfPerforated)))
+            //.ForMember(dest => dest.BaseOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.BaseOfPerforated)));
 
-            CreateMap<Well, WellWithFieldAndCompletionsDTO>().ForMember(dest => dest.WaterDepth, opt => opt.MapFrom(src => TruncateTwoDecimals(src.WaterDepth)))
-                .ForMember(dest => dest.TopOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.TopOfPerforated)))
-                .ForMember(dest => dest.BaseOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.BaseOfPerforated)));
+            CreateMap<Well, WellWithFieldAndCompletionsDTO>().ForMember(dest => dest.WaterDepth, opt => opt.MapFrom(src => TruncateTwoDecimals(src.WaterDepth)));
+            //.ForMember(dest => dest.TopOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.TopOfPerforated)))
+            //.ForMember(dest => dest.BaseOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.BaseOfPerforated)));
 
             CreateMap<Completion, CompletionDTO>();
             CreateMap<Completion, CompletionHistoryDTO>();
@@ -193,8 +216,28 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<DrainVolume, DrainVolumeWithEquipmentDTO>();
             CreateMap<TOGRecoveredOil, TOGRecoveredOilWithEquipmentDTO>();
             CreateMap<DOR, DORWithEquipmentDTO>();
+            CreateMap<NFSM, NFSMGetAllDto>();
+
+            CreateMap<MeasurementHistory, MeasurementHistoryWithMeasurementsDto>()
+                .ForMember(dest => dest.ImportId, opt => opt.MapFrom(src =>
+                src.Id));
+
+            CreateMap<GasVolumeCalculation, GasVolumeCalculationDto>();
+            CreateMap<AssistanceGas, AssistanceGasDto>();
+            CreateMap<ExportGas, ExportGasDto>();
+            CreateMap<HighPressureGas, HighPressureGasDto>();
+            CreateMap<HPFlare, HPFlareDto>();
+            CreateMap<ImportGas, ImportGasDto>();
+            CreateMap<LowPressureGas, LowPressureGasDto>();
+            CreateMap<LPFlare, LPFlareDto>();
+            CreateMap<PilotGas, PilotGasDto>();
+            CreateMap<PurgeGas, PurgeGasDto>();
             #endregion
 
+            CreateMap<BTP, BTPDTO>();
+            CreateMap<BTPBase64, BTPBase64DTO>();
+            CreateMap<BTPData, BTPDataDTO>();
+            CreateMap<FieldFR, FRFieldDTO>();
         }
 
         private static decimal? TruncateTwoDecimals(decimal? value)

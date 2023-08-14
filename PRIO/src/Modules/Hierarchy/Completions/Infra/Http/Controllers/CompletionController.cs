@@ -33,6 +33,19 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Controllers
             return Created($"completions/{completionDTO.Id}", completionDTO);
         }
 
+        [HttpPost("double")]
+        public async Task<IActionResult> CreateDouble([FromBody] CreateDoubleCompletionViewModel body)
+        {
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+
+            var completionDTO = await _completionService.CreateDoubleCompletion(body, user);
+            return Created($"completions/{completionDTO.Id}", completionDTO);
+        }
+
         [HttpGet]
         public async Task<IActionResult> Get()
         {

@@ -49,6 +49,10 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             if (field.IsActive is false)
                 throw new NotFoundException(ErrorMessages.Inactive<Field>());
 
+            var wellSameName = await _wellRepository.GetByNameAsync(body.Name);
+            if (wellSameName is not null)
+                throw new ConflictException($"Já existe um poço com o nome: {body.Name}");
+
             var wellId = Guid.NewGuid();
 
             var well = new Well
@@ -64,8 +68,6 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
                 StatusOperator = body.StatusOperator,
                 Type = body.Type,
                 WaterDepth = body.WaterDepth,
-                TopOfPerforated = body.TopOfPerforated,
-                BaseOfPerforated = body.BaseOfPerforated,
                 ArtificialLift = body.ArtificialLift,
                 Latitude4C = body.Latitude4C,
                 Longitude4C = body.Longitude4C,

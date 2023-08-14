@@ -11,7 +11,10 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Mappings
             builder.ToTable("GasVolumeCalculations");
 
             builder.HasOne(x => x.Installation)
-                .WithMany(d => d.GasVolumeCalculations);
+                .WithOne(d => d.GasVolumeCalculation)
+                .HasForeignKey<GasVolumeCalculation>("InstallationId")
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
         }
     }
 }

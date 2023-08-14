@@ -23,11 +23,14 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Repositories
                .ThenInclude(x => x!.Cluster)
                .FirstOrDefaultAsync(x => x.Id == id);
         }
-        public async Task<Reservoir?> GetByCode(string? cod)
+        public async Task<Reservoir?> GetByNameAsync(string? name)
         {
             return await _context.Reservoirs
-                 .FirstOrDefaultAsync(x => x.CodReservoir == cod);
+               .Include(x => x.User)
+               .Include(x => x.Zone)
+               .FirstOrDefaultAsync(x => x.Name == name);
         }
+
         public async Task<Reservoir?> GetWithZoneAsync(Guid? id)
         {
             return await _context.Reservoirs

@@ -58,6 +58,10 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
             if (installationInDatabase.IsActive is false)
                 throw new ConflictException(ErrorMessages.Inactive<Installation>());
 
+            var fieldSameName = await _fieldRepository.GetByNameAsync(body.Name);
+            if (fieldSameName is not null)
+                throw new ConflictException($"Já existe um campo com o nome: {body.Name}.");
+
             var fieldId = Guid.NewGuid();
 
             var field = new Field

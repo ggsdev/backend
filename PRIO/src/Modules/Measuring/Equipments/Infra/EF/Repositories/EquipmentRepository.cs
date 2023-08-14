@@ -17,6 +17,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Repositories
         public async Task<MeasuringEquipment?> GetByIdAsync(Guid? id)
         {
             return await _context.MeasuringEquipments
+                .Include(x => x.MeasuringPoint)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
         public async Task AddAsync(MeasuringEquipment installation)

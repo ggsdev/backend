@@ -22,9 +22,35 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
         {
             return await _context.Fields
                 .Include(x => x.User)
+               .Include(x => x.Wells)
                .Include(x => x.Installation)
                .ThenInclude(i => i!.Cluster)
                .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task<List<Field>> GetFieldsByUepCode(string code)
+        {
+            return await _context.Fields
+                .Include(x => x.Installation)
+                .Where(x => x.Installation.UepCod == code && x.IsActive)
+                .ToListAsync();
+        }
+
+
+        public async Task<List<Field>> GetFieldsByInstallationId(Guid id)
+        {
+            return await _context.Fields
+               .Include(x => x.Installation)
+               .Where(x => x.Installation.Id == id && x.IsActive)
+               .ToListAsync();
+        }
+
+        public async Task<Field?> GetByNameAsync(string? name)
+        {
+            return await _context.Fields
+                .Include(x => x.User)
+               .Include(x => x.Installation)
+               .FirstOrDefaultAsync(x => x.Name == name);
         }
 
         public async Task<Field?> GetFieldAndChildren(Guid? id)
@@ -63,6 +89,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
             return await _context.Fields
                .Include(x => x.Installation)
                .ThenInclude(i => i!.Cluster)
+               .Include(x => x.Wells)
                .Include(x => x.User)
                .ToListAsync();
         }

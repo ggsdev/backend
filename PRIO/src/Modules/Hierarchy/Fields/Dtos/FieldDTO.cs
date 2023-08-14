@@ -1,5 +1,6 @@
 ﻿using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.Hierarchy.Installations.Dtos;
+using PRIO.src.Modules.Hierarchy.Wells.Dtos;
 
 namespace PRIO.src.Modules.Hierarchy.Fields.Dtos
 {
@@ -14,6 +15,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Dtos
         public string? Location { get; set; }
         public UserDTO? User { get; set; }
         public InstallationDTO? Installation { get; set; }
+        public List<WellWithoutFieldDTO>? Wells { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public bool? IsActive { get; set; }

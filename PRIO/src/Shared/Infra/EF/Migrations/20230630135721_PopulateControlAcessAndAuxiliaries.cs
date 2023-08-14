@@ -84,26 +84,19 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Fluid", "Óleo",  DateTime.UtcNow },
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Fluid", "Água",  DateTime.UtcNow },
 
-                //new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Type", "EC",  DateTime.UtcNow },
-                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Type", "Elemento Secundário",  DateTime.UtcNow },
-                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Type", "Elemento Primário",  DateTime.UtcNow },
-                //new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Type", "CV",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Type", "EC",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Type", "ES",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Type", "EP",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "Type", "CV",  DateTime.UtcNow },
 
-                // Elemento Primário
-                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Medidor Ultrassônico",  DateTime.UtcNow },
-                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Medidor Coriolis",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Medidor ultrassônico",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Analisador de BSW",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Medidor coriolis",  DateTime.UtcNow },
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Medidor Turbina",  DateTime.UtcNow },
-                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Medidor Magnético",  DateTime.UtcNow },
-                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Medidor Multifásico",  DateTime.UtcNow },
-                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Medidor de Deslocamento Positivo",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Medidor magnético",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Apropriação ao poço",  DateTime.UtcNow },
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Placa de orifício",  DateTime.UtcNow },
-                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Outros",  DateTime.UtcNow },
-
-                //Elemento Secundário
-                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Transmissor de Pressão Diferencial",  DateTime.UtcNow },
-                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Transmissor de Pressão Estátca",  DateTime.UtcNow },
-                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Transmissor de Temperatura",  DateTime.UtcNow },
-                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Transmissor Multivariável",  DateTime.UtcNow },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypeEquipment", "Proving",  DateTime.UtcNow },
 
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypePoint", "Operacional",  DateTime.UtcNow },
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypePoint", "Medição Fiscal",  DateTime.UtcNow },
@@ -167,10 +160,11 @@ namespace PRIO.src.Shared.Infra.EF.Migrations
 
             var usersData = new List<object[]>
             {
-                new object[] { "Prinna", "pmonteiro@prio3.com.br", null, "pmonteiro", Guid.NewGuid() } ,
-                new object[] { "Alfredo", "amolisani@prio3.com.br", null, "amolisani", Guid.NewGuid()},
-                new object[] { "Thais", "tgoncalves@prio3.com.br", null, "tgoncalves", Guid.NewGuid()},
                 new object[] { "Fernando", "falberdi.globalhitts@prio3.com.br", null, "falberdi.globalhitts", Guid.NewGuid()} ,
+                new object[] { "Garcia", "gabriel@prio3.com.br", null, "gabriel", Guid.NewGuid()},
+                new object[] { "Pablo Escobar", "pablo@prio3.com.br", null, "pablo", Guid.NewGuid()},
+                new object[] { "Vera Braga", "vera@prio3.com.br", null, "vera", Guid.NewGuid()},
+                new object[] { "Alessandro", "alessandro@prio3.com.br", null, "alessandro", Guid.NewGuid()},
             };
 
             foreach (var user in usersData)

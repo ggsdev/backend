@@ -18,12 +18,27 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories
         {
             await _context.AddAsync(measurement);
         }
+        public async Task<bool> GetAnyImported(Guid? id)
+        {
+            return await _context.MeasurementHistories
+                .AnyAsync(x => x.Id == id);
+        }
 
+        public async Task AddRangeAsync(List<Measurement> measurements)
+        {
+            await _context.Measurements
+                .AddRangeAsync(measurements);
+        }
+        //public async Task<Measurement?> GetMeasurementByDate(DateTime? date, string tagMeasuringPoint)
+        //{
+        //    return await _context.Measurements.FirstOrDefaultAsync(x => x.DHA_)
+
+        //}
         public async Task<Measurement?> GetUnique039Async(string codFailure)
         {
             return await _context.Measurements.FirstOrDefaultAsync(x => x.COD_FALHA_039 == codFailure);
         }
-        public async Task<bool> GetAnyByDate(DateTime date, string fileType)
+        public async Task<bool> GetAnyByDate(DateTime? date, string fileType)
         {
             switch (fileType)
             {
@@ -44,6 +59,11 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories
         public async Task<Measurement?> GetUnique001Async(string numSerie)
         {
             return await _context.Measurements.FirstOrDefaultAsync(x => x.NUM_SERIE_ELEMENTO_PRIMARIO_001 == numSerie);
+        }
+
+        public void UpdateMeasurement(Measurement measurement)
+        {
+            _context.Update(measurement);
         }
 
         public async Task<Measurement?> GetUnique002Async(string numSerie)
@@ -95,6 +115,5 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories
         {
             return _context.Measurements.Count();
         }
-
     }
 }

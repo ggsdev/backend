@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Shared.Errors;
@@ -44,6 +45,55 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
 
         }
 
+        public async Task<List<FieldFR?>> GetFRsByIdAsync(Guid? id)
+        {
+            return await _context.FieldsFRs
+                .Include(x => x.Field)
+               .ThenInclude(x => x.Installation)
+               .Where(x => x.Field.Installation.Id == id)
+               .ToListAsync();
+        }
+
+        public async Task<FieldFR?> GetFrByDateMeasuredAndFieldId(DateTime date, Guid fieldId)
+        {
+            return await _context.FieldsFRs
+                .Include(x => x.DailyProduction)
+                .Include(x => x.Field)
+                .Where(x => (x.DailyProduction.MeasuredAt.Year == date.Year &&
+                            x.DailyProduction.MeasuredAt.Month == date.Month &&
+                            x.DailyProduction.MeasuredAt.Day == date.Day) && x.Field.Id == fieldId)
+                .FirstOrDefaultAsync();
+        }
+
+        public void UpdateFr(FieldFR fieldFr)
+        {
+            _context.Update(fieldFr);
+        }
+        public async Task<List<FieldFR?>> GetFRsByUEPAsync(string? uep)
+        {
+            var Frs = await _context.FieldsFRs
+                .Include(x => x.Field)
+                .ThenInclude(x => x.Installation)
+                .Where(x => x.Field.Installation.UepCod == uep)
+                .Where(x => x.IsActive == true)
+                .ToListAsync();
+            return Frs;
+        }
+
+        public async Task<List<FieldFR>> GetFRsByIdAsync(Guid id)
+        {
+            return await _context.FieldsFRs
+                .Include(x => x.Field)
+                .ThenInclude(x => x.Installation)
+                .Where(x => x.Field.Installation.Id == id)
+                .Where(x => x.IsActive == true)
+                .ToListAsync();
+        }
+        public async Task AddFRAsync(FieldFR fr)
+        {
+            await _context.FieldsFRs.AddAsync(fr);
+        }
+
         public async Task<Installation?> GetInstallationAndChildren(Guid? id)
         {
             return await _context.Installations
@@ -65,19 +115,77 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                         .ThenInclude(x => x.DrainVolume)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
+        public async Task<Installation?> GetByIdWithCalculationsAsync(Guid? id)
+        {
+            return await _context.Installations
+                .Include(x => x.OilVolumeCalculation)
+                .Include(x => x.GasVolumeCalculation)
+                    .ThenInclude(x => x.AssistanceGases)
+                .Include(x => x.GasVolumeCalculation)
+                    .ThenInclude(x => x.ExportGases)
+                .Include(x => x.GasVolumeCalculation)
+                    .ThenInclude(x => x.ImportGases)
+                .Include(x => x.GasVolumeCalculation)
+                    .ThenInclude(x => x.LowPressureGases)
+                .Include(x => x.GasVolumeCalculation)
+                    .ThenInclude(x => x.HighPressureGases)
+                .Include(x => x.GasVolumeCalculation)
+                    .ThenInclude(x => x.HPFlares)
+                .Include(x => x.GasVolumeCalculation)
+                        .ThenInclude(x => x.LPFlares)
+                .Include(x => x.GasVolumeCalculation)
+                        .ThenInclude(x => x.PilotGases)
+                .Include(x => x.GasVolumeCalculation)
+                        .ThenInclude(x => x.PurgeGases)
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
 
         public async Task<Installation?> GetByIdAsync(Guid? id)
         {
-            return await _context.Installations
-                .Include(x => x.User)
+            var installation = await _context.Installations
                 .Include(x => x.Cluster)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .Where(x => x.Id == id)
+                .FirstOrDefaultAsync();
+            return installation;
+        }
+
+        public async Task<Installation?> GetByNameAsync(string? name)
+        {
+            var installation = await _context.Installations
+                .Where(x => x.Name == name)
+                .FirstOrDefaultAsync();
+            return installation;
         }
 
         public async Task<Installation?> GetByCod(string? cod)
         {
             return await _context.Installations
               .FirstOrDefaultAsync(x => x.CodInstallationAnp == cod);
+        }
+        public async Task<Installation?> GetByUEPCod(string? cod)
+        {
+            return await _context.Installations
+                .Include(x => x.OilVolumeCalculation)
+                .Include(x => x.GasVolumeCalculation)
+                .Where(x => x.UepCod == cod && x.CodInstallationAnp == cod)
+              .FirstOrDefaultAsync();
+        }
+        public async Task<List<Installation?>> GetByUEPWithFieldsCod(string? cod)
+        {
+            return await _context.Installations
+                .Include(x => x.Fields)
+                .ThenInclude(x => x.FRs)
+                .Where(x => x.UepCod == cod)
+              .ToListAsync();
+        }
+
+        public async Task<List<Installation>> GetByIdWithFieldsCod(Guid id)
+        {
+            return await _context.Installations
+                .Include(x => x.Fields)
+                .ThenInclude(x => x.FRs)
+                .Where(x => x.Id == id)
+              .ToListAsync();
         }
 
         public async Task<Installation?> GetByIdWithFieldsMeasuringPointsAsync(Guid? id)
@@ -99,6 +207,14 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
             return await _context.Installations
                 .Include(x => x.Cluster)
                 .Include(x => x.User)
+                .ToListAsync();
+        }
+        public async Task<List<Installation>> GetUEPsAsync()
+        {
+            return await _context.Installations
+                .Include(x => x.Cluster)
+                .Include(x => x.User)
+                .Where(x => x.IsProcessingUnit == true)
                 .ToListAsync();
         }
 

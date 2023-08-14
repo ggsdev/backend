@@ -5,7 +5,7 @@ namespace PRIO.src.Modules.FileImport.XML.ViewModels
     public class RequestXmlViewModel
     {
         [Required]
-        public List<FileContent> Files { get; set; } = new();
+        public List<FileContent> Files { get; set; }
     }
 
     public class FileContent
@@ -14,8 +14,14 @@ namespace PRIO.src.Modules.FileImport.XML.ViewModels
         public string ContentBase64 { get; set; } = string.Empty;
         [Required(ErrorMessage = "File name is required")]
         public string FileName { get; set; } = string.Empty;
-        [StringLength(3, ErrorMessage = "FileType cannot exceed 3 characters, choose between: 001,002,003, 039")]
+        [StringLength(3, ErrorMessage = "FileType cannot exceed 3 characters")]
         public string FileType { get; set; } = string.Empty;
+    }
+
+    public class ErrorsImportViewModel
+    {
+        [Required(ErrorMessage = "Errors is required")]
+        public List<string> Errors { get; set; } = new();
 
     }
 }

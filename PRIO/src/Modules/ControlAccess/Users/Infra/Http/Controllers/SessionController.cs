@@ -103,7 +103,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
             var secretKey = envVars["SECRET_KEY"];
             if ((Decrypt.TryParseBase64String(body.Username, out byte[]? encriptedBytes) && Decrypt.TryParseBase64String(body.Password, out byte[]? encryptedBytes2)) is false)
                 return BadRequest(new ErrorResponseDTO { Message = "Username and password not encrypted." });
-
             var usernameDecrypted = Decrypt
                .DecryptAes(body.Username, secretKey);
 
@@ -213,9 +212,9 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
             var user = await _context
                 .Users
                 .Include(u => u.Session)
+                .Include(u => u.Group)
                 .FirstOrDefaultAsync(x => x.Username == body.Username);
 
-            string token;
             var userHttpAgent = Request.Headers["User-Agent"].ToString();
 
             if (user is null || user.Group is null)

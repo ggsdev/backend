@@ -7,7 +7,6 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Dtos
     {
         public Guid? Id { get; set; }
         public string? Name { get; set; }
-        public string? CodReservoir { get; set; }
         public string? Description { get; set; }
         public UserDTO? User { get; set; }
         public ZoneDTO? Zone { get; set; }

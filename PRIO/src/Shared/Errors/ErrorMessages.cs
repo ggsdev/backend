@@ -11,6 +11,7 @@
         private static readonly string _zone = "Zone";
         private static readonly string _user = "User";
         private static readonly string _equipment = "MeasuringEquipment";
+        private static readonly string _measuringPoint = "MeasuringPoint";
 
         //private readonly IStringLocalizer<ErrorMessages> _localizer;
 
@@ -45,6 +46,9 @@
 
             if (typeof(TModel).Name == _equipment)
                 return "Equipamento de medição" + message;
+
+            if (typeof(TModel).Name == _measuringPoint)
+                return "Ponto de medição" + message;
 
             if (typeof(TModel).Name == _user)
                 return "Usuário" + message;

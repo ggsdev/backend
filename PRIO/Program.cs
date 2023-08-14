@@ -17,8 +17,14 @@ using PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Interfaces;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
+using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories;
+using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services;
+using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
 using PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XML.Infra.Http.Services;
+using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Respositories;
+using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services;
+using PRIO.src.Modules.FileImport.XML.NFSMS.Interfaces;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Repositories;
@@ -40,12 +46,21 @@ using PRIO.src.Modules.Hierarchy.Zones.Interfaces;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Equipments.Interfaces;
+using PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Repositories;
+using PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.Http.Services;
+using PRIO.src.Modules.Measuring.GasVolumeCalculations.Interfaces;
 using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.Measurements.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Measurements.Interfaces;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
+using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Repositories;
+using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services;
+using PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces;
+using PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories;
+using PRIO.src.Modules.Measuring.Productions.Infra.Http.Services;
+using PRIO.src.Modules.Measuring.Productions.Interfaces;
 using PRIO.src.Shared.Auxiliaries.Infra.Http.Services;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
@@ -113,9 +128,9 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
         options.AddPolicy("CorsPolicy", builder =>
         {
             builder
-                .SetIsOriginAllowed(origin => true) // allow any origin
+                .AllowAnyOrigin()
           .AllowAnyHeader()
-          .AllowCredentials()
+          //.AllowCredentials()
           .WithMethods("GET", "PATCH", "POST", "DELETE", "OPTIONS")
           .SetPreflightMaxAge(TimeSpan.FromSeconds(3600));
         });
@@ -159,8 +174,14 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddScoped<ICompletionRepository, CompletionRepository>();
 
     services.AddScoped<IMeasurementRepository, MeasurementRepository>();
+    services.AddScoped<IProductionRepository, ProductionRepository>();
+
+    services.AddScoped<IOilVolumeCalculationRepository, OilVolumeCalculationRepository>();
+    services.AddScoped<IGasVolumeCalculationRepository, GasVolumeCalculationRepository>();
 
     services.AddScoped<IMeasurementHistoryRepository, MeasurementHistoryRepository>();
+    services.AddScoped<IBTPRepository, BTPRepository>();
+    services.AddScoped<INFSMRepository, NFSMRepository>();
 
     #endregion
 
@@ -193,8 +214,21 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     #region Control Access Services
     services.AddScoped<MenuService>();
     services.AddScoped<UserService>();
+
     services.AddScoped<GroupService>();
     #endregion
+
+    #region Measuring Services
+    services.AddScoped<OilVolumeCalculationService>();
+    services.AddScoped<GasVolumeCalculationService>();
+    services.AddScoped<ProductionService>();
+    services.AddScoped<FieldFRService>();
+    services.AddScoped<NFSMService>();
+
+
+    #endregion
+
+    services.AddScoped<BTPService>();
 
     services.AddScoped<XLSXService>();
 

@@ -8,7 +8,9 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models
     public class Completion : BaseModel
     {
         public string? Name { get; set; }
-        public string? CodCompletion { get; set; }
+        public decimal? TopOfPerforated { get; set; }
+        public decimal? BaseOfPerforated { get; set; }
+        public decimal? AllocationReservoir { get; set; } = 1;
         public Reservoir? Reservoir { get; set; }
         public Well? Well { get; set; }
         public User? User { get; set; }

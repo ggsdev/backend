@@ -17,8 +17,6 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Dtos
         public bool? StatusOperator { get; set; }
         public string? Type { get; set; }
         public decimal? WaterDepth { get; set; }
-        public decimal? TopOfPerforated { get; set; }
-        public decimal? BaseOfPerforated { get; set; }
         public string? ArtificialLift { get; set; }
         public string? Latitude4C { get; set; }
         public string? Longitude4C { get; set; }
@@ -45,6 +43,8 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Dtos
         public string? Name { get; set; }
         public string? Description { get; set; }
         public string? CodCompletion { get; set; }
+        public decimal? TopOfPerforated { get; set; }
+        public decimal? BaseOfPerforated { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public ReservoirWithZoneDTO? Reservoir { get; set; }

@@ -7,8 +7,7 @@ using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.ViewModels;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.SystemHistories.Dtos.UserDtos;
-using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
-using PRIO.src.Shared.SystemHistories.Interfaces;
+using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
 using PRIO.src.Shared.Utils;
 
 namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
@@ -21,19 +20,20 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
         private IGroupPermissionRepository _groupPermissionRepository;
         private IGroupOperationRepository _groupOperationRepository;
         private IGlobalOperationsRepository _globalOperationsRepository;
-        private ISystemHistoryRepository _systemHistoryRepository;
         private IMapper _mapper;
+        private readonly SystemHistoryService _systemHistoryService;
+        private readonly string _table = HistoryColumns.TableUsers;
 
-        public UserService(IMapper mapper, IUserRepository user, ISystemHistoryRepository systemHistoryRepository, IUserPermissionRepository userPermissionRepository, IUserOperationRepository userOperationRepository, IGroupPermissionRepository groupPermissionRepository, IGroupOperationRepository groupOperationRepository, IGlobalOperationsRepository globalOperationsRepository)
+        public UserService(IMapper mapper, IUserRepository user, IUserPermissionRepository userPermissionRepository, IUserOperationRepository userOperationRepository, IGroupPermissionRepository groupPermissionRepository, IGroupOperationRepository groupOperationRepository, IGlobalOperationsRepository globalOperationsRepository, SystemHistoryService systemHistoryService)
         {
             _mapper = mapper;
             _userRepository = user;
-            _systemHistoryRepository = systemHistoryRepository;
             _userPermissionRepository = userPermissionRepository;
             _userOperationRepository = userOperationRepository;
             _groupPermissionRepository = groupPermissionRepository;
             _groupOperationRepository = groupOperationRepository;
             _globalOperationsRepository = globalOperationsRepository;
+            _systemHistoryService = systemHistoryService;
         }
 
 
@@ -67,29 +67,34 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                 Id = userId,
                 Name = body.Name,
                 Username = treatedUsername,
+                Email = body.Email is not null ? body.Email : null,
+                IsActive = body.IsActive,
                 Description = body.Description is not null ? body.Description : null,
             };
 
             await _userRepository
                 .CreateUser(user);
 
-            var currentData = _mapper.Map<User, UserHistoryDTO>(user);
+            //var currentData = _mapper.Map<User, UserHistoryDTO>(user);
 
-            var dateNow = DateTime.UtcNow;
+            //var dateNow = DateTime.UtcNow;
 
-            currentData.createdAt = dateNow;
-            currentData.updatedAt = dateNow;
+            //currentData.createdAt = dateNow;
+            //currentData.updatedAt = dateNow;
 
-            var history = new SystemHistory
-            {
-                Table = HistoryColumns.TableUsers,
-                TypeOperation = HistoryColumns.Create,
-                CreatedBy = loggedUser?.Id,
-                TableItemId = userId,
-                CurrentData = currentData,
-            };
+            //var history = new SystemHistory
+            //{
+            //    Table = HistoryColumns.TableUsers,
+            //    TypeOperation = HistoryColumns.Create,
+            //    CreatedBy = loggedUser?.Id,
+            //    TableItemId = userId,
+            //    CurrentData = currentData,
+            //};
 
-            await _systemHistoryRepository.AddAsync(history);
+            //await _systemHistoryRepository.AddAsync(history);
+
+            await _systemHistoryService.Create<User, UserHistoryDTO>(_table, loggedUser, userId, user);
+
 
             await _userRepository.SaveChangesAsync();
             var userDTO = _mapper.Map<User, UserDTO>(user);
@@ -150,7 +155,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             return userDTO;
         }
 
-        public async Task<UserDTO?> UpdateUserByIdAsync(Guid id, UpdateUserViewModel body)
+        public async Task<UserDTO?> UpdateUserByIdAsync(Guid id, UpdateUserViewModel body, User loggedUser)
         {
             var user = await _userRepository.GetUserById(id);
             if (user is null || user.IsActive is false)
@@ -167,18 +172,29 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             //        Message = $"User is not found"
             //    });            
 
-            user.Name = body.Name is not null ? body.Name : user.Name;
+            if (body.Username is not null)
+            {
+                var username = await _userRepository.GetUserByUsername(body.Username);
+                if (username != null)
+                    throw new ConflictException("Já existe um usuário com este nome de usuário");
+
+            };
+
+            await _systemHistoryService.Update(_table, loggedUser, updatedProperties, user.Id, user, beforeChangesUser);
+
+            //user.Name = body.Name is not null ? body.Name : user.Name;
             user.Password = body.Password is not null ? BCrypt.Net.BCrypt.HashPassword(body.Password) : user.Password;
-            user.Email = body.Email is not null ? body.Email : user.Email;
-            user.Username = body.Username is not null ? body.Username : user.Username;
+            //user.Email = body.Email is not null ? body.Email : user.Email;
+            //user.Username = body.Username is not null ? body.Username : user.Username;
 
             _userRepository.UpdateUser(user);
+
             await _userRepository.SaveChangesAsync();
             var userDTO = _mapper.Map<User, UserDTO>(user);
             return userDTO;
         }
 
-        public async Task DeleteUserByIdAsync(Guid id, Guid userOperationId)
+        public async Task DeleteUserByIdAsync(Guid id, Guid userOperationId, User loggedUser)
         {
             var user = await _userRepository.GetUserById(id);
             if (user is null || user.IsActive is false)
@@ -188,14 +204,24 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             if (userOperation is null)
                 throw new NotFoundException("User not found");
 
+            var properties = new
+            {
+                DeletedAt = DateTime.UtcNow,
+                IsActive = false
+            };
+
             user.DeletedAt = DateTime.UtcNow;
             user.IsActive = false;
 
-            await _userRepository.UpdateUser(user);
+            var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(user, properties);
+
+            await _systemHistoryService.Delete<User, UserHistoryDTO>(_table, loggedUser, updatedProperties, user.Id, user);
+
+            _userRepository.UpdateUser(user);
             await _userRepository.SaveChangesAsync();
         }
 
-        public async Task<UserDTO?> RestoreUserByIdAsync(Guid id, Guid userOperationId)
+        public async Task<UserDTO?> RestoreUserByIdAsync(Guid id, Guid userOperationId, User loggedUser)
         {
             var user = await _userRepository.GetUserById(id);
 
@@ -209,7 +235,18 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             user.IsActive = true;
             user.DeletedAt = null;
 
-            await _userRepository.UpdateUser(user);
+            var properties = new
+            {
+                IsActive = true,
+                DeletedAt = (DateTime?)null,
+            };
+
+            _userRepository.UpdateUser(user);
+
+            var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(user, properties);
+
+            await _systemHistoryService.Delete<User, UserHistoryDTO>(_table, loggedUser, updatedProperties, user.Id, user);
+
             await _userRepository.SaveChangesAsync();
 
             var UserDTO = _mapper.Map<User, UserDTO>(user);
@@ -240,7 +277,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             {
                 //PROCURANDO PERMISSAO NO GRUPO
                 var verifyRelationMenuParent = await _groupPermissionRepository.GetGroupPermissionByMenuIdAndGroupId(menu.MenuId, userWithPermissions.Group.Id);
-
 
                 // EXISTE A PERMISSAO NO GRUPO
                 if (verifyRelationMenuParent is not null)
@@ -621,13 +657,20 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                 }
             }
             user.IsPermissionDefault = true;
-            await _userRepository.UpdateUser(user);
+            _userRepository.UpdateUser(user);
             await _userRepository.SaveChangesAsync();
             var userDTO = _mapper.Map<User, UserGroupDTO>(user);
 
             return userDTO;
 
         }
+
+        public async Task<List<User>> GetAllEncryptedAdminUsers()
+        {
+            return await _userRepository.GetAdminUsers();
+        }
+
+
         //public async Task<List<UserDTO>> RetrieveAllUsersAndMap()
         //{
 
