@@ -25,6 +25,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Interfaces
         Task<Installation?> GetByIdWithFieldsMeasuringPointsAsync(Guid? id);
         Task<List<Installation>> GetAsync();
         Task<List<Installation>> GetUEPsAsync();
+        Task<List<Installation>> GetUEPsCreateAsync(string table);
         Task<List<Installation>> GetByIdWithFieldsCod(Guid id);
         Task<Installation?> GetInstallationAndChildren(Guid? id);
         Task SaveChangesAsync();

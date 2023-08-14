@@ -71,6 +71,12 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Controllers
             var installationsDTO = await _installationService.GetUEPs();
             return Ok(installationsDTO);
         }
+        [HttpGet("ueps/create")]
+        public async Task<IActionResult> GetUEPsCreate([FromQuery] string table)
+        {
+            var installationsDTO = await _installationService.GetUEPsCreate(table);
+            return Ok(installationsDTO);
+        }
 
         [HttpPatch("{id:guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateInstallationViewModel body)
