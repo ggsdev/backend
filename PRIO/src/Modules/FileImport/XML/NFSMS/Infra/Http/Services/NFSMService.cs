@@ -1,8 +1,4 @@
 ﻿using AutoMapper;
-using iText.Kernel.Pdf;
-using iText.Layout;
-using iText.Layout.Element;
-using iText.Layout.Properties;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
@@ -266,7 +262,6 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                             {
 
                                 var dateString = dadosBasicos.LISTA_VOLUME[j].DHA_MEDICAO_039;
-                                var dateElement = volumesListElements.ElementAt(j).Element("DHA_MEDICAO");
 
                                 //var dateElement = volumesListElements.ElementAt(j).Element("DHA_MEDICAO");
 
@@ -287,7 +282,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                                 var volume = dadosBasicos.LISTA_VOLUME[j];
 
                                 var volumeMapped = _mapper.Map<VOLUME, Volume>(volume);
-                                volumeMapped.DHA_MEDICAO_039 = XmlUtils.DateTimeWithoutTimeParser(volume.DHA_MEDICAO_039, errorsInFormat, dateElement?.Name.LocalName);
+                                volumeMapped.DHA_MEDICAO_039 = XmlUtils.DateTimeWithoutTimeParser(volume.DHA_MEDICAO_039, errorsInFormat, "");
                                 volumeMapped.DHA_MED_DECLARADO_039 = XmlUtils.DecimalParser(volume.DHA_MED_DECLARADO_039, errorsInFormat, "");
                                 volumeMapped.DHA_MED_REGISTRADO_039 = XmlUtils.DecimalParser(volume.DHA_MED_REGISTRADO_039, errorsInFormat, "");
 
@@ -732,37 +727,37 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
             return result;
         }
 
-        public FileContentResponse DownloadErrors(List<string> errors)
-        {
-            using var memoryStream = new MemoryStream();
+        //public FileContentResponse DownloadErrors(List<string> errors)
+        //{
+        //    using var memoryStream = new MemoryStream();
 
-            var pdfDoc = new PdfDocument(new PdfWriter(memoryStream));
+        //    var pdfDoc = new PdfDocument(new PdfWriter(memoryStream));
 
-            var document = new Document(pdfDoc);
+        //    var document = new Document(pdfDoc);
 
-            var titleParagraph = new Paragraph("< Erros Importação >")
-                .SetTextAlignment(TextAlignment.CENTER)
-                .SetFontSize(20);
-            document.Add(titleParagraph);
+        //    var titleParagraph = new Paragraph("< Erros Importação >")
+        //        .SetTextAlignment(TextAlignment.CENTER)
+        //        .SetFontSize(20);
+        //    document.Add(titleParagraph);
 
-            foreach (string error in errors)
-            {
-                var listItem = new ListItem("=> " + error)
-                    .SetMarginBottom(10);
-                document.Add(listItem);
-            }
+        //    foreach (string error in errors)
+        //    {
+        //        var listItem = new ListItem("=> " + error)
+        //            .SetMarginBottom(10);
+        //        document.Add(listItem);
+        //    }
 
-            document.Close();
+        //    document.Close();
 
-            byte[] pdfBytes = memoryStream.ToArray();
+        //    byte[] pdfBytes = memoryStream.ToArray();
 
-            var response = new FileContentResponse
-            {
-                ContentBase64 = Convert.ToBase64String(pdfBytes)
-            };
+        //    var response = new FileContentResponse
+        //    {
+        //        ContentBase64 = Convert.ToBase64String(pdfBytes)
+        //    };
 
-            return response;
-        }
+        //    return response;
+        //}
 
 
         //private string CleanAndDecode(string input)

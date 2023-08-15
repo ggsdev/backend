@@ -5,6 +5,7 @@ using PRIO.src.Modules.FileImport.XML.Dtos;
 using PRIO.src.Modules.FileImport.XML.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XML.ViewModels;
 using PRIO.src.Shared.Infra.Http.Filters;
+using PRIO.src.Shared.Utils;
 
 namespace PRIO.Controllers
 {
@@ -44,7 +45,7 @@ namespace PRIO.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DTOFiles))]
         public ActionResult ErrorsDownload([FromBody] ErrorsImportViewModel data)
         {
-            var result = _service.DownloadErrors(data.Errors);
+            var result = Download.DownloadErrors(data.Errors);
 
             return Ok(result);
         }

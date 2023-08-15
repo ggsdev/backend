@@ -6,6 +6,7 @@ using PRIO.src.Modules.FileImport.XML.NFSMS.ViewModels;
 using PRIO.src.Modules.FileImport.XML.ViewModels;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.Http.Filters;
+using PRIO.src.Shared.Utils;
 
 namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Controllers
 {
@@ -73,7 +74,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Controllers
         [HttpPost("import-nfsms/errors")]
         public ActionResult ErrorsDownload([FromBody] ErrorsImportViewModel data)
         {
-            var result = _service.DownloadErrors(data.Errors);
+            var result = Download.DownloadErrors(data.Errors);
 
             return Ok(result);
         }
