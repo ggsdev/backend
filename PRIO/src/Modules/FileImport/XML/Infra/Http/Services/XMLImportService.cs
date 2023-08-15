@@ -2315,10 +2315,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             {
                 foreach (var bodyMeasurement in file.Measurements)
                 {
-
-                    //if (bodyMeasurement.ImportId is null)
-                    //    throw new BadRequestException("Arquivo não encontrado.");
-
                     var measurement = _mapper.Map<Client001DTO, Measurement>(bodyMeasurement);
 
                     var measurementExists = await _repository.GetAnyByDate(measurement.DHA_INICIO_PERIODO_MEDICAO_001, XmlUtils.File001);
@@ -2370,54 +2366,57 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         }
                     }
 
-                    var fileInfo = new FileBasicInfoDTO
+                    if (bodyMeasurement.ImportId is not null)
                     {
-                        Acronym = XmlUtils.FileAcronym001,
-                        Name = bodyMeasurement.FileName,
-                        Type = XmlUtils.File001
-                    };
-                    measurement.User = user;
-
-                    measurement.FileType = new FileType
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = fileInfo.Type,
-                        Acronym = fileInfo.Acronym,
-                        ImportId = bodyMeasurement.ImportId
-                    };
-
-                    measurement.Installation = installation;
-                    measurement.MeasuringPoint = measuringPoint;
-                    measurement.BswManual_001 = bodyMeasurement.BswManual;
-                    measurement.StatusMeasuringPoint = bodyMeasurement.Summary.Status;
-                    measurement.VolumeAfterManualBsw_001 = totalOilWithBsw;
-
-                    var path001Xml = Path.GetTempPath() + bodyMeasurement.ImportId + ".xml";
-
-                    if (File.Exists(path001Xml))
-                    {
-                        var documentXml = XDocument.Load(path001Xml);
-                        byte[] xmlBytes;
-                        using (var memoryStream = new MemoryStream())
-                        using (var xmlWriter = XmlWriter.Create(memoryStream, new XmlWriterSettings { Encoding = Encoding.UTF8 }))
+                        var fileInfo = new FileBasicInfoDTO
                         {
-                            documentXml.Save(xmlWriter);
-                            xmlWriter.Flush();
-                            xmlBytes = memoryStream.ToArray();
+                            Acronym = XmlUtils.FileAcronym001,
+                            Name = bodyMeasurement.FileName,
+                            Type = XmlUtils.File001
+                        };
+                        measurement.User = user;
+
+                        measurement.FileType = new FileType
+                        {
+                            Id = Guid.NewGuid(),
+                            Name = fileInfo.Type,
+                            Acronym = fileInfo.Acronym,
+                            ImportId = bodyMeasurement.ImportId
+                        };
+
+                        measurement.Installation = installation;
+                        measurement.MeasuringPoint = measuringPoint;
+                        measurement.BswManual_001 = bodyMeasurement.BswManual;
+                        measurement.StatusMeasuringPoint = bodyMeasurement.Summary.Status;
+                        measurement.VolumeAfterManualBsw_001 = totalOilWithBsw;
+
+                        var path001Xml = Path.GetTempPath() + bodyMeasurement.ImportId + ".xml";
+
+                        if (File.Exists(path001Xml))
+                        {
+                            var documentXml = XDocument.Load(path001Xml);
+                            byte[] xmlBytes;
+                            using (var memoryStream = new MemoryStream())
+                            using (var xmlWriter = XmlWriter.Create(memoryStream, new XmlWriterSettings { Encoding = Encoding.UTF8 }))
+                            {
+                                documentXml.Save(xmlWriter);
+                                xmlWriter.Flush();
+                                xmlBytes = memoryStream.ToArray();
+                            }
+
+                            var base64String = "data:@file/xml;base64," + Convert.ToBase64String(xmlBytes);
+
+                            if (base64HistoryMap.TryGetValue(base64String, out var history) is false)
+                            {
+                                history = await _measurementService.Import(user, fileInfo, base64String, measurement.DHA_INICIO_PERIODO_MEDICAO_001);
+                                base64HistoryMap.Add(base64String, history);
+                            }
+
+                            measurement.MeasurementHistory = history;
                         }
 
-                        var base64String = "data:@file/xml;base64," + Convert.ToBase64String(xmlBytes);
-
-                        if (base64HistoryMap.TryGetValue(base64String, out var history) is false)
-                        {
-                            history = await _measurementService.Import(user, fileInfo, base64String, measurement.DHA_INICIO_PERIODO_MEDICAO_001);
-                            base64HistoryMap.Add(base64String, history);
-                        }
-
-                        measurement.MeasurementHistory = history;
+                        measurementsAdded.Add(measurement);
                     }
-
-                    measurementsAdded.Add(measurement);
                 }
 
             }
