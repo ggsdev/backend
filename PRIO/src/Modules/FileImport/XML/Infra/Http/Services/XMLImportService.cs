@@ -2316,8 +2316,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 foreach (var bodyMeasurement in file.Measurements)
                 {
 
-                    if (bodyMeasurement.ImportId is null)
-                        throw new BadRequestException("Arquivo não encontrado.");
+                    //if (bodyMeasurement.ImportId is null)
+                    //    throw new BadRequestException("Arquivo não encontrado.");
 
                     var measurement = _mapper.Map<Client001DTO, Measurement>(bodyMeasurement);
 
