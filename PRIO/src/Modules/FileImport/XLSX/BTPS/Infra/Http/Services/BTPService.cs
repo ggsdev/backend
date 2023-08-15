@@ -264,7 +264,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             decimal bswDecimalFormated = Math.Round(bswDecimal, 5, MidpointRounding.AwayFromZero);
 
             if (oilCheck is false || gasCheck is false || waterCheck is false || rgoCheck is false || bswCheck is false
-                //|| checkAlignHour is false
+                || checkAlignHour is false
                 )
             {
                 throw new ConflictException("Dados decimais não podem ser convertidos.");
