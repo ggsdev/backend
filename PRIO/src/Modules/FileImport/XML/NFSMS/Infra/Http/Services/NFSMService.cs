@@ -419,55 +419,59 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     {
                         if (measurement.MeasuringPoint.TagPointMeasuring == measuringPoint.TagPointMeasuring && measurement.DHA_INICIO_PERIODO_MEDICAO_002 is not null)
                         {
-                            measurement.MED_CORRIGIDO_MVMDO_002 = productionInXml.DHA_MED_DECLARADO_039;
-                            totalLinear += productionInXml.DHA_MED_DECLARADO_039 ?? 0;
-                            _measurementRepository.UpdateMeasurement(measurement);
+                            //    measurement.MED_CORRIGIDO_MVMDO_002 = productionInXml.DHA_MED_DECLARADO_039;
+
+                            //    totalLinear += productionInXml.DHA_MED_DECLARADO_039 ?? 0;
+
+                            //    _measurementRepository.UpdateMeasurement(measurement);
+
                             measurementsFixed.Add(measurement);
                         }
 
                         if (measurement.MeasuringPoint.TagPointMeasuring == measuringPoint.TagPointMeasuring && measurement.DHA_INICIO_PERIODO_MEDICAO_001 is not null)
                         {
-                            measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001 = productionInXml.DHA_MED_DECLARADO_039;
-                            measurement.MED_VOLUME_LIQUIDO_MVMDO_001 = productionInXml.DHA_MED_DECLARADO_039;
 
-                            totalOil += productionInXml.DHA_MED_DECLARADO_039 ?? 0;
+                            //measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001 = productionInXml.DHA_MED_DECLARADO_039;
+                            //measurement.MED_VOLUME_LIQUIDO_MVMDO_001 = productionInXml.DHA_MED_DECLARADO_039;
 
-                            _measurementRepository.UpdateMeasurement(measurement);
+                            //totalOil += productionInXml.DHA_MED_DECLARADO_039 ?? 0;
+
+                            //_measurementRepository.UpdateMeasurement(measurement);
                             measurementsFixed.Add(measurement);
                         }
 
                         if (measurement.MeasuringPoint.TagPointMeasuring == measuringPoint.TagPointMeasuring && measurement.DHA_INICIO_PERIODO_MEDICAO_003 is not null)
                         {
-                            measurement.MED_CORRIGIDO_MVMDO_003 = productionInXml.DHA_MED_DECLARADO_039;
-                            totalDiferencial += productionInXml.DHA_MED_DECLARADO_039 ?? 0;
+                            //measurement.MED_CORRIGIDO_MVMDO_003 = productionInXml.DHA_MED_DECLARADO_039;
+                            //totalDiferencial += productionInXml.DHA_MED_DECLARADO_039 ?? 0;
 
-                            _measurementRepository.UpdateMeasurement(measurement);
+                            //_measurementRepository.UpdateMeasurement(measurement);
                             measurementsFixed.Add(measurement);
                         }
 
-                        productionInDatabase.TotalProduction = totalOil + totalLinear + totalDiferencial;
+                        //productionInDatabase.TotalProduction = totalOil + totalLinear + totalDiferencial;
 
-                        if (productionInDatabase.GasLinear is not null)
-                            productionInDatabase.GasLinear.TotalGas = totalLinear;
+                        //if (productionInDatabase.GasLinear is not null)
+                        //    productionInDatabase.GasLinear.TotalGas = totalLinear;
 
-                        if (productionInDatabase.GasDiferencial is not null)
-                            productionInDatabase.GasDiferencial.TotalGas = totalDiferencial;
+                        //if (productionInDatabase.GasDiferencial is not null)
+                        //    productionInDatabase.GasDiferencial.TotalGas = totalDiferencial;
 
-                        if (productionInDatabase.Oil is not null)
-                            productionInDatabase.Oil.TotalOil = totalOil;
+                        //if (productionInDatabase.Oil is not null)
+                        //    productionInDatabase.Oil.TotalOil = totalOil;
 
-                        _productionRepository.Update(productionInDatabase);
+                        //_productionRepository.Update(productionInDatabase);
                         measurementsFixed.Add(measurement);
                     }
 
-                    if (productionInDatabase.FieldsFR is not null)
-                        foreach (var fieldFr in productionInDatabase.FieldsFR)
-                        {
-                            fieldFr.ProductionInField += fieldFr.FROil is not null ? totalOil * fieldFr.FROil.Value : 0;
-                            fieldFr.ProductionInField += fieldFr.FRGas is not null ? (totalDiferencial + totalLinear) * fieldFr.FRGas.Value : 0;
+                    //if (productionInDatabase.FieldsFR is not null)
+                    //    foreach (var fieldFr in productionInDatabase.FieldsFR)
+                    //    {
+                    //        fieldFr.ProductionInField += fieldFr.FROil is not null ? totalOil * fieldFr.FROil.Value : 0;
+                    //        fieldFr.ProductionInField += fieldFr.FRGas is not null ? (totalDiferencial + totalLinear) * fieldFr.FRGas.Value : 0;
 
-                            _installationRepository.UpdateFr(fieldFr);
-                        }
+                    //        _installationRepository.UpdateFr(fieldFr);
+                    //    }
 
                     var volumeProduction = new NFSMsProductions
                     {
@@ -489,16 +493,12 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     nfsmsProductionList.Add(volumeProduction);
 
                 }
-
-
                 //foreach (var productionInXml in nfsm.LISTA_VOLUME)
                 //{
                 //    DateTime productionInXmlDate = productionInXml.DHA_MEDICAO_039 is not null ? productionInXml.DHA_MEDICAO_039.Value : DateTime.MinValue;
 
                 //    var productionInDatabase = await _productionRepository
                 //        .GetExistingByDate(productionInXmlDate);
-
-
                 //}
 
                 var fileInfo = new FileBasicInfoDTO
