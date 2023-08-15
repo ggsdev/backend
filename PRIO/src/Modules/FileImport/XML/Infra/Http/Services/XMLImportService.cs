@@ -238,8 +238,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                     var measuringPoint = await _measuringPointRepository
                                         .GetByTagMeasuringPointXML(dadosBasicos.COD_TAG_PONTO_MEDICAO_001, XmlUtils.File001);
 
-                                    if (measuringPoint is null)
-                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), ponto de medição TAG: {dadosBasicos.COD_TAG_PONTO_MEDICAO_001}: {ErrorMessages.NotFound<MeasuringPoint>()}");
+                                    //if (measuringPoint is null)
+                                    //    errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), ponto de medição TAG: {dadosBasicos.COD_TAG_PONTO_MEDICAO_001}: {ErrorMessages.NotFound<MeasuringPoint>()}");
 
                                     if (installation is not null && measuringPoint is not null)
                                     {
@@ -536,8 +536,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                     var measuringPoint = await _measuringPointRepository
                                         .GetByTagMeasuringPointXML(dadosBasicos.COD_TAG_PONTO_MEDICAO_002, XmlUtils.File002);
 
-                                    if (measuringPoint is null)
-                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), ponto de medição com TAG: {dadosBasicos.COD_TAG_PONTO_MEDICAO_002}, {ErrorMessages.NotFound<MeasuringPoint>()}");
+                                    //if (measuringPoint is null)
+                                    //    errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), ponto de medição com TAG: {dadosBasicos.COD_TAG_PONTO_MEDICAO_002}, {ErrorMessages.NotFound<MeasuringPoint>()}");
 
                                     if (installation is not null && measuringPoint is not null)
                                     {
@@ -906,8 +906,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                     var measuringPoint = await _measuringPointRepository
                                         .GetByTagMeasuringPointXML(dadosBasicos.COD_TAG_PONTO_MEDICAO_003, XmlUtils.File003);
 
-                                    if (measuringPoint is null)
-                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), ponto de medição TAG: {dadosBasicos.COD_TAG_PONTO_MEDICAO_003}: {ErrorMessages.NotFound<MeasuringPoint>()}");
+                                    //if (measuringPoint is null)
+                                    //    errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), ponto de medição TAG: {dadosBasicos.COD_TAG_PONTO_MEDICAO_003}: {ErrorMessages.NotFound<MeasuringPoint>()}");
 
                                     if (installation is not null && measuringPoint is not null)
                                     {
