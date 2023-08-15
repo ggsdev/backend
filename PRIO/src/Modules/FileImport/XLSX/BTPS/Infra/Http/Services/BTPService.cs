@@ -246,7 +246,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             string valorTempo = duration[1];
 
             //Verify Well
-            string? message = well.Name == worksheet.Cells[BTP.CellWellName].Value.ToString() ? "Sucesso: Nome do poço encontrado corresponde ao xls" : throw new ConflictException($"O poço {worksheet.Cells[BTP.CellWellName].Value.ToString()} do arquivo {body.FileName} não corresponde ao poço {well.Name} selecionado para o teste.");
+            string? message = well.Name == worksheet.Cells[BTP.CellWellName].Value.ToString() ? "Sucesso: Nome do poço encontrado corresponde ao xls" : throw new ConflictException($"O poço {worksheet.Cells[BTP.CellWellName].Value} do arquivo {body.FileName} não corresponde ao poço {well.Name} selecionado para o teste.");
 
             //ToDecimal
             var oilCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialOil].Value.ToString(), out var oilDecimal);
@@ -264,7 +264,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             decimal bswDecimalFormated = Math.Round(bswDecimal, 5, MidpointRounding.AwayFromZero);
 
             if (oilCheck is false || gasCheck is false || waterCheck is false || rgoCheck is false || bswCheck is false
-                || checkAlignHour is false
                 )
             {
                 throw new ConflictException("Dados decimais não podem ser convertidos.");
@@ -323,6 +322,10 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                     TimeSpan horaMinuto = new TimeSpan(horas, minutos, 0);
                     align = horaMinuto.ToString();
                     data.WellAlignmentHour = align;
+                }
+                else
+                {
+                    throw new ConflictException("Dados decimais não podem ser convertidos.");
                 }
 
             }
