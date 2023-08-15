@@ -3,8 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.ViewModels;
+using PRIO.src.Modules.FileImport.XML.Dtos;
+using PRIO.src.Modules.FileImport.XML.ViewModels;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.Http.Filters;
+using PRIO.src.Shared.Utils;
 
 namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Controllers
 {
@@ -141,6 +144,15 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Controllers
                 });
 
             var result = await _BTPService.GetBTPDataByDataId(dataId);
+
+            return Ok(result);
+        }
+
+        [HttpPost("errors")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DTOFiles))]
+        public ActionResult ErrorsDownload([FromBody] ErrorsImportViewModel data)
+        {
+            var result = Download.DownloadErrors(data.Errors);
 
             return Ok(result);
         }
