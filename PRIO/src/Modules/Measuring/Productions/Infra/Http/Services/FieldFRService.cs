@@ -61,7 +61,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 }
 
                 if (sumGas != 1 && body.Gas.FR.IsApplicable)
-                    throw new ConflictException("Gás: Soma dos fatores deve ser 1.");
+                    throw new ConflictException("Gás: Soma dos fatores de rateio deve ser 1.");
 
                 if (/*body.BothGas &&*/ body.Gas.FR.IsApplicable)
                 {
@@ -100,7 +100,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             }
                         }
                     }
+
+
                 }
+
             }
 
             if (body.Oil is not null)
@@ -128,7 +131,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 }
 
                 if (sumOil != 1 && body.Oil.FR.IsApplicable)
-                    throw new ConflictException("Óleo: Soma dos fatores deve ser 1.");
+                    throw new ConflictException("Óleo: Soma dos fatores de rateio deve ser 1.");
 
                 if (body.Oil.FR.IsApplicable)
                     foreach (var field in body.Oil.FR.Fields)
@@ -150,7 +153,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     DailyProduction = body.Production,
                                     Field = fieldInDatabase,
                                     FROil = field.FluidFr,
-                                    ProductionInField = body.Oil.TotalOilProductionM3 * field.FluidFr,
+                                    ProductionInField = body.Oil.TotalOilProductionM3 * field.FluidFr + (body.Water is not null ? body.Water.TotalWaterM3 : 0),
 
                                 };
 
@@ -159,15 +162,16 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             else
                             {
 
-                                existingFr.ProductionInField += body.Oil.TotalOilProductionM3 * field.FluidFr;
+                                existingFr.ProductionInField += body.Oil.TotalOilProductionM3 * field.FluidFr + (body.Water is not null ? body.Water.TotalWaterM3 : 0);
                                 existingFr.FROil = field.FluidFr;
 
                                 _installationRepository.UpdateFr(existingFr);
                             }
                         }
                     }
-            }
 
+
+            }
         }
     }
 }

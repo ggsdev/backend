@@ -294,6 +294,12 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public List<Client003DTO> Measurements { get; set; } = new();
     }
 
+    public class WaterDto
+    {
+        public decimal TotalWaterM3 { get; set; }
+        public decimal TotalWaterSCF { get; set; }
+    }
+
     public class ResponseXmlDto
     {
         public string UepName { get; set; }
@@ -306,6 +312,7 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public GasSummary? GasSummary { get; set; }
         public GasLinearDto? GasLinear { get; set; }
         public GasDiferencialDto? GasDiferencial { get; set; }
+        public WaterDto? Water { get; set; }
 
         public List<Response001DTO> _001File { get; set; } = new();
         public List<Response002DTO> _002File { get; set; } = new();

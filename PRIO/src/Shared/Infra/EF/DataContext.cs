@@ -110,6 +110,8 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<FileType> FileTypes { get; set; }
         public DbSet<Volume> Volume { get; set; }
         public DbSet<Calibration> Calibrations { get; set; }
+        public DbSet<Water> Waters { get; set; }
+
         public DbSet<Bsw> Bsws { get; set; }
         #endregion
 
