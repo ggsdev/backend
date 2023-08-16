@@ -48,11 +48,11 @@ namespace PRIO.Migrations
 
             var usersData = new List<object[]>
             {
-                new object[] { "Prinna", "pmonteiro@prio3.com.br", null, "pmonteiro", Guid.NewGuid()},
-                new object[] { "Alfredo", "amolisani@prio3.com.br", null, "amolisani", Guid.NewGuid()},
-                new object[] { "Thais", "tgoncalves@prio3.com.br", null, "tgoncalves", Guid.NewGuid()},
-                new object[] { "Fernando", "falberdi.globalhitts@prio3.com.br", null, "falberdi.globalhitts", Guid.NewGuid()},
-
+                    new object[] { "Felipe", "fsantos@prio3.com.br", null, "fsantos", Guid.NewGuid()},
+                    new object[] { "Alfredo", "amolisani@prio3.com.br", null, "amolisani", Guid.NewGuid()},
+                    new object[] { "Thais", "tgoncalves@prio3.com.br", null, "tgoncalves", Guid.NewGuid()},
+                    new object[] { "Fernando", "falberdi.globalhitts@prio3.com.br", null, "falberdi.globalhitts", Guid.NewGuid()},
+                    new object[] { "Julia", "jdias@prio3.com.br", null, "jdias", Guid.NewGuid()}
             };
 
 

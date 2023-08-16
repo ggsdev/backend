@@ -152,7 +152,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             List<string> concatenatedValues = new List<string>();
             if (parts.Length > 1)
             {
-
                 foreach (string part in parts)
                 {
 
@@ -161,9 +160,13 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                     {
                         erros.Add("Erro: Valor da célula para ponto de medição do óleo não é uma string na célula " + part);
                     }
-                    else
+                    else if (MPointOilValue != null)
                     {
                         concatenatedValues.Add(MPointOilValue.ToString());
+                    }
+                    else
+                    {
+                        erros.Add("Erro: Valor da célula para ponto de medição do óleo é nulo na célula " + part);
                     }
                 }
             }
@@ -186,7 +189,9 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                     }
                 }
             }
+            Console.WriteLine(concatenatedValues.Count);
             string concatenatedString = string.Join(", ", concatenatedValues);
+            Console.WriteLine(concatenatedString);
 
             object? MPointGasValue = worksheet.Cells[BTP.CellMPointGas].Value;
             if (!(MPointGasValue is string))
