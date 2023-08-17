@@ -316,22 +316,19 @@ namespace PRIO.TESTS.Hierarquies.Zones
             await _fieldRepository.AddAsync(_field1);
             await _zoneRepository.SaveChangesAsync();
 
-            Zone _zone = new()
+            var _zone = new CreateZoneViewModel
             {
-                Id = Guid.NewGuid(),
                 CodZone = "ZoneTest",
-                Field = _field1
+                FieldId = _field1.Id
             };
 
-            await _zoneRepository.AddAsync(_zone);
-            await _zoneRepository.SaveChangesAsync();
+            var create = await _service.CreateZone(_zone, _user);
 
             var _viewModel2 = new UpdateZoneViewModel
             {
                 CodZone = "ZoneTest2"
             };
-
-            var response = await _controller.Update(_zone.Id, _viewModel2);
+            var response = await _controller.Update(create.Id, _viewModel2);
             var createdResult = (OkObjectResult)response;
 
             Assert.IsInstanceOf<OkObjectResult>(response);

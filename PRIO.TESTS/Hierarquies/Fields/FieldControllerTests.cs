@@ -175,7 +175,7 @@ namespace PRIO.TESTS.Hierarquies.Fields
             }
             catch (NotFoundException ex)
             {
-                Assert.That(ex.Message, Is.EqualTo($"Installation not found"));
+                Assert.That(ex.Message, Is.EqualTo($"Instalação não encontrado(a)."));
 
             }
         }
@@ -278,13 +278,11 @@ namespace PRIO.TESTS.Hierarquies.Fields
             try
             {
                 var response = await _controller.Update(_invalidId, _updateViewModel);
-
                 Assert.Fail("Expected NotFoundException was not thrown.");
-
             }
             catch (NotFoundException ex)
             {
-                Assert.That(ex.Message, Is.EqualTo("Field not found"));
+                Assert.That(ex.Message, Is.EqualTo("Campo não encontrado(a)."));
 
             }
 
@@ -312,37 +310,41 @@ namespace PRIO.TESTS.Hierarquies.Fields
             try
             {
                 var response = await _controller.Update(fieldToUpdate.Id, _updateViewModel);
-
                 Assert.Fail("Expected NotFoundException was not thrown.");
-
             }
-            catch (NotFoundException ex)
+            catch (ConflictException ex)
             {
-                Assert.That(ex.Message, Is.EqualTo("Installation not found"));
-
+                Assert.That(ex.Message, Is.EqualTo("Relacionamento não pode ser alterado."));
             }
         }
 
         [Test]
         public async Task Update_FieldAlsoCreateAHistoryOfTypeUpdateAndPersistsInDatabase()
         {
-            var fieldToUpdate = new Field
+            var fieldToUpdate = new CreateFieldViewModel
             {
                 CodField = "21321",
                 Name = "NameToUpdate",
-                Installation = _installation1,
-                User = _user,
+                InstallationId = _installation1.Id,
             };
 
-            await _context.Fields.AddAsync(fieldToUpdate);
-            await _context.SaveChangesAsync();
+            var create = await _service.CreateField(fieldToUpdate, _user);
+
             _updateViewModel = new()
             {
                 InstallationId = _installation2.Id,
                 Name = "saoidjasdsa"
             };
-
-            await _controller.Update(fieldToUpdate.Id, _updateViewModel);
+            Console.WriteLine(create.Id);
+            try
+            {
+                var update = await _controller.Update(create.Id, _updateViewModel);
+                Assert.Fail("Expected ConflictException was not thrown.");
+            }
+            catch (Exception ex)
+            {
+                Assert.That(ex.Message, Is.EqualTo("Relacionamento não pode ser alterado."));
+            }
             var field = await _context.Fields.SingleOrDefaultAsync();
             Assert.That(field, Is.Not.Null);
             Assert.That(field.Installation, Is.Not.Null);

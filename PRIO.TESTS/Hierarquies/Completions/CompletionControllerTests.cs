@@ -65,6 +65,7 @@ namespace PRIO.TESTS.Hierarquies.Completions
         [SetUp]
         public void Setup()
         {
+            #region Context Config
             var contextOptions = new DbContextOptionsBuilder<DataContext>()
                 .UseInMemoryDatabase(databaseName: "TestDatabase")
                 .Options;
@@ -92,6 +93,8 @@ namespace PRIO.TESTS.Hierarquies.Completions
             });
 
             _mapper = mapperConfig.CreateMapper();
+            #endregion
+
             _user = new User()
             {
                 Name = "userTeste",
@@ -112,19 +115,24 @@ namespace PRIO.TESTS.Hierarquies.Completions
             httpContext.Items["Id"] = _user.Id;
             httpContext.Items["User"] = _user;
 
+            #region Repositories
             _systemHistoryRepository = new SystemHistoryRepository(_context);
             _completionRepository = new CompletionRepository(_context);
             _wellRepository = new WellRepository(_context);
             _reservoirRepository = new ReservoirRepository(_context);
+            #endregion
 
+            #region Services
             _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository);
-
             _service = new CompletionService(_mapper, _completionRepository,
                 _wellRepository, _reservoirRepository,
                 _systemHistoryService);
+            #endregion
 
+            #region Controllers
             _controller = new CompletionController(_service);
             _controller.ControllerContext.HttpContext = httpContext;
+            #endregion
         }
 
         [TearDown]
@@ -141,7 +149,6 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 ReservoirId = _reservoir1.Id,
                 WellId = _well1.Id,
-                Name = "asdsadsad",
                 AllocationReservoir = 1
             };
 
@@ -160,7 +167,6 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 ReservoirId = _reservoir1.Id,
                 WellId = _well2.Id,
-                Name = "Different Fields",
                 AllocationReservoir = 1
             };
 
@@ -171,7 +177,7 @@ namespace PRIO.TESTS.Hierarquies.Completions
             }
             catch (ConflictException ex)
             {
-                Assert.That(ex.Message, Is.EqualTo($"Reservoir: {_reservoir1.Name} and Well: {_well2.Name} doesn't belong to the same Field"));
+                Assert.That(ex.Message, Is.EqualTo($"Poço e reservatório devem pertencer ao mesmo campo."));
             }
         }
 
@@ -183,7 +189,6 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 ReservoirId = _reservoir1.Id,
                 WellId = wellInvalidId,
-                Name = "Invalid well",
                 AllocationReservoir = 1
 
             };
@@ -196,7 +201,7 @@ namespace PRIO.TESTS.Hierarquies.Completions
             }
             catch (NotFoundException ex)
             {
-                Assert.That(ex.Message, Is.EqualTo($"Well with id: {wellInvalidId} not found"));
+                Assert.That(ex.Message, Is.EqualTo($"Poço não encontrado(a)."));
             }
         }
 
@@ -208,7 +213,6 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 ReservoirId = Mock._invalidId,
                 WellId = _well1.Id,
-                Name = "Invalid reservoir",
                 AllocationReservoir = 1
 
             };
@@ -221,7 +225,7 @@ namespace PRIO.TESTS.Hierarquies.Completions
             }
             catch (NotFoundException ex)
             {
-                Assert.That(ex.Message, Is.EqualTo($"Reservoir with id: {Mock._invalidId} not found"));
+                Assert.That(ex.Message, Is.EqualTo($"Reservatório não encontrado(a)."));
 
             }
         }
@@ -233,8 +237,7 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 ReservoirId = _reservoir1.Id,
                 WellId = _well1.Id,
-                Name = "Invalid reservoir",
-                AllocationReservoir = 1
+                AllocationReservoir = 0.5m
 
             };
 
@@ -244,8 +247,7 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 ReservoirId = _reservoir1.Id,
                 WellId = _well1.Id,
-                Name = "Already exists",
-                AllocationReservoir = 1
+                AllocationReservoir = 0.5m
 
             };
 
@@ -256,7 +258,7 @@ namespace PRIO.TESTS.Hierarquies.Completions
             }
             catch (ConflictException ex)
             {
-                Assert.That(ex.Message, Is.EqualTo($"Completion with name: {_well1.Name}_{_reservoir1.Zone?.CodZone} already exists."));
+                Assert.That(ex.Message, Is.EqualTo($"Já existe uma completação com esse poço e reservatório associados"));
             }
         }
 
@@ -267,7 +269,6 @@ namespace PRIO.TESTS.Hierarquies.Completions
                 _createViewModel = new CreateCompletionViewModel
                 {
                     ReservoirId = _reservoir1.Id,
-                    Name = "Invalid reservoir",
                     AllocationReservoir = 1
                 };
 
@@ -298,7 +299,6 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 ReservoirId = _reservoir1.Id,
                 WellId = _well1.Id,
-                Name = "mockCod",
                 AllocationReservoir = 1
             };
 
@@ -323,7 +323,6 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 ReservoirId = _reservoir2.Id,
                 WellId = _well2.Id,
-                Name = "updatedMock",
                 AllocationReservoir = 1
 
             };
@@ -333,12 +332,12 @@ namespace PRIO.TESTS.Hierarquies.Completions
 
             Assert.IsInstanceOf<OkObjectResult>(response);
             Assert.That(((CompletionDTO)updatedResult.Value).Name, Is.EqualTo($"{_well2.Name}_{_reservoir2.Zone?.CodZone}"));
-            Assert.That(((CompletionDTO)updatedResult.Value).Name, Is.EqualTo(_updateViewModel.Name));
+            //Assert.That(((CompletionDTO)updatedResult.Value).Name, Is.EqualTo(_updateViewModel.Name));
             Assert.That(((CompletionDTO)updatedResult.Value).Well, Is.Not.Null);
             Assert.That(((CompletionDTO)updatedResult.Value).Well.Name, Is.EqualTo(_well2.Name));
             Assert.That(((CompletionDTO)updatedResult.Value).Reservoir, Is.Not.Null);
             Assert.That(((CompletionDTO)updatedResult.Value).Reservoir.Name, Is.EqualTo(_reservoir2.Name));
-            Assert.That(((CompletionDTO)updatedResult.Value).Name, Is.EqualTo(_updateViewModel.Name));
+            //Assert.That(((CompletionDTO)updatedResult.Value).Name, Is.EqualTo(_updateViewModel.Name));
         }
 
         [Test]
@@ -349,7 +348,6 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 ReservoirId = _reservoir2.Id,
                 WellId = _well2.Id,
-                Name = "updatedMock",
             };
 
             try
@@ -360,7 +358,7 @@ namespace PRIO.TESTS.Hierarquies.Completions
             }
             catch (NotFoundException ex)
             {
-                Assert.That(ex.Message, Is.EqualTo("Completion not found"));
+                Assert.That(ex.Message, Is.EqualTo("Completação não encontrado(a)."));
             }
         }
 
@@ -373,7 +371,6 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 WellId = Guid.NewGuid(),
                 ReservoirId = _reservoir1.Id,
-                Name = "updatedMock",
             };
 
             try
@@ -384,7 +381,7 @@ namespace PRIO.TESTS.Hierarquies.Completions
             }
             catch (NotFoundException ex)
             {
-                Assert.That(ex.Message, Is.EqualTo("Well not found"));
+                Assert.That(ex.Message, Is.EqualTo("Poço não encontrado(a)."));
 
             }
 
@@ -399,7 +396,6 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 ReservoirId = Guid.NewGuid(),
                 WellId = _well1.Id,
-                Name = "updatedMock",
             };
 
             try
@@ -411,7 +407,7 @@ namespace PRIO.TESTS.Hierarquies.Completions
             }
             catch (NotFoundException ex)
             {
-                Assert.That(ex.Message, Is.EqualTo("Reservoir not found"));
+                Assert.That(ex.Message, Is.EqualTo("Reservatório não encontrado(a)."));
 
             }
         }
@@ -425,7 +421,6 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 ReservoirId = _reservoir2.Id,
                 WellId = _well1.Id,
-                Name = "updatedMock",
             };
 
             try
@@ -437,7 +432,7 @@ namespace PRIO.TESTS.Hierarquies.Completions
             }
             catch (ConflictException ex)
             {
-                Assert.That(ex.Message, Is.EqualTo($"Well: {_well1.Name} and Reservoir: {_reservoir2.Name} doesn't belong to the same Field"));
+                Assert.That(ex.Message, Is.EqualTo($"Poço e reservatório devem pertencer ao mesmo campo."));
 
             }
         }
@@ -450,7 +445,6 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 ReservoirId = _reservoir2.Id,
                 WellId = _well2.Id,
-                Name = "updatedMock",
             };
 
             await _controller.Update(completionToUpdate.Id, _updateViewModel);
@@ -499,22 +493,18 @@ namespace PRIO.TESTS.Hierarquies.Completions
         [Test]
         public async Task Restore_SuccesfullyRestoresACompletion()
         {
-            var completionToRestore = new Completion
+            var completionToRestore = new CreateCompletionViewModel
             {
-                Id = Guid.NewGuid(),
-                Name = "Tes22t",
-                Well = _well1,
-                Reservoir = _reservoir1,
-                IsActive = false,
+                WellId = _well1.Id,
+                ReservoirId = _reservoir1.Id,
                 AllocationReservoir = 1
-
             };
 
+            var create = await _service.CreateCompletion(completionToRestore, _user);
 
-            await _completionRepository.AddAsync(completionToRestore);
-            await _completionRepository.SaveChangesAsync();
+            await _controller.Delete(create.Id);
 
-            var response = await _controller.Restore(completionToRestore.Id);
+            var response = await _controller.Restore(create.Id);
             var completionInDatabase = await _context.Completions.SingleOrDefaultAsync();
             var okResult = (OkObjectResult)response;
 
@@ -526,8 +516,7 @@ namespace PRIO.TESTS.Hierarquies.Completions
             Assert.That(completionInDatabase, Is.Not.Null);
             Assert.That(completionInDatabase.IsActive, Is.True);
             //Assert.That(historyInDatabase, Is.Not.Null);
-            //Assert.That(historyInDatabase.IsActive, Is.True);
-            //Assert.That(historyInDatabase.IsActiveOld, Is.False);
+            //assert.that(historyindatabase.isactive, is.true);
             //Assert.That(historyInDatabase.TypeOperation, Is.EqualTo(Utils.TypeOperation.Restore));
             Assert.That(completionInDatabase.DeletedAt, Is.Null);
         }
