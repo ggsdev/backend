@@ -1664,6 +1664,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
             {
                 var files = await _fileHistoryRepository
                     .GetAllFilesByDate(production.MeasuredAt);
+
                 var filesDto = new List<ProductionFilesDto>();
 
                 foreach (var file in files)

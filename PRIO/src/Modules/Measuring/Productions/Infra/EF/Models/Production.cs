@@ -18,7 +18,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Models
         public Gas? Gas { get; set; }
         public GasDiferencial? GasDiferencial { get; set; }
 
-        //public Water? Water { get; set; }
+        public Water? Water { get; set; }
         public User CalculatedImportedBy { get; set; }
         public bool StatusProduction { get; set; } = false;
         public decimal TotalProduction { get; set; }

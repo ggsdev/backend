@@ -225,6 +225,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                         if (checkDateExists)
                                             errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) data: {producao.DHA_INICIO_PERIODO_MEDICAO_001} já existente.");
                                     }
+
                                     else
                                     {
                                         errorsInFormat.Add("Formato da tag DHA_INICIO_PERIODO_MEDICAO incorreto deve ser: dd/MM/yyyy HH:mm:ss");
@@ -238,32 +239,67 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                     var measuringPoint = await _measuringPointRepository
                                         .GetByTagMeasuringPointXML(dadosBasicos.COD_TAG_PONTO_MEDICAO_001, XmlUtils.File001);
 
-                                    //if (measuringPoint is null)
-                                    //    errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), ponto de medição TAG: {dadosBasicos.COD_TAG_PONTO_MEDICAO_001}: {ErrorMessages.NotFound<MeasuringPoint>()}");
+                                    var oilCalculation = await _oilCalculationRepository
+                                        .GetOilVolumeCalculationByInstallationId(installation.Id);
+
+                                    if (measuringPoint is null)
+                                    {
+
+                                        var containsAnySection = oilCalculation.Sections.Any(oil =>
+                                            dadosBasicos.COD_TAG_PONTO_MEDICAO_001 != oil.MeasuringPoint.TagPointMeasuring);
+
+                                        var containsAnyDrain = oilCalculation.DrainVolumes.Any(oil =>
+                                            dadosBasicos.COD_TAG_PONTO_MEDICAO_001 != oil.MeasuringPoint.TagPointMeasuring);
+
+                                        var containsAnyDOR = oilCalculation.DORs.Any(oil =>
+                                            dadosBasicos.COD_TAG_PONTO_MEDICAO_001 != oil.MeasuringPoint.TagPointMeasuring);
+
+                                        var containsAnyTOGRecoveredOil = oilCalculation.TOGRecoveredOils.Any(oil =>
+                                            dadosBasicos.COD_TAG_PONTO_MEDICAO_001 != oil.MeasuringPoint.TagPointMeasuring);
+
+                                        if (!containsAnySection || !containsAnyDrain || !containsAnyDOR || !containsAnyTOGRecoveredOil)
+                                        {
+                                            response001.Measurements.Add(new Client001DTO
+                                            {
+                                                DHA_INICIO_PERIODO_MEDICAO_001 = dateBeginningMeasurement,
+                                                COD_INSTALACAO_001 = dadosBasicos.COD_INSTALACAO_001,
+                                                COD_TAG_PONTO_MEDICAO_001 = dadosBasicos.COD_TAG_PONTO_MEDICAO_001,
+
+                                                Summary = new ClientInfo
+                                                {
+                                                    Status = false,
+                                                    Date = dateBeginningMeasurement,
+                                                    LocationMeasuringPoint = string.Empty,
+                                                    TagMeasuringPoint = dadosBasicos.COD_TAG_PONTO_MEDICAO_001,
+                                                    Volume = 0
+                                                }
+
+                                            });
+                                        }
+
+                                    }
+
+                                    if (installation is not null && installation.MeasuringPoints is not null && measuringPoint is not null)
+                                    {
+                                        var containsInInstallation = false;
+
+                                        foreach (var point in installation.MeasuringPoints)
+                                            if (measuringPoint is not null && measuringPoint.TagPointMeasuring == point.TagPointMeasuring && point.IsActive && measuringPoint.IsActive)
+                                                containsInInstallation = true;
+
+                                        if (containsInInstallation is false)
+                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), TAG do ponto de medição: {measuringPoint.TagPointMeasuring} não encontrado na instalação: {installation.Name}");
+                                    }
+
+
+                                    if (oilCalculation is null)
+                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), cálculo de óleo não configurado nesta instalação");
+
+                                    if (oilCalculation is not null && oilCalculation.DrainVolumes.Count == 0 && oilCalculation.DORs.Count == 0 && oilCalculation.Sections.Count == 0 && oilCalculation.TOGRecoveredOils.Count == 0)
+                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), cálculo de óleo não configurado nesta instalação, não foi encontrado nenhum ponto de medição vinculado ao cálculo");
 
                                     if (installation is not null && measuringPoint is not null)
                                     {
-                                        if (installation.MeasuringPoints is not null)
-                                        {
-                                            var containsInInstallation = false;
-
-                                            foreach (var point in installation.MeasuringPoints)
-                                                if (measuringPoint is not null && measuringPoint.TagPointMeasuring == point.TagPointMeasuring && point.IsActive && measuringPoint.IsActive)
-                                                    containsInInstallation = true;
-
-                                            if (containsInInstallation is false)
-                                                errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), TAG do ponto de medição: {measuringPoint.TagPointMeasuring} não encontrado na instalação: {installation.Name}");
-                                        }
-
-                                        var oilCalculation = await _oilCalculationRepository
-                                            .GetOilVolumeCalculationByInstallationId(installation.Id);
-
-                                        if (oilCalculation is null)
-                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), cálculo de óleo não configurado nesta instalação");
-
-                                        if (oilCalculation is not null && oilCalculation.DrainVolumes.Count == 0 && oilCalculation.DORs.Count == 0 && oilCalculation.Sections.Count == 0 && oilCalculation.TOGRecoveredOils.Count == 0)
-                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), cálculo de óleo não configurado nesta instalação, não foi encontrado nenhum ponto de medição vinculado ao cálculo");
-
                                         var containsInCalculation = false;
                                         var applicable = false;
 
@@ -282,6 +318,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                             applicable = true;
                                                     }
                                             }
+
                                             if (oilCalculation.DORs is not null)
                                             {
                                                 foreach (var dor in oilCalculation.DORs)
@@ -292,6 +329,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                             applicable = true;
                                                     }
                                             }
+
                                             if (oilCalculation.Sections is not null)
                                             {
                                                 foreach (var section in oilCalculation.Sections)
@@ -303,6 +341,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                     }
 
                                             }
+
                                             if (oilCalculation.TOGRecoveredOils is not null)
                                             {
                                                 foreach (var togRecovered in oilCalculation.TOGRecoveredOils)
@@ -313,6 +352,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                             applicable = true;
                                                     }
                                             }
+
                                         }
 
                                         if (errorsInImport.Count == 0 && applicable)
@@ -1184,6 +1224,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     }
                 }
 
+                if (response003.Measurements.Count == 0 && response002.Measurements.Count == 0 && response001.Measurements.Count == 0)
+                    errorsInImport.Add($"Algum erro ocorreu na hora de achar a configuração de cálculo, certifique-se que os pontos de medição do xml estão associados corretamente na configuração de cálculo dos fluídos, arquivo de nome: {data.Files[i].FileName}");
+
                 if (errorsInImport.Count > 0)
                     throw new BadRequestException($"Algum(s) erro(s) ocorreram durante a validação do arquivo de nome: {data.Files[i].FileName}", errors: errorsInImport);
 
@@ -1198,6 +1241,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                 if (response001.Measurements.Count > 0)
                     response._001File.Add(response001);
+
             }
 
             decimal totalLinearBurnetGas = 0;
@@ -1211,6 +1255,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             decimal totalDiferencialImportedGas = 0;
 
             decimal totalOil = 0;
+            decimal totalOilWithoutBsw = 0;
+            var bswTotal = 0m;
+            var divideBsw = 1;
 
             foreach (var file001 in response._001File)
             {
@@ -1219,6 +1266,15 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                 if (oilCalculationByUepCode is null)
                     throw new NotFoundException("Cálculo de gás não encontrado");
+
+                foreach (var measurement in file001.Measurements)
+                {
+
+                    bswTotal += measurement.BswManual;
+                    divideBsw++;
+                    totalOilWithoutBsw += measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001;
+
+                }
 
                 var containDrain = false;
 
@@ -2148,6 +2204,16 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 };
 
                 response.Oil = oilResponse;
+                var totalWater = 0m;
+                totalWater += (bswTotal / divideBsw) * totalOilWithoutBsw;
+
+                var waterResponse = new WaterDto
+                {
+                    TotalWaterM3 = totalWater,
+                    TotalWaterSCF = totalWater * ProductionUtils.m3ToSCFConversionMultipler
+                };
+
+                response.Water = waterResponse;
             }
 
             if (response._002File.Count > 0)
@@ -2305,7 +2371,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             var totalOilWithBsw = 0m;
             var totalProduction = 0m;
-            decimal? bswAverage = 0;
+            decimal bswAverage = 0;
 
             foreach (var file in data._001File)
             {
@@ -2432,9 +2498,19 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 };
 
                 dailyProduction.Oil = oil;
+
+                var water = new Water
+                {
+                    Id = Guid.NewGuid(),
+                    Production = dailyProduction,
+                    TotalWater = totalOilWithBsw * bswAverage,
+                    StatusWater = true,
+                };
+
+                dailyProduction.Water = water;
             }
 
-            totalProduction += totalOilWithBsw;
+            totalProduction += totalOilWithBsw + totalOilWithBsw * bswAverage;
 
             foreach (var file in data._002File)
             {
@@ -2615,8 +2691,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 }
             }
 
-
-
             dailyProduction.TotalProduction += totalProduction;
 
             foreach (var measuring in measurementsAdded)
@@ -2634,6 +2708,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 Gas = data.Gas,
                 InstallationId = installation.Id,
                 Production = dailyProduction,
+                Water = data.Water
+
                 //BothGas = bothGasFiles
             };
 

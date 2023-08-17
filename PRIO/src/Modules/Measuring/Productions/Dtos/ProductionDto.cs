@@ -82,6 +82,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
         public GasDto? Gas { get; set; }
         //public bool BothGas { get; set; }
         public OilDto? Oil { get; set; }
+        public WaterDto? Water { get; set; }
         public Production Production { get; set; }
         public Guid InstallationId { get; set; }
     }
