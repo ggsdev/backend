@@ -85,9 +85,8 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
             _systemHistoryRepository = new SystemHistoryRepository(_context);
             _reservoirRepository = new ReservoirRepository(_context);
             _zoneRepository = new ZoneRepository(_context);
-            _userService = new UserService(_context, _mapper);
 
-            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository, _userService);
+            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository);
 
             _service = new ReservoirService(_mapper, _reservoirRepository, _zoneRepository, _systemHistoryService);
 
@@ -152,8 +151,8 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
             {
 
                 Name = "ReservoirTest",
-                CodReservoir = "ReservoirTest",
                 ZoneId = _zone.Id,
+
             };
 
             var response = await _controller.Create(_viewModel);
@@ -161,7 +160,6 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
             Assert.IsInstanceOf<CreatedResult>(response);
             Assert.That(((CreateUpdateReservoirDTO)createdResult.Value).Name, Is.EqualTo(_viewModel.Name));
-            Assert.That(((CreateUpdateReservoirDTO)createdResult.Value).CodReservoir, Is.EqualTo(_viewModel.CodReservoir));
             Assert.That(createdResult.StatusCode, Is.EqualTo(201));
             Assert.That(createdResult.Location, Is.EqualTo($"reservoirs/{((CreateUpdateReservoirDTO)createdResult.Value).Id}"));
         }
@@ -216,7 +214,6 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
             _viewModel = new CreateReservoirViewModel
             {
                 Name = "ReservoirTest",
-                CodReservoir = "ReservoirTest",
             };
 
             var validationResults = new List<ValidationResult>();
@@ -345,7 +342,6 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
                 Id = Guid.NewGuid(),
                 Name = "ReservoirTest",
                 Zone = _zone,
-                CodReservoir = "ReservoirTest",
                 User = _user,
             };
             _context.Add(_reservoir);
@@ -354,7 +350,6 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
             var _viewModel2 = new UpdateReservoirViewModel
             {
                 Name = "ReservoirTest2",
-                CodReservoir = "ReservoirTest2",
                 ZoneId = _zone.Id,
             };
 
@@ -363,7 +358,6 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
 
             Assert.IsInstanceOf<OkObjectResult>(response);
             Assert.That(((CreateUpdateReservoirDTO)createdResult.Value).Name, Is.EqualTo(_viewModel2.Name));
-            Assert.That(((CreateUpdateReservoirDTO)createdResult.Value).CodReservoir, Is.EqualTo(_viewModel2.CodReservoir));
             Assert.That(createdResult.StatusCode, Is.EqualTo(200));
         }
 
@@ -416,7 +410,6 @@ namespace PRIO.TESTS.Hierarquies.Reservoirs
                 Id = Guid.NewGuid(),
                 Name = "ReservoirTest",
                 Zone = _zone,
-                CodReservoir = "ReservoirTest",
                 User = _user,
             };
             _context.Add(_reservoir);

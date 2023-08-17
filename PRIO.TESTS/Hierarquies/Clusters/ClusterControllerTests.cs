@@ -4,13 +4,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
-using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Clusters.Dtos;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Controllers;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Clusters.ViewModels;
+using PRIO.src.Modules.Hierarchy.Completions.Interfaces;
+using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
+using PRIO.src.Modules.Hierarchy.Reservoirs.Interfaces;
+using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
+using PRIO.src.Modules.Hierarchy.Zones.Interfaces;
+using PRIO.src.Modules.Measuring.Equipments.Interfaces;
+using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Repositories;
@@ -25,9 +31,16 @@ namespace PRIO.TESTS.Hierarquies.Clusters
         private IMapper _mapper;
         private DataContext _context;
         private IClusterRepository _clusterRepository;
+        private IInstallationRepository _installationRepository;
+        private IZoneRepository _zoneRepository;
+        private IReservoirRepository _reservoirRepository;
+        private IWellRepository _wellRepository;
+        private IFieldRepository _fieldRepository;
+        private IMeasuringPointRepository _measuringPointRepository;
+        private IEquipmentRepository _equipmentRepository;
+        private ICompletionRepository _completionRepository;
         private ISystemHistoryRepository _systemHistoryRepository;
         private SystemHistoryService _systemHistoryService;
-        private UserService _userService;
 
         private ClusterService _service;
         private CreateClusterViewModel _viewModel;
@@ -66,11 +79,11 @@ namespace PRIO.TESTS.Hierarquies.Clusters
 
             _systemHistoryRepository = new SystemHistoryRepository(_context);
             _clusterRepository = new ClusterRepository(_context);
-            _userService = new UserService(_context, _mapper);
 
-            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository, _userService);
+            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository);
 
-            _service = new ClusterService(_mapper, _clusterRepository, _systemHistoryService);
+            _service = new ClusterService(_mapper, _clusterRepository, _systemHistoryService, _installationRepository, _fieldRepository, _zoneRepository, _wellRepository, _reservoirRepository, _completionRepository, _measuringPointRepository, _equipmentRepository);
+
             _controller = new ClusterController(_service);
             _controller.ControllerContext.HttpContext = httpContext;
         }
@@ -89,7 +102,6 @@ namespace PRIO.TESTS.Hierarquies.Clusters
             _viewModel = new CreateClusterViewModel
             {
                 Name = "ClusterTest",
-                CodCluster = "12312",
             };
 
             var response = await _controller.Create(_viewModel);
@@ -106,7 +118,7 @@ namespace PRIO.TESTS.Hierarquies.Clusters
         {
             _viewModel = new CreateClusterViewModel
             {
-                CodCluster = "12312",
+                IsActive = true,
             };
 
             try
@@ -132,7 +144,6 @@ namespace PRIO.TESTS.Hierarquies.Clusters
             _viewModel = new CreateClusterViewModel
             {
                 Name = "ClusterTest",
-                CodCluster = "12312",
             };
 
             await _controller.Create(_viewModel);
@@ -166,7 +177,6 @@ namespace PRIO.TESTS.Hierarquies.Clusters
             var _viewModel2 = new UpdateClusterViewModel
             {
                 Name = "ClusterTest2",
-                CodCluster = "ClusterTest2",
             };
 
             var response = await _controller.Update(_cluster1.Id, _viewModel2);

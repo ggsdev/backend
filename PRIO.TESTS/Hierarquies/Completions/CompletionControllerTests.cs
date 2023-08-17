@@ -87,6 +87,7 @@ namespace PRIO.TESTS.Hierarquies.Completions
                 cfg.CreateMap<Installation, InstallationDTO>();
                 cfg.CreateMap<Cluster, ClusterDTO>();
                 cfg.CreateMap<Well, WellDTO>();
+                cfg.CreateMap<Well, WellWithoutFieldDTO>();
                 cfg.CreateMap<Well, WellWithoutCompletionDTO>();
             });
 
@@ -115,9 +116,8 @@ namespace PRIO.TESTS.Hierarquies.Completions
             _completionRepository = new CompletionRepository(_context);
             _wellRepository = new WellRepository(_context);
             _reservoirRepository = new ReservoirRepository(_context);
-            _userService = new UserService(_context, _mapper);
 
-            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository, _userService);
+            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository);
 
             _service = new CompletionService(_mapper, _completionRepository,
                 _wellRepository, _reservoirRepository,
@@ -141,7 +141,8 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 ReservoirId = _reservoir1.Id,
                 WellId = _well1.Id,
-                CodCompletion = "Cod Teste COmpletion",
+                Name = "asdsadsad",
+                AllocationReservoir = 1
             };
 
             var response = await _controller.Create(_createViewModel);
@@ -159,7 +160,8 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 ReservoirId = _reservoir1.Id,
                 WellId = _well2.Id,
-                CodCompletion = "Different Fields",
+                Name = "Different Fields",
+                AllocationReservoir = 1
             };
 
             try
@@ -181,7 +183,9 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 ReservoirId = _reservoir1.Id,
                 WellId = wellInvalidId,
-                CodCompletion = "Invalid well",
+                Name = "Invalid well",
+                AllocationReservoir = 1
+
             };
 
             try
@@ -204,7 +208,9 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 ReservoirId = Mock._invalidId,
                 WellId = _well1.Id,
-                CodCompletion = "Invalid reservoir",
+                Name = "Invalid reservoir",
+                AllocationReservoir = 1
+
             };
 
             try
@@ -227,7 +233,9 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 ReservoirId = _reservoir1.Id,
                 WellId = _well1.Id,
-                CodCompletion = "Invalid reservoir",
+                Name = "Invalid reservoir",
+                AllocationReservoir = 1
+
             };
 
             await _controller.Create(_createViewModel);
@@ -236,7 +244,9 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 ReservoirId = _reservoir1.Id,
                 WellId = _well1.Id,
-                CodCompletion = "Already exists",
+                Name = "Already exists",
+                AllocationReservoir = 1
+
             };
 
             try
@@ -257,7 +267,8 @@ namespace PRIO.TESTS.Hierarquies.Completions
                 _createViewModel = new CreateCompletionViewModel
                 {
                     ReservoirId = _reservoir1.Id,
-                    CodCompletion = "Invalid reservoir",
+                    Name = "Invalid reservoir",
+                    AllocationReservoir = 1
                 };
 
                 var validationResults = new List<ValidationResult>();
@@ -287,7 +298,8 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 ReservoirId = _reservoir1.Id,
                 WellId = _well1.Id,
-                CodCompletion = "mockCod",
+                Name = "mockCod",
+                AllocationReservoir = 1
             };
 
             await _controller.Create(_createViewModel);
@@ -311,7 +323,9 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 ReservoirId = _reservoir2.Id,
                 WellId = _well2.Id,
-                CodCompletion = "updatedMock",
+                Name = "updatedMock",
+                AllocationReservoir = 1
+
             };
 
             var response = await _controller.Update(completionToUpdate.Id, _updateViewModel);
@@ -319,12 +333,12 @@ namespace PRIO.TESTS.Hierarquies.Completions
 
             Assert.IsInstanceOf<OkObjectResult>(response);
             Assert.That(((CompletionDTO)updatedResult.Value).Name, Is.EqualTo($"{_well2.Name}_{_reservoir2.Zone?.CodZone}"));
-            Assert.That(((CompletionDTO)updatedResult.Value).CodCompletion, Is.EqualTo(_updateViewModel.CodCompletion));
+            Assert.That(((CompletionDTO)updatedResult.Value).Name, Is.EqualTo(_updateViewModel.Name));
             Assert.That(((CompletionDTO)updatedResult.Value).Well, Is.Not.Null);
             Assert.That(((CompletionDTO)updatedResult.Value).Well.Name, Is.EqualTo(_well2.Name));
             Assert.That(((CompletionDTO)updatedResult.Value).Reservoir, Is.Not.Null);
             Assert.That(((CompletionDTO)updatedResult.Value).Reservoir.Name, Is.EqualTo(_reservoir2.Name));
-            Assert.That(((CompletionDTO)updatedResult.Value).CodCompletion, Is.EqualTo(_updateViewModel.CodCompletion));
+            Assert.That(((CompletionDTO)updatedResult.Value).Name, Is.EqualTo(_updateViewModel.Name));
         }
 
         [Test]
@@ -335,7 +349,7 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 ReservoirId = _reservoir2.Id,
                 WellId = _well2.Id,
-                CodCompletion = "updatedMock",
+                Name = "updatedMock",
             };
 
             try
@@ -359,7 +373,7 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 WellId = Guid.NewGuid(),
                 ReservoirId = _reservoir1.Id,
-                CodCompletion = "updatedMock",
+                Name = "updatedMock",
             };
 
             try
@@ -385,7 +399,7 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 ReservoirId = Guid.NewGuid(),
                 WellId = _well1.Id,
-                CodCompletion = "updatedMock",
+                Name = "updatedMock",
             };
 
             try
@@ -411,7 +425,7 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 ReservoirId = _reservoir2.Id,
                 WellId = _well1.Id,
-                CodCompletion = "updatedMock",
+                Name = "updatedMock",
             };
 
             try
@@ -436,7 +450,7 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 ReservoirId = _reservoir2.Id,
                 WellId = _well2.Id,
-                CodCompletion = "updatedMock",
+                Name = "updatedMock",
             };
 
             await _controller.Update(completionToUpdate.Id, _updateViewModel);
@@ -462,9 +476,10 @@ namespace PRIO.TESTS.Hierarquies.Completions
             var completionToDelete = new Completion
             {
                 Name = "Test",
-                CodCompletion = "Cod test",
                 Well = _well1,
                 Reservoir = _reservoir1,
+                AllocationReservoir = 1
+
             };
 
             _context.Add(completionToDelete);
@@ -486,15 +501,18 @@ namespace PRIO.TESTS.Hierarquies.Completions
         {
             var completionToRestore = new Completion
             {
-                Name = "Test",
-                CodCompletion = "Cod test",
+                Id = Guid.NewGuid(),
+                Name = "Tes22t",
                 Well = _well1,
                 Reservoir = _reservoir1,
                 IsActive = false,
+                AllocationReservoir = 1
+
             };
 
-            _context.Add(completionToRestore);
-            _context.SaveChanges();
+
+            await _completionRepository.AddAsync(completionToRestore);
+            await _completionRepository.SaveChangesAsync();
 
             var response = await _controller.Restore(completionToRestore.Id);
             var completionInDatabase = await _context.Completions.SingleOrDefaultAsync();
@@ -575,8 +593,6 @@ namespace PRIO.TESTS.Hierarquies.Completions
                 StatusOperator = true,
                 Type = "1233a3",
                 WaterDepth = 322.52m,
-                TopOfPerforated = 2.5m,
-                BaseOfPerforated = 2.5m,
                 ArtificialLift = "1233a3",
                 Latitude4C = "22:03:34,054",
                 Longitude4C = "22:03:34,054",
@@ -651,8 +667,6 @@ namespace PRIO.TESTS.Hierarquies.Completions
                 StatusOperator = true,
                 Type = "1233a3",
                 WaterDepth = 322.52m,
-                TopOfPerforated = 2.5m,
-                BaseOfPerforated = 2.5m,
                 ArtificialLift = "1233a3",
                 Latitude4C = "22:03:34,054",
                 Longitude4C = "22:03:34,054",
@@ -696,9 +710,10 @@ namespace PRIO.TESTS.Hierarquies.Completions
             {
                 Id = Guid.NewGuid(),
                 Name = "Test",
-                CodCompletion = "Cod test",
                 Well = _well1,
                 Reservoir = _reservoir1,
+                AllocationReservoir = 1
+
             };
 
             _context.Add(_completionToUpdate);

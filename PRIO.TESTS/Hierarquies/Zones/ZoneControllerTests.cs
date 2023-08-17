@@ -4,15 +4,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
-using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Clusters.Dtos;
+using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Repositories;
+using PRIO.src.Modules.Hierarchy.Completions.Interfaces;
 using PRIO.src.Modules.Hierarchy.Fields.Dtos;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Dtos;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
+using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Repositories;
+using PRIO.src.Modules.Hierarchy.Reservoirs.Interfaces;
+using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories;
+using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Modules.Hierarchy.Zones.Dtos;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Repositories;
@@ -37,12 +43,16 @@ namespace PRIO.TESTS.Hierarquies.Zones
         private DataContext _context;
         private CreateZoneViewModel _viewModel;
         private ZoneService _service;
-        private UserService _userService;
         private User _user;
 
-        private IFieldRepository _fieldRepository;
         private ISystemHistoryRepository _systemHistoryRepository;
+        private IFieldRepository _fieldRepository;
         private IZoneRepository _zoneRepository;
+        private ICompletionRepository _completionRepository;
+        private IWellRepository _wellRepository;
+        private IClusterRepository _clusterRepository;
+        private IInstallationRepository _installationRepository;
+        private IReservoirRepository _reservoirRepository;
         private SystemHistoryService _systemHistoryService;
 
         [SetUp]
@@ -82,14 +92,20 @@ namespace PRIO.TESTS.Hierarquies.Zones
             httpContext.Items["User"] = _user;
 
             _systemHistoryRepository = new SystemHistoryRepository(_context);
+            _clusterRepository = new ClusterRepository(_context);
+            _installationRepository = new InstallationRepository(_context);
+            _reservoirRepository = new ReservoirRepository(_context);
+            _wellRepository = new WellRepository(_context);
+            _completionRepository = new CompletionRepository(_context);
+
+
             _fieldRepository = new FieldRepository(_context);
             _zoneRepository = new ZoneRepository(_context);
 
-            _userService = new UserService(_context, _mapper);
 
-            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository, _userService);
+            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository);
 
-            _service = new ZoneService(_mapper, _systemHistoryService, _fieldRepository, _zoneRepository);
+            _service = new ZoneService(_mapper, _systemHistoryService, _fieldRepository, _zoneRepository, _reservoirRepository, _completionRepository, _wellRepository);
 
             _controller = new ZoneController(_service);
             _controller.ControllerContext.HttpContext = httpContext;
@@ -110,7 +126,7 @@ namespace PRIO.TESTS.Hierarquies.Zones
                 Name = "ClusterTest",
                 User = _user
             };
-            _context.Add(_cluster1);
+            await _clusterRepository.AddClusterAsync(_cluster1);
 
             Installation _installation1 = new()
             {
@@ -121,7 +137,7 @@ namespace PRIO.TESTS.Hierarquies.Zones
                 Cluster = _cluster1,
                 User = _user
             };
-            _context.Add(_installation1);
+            await _installationRepository.AddAsync(_installation1);
 
             Field _field1 = new()
             {
@@ -130,8 +146,9 @@ namespace PRIO.TESTS.Hierarquies.Zones
                 Installation = _installation1,
                 User = _user
             };
-            _context.Add(_field1);
-            _context.SaveChanges();
+            await _fieldRepository.AddAsync(_field1);
+            //_context.SaveChanges();
+            await _fieldRepository.SaveChangesAsync();
 
             _viewModel = new CreateZoneViewModel
             {
@@ -263,16 +280,20 @@ namespace PRIO.TESTS.Hierarquies.Zones
         [Test]
         public async Task Update_ZoneReturnsACreatedStatusWithDTO()
         {
+
             Cluster _cluster1 = new()
             {
+                Id = Guid.NewGuid(),
                 Name = "clustertest",
                 User = _user
             };
-            _context.Add(_cluster1);
-            _context.SaveChanges();
+            await _clusterRepository.AddClusterAsync(_cluster1);
+            await _zoneRepository.SaveChangesAsync();
 
             Installation _installation1 = new()
             {
+                Id = Guid.NewGuid(),
+
                 Name = "InstallationTest",
                 UepCod = "InstallationTest",
                 CodInstallationAnp = "asdsa",
@@ -280,24 +301,30 @@ namespace PRIO.TESTS.Hierarquies.Zones
                 Cluster = _cluster1,
                 User = _user
             };
-            _context.Add(_installation1);
+            await _installationRepository.AddAsync(_installation1);
+            await _zoneRepository.SaveChangesAsync();
 
             Field _field1 = new()
             {
+                Id = Guid.NewGuid(),
+
                 Name = "FieldTest",
                 CodField = "FieldTest",
                 Installation = _installation1,
                 User = _user
             };
-            _context.Add(_field1);
+            await _fieldRepository.AddAsync(_field1);
+            await _zoneRepository.SaveChangesAsync();
 
             Zone _zone = new()
             {
+                Id = Guid.NewGuid(),
                 CodZone = "ZoneTest",
                 Field = _field1
             };
-            _context.Add(_zone);
-            _context.SaveChanges();
+
+            await _zoneRepository.AddAsync(_zone);
+            await _zoneRepository.SaveChangesAsync();
 
             var _viewModel2 = new UpdateZoneViewModel
             {

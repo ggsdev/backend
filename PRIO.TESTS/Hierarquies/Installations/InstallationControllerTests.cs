@@ -8,6 +8,7 @@ using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Clusters.Dtos;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Completions.Interfaces;
 using PRIO.src.Modules.Hierarchy.Installations.Dtos;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories;
@@ -15,6 +16,13 @@ using PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Controllers;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Hierarchy.Installations.ViewModels;
+using PRIO.src.Modules.Hierarchy.Reservoirs.Interfaces;
+using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
+using PRIO.src.Modules.Hierarchy.Zones.Interfaces;
+using PRIO.src.Modules.Measuring.Equipments.Interfaces;
+using PRIO.src.Modules.Measuring.GasVolumeCalculations.Interfaces;
+using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
+using PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
@@ -34,6 +42,15 @@ namespace PRIO.TESTS.Hierarquies.Installations
         private InstallationService _service;
         private User _user;
         private UserService _userService;
+        private IZoneRepository _zoneRepository;
+        private IReservoirRepository _reservoirRepository;
+        private IWellRepository _wellRepository;
+        private IFieldRepository _fieldRepository;
+        private IMeasuringPointRepository _measuringPointRepository;
+        private IEquipmentRepository _equipmentRepository;
+        private IOilVolumeCalculationRepository _oilRepository;
+        private IGasVolumeCalculationRepository _gasRepository;
+        private ICompletionRepository _completionRepository;
 
         private ISystemHistoryRepository _systemHistoryRepository;
         private IClusterRepository _clusterRepository;
@@ -77,11 +94,9 @@ namespace PRIO.TESTS.Hierarquies.Installations
             _installationRepository = new InstallationRepository(_context);
             _clusterRepository = new ClusterRepository(_context);
 
-            _userService = new UserService(_context, _mapper);
+            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository);
 
-            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository, _userService);
-
-            _service = new InstallationService(_mapper, _installationRepository, _clusterRepository, _systemHistoryService);
+            _service = new InstallationService(_mapper, _installationRepository, _clusterRepository, _systemHistoryService, _fieldRepository, _zoneRepository, _wellRepository, _reservoirRepository, _completionRepository, _measuringPointRepository, _equipmentRepository, _oilRepository, _gasRepository);
             _controller = new InstallationController(_service);
             _controller.ControllerContext.HttpContext = httpContext;
         }

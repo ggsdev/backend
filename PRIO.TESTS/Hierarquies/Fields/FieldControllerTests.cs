@@ -6,6 +6,7 @@ using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Completions.Interfaces;
 using PRIO.src.Modules.Hierarchy.Fields.Dtos;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Controllers;
@@ -14,6 +15,9 @@ using PRIO.src.Modules.Hierarchy.Fields.ViewModels;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
+using PRIO.src.Modules.Hierarchy.Reservoirs.Interfaces;
+using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
+using PRIO.src.Modules.Hierarchy.Zones.Interfaces;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
@@ -42,6 +46,10 @@ namespace PRIO.TESTS.Hierarquies.Fields
         private IFieldRepository _fieldRepository;
         private ISystemHistoryRepository _systemHistoryRepository;
         private IInstallationRepository _installationRepository;
+        private IZoneRepository _zoneRepository;
+        private ICompletionRepository _completionRepository;
+        private IWellRepository _wellRepository;
+        private IReservoirRepository _reservoirRepository;
 
         private SystemHistoryService _systemHistoryService;
 
@@ -115,10 +123,8 @@ namespace PRIO.TESTS.Hierarquies.Fields
             _fieldRepository = new FieldRepository(_context);
             _installationRepository = new InstallationRepository(_context);
 
-            _userService = new UserService(_context, _mapper);
-
-            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository, _userService);
-            _service = new FieldService(_mapper, _fieldRepository, _systemHistoryService, _installationRepository);
+            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository);
+            _service = new FieldService(_mapper, _fieldRepository, _systemHistoryService, _installationRepository, _zoneRepository, _wellRepository, _completionRepository, _reservoirRepository);
             _controller = new FieldController(_service);
             _controller.ControllerContext.HttpContext = httpContext;
         }
