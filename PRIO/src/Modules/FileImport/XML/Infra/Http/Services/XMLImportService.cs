@@ -169,7 +169,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     FileContent = data.Files[i].ContentBase64,
                     FileName = data.Files[i].FileName,
                     FileType = data.Files[i].FileType,
-                    ImportedAt = DateTime.UtcNow.ToString("dd/MM/yyyy"),
+                    ImportedAt = DateTime.UtcNow.AddHours(-3).ToString("dd/MM/yyyy"),
                     ImportedBy = userDto,
                     ImportId = importId
                 };
@@ -2313,7 +2313,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             var measurementsAdded = new List<Measurement>();
 
-            DateTime measuredAt = DateTime.UtcNow;
+            DateTime measuredAt = DateTime.UtcNow.AddHours(-3);
 
             if (data._001File.Count > 0)
                 measuredAt = data._001File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001;
@@ -2337,7 +2337,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 {
                     Id = Guid.NewGuid(),
                     CalculatedImportedBy = user,
-                    CalculatedImportedAt = DateTime.UtcNow,
+                    CalculatedImportedAt = DateTime.UtcNow.AddHours(-3),
                     MeasuredAt = measuredAt,
                     Installation = installation,
 
@@ -2733,7 +2733,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 == 0)
                 throw new BadRequestException("Nenhuma medição foi adicionada", status: "Error");
 
-            return new ImportResponseDTO { Status = "Success", Message = $"Arquivo importado com sucesso, {measurementsAdded.Count} medições importadas" };
+            return new ImportResponseDTO { Status = "Success", Message = $"Arquivo importado com sucesso, {measurementsAdded.Count} medições importadas", ProductionId = dailyProduction.Id };
         }
 
     }

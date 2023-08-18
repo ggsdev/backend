@@ -36,7 +36,7 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.Http.Services
                     Id = Guid.NewGuid(),
                     TypeOperation = HistoryColumns.Import,
                     ImportedBy = user,
-                    ImportedAt = DateTime.UtcNow,
+                    ImportedAt = DateTime.UtcNow.AddHours(-3),
                     FileAcronym = File.Acronym,
                     FileName = File.Name,
                     FileType = File.Type,

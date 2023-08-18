@@ -1676,30 +1676,30 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
         //        throw new ConflictException(ErrorMessages.InactiveAlready<Production>());
 
         //    production.IsActive = false;
-        //    production.DeletedAt = DateTime.UtcNow;
+        //    production.DeletedAt = DateTime.UtcNow.AddHours(-3);
 
         //    if (production.GasLinear is not null)
         //    {
         //        production.GasLinear.IsActive = false;
-        //        production.GasLinear.DeletedAt = DateTime.UtcNow;
+        //        production.GasLinear.DeletedAt = DateTime.UtcNow.AddHours(-3);
         //    }
 
         //    if (production.GasDiferencial is not null)
         //    {
         //        production.GasDiferencial.IsActive = false;
-        //        production.GasDiferencial.DeletedAt = DateTime.UtcNow;
+        //        production.GasDiferencial.DeletedAt = DateTime.UtcNow.AddHours(-3);
         //    }
 
         //    if (production.Gas is not null)
         //    {
         //        production.Gas.IsActive = false;
-        //        production.Gas.DeletedAt = DateTime.UtcNow;
+        //        production.Gas.DeletedAt = DateTime.UtcNow.AddHours(-3);
         //    }
 
         //    if (production.Oil is not null)
         //    {
         //        production.Oil.IsActive = false;
-        //        production.Oil.DeletedAt = DateTime.UtcNow;
+        //        production.Oil.DeletedAt = DateTime.UtcNow.AddHours(-3);
         //    }
 
 

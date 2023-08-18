@@ -43,6 +43,9 @@ using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Repositories;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Zones.Interfaces;
+using PRIO.src.Modules.Measuring.Comments.Infra.EF.Repositories;
+using PRIO.src.Modules.Measuring.Comments.Infra.Http.Services;
+using PRIO.src.Modules.Measuring.Comments.Interfaces;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.Equipments.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Equipments.Interfaces;
@@ -199,6 +202,7 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddScoped<AuxiliaryService>();
     services.AddScoped<XMLImportService>();
     services.AddScoped<MeasurementService>();
+    services.AddScoped<CommentService>();
 
     services.AddScoped<IMenuRepository, MenuRepository>();
     services.AddScoped<IMeasuringPointRepository, MeasuringPointRepository>();
@@ -209,6 +213,7 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddScoped<IUserPermissionRepository, UserPermissionRepository>();
     services.AddScoped<IUserOperationRepository, UserOperationRepository>();
     services.AddScoped<IGlobalOperationsRepository, GlobalOperationsRepository>();
+    services.AddScoped<ICommentRepository, CommentRepository>();
     #endregion
 
     #region Control Access Services

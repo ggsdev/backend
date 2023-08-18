@@ -78,7 +78,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
 
                 //var beforeChangesUser = _mapper.Map<UserHistoryDTO>(userHasGroup);
                 //var currentData = _mapper.Map<User, UserHistoryDTO>(userHasGroup);
-                //currentData.updatedAt = DateTime.UtcNow;
+                //currentData.updatedAt = DateTime.UtcNow.AddHours(-3);
 
                 //var history = new SystemHistory
                 //{
@@ -136,7 +136,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
             //    TypeOperation = HistoryColumns.Delete,
             //    CreatedBy = userHasGroup?.Id,
             //    TableItemId = userId,
-            //    CurrentData = DateTime.UtcNow,
+            //    CurrentData = DateTime.UtcNow.AddHours(-3),
             //    PreviousData = beforeChangesUser,
             //    UpdatedBy = userLoggedIn?.Id,
             //};
@@ -271,7 +271,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
             var groupPermissions = await _groupPermissionRepository.GetGroupPermissionsByGroupId(id);
 
             //ADD USER PERMISSIONS
-            var changedDate = DateTime.UtcNow;
+            var changedDate = DateTime.UtcNow.AddHours(-3);
             foreach (var user in users)
             {
                 user.Group = group;
@@ -281,7 +281,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
                     var userPermission = new UserPermission
                     {
                         Id = Guid.NewGuid(),
-                        CreatedAt = DateTime.UtcNow,
+                        CreatedAt = DateTime.UtcNow.AddHours(-3),
                         GroupId = group.Id,
                         GroupName = group.Name,
                         GroupMenu = groupPermissions[i],
@@ -324,7 +324,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
                 throw new NotFoundException("Group not found or inactive already");
 
             group.IsActive = false;
-            group.DeletedAt = DateTime.UtcNow;
+            group.DeletedAt = DateTime.UtcNow.AddHours(-3);
 
             _groupRepository.UpdateGroup(group);
 
@@ -338,7 +338,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
 
             var groupPermissions = await _groupPermissionRepository.GetGroupPermissionsByGroupId(id);
 
-            var changedDate = DateTime.UtcNow;
+            var changedDate = DateTime.UtcNow.AddHours(-3);
             for (int i = 0; i < groupPermissions.Count; ++i)
             {
                 groupPermissions[i].IsActive = false;
@@ -366,7 +366,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
 
             var users = await _userRepository.GetUsersByLastGroupId(id);
 
-            var changedDate = DateTime.UtcNow;
+            var changedDate = DateTime.UtcNow.AddHours(-3);
             foreach (var user in users)
             {
                 user.Group = group;
@@ -382,7 +382,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
                     var userPermission = new UserPermission
                     {
                         Id = Guid.NewGuid(),
-                        CreatedAt = DateTime.UtcNow,
+                        CreatedAt = DateTime.UtcNow.AddHours(-3),
                         GroupId = group.Id,
                         GroupName = group.Name,
                         GroupMenu = groupPermissions[i],

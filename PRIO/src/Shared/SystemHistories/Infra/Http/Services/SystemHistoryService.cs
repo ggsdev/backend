@@ -20,7 +20,7 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
         public async Task Create<T, U>(string tableName, User user, Guid tableItemId, T objectCreated) where T : class where U : class
         {
             dynamic currentData = _mapper.Map<T, U>(objectCreated);
-            var dateCurrent = DateTime.UtcNow;
+            var dateCurrent = DateTime.UtcNow.AddHours(-3);
 
             currentData.createdAt = dateCurrent;
             currentData.updatedAt = dateCurrent;
@@ -123,7 +123,7 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
 
             dynamic currentData = _mapper.Map<T, U>(objectUpdated);
 
-            var dateCurrent = DateTime.UtcNow;
+            var dateCurrent = DateTime.UtcNow.AddHours(-3);
 
             currentData.createdAt = dateCurrent;
             currentData.updatedAt = dateCurrent;
@@ -152,7 +152,7 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
 
             dynamic currentData = _mapper.Map<T, U>(objectDeleted);
 
-            var dateCurrent = DateTime.UtcNow;
+            var dateCurrent = DateTime.UtcNow.AddHours(-3);
 
             currentData.updatedAt = dateCurrent;
             currentData.deletedAt = dateCurrent;
@@ -181,7 +181,7 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
 
             dynamic currentData = _mapper.Map<T, U>(objectRestored);
 
-            currentData.updatedAt = DateTime.UtcNow;
+            currentData.updatedAt = DateTime.UtcNow.AddHours(-3);
             currentData.deletedAt = null;
 
             var history = new SystemHistory
@@ -203,7 +203,7 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
         public async Task Import<T, U>(string tableName, User user, string fileName, Guid tableItemId, T objectCreated) where T : class where U : class
         {
             dynamic currentData = _mapper.Map<T, U>(objectCreated);
-            var dateCurrent = DateTime.UtcNow;
+            var dateCurrent = DateTime.UtcNow.AddHours(-3);
 
             currentData.createdAt = dateCurrent;
             currentData.updatedAt = dateCurrent;
@@ -237,7 +237,7 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
             dynamic currentData = _mapper.Map<T, U>(objectUpdated);
 
             changedFields.fileName = fileName;
-            var dateCurrent = DateTime.UtcNow;
+            var dateCurrent = DateTime.UtcNow.AddHours(-3);
 
             currentData.createdAt = dateCurrent;
             currentData.updatedAt = dateCurrent;

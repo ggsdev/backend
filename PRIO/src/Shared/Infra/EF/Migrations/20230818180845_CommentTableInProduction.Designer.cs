@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230818180845_CommentTableInProduction")]
+    partial class CommentTableInProduction
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1423,7 +1426,7 @@ namespace PRIO.Migrations
                     b.ToTable("Zones", (string)null);
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.Measuring.Comments.Infra.EF.Models.CommentInProduction", b =>
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Comments.Infra.EF.Models.Comment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1461,7 +1464,7 @@ namespace PRIO.Migrations
                     b.HasIndex("ProductionId")
                         .IsUnique();
 
-                    b.ToTable("CommentsInProduction", (string)null);
+                    b.ToTable("Comments", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Bsw", b =>
@@ -4569,7 +4572,7 @@ namespace PRIO.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.Measuring.Comments.Infra.EF.Models.CommentInProduction", b =>
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Comments.Infra.EF.Models.Comment", b =>
                 {
                     b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "CommentedBy")
                         .WithMany("Comments")
@@ -4579,7 +4582,7 @@ namespace PRIO.Migrations
 
                     b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "Production")
                         .WithOne("Comment")
-                        .HasForeignKey("PRIO.src.Modules.Measuring.Comments.Infra.EF.Models.CommentInProduction", "ProductionId")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.Comments.Infra.EF.Models.Comment", "ProductionId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 

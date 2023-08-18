@@ -13,6 +13,7 @@
         private static readonly string _equipment = "MeasuringEquipment";
         private static readonly string _measuringPoint = "MeasuringPoint";
         private static readonly string _production = "Production";
+        private static readonly string _commentInProduction = "CommentInProduction";
 
         //private readonly IStringLocalizer<ErrorMessages> _localizer;
 
@@ -56,6 +57,9 @@
 
             if (typeof(TModel).Name == _production)
                 return "Produção" + message;
+
+            if (typeof(TModel).Name == _commentInProduction)
+                return "Comentário" + message;
 
             return message;
 
@@ -157,7 +161,8 @@
             if (typeof(TModel).Name == _equipment)
                 return "Esse Equipamento de medição" + message;
 
-
+            if (typeof(TModel).Name == _commentInProduction)
+                return "Esse Comentário" + message;
 
             return message;
         }

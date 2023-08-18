@@ -63,6 +63,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
         public async Task<Production?> GetById(Guid id)
         {
             return await _context.Productions
+                .Include(x => x.Comment)
                 .Include(x => x.Measurements)
                     .ThenInclude(m => m.MeasurementHistory)
                 .FirstOrDefaultAsync(x => x.Id == id);

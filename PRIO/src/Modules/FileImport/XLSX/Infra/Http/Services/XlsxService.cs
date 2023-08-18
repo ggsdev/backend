@@ -65,7 +65,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
             var entityDictionary = new Dictionary<string, BaseModel>();
             var updatedDictionary = new Dictionary<string, BaseModel>();
 
-            var dateCurrent = DateTime.UtcNow;
+            var dateCurrent = DateTime.UtcNow.AddHours(-3);
             var columnPositions = XlsUtils.GetColumnPositions(worksheetTab);
 
             var errors = XlsUtils.ValidateColumns(worksheetTab);

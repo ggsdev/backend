@@ -299,7 +299,7 @@ namespace PRIO.src.Shared.Utils
 
             var modelType = typeof(TModel);
             var viewModelType = typeof(TViewModel);
-
+            var hasUpdates = false;
             var properties = viewModelType.GetProperties();
 
             foreach (var property in properties)
@@ -313,21 +313,33 @@ namespace PRIO.src.Shared.Utils
                     if (property.PropertyType == typeof(Guid))
                         continue;
 
+
                     var loweringFirstLetter = property.Name[0].ToString().ToLower() + property.Name[1..];
 
                     if (viewModelValue is not null && !viewModelValue.Equals(modelValue))
                     {
                         modelProperty.SetValue(model, viewModelValue);
                         updatedProperties[loweringFirstLetter] = viewModelValue;
+                        hasUpdates = true;
                     }
 
                     if (property.Name.ToLower().Equals("deletedat"))
                     {
                         modelProperty.SetValue(model, viewModelValue);
                         updatedProperties[loweringFirstLetter] = viewModelValue;
+                        hasUpdates = true;
                     }
                 }
             }
+
+            if (hasUpdates)
+            {
+                var updatedAtProperty = modelType.GetProperty("UpdatedAt");
+
+                if (updatedAtProperty is not null)
+                    updatedAtProperty.SetValue(model, DateTime.UtcNow);
+            }
+
 
             return updatedProperties;
         }

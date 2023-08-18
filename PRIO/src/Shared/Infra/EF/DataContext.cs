@@ -26,6 +26,8 @@ using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Mappings;
 using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Mappings;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.Comments.Infra.EF.Mappings;
+using PRIO.src.Modules.Measuring.Comments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Mappings;
@@ -127,6 +129,7 @@ namespace PRIO.src.Shared.Infra.EF
 
         public DbSet<SystemHistory> SystemHistories { get; set; }
         public DbSet<Auxiliary> Auxiliaries { get; set; }
+        public DbSet<CommentInProduction> Comments { get; set; }
         public DbSet<ValidateBTP> Validates { get; set; }
         public DbSet<NFSMsProductions> NFSMsProductions { get; set; }
         public DbSet<NFSM> NFSMs { get; set; }
@@ -183,19 +186,19 @@ namespace PRIO.src.Shared.Infra.EF
                 {
                     if (entry.Entity is BaseModel baseModel)
                     {
-                        baseModel.CreatedAt = DateTime.UtcNow;
-                        baseModel.UpdatedAt = DateTime.UtcNow;
+                        baseModel.CreatedAt = DateTime.UtcNow.AddHours(-3);
+                        baseModel.UpdatedAt = DateTime.UtcNow.AddHours(-3);
                     }
                     if (entry.Entity is SystemHistory systemHistoryModel)
                     {
-                        systemHistoryModel.CreatedAt = DateTime.UtcNow;
+                        systemHistoryModel.CreatedAt = DateTime.UtcNow.AddHours(-3);
                     }
                 }
                 if (entry.State == EntityState.Modified)
                 {
                     if (entry.Entity is BaseModel baseModel)
                     {
-                        baseModel.UpdatedAt = DateTime.UtcNow;
+                        baseModel.UpdatedAt = DateTime.UtcNow.AddHours(-3);
                     }
                 }
             }
@@ -245,6 +248,7 @@ namespace PRIO.src.Shared.Infra.EF
             modelBuilder.ApplyConfiguration(new UserPermissionMap());
             modelBuilder.ApplyConfiguration(new GroupPermissionMap());
             modelBuilder.ApplyConfiguration(new UserOperationMap());
+            modelBuilder.ApplyConfiguration(new CommentMap());
 
             #region Measurement & Relations
             modelBuilder.ApplyConfiguration(new SectionMap());

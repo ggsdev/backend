@@ -130,7 +130,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     FileContent = data.File.ContentBase64,
                     FileName = data.File.FileName,
                     FileType = data.File.FileType,
-                    ImportedAt = DateTime.UtcNow.ToString("dd/MM/yyyy"),
+                    ImportedAt = DateTime.UtcNow.AddHours(-3).ToString("dd/MM/yyyy"),
                     ImportedBy = userDto,
                     ImportId = importId
                 },
@@ -572,7 +572,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                 Id = Guid.NewGuid(),
                 TypeOperation = HistoryColumns.Import,
                 ImportedBy = user,
-                ImportedAt = DateTime.UtcNow,
+                ImportedAt = DateTime.UtcNow.AddHours(-3),
                 FileAcronym = file.Acronym,
                 FileName = file.Name,
                 FileType = file.Type,

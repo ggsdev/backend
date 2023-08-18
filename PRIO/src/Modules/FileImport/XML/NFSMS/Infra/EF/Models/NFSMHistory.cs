@@ -6,7 +6,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models
     public class NFSMHistory
     {
         public Guid Id { get; set; }
-        public DateTime ImportedAt { get; set; } = DateTime.UtcNow;
+        public DateTime ImportedAt { get; set; } = DateTime.UtcNow.AddHours(-3);
         public DateTime MeasuredAt { get; set; }
         public User ImportedBy { get; set; }
         public NFSM NFSM { get; set; }

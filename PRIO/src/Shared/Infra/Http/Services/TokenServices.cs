@@ -31,7 +31,7 @@ namespace PRIO.src.Shared.Infra.Http.Services
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
 
                 }),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddHours(-3).AddDays(7),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(key),
                     SecurityAlgorithms.HmacSha256Signature)
@@ -43,7 +43,7 @@ namespace PRIO.src.Shared.Infra.Http.Services
 
         public async Task<string> CreateSessionAndToken(User user, string userHttpAgent)
         {
-            if (user.Session is not null && user.Session.ExpiresIn > DateTime.UtcNow && user.Session.UserHttpAgent == userHttpAgent)
+            if (user.Session is not null && user.Session.ExpiresIn > DateTime.UtcNow.AddHours(-3) && user.Session.UserHttpAgent == userHttpAgent)
                 return user.Session.Token;
 
             var token = GenerateToken(user);
@@ -55,7 +55,7 @@ namespace PRIO.src.Shared.Infra.Http.Services
                     Token = token,
                     User = user,
                     UserHttpAgent = userHttpAgent,
-                    ExpiresIn = DateTime.UtcNow.AddHours(1),
+                    ExpiresIn = DateTime.UtcNow.AddHours(-3).AddHours(1),
                 };
 
                 await _context.Sessions.AddAsync(session);
@@ -64,12 +64,12 @@ namespace PRIO.src.Shared.Infra.Http.Services
                 return token;
             }
 
-            if (user.Session.ExpiresIn < DateTime.UtcNow || user.Session.UserHttpAgent != userHttpAgent)
+            if (user.Session.ExpiresIn < DateTime.UtcNow.AddHours(-3) || user.Session.UserHttpAgent != userHttpAgent)
             {
                 user.Session = new Session
                 {
                     Token = token,
-                    ExpiresIn = DateTime.UtcNow.AddHours(1),
+                    ExpiresIn = DateTime.UtcNow.AddHours(-3).AddHours(1),
                     UserHttpAgent = userHttpAgent
                 };
 
