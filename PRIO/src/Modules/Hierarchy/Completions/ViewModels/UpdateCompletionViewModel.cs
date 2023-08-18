@@ -15,5 +15,6 @@ namespace PRIO.src.Modules.Hierarchy.Completions.ViewModels
         public decimal? BaseOfPerforated { get; set; }
         public Guid? ReservoirId { get; set; }
         public Guid? WellId { get; set; }
+        public string? Name { get; set; }
     }
 }

@@ -20,11 +20,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
         private readonly IGasVolumeCalculationRepository _gasRepository;
         private readonly IOilVolumeCalculationRepository _oilRepository;
         private readonly IMeasurementHistoryRepository _fileHistoryRepository;
-        private readonly IFieldRepository _fieldRepository;
         private readonly IInstallationRepository _installationRepository;
         private readonly IMapper _mapper;
 
-        public ProductionService(IProductionRepository productionRepository, IMapper mapper, IGasVolumeCalculationRepository gasVolumeCalculationRepository, IInstallationRepository installationRepository, IOilVolumeCalculationRepository oilVolumeCalculationRepository, IMeasurementHistoryRepository measurementHistoryRepository, IFieldRepository fieldRepository)
+        public ProductionService(IProductionRepository productionRepository, IMapper mapper, IGasVolumeCalculationRepository gasVolumeCalculationRepository, IInstallationRepository installationRepository, IOilVolumeCalculationRepository oilVolumeCalculationRepository, IMeasurementHistoryRepository measurementHistoryRepository)
         {
             _repository = productionRepository;
             _mapper = mapper;
@@ -32,7 +31,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
             _installationRepository = installationRepository;
             _oilRepository = oilVolumeCalculationRepository;
             _fileHistoryRepository = measurementHistoryRepository;
-            _fieldRepository = fieldRepository;
 
         }
 
@@ -124,9 +122,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_002,
                                 LocalPoint = assistanceGas.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = assistanceGas.MeasuringPoint.TagPointMeasuring,
-                                //ImportId = measurement.MeasurementHistory.Id,
-                                //FileName = measurement.MeasurementHistory.FileName,
-                                //FileType = measurement.MeasurementHistory.FileType
                             };
 
                             burnetGasPoints.Add(measuringPoint);
@@ -145,9 +140,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_002,
                                 LocalPoint = hpFlare.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = hpFlare.MeasuringPoint.TagPointMeasuring,
-                                //ImportId = measurement.MeasurementHistory.Id,
-                                //FileName = measurement.MeasurementHistory.FileName,
-                                //FileType = measurement.MeasurementHistory.FileType
                             };
 
                             burnetGasPoints.Add(measuringPoint);
@@ -166,9 +158,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_002,
                                 LocalPoint = lpFlare.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = lpFlare.MeasuringPoint.TagPointMeasuring,
-                                //ImportId = measurement.MeasurementHistory.Id,
-                                //FileName = measurement.MeasurementHistory.FileName,
-                                //FileType = measurement.MeasurementHistory.FileType
                             };
 
                             burnetGasPoints.Add(measuringPoint);
@@ -187,9 +176,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_002,
                                 LocalPoint = pilot.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = pilot.MeasuringPoint.TagPointMeasuring,
-                                //ImportId = measurement.MeasurementHistory.Id,
-                                //FileName = measurement.MeasurementHistory.FileName,
-                                //FileType = measurement.MeasurementHistory.FileType
                             };
 
                             burnetGasPoints.Add(measuringPoint);
@@ -210,9 +196,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_002,
                                 LocalPoint = purge.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = purge.MeasuringPoint.TagPointMeasuring,
-                                //ImportId = measurement.MeasurementHistory.Id,
-                                //FileName = measurement.MeasurementHistory.FileName,
-                                //FileType = measurement.MeasurementHistory.FileType
                             };
 
                             burnetGasPoints.Add(measuringPoint);
@@ -233,9 +216,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_002,
                                 LocalPoint = lowPressure.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = lowPressure.MeasuringPoint.TagPointMeasuring,
-                                //ImportId = measurement.MeasurementHistory.Id,
-                                //FileName = measurement.MeasurementHistory.FileName,
-                                //FileType = measurement.MeasurementHistory.FileType
                             };
 
 
@@ -255,9 +235,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_002,
                                 LocalPoint = highPressure.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = highPressure.MeasuringPoint.TagPointMeasuring,
-                                //ImportId = measurement.MeasurementHistory.Id,
-                                //FileName = measurement.MeasurementHistory.FileName,
-                                //FileType = measurement.MeasurementHistory.FileType
                             };
 
                             fuelGasPoints.Add(measuringPoint);
@@ -276,9 +253,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_002,
                                 LocalPoint = import.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = import.MeasuringPoint.TagPointMeasuring,
-                                //ImportId = measurement.MeasurementHistory.Id,
-                                //FileName = measurement.MeasurementHistory.FileName,
-                                //FileType = measurement.MeasurementHistory.FileType
                             };
 
                             importedGasPoints.Add(measuringPoint);
@@ -297,9 +271,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_002,
                                 LocalPoint = export.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = export.MeasuringPoint.TagPointMeasuring,
-                                //ImportId = measurement.MeasurementHistory.Id,
-                                //FileName = measurement.MeasurementHistory.FileName,
-                                //FileType = measurement.MeasurementHistory.FileType
                             };
 
 
@@ -329,9 +300,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_003,
                                 LocalPoint = assistanceGas.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = assistanceGas.MeasuringPoint.TagPointMeasuring,
-                                //ImportId = measurement.MeasurementHistory.Id,
-                                //FileName = measurement.MeasurementHistory.FileName,
-                                //FileType = measurement.MeasurementHistory.FileType
                             };
                             burnetGasPoints.Add(measuringPoint);
                         }
@@ -349,9 +317,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_003,
                                 LocalPoint = hpFlare.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = hpFlare.MeasuringPoint.TagPointMeasuring,
-                                //ImportId = measurement.MeasurementHistory.Id,
-                                //FileName = measurement.MeasurementHistory.FileName,
-                                //FileType = measurement.MeasurementHistory.FileType
                             };
                             burnetGasPoints.Add(measuringPoint);
                         }
@@ -369,9 +334,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_003,
                                 LocalPoint = lpFlare.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = lpFlare.MeasuringPoint.TagPointMeasuring,
-                                //ImportId = measurement.MeasurementHistory.Id,
-                                //FileName = measurement.MeasurementHistory.FileName,
-                                //FileType = measurement.MeasurementHistory.FileType
                             };
 
                             burnetGasPoints.Add(measuringPoint);
@@ -390,9 +352,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_003,
                                 LocalPoint = pilot.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = pilot.MeasuringPoint.TagPointMeasuring,
-                                //ImportId = measurement.MeasurementHistory.Id,
-                                //FileName = measurement.MeasurementHistory.FileName,
-                                //FileType = measurement.MeasurementHistory.FileType
                             };
                             burnetGasPoints.Add(measuringPoint);
                             fuelGasPoints.Add(measuringPoint);
@@ -411,9 +370,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_003,
                                 LocalPoint = purge.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = purge.MeasuringPoint.TagPointMeasuring,
-                                //ImportId = measurement.MeasurementHistory.Id,
-                                //FileName = measurement.MeasurementHistory.FileName,
-                                //FileType = measurement.MeasurementHistory.FileType
                             };
 
                             burnetGasPoints.Add(measuringPoint);
@@ -434,9 +390,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_003,
                                 LocalPoint = lowPressure.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = lowPressure.MeasuringPoint.TagPointMeasuring,
-                                //ImportId = measurement.MeasurementHistory.Id,
-                                //FileName = measurement.MeasurementHistory.FileName,
-                                //FileType = measurement.MeasurementHistory.FileType
                             };
                             fuelGasPoints.Add(measuringPoint);
                         }
@@ -454,9 +407,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_003,
                                 LocalPoint = highPressure.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = highPressure.MeasuringPoint.TagPointMeasuring,
-                                //ImportId = measurement.MeasurementHistory.Id,
-                                //FileName = measurement.MeasurementHistory.FileName,
-                                //FileType = measurement.MeasurementHistory.FileType
                             };
 
                             fuelGasPoints.Add(measuringPoint);
@@ -475,9 +425,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_003,
                                 LocalPoint = import.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = import.MeasuringPoint.TagPointMeasuring,
-                                //ImportId = measurement.MeasurementHistory.Id,
-                                //FileName = measurement.MeasurementHistory.FileName,
-                                //FileType = measurement.MeasurementHistory.FileType
                             };
 
                             importedGasPoints.Add(measuringPoint);
@@ -496,9 +443,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 IndividualProduction = measurement.MED_CORRIGIDO_MVMDO_003,
                                 LocalPoint = export.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = export.MeasuringPoint.TagPointMeasuring,
-                                //ImportId = measurement.MeasurementHistory.Id,
-                                //FileName = measurement.MeasurementHistory.FileName,
-                                //FileType = measurement.MeasurementHistory.FileType
                             };
 
                             exportedGasPoints.Add(measuringPoint);
@@ -534,9 +478,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 TagMeasuringPoint = section.MeasuringPoint.TagPointMeasuring,
 
                                 Bsw = measurement.BswManual_001,
-                                //ImportId = measurement.MeasurementHistory.Id,
-                                //FileName = measurement.MeasurementHistory.FileName,
-                                //FileType = measurement.MeasurementHistory.FileType
                             };
 
                             oilPoints.Add(measuringPoint);
@@ -557,9 +498,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 LocalPoint = dor.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = dor.MeasuringPoint.TagPointMeasuring,
                                 Bsw = measurement.BswManual_001,
-                                //ImportId = measurement.MeasurementHistory.Id,
-                                //FileName = measurement.MeasurementHistory.FileName,
-                                //FileType = measurement.MeasurementHistory.FileType
                             };
 
                             oilPoints.Add(measuringPoint);
@@ -581,9 +519,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 LocalPoint = drain.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = drain.MeasuringPoint.TagPointMeasuring,
                                 Bsw = measurement.BswManual_001,
-                                //ImportId = measurement.MeasurementHistory.Id,
-                                //FileName = measurement.MeasurementHistory.FileName,
-                                //FileType = measurement.MeasurementHistory.FileType
                             };
 
                             oilPoints.Add(measuringPoint);
@@ -605,9 +540,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 LocalPoint = tog.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = tog.MeasuringPoint.TagPointMeasuring,
                                 Bsw = measurement.BswManual_001,
-                                //ImportId = measurement.MeasurementHistory.Id,
-                                //FileName = measurement.MeasurementHistory.FileName,
-                                //FileType = measurement.MeasurementHistory.FileType
                             };
 
                             oilPoints.Add(measuringPoint);

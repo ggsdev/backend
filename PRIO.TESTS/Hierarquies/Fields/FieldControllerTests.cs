@@ -257,13 +257,16 @@ namespace PRIO.TESTS.Hierarquies.Fields
                 InstallationId = _installation2.Id,
                 Name = "UpdatedField"
             };
+            try
+            {
+                var response = await _controller.Update(fieldToUpdate.Id, _updateViewModel);
+                Assert.Fail("Expected ConflictException was not thrown.");
+            }
+            catch (ConflictException ex)
+            {
+                Assert.That(ex.Message, Is.EqualTo("Relacionamento não pode ser alterado."));
 
-            var response = await _controller.Update(fieldToUpdate.Id, _updateViewModel);
-            var updatedResult = (OkObjectResult)response;
-
-            Assert.IsInstanceOf<OkObjectResult>(response);
-            Assert.That(updatedResult.StatusCode, Is.EqualTo(200));
-            Assert.That(((CreateUpdateFieldDTO)updatedResult.Value).Name, Is.EqualTo(_updateViewModel.Name));
+            }
 
         }
 
@@ -335,7 +338,6 @@ namespace PRIO.TESTS.Hierarquies.Fields
                 InstallationId = _installation2.Id,
                 Name = "saoidjasdsa"
             };
-            Console.WriteLine(create.Id);
             try
             {
                 var update = await _controller.Update(create.Id, _updateViewModel);

@@ -17,7 +17,7 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.TESTS.Productions.DailyProduction
 {
     [TestFixture]
-    internal class DailyProductionRepository
+    internal class DailyProductionRepositoryTest
     {
         private DataContext _context;
         private IMeasurementRepository _measurementRepository;

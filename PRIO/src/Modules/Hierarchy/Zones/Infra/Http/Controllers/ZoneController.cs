@@ -53,7 +53,6 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Controllers
                 {
                     Message = "User not identified, please login first"
                 });
-
             var zoneDTO = await _zoneService.UpdateZone(body, id, user);
             return Ok(zoneDTO);
         }
