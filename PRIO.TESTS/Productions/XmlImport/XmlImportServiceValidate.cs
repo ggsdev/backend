@@ -15,6 +15,7 @@ using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.GasVolumeCalculations.Interfaces;
 using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models;
@@ -63,13 +64,29 @@ namespace PRIO.TESTS.Productions.XmlImport
 
         private User _user;
         private Installation _bravoInstallation;
+        private Production _production;
+        private FileType _fileType;
+
+        #region Oil
         private Section _tramoASection;
         private Section _tramoBSection;
         private OilVolumeCalculation _oilVolumeCalculation;
         private MeasuringPoint _measuringPoint;
         private MeasuringPoint _measuringPoint2;
-        private Production _production;
-        private FileType _fileType;
+        #endregion
+
+        #region Gas
+        private HPFlare _hpFlare;
+        private LPFlare _lpFlare;
+        private LowPressureGas _lowPressure;
+        private GasVolumeCalculation _gasVolumeCalculation;
+
+        private MeasuringPoint _measuringPoint3;
+        private MeasuringPoint _measuringPoint4;
+
+        private MeasuringPoint _measuringPoint5;
+        #endregion
+
 
         [SetUp]
         public void Setup()
@@ -93,6 +110,7 @@ namespace PRIO.TESTS.Productions.XmlImport
                 cfg.CreateMap<Measurement, _002DTO>();
                 cfg.CreateMap<_002DTO, Measurement>();
                 cfg.CreateMap<Client002DTO, Measurement>();
+                cfg.CreateMap<Measurement, Client002DTO>();
                 cfg.CreateMap<Client001DTO, Measurement>();
                 cfg.CreateMap<Client003DTO, Measurement>();
                 cfg.CreateMap<Client039DTO, Measurement>();
@@ -130,6 +148,13 @@ namespace PRIO.TESTS.Productions.XmlImport
                 Sections = new(),
 
             };
+            _gasVolumeCalculation = new GasVolumeCalculation
+            {
+                Id = Guid.NewGuid(),
+                HPFlares = new(),
+                LPFlares = new()
+
+            };
 
             _bravoInstallation = new Installation()
             {
@@ -141,7 +166,8 @@ namespace PRIO.TESTS.Productions.XmlImport
                 Cluster = bravoCluster,
                 Id = Guid.NewGuid(),
                 IsProcessingUnit = true,
-                OilVolumeCalculation = _oilVolumeCalculation
+                OilVolumeCalculation = _oilVolumeCalculation,
+                GasVolumeCalculation = _gasVolumeCalculation,
             };
 
             _measuringPoint = new MeasuringPoint()
@@ -158,6 +184,30 @@ namespace PRIO.TESTS.Productions.XmlImport
                 Installation = _bravoInstallation,
                 Id = Guid.NewGuid(),
                 TagPointMeasuring = "FT-1198C-01",
+            };
+
+            _measuringPoint3 = new MeasuringPoint()
+            {
+                DinamicLocalMeasuringPoint = "HP Flare",
+                Installation = _bravoInstallation,
+                Id = Guid.NewGuid(),
+                TagPointMeasuring = "FT-3010-01",
+            };
+
+            _measuringPoint4 = new MeasuringPoint()
+            {
+                DinamicLocalMeasuringPoint = "LPFlare",
+                Installation = _bravoInstallation,
+                Id = Guid.NewGuid(),
+                TagPointMeasuring = "FT-3020-01",
+            };
+
+            _measuringPoint5 = new MeasuringPoint()
+            {
+                DinamicLocalMeasuringPoint = "GasCombustivel",
+                Installation = _bravoInstallation,
+                Id = Guid.NewGuid(),
+                TagPointMeasuring = "FIT-3115-03",
             };
 
             _tramoASection = new Section
@@ -178,44 +228,68 @@ namespace PRIO.TESTS.Productions.XmlImport
                 IsApplicable = true,
             };
 
+            _hpFlare = new HPFlare
+            {
+                Id = Guid.NewGuid(),
+                MeasuringPoint = _measuringPoint3,
+                StaticLocalMeasuringPoint = "HP Flare",
+                GasVolumeCalculation = _gasVolumeCalculation,
+                IsApplicable = true,
+            };
+
+            _lpFlare = new LPFlare
+            {
+                Id = Guid.NewGuid(),
+                MeasuringPoint = _measuringPoint4,
+                StaticLocalMeasuringPoint = "LP Flare",
+                GasVolumeCalculation = _gasVolumeCalculation,
+                IsApplicable = true,
+            };
+
+            _lowPressure = new LowPressureGas
+            {
+                Id = Guid.NewGuid(),
+                MeasuringPoint = _measuringPoint5,
+                StaticLocalMeasuringPoint = "Low Pressure",
+                GasVolumeCalculation = _gasVolumeCalculation,
+                IsApplicable = true,
+            };
+
             _context.Clusters.Add(bravoCluster);
 
             _measuringPoint.Section = _tramoASection;
             _measuringPoint2.Section = _tramoBSection;
 
+            _measuringPoint3.HPFlare = _hpFlare;
+            _measuringPoint4.LPFlare = _lpFlare;
+            _measuringPoint5.LowPressureGas = _lowPressure;
+
             _oilVolumeCalculation.Sections.Add(_tramoASection);
             _oilVolumeCalculation.Sections.Add(_tramoBSection);
 
+            _gasVolumeCalculation.HPFlares.Add(_hpFlare);
+            _gasVolumeCalculation.LPFlares.Add(_lpFlare);
+            _gasVolumeCalculation.LowPressureGases.Add(_lowPressure);
 
             _context.Installations.Add(_bravoInstallation);
 
             _context.MeasuringPoints.Add(_measuringPoint);
             _context.MeasuringPoints.Add(_measuringPoint2);
 
+            _context.MeasuringPoints.Add(_measuringPoint3);
+            _context.MeasuringPoints.Add(_measuringPoint4);
+            _context.MeasuringPoints.Add(_measuringPoint5);
+
             _context.OilVolumeCalculations.Add(_oilVolumeCalculation);
+
+            _context.GasVolumeCalculations.Add(_gasVolumeCalculation);
 
             _context.Sections.Add(_tramoASection);
             _context.Sections.Add(_tramoBSection);
 
-            //_production = new Production()
-            //{
-            //    Id = Guid.NewGuid(),
-            //    Installation = _bravoInstallation,
-            //    CalculatedImportedAt = DateTime.UtcNow,
-            //    CalculatedImportedBy = _user,
-            //    MeasuredAt = DateTime.UtcNow,
-            //    TotalProduction = 0m,
-            //    StatusProduction = false
-            //};
-
-            //_fileType = new FileType()
-            //{
-            //    Name = "001",
-            //    Acronym = "PGL",
-            //    Id = Guid.NewGuid(),
-            //};
-
-            //_context.FileTypes.Add(_fileType);
+            _context.HPFlares.Add(_hpFlare);
+            _context.LPFlares.Add(_lpFlare);
+            _context.LowPressureGases.Add(_lowPressure);
 
             _context.SaveChanges();
 
@@ -253,7 +327,7 @@ namespace PRIO.TESTS.Productions.XmlImport
         [Test]
         public async Task ValidateFile_NonXmlFileReturnsError()
         {
-            var fileContent001 = new FileContent
+            var fileContent = new FileContent
             {
                 ContentBase64 = BravoMocks.Bravo001,
                 FileName = "bravo001.xsd",
@@ -264,7 +338,7 @@ namespace PRIO.TESTS.Productions.XmlImport
             {
                 Files = new List<FileContent>
                 {
-                    fileContent001
+                    fileContent
                 }
             };
             try
@@ -276,14 +350,14 @@ namespace PRIO.TESTS.Productions.XmlImport
             catch (BadRequestException ex)
             {
                 Assert.That(ex.Message, Is.Not.Null);
-                Assert.That(ex.Message, Is.EqualTo($"Formato arquivo inválido, deve ter a extensão xml. Importação falhou arquivo com nome: {fileContent001.FileName}"));
+                Assert.That(ex.Message, Is.EqualTo($"Formato arquivo inválido, deve ter a extensão xml. Importação falhou arquivo com nome: {fileContent.FileName}"));
             }
         }
 
         [Test]
         public async Task ValidateFile_NonValidBase64ReturnsError()
         {
-            var fileContent001 = new FileContent
+            var fileContent = new FileContent
             {
                 ContentBase64 = "invalidbase64",
                 FileName = "bravo001.xml",
@@ -294,7 +368,7 @@ namespace PRIO.TESTS.Productions.XmlImport
             {
                 Files = new List<FileContent>
                 {
-                    fileContent001
+                    fileContent
                 }
             };
             try
@@ -313,7 +387,7 @@ namespace PRIO.TESTS.Productions.XmlImport
         [Test]
         public async Task ValidateFile_NonValidFileTypeReturnsError()
         {
-            var fileContent001 = new FileContent
+            var fileContent = new FileContent
             {
                 ContentBase64 = BravoMocks.Bravo001,
                 FileName = "bravo001.xml",
@@ -324,7 +398,7 @@ namespace PRIO.TESTS.Productions.XmlImport
             {
                 Files = new List<FileContent>
                 {
-                    fileContent001
+                    fileContent
                 }
             };
             try
@@ -336,14 +410,14 @@ namespace PRIO.TESTS.Productions.XmlImport
             catch (BadRequestException ex)
             {
                 Assert.That(ex.Message, Is.Not.Null);
-                Assert.That(ex.Message, Is.EqualTo($"Deve pertencer a uma das categorias: 001, 002 e 003. Importação falhou, arquivo com nome: {fileContent001.FileName}"));
+                Assert.That(ex.Message, Is.EqualTo($"Deve pertencer a uma das categorias: 001, 002 e 003. Importação falhou, arquivo com nome: {fileContent.FileName}"));
             }
         }
 
         [Test]
         public async Task Validate001File_NonValidXmlStructureMissingProductionTag()
         {
-            var fileContent001 = new FileContent
+            var fileContent = new FileContent
             {
                 ContentBase64 = BravoMocks.BravoInvalidXsd001,
                 FileName = "bravo001.xml",
@@ -354,7 +428,7 @@ namespace PRIO.TESTS.Productions.XmlImport
             {
                 Files = new List<FileContent>
                 {
-                    fileContent001
+                    fileContent
                 }
             };
             try
@@ -373,7 +447,7 @@ namespace PRIO.TESTS.Productions.XmlImport
         [Test]
         public async Task Validate001File_NonValidXmlStructureMissingDadosBasicosElement()
         {
-            var fileContent001 = new FileContent
+            var fileContent = new FileContent
             {
                 ContentBase64 = BravoMocks.Bravo001WithoutDadosBasicosElement,
                 FileName = "bravo001.xml",
@@ -384,7 +458,7 @@ namespace PRIO.TESTS.Productions.XmlImport
             {
                 Files = new List<FileContent>
                 {
-                    fileContent001
+                    fileContent
                 }
             };
             try
@@ -403,7 +477,7 @@ namespace PRIO.TESTS.Productions.XmlImport
         [Test]
         public async Task Validate001File_ReturnsAListOfErrorsWhenNotProperlyRegisteringHierarchy()
         {
-            var fileContent001 = new FileContent
+            var fileContent = new FileContent
             {
                 ContentBase64 = BravoMocks.Bravo001InstallationInvalidAndMeasuringPointInvalid,
                 FileName = "bravo001.xml",
@@ -414,7 +488,7 @@ namespace PRIO.TESTS.Productions.XmlImport
             {
                 Files = new List<FileContent>
                 {
-                    fileContent001
+                    fileContent
                 }
             };
             try
@@ -426,15 +500,16 @@ namespace PRIO.TESTS.Productions.XmlImport
             catch (BadRequestException ex)
             {
                 Assert.That(ex.Message, Is.Not.Null);
-                Assert.That(ex.Message, Is.EqualTo($"Algum(s) erro(s) ocorreram durante a validação do arquivo de nome: {fileContent001.FileName}"));
+                Assert.That(ex.Message, Is.EqualTo($"Algum(s) erro(s) ocorreram durante a validação do arquivo de nome: {fileContent.FileName}"));
                 Assert.That(ex.Errors, Is.Not.Null);
                 Assert.That(ex.Errors.Count, Is.GreaterThan(0));
             }
         }
+
         [Test]
         public async Task Validate001File_ReturnsAProperResponseWithOneMeasurement()
         {
-            var fileContent001 = new FileContent
+            var fileContent = new FileContent
             {
                 ContentBase64 = BravoMocks.Bravo001OneMeasurement,
                 FileName = "bravo001.xml",
@@ -445,7 +520,7 @@ namespace PRIO.TESTS.Productions.XmlImport
             {
                 Files = new List<FileContent>
                 {
-                    fileContent001
+                    fileContent
                 }
             };
 
@@ -456,12 +531,14 @@ namespace PRIO.TESTS.Productions.XmlImport
             Assert.That(result.UepName, Is.EqualTo(_bravoInstallation.UepName));
             Assert.That(result._001File.Count, Is.EqualTo(1));
             Assert.That(result._001File[0].Measurements.Count, Is.EqualTo(1));
+            Assert.That(result._001File[0].Measurements[0].COD_TAG_PONTO_MEDICAO_001, Is.EqualTo(_measuringPoint.TagPointMeasuring));
+            Assert.That(result._001File[0].Measurements[0].COD_INSTALACAO_001, Is.EqualTo(_bravoInstallation.UepCod));
         }
 
         [Test]
         public async Task Validate001File_ReturnsAProperResponseWithMoreThanOneMeasurement()
         {
-            var fileContent001 = new FileContent
+            var fileContent = new FileContent
             {
                 ContentBase64 = BravoMocks.Bravo001,
                 FileName = "bravo001.xml",
@@ -472,7 +549,7 @@ namespace PRIO.TESTS.Productions.XmlImport
             {
                 Files = new List<FileContent>
                 {
-                    fileContent001
+                    fileContent
                 }
             };
 
@@ -484,6 +561,205 @@ namespace PRIO.TESTS.Productions.XmlImport
             Assert.That(result.UepName, Is.EqualTo(_bravoInstallation.UepName));
             Assert.That(result._001File.Count, Is.EqualTo(1));
             Assert.That(result._001File[0].Measurements.Count, Is.EqualTo(2));
+
+            Assert.That(result._001File[0].Measurements[0].COD_TAG_PONTO_MEDICAO_001, Is.EqualTo(_measuringPoint.TagPointMeasuring));
+            Assert.That(result._001File[0].Measurements[0].COD_INSTALACAO_001, Is.EqualTo(_bravoInstallation.UepCod));
+            Assert.That(result._001File[0].Measurements[1].COD_TAG_PONTO_MEDICAO_001, Is.EqualTo(_measuringPoint2.TagPointMeasuring));
+            Assert.That(result._001File[0].Measurements[1].COD_INSTALACAO_001, Is.EqualTo(_bravoInstallation.UepCod));
+        }
+
+        [Test]
+        public async Task Validate002File_NonValidXmlStructureMissingProductionTag()
+        {
+            var fileContent = new FileContent
+            {
+                ContentBase64 = BravoMocks.BravoInvalidXsd002,
+                FileName = "bravo002.xml",
+                FileType = XmlUtils.File002
+            };
+
+            var requestViewModel = new RequestXmlViewModel
+            {
+                Files = new List<FileContent>
+                {
+                    fileContent
+                }
+            };
+            try
+            {
+                var result = await _service.Validate(requestViewModel, _user);
+                Assert.Fail("Expected BadRequestException not thrown");
+            }
+
+            catch (BadRequestException ex)
+            {
+                Assert.That(ex.Message, Is.Not.Null);
+                Assert.That(ex.Message, Is.EqualTo("The element 'LISTA_CONFIGURACAO_CV' has incomplete content. List of possible elements expected: 'CONFIGURACAO_CV'.,The element 'LISTA_PRODUCAO' has incomplete content. List of possible elements expected: 'PRODUCAO'."));
+            }
+        }
+
+        [Test]
+        public async Task Validate002File_ReturnsAListOfErrorsWhenNotProperlyRegisteringHierarchy()
+        {
+            var fileContent = new FileContent
+            {
+                ContentBase64 = BravoMocks.Bravo002InvalidInstallationAndMeasuringPoint,
+                FileName = "bravo002.xml",
+                FileType = XmlUtils.File002
+            };
+
+            var requestViewModel = new RequestXmlViewModel
+            {
+                Files = new List<FileContent>
+                {
+                    fileContent
+                }
+            };
+            try
+            {
+                var result = await _service.Validate(requestViewModel, _user);
+                Assert.Fail("Expected BadRequestException not thrown");
+            }
+
+            catch (BadRequestException ex)
+            {
+                Assert.That(ex.Message, Is.Not.Null);
+                Assert.That(ex.Message, Is.EqualTo($"Algum(s) erro(s) ocorreram durante a validação do arquivo de nome: {fileContent.FileName}"));
+                Assert.That(ex.Errors, Is.Not.Null);
+                Assert.That(ex.Errors.Count, Is.GreaterThan(0));
+            }
+        }
+
+        [Test]
+        public async Task Validate002File_ReturnsAProperResponseWithMoreThanOneMeasurement()
+        {
+            var fileContent = new FileContent
+            {
+                ContentBase64 = BravoMocks.Bravo002TwoMeasurements,
+                FileName = "bravo002.xml",
+                FileType = XmlUtils.File002
+            };
+
+            var requestViewModel = new RequestXmlViewModel
+            {
+                Files = new List<FileContent>
+                {
+                    fileContent
+                }
+            };
+
+            var result = await _service.Validate(requestViewModel, _user);
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.InstallationId, Is.EqualTo(_bravoInstallation.Id));
+            Assert.That(result.UepCode, Is.EqualTo(_bravoInstallation.UepCod));
+            Assert.That(result.UepName, Is.EqualTo(_bravoInstallation.UepName));
+            Assert.That(result._002File.Count, Is.EqualTo(1));
+            Assert.That(result._002File[0].Measurements.Count, Is.EqualTo(3));
+
+            Assert.That(result._002File[0].Measurements[0].COD_TAG_PONTO_MEDICAO_002, Is.EqualTo(_measuringPoint3.TagPointMeasuring));
+            Assert.That(result._002File[0].Measurements[0].COD_INSTALACAO_002, Is.EqualTo(_bravoInstallation.UepCod));
+            Assert.That(result._002File[0].Measurements[1].COD_TAG_PONTO_MEDICAO_002, Is.EqualTo(_measuringPoint4.TagPointMeasuring));
+            Assert.That(result._002File[0].Measurements[1].COD_INSTALACAO_002, Is.EqualTo(_bravoInstallation.UepCod));
+
+
+            Assert.That(result._002File[0].Measurements[2].Summary.TagMeasuringPoint, Is.EqualTo(_measuringPoint5.TagPointMeasuring));
+        }
+
+        [Test]
+        public async Task Validate003File_NonValidXmlStructureMissingProductionTag()
+        {
+            var fileContent = new FileContent
+            {
+                ContentBase64 = BravoMocks.Bravo003InvalidXsd,
+                FileName = "bravo003.xml",
+                FileType = XmlUtils.File003
+            };
+
+            var requestViewModel = new RequestXmlViewModel
+            {
+                Files = new List<FileContent>
+                {
+                    fileContent
+                }
+            };
+            try
+            {
+                var result = await _service.Validate(requestViewModel, _user);
+                Assert.Fail("Expected BadRequestException not thrown");
+            }
+
+            catch (BadRequestException ex)
+            {
+                Assert.That(ex.Message, Is.Not.Null);
+                Assert.That(ex.Message, Is.EqualTo("The element 'PRODUCAO' has invalid child element 'DHA_FIM_PERIODO_MEDICAO'. List of possible elements expected: 'DHA_INICIO_PERIODO_MEDICAO'."));
+            }
+        }
+
+        [Test]
+        public async Task Validate003File_ReturnsAListOfErrorsWhenNotProperlyRegisteringHierarchy()
+        {
+            var fileContent = new FileContent
+            {
+                ContentBase64 = BravoMocks.Bravo003InvalidInstallationAndMeasuringPoint,
+                FileName = "bravo003.xml",
+                FileType = XmlUtils.File003
+            };
+
+            var requestViewModel = new RequestXmlViewModel
+            {
+                Files = new List<FileContent>
+                {
+                    fileContent
+                }
+            };
+            try
+            {
+                var result = await _service.Validate(requestViewModel, _user);
+                Assert.Fail("Expected BadRequestException not thrown");
+            }
+
+            catch (BadRequestException ex)
+            {
+                Assert.That(ex.Message, Is.Not.Null);
+                Assert.That(ex.Message, Is.EqualTo($"Algum(s) erro(s) ocorreram durante a validação do arquivo de nome: {fileContent.FileName}"));
+                Assert.That(ex.Errors, Is.Not.Null);
+                Assert.That(ex.Errors.Count, Is.GreaterThan(0));
+            }
+        }
+
+        [Test]
+        public async Task Validate003File_ReturnsAProperResponseWithOneMeasurement()
+        {
+            var fileContent = new FileContent
+            {
+                ContentBase64 = BravoMocks.Bravo003,
+                FileName = "bravo003.xml",
+                FileType = XmlUtils.File003
+            };
+
+            var requestViewModel = new RequestXmlViewModel
+            {
+                Files = new List<FileContent>
+                {
+                    fileContent
+                }
+            };
+
+            var result = await _service.Validate(requestViewModel, _user);
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.InstallationId, Is.EqualTo(_bravoInstallation.Id));
+            Assert.That(result.UepCode, Is.EqualTo(_bravoInstallation.UepCod));
+            Assert.That(result.UepName, Is.EqualTo(_bravoInstallation.UepName));
+            Assert.That(result._003File.Count, Is.EqualTo(1));
+            Assert.That(result._003File[0].Measurements.Count, Is.EqualTo(3));
+
+            Assert.That(result._003File[0].Measurements[0].COD_TAG_PONTO_MEDICAO_003, Is.EqualTo(_measuringPoint5.TagPointMeasuring));
+            Assert.That(result._003File[0].Measurements[0].COD_INSTALACAO_003, Is.EqualTo(_bravoInstallation.UepCod));
+
+            Assert.That(result._003File[0].Measurements[1].Summary.TagMeasuringPoint, Is.EqualTo(_measuringPoint3.TagPointMeasuring));
+            Assert.That(result._003File[0].Measurements[2].Summary.TagMeasuringPoint, Is.EqualTo(_measuringPoint4.TagPointMeasuring));
         }
     }
 }
