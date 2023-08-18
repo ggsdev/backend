@@ -21,12 +21,13 @@ using PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.Productions.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Productions.Interfaces;
 using PRIO.src.Modules.Measuring.Productions.Utils;
+using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 
 namespace PRIO.TESTS.Productions.DailyProduction
 {
     [TestFixture]
-    internal class DailyProductionService
+    internal class DailyProductionServiceTest
     {
         private ProductionService _service;
 
@@ -144,6 +145,138 @@ namespace PRIO.TESTS.Productions.DailyProduction
         }
 
         [Test]
+        public async Task GetProductionByInvalidDate_ReturnsNotFoundException()
+        {
+            var invalidDate = DateTime.UtcNow.Date.AddDays(-5);
+
+            try
+            {
+                var result = await _service.GetByDate(invalidDate);
+                Assert.Fail("Expected NotFoundException was not thrown.");
+            }
+            catch (NotFoundException)
+            {
+
+                // Expected exception, do nothing
+            }
+        }
+
+        [Test]
+        public async Task GetProductionByDate_ReturnsProduction()
+        {
+            var productionId = Guid.NewGuid();
+            var productionDate = DateTime.UtcNow.Date;
+
+            var production = new Production
+            {
+                Id = productionId,
+                Installation = _installation,
+                MeasuredAt = productionDate,
+                StatusProduction = true,
+                CalculatedImportedBy = _user,
+                CalculatedImportedAt = DateTime.UtcNow,
+                TotalProduction = 20m,
+
+            };
+
+            _context.Productions.Add(production);
+            await _context.SaveChangesAsync();
+
+
+            var result = await _service.GetByDate(productionDate);
+
+
+            var productionInDb = await _context.Productions
+                .FirstOrDefaultAsync(x => x.Id == productionId);
+
+            Assert.That(result, Is.Not.Null);
+
+            Assert.That(_context.Productions.Count() == 1);
+
+            Assert.That(productionInDb, Is.Not.Null);
+            Assert.That(productionInDb.Installation.Id, Is.EqualTo(production.Installation.Id));
+            Assert.That(productionInDb.MeasuredAt, Is.EqualTo(production.MeasuredAt));
+            Assert.That(productionInDb.StatusProduction, Is.EqualTo(production.StatusProduction));
+            Assert.That(productionInDb.Id, Is.EqualTo(production.Id));
+            Assert.That(productionInDb.TotalProduction, Is.EqualTo(production.TotalProduction));
+            Assert.That(productionInDb.CalculatedImportedBy.Name, Is.EqualTo(production.CalculatedImportedBy.Name));
+        }
+
+        [Test]
+        public async Task GetProductionByDate_ReturnsWithGasAndOilWhenHasIt()
+        {
+            var productionId = Guid.NewGuid();
+            var productionDate = DateTime.UtcNow.Date;
+
+            var gasLinear = new GasLinear
+            {
+                Id = Guid.NewGuid(),
+                TotalGas = 2m,
+                StatusGas = true,
+                BurntGas = 2m
+            };
+
+            var gasDiferencial = new GasDiferencial
+            {
+                Id = Guid.NewGuid(),
+                TotalGas = 2m,
+                StatusGas = true,
+                FuelGas = 3m
+            };
+
+            var gas = new Gas
+            {
+                Id = Guid.NewGuid(),
+                GasDiferencial = gasDiferencial,
+                GasLinear = gasLinear,
+
+            };
+
+            var oil = new Oil
+            {
+                Id = Guid.NewGuid(),
+                TotalOil = 15m
+            };
+
+            var production = new Production
+            {
+                Id = productionId,
+                Installation = _installation,
+                MeasuredAt = productionDate,
+                StatusProduction = true,
+                CalculatedImportedBy = _user,
+                CalculatedImportedAt = DateTime.UtcNow,
+                TotalProduction = 20m,
+                Gas = gas,
+                GasLinear = gasLinear,
+                GasDiferencial = gasDiferencial,
+                Oil = oil,
+            };
+
+            _context.Productions.Add(production);
+            await _context.SaveChangesAsync();
+
+            var result = await _service.GetByDate(productionDate);
+
+            var productionInDb = await _context.Productions
+                .Include(x => x.Gas)
+                .Include(x => x.GasLinear)
+                .Include(x => x.GasDiferencial)
+                .Include(x => x.Oil)
+                .FirstOrDefaultAsync(x => x.Id == productionId);
+
+            Assert.That(result, Is.Not.Null);
+
+            Assert.That(_context.Productions.Count() == 1);
+
+            Assert.That(productionInDb, Is.Not.Null);
+            Assert.That(productionInDb.Gas.Id, Is.EqualTo(production.Gas.Id));
+            Assert.That(productionInDb.Oil.Id, Is.EqualTo(production.Oil.Id));
+            Assert.That(productionInDb.GasLinear.Id, Is.EqualTo(production.GasLinear.Id));
+            Assert.That(productionInDb.GasDiferencial.Id, Is.EqualTo(production.GasDiferencial.Id));
+        }
+
+        [Test]
         public async Task GetAllProductions_ReturnsListOfProductionsDto()
         {
             var gasDiferencial = new GasDiferencial { TotalGas = 50.0m };
@@ -159,7 +292,6 @@ namespace PRIO.TESTS.Productions.DailyProduction
                 GasDiferencial = gasDiferencial,
                 GasLinear = gasLinear,
                 Oil = oil,
-
             };
 
             _context.Productions.Add(production);
@@ -173,13 +305,10 @@ namespace PRIO.TESTS.Productions.DailyProduction
 
             GetAllProductionsDto retrievedDto = result[0];
             Assert.That(retrievedDto.Id, Is.EqualTo(production.Id));
-            // ... assert other properties in the DTO
 
-            // Calculate expected gas values based on your formula
             decimal expectedGasTotalBBL = Math.Round((gasDiferencial.TotalGas * ProductionUtils.m3ToBBLConversionMultiplier) + (gasLinear.TotalGas * ProductionUtils.m3ToBBLConversionMultiplier), 2);
             decimal expectedGasTotalM3 = Math.Round(gasDiferencial.TotalGas + gasLinear.TotalGas, 2);
 
-            // Calculate expected oil values based on your formula
             decimal expectedOilTotalBBL = Math.Round(oil.TotalOil * ProductionUtils.m3ToBBLConversionMultiplier, 2);
             decimal expectedOilTotalM3 = Math.Round(oil.TotalOil, 2);
 
@@ -188,7 +317,6 @@ namespace PRIO.TESTS.Productions.DailyProduction
 
             Assert.That(retrievedDto.Oil.TotalOilBBL, Is.EqualTo(expectedOilTotalBBL));
             Assert.That(retrievedDto.Oil.TotalOilM3, Is.EqualTo(expectedOilTotalM3));
-            // ... assert other properties in the DTO
         }
 
         [Test]
@@ -203,7 +331,8 @@ namespace PRIO.TESTS.Productions.DailyProduction
                 FileName = "test.xml",
                 FileType = "001",
                 ImportedAt = productionDate,
-                FileContent = "base64content"
+                FileContent = "base64content",
+                MeasuredAt = productionDate,
             };
 
             _context.MeasurementHistories.Add(fileHistory);
@@ -220,7 +349,6 @@ namespace PRIO.TESTS.Productions.DailyProduction
 
             // Act
             var result = await _service.DownloadAllProductionFiles(productionId);
-            await _context.SaveChangesAsync();
 
             // Assert
             Assert.That(result.Count, Is.EqualTo(1));
@@ -231,6 +359,24 @@ namespace PRIO.TESTS.Productions.DailyProduction
             Assert.That(retrievedDto.FileType, Is.EqualTo(fileHistory.FileType));
             Assert.That(retrievedDto.ImportedAt, Is.EqualTo(fileHistory.ImportedAt));
             Assert.That(retrievedDto.Base64, Is.EqualTo(fileHistory.FileContent));
+        }
+
+        [Test]
+        public async Task DownloadAllProductionFiles_InvalidProductionId_ReturnsNotFound()
+        {
+            var invalidId = Guid.NewGuid();
+            // Act
+            try
+            {
+                var result = await _service.DownloadAllProductionFiles(invalidId);
+                Assert.Fail("Expected NotFoundException was not thrown.");
+
+            }
+            catch (NotFoundException)
+            {
+
+                // Expected exception, do nothing
+            }
         }
     }
 }

@@ -68,7 +68,6 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
                 User = user,
                 IsActive = body.IsActive is not null ? body.IsActive.Value : true,
             };
-
             await _zoneRepository.AddAsync(zone);
 
             await _systemHistoryService
@@ -103,6 +102,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
         public async Task<CreateUpdateZoneDTO> UpdateZone(UpdateZoneViewModel body, Guid id, User user)
         {
             var zone = await _zoneRepository.GetByIdWithReservoirsAsync(id);
+            Console.WriteLine(zone.Id);
 
             if (zone is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Zone>());

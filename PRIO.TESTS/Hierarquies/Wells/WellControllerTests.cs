@@ -211,7 +211,7 @@ namespace PRIO.TESTS.Hierarquies.Wells
             }
             catch (NotFoundException ex)
             {
-                Assert.That(ex.Message, Is.EqualTo("Field not found"));
+                Assert.That(ex.Message, Is.EqualTo(ErrorMessages.NotFound<Field>()));
 
             }
         }
@@ -356,7 +356,7 @@ namespace PRIO.TESTS.Hierarquies.Wells
             }
             catch (NotFoundException ex)
             {
-                Assert.That(ex.Message, Is.EqualTo("Well not found"));
+                Assert.That(ex.Message, Is.EqualTo(ErrorMessages.NotFound<Well>()));
 
             }
         }
@@ -405,7 +405,7 @@ namespace PRIO.TESTS.Hierarquies.Wells
             }
             catch (NotFoundException ex)
             {
-                Assert.That(ex.Message, Is.EqualTo("Field not found"));
+                Assert.That(ex.Message, Is.EqualTo(ErrorMessages.NotFound<Field>()));
 
             }
         }

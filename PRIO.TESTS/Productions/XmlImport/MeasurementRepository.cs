@@ -13,7 +13,7 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.TESTS.Productions.XmlImport
 {
     [TestFixture]
-    internal class MeasurementRepository
+    internal class MeasurementRepositoryTest
     {
         private DataContext _context;
         private IMeasurementRepository _measurementRepository;
