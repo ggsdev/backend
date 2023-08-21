@@ -44,6 +44,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
         {
             return await _context.Productions
                 .Include(x => x.Installation)
+                .Include(x => x.Comment)
+                .ThenInclude(x => x.CommentedBy)
                 .Include(x => x.GasLinear)
                 .Include(x => x.GasDiferencial)
                 .Include(x => x.Gas)

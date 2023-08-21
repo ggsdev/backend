@@ -48,5 +48,14 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Controllers
 
             return Ok(files);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduction([FromRoute] Guid id)
+        {
+            await _productionService
+                .DeleteProduction(id);
+
+            return NoContent();
+        }
     }
 }

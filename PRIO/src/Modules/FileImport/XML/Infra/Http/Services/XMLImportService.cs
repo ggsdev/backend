@@ -2245,7 +2245,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 .GetExistingByDate(response.DateProduction);
 
             if (productionOfTheDay is null)
-                response.StatusProduction = false;
+                response.StatusProduction = "aberto";
             else
                 response.StatusProduction = productionOfTheDay.StatusProduction;
 
@@ -2375,10 +2375,11 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             var totalOilWithBsw = 0m;
             var totalProduction = 0m;
-            decimal bswAverage = 0;
+            var bswAverage = 0m;
 
             foreach (var file in data._001File)
             {
+
                 foreach (var bodyMeasurement in file.Measurements)
                 {
                     var measurement = _mapper.Map<Client001DTO, Measurement>(bodyMeasurement);
@@ -2702,10 +2703,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 measuring.Production = dailyProduction;
             }
 
-            //var bothGasFiles = false;
-            //if (dailyProduction.GasDiferencial is not null && dailyProduction.GasLinear is not null)
-            //    bothGasFiles = true;
-
             var fieldFrViewModel = new FieldFRBodyService
             {
                 Oil = data.Oil,
@@ -2719,9 +2716,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             await _fieldFRService.ApplyFR(fieldFrViewModel, data.DateProduction);
 
-            //if (dailyProduction.GasDiferencial is not null && dailyProduction.GasLinear is not null && dailyProduction.Oil is not null)
+            //change production status to true
+            //if (dailyProduction.GasDiferencial is not null && dailyProduction.GasLinear is not null && dailyProduction.Oil is not null && dailyProduction.Comment is not null && dailyProduction.Water is not null)
             //{
-            //    dailyProduction.StatusProduction = true;
+            //    dailyProduction.StatusProduction = "fechado";
             //}
 
             await _productionRepository.AddOrUpdateProduction(dailyProduction);

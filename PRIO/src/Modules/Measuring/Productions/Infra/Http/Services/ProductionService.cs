@@ -3,11 +3,13 @@ using PRIO.src.Modules.FileImport.XML.Dtos;
 using PRIO.src.Modules.FileImport.XML.Infra.Utils;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
+using PRIO.src.Modules.Measuring.Comments.Dtos;
 using PRIO.src.Modules.Measuring.GasVolumeCalculations.Interfaces;
 using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Measurements.Interfaces;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces;
 using PRIO.src.Modules.Measuring.Productions.Dtos;
+using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Productions.Interfaces;
 using PRIO.src.Modules.Measuring.Productions.Utils;
 using PRIO.src.Shared.Errors;
@@ -60,6 +62,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                     5),
                 StatusGas = (production.GasDiferencial is not null ? production.GasDiferencial.StatusGas : false) || (production.GasLinear is not null ? production.GasLinear.StatusGas : false),
                 StatusOil = production.Oil is not null ? production.Oil.StatusOil : false,
+                IsActive = production.IsActive
             };
 
             var gasBurnt = new GasBurntDto
@@ -634,6 +637,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
             gasDto.FR = gasFrs;
             oilDto.FR = oilFrs;
 
+            var commentDto = _mapper.Map<CreateUpdateCommentDto>(production.Comment);
+
             var productionDto = new ProductionDtoWithNullableDecimals
             {
                 InstallationName = production.Installation.Name,
@@ -642,6 +647,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 Gas = gasDto,
                 Oil = oilDto,
                 Files = files,
+                Comment = commentDto
             };
 
             var gasCalculationByUepCode = await _gasRepository
@@ -1585,6 +1591,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
             return productionDto;
         }
+
         public async Task<List<GetAllProductionsDto>> GetAllProductions()
         {
             var productions = await _repository
@@ -1628,7 +1635,13 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                     },
                     Status = production.StatusProduction,
                     UepName = production.Installation.UepName,
-                    Files = filesDto
+                    Files = filesDto,
+                    IsActive = production.IsActive,
+                    Water = new WaterTotalDto
+                    {
+                        TotalWaterM3 = Math.Round(production.Water is not null ? production.Water.TotalWater : 0, 2),
+                        TotalWaterBBL = Math.Round(production.Water is not null ? production.Water.TotalWater * ProductionUtils.m3ToBBLConversionMultiplier : 0, 2)
+                    }
                 };
 
                 productionsDto.Add(productionDto);
@@ -1665,47 +1678,76 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
             return filesDto;
         }
 
-        //public async Task DeleteProduction(Guid id)
-        //{
-        //    var production = await _repository.GetById(id);
+        public async Task DeleteProduction(Guid id)
+        {
+            var production = await _repository.GetById(id);
 
-        //    if (production is null)
-        //        throw new NotFoundException(ErrorMessages.NotFound<Production>());
+            if (production is null)
+                throw new NotFoundException(ErrorMessages.NotFound<Production>());
 
-        //    if (production.IsActive is false)
-        //        throw new ConflictException(ErrorMessages.InactiveAlready<Production>());
+            if (production.IsActive is false)
+                throw new ConflictException(ErrorMessages.InactiveAlready<Production>());
 
-        //    production.IsActive = false;
-        //    production.DeletedAt = DateTime.UtcNow.AddHours(-3);
+            if (production.GasLinear is not null)
+            {
+                production.GasLinear.IsActive = false;
+                production.GasLinear.DeletedAt = DateTime.UtcNow.AddHours(-3);
+            }
 
-        //    if (production.GasLinear is not null)
-        //    {
-        //        production.GasLinear.IsActive = false;
-        //        production.GasLinear.DeletedAt = DateTime.UtcNow.AddHours(-3);
-        //    }
+            if (production.GasDiferencial is not null)
+            {
+                production.GasDiferencial.IsActive = false;
+                production.GasDiferencial.DeletedAt = DateTime.UtcNow.AddHours(-3);
+            }
 
-        //    if (production.GasDiferencial is not null)
-        //    {
-        //        production.GasDiferencial.IsActive = false;
-        //        production.GasDiferencial.DeletedAt = DateTime.UtcNow.AddHours(-3);
-        //    }
+            if (production.Gas is not null)
+            {
+                production.Gas.IsActive = false;
+                production.Gas.DeletedAt = DateTime.UtcNow.AddHours(-3);
+            }
 
-        //    if (production.Gas is not null)
-        //    {
-        //        production.Gas.IsActive = false;
-        //        production.Gas.DeletedAt = DateTime.UtcNow.AddHours(-3);
-        //    }
+            if (production.Oil is not null)
+            {
+                production.Oil.IsActive = false;
+                production.Oil.DeletedAt = DateTime.UtcNow.AddHours(-3);
+            }
 
-        //    if (production.Oil is not null)
-        //    {
-        //        production.Oil.IsActive = false;
-        //        production.Oil.DeletedAt = DateTime.UtcNow.AddHours(-3);
-        //    }
+            if (production.Water is not null)
+            {
+                production.Water.IsActive = false;
+                production.Water.DeletedAt = DateTime.UtcNow.AddHours(-3);
+            }
 
+            if (production.Comment is not null)
+            {
+                production.Comment.IsActive = false;
+                production.Comment.DeletedAt = DateTime.UtcNow.AddHours(-3);
+            }
 
-        //    _repository.Update(production);
+            if (production.NFSMs is not null)
+            {
+                foreach (var nfsm in production.NFSMs)
+                {
+                    nfsm.IsActive = false;
+                    nfsm.DeletedAt = DateTime.UtcNow.AddHours(-3);
+                }
+            }
 
-        //    await _repository.SaveChangesAsync();
-        //}
+            if (production.FieldsFR is not null)
+            {
+                foreach (var fieldFR in production.FieldsFR)
+                {
+                    fieldFR.IsActive = false;
+                    fieldFR.DeletedAt = DateTime.UtcNow.AddHours(-3);
+                }
+            }
+
+            production.IsActive = false;
+            production.DeletedAt = DateTime.UtcNow.AddHours(-3);
+
+            _repository.Update(production);
+
+            await _repository.SaveChangesAsync();
+        }
     }
 }

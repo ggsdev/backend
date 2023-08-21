@@ -153,7 +153,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     DailyProduction = body.Production,
                                     Field = fieldInDatabase,
                                     FROil = field.FluidFr,
-                                    ProductionInField = body.Oil.TotalOilProductionM3 * field.FluidFr + (body.Water is not null ? body.Water.TotalWaterM3 : 0),
+                                    ProductionInField = body.Oil.TotalOilProductionM3 * field.FluidFr /*+ (body.Water is not null ? body.Water.TotalWaterM3 : 0)*/,
 
                                 };
 
@@ -162,7 +162,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             else
                             {
 
-                                existingFr.ProductionInField += body.Oil.TotalOilProductionM3 * field.FluidFr + (body.Water is not null ? body.Water.TotalWaterM3 : 0);
+                                existingFr.ProductionInField += body.Oil.TotalOilProductionM3 * field.FluidFr /*+ (body.Water is not null ? body.Water.TotalWaterM3 : 0)*/;
                                 existingFr.FROil = field.FluidFr;
 
                                 _installationRepository.UpdateFr(existingFr);
