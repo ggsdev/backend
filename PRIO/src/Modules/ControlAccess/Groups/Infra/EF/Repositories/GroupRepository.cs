@@ -52,7 +52,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
             {
                 Id = groupId,
                 Name = body.GroupName,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow.AddHours(-3),
                 Description = body.Description is null ? null : body.Description,
             };
             await _context.Groups.AddAsync(group);
@@ -77,7 +77,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
                     MenuName = foundMenuParent.Name,
                     MenuOrder = foundMenuParent.Order,
                     MenuRoute = foundMenuParent.Route,
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.UtcNow.AddHours(-3),
                     Menu = foundMenuParent,
                     GroupName = body.GroupName,
                     hasChildren = foundMenusChildrensInParent.Count == 0 ? false : true,
@@ -106,7 +106,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
                                 MenuName = foundMenuChildren.Name,
                                 MenuOrder = foundMenuChildren.Order,
                                 MenuRoute = foundMenuChildren.Route,
-                                CreatedAt = DateTime.UtcNow,
+                                CreatedAt = DateTime.UtcNow.AddHours(-3),
                                 Menu = foundMenuChildren,
                                 GroupName = body.GroupName,
                                 hasChildren = foundMenusChildrensInChildren.Count == 0 ? false : true,
@@ -178,7 +178,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
                     MenuName = foundMenuParent.Name,
                     MenuOrder = foundMenuParent.Order,
                     MenuRoute = foundMenuParent.Route,
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.UtcNow.AddHours(-3),
                     Menu = foundMenuParent,
                     GroupName = group.Name,
                     hasChildren = foundMenusChildrensInParent.Count == 0 ? false : true,
@@ -207,7 +207,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
                                 MenuName = foundMenuChildren.Name,
                                 MenuOrder = foundMenuChildren.Order,
                                 MenuRoute = foundMenuChildren.Route,
-                                CreatedAt = DateTime.UtcNow,
+                                CreatedAt = DateTime.UtcNow.AddHours(-3),
                                 Menu = foundMenuChildren,
                                 GroupName = group.Name,
                                 hasChildren = foundMenusChildrensInChildren.Count == 0 ? false : true,
@@ -278,7 +278,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
                     MenuId = Guid.Parse(permission.Menu.Id),
                     User = userHasGroup,
                     GroupMenu = groupPermission,
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.UtcNow.AddHours(-3),
                 };
 
                 await _context.UserPermissions.AddAsync(userPermission);

@@ -77,7 +77,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
 
             //var currentData = _mapper.Map<User, UserHistoryDTO>(user);
 
-            //var dateNow = DateTime.UtcNow;
+            //var dateNow = DateTime.UtcNow.AddHours(-3);
 
             //currentData.createdAt = dateNow;
             //currentData.updatedAt = dateNow;
@@ -206,11 +206,11 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
 
             var properties = new
             {
-                DeletedAt = DateTime.UtcNow,
+                DeletedAt = DateTime.UtcNow.AddHours(-3),
                 IsActive = false
             };
 
-            user.DeletedAt = DateTime.UtcNow;
+            user.DeletedAt = DateTime.UtcNow.AddHours(-3);
             user.IsActive = false;
 
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(user, properties);
@@ -292,7 +292,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                         MenuName = verifyRelationMenuParent.MenuName,
                         MenuOrder = verifyRelationMenuParent.MenuOrder,
                         MenuRoute = verifyRelationMenuParent.MenuRoute,
-                        CreatedAt = DateTime.UtcNow,
+                        CreatedAt = DateTime.UtcNow.AddHours(-3),
                         MenuId = verifyRelationMenuParent.Menu.Id,
                         User = userWithPermissions,
                         GroupMenu = verifyRelationMenuParent,
@@ -324,7 +324,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                                         MenuName = verifyRelationMenuChildren.MenuName,
                                         MenuOrder = verifyRelationMenuChildren.MenuOrder,
                                         MenuRoute = verifyRelationMenuChildren.MenuRoute,
-                                        CreatedAt = DateTime.UtcNow,
+                                        CreatedAt = DateTime.UtcNow.AddHours(-3),
                                         MenuId = verifyRelationMenuChildren.Menu.Id,
                                         User = userWithPermissions,
                                         GroupMenu = verifyRelationMenuChildren,
@@ -384,7 +384,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                                         MenuName = verifyRelationMenuChildrenInMaster.MenuName,
                                         MenuOrder = verifyRelationMenuChildrenInMaster.MenuOrder,
                                         MenuRoute = verifyRelationMenuChildrenInMaster.MenuRoute,
-                                        CreatedAt = DateTime.UtcNow,
+                                        CreatedAt = DateTime.UtcNow.AddHours(-3),
                                         MenuId = verifyRelationMenuChildrenInMaster.Menu.Id,
                                         User = userWithPermissions,
                                         GroupMenu = verifyRelationMenuChildrenInMaster,
@@ -466,7 +466,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                         MenuName = verifyRelationMenuParentInMaster.MenuName,
                         MenuOrder = verifyRelationMenuParentInMaster.MenuOrder,
                         MenuRoute = verifyRelationMenuParentInMaster.MenuRoute,
-                        CreatedAt = DateTime.UtcNow,
+                        CreatedAt = DateTime.UtcNow.AddHours(-3),
                         MenuId = verifyRelationMenuParentInMaster.Menu.Id,
                         User = userWithPermissions,
                         GroupMenu = verifyRelationMenuParentInMaster,
@@ -493,7 +493,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                                     MenuName = verifyRelationMenuChildrenInMaster.MenuName,
                                     MenuOrder = verifyRelationMenuChildrenInMaster.MenuOrder,
                                     MenuRoute = verifyRelationMenuChildrenInMaster.MenuRoute,
-                                    CreatedAt = DateTime.UtcNow,
+                                    CreatedAt = DateTime.UtcNow.AddHours(-3),
                                     MenuId = verifyRelationMenuChildrenInMaster.Menu.Id,
                                     User = userWithPermissions,
                                     GroupMenu = verifyRelationMenuChildrenInMaster,
@@ -634,7 +634,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                     MenuId = permission.Menu.Id,
                     User = user,
                     GroupMenu = groupPermission,
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.UtcNow.AddHours(-3),
                 };
 
                 await _userPermissionRepository.AddUserPermission(userPermission);

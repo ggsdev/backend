@@ -152,7 +152,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
             var clusterPropertiesToUpdate = new
             {
                 IsActive = false,
-                DeletedAt = DateTime.UtcNow,
+                DeletedAt = DateTime.UtcNow.AddHours(-3),
             };
             var clusterUpdatedProperties = UpdateFields
                 .CompareUpdateReturnOnlyUpdated(cluster, clusterPropertiesToUpdate);
@@ -170,7 +170,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                         var installationPropertiesToUpdate = new
                         {
                             IsActive = false,
-                            DeletedAt = DateTime.UtcNow,
+                            DeletedAt = DateTime.UtcNow.AddHours(-3),
                         };
 
                         var installationUpdatedProperties = UpdateFields
@@ -190,7 +190,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                                 var pointPropertiesToUpdate = new
                                 {
                                     IsActive = false,
-                                    DeletedAt = DateTime.UtcNow,
+                                    DeletedAt = DateTime.UtcNow.AddHours(-3),
                                 };
 
                                 var pointUpdatedProperties = UpdateFields
@@ -209,7 +209,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                                         var equipmentPropertiesToUpdate = new
                                         {
                                             IsActive = false,
-                                            DeletedAt = DateTime.UtcNow,
+                                            DeletedAt = DateTime.UtcNow.AddHours(-3),
                                         };
 
                                         var equipmentUpdatedProperties = UpdateFields
@@ -231,7 +231,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                                 var fieldPropertiesToUpdate = new
                                 {
                                     IsActive = false,
-                                    DeletedAt = DateTime.UtcNow,
+                                    DeletedAt = DateTime.UtcNow.AddHours(-3),
                                 };
 
                                 var fieldUpdatedProperties = UpdateFields
@@ -251,7 +251,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                                         var zonePropertiesToUpdate = new
                                         {
                                             IsActive = false,
-                                            DeletedAt = DateTime.UtcNow,
+                                            DeletedAt = DateTime.UtcNow.AddHours(-3),
                                         };
 
                                         var zoneUpdatedProperties = UpdateFields
@@ -272,7 +272,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                                                 var reservoirPropertiesToUpdate = new
                                                 {
                                                     IsActive = false,
-                                                    DeletedAt = DateTime.UtcNow,
+                                                    DeletedAt = DateTime.UtcNow.AddHours(-3),
                                                 };
 
                                                 var reservoirUpdatedProperties = UpdateFields
@@ -292,7 +292,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                                                         var completionPropertiesToUpdate = new
                                                         {
                                                             IsActive = false,
-                                                            DeletedAt = DateTime.UtcNow,
+                                                            DeletedAt = DateTime.UtcNow.AddHours(-3),
                                                         };
 
                                                         var completionUpdatedProperties = UpdateFields
@@ -315,7 +315,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                                         var wellPropertiesToUpdate = new
                                         {
                                             IsActive = false,
-                                            DeletedAt = DateTime.UtcNow,
+                                            DeletedAt = DateTime.UtcNow.AddHours(-3),
                                         };
 
                                         var wellUpdatedProperties = UpdateFields
@@ -335,7 +335,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                                                 var completionPropertiesToUpdate = new
                                                 {
                                                     IsActive = false,
-                                                    DeletedAt = DateTime.UtcNow,
+                                                    DeletedAt = DateTime.UtcNow.AddHours(-3),
                                                 };
 
                                                 var completionUpdatedProperties = UpdateFields

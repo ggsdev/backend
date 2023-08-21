@@ -425,7 +425,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
             var installationpropertiesUpdated = new
             {
                 IsActive = false,
-                DeletedAt = DateTime.UtcNow,
+                DeletedAt = DateTime.UtcNow.AddHours(-3),
             };
 
             if (installation.MeasuringPoints is not null)
@@ -436,7 +436,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                         var mpointPropertiesToUpdate = new
                         {
                             IsActive = false,
-                            DeletedAt = DateTime.UtcNow,
+                            DeletedAt = DateTime.UtcNow.AddHours(-3),
                         };
 
                         var mpointUpdatedProperties = UpdateFields
@@ -456,7 +456,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                                 var mEquipmentPropertiesToUpdate = new
                                 {
                                     IsActive = false,
-                                    DeletedAt = DateTime.UtcNow,
+                                    DeletedAt = DateTime.UtcNow.AddHours(-3),
                                 };
 
                                 var mEquipmentUpdatedProperties = UpdateFields
@@ -478,7 +478,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                         var fieldPropertiesToUpdate = new
                         {
                             IsActive = false,
-                            DeletedAt = DateTime.UtcNow,
+                            DeletedAt = DateTime.UtcNow.AddHours(-3),
                         };
 
                         var fieldUpdatedProperties = UpdateFields
@@ -498,7 +498,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                                 var zonePropertiesToUpdate = new
                                 {
                                     IsActive = false,
-                                    DeletedAt = DateTime.UtcNow,
+                                    DeletedAt = DateTime.UtcNow.AddHours(-3),
                                 };
 
                                 var zoneUpdatedProperties = UpdateFields
@@ -518,7 +518,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                                         var reservoirPropertiesToUpdate = new
                                         {
                                             IsActive = false,
-                                            DeletedAt = DateTime.UtcNow,
+                                            DeletedAt = DateTime.UtcNow.AddHours(-3),
                                         };
 
                                         var reservoirUpdatedProperties = UpdateFields
@@ -539,7 +539,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                                                 var completionPropertiesToUpdate = new
                                                 {
                                                     IsActive = false,
-                                                    DeletedAt = DateTime.UtcNow,
+                                                    DeletedAt = DateTime.UtcNow.AddHours(-3),
                                                 };
 
                                                 var completionUpdatedProperties = UpdateFields
@@ -562,7 +562,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                                 var wellPropertiesToUpdate = new
                                 {
                                     IsActive = false,
-                                    DeletedAt = DateTime.UtcNow,
+                                    DeletedAt = DateTime.UtcNow.AddHours(-3),
                                 };
 
                                 var wellUpdatedProperties = UpdateFields
@@ -584,7 +584,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                                         var completionPropertiesToUpdate = new
                                         {
                                             IsActive = false,
-                                            DeletedAt = DateTime.UtcNow,
+                                            DeletedAt = DateTime.UtcNow.AddHours(-3),
                                         };
 
                                         var completionUpdatedProperties = UpdateFields

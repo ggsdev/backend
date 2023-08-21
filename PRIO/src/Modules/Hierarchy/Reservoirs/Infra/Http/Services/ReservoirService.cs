@@ -147,7 +147,7 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
             var propertiesUpdated = new
             {
                 IsActive = false,
-                DeletedAt = DateTime.UtcNow,
+                DeletedAt = DateTime.UtcNow.AddHours(-3),
             };
 
             if (reservoir.Completions is not null)
@@ -158,7 +158,7 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
                         var completionPropertiesToUpdate = new
                         {
                             IsActive = false,
-                            DeletedAt = DateTime.UtcNow,
+                            DeletedAt = DateTime.UtcNow.AddHours(-3),
                         };
 
                         var completionUpdatedProperties = UpdateFields

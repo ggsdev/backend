@@ -19,25 +19,10 @@ namespace PRIO.src.Shared.Infra.Http.Filters
         {
             var userId = context.HttpContext.Items["Id"] as Guid?;
 
-            var requestMethod = context.HttpContext.Request.Method;
-            //var clientUrl = $"{context.HttpContext.Request.Scheme}://{context.HttpContext.Request.Host}{context.HttpContext.Request.Path}{context.HttpContext.Request.QueryString}";
-            //var frontendUrl = context.HttpContext.Request.Headers["Custom"];
-            var frontendUrl2 = context.HttpContext.Request.Headers["User-Agent"];
-
-
-            var frontendUrl = context.HttpContext.Request.Headers.Location;
-
-            Console.WriteLine(frontendUrl2);
-            foreach (var item in frontendUrl2)
-            {
-            }
-
-
             if (userId is not null)
             {
                 var user = await _context.Users
-                    .Include(x => x.UserPermissions)
-                    .ThenInclude(x => x.UserOperation)
+                    .Include(x => x.Group)
                     .FirstOrDefaultAsync(x => x.Id == userId);
 
                 if (user is null)
@@ -48,6 +33,7 @@ namespace PRIO.src.Shared.Infra.Http.Filters
                     });
 
                     return;
+
 
                 }
 
@@ -78,9 +64,10 @@ namespace PRIO.src.Shared.Infra.Http.Filters
 
                 //}
 
-                context.HttpContext.Items["User"] = user;
-            }
 
+                context.HttpContext.Items["User"] = user;
+
+            }
             await next();
         }
     }

@@ -575,12 +575,16 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 throw new ConflictException("Dados diferentes da importação");
             }
 
+
             var listWellTets = await _BTPRepository.ListBTPSDataActiveByWellId(body.Validate.WellId);
             if (listWellTets[0] is not null)
             {
                 if (DateTime.Parse(listWellTets[0].ApplicationDate) < DateTime.Parse(body.Data.ApplicationDate))
                 {
-
+                    DateTime applicationDateFromBody = DateTime.Parse(body.Data.ApplicationDate);
+                    DateTime FinalnewDate = applicationDateFromBody.AddDays(-1);
+                    listWellTets[0].FinalApplicationDate = FinalnewDate.ToString();
+                    listWellTets[0].IsActive = false;
                 }
             }
 

@@ -169,7 +169,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     FileContent = data.Files[i].ContentBase64,
                     FileName = data.Files[i].FileName,
                     FileType = data.Files[i].FileType,
-                    ImportedAt = DateTime.UtcNow.ToString("dd/MM/yyyy"),
+                    ImportedAt = DateTime.UtcNow.AddHours(-3).ToString("dd/MM/yyyy"),
                     ImportedBy = userDto,
                     ImportId = importId
                 };
@@ -2214,7 +2214,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 var waterResponse = new WaterDto
                 {
                     TotalWaterM3 = totalWater,
-                    TotalWaterSCF = totalWater * ProductionUtils.m3ToSCFConversionMultipler
+                    TotalWaterBBL = totalWater * ProductionUtils.m3ToSCFConversionMultipler
                 };
 
                 response.Water = waterResponse;
@@ -2245,7 +2245,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 .GetExistingByDate(response.DateProduction);
 
             if (productionOfTheDay is null)
-                response.StatusProduction = false;
+                response.StatusProduction = "aberto";
             else
                 response.StatusProduction = productionOfTheDay.StatusProduction;
 
@@ -2313,7 +2313,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             var measurementsAdded = new List<Measurement>();
 
-            DateTime measuredAt = DateTime.UtcNow;
+            DateTime measuredAt = DateTime.UtcNow.AddHours(-3);
 
             if (data._001File.Count > 0)
                 measuredAt = data._001File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001;
@@ -2337,24 +2337,12 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 {
                     Id = Guid.NewGuid(),
                     CalculatedImportedBy = user,
-                    CalculatedImportedAt = DateTime.UtcNow,
+                    CalculatedImportedAt = DateTime.UtcNow.AddHours(-3),
                     MeasuredAt = measuredAt,
                     Installation = installation,
 
                 };
             }
-
-            //if (dailyProduction.Gas is not null && data.GasSummary is not null)
-            //{
-            //    dailyProduction.Gas.EmergencialBurn += data.GasSummary.DetailedBurnedGas.EmergencialBurn;
-            //    dailyProduction.Gas.LimitOperacionalBurn += data.GasSummary.DetailedBurnedGas.LimitOperacionalBurn;
-            //    dailyProduction.Gas.ScheduledStopBurn += data.GasSummary.DetailedBurnedGas.ScheduledStopBurn;
-            //    dailyProduction.Gas.ForCommissioningBurn += data.GasSummary.DetailedBurnedGas.ForCommissioningBurn;
-            //    dailyProduction.Gas.VentedGas += data.GasSummary.DetailedBurnedGas.VentedGas;
-            //    dailyProduction.Gas.WellTestBurn += data.GasSummary.DetailedBurnedGas.WellTestBurn;
-            //    dailyProduction.Gas.OthersBurn += data.GasSummary.DetailedBurnedGas.OthersBurn;
-
-            //}
 
             if (dailyProduction.Gas is null && data.GasSummary is not null)
             {
@@ -2375,10 +2363,11 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             var totalOilWithBsw = 0m;
             var totalProduction = 0m;
-            decimal bswAverage = 0;
+            var bswAverage = 0m;
 
             foreach (var file in data._001File)
             {
+
                 foreach (var bodyMeasurement in file.Measurements)
                 {
                     var measurement = _mapper.Map<Client001DTO, Measurement>(bodyMeasurement);
@@ -2502,6 +2491,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 };
 
                 dailyProduction.Oil = oil;
+
+                //Console.WriteLine(totalOilWithBsw);
+                //Console.WriteLine(bswAverage);
 
                 var water = new Water
                 {
@@ -2702,10 +2694,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 measuring.Production = dailyProduction;
             }
 
-            //var bothGasFiles = false;
-            //if (dailyProduction.GasDiferencial is not null && dailyProduction.GasLinear is not null)
-            //    bothGasFiles = true;
-
             var fieldFrViewModel = new FieldFRBodyService
             {
                 Oil = data.Oil,
@@ -2719,9 +2707,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             await _fieldFRService.ApplyFR(fieldFrViewModel, data.DateProduction);
 
-            //if (dailyProduction.GasDiferencial is not null && dailyProduction.GasLinear is not null && dailyProduction.Oil is not null)
+            //change production status to true
+            //if (dailyProduction.GasDiferencial is not null && dailyProduction.GasLinear is not null && dailyProduction.Oil is not null && dailyProduction.Comment is not null && dailyProduction.Water is not null)
             //{
-            //    dailyProduction.StatusProduction = true;
+            //    dailyProduction.StatusProduction = "fechado";
             //}
 
             await _productionRepository.AddOrUpdateProduction(dailyProduction);
@@ -2733,7 +2722,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 == 0)
                 throw new BadRequestException("Nenhuma medição foi adicionada", status: "Error");
 
-            return new ImportResponseDTO { Status = "Success", Message = $"Arquivo importado com sucesso, {measurementsAdded.Count} medições importadas" };
+            return new ImportResponseDTO { Status = "Success", Message = $"Arquivo importado com sucesso, {measurementsAdded.Count} medições importadas", ProductionId = dailyProduction.Id };
         }
 
     }

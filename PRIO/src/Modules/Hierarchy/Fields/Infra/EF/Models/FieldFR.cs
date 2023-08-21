@@ -7,7 +7,6 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models
     {
         public decimal? FRGas { get; set; }
         public decimal? FROil { get; set; }
-        public decimal? FRWater { get; set; }
         public Field Field { get; set; }
         public Production DailyProduction { get; set; }
         public decimal ProductionInField { get; set; }

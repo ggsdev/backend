@@ -19,7 +19,7 @@ namespace PRIO.Migrations
             migrationBuilder.InsertData(
                 table: "Groups",
                 columns: new[] { "Name", "IsActive", "Id", "CreatedAt", "UpdatedAt" },
-                values: new object[] { nameGroup, true, idGroup, DateTime.UtcNow, DateTime.UtcNow });
+                values: new object[] { nameGroup, true, idGroup, DateTime.UtcNow.AddHours(-3), DateTime.UtcNow.AddHours(-3) });
 
             // criação do grupo BASICO
             var basicGroup = new object[]
@@ -30,7 +30,7 @@ namespace PRIO.Migrations
             migrationBuilder.InsertData(
                 table: "Groups",
                 columns: new[] { "Name", "IsActive", "Id", "CreatedAt", "UpdatedAt" },
-                values: new object[] { nameBasicGroup, true, idBasicGroup, DateTime.UtcNow, DateTime.UtcNow });
+                values: new object[] { nameBasicGroup, true, idBasicGroup, DateTime.UtcNow.AddHours(-3), DateTime.UtcNow.AddHours(-3) });
 
             // criação user master
             var userData = new object[]
@@ -44,7 +44,7 @@ namespace PRIO.Migrations
             migrationBuilder.InsertData(
              table: "Users",
              columns: new[] { "Name", "Email", "Password", "Username", "IsActive", "Id", "CreatedAt", "UpdatedAt", "GroupId", "Type", "IsPermissionDefault" },
-             values: new object[] { nameUser, emailUser, BCrypt.Net.BCrypt.HashPassword(passwordUser), usernameUser, true, idUser, DateTime.UtcNow, DateTime.UtcNow, idGroup, nameGroup, true });
+             values: new object[] { nameUser, emailUser, BCrypt.Net.BCrypt.HashPassword(passwordUser), usernameUser, true, idUser, DateTime.UtcNow.AddHours(-3), DateTime.UtcNow.AddHours(-3), idGroup, nameGroup, true });
 
             var usersData = new List<object[]>
             {
@@ -76,7 +76,7 @@ namespace PRIO.Migrations
                             values: new object[]
                             {
                             nameUserNotMaster, emailUserNotMaster, passwordUserNotMaster, usernameUserNotMaster,
-                            true, idUserNotMaster, DateTime.UtcNow, DateTime.UtcNow, idGroup, nameGroup, true
+                            true, idUserNotMaster, DateTime.UtcNow.AddHours(-3), DateTime.UtcNow.AddHours(-3), idGroup, nameGroup, true
                             });
 
             }
@@ -104,7 +104,7 @@ namespace PRIO.Migrations
                 migrationBuilder.InsertData(
                     table: "GlobalOperations",
                     columns: new[] { "Method", "IsActive", "Id", "CreatedAt", "UpdatedAt" },
-                    values: new object[] { methodOperation, true, idOperation, DateTime.UtcNow, DateTime.UtcNow });
+                    values: new object[] { methodOperation, true, idOperation, DateTime.UtcNow.AddHours(-3), DateTime.UtcNow.AddHours(-3) });
             }
 
             //criação do menu (1 - hasChildren, 2 - hasParent)
@@ -168,21 +168,21 @@ namespace PRIO.Migrations
                     migrationBuilder.InsertData(
                       table: "Menus",
                       columns: new[] { "Name", "Icon", "Order", "Route", "ParentId", "IsActive", "Id", "CreatedAt", "UpdatedAt" },
-                      values: new object[] { nameMenu, iconMenu, orderMenu, routeMenu, parentId, true, idMenu, DateTime.UtcNow, DateTime.UtcNow, });
+                      values: new object[] { nameMenu, iconMenu, orderMenu, routeMenu, parentId, true, idMenu, DateTime.UtcNow.AddHours(-3), DateTime.UtcNow.AddHours(-3), });
                 }
                 else
                 {
                     migrationBuilder.InsertData(
                         table: "Menus",
                         columns: new[] { "Name", "Icon", "Order", "Route", "ParentId", "IsActive", "Id", "CreatedAt", "UpdatedAt" },
-                        values: new object[] { nameMenu, iconMenu, orderMenu, routeMenu, null, true, idMenu, DateTime.UtcNow, DateTime.UtcNow });
+                        values: new object[] { nameMenu, iconMenu, orderMenu, routeMenu, null, true, idMenu, DateTime.UtcNow.AddHours(-3), DateTime.UtcNow.AddHours(-3) });
                 }
 
                 // PERMISSÕES PARA O GROUP MASTER
                 migrationBuilder.InsertData(
                     table: "GroupPermissions",
                     columns: new[] { "Id", "GroupId", "GroupName", "MenuId", "MenuName", "MenuOrder", "MenuIcon", "MenuRoute", "CreatedAt", "UpdatedAt", "hasParent", "hasChildren", "IsActive" },
-                    values: new object[] { idGroupPermission, idGroup, nameGroup, idMenu, nameMenu, orderMenu, iconMenu, routeMenu, DateTime.UtcNow, DateTime.UtcNow, hasParent, hasChildren, true });
+                    values: new object[] { idGroupPermission, idGroup, nameGroup, idMenu, nameMenu, orderMenu, iconMenu, routeMenu, DateTime.UtcNow.AddHours(-3), DateTime.UtcNow.AddHours(-3), hasParent, hasChildren, true });
 
                 // PERMISSÕES PARA O GROUP BASICO
                 var idGroupBasicoPermission = Guid.NewGuid();
@@ -191,7 +191,7 @@ namespace PRIO.Migrations
                     migrationBuilder.InsertData(
                         table: "GroupPermissions",
                         columns: new[] { "Id", "GroupId", "GroupName", "MenuId", "MenuName", "MenuOrder", "MenuIcon", "MenuRoute", "CreatedAt", "UpdatedAt", "hasParent", "hasChildren", "IsActive" },
-                        values: new object[] { idGroupBasicoPermission, idBasicGroup, nameBasicGroup, idMenu, nameMenu, orderMenu, iconMenu, routeMenu, DateTime.UtcNow, DateTime.UtcNow, hasParent, hasChildren, true });
+                        values: new object[] { idGroupBasicoPermission, idBasicGroup, nameBasicGroup, idMenu, nameMenu, orderMenu, iconMenu, routeMenu, DateTime.UtcNow.AddHours(-3), DateTime.UtcNow.AddHours(-3), hasParent, hasChildren, true });
                 };
 
                 // PERMISSAO PARA USER MASTER
@@ -199,7 +199,7 @@ namespace PRIO.Migrations
                 migrationBuilder.InsertData(
                     table: "UserPermissions",
                     columns: new[] { "Id", "UserId", "GroupMenuId", "GroupId", "GroupName", "MenuId", "MenuName", "MenuOrder", "MenuIcon", "MenuRoute", "CreatedAt", "hasParent", "hasChildren" },
-                    values: new object[] { idUserPermission, idUser, idGroupPermission, idGroup, nameGroup, idMenu, nameMenu, orderMenu, iconMenu, routeMenu, DateTime.UtcNow, hasParent, hasChildren });
+                    values: new object[] { idUserPermission, idUser, idGroupPermission, idGroup, nameGroup, idMenu, nameMenu, orderMenu, iconMenu, routeMenu, DateTime.UtcNow.AddHours(-3), hasParent, hasChildren });
 
                 if (hasChildren == false)
                 {
@@ -249,7 +249,7 @@ namespace PRIO.Migrations
                             values: new object[]
                             {
                                 idUserPermissionNotMaster , userIdNotMaster , idGroupPermission, idGroup, nameGroup,
-                                idMenu, nameMenu, orderMenu, iconMenu, routeMenu, DateTime.UtcNow, hasParent, hasChildren
+                                idMenu, nameMenu, orderMenu, iconMenu, routeMenu, DateTime.UtcNow.AddHours(-3), hasParent, hasChildren
                             });
 
                     if (hasChildren == false)

@@ -1,6 +1,7 @@
 ﻿using PRIO.src.Modules.FileImport.XML.Dtos;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.ViewModels;
+using PRIO.src.Modules.Measuring.Comments.Dtos;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Measuring.Productions.Dtos
@@ -26,13 +27,15 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
         public decimal TotalOilM3 { get; set; }
         public bool StatusGas { get; set; }
         public bool StatusOil { get; set; }
-        public bool StatusProduction { get; set; }
+        public string StatusProduction { get; set; } = "aberto";
+        public bool IsActive { get; set; }
     }
 
     public class GetAllProductionsDto
     {
+        public bool IsActive { get; set; }
         public Guid Id { get; set; }
-        public bool Status { get; set; }
+        public string Status { get; set; }
         public string UepName { get; set; }
         public string DateProduction { get; set; }
         public List<ProductionFilesDto> Files { get; set; }
@@ -75,7 +78,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
     public class WaterTotalDto
     {
         public decimal TotalWaterM3 { get; set; }
-        public decimal TotalWaterSFC { get; set; }
+        public decimal TotalWaterBBL { get; set; }
     }
     public class FieldFRBodyService
     {
@@ -157,6 +160,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
 
         public GasConsultingDtoFrsNull Gas { get; set; }
         public OilConsultingDtoFrsNull Oil { get; set; }
+
+        public CreateUpdateCommentDto Comment { get; set; }
     }
 
     public class GasBurntDto

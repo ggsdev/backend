@@ -28,6 +28,8 @@ using PRIO.src.Modules.Hierarchy.Wells.Dtos;
 using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Zones.Dtos;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.Comments.Dtos;
+using PRIO.src.Modules.Measuring.Comments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Dtos;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.GasVolumeCalculations.Dtos;
@@ -37,6 +39,8 @@ using PRIO.src.Modules.Measuring.MeasuringPoints.Dtos;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Dtos;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.Productions.Dtos;
+using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
 using PRIO.src.Shared.SystemHistories.Dtos;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Dtos.UserDtos;
@@ -241,6 +245,9 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<BTPBase64, BTPBase64DTO>();
             CreateMap<BTPData, BTPDataDTO>();
             CreateMap<FieldFR, FRFieldDTO>();
+
+            CreateMap<CommentInProduction, CreateUpdateCommentDto>();
+            CreateMap<Production, ProductionDto>();
         }
 
         private static decimal? TruncateTwoDecimals(decimal? value)

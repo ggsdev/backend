@@ -291,7 +291,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             var propertiesUpdated = new
             {
                 IsActive = false,
-                DeletedAt = DateTime.UtcNow,
+                DeletedAt = DateTime.UtcNow.AddHours(-3),
             };
 
             var updatedProperties = UpdateFields

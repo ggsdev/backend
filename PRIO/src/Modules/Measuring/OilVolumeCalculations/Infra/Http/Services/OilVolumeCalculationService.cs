@@ -521,7 +521,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
                 {
                     var sectionFound = await _oilVolumeCalculationRepository.GetSectionByMeasuringPointIdAsync(section.MeasuringPointId);
                     sectionFound.IsActive = false;
-                    sectionFound.DeletedAt = DateTime.UtcNow;
+                    sectionFound.DeletedAt = DateTime.UtcNow.AddHours(-3);
 
                     await _oilVolumeCalculationRepository.UpdateSection(sectionFound);
                 }
@@ -533,7 +533,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
                 {
                     var togFound = await _oilVolumeCalculationRepository.GetTOGByMeasuringPointIdAsync(tog.MeasuringPointId);
                     togFound.IsActive = false;
-                    togFound.DeletedAt = DateTime.UtcNow;
+                    togFound.DeletedAt = DateTime.UtcNow.AddHours(-3);
 
                     await _oilVolumeCalculationRepository.UpdateTOG(togFound);
                 }
@@ -545,7 +545,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
                 {
                     var drainFound = await _oilVolumeCalculationRepository.GetDrainByMeasuringPointIdAsync(drain.MeasuringPointId);
                     drainFound.IsActive = false;
-                    drainFound.DeletedAt = DateTime.UtcNow;
+                    drainFound.DeletedAt = DateTime.UtcNow.AddHours(-3);
 
                     await _oilVolumeCalculationRepository.UpdateDrain(drainFound);
                 }
@@ -557,7 +557,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
                 {
                     var dorFound = await _oilVolumeCalculationRepository.GetDORByMeasuringPointIdAsync(dor.MeasuringPointId);
                     dorFound.IsActive = false;
-                    dorFound.DeletedAt = DateTime.UtcNow;
+                    dorFound.DeletedAt = DateTime.UtcNow.AddHours(-3);
 
                     await _oilVolumeCalculationRepository.UpdateDOR(dorFound);
                 }

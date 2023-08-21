@@ -606,6 +606,9 @@ namespace PRIO.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("VARCHAR");
 
+                    b.Property<string>("FinalApplicationDate")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("FinalDate")
                         .IsRequired()
                         .HasMaxLength(60)
@@ -1100,10 +1103,6 @@ namespace PRIO.Migrations
                         .HasPrecision(4, 2)
                         .HasColumnType("decimal");
 
-                    b.Property<decimal?>("FRWater")
-                        .HasPrecision(4, 2)
-                        .HasColumnType("decimal");
-
                     b.Property<Guid>("FieldId")
                         .HasColumnType("uniqueidentifier");
 
@@ -1421,6 +1420,47 @@ namespace PRIO.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Zones", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Comments.Infra.EF.Models.CommentInProduction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CommentedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("ProductionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CommentedById");
+
+                    b.HasIndex("ProductionId")
+                        .IsUnique();
+
+                    b.ToTable("CommentsInProduction", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Bsw", b =>
@@ -4018,6 +4058,15 @@ namespace PRIO.Migrations
                     b.Property<Guid>("CalculatedImportedById")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid?>("GasDiferencialId")
                         .HasColumnType("uniqueidentifier");
 
@@ -4030,18 +4079,25 @@ namespace PRIO.Migrations
                     b.Property<Guid>("InstallationId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("MeasuredAt")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid?>("OilId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("StatusProduction")
-                        .HasColumnType("bit");
+                    b.Property<string>("StatusProduction")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("TotalProduction")
                         .HasPrecision(10, 5)
                         .HasColumnType("decimal");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("WaterId")
                         .HasColumnType("uniqueidentifier");
@@ -4096,7 +4152,7 @@ namespace PRIO.Migrations
                     b.Property<bool>("StatusWater")
                         .HasColumnType("bit");
 
-                    b.Property<decimal?>("TotalWater")
+                    b.Property<decimal>("TotalWater")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -4526,6 +4582,25 @@ namespace PRIO.Migrations
                     b.Navigation("Field");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Comments.Infra.EF.Models.CommentInProduction", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "CommentedBy")
+                        .WithMany("Comments")
+                        .HasForeignKey("CommentedById")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "Production")
+                        .WithOne("Comment")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.Comments.Infra.EF.Models.CommentInProduction", "ProductionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("CommentedBy");
+
+                    b.Navigation("Production");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Bsw", b =>
@@ -5031,6 +5106,8 @@ namespace PRIO.Migrations
 
                     b.Navigation("Clusters");
 
+                    b.Navigation("Comments");
+
                     b.Navigation("Completions");
 
                     b.Navigation("Fields");
@@ -5256,6 +5333,8 @@ namespace PRIO.Migrations
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", b =>
                 {
+                    b.Navigation("Comment");
+
                     b.Navigation("FieldsFR");
 
                     b.Navigation("Measurements");
