@@ -47,6 +47,12 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
 
             var commentDto = _mapper.Map<CreateUpdateCommentDto>(comment);
 
+            //if (prodution.Oil is not null && prodution.GasLinear is not null && prodution.GasDiferencial is not null && prodution.Water is not null)
+            //{
+            //    prodution.StatusProduction = "fechado";
+            //    _productionRepository.Update(prodution);
+            //}
+
             await _commentRepository.Save();
 
             return commentDto;

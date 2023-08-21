@@ -4,12 +4,13 @@ using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Comments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
+using PRIO.src.Shared.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Models
 {
-    public class Production /*: BaseModel*/
+    public class Production : BaseModel
     {
-        public Guid Id { get; set; }
+        //public Guid Id { get; set; }
         public List<Measurement> Measurements { get; set; } = new();
         public DateTime MeasuredAt { get; set; }
         public DateTime CalculatedImportedAt { get; set; } = DateTime.UtcNow.AddHours(-3);
@@ -21,10 +22,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Models
 
         public Water? Water { get; set; }
         public User CalculatedImportedBy { get; set; }
-        public bool StatusProduction { get; set; } = false;
+        public string StatusProduction { get; set; } = "aberto";
         public decimal TotalProduction { get; set; }
         public Installation Installation { get; set; }
-        public CommentInProduction Comment { get; set; }
+        public CommentInProduction? Comment { get; set; }
         public List<FieldFR>? FieldsFR { get; set; }
         public List<NFSMsProductions>? NFSMs { get; set; }
     }

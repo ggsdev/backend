@@ -10,10 +10,6 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Mappings
         {
             builder.ToTable("FieldsFRs");
 
-            builder.Property(x => x.FRWater)
-               .HasColumnType("decimal")
-               .HasPrecision(4, 2);
-
             builder.Property(x => x.FROil)
                .HasColumnType("decimal")
                .HasPrecision(4, 2);

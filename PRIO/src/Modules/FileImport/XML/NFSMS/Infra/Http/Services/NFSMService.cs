@@ -727,56 +727,5 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
             return result;
         }
 
-        //public FileContentResponse DownloadErrors(List<string> errors)
-        //{
-        //    using var memoryStream = new MemoryStream();
-
-        //    var pdfDoc = new PdfDocument(new PdfWriter(memoryStream));
-
-        //    var document = new Document(pdfDoc);
-
-        //    var titleParagraph = new Paragraph("< Erros Importação >")
-        //        .SetTextAlignment(TextAlignment.CENTER)
-        //        .SetFontSize(20);
-        //    document.Add(titleParagraph);
-
-        //    foreach (string error in errors)
-        //    {
-        //        var listItem = new ListItem("=> " + error)
-        //            .SetMarginBottom(10);
-        //        document.Add(listItem);
-        //    }
-
-        //    document.Close();
-
-        //    byte[] pdfBytes = memoryStream.ToArray();
-
-        //    var response = new FileContentResponse
-        //    {
-        //        ContentBase64 = Convert.ToBase64String(pdfBytes)
-        //    };
-
-        //    return response;
-        //}
-
-
-        //private string CleanAndDecode(string input)
-        //{
-        //    byte[] isoBytes = Encoding.GetEncoding("iso-8859-1").GetBytes(input);
-        //    string utf8String = Encoding.UTF8.GetString(isoBytes);
-
-        //    utf8String = CleanString(utf8String);
-
-        //    return utf8String;
-        //}
-
-        //private string CleanString(string? input)
-        //{
-        //    if (input is null)
-        //        return string.Empty;
-
-        //    string cleanedValue = input.Replace("\n", "").Replace("\t", "").Trim();
-        //    return cleanedValue;
-        //}
     }
 }

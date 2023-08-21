@@ -40,6 +40,14 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Controllers
 
         }
 
+        [HttpGet("deleted")]
+        public async Task<IActionResult> GetDeleted()
+        {
+            var productions = await _productionService.GetDeletedProductions();
+            return Ok(productions);
+
+        }
+
         [HttpGet("{id}/files")]
         public async Task<IActionResult> DownloadFiles([FromRoute] Guid id)
         {
@@ -47,6 +55,15 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Controllers
                 .DownloadAllProductionFiles(id);
 
             return Ok(files);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduction([FromRoute] Guid id)
+        {
+            await _productionService
+                .DeleteProduction(id);
+
+            return NoContent();
         }
     }
 }
