@@ -2214,7 +2214,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 var waterResponse = new WaterDto
                 {
                     TotalWaterM3 = totalWater,
-                    TotalWaterSCF = totalWater * ProductionUtils.m3ToSCFConversionMultipler
+                    TotalWaterBBL = totalWater * ProductionUtils.m3ToSCFConversionMultipler
                 };
 
                 response.Water = waterResponse;
@@ -2343,18 +2343,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                 };
             }
-
-            //if (dailyProduction.Gas is not null && data.GasSummary is not null)
-            //{
-            //    dailyProduction.Gas.EmergencialBurn += data.GasSummary.DetailedBurnedGas.EmergencialBurn;
-            //    dailyProduction.Gas.LimitOperacionalBurn += data.GasSummary.DetailedBurnedGas.LimitOperacionalBurn;
-            //    dailyProduction.Gas.ScheduledStopBurn += data.GasSummary.DetailedBurnedGas.ScheduledStopBurn;
-            //    dailyProduction.Gas.ForCommissioningBurn += data.GasSummary.DetailedBurnedGas.ForCommissioningBurn;
-            //    dailyProduction.Gas.VentedGas += data.GasSummary.DetailedBurnedGas.VentedGas;
-            //    dailyProduction.Gas.WellTestBurn += data.GasSummary.DetailedBurnedGas.WellTestBurn;
-            //    dailyProduction.Gas.OthersBurn += data.GasSummary.DetailedBurnedGas.OthersBurn;
-
-            //}
 
             if (dailyProduction.Gas is null && data.GasSummary is not null)
             {
@@ -2503,6 +2491,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 };
 
                 dailyProduction.Oil = oil;
+
+                //Console.WriteLine(totalOilWithBsw);
+                //Console.WriteLine(bswAverage);
 
                 var water = new Water
                 {
