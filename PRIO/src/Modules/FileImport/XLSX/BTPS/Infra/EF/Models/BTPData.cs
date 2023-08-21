@@ -29,6 +29,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models
         public decimal RGO { get; set; }
         public decimal BSW { get; set; }
         public string ApplicationDate { get; set; }
+        public string? FinalApplicationDate { get; set; }
         public Guid? BTPId { get; set; }
         public bool IsValid { get; set; }
         public BTPBase64? BTPBase64 { get; set; }

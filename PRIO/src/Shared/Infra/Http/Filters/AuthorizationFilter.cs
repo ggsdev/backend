@@ -33,11 +33,41 @@ namespace PRIO.src.Shared.Infra.Http.Filters
                     });
 
                     return;
+
+
                 }
 
-                context.HttpContext.Items["User"] = user;
-            }
+                //foreach (var permission in user.UserPermissions)
+                //{
+                //    //Console.WriteLine("request" + requestMethod);
 
+                //    foreach (var ope in permission.UserOperation)
+                //    {
+                //        //Console.WriteLine("operation" + ope.OperationName);
+
+                //    }
+
+                //    var hasPermission = permission.UserOperation
+                //        .Any(x => x.OperationName == requestMethod);
+
+                //    //Console.WriteLine(hasPermission);
+
+                //    //if (hasPermission is false)
+                //    //{
+                //    //    context.Result = new UnauthorizedObjectResult(new ErrorResponseDTO
+                //    //    {
+                //    //        Message = "Usuário não tem permissão para essa operação"
+                //    //    });
+
+                //    //    return;
+                //    //}
+
+                //}
+
+
+                context.HttpContext.Items["User"] = user;
+
+            }
             await next();
         }
     }

@@ -241,6 +241,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             #endregion
 
             CreateMap<BTP, BTPDTO>();
+            CreateMap<BTP, BTPCreateDTO>();
             CreateMap<BTPBase64, BTPBase64DTO>();
             CreateMap<BTPData, BTPDataDTO>();
             CreateMap<FieldFR, FRFieldDTO>();

@@ -51,6 +51,20 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Controllers
             return Ok(result);
         }
 
+        [HttpPost("create")]
+        public async Task<IActionResult> create([FromBody] CreateBTPViewModel body)
+        {
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+
+            var result = await _BTPService.createBTP(body, user);
+
+            return Ok(result);
+        }
+
         [HttpPost("xls/import")]
         public async Task<IActionResult> PostData([FromBody] ImportViewModel body)
         {
