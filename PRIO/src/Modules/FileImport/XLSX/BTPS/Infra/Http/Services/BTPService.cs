@@ -36,6 +36,56 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
 
             return btpsDTO;
         }
+
+        public async Task<BTPCreateDTO> createBTP(CreateBTPViewModel body, User user)
+        {
+            var BTPexists = await _BTPRepository.GetByNameOrContent(body.Name, body.FileContent);
+            if (BTPexists is not null)
+            {
+                if (BTPexists.Name == body.Name)
+                    throw new ConflictException("Nome de BTP já existe.");
+                if (BTPexists.FileContent == body.FileContent)
+                    throw new ConflictException("Modelo de BTP já existe.");
+            }
+            var BTPType = await _BTPRepository.GetTypeAsync(body.Type);
+            if (BTPType is null)
+                throw new NotFoundException("Não existe este Tipo de modelo.");
+
+            var create = new BTP
+            {
+                BTPSheet = body.BTPSheet,
+                FileContent = body.FileContent,
+                CellBSW = body.CellBSW,
+                CellBTPNumber = body.CellBTPNumber,
+                CellDuration = body.CellDuration,
+                CellFinalDate = body.CellFinalDate,
+                CellInitialDate = body.CellInitialDate,
+                CellMPointGas = body.CellMPointGas,
+                CellMPointOil = body.CellMPointOil,
+                CellMPointWater = body.CellMPointWater,
+                CellPotencialOil = body.CellPotencialOil,
+                CellPotencialGas = body.CellPotencialGas,
+                CellPotencialLiquid = body.CellPotencialLiquid,
+                CellPotencialWater = body.CellPotencialWater,
+                CellRGO = body.CellRGO,
+                CellWellAlignmentData = body.CellWellAlignmentData,
+                CellWellAlignmentHour = body.CellWellAlignmentHour,
+                CellWellName = body.CellWellName,
+                Mutable = true,
+                Name = body.Name,
+                IsActive = true,
+                Type = body.Type,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+            };
+            await _BTPRepository.AddBTPAsync(create);
+            await _BTPRepository.SaveChangesAsync();
+
+            var BTPDTO = _mapper.Map<BTP, BTPCreateDTO>(create);
+
+            return BTPDTO;
+
+        }
         public async Task<BTPBase64DTO> GetById(Guid id)
         {
             var BTP = await _BTPRepository.GetByIdAsync(id);
@@ -94,10 +144,11 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             }
 
             object DurationValue = worksheet.Cells[BTP.CellDuration].Value;
-            if (!(DurationValue is DateTime))
+            if (!(DurationValue is DateTime) && !(DurationValue is double))
             {
                 erros.Add("Erro: Valor da célula para duração não é uma hora na célula " + BTP.CellDuration);
             }
+            Console.WriteLine(DurationValue);
             object btpNumberValue = worksheet.Cells[BTP.CellBTPNumber].Value;
             if (btpNumberValue is null)
             {
@@ -189,9 +240,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                     }
                 }
             }
-            Console.WriteLine(concatenatedValues.Count);
             string concatenatedString = string.Join(", ", concatenatedValues);
-            Console.WriteLine(concatenatedString);
 
             object? MPointGasValue = worksheet.Cells[BTP.CellMPointGas].Value;
             if (!(MPointGasValue is string))
@@ -244,11 +293,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             }
 
 
-            //Trated Duration
-            string[] duration = worksheet.Cells[BTP.CellDuration].Value.ToString().Split(' ');
-            if (duration[1] is null)
-                throw new ConflictException("Conteúdo da célula duração é inválido");
-            string valorTempo = duration[1];
 
             //Verify Well
             string? message = well.Name == worksheet.Cells[BTP.CellWellName].Value.ToString() ? "Sucesso: Nome do poço encontrado corresponde ao xls" : throw new ConflictException($"O poço {worksheet.Cells[BTP.CellWellName].Value} do arquivo {body.FileName} não corresponde ao poço {well.Name} selecionado para o teste.");
@@ -297,7 +341,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 PotencialGasPerHour = gasPerHourDecimalFormated,
                 PotencialWater = waterDecimalFormated,
                 PotencialWaterPerHour = waterPerHourDecimalFormated,
-                Duration = valorTempo,
                 InitialDate = worksheet.Cells[BTP.CellInitialDate].Value.ToString(),
                 FinalDate = worksheet.Cells[BTP.CellFinalDate].Value.ToString(),
                 BTPNumber = convertBtp,
@@ -313,6 +356,24 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 Well = well,
                 BTPBase64 = content
             };
+
+            //Trated Duration
+            string[] duration = worksheet.Cells[BTP.CellDuration].Value.ToString().Split(' ');
+            if (duration.Length == 2)
+            {
+                if (duration[1] is null)
+                    throw new ConflictException("Conteúdo da célula duração é inválido");
+
+                string valorTempo = duration[1];
+                data.Duration = valorTempo;
+            }
+            else if (duration.Length == 1)
+            {
+
+                string valorTempo = duration[0];
+                data.Duration = valorTempo;
+            }
+
             //Trated aligmentHour
             if (wellAlignmentHourValue is double)
             {
@@ -324,7 +385,19 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                     decimal x = valor * 24 * 60;
                     int horas = (int)x / 60;
                     int minutos = (int)x % 60;
-                    TimeSpan horaMinuto = new TimeSpan(horas, minutos, 0);
+                    int segundos = (int)(x * 60) % 60;
+                    if (segundos == 59)
+                    {
+                        segundos = 0;
+                        minutos += 1;
+
+                        if (minutos == 60)
+                        {
+                            minutos = 0;
+                            horas += 1;
+                        }
+                    }
+                    TimeSpan horaMinuto = new TimeSpan(horas, minutos, segundos);
                     align = horaMinuto.ToString();
                     data.WellAlignmentHour = align;
                 }
@@ -500,6 +573,15 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             if (_validatePotencialLiquid is false || _validatePotenialOil is false || _validatePotencialGas is false || _validatePotencialWater is false || _validateDuration is false || _validateInitialDate is false || _validateFinalDate is false || _validateBTPNumber is false || _validateMPointGas is false || _validateMPointOil is false || _validateMPointWater is false || _validateBsw is false || _validateRGO is false || _validateWellAlignDate is false || _validateWellAlignHour is false || _validateWellName is false || _validateBTPSheet is false)
             {
                 throw new ConflictException("Dados diferentes da importação");
+            }
+
+            var listWellTets = await _BTPRepository.ListBTPSDataActiveByWellId(body.Validate.WellId);
+            if (listWellTets[0] is not null)
+            {
+                if (DateTime.Parse(listWellTets[0].ApplicationDate) < DateTime.Parse(body.Data.ApplicationDate))
+                {
+
+                }
             }
 
             var content = new BTPBase64

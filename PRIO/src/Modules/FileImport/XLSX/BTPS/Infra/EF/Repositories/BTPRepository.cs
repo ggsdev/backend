@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
+using PRIO.src.Shared.Auxiliaries.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF;
 
 namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
@@ -19,6 +20,14 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
         {
             return await _context.BTPs.ToListAsync();
         }
+        public async Task AddBTPAsync(BTP btp)
+        {
+            await _context.BTPs.AddAsync(btp);
+        }
+        public async Task<Auxiliary?> GetTypeAsync(string type)
+        {
+            return await _context.Auxiliaries.Where(x => x.Table == "Teste" && x.Select == "Tipo de Teste" && x.Option == type).FirstOrDefaultAsync();
+        }
         public async Task<List<BTP>> GetAllBTPsByTypeAsync(string type)
         {
             return await _context.BTPs.Where(x => x.Type == type).ToListAsync();
@@ -27,12 +36,20 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
         {
             return await _context.BTPs.Where(x => x.Id == id).FirstOrDefaultAsync();
         }
+        public async Task<BTP?> GetByNameOrContent(string name, string content)
+        {
+            return _context.BTPs.Where(x => x.Name == name).AsEnumerable().FirstOrDefault(x => string.Equals(x.FileContent, content, StringComparison.Ordinal));
+        }
         #endregion
 
         #region BTPData
         public async Task<List<BTPData>> GetAllBTPsDataAsync()
         {
             return await _context.BTPDatas.Include(x => x.Well).Include(x => x.BTPBase64).ThenInclude(x => x.User).ToListAsync();
+        }
+        public async Task<List<BTPData>?> ListBTPSDataActiveByWellId(Guid wellId)
+        {
+            return await _context.BTPDatas.Include(x => x.Well).Where(x => x.Well.Id == wellId && x.IsActive == true).ToListAsync();
         }
         public async Task<BTPData?> GetByWellAndDateXls(Guid wellId, string dateXls)
         {
@@ -101,7 +118,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
         {
             _context.BTPDatas.Update(data);
         }
-
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
