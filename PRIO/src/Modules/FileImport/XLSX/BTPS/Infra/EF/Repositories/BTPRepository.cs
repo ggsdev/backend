@@ -3,6 +3,7 @@ using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
 using PRIO.src.Shared.Auxiliaries.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF;
+using System.Globalization;
 
 namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
 {
@@ -49,11 +50,24 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
         }
         public async Task<List<BTPData>?> ListBTPSDataActiveByWellId(Guid wellId)
         {
-            return await _context.BTPDatas.Include(x => x.Well).Where(x => x.Well.Id == wellId && x.IsActive == true).ToListAsync();
+            var data = await _context.BTPDatas
+                      .Include(x => x.Well)
+                      .Where(x => x.Well.Id == wellId)
+                      .ToListAsync();
+
+            var sortedData = data
+                .OrderByDescending(x => DateTime.ParseExact(x.ApplicationDate, "dd/MM/yyyy", CultureInfo.InvariantCulture))
+                .ToList();
+
+            return sortedData;
         }
         public async Task<BTPData?> GetByWellAndDateXls(Guid wellId, string dateXls)
         {
             return await _context.BTPDatas.Include(x => x.Well).Where(x => x.Well.Id == wellId && x.FinalDate == dateXls).FirstOrDefaultAsync();
+        }
+        public async Task<BTPData?> GetByWellAndLastDate(Guid wellId, string FinalDate)
+        {
+            return await _context.BTPDatas.Include(x => x.Well).Where(x => x.Well.Id == wellId && x.FinalApplicationDate == FinalDate).FirstOrDefaultAsync();
         }
         public async Task<BTPData?> GetByWellAndApplicationDateXls(Guid wellId, string appDateXls)
         {
