@@ -54,10 +54,15 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Respositories
         {
             return await _context.NFSMs
                 .Include(x => x.ImportHistory)
+                .Include(x => x.Productions)
                     .Include(x => x.Installation)
                     .Include(x => x.MeasuringPoint)
                     .Include(x => x.Measurements)
-                    .Include(x => x.Productions)
+                        .ThenInclude(x => x.LISTA_VOLUME)
+                    .Include(x => x.Measurements)
+                        .ThenInclude(x => x.LISTA_BSW)
+                    .Include(x => x.Measurements)
+                        .ThenInclude(x => x.MeasuringPoint)
                     .FirstOrDefaultAsync(x => x.Id == id);
         }
 

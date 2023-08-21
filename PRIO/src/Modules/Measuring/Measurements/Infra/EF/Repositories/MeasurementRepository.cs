@@ -8,7 +8,6 @@ using PRIO.src.Shared.Infra.EF;
 
 namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories
 {
-
     public class MeasurementRepository : IMeasurementRepository
     {
         private readonly DataContext _context;
@@ -33,11 +32,20 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories
             await _context.Measurements
                 .AddRangeAsync(measurements);
         }
-        //public async Task<Measurement?> GetMeasurementByDate(DateTime? date, string tagMeasuringPoint)
-        //{
-        //    return await _context.Measurements.FirstOrDefaultAsync(x => x.DHA_)
-
-        //}
+        public async Task<Measurement?> GetMeasurementByDate(DateTime? date, string fileType)
+        {
+            switch (fileType)
+            {
+                case "001":
+                    return await _context.Measurements.FirstOrDefaultAsync(x => x.DHA_INICIO_PERIODO_MEDICAO_001 == date);
+                case "002":
+                    return await _context.Measurements.FirstOrDefaultAsync(x => x.DHA_INICIO_PERIODO_MEDICAO_002 == date);
+                case "003":
+                    return await _context.Measurements.FirstOrDefaultAsync(x => x.DHA_INICIO_PERIODO_MEDICAO_003 == date);
+                default:
+                    throw new BadRequestException("arquivo: 001,002,003");
+            }
+        }
         public async Task<Measurement?> GetUnique039Async(string codFailure)
         {
             return await _context.Measurements.FirstOrDefaultAsync(x => x.COD_FALHA_039 == codFailure);

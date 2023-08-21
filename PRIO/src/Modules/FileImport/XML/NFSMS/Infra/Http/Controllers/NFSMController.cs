@@ -63,6 +63,12 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Controllers
 
         }
 
+        [HttpPatch("nfsms/{id}/apply")]
+        public async Task<IActionResult> Apply([FromRoute] Guid id)
+        {
+            return Ok(await _service.ApplyNfsm(id));
+        }
+
         [HttpGet("nfsms/{id}/download")]
         public async Task<IActionResult> DownloadNfsm([FromRoute] Guid id)
         {

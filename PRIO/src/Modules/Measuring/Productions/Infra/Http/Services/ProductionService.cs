@@ -1808,6 +1808,15 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 }
             }
 
+            if (production.Measurements is not null)
+            {
+                foreach (var measurement in production.Measurements)
+                {
+                    measurement.IsActive = false;
+                    measurement.DeletedAt = DateTime.UtcNow.AddHours(-3);
+                }
+            }
+
             production.IsActive = false;
             production.DeletedAt = DateTime.UtcNow.AddHours(-3);
 
