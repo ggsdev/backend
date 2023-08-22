@@ -696,7 +696,10 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             if (BTPData is null)
                 throw new NotFoundException("Teste de poço não encontrado.");
 
-            var listWellTests = await _BTPRepository.ListBTPSDataActiveByWellId(BTPData.Well.Field.Id);
+            if (BTPData.IsValid is false)
+                throw new NotFoundException("Teste de poço está invalidado.");
+
+            var listWellTests = await _BTPRepository.ListBTPSDataActiveByWellId(BTPData.Well.Id);
             DateTime applicationDateFromBody = DateTime.Parse(BTPData.ApplicationDate);
 
             if (listWellTests.Count != 0)
@@ -709,6 +712,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                     BTPData.IsActive = false;
                     BTPData.IsValid = false;
                     BTPData.FinalApplicationDate = null;
+                    BTPData.ApplicationDate = null;
 
                     previousDate.FinalApplicationDate = null;
                     previousDate.IsActive = true;
@@ -724,6 +728,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                     BTPData.IsActive = false;
                     BTPData.IsValid = false;
                     BTPData.FinalApplicationDate = null;
+                    BTPData.ApplicationDate = null;
 
                     previousDate.FinalApplicationDate = previousFinalNewDate.ToString();
                     _BTPRepository.Update(previousDate);

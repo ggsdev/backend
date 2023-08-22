@@ -54,7 +54,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
             var data = await _context.BTPDatas
                       .Include(x => x.Well)
                       .Where(x => x.Well.Id == wellId)
-                      //.Where(x => x.ApplicationDate != null)
+                      .Where(x => x.ApplicationDate != null)
                       .ToListAsync();
 
             var sortedData = data
