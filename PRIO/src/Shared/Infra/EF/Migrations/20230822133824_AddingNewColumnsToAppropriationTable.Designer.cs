@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230822133824_AddingNewColumnsToAppropriationTable")]
+    partial class AddingNewColumnsToAppropriationTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4189,11 +4192,11 @@ namespace PRIO.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal>("ProductionGasAsPercentageOfField")
-                        .HasPrecision(7, 5)
+                        .HasPrecision(4, 2)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionGasAsPercentageOfInstallation")
-                        .HasPrecision(7, 5)
+                        .HasPrecision(4, 2)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionGasInWell")
@@ -4204,11 +4207,11 @@ namespace PRIO.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("ProductionOilAsPercentageOfField")
-                        .HasPrecision(7, 5)
+                        .HasPrecision(4, 2)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionOilAsPercentageOfInstallation")
-                        .HasPrecision(7, 5)
+                        .HasPrecision(4, 2)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionOilInWell")
@@ -4216,11 +4219,11 @@ namespace PRIO.Migrations
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionWaterAsPercentageOfField")
-                        .HasPrecision(7, 5)
+                        .HasPrecision(4, 2)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionWaterAsPercentageOfInstallation")
-                        .HasPrecision(7, 5)
+                        .HasPrecision(4, 2)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionWaterInWell")

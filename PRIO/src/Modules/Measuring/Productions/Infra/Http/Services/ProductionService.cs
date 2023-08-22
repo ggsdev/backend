@@ -1714,7 +1714,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
             return productionsDto;
         }
 
-
         public async Task<List<ProductionFilesDtoWithBase64>> DownloadAllProductionFiles(Guid productionId)
         {
             var production = await _repository
@@ -1805,6 +1804,15 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 {
                     fieldFR.IsActive = false;
                     fieldFR.DeletedAt = DateTime.UtcNow.AddHours(-3);
+                }
+            }
+
+            if (production.Measurements is not null)
+            {
+                foreach (var measurement in production.Measurements)
+                {
+                    measurement.IsActive = false;
+                    measurement.DeletedAt = DateTime.UtcNow.AddHours(-3);
                 }
             }
 

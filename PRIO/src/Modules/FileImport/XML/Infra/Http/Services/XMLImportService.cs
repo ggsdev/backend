@@ -221,9 +221,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                 {
                                     if (DateTime.TryParseExact(producao.DHA_INICIO_PERIODO_MEDICAO_001, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateBeginningMeasurement))
                                     {
-                                        var checkDateExists = await _repository.GetAnyByDate(dateBeginningMeasurement, XmlUtils.File001);
+                                        var checkDateExists = await _repository.GetMeasurementByDate(dateBeginningMeasurement, XmlUtils.File001);
 
-                                        if (checkDateExists)
+                                        if (checkDateExists is not null && checkDateExists.IsActive)
                                             errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) data: {producao.DHA_INICIO_PERIODO_MEDICAO_001} já existente.");
                                     }
 
@@ -555,9 +555,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                     if (DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_002, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateBeginningMeasurement))
                                     {
-                                        var checkDateExists = await _repository.GetAnyByDate(dateBeginningMeasurement, XmlUtils.File002);
+                                        var checkDateExists = await _repository.GetMeasurementByDate(dateBeginningMeasurement, XmlUtils.File002);
 
-                                        if (checkDateExists)
+                                        if (checkDateExists is not null && checkDateExists.IsActive)
                                             errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) data: {producao.DHA_INICIO_PERIODO_MEDICAO_002} já existente.");
 
 
@@ -925,9 +925,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                     if (DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_003, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateBeginningMeasurement))
                                     {
-                                        var checkDateExists = await _repository.GetAnyByDate(dateBeginningMeasurement, XmlUtils.File003);
+                                        var checkDateExists = await _repository.GetMeasurementByDate(dateBeginningMeasurement, XmlUtils.File003);
 
-                                        if (checkDateExists)
+                                        if (checkDateExists is not null && checkDateExists.IsActive)
                                             errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) data: {producao.DHA_INICIO_PERIODO_MEDICAO_003} já existente.");
 
                                         var checkGasProductionExists = await _productionRepository
@@ -2359,9 +2359,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             }
 
-            var dividirBsw = 1;
+            var dividirBsw = 0;
 
             var totalOilWithBsw = 0m;
+            var totalOilWithoutBsw = 0m;
             var totalProduction = 0m;
             var bswAverage = 0m;
 
@@ -2372,9 +2373,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 {
                     var measurement = _mapper.Map<Client001DTO, Measurement>(bodyMeasurement);
 
-                    var measurementExists = await _repository.GetAnyByDate(measurement.DHA_INICIO_PERIODO_MEDICAO_001, XmlUtils.File001);
+                    var measurementExists = await _repository.GetMeasurementByDate(measurement.DHA_INICIO_PERIODO_MEDICAO_001, XmlUtils.File001);
 
-                    if (measurementExists is true)
+                    if (measurementExists is not null && measurementExists.IsActive)
                         throw new ConflictException($"Medição na data: {measurement.DHA_INICIO_PERIODO_MEDICAO_001} já cadastrada.");
 
                     var measuringPoint = await _measuringPointRepository.GetByTagMeasuringPointXML(bodyMeasurement.COD_TAG_PONTO_MEDICAO_001, XmlUtils.File001);
@@ -2392,6 +2393,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         if (tog.IsApplicable && tog.MeasuringPoint.TagPointMeasuring == bodyMeasurement.COD_TAG_PONTO_MEDICAO_001)
                         {
                             totalOilWithBsw += bodyMeasurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001;
+                            totalOilWithoutBsw += bodyMeasurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001;
                         }
                     }
 
@@ -2400,7 +2402,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         if (drain.IsApplicable && drain.MeasuringPoint.TagPointMeasuring == bodyMeasurement.COD_TAG_PONTO_MEDICAO_001)
                         {
                             totalOilWithBsw += bodyMeasurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001;
-
+                            totalOilWithoutBsw += bodyMeasurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001;
                         }
                     }
 
@@ -2409,7 +2411,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         if (section.IsApplicable && section.MeasuringPoint.TagPointMeasuring == bodyMeasurement.COD_TAG_PONTO_MEDICAO_001)
                         {
                             totalOilWithBsw += bodyMeasurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001 * (1 - bodyMeasurement.BswManual);
-
+                            totalOilWithoutBsw += bodyMeasurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001;
                         }
                     }
 
@@ -2418,6 +2420,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         if (dor.IsApplicable && dor.MeasuringPoint.TagPointMeasuring == bodyMeasurement.COD_TAG_PONTO_MEDICAO_001)
                         {
                             totalOilWithBsw -= bodyMeasurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001 * (1 - bodyMeasurement.BswManual);
+                            totalOilWithoutBsw -= bodyMeasurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001;
                         }
                     }
 
@@ -2480,7 +2483,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             {
                 data.Oil.TotalOilProductionM3 = totalOilWithBsw;
 
-                bswAverage = bswAverage / dividirBsw;
+                if (dividirBsw > 0)
+                {
+                    bswAverage = bswAverage / dividirBsw;
+                }
+                else
+                {
+                    bswAverage = 0;
+                }
 
                 var oil = new Oil
                 {
@@ -2488,25 +2498,23 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     TotalOil = totalOilWithBsw,
                     Production = dailyProduction,
                     BswAverage = bswAverage,
+                    TotalOilWithoutBsw = totalOilWithoutBsw
                 };
 
                 dailyProduction.Oil = oil;
 
-                //Console.WriteLine(totalOilWithBsw);
-                //Console.WriteLine(bswAverage);
+                //var water = new Water
+                //{
+                //    Id = Guid.NewGuid(),
+                //    Production = dailyProduction,
+                //    TotalWater = totalWater,
+                //    StatusWater = true,
+                //};
 
-                var water = new Water
-                {
-                    Id = Guid.NewGuid(),
-                    Production = dailyProduction,
-                    TotalWater = totalOilWithBsw * bswAverage,
-                    StatusWater = true,
-                };
-
-                dailyProduction.Water = water;
+                //dailyProduction.Water = water;
             }
 
-            totalProduction += totalOilWithBsw + totalOilWithBsw * bswAverage;
+            totalProduction += totalOilWithBsw;
 
             foreach (var file in data._002File)
             {
@@ -2514,9 +2522,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 {
                     var measurement = _mapper.Map<Client002DTO, Measurement>(bodyMeasurement);
 
-                    var measurementExists = await _repository.GetAnyByDate(measurement.DHA_INICIO_PERIODO_MEDICAO_002, XmlUtils.File002);
+                    var measurementExists = await _repository.GetMeasurementByDate(measurement.DHA_INICIO_PERIODO_MEDICAO_002, XmlUtils.File002);
 
-                    if (measurementExists is true)
+                    if (measurementExists is not null && measurementExists.IsActive)
                         throw new ConflictException($"Medição na data: {measurement.DHA_INICIO_PERIODO_MEDICAO_002} já cadastrada.");
 
                     var measuringPoint = await _measuringPointRepository.GetByTagMeasuringPointXML(bodyMeasurement.COD_TAG_PONTO_MEDICAO_002, XmlUtils.File002);
@@ -2582,9 +2590,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 {
                     var measurement = _mapper.Map<Client003DTO, Measurement>(bodyMeasurement);
 
-                    var measurementExists = await _repository.GetAnyByDate(measurement.DHA_INICIO_PERIODO_MEDICAO_003, XmlUtils.File003);
+                    var measurementExists = await _repository.GetMeasurementByDate(measurement.DHA_INICIO_PERIODO_MEDICAO_003, XmlUtils.File003);
 
-                    if (measurementExists is true)
+                    if (measurementExists is not null && measurementExists.IsActive)
                         throw new ConflictException($"Medição na data: {measurement.DHA_INICIO_PERIODO_MEDICAO_003} já cadastrada.");
 
                     var measuringPoint = await _measuringPointRepository.GetByTagMeasuringPointXML(bodyMeasurement.COD_TAG_PONTO_MEDICAO_003, XmlUtils.File003);
@@ -2700,9 +2708,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 Gas = data.Gas,
                 InstallationId = installation.Id,
                 Production = dailyProduction,
-                Water = data.Water
 
-                //BothGas = bothGasFiles
             };
 
             await _fieldFRService.ApplyFR(fieldFrViewModel, data.DateProduction);

@@ -2,6 +2,7 @@
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
 using PRIO.src.Shared.Auxiliaries.Infra.EF.Models;
+using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 using System.Globalization;
 
@@ -127,6 +128,46 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
                 .FirstOrDefaultAsync();
         }
         #endregion
+
+        public async Task<decimal> SumFluidTotalPotencialByFieldId(Guid fieldId, string fluid)
+        {
+            switch (fluid)
+            {
+                case "oil":
+                    return await _context.BTPDatas
+              .Include(x => x.Well)
+                  .ThenInclude(x => x.Field)
+              .Where(x => x.Well.Field.Id == fieldId && x.IsActive && x.IsValid)
+              .SumAsync(x => x.PotencialOil);
+
+                case "gas":
+                    return await _context.BTPDatas
+               .Include(x => x.Well)
+                   .ThenInclude(x => x.Field)
+               .Where(x => x.Well.Field.Id == fieldId && x.IsActive && x.IsValid)
+               .SumAsync(x => x.PotencialGas);
+
+                case "water":
+                    return await _context.BTPDatas
+              .Include(x => x.Well)
+                  .ThenInclude(x => x.Field)
+              .Where(x => x.Well.Field.Id == fieldId && x.IsActive && x.IsValid)
+              .SumAsync(x => x.PotencialWater);
+
+                default:
+                    throw new BadRequestException("water, oil, gas");
+            }
+        }
+
+        public async Task<List<BTPData>> GetBtpDatasByFieldId(Guid fieldId)
+        {
+            return await _context.BTPDatas
+              .Include(x => x.Well)
+                  .ThenInclude(x => x.Field)
+              .Where(x => x.Well.Field.Id == fieldId && x.IsActive && x.IsValid)
+              .ToListAsync();
+
+        }
 
         public void Update(BTPData data)
         {

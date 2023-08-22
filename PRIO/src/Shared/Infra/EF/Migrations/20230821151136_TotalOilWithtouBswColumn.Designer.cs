@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230821151136_TotalOilWithtouBswColumn")]
+    partial class TotalOilWithtouBswColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4167,78 +4170,6 @@ namespace PRIO.Migrations
                     b.ToTable("Waters");
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellAppropriations.Infra.EF.Models.WellAppropriation", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("BtpDataId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<decimal>("ProductionGasAsPercentageOfField")
-                        .HasPrecision(7, 5)
-                        .HasColumnType("DECIMAL");
-
-                    b.Property<decimal>("ProductionGasAsPercentageOfInstallation")
-                        .HasPrecision(7, 5)
-                        .HasColumnType("DECIMAL");
-
-                    b.Property<decimal>("ProductionGasInWell")
-                        .HasPrecision(10, 5)
-                        .HasColumnType("DECIMAL");
-
-                    b.Property<Guid>("ProductionId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("ProductionOilAsPercentageOfField")
-                        .HasPrecision(7, 5)
-                        .HasColumnType("DECIMAL");
-
-                    b.Property<decimal>("ProductionOilAsPercentageOfInstallation")
-                        .HasPrecision(7, 5)
-                        .HasColumnType("DECIMAL");
-
-                    b.Property<decimal>("ProductionOilInWell")
-                        .HasPrecision(10, 5)
-                        .HasColumnType("DECIMAL");
-
-                    b.Property<decimal>("ProductionWaterAsPercentageOfField")
-                        .HasPrecision(7, 5)
-                        .HasColumnType("DECIMAL");
-
-                    b.Property<decimal>("ProductionWaterAsPercentageOfInstallation")
-                        .HasPrecision(7, 5)
-                        .HasColumnType("DECIMAL");
-
-                    b.Property<decimal>("ProductionWaterInWell")
-                        .HasPrecision(10, 5)
-                        .HasColumnType("DECIMAL");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BtpDataId");
-
-                    b.HasIndex("ProductionId");
-
-                    b.ToTable("WellAppropriations", (string)null);
-                });
-
             modelBuilder.Entity("PRIO.src.Shared.Auxiliaries.Infra.EF.Models.Auxiliary", b =>
                 {
                     b.Property<Guid?>("Id")
@@ -5148,25 +5079,6 @@ namespace PRIO.Migrations
                     b.Navigation("Water");
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellAppropriations.Infra.EF.Models.WellAppropriation", b =>
-                {
-                    b.HasOne("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPData", "BtpData")
-                        .WithMany("WellAppropriations")
-                        .HasForeignKey("BtpDataId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "Production")
-                        .WithMany("WellAppropriations")
-                        .HasForeignKey("ProductionId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("BtpData");
-
-                    b.Navigation("Production");
-                });
-
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.Group", b =>
                 {
                     b.Navigation("GroupPermissions");
@@ -5244,11 +5156,6 @@ namespace PRIO.Migrations
                 {
                     b.Navigation("BTPData")
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPData", b =>
-                {
-                    b.Navigation("WellAppropriations");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSM", b =>
@@ -5440,8 +5347,6 @@ namespace PRIO.Migrations
                     b.Navigation("Measurements");
 
                     b.Navigation("NFSMs");
-
-                    b.Navigation("WellAppropriations");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Water", b =>

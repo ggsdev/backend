@@ -62,15 +62,20 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<Production?> GetById(Guid id)
+        public async Task<Production?> GetById(Guid? id)
         {
             return await _context.Productions
+                .Include(x => x.Installation)
+                    .ThenInclude(x => x.Fields)
+                    .ThenInclude(f => f.Wells)
+                    .ThenInclude(d => d.BTPDatas)
                 .Include(x => x.Comment)
                 .Include(x => x.GasLinear)
                 .Include(x => x.GasDiferencial)
                 .Include(x => x.Gas)
                 .Include(x => x.Oil)
                 .Include(x => x.FieldsFR)
+                .Include(x => x.WellAppropriations)
                 .Include(x => x.Measurements)
                     .ThenInclude(m => m.MeasurementHistory)
                 .FirstOrDefaultAsync(x => x.Id == id);
