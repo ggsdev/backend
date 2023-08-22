@@ -17,5 +17,7 @@ namespace PRIO.src.Modules.Measuring.WellAppropriations.Infra.EF.Models
         public decimal ProductionWaterAsPercentageOfInstallation { get; set; }
         public BTPData BtpData { get; set; }
         public Production Production { get; set; }
+
+        public FieldProduction FieldProduction { get; set; }
     }
 }
