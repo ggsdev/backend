@@ -36,7 +36,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
 
             return btpsDTO;
         }
-
         public async Task<BTPCreateDTO> createBTP(CreateBTPViewModel body, User user)
         {
             var BTPexists = await _BTPRepository.GetByNameOrContent(body.Name, body.FileContent);
@@ -627,7 +626,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             var listWellTests = await _BTPRepository.ListBTPSDataActiveByWellId(body.Validate.WellId);
             DateTime applicationDateFromBody = DateTime.Parse(body.Data.ApplicationDate);
 
-
             if (listWellTests.Count != 0)
             {
                 var greaterThanDate = listWellTests.LastOrDefault(x => DateTime.Parse(x.ApplicationDate) > applicationDateFromBody);
@@ -642,6 +640,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                     listWellTests[0].FinalApplicationDate = FinalnewDate.ToString();
                     listWellTests[0].IsActive = today <= FinalnewDate;
 
+                    _BTPRepository.Update(listWellTests[0]);
+
                     data.IsActive = today >= applicationDateFromBodya;
                 }
                 else if (DateTime.Parse(listWellTests[0].ApplicationDate) == applicationDateFromBody)
@@ -652,7 +652,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 {
                     DateTime FinalnewDate = DateTime.Parse(greaterThanDate.ApplicationDate).AddDays(-1);
                     DateTime today = DateTime.Today;
-
                     data.FinalApplicationDate = FinalnewDate.ToString();
                     data.IsActive = false;
 
@@ -663,9 +662,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                         previousDate.IsActive = false;
 
                         _BTPRepository.Update(previousDate);
-
                     }
-
                 }
             }
 
@@ -695,6 +692,52 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
         public async Task<BTPDataDTO> UpdateByDataId(Guid dataId)
         {
             var BTPData = await _BTPRepository.GetByDataIdAsync(dataId);
+
+            if (BTPData is null)
+                throw new NotFoundException("Teste de poço não encontrado.");
+
+            if (BTPData.IsValid is false)
+                throw new NotFoundException("Teste de poço está invalidado.");
+
+            var listWellTests = await _BTPRepository.ListBTPSDataActiveByWellId(BTPData.Well.Id);
+            DateTime applicationDateFromBody = DateTime.Parse(BTPData.ApplicationDate);
+
+            if (listWellTests.Count != 0)
+            {
+                var greaterThanDate = listWellTests.LastOrDefault(x => DateTime.Parse(x.ApplicationDate) > applicationDateFromBody);
+                var previousDate = listWellTests.FirstOrDefault(x => DateTime.Parse(x.ApplicationDate) < applicationDateFromBody);
+
+                if (previousDate is not null && greaterThanDate is null)
+                {
+                    BTPData.IsActive = false;
+                    BTPData.IsValid = false;
+                    BTPData.FinalApplicationDate = null;
+                    BTPData.ApplicationDate = null;
+
+                    previousDate.FinalApplicationDate = null;
+                    previousDate.IsActive = true;
+
+                    _BTPRepository.Update(previousDate);
+
+
+                }
+                else if (previousDate is not null && greaterThanDate is not null)
+                {
+                    DateTime previousFinalNewDate = DateTime.Parse(greaterThanDate.ApplicationDate).AddDays(-1);
+
+                    BTPData.IsActive = false;
+                    BTPData.IsValid = false;
+                    BTPData.FinalApplicationDate = null;
+                    BTPData.ApplicationDate = null;
+
+                    previousDate.FinalApplicationDate = previousFinalNewDate.ToString();
+                    _BTPRepository.Update(previousDate);
+                }
+                else
+                {
+                    throw new ConflictException("Só existe este BTP para este poço.");
+                }
+            }
 
             BTPData.IsValid = false;
 
