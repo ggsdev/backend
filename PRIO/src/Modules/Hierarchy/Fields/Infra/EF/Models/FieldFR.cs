@@ -9,7 +9,11 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models
         public decimal? FROil { get; set; }
         public Field Field { get; set; }
         public Production DailyProduction { get; set; }
-        public decimal ProductionInField { get; set; }
+        public decimal TotalProductionInField { get; set; }
+        public decimal GasProductionInField { get; set; }
+        public decimal OilProductionInField { get; set; }
+
+        public decimal ProductionInFieldAsPercentage { get; set; }
         public bool IsManually { get; set; }
     }
 

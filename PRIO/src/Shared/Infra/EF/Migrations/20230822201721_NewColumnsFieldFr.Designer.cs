@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230822201721_NewColumnsFieldFr")]
+    partial class NewColumnsFieldFr
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1117,10 +1120,6 @@ namespace PRIO.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal>("OilProductionInField")
-                        .HasPrecision(10, 5)
-                        .HasColumnType("decimal");
-
-                    b.Property<decimal>("ProductionInFieldAsPercentage")
                         .HasPrecision(10, 5)
                         .HasColumnType("decimal");
 

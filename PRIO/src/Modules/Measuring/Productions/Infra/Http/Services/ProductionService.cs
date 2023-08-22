@@ -608,7 +608,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             FieldId = fr.Field.Id,
                             FieldName = fr.Field.Name,
                             FluidFr = fr.FROil,
-                            ProductionInField = fr.ProductionInField
+                            ProductionInField = fr.OilProductionInField
 
                         };
 
@@ -625,7 +625,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             FieldId = fr.Field.Id,
                             FieldName = fr.Field.Name,
                             FluidFr = fr.FRGas,
-                            ProductionInField = fr.ProductionInField
+                            ProductionInField = fr.GasProductionInField
                         };
 
                         gasFrs.Fields.Add(createdFr);

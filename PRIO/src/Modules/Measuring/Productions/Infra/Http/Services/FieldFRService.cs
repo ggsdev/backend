@@ -84,17 +84,22 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     DailyProduction = body.Production,
                                     Field = fieldInDatabase,
                                     FRGas = field.FluidFr,
-                                    ProductionInField = ((body.Production.GasLinear is not null ? body.Production.GasLinear.TotalGas : 0) + (body.Production.GasDiferencial is not null ? body.Production.GasDiferencial.TotalGas : 0)) * field.FluidFr,
+                                    TotalProductionInField = ((body.Production.GasLinear is not null ? body.Production.GasLinear.TotalGas : 0) + (body.Production.GasDiferencial is not null ? body.Production.GasDiferencial.TotalGas : 0)) * field.FluidFr,
+                                    GasProductionInField = ((body.Production.GasLinear is not null ? body.Production.GasLinear.TotalGas : 0) + (body.Production.GasDiferencial is not null ? body.Production.GasDiferencial.TotalGas : 0)) * field.FluidFr,
                                 };
+
+                                fr.ProductionInFieldAsPercentage = fr.TotalProductionInField / body.Production.TotalProduction;
 
                                 await _installationRepository.AddFRAsync(fr);
                             }
 
                             if (existingFr is not null && existingFr.FRGas is null)
                             {
-                                existingFr.ProductionInField += ((body.Production.GasLinear is not null ? body.Production.GasLinear.TotalGas : 0) + (body.Production.GasDiferencial is not null ? body.Production.GasDiferencial.TotalGas : 0)) * field.FluidFr;
+                                existingFr.TotalProductionInField += ((body.Production.GasLinear is not null ? body.Production.GasLinear.TotalGas : 0) + (body.Production.GasDiferencial is not null ? body.Production.GasDiferencial.TotalGas : 0)) * field.FluidFr;
                                 existingFr.FRGas = field.FluidFr;
+                                existingFr.GasProductionInField = ((body.Production.GasLinear is not null ? body.Production.GasLinear.TotalGas : 0) + (body.Production.GasDiferencial is not null ? body.Production.GasDiferencial.TotalGas : 0)) * field.FluidFr;
 
+                                existingFr.ProductionInFieldAsPercentage = existingFr.TotalProductionInField / body.Production.TotalProduction;
 
                                 _installationRepository.UpdateFr(existingFr);
                             }
@@ -153,17 +158,23 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     DailyProduction = body.Production,
                                     Field = fieldInDatabase,
                                     FROil = field.FluidFr,
-                                    ProductionInField = body.Oil.TotalOilProductionM3 * field.FluidFr /*+ (body.Water is not null ? body.Water.TotalWaterM3 : 0)*/,
-
+                                    TotalProductionInField = body.Oil.TotalOilProductionM3 * field.FluidFr, /*+ (body.Water is not null ? body.Water.TotalWaterM3 : 0)*/
+                                    OilProductionInField = body.Oil.TotalOilProductionM3 * field.FluidFr
                                 };
+
+                                fr.ProductionInFieldAsPercentage = fr.TotalProductionInField / body.Production.TotalProduction;
 
                                 await _installationRepository.AddFRAsync(fr);
                             }
                             else
                             {
 
-                                existingFr.ProductionInField += body.Oil.TotalOilProductionM3 * field.FluidFr /*+ (body.Water is not null ? body.Water.TotalWaterM3 : 0)*/;
+                                existingFr.TotalProductionInField += body.Oil.TotalOilProductionM3 * field.FluidFr /*+ (body.Water is not null ? body.Water.TotalWaterM3 : 0)*/;
                                 existingFr.FROil = field.FluidFr;
+
+                                existingFr.OilProductionInField = body.Oil.TotalOilProductionM3 * field.FluidFr;
+
+                                existingFr.ProductionInFieldAsPercentage = existingFr.TotalProductionInField / body.Production.TotalProduction;
 
                                 _installationRepository.UpdateFr(existingFr);
                             }

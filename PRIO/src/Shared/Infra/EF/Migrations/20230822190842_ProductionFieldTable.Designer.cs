@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230822190842_ProductionFieldTable")]
+    partial class ProductionFieldTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1106,25 +1109,13 @@ namespace PRIO.Migrations
                     b.Property<Guid>("FieldId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("GasProductionInField")
-                        .HasPrecision(10, 5)
-                        .HasColumnType("decimal");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsManually")
                         .HasColumnType("bit");
 
-                    b.Property<decimal>("OilProductionInField")
-                        .HasPrecision(10, 5)
-                        .HasColumnType("decimal");
-
-                    b.Property<decimal>("ProductionInFieldAsPercentage")
-                        .HasPrecision(10, 5)
-                        .HasColumnType("decimal");
-
-                    b.Property<decimal>("TotalProductionInField")
+                    b.Property<decimal>("ProductionInField")
                         .HasPrecision(10, 5)
                         .HasColumnType("decimal");
 
@@ -3874,26 +3865,23 @@ namespace PRIO.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("GasProductionInField")
-                        .HasPrecision(10, 5)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<decimal>("OilProductionInField")
-                        .HasPrecision(10, 5)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("WaterProductionInField")
-                        .HasPrecision(10, 5)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("FieldsProductions", (string)null);
+                    b.ToTable("FieldsProductions");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Gas", b =>
