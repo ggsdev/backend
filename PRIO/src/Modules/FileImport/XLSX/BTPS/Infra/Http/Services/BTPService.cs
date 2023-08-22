@@ -148,7 +148,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             {
                 erros.Add("Erro: Valor da célula para duração não é uma hora na célula " + BTP.CellDuration);
             }
-            Console.WriteLine(DurationValue);
             object btpNumberValue = worksheet.Cells[BTP.CellBTPNumber].Value;
             if (btpNumberValue is null)
             {
@@ -331,6 +330,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             var data = new BTPData
             {
                 Id = Guid.NewGuid(),
+                BTPId = body.BTPId,
                 Filename = body.FileName,
                 Type = body.Type,
                 IsValid = body.IsValid,
@@ -576,17 +576,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             }
 
 
-            var listWellTets = await _BTPRepository.ListBTPSDataActiveByWellId(body.Validate.WellId);
-            if (listWellTets[0] is not null)
-            {
-                if (DateTime.Parse(listWellTets[0].ApplicationDate) < DateTime.Parse(body.Data.ApplicationDate))
-                {
-                    DateTime applicationDateFromBody = DateTime.Parse(body.Data.ApplicationDate);
-                    DateTime FinalnewDate = applicationDateFromBody.AddDays(-1);
-                    listWellTets[0].FinalApplicationDate = FinalnewDate.ToString();
-                    listWellTets[0].IsActive = false;
-                }
-            }
 
             var content = new BTPBase64
             {
@@ -634,6 +623,51 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 Well = well,
                 BTPBase64 = content
             };
+
+            var listWellTests = await _BTPRepository.ListBTPSDataActiveByWellId(body.Validate.WellId);
+            DateTime applicationDateFromBody = DateTime.Parse(body.Data.ApplicationDate);
+
+
+            if (listWellTests.Count != 0)
+            {
+                var greaterThanDate = listWellTests.LastOrDefault(x => DateTime.Parse(x.ApplicationDate) > applicationDateFromBody);
+                var previousDate = listWellTests.FirstOrDefault(x => DateTime.Parse(x.ApplicationDate) < applicationDateFromBody);
+
+                if (DateTime.Parse(listWellTests[0].ApplicationDate) < applicationDateFromBody)
+                {
+                    DateTime applicationDateFromBodya = DateTime.Parse(body.Data.ApplicationDate);
+                    DateTime FinalnewDate = applicationDateFromBody.AddDays(-1);
+                    DateTime today = DateTime.Today;
+
+                    listWellTests[0].FinalApplicationDate = FinalnewDate.ToString();
+                    listWellTests[0].IsActive = today <= FinalnewDate;
+
+                    data.IsActive = today >= applicationDateFromBodya;
+                }
+                else if (DateTime.Parse(listWellTests[0].ApplicationDate) == applicationDateFromBody)
+                {
+                    throw new ConflictException("Já existe uma aplicação de teste para essa data.");
+                }
+                else
+                {
+                    DateTime FinalnewDate = DateTime.Parse(greaterThanDate.ApplicationDate).AddDays(-1);
+                    DateTime today = DateTime.Today;
+
+                    data.FinalApplicationDate = FinalnewDate.ToString();
+                    data.IsActive = false;
+
+                    if (previousDate is not null)
+                    {
+                        DateTime previousFinalNewDate = DateTime.Parse(data.ApplicationDate).AddDays(-1);
+                        previousDate.FinalApplicationDate = previousFinalNewDate.ToString();
+                        previousDate.IsActive = false;
+
+                        _BTPRepository.Update(previousDate);
+
+                    }
+
+                }
+            }
 
             await _BTPRepository.AddBTPAsync(data);
             await _BTPRepository.AddBTPBase64Async(content);
