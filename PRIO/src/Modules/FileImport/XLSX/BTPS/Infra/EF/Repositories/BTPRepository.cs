@@ -53,6 +53,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
             var data = await _context.BTPDatas
                       .Include(x => x.Well)
                       .Where(x => x.Well.Id == wellId)
+                      //.Where(x => x.ApplicationDate != null)
                       .ToListAsync();
 
             var sortedData = data
@@ -83,7 +84,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
         }
         public async Task<BTPData?> GetByDataIdAsync(Guid id)
         {
-            return await _context.BTPDatas.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return await _context.BTPDatas.Include(x => x.Well).ThenInclude(x => x.Field).Where(x => x.Id == id).FirstOrDefaultAsync();
         }
         public async Task<BTPData?> GetByDateAsync(string date, Guid wellId)
         {
