@@ -14,7 +14,7 @@ namespace PRIO.src.Modules.Measuring.Measurements.Interfaces
         Task<Measurement?> GetUnique002Async(string numSerie);
         Task<Measurement?> GetUnique003Async(string numSerie);
         Task<bool> GetAnyByDate(DateTime? date, string fileType);
-        //Task<Measurement?> GetMeasurementByDate(DateTime? date);
+        Task<Measurement?> GetMeasurementByDate(DateTime? date, string? fileType);
         IIncludableQueryable<FileType, User?> FileTypeBuilderByName(string name);
         IIncludableQueryable<FileType, User?> FileTypeBuilderByAcronym(string acronym);
         IIncludableQueryable<FileType, User?> FileTypeBuilder();

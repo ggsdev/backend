@@ -209,6 +209,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
             return await _context.Installations
                 .Include(x => x.Cluster)
                 .Include(x => x.User)
+
                 .ToListAsync();
         }
         public async Task<List<Installation>> GetUEPsAsync()
@@ -217,6 +218,16 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                 .Include(x => x.Cluster)
                 .Include(x => x.User)
                 .Where(x => x.IsProcessingUnit == true)
+                .ToListAsync();
+        }
+
+        public async Task<List<Installation>> GetInstallationChildrenOfUEP(string uepCode)
+        {
+            return await _context.Installations
+                .Include(x => x.Fields)
+                    .ThenInclude(x => x.Wells)
+                        .ThenInclude(x => x.BTPDatas)
+                .Where(x => x.UepCod == uepCode)
                 .ToListAsync();
         }
         public async Task<List<Installation>> GetUEPsCreateAsync(string table)

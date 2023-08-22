@@ -13,6 +13,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Interfaces
         Task AddOrUpdateProduction(Production production);
         Task AddGas(Gas gas);
         Task<List<Production>> GetAllProductions();
-        Task<Production?> GetById(Guid id);
+        Task<Production?> GetById(Guid? id);
     }
 }

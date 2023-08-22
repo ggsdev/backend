@@ -40,6 +40,8 @@ using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.WellAppropriations.Infra.EF.Mappings;
+using PRIO.src.Modules.Measuring.WellAppropriations.Infra.EF.Models;
 using PRIO.src.Shared.Auxiliaries.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF.Models;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Mappings;
@@ -134,6 +136,7 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<NFSMsProductions> NFSMsProductions { get; set; }
         public DbSet<NFSM> NFSMs { get; set; }
         public DbSet<NFSMHistory> NFSMImportHistories { get; set; }
+        public DbSet<WellAppropriation> WellAppropriations { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -249,6 +252,7 @@ namespace PRIO.src.Shared.Infra.EF
             modelBuilder.ApplyConfiguration(new GroupPermissionMap());
             modelBuilder.ApplyConfiguration(new UserOperationMap());
             modelBuilder.ApplyConfiguration(new CommentMap());
+            modelBuilder.ApplyConfiguration(new WellAppropriationMap());
 
             #region Measurement & Relations
             modelBuilder.ApplyConfiguration(new SectionMap());

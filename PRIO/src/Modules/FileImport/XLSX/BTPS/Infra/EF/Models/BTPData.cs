@@ -1,4 +1,5 @@
 ﻿using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.WellAppropriations.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF.Models;
 
 namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models
@@ -34,5 +35,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models
         public bool IsValid { get; set; }
         public BTPBase64? BTPBase64 { get; set; }
         public Well? Well { get; set; }
+        public List<WellAppropriation>? WellAppropriations { get; set; }
     }
 }
