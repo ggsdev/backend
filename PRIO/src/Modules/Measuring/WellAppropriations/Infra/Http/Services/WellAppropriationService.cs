@@ -3,6 +3,7 @@ using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Productions.Interfaces;
+using PRIO.src.Modules.Measuring.WellAppropriations.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.WellAppropriations.Infra.Utils;
 using PRIO.src.Modules.Measuring.WellAppropriations.Infra.ViewModels;
 using PRIO.src.Modules.Measuring.WellAppropriations.Interfaces;
@@ -77,21 +78,58 @@ namespace PRIO.src.Modules.Measuring.WellAppropriations.Infra.Http.Services
 
                     var btps = await _btpRepository.GetBtpDatasByFieldId(fieldFR.Field.Id);
 
+
                     foreach (var btp in btps)
                     {
-                        Console.WriteLine(btp.PotencialLiquid);
+                        var wellPotencialGasAsPercentageOfField = btp.PotencialGas / totalGasPotencial;
+
+                        var wellPotencialOilAsPercentageOfField = btp.PotencialOil / totalOilPotencial;
+
+                        var wellPotencialWaterAsPercentageOfField = btp.PotencialWater / totalWaterPotencial;
+
+                        Console.WriteLine(btp.Well.Name);
+
+                        var wellAppropriation = new WellAppropriation
+                        {
+                            Id = Guid.NewGuid(),
+
+                            BtpData = btp,
+
+                            Production = production,
+
+                            ProductionGasAsPercentageOfField = wellPotencialGasAsPercentageOfField,
+                            ProductionOilAsPercentageOfField = wellPotencialOilAsPercentageOfField,
+                            ProductionWaterAsPercentageOfField = wellPotencialWaterAsPercentageOfField,
+
+                            ProductionOilAsPercentageOfInstallation = fieldFR.FROil is not null ? fieldFR.FROil.Value * ((100 - btp.BSW) / 100) * wellPotencialOilAsPercentageOfField : 0,
+
+                            ProductionGasAsPercentageOfInstallation = fieldFR.FRGas is not null ? fieldFR.FRGas.Value * wellPotencialGasAsPercentageOfField : 0,
+
+                            ProductionWaterAsPercentageOfInstallation = fieldFR.FROil is not null ? fieldFR.FROil.Value * (btp.BSW / 100) * wellPotencialWaterAsPercentageOfField : 0, // nsei
+
+                            ProductionGasInWell = fieldFR.ProductionInField * fieldFR.FRGas.Value * wellPotencialGasAsPercentageOfField,
+
+                            ProductionOilInWell = fieldFR.ProductionInField * fieldFR.FROil.Value * ((100 - btp.BSW) / 100) * wellPotencialOilAsPercentageOfField,
+
+                            ProductionWaterInWell = fieldFR.ProductionInField * fieldFR.FROil.Value * (btp.BSW / 100) * wellPotencialWaterAsPercentageOfField,
+
+                        };
+
+
+                        await _repository.AddAsync(wellAppropriation);
 
                     }
 
                 }
             }
+
             else
             {
 
 
             }
 
-
+            await _repository.Save();
             //    var totalPotencialOilAllWells = 0m;
             //    var totalPotencialGasAllWells = 0m;
             //    var totalPotencialWaterAllWells = 0m;

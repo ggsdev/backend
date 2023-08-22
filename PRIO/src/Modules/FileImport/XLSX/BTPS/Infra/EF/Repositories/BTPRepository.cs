@@ -162,10 +162,10 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
         public async Task<List<BTPData>> GetBtpDatasByFieldId(Guid fieldId)
         {
             return await _context.BTPDatas
-      .Include(x => x.Well)
-          .ThenInclude(x => x.Field)
-      .Where(x => x.Well.Field.Id == fieldId && x.IsActive && x.IsValid)
-      .ToListAsync();
+              .Include(x => x.Well)
+                  .ThenInclude(x => x.Field)
+              .Where(x => x.Well.Field.Id == fieldId && x.IsActive && x.IsValid)
+              .ToListAsync();
 
         }
 
