@@ -2,7 +2,6 @@
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
 using PRIO.src.Shared.Auxiliaries.Infra.EF.Models;
-using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 using System.Globalization;
 
@@ -129,44 +128,60 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
         }
         #endregion
 
-        public async Task<decimal> SumFluidTotalPotencialByFieldId(Guid fieldId, string fluid)
-        {
-            switch (fluid)
-            {
-                case "oil":
-                    return await _context.BTPDatas
-              .Include(x => x.Well)
-                  .ThenInclude(x => x.Field)
-              .Where(x => x.Well.Field.Id == fieldId && x.IsActive && x.IsValid)
-              .SumAsync(x => x.PotencialOil);
+        //public async Task<List<BTPData>> SumFluidTotalPotencialByFieldId(Guid fieldId, string fluid)
+        //{
+        //    switch (fluid)
+        //    {
+        //        case "oil":
+        //            return await _context.BTPDatas
+        //      .Include(x => x.Well)
+        //    .ThenInclude(x => x.Field)
+        //    .Where(x => x.Well.Field.Id == fieldId && x.IsValid)
+        //      //.Where(x => (x.FinalDate == null && DateTime.Parse(x.ApplicationDate) <= productionDate.Date) || (x.FinalDate != null &&
+        //      //    DateTime.Parse(x.FinalDate) >= productionDate.Date &&
+        //      //    DateTime.Parse(x.ApplicationDate) <= productionDate.Date))
+        //      //.SumAsync(x => x.PotencialOil);
+        //      .ToListAsync();
 
-                case "gas":
-                    return await _context.BTPDatas
-               .Include(x => x.Well)
-                   .ThenInclude(x => x.Field)
-               .Where(x => x.Well.Field.Id == fieldId && x.IsActive && x.IsValid)
-               .SumAsync(x => x.PotencialGas);
+        //        case "gas":
+        //            return await _context.BTPDatas
+        //       .Include(x => x.Well)
+        //    .ThenInclude(x => x.Field)
+        //    .Where(x => x.Well.Field.Id == fieldId && x.IsValid)
+        //       //.Where(x => (x.FinalDate == null && DateTime.Parse(x.ApplicationDate) <= productionDate.Date) || (x.FinalDate != null &&
+        //       //    DateTime.Parse(x.FinalDate) >= productionDate.Date &&
+        //       //    DateTime.Parse(x.ApplicationDate) <= productionDate.Date))
+        //       //.SumAsync(x => x.PotencialGas);
+        //       .ToListAsync();
 
-                case "water":
-                    return await _context.BTPDatas
-              .Include(x => x.Well)
-                  .ThenInclude(x => x.Field)
-              .Where(x => x.Well.Field.Id == fieldId && x.IsActive && x.IsValid)
-              .SumAsync(x => x.PotencialWater);
+        //        case "water":
+        //            return await _context.BTPDatas
+        //      .Include(x => x.Well)
+        //    .ThenInclude(x => x.Field)
+        //    .Where(x => x.Well.Field.Id == fieldId && x.IsValid)
+        //      //.Where(x => (x.FinalDate == null && DateTime.Parse(x.ApplicationDate) <= productionDate.Date) || (x.FinalDate != null &&
+        //      //    DateTime.Parse(x.FinalDate) >= productionDate.Date &&
+        //      //    DateTime.Parse(x.ApplicationDate) <= productionDate.Date))
+        //      //.SumAsync(x => x.PotencialWater);
+        //      .ToListAsync();
 
-                default:
-                    throw new BadRequestException("water, oil, gas");
-            }
-        }
+        //        default:
+        //            throw new BadRequestException("water, oil, gas");
+        //    }
+        //}
 
         public async Task<List<BTPData>> GetBtpDatasByFieldId(Guid fieldId)
         {
-            return await _context.BTPDatas
-              .Include(x => x.Well)
-                  .ThenInclude(x => x.Field)
-              .Where(x => x.Well.Field.Id == fieldId && x.IsActive && x.IsValid)
-              .ToListAsync();
+            var btps = await _context.BTPDatas
+        .Include(x => x.Well)
+            .ThenInclude(x => x.Field)
+            .Where(x => x.Well.Field.Id == fieldId && x.IsValid)
+            //.Where(x => (x.FinalDate == null && DateTime.Parse(x.ApplicationDate) <= productionDate.Date) || (x.FinalDate != null &&
+            //    DateTime.Parse(x.FinalDate) >= productionDate.Date &&
+            //    DateTime.Parse(x.ApplicationDate) <= productionDate.Date))
+        .ToListAsync();
 
+            return btps;
         }
 
         public void Update(BTPData data)

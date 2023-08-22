@@ -6,9 +6,43 @@
         public static readonly string fluidGas = "gas";
         public static readonly string fluidWater = "water";
 
-        public static decimal CalculatePercentageField()
+        public static decimal CalculateWellProductionAsPercentageOfField(decimal potencial, decimal totalPotencialField)
         {
-            return 0m;
+            return potencial / totalPotencialField;
+        }
+        public static decimal CalculateWellProductionAsPercentageOfInstallation(decimal potencial, decimal frFactor, decimal bsw, string fluidType)
+        {
+            switch (fluidType.ToLower())
+            {
+                case "oil":
+                    return potencial * frFactor * ((100 - bsw) / 100);
+                case "water":
+                    return potencial * frFactor * (bsw / 100);
+                case "gas":
+                    return potencial * frFactor;
+
+                default:
+                    return 0;
+            }
+        }
+
+        public static decimal CalculateWellProduction(decimal productionInField, decimal frFactor, decimal bsw, decimal potencial, string fluidType)
+        {
+            switch (fluidType.ToLower())
+            {
+                case "oil":
+                    return productionInField * frFactor * ((100 - bsw) / 100) * potencial;
+
+                case "gas":
+                    return productionInField * frFactor * potencial;
+
+                case "water":
+                    return productionInField * frFactor * (bsw / 100) * potencial;
+
+                default:
+                    return 0;
+
+            }
         }
     }
 }

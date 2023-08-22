@@ -42,6 +42,7 @@ namespace PRIO.src.Modules.Measuring.WellAppropriations.Infra.Http.Services
             var installations = await _installationRepository
                 .GetInstallationChildrenOfUEP(production.Installation.UepCod);
 
+            var wellsInvalids = new List<string>();
             //validando se todos poços tem um teste válido
             foreach (var installation in installations)
             {
@@ -51,43 +52,55 @@ namespace PRIO.src.Modules.Measuring.WellAppropriations.Infra.Http.Services
                     {
                         var wellContainBtpValid = false;
 
+                        var allBtpsValid = well.BTPDatas.Where(x => (x.FinalApplicationDate == null && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date)
+                        || (x.FinalApplicationDate != null && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
+                        && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date));
+
                         if (well.BTPDatas is not null)
-                            foreach (var btp in well.BTPDatas.OrderByDescending(x => x.ApplicationDate))
-                                if (btp.IsActive)
+                            foreach (var btp in allBtpsValid)
+                                if (btp.IsValid)
                                 {
                                     wellContainBtpValid = true;
                                     break;
                                 }
 
-
-                        //if (wellContainBtpValid is false)
-                        //    throw new ConflictException($"Todos os poços devem ter um teste de poço válido, poço: {well.Name}");
+                        if (wellContainBtpValid is false)
+                            wellsInvalids.Add(well.Name);
                     }
                 }
             }
+
+            if (wellsInvalids.Count > 0)
+                throw new BadRequestException($"Todos os poços devem ter um teste de poço válido. Poços sem teste ou com teste inválido:", errors: wellsInvalids);
 
             if (production.FieldsFR is not null)
             {
                 foreach (var fieldFR in production.FieldsFR)
                 {
-                    var totalGasPotencial = await _btpRepository.SumFluidTotalPotencialByFieldId(fieldFR.Field.Id, AppropriationUtils.fluidGas);
+                    var btps = await _btpRepository
+                        .GetBtpDatasByFieldId(fieldFR.Field.Id);
 
-                    var totalOilPotencial = await _btpRepository.SumFluidTotalPotencialByFieldId(fieldFR.Field.Id, AppropriationUtils.fluidOil);
+                    var filtredByApplyDateAndFinal = btps
+                        .Where(x => (x.FinalApplicationDate == null && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date)
+                        || (x.FinalApplicationDate != null && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
+                        && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date));
 
-                    var totalWaterPotencial = await _btpRepository.SumFluidTotalPotencialByFieldId(fieldFR.Field.Id, AppropriationUtils.fluidWater);
+                    var totalGasPotencial = filtredByApplyDateAndFinal
+                        .Sum(x => x.PotencialGas);
 
-                    var btps = await _btpRepository.GetBtpDatasByFieldId(fieldFR.Field.Id);
+                    var totalOilPotencial = filtredByApplyDateAndFinal
+                        .Sum(x => x.PotencialOil);
 
+                    var totalWaterPotencial = filtredByApplyDateAndFinal
+                        .Sum(x => x.PotencialWater);
 
-                    foreach (var btp in btps)
+                    foreach (var btp in filtredByApplyDateAndFinal)
                     {
-                        var wellPotencialGasAsPercentageOfField = btp.PotencialGas / totalGasPotencial;
+                        var wellPotencialGasAsPercentageOfField = AppropriationUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialGas, totalGasPotencial);
 
-                        var wellPotencialOilAsPercentageOfField = btp.PotencialOil / totalOilPotencial;
+                        var wellPotencialOilAsPercentageOfField = AppropriationUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialOil, totalOilPotencial);
 
-                        var wellPotencialWaterAsPercentageOfField = btp.PotencialWater / totalWaterPotencial;
-
-                        Console.WriteLine(btp.Well.Name);
+                        var wellPotencialWaterAsPercentageOfField = AppropriationUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialWater, totalWaterPotencial);
 
                         var wellAppropriation = new WellAppropriation
                         {
@@ -101,25 +114,23 @@ namespace PRIO.src.Modules.Measuring.WellAppropriations.Infra.Http.Services
                             ProductionOilAsPercentageOfField = wellPotencialOilAsPercentageOfField,
                             ProductionWaterAsPercentageOfField = wellPotencialWaterAsPercentageOfField,
 
-                            ProductionOilAsPercentageOfInstallation = fieldFR.FROil is not null ? fieldFR.FROil.Value * ((100 - btp.BSW) / 100) * wellPotencialOilAsPercentageOfField : 0,
+                            ProductionOilAsPercentageOfInstallation = fieldFR.FROil is not null ? AppropriationUtils.CalculateWellProductionAsPercentageOfInstallation(wellPotencialOilAsPercentageOfField, fieldFR.FROil.Value, btp.BSW, AppropriationUtils.fluidOil) : 0,
 
-                            ProductionGasAsPercentageOfInstallation = fieldFR.FRGas is not null ? fieldFR.FRGas.Value * wellPotencialGasAsPercentageOfField : 0,
+                            ProductionGasAsPercentageOfInstallation = fieldFR.FRGas is not null ? AppropriationUtils.CalculateWellProductionAsPercentageOfInstallation(wellPotencialGasAsPercentageOfField, fieldFR.FRGas.Value, btp.BSW, AppropriationUtils.fluidGas) : 0,
 
-                            ProductionWaterAsPercentageOfInstallation = fieldFR.FROil is not null ? fieldFR.FROil.Value * (btp.BSW / 100) * wellPotencialWaterAsPercentageOfField : 0, // nsei
+                            ProductionWaterAsPercentageOfInstallation = fieldFR.FROil is not null ? AppropriationUtils.CalculateWellProductionAsPercentageOfInstallation(wellPotencialWaterAsPercentageOfField, fieldFR.FROil.Value, btp.BSW, AppropriationUtils.fluidWater) : 0,
 
-                            ProductionGasInWell = fieldFR.ProductionInField * fieldFR.FRGas.Value * wellPotencialGasAsPercentageOfField,
 
-                            ProductionOilInWell = fieldFR.ProductionInField * fieldFR.FROil.Value * ((100 - btp.BSW) / 100) * wellPotencialOilAsPercentageOfField,
+                            ProductionGasInWell = fieldFR.FRGas is not null ? AppropriationUtils.CalculateWellProduction(fieldFR.ProductionInField, fieldFR.FRGas.Value, btp.BSW, wellPotencialGasAsPercentageOfField, AppropriationUtils.fluidGas) : 0,
 
-                            ProductionWaterInWell = fieldFR.ProductionInField * fieldFR.FROil.Value * (btp.BSW / 100) * wellPotencialWaterAsPercentageOfField,
+                            ProductionOilInWell = fieldFR.FROil is not null ? AppropriationUtils.CalculateWellProduction(fieldFR.ProductionInField, fieldFR.FROil.Value, btp.BSW, wellPotencialOilAsPercentageOfField, AppropriationUtils.fluidOil) : 0,
+
+                            ProductionWaterInWell = fieldFR.FROil is not null ? AppropriationUtils.CalculateWellProduction(fieldFR.ProductionInField, fieldFR.FROil.Value, btp.BSW, wellPotencialWaterAsPercentageOfField, AppropriationUtils.fluidWater) : 0,
 
                         };
 
-
                         await _repository.AddAsync(wellAppropriation);
-
                     }
-
                 }
             }
 
@@ -127,15 +138,10 @@ namespace PRIO.src.Modules.Measuring.WellAppropriations.Infra.Http.Services
             {
 
 
+
             }
 
             await _repository.Save();
-            //    var totalPotencialOilAllWells = 0m;
-            //    var totalPotencialGasAllWells = 0m;
-            //    var totalPotencialWaterAllWells = 0m;
-            //}
-
         }
-
     }
 }
