@@ -6,7 +6,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces
     public interface IBTPRepository
     {
         Task<List<BTP>> GetAllBTPsAsync();
-        Task<decimal> SumFluidTotalPotencialByFieldId(Guid fieldId, string fluid);
         Task<List<BTPData>> GetBtpDatasByFieldId(Guid fieldId);
         Task AddBTPAsync(BTP btp);
         Task<Auxiliary?> GetTypeAsync(string type);

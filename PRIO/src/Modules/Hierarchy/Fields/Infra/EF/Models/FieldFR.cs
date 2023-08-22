@@ -10,6 +10,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models
         public Field Field { get; set; }
         public Production DailyProduction { get; set; }
         public decimal ProductionInField { get; set; }
+        public bool IsManually { get; set; }
     }
 
     public class FRFieldsViewModelNull
