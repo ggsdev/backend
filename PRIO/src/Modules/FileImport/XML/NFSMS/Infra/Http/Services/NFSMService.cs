@@ -741,49 +741,67 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                 var productionInDatabase = await _productionRepository
                     .GetExistingByDate(measurementCorrected.MeasuredAt);
 
-                //if (productionInDatabase is not null && productionInDatabase.StatusProduction.ToLower() != ProductionUtils.closedStatus)
-                //    throw new ConflictException("Produção precisa ter o status'fechado' para ser corrigida");
+                if (productionInDatabase is null)
+                    continue;
+
+                if (productionInDatabase.StatusProduction.ToLower() != ProductionUtils.closedStatus)
+                    throw new ConflictException("Produção precisa ter sido fechada para ser corrigida.");
+
+                var originalTotalOil = productionInDatabase.Oil?.TotalOil ?? 0;
+                var originalTotalGasDiferencial = productionInDatabase.GasDiferencial?.TotalGas ?? 0;
+                var originalTotalGasLinear = productionInDatabase.GasLinear?.TotalGas ?? 0;
 
                 var totalLinear = 0m;
                 var totalOil = 0m;
                 var totalDiferencial = 0m;
 
-                Console.WriteLine(productionInDatabase?.Id);
-                Console.WriteLine(productionInDatabase?.Id);
-                Console.WriteLine(productionInDatabase?.Id);
-
                 foreach (var measurement in productionInDatabase.Measurements)
                 {
-                    if (measurement.MeasuringPoint.TagPointMeasuring == nfsmInDatabase.MeasuringPoint.TagPointMeasuring && measurement.DHA_INICIO_PERIODO_MEDICAO_002 is not null)
+                    if (measurement.DHA_INICIO_PERIODO_MEDICAO_003 is not null)
                     {
-                        measurement.MED_CORRIGIDO_MVMDO_002 = measurementCorrected.VolumeAfter;
+                        if (measurement.MeasuringPoint.TagPointMeasuring == nfsmInDatabase.MeasuringPoint.TagPointMeasuring)
+                        {
+                            measurement.MED_CORRIGIDO_MVMDO_003 = measurementCorrected.VolumeAfter;
 
-                        totalLinear += measurementCorrected.VolumeAfter ?? 0;
+                            _measurementRepository.UpdateMeasurement(measurement);
+                        }
 
-                        //_measurementRepository.UpdateMeasurement(measurement);
+                        if (measurement.MED_CORRIGIDO_MVMDO_003 is not null)
+                        {
+                            totalDiferencial += measurement.MED_CORRIGIDO_MVMDO_003.Value;
+                        }
                     }
 
-                    if (measurement.MeasuringPoint.TagPointMeasuring == nfsmInDatabase.MeasuringPoint.TagPointMeasuring && measurement.DHA_INICIO_PERIODO_MEDICAO_003 is not null)
+                    if (measurement.DHA_INICIO_PERIODO_MEDICAO_002 is not null)
                     {
-                        measurement.MED_CORRIGIDO_MVMDO_003 = measurementCorrected.VolumeAfter;
+                        if (measurement.MeasuringPoint.TagPointMeasuring == nfsmInDatabase.MeasuringPoint.TagPointMeasuring)
+                        {
+                            measurement.MED_CORRIGIDO_MVMDO_002 = measurementCorrected.VolumeAfter;
 
-                        totalDiferencial += measurementCorrected.VolumeAfter ?? 0;
+                            _measurementRepository.UpdateMeasurement(measurement);
+                        }
 
-                        //_measurementRepository.UpdateMeasurement(measurement);
+                        if (measurement.MED_CORRIGIDO_MVMDO_002 is not null)
+                        {
+                            totalLinear += measurement.MED_CORRIGIDO_MVMDO_002.Value;
+                        }
                     }
 
-                    if (measurement.MeasuringPoint.TagPointMeasuring == nfsmInDatabase.MeasuringPoint.TagPointMeasuring && measurement.DHA_INICIO_PERIODO_MEDICAO_001 is not null)
+                    if (measurement.DHA_INICIO_PERIODO_MEDICAO_001 is not null)
                     {
-                        measurement.MED_VOLUME_LIQUIDO_MVMDO_001 = measurementCorrected.VolumeAfter;
+                        if (measurement.MeasuringPoint.TagPointMeasuring == nfsmInDatabase.MeasuringPoint.TagPointMeasuring)
+                        {
+                            measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001 = measurementCorrected.VolumeAfter;
 
-                        totalOil += measurementCorrected.VolumeAfter ?? 0;
+                            _measurementRepository.UpdateMeasurement(measurement);
+                        }
 
-                        //_measurementRepository.UpdateMeasurement(measurement);
+                        if (measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001 is not null)
+                        {
+                            totalOil += measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001.Value;
+                        }
                     }
-
                 }
-
-                productionInDatabase.TotalProduction = totalDiferencial + totalLinear + totalOil;
 
                 if (productionInDatabase.Oil is not null)
                     productionInDatabase.Oil.TotalOil = totalOil;
@@ -794,13 +812,18 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                 if (productionInDatabase.GasLinear is not null)
                     productionInDatabase.GasLinear.TotalGas = totalLinear;
 
-                productionInDatabase.StatusProduction = ProductionUtils.fixedStatus;
+                productionInDatabase.TotalProduction = (productionInDatabase.Oil?.TotalOil ?? 0) +
+                                         (productionInDatabase.GasDiferencial?.TotalGas ?? 0) +
+                                         (productionInDatabase.GasLinear?.TotalGas ?? 0);
 
-                _productionRepository.Update(productionInDatabase);
-
+                if (originalTotalOil != totalOil || originalTotalGasDiferencial != totalDiferencial || originalTotalGasLinear != totalLinear)
+                {
+                    productionInDatabase.StatusProduction = ProductionUtils.fixedStatus;
+                    _productionRepository.Update(productionInDatabase);
+                }
             }
 
-            //await _repository.SaveChangesAsync();
+            await _repository.SaveChangesAsync();
 
             return new NFSMImportResponseDto { Id = id, Status = "Success", Message = "Produções corrigida(s)." };
         }
