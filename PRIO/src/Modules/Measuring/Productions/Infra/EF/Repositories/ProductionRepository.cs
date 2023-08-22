@@ -22,6 +22,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
         {
             await _context.Productions.AddAsync(production);
         }
+        public async Task AddFieldProduction(FieldProduction fieldProduction)
+        {
+            await _context.FieldsProductions.AddAsync(fieldProduction);
+        }
         public async Task<Production?> GetProductionGasByDate(DateTime date)
         {
             return await _context.Productions

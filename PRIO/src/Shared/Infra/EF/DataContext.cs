@@ -137,6 +137,7 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<NFSM> NFSMs { get; set; }
         public DbSet<NFSMHistory> NFSMImportHistories { get; set; }
         public DbSet<WellAppropriation> WellAppropriations { get; set; }
+        public DbSet<FieldProduction> FieldsProductions { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -253,6 +254,7 @@ namespace PRIO.src.Shared.Infra.EF
             modelBuilder.ApplyConfiguration(new UserOperationMap());
             modelBuilder.ApplyConfiguration(new CommentMap());
             modelBuilder.ApplyConfiguration(new WellAppropriationMap());
+            modelBuilder.ApplyConfiguration(new FieldProductionMap());
 
             #region Measurement & Relations
             modelBuilder.ApplyConfiguration(new SectionMap());

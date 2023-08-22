@@ -18,7 +18,19 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Mappings
                .HasColumnType("decimal")
                .HasPrecision(4, 2);
 
-            builder.Property(x => x.ProductionInField)
+            builder.Property(x => x.TotalProductionInField)
+               .HasColumnType("decimal")
+               .HasPrecision(10, 5);
+
+            builder.Property(x => x.GasProductionInField)
+               .HasColumnType("decimal")
+               .HasPrecision(10, 5);
+
+            builder.Property(x => x.OilProductionInField)
+               .HasColumnType("decimal")
+               .HasPrecision(10, 5);
+
+            builder.Property(x => x.ProductionInFieldAsPercentage)
                .HasColumnType("decimal")
                .HasPrecision(10, 5);
 
