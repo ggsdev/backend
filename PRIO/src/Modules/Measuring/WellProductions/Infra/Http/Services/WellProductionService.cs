@@ -75,7 +75,8 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
             //if (wellsInvalids.Count > 0)
             //    throw new BadRequestException($"Todos os poços devem ter um teste de poço válido. Poços sem teste ou com teste inválido:", errors: wellsInvalids);
 
-            if (production.FieldsFR is not null)
+
+            if (production.FieldsFR is not null && production.FieldsFR.Count > 0)
             {
                 foreach (var fieldFR in production.FieldsFR)
                 {
@@ -106,7 +107,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         FieldId = fieldFR.Field.Id,
                         ProductionId = production.Id,
                     } : null;
-
                     foreach (var btp in filtredByApplyDateAndFinal)
                     {
                         var wellPotencialGasAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialGas, totalGasPotencial);
@@ -138,11 +138,11 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                             ProductionWaterAsPercentageOfInstallation = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProductionAsPercentageOfInstallation(wellPotencialWaterAsPercentageOfField, fieldFR.FROil.Value, btp.BSW, WellProductionUtils.fluidWater) : 0,
 
 
-                            ProductionGasInWell = fieldFR.FRGas is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.GasProductionInField, fieldFR.FRGas.Value, btp.BSW, wellPotencialGasAsPercentageOfField, WellProductionUtils.fluidGas) : 0,
+                            ProductionGasInWell = fieldFR.FRGas is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.GasProductionInField, btp.BSW, wellPotencialGasAsPercentageOfField, WellProductionUtils.fluidGas) : 0,
 
-                            ProductionOilInWell = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.OilProductionInField, fieldFR.FROil.Value, btp.BSW, wellPotencialOilAsPercentageOfField, WellProductionUtils.fluidOil) : 0,
+                            ProductionOilInWell = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.OilProductionInField, btp.BSW, wellPotencialOilAsPercentageOfField, WellProductionUtils.fluidOil) : 0,
 
-                            ProductionWaterInWell = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.OilProductionInField, fieldFR.FROil.Value, btp.BSW, wellPotencialWaterAsPercentageOfField, WellProductionUtils.fluidWater) : 0,
+                            ProductionWaterInWell = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.OilProductionInField, btp.BSW, wellPotencialWaterAsPercentageOfField, WellProductionUtils.fluidWater) : 0,
 
                         };
 
@@ -199,7 +199,120 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
             else
             {
+                var totalGasPotencialInstallation = 0m;
+                var totalOilPotencialInstallation = 0m;
+                var totalWaterPotencialInstallation = 0m;
 
+                foreach (var installation in installations)
+                {
+
+                    foreach (var field in installation.Fields)
+                    {
+                        var btps = await _btpRepository
+                            .GetBtpDatasByFieldId(field.Id);
+
+                        var filtredByApplyDateAndFinal = btps
+                            .Where(x => (x.FinalApplicationDate == null && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date)
+                            || (x.FinalApplicationDate != null && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
+                            && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date));
+
+                        var totalGasPotencial = filtredByApplyDateAndFinal
+                            .Sum(x => x.PotencialGas);
+
+                        var totalOilPotencial = filtredByApplyDateAndFinal
+                            .Sum(x => x.PotencialOil);
+
+                        var totalWaterPotencial = filtredByApplyDateAndFinal
+                            .Sum(x => x.PotencialWater);
+
+                        totalGasPotencialInstallation += totalGasPotencial;
+                        totalOilPotencialInstallation += totalOilPotencial;
+                        totalWaterPotencialInstallation += totalWaterPotencial;
+                    }
+
+                    Console.WriteLine("oil inst" + totalOilPotencialInstallation);
+                    Console.WriteLine("gas inst" + totalGasPotencialInstallation);
+                    Console.WriteLine("water inst" + totalWaterPotencialInstallation);
+
+                    foreach (var field in installation.Fields)
+                    {
+                        var btps = await _btpRepository
+                            .GetBtpDatasByFieldId(field.Id);
+
+                        var filtredByApplyDateAndFinal = btps
+                            .Where(x => (x.FinalApplicationDate == null && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date)
+                            || (x.FinalApplicationDate != null && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
+                            && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date));
+
+                        var totalGasPotencial = filtredByApplyDateAndFinal
+                            .Sum(x => x.PotencialGas);
+
+                        var totalOilPotencial = filtredByApplyDateAndFinal
+                            .Sum(x => x.PotencialOil);
+
+                        var totalWaterPotencial = filtredByApplyDateAndFinal
+                            .Sum(x => x.PotencialWater);
+
+                        var totalGas = 0m;
+                        var totalOil = 0m;
+                        var totalWater = 0m;
+
+                        FieldProduction? fieldProduction = filtredByApplyDateAndFinal.Count() > 0 ? new()
+                        {
+                            Id = Guid.NewGuid(),
+                        } : null;
+
+                        foreach (var btp in filtredByApplyDateAndFinal)
+                        {
+                            var wellPotencialGasAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialGas, totalGasPotencial);
+
+                            var wellPotencialOilAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialOil, totalOilPotencial);
+
+                            var wellPotencialWaterAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialWater, totalWaterPotencial);
+
+                            var wellAppropriation = new WellProduction
+                            {
+
+                                Id = Guid.NewGuid(),
+
+                                BtpData = btp,
+                                Production = production,
+
+                                ProductionGasAsPercentageOfField = wellPotencialGasAsPercentageOfField,
+                                ProductionOilAsPercentageOfField = wellPotencialOilAsPercentageOfField,
+                                ProductionWaterAsPercentageOfField = wellPotencialWaterAsPercentageOfField,
+
+                                WellId = btp.Well.Id,
+                                FieldProduction = fieldProduction,
+
+                                ProductionGasAsPercentageOfInstallation = btp.PotencialGas / totalGasPotencialInstallation,
+                                ProductionOilAsPercentageOfInstallation = btp.PotencialOil / totalOilPotencialInstallation,
+                                ProductionWaterAsPercentageOfInstallation = btp.PotencialWater / totalWaterPotencialInstallation,
+
+                                ProductionGasInWell = btp.PotencialGas / totalGasPotencialInstallation * ((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas : 0)),
+                                ProductionOilInWell = (btp.PotencialOil / totalOilPotencialInstallation * (100 - btp.BSW) / 100) * (production.Oil is not null ? production.Oil.TotalOil : 0),
+                                ProductionWaterInWell = (btp.PotencialWater / totalWaterPotencialInstallation * (btp.BSW / 100)) * (production.Oil is not null ? production.Oil.TotalOil : 0),
+                            };
+
+                            totalWater += wellAppropriation.ProductionWaterInWell;
+                            totalOil += wellAppropriation.ProductionOilInWell;
+                            totalGas += wellAppropriation.ProductionGasInWell;
+
+                            await _repository.AddAsync(wellAppropriation);
+                        }
+
+                        if (fieldProduction is not null)
+                        {
+                            fieldProduction.WaterProductionInField = totalWater;
+                            fieldProduction.GasProductionInField = totalGas;
+                            fieldProduction.OilProductionInField = totalOil;
+                            fieldProduction.FieldId = field.Id;
+                            fieldProduction.ProductionId = production.Id;
+
+                            await _productionRepository.AddFieldProduction(fieldProduction);
+                        }
+                    }
+                }
 
             }
 
