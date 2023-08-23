@@ -277,9 +277,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         totalWaterPotencialInstallation += totalWaterPotencial;
                     }
 
-                    Console.WriteLine("oil inst" + totalOilPotencialInstallation);
-                    Console.WriteLine("gas inst" + totalGasPotencialInstallation);
-                    Console.WriteLine("water inst" + totalWaterPotencialInstallation);
 
                     foreach (var field in installation.Fields)
                     {
