@@ -252,7 +252,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                 foreach (var installation in installations)
                 {
-
                     foreach (var field in installation.Fields)
                     {
                         var btps = await _btpRepository
@@ -277,6 +276,10 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         totalWaterPotencialInstallation += totalWaterPotencial;
                     }
 
+                }
+
+                foreach (var installation in installations)
+                {
 
                     foreach (var field in installation.Fields)
                     {
@@ -306,8 +309,10 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                             Id = Guid.NewGuid(),
                         } : null;
 
+
                         foreach (var btp in filtredByApplyDateAndFinal)
                         {
+
                             var wellPotencialGasAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialGas, totalGasPotencial);
 
                             var wellPotencialOilAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialOil, totalOilPotencial);
@@ -333,9 +338,9 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                                 ProductionOilAsPercentageOfInstallation = btp.PotencialOil / totalOilPotencialInstallation,
                                 ProductionWaterAsPercentageOfInstallation = btp.PotencialWater / totalWaterPotencialInstallation,
 
-                                ProductionGasInWell = btp.PotencialGas / totalGasPotencialInstallation * ((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas : 0)),
-                                ProductionOilInWell = (btp.PotencialOil / totalOilPotencialInstallation * (100 - btp.BSW) / 100) * (production.Oil is not null ? production.Oil.TotalOil : 0),
-                                ProductionWaterInWell = (btp.PotencialWater / totalWaterPotencialInstallation * (btp.BSW / 100)) * (production.Oil is not null ? production.Oil.TotalOil : 0),
+                                ProductionGasInWell = (btp.PotencialGas / totalGasPotencialInstallation) * ((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas : 0)),
+                                ProductionOilInWell = (btp.PotencialOil / totalOilPotencialInstallation) * (production.Oil is not null ? production.Oil.TotalOil * ((100 - btp.BSW) / 100) : 0),
+                                ProductionWaterInWell = (btp.PotencialWater / totalWaterPotencialInstallation) * (production.Oil is not null ? production.Oil.TotalOil * (btp.BSW / 100) : 0),
                             };
 
                             totalWater += wellAppropriation.ProductionWaterInWell;
