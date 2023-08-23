@@ -1,9 +1,9 @@
 ﻿using PRIO.src.Modules.FileImport.XLSX.BTPS.Dtos;
 using PRIO.src.Modules.Measuring.Productions.Dtos;
 
-namespace PRIO.src.Modules.Measuring.WellAppropriations.Infra.Dtos
+namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Dtos
 {
-    public class CreateWellAppropriationDto
+    public class CreateWellProductionDto
     {
         public Guid Id { get; set; }
         public decimal ProductionInWell { get; set; }

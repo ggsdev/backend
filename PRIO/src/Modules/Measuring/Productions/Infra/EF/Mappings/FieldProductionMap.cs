@@ -22,6 +22,14 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Mappings
                 .HasColumnType("DECIMAL")
                 .HasPrecision(10, 5);
 
+            builder.Property(x => x.FieldId)
+                .HasColumnType("uniqueidentifier")
+                .IsRequired();
+
+            builder.Property(x => x.ProductionId)
+                .HasColumnType("uniqueidentifier")
+                .IsRequired();
+
         }
     }
 }

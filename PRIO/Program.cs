@@ -64,9 +64,9 @@ using PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.Productions.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Productions.Interfaces;
-using PRIO.src.Modules.Measuring.WellAppropriations.Infra.EF.Repositories;
-using PRIO.src.Modules.Measuring.WellAppropriations.Infra.Http.Services;
-using PRIO.src.Modules.Measuring.WellAppropriations.Interfaces;
+using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Repositories;
+using PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services;
+using PRIO.src.Modules.Measuring.WellProductions.Interfaces;
 using PRIO.src.Shared.Auxiliaries.Infra.Http.Services;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
@@ -233,7 +233,7 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddScoped<ProductionService>();
     services.AddScoped<FieldFRService>();
     services.AddScoped<NFSMService>();
-    services.AddScoped<WellAppropriationService>();
+    services.AddScoped<WellProductionService>();
 
 
     #endregion

@@ -3,15 +3,15 @@ using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Productions.Interfaces;
-using PRIO.src.Modules.Measuring.WellAppropriations.Infra.EF.Models;
-using PRIO.src.Modules.Measuring.WellAppropriations.Infra.Utils;
-using PRIO.src.Modules.Measuring.WellAppropriations.Infra.ViewModels;
-using PRIO.src.Modules.Measuring.WellAppropriations.Interfaces;
+using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.WellProductions.Infra.Utils;
+using PRIO.src.Modules.Measuring.WellProductions.Infra.ViewModels;
+using PRIO.src.Modules.Measuring.WellProductions.Interfaces;
 using PRIO.src.Shared.Errors;
 
-namespace PRIO.src.Modules.Measuring.WellAppropriations.Infra.Http.Services
+namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 {
-    public class WellAppropriationService
+    public class WellProductionService
     {
         private readonly IWellAppropriationRepository _repository;
         private readonly IProductionRepository _productionRepository;
@@ -19,7 +19,7 @@ namespace PRIO.src.Modules.Measuring.WellAppropriations.Infra.Http.Services
         private readonly IInstallationRepository _installationRepository;
         private readonly IMapper _mapper;
 
-        public WellAppropriationService(IWellAppropriationRepository repository, IMapper mapper, IProductionRepository productionRepository, IInstallationRepository installationRepository, IBTPRepository bTPRepository)
+        public WellProductionService(IWellAppropriationRepository repository, IMapper mapper, IProductionRepository productionRepository, IInstallationRepository installationRepository, IBTPRepository bTPRepository)
         {
             _repository = repository;
             _mapper = mapper;
@@ -28,7 +28,7 @@ namespace PRIO.src.Modules.Measuring.WellAppropriations.Infra.Http.Services
             _btpRepository = bTPRepository;
         }
 
-        public async Task CreateAppropriation(WellAppropriationViewModel body)
+        public async Task CreateAppropriation(WellProductionViewModel body)
         {
             var production = await _productionRepository
                 .GetById(body.ProductionId);
@@ -98,21 +98,22 @@ namespace PRIO.src.Modules.Measuring.WellAppropriations.Infra.Http.Services
                     var totalWaterPotencial = filtredByApplyDateAndFinal
                         .Sum(x => x.PotencialWater);
 
-                    FieldProduction? fieldProduction = filtredByApplyDateAndFinal.Count() > 0 ? new FieldProduction
+                    FieldProduction? fieldProduction = filtredByApplyDateAndFinal.Count() > 0 ? new()
                     {
                         Id = Guid.NewGuid(),
+                        FieldId = fieldFR.Field.Id,
+                        ProductionId = production.Id,
                     } : null;
 
                     foreach (var btp in filtredByApplyDateAndFinal)
                     {
+                        var wellPotencialGasAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialGas, totalGasPotencial);
 
-                        var wellPotencialGasAsPercentageOfField = AppropriationUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialGas, totalGasPotencial);
+                        var wellPotencialOilAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialOil, totalOilPotencial);
 
-                        var wellPotencialOilAsPercentageOfField = AppropriationUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialOil, totalOilPotencial);
+                        var wellPotencialWaterAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialWater, totalWaterPotencial);
 
-                        var wellPotencialWaterAsPercentageOfField = AppropriationUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialWater, totalWaterPotencial);
-
-                        var wellAppropriation = new WellAppropriation
+                        var wellAppropriation = new WellProduction
                         {
                             Id = Guid.NewGuid(),
 
@@ -124,20 +125,22 @@ namespace PRIO.src.Modules.Measuring.WellAppropriations.Infra.Http.Services
                             ProductionOilAsPercentageOfField = wellPotencialOilAsPercentageOfField,
                             ProductionWaterAsPercentageOfField = wellPotencialWaterAsPercentageOfField,
 
+                            WellId = btp.Well.Id,
+
                             FieldProduction = fieldProduction,
 
-                            ProductionOilAsPercentageOfInstallation = fieldFR.FROil is not null ? AppropriationUtils.CalculateWellProductionAsPercentageOfInstallation(wellPotencialOilAsPercentageOfField, fieldFR.FROil.Value, btp.BSW, AppropriationUtils.fluidOil) : 0,
+                            ProductionOilAsPercentageOfInstallation = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProductionAsPercentageOfInstallation(wellPotencialOilAsPercentageOfField, fieldFR.FROil.Value, btp.BSW, WellProductionUtils.fluidOil) : 0,
 
-                            ProductionGasAsPercentageOfInstallation = fieldFR.FRGas is not null ? AppropriationUtils.CalculateWellProductionAsPercentageOfInstallation(wellPotencialGasAsPercentageOfField, fieldFR.FRGas.Value, btp.BSW, AppropriationUtils.fluidGas) : 0,
+                            ProductionGasAsPercentageOfInstallation = fieldFR.FRGas is not null ? WellProductionUtils.CalculateWellProductionAsPercentageOfInstallation(wellPotencialGasAsPercentageOfField, fieldFR.FRGas.Value, btp.BSW, WellProductionUtils.fluidGas) : 0,
 
-                            ProductionWaterAsPercentageOfInstallation = fieldFR.FROil is not null ? AppropriationUtils.CalculateWellProductionAsPercentageOfInstallation(wellPotencialWaterAsPercentageOfField, fieldFR.FROil.Value, btp.BSW, AppropriationUtils.fluidWater) : 0,
+                            ProductionWaterAsPercentageOfInstallation = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProductionAsPercentageOfInstallation(wellPotencialWaterAsPercentageOfField, fieldFR.FROil.Value, btp.BSW, WellProductionUtils.fluidWater) : 0,
 
 
-                            ProductionGasInWell = fieldFR.FRGas is not null ? AppropriationUtils.CalculateWellProduction(fieldFR.GasProductionInField, fieldFR.FRGas.Value, btp.BSW, wellPotencialGasAsPercentageOfField, AppropriationUtils.fluidGas) : 0,
+                            ProductionGasInWell = fieldFR.FRGas is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.GasProductionInField, fieldFR.FRGas.Value, btp.BSW, wellPotencialGasAsPercentageOfField, WellProductionUtils.fluidGas) : 0,
 
-                            ProductionOilInWell = fieldFR.FROil is not null ? AppropriationUtils.CalculateWellProduction(fieldFR.OilProductionInField, fieldFR.FROil.Value, btp.BSW, wellPotencialOilAsPercentageOfField, AppropriationUtils.fluidOil) : 0,
+                            ProductionOilInWell = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.OilProductionInField, fieldFR.FROil.Value, btp.BSW, wellPotencialOilAsPercentageOfField, WellProductionUtils.fluidOil) : 0,
 
-                            ProductionWaterInWell = fieldFR.FROil is not null ? AppropriationUtils.CalculateWellProduction(fieldFR.OilProductionInField, fieldFR.FROil.Value, btp.BSW, wellPotencialWaterAsPercentageOfField, AppropriationUtils.fluidWater) : 0,
+                            ProductionWaterInWell = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.OilProductionInField, fieldFR.FROil.Value, btp.BSW, wellPotencialWaterAsPercentageOfField, WellProductionUtils.fluidWater) : 0,
 
                         };
 
@@ -156,13 +159,11 @@ namespace PRIO.src.Modules.Measuring.WellAppropriations.Infra.Http.Services
 
                         await _productionRepository.AddFieldProduction(fieldProduction);
                     }
-
                 }
             }
 
             else
             {
-
 
 
             }

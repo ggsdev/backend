@@ -2,9 +2,9 @@
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF.Models;
 
-namespace PRIO.src.Modules.Measuring.WellAppropriations.Infra.EF.Models
+namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models
 {
-    public class WellAppropriation : BaseModel
+    public class WellProduction : BaseModel
     {
         public decimal ProductionGasInWell { get; set; }
         public decimal ProductionWaterInWell { get; set; }
@@ -15,6 +15,7 @@ namespace PRIO.src.Modules.Measuring.WellAppropriations.Infra.EF.Models
         public decimal ProductionGasAsPercentageOfInstallation { get; set; }
         public decimal ProductionOilAsPercentageOfInstallation { get; set; }
         public decimal ProductionWaterAsPercentageOfInstallation { get; set; }
+        public Guid WellId { get; set; }
         public BTPData BtpData { get; set; }
         public Production Production { get; set; }
 

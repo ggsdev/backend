@@ -4,7 +4,7 @@ using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Comments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
-using PRIO.src.Modules.Measuring.WellAppropriations.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Models
@@ -29,6 +29,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Models
         public CommentInProduction? Comment { get; set; }
         public List<FieldFR>? FieldsFR { get; set; }
         public List<NFSMsProductions>? NFSMs { get; set; }
-        public List<WellAppropriation>? WellAppropriations { get; set; }
+        public List<WellProduction>? WellAppropriations { get; set; }
     }
 }

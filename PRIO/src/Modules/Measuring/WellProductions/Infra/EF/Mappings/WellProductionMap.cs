@@ -1,14 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PRIO.src.Modules.Measuring.WellAppropriations.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models;
 
-namespace PRIO.src.Modules.Measuring.WellAppropriations.Infra.EF.Mappings
+namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Mappings
 {
-    public class WellAppropriationMap : IEntityTypeConfiguration<WellAppropriation>
+    public class WellProductionMap : IEntityTypeConfiguration<WellProduction>
     {
-        public void Configure(EntityTypeBuilder<WellAppropriation> builder)
+        public void Configure(EntityTypeBuilder<WellProduction> builder)
         {
-            builder.ToTable("WellAppropriations");
+            builder.ToTable("WellProductions");
 
             builder.Property(x => x.ProductionGasAsPercentageOfField)
                 .HasColumnType("DECIMAL")

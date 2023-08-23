@@ -1,6 +1,6 @@
-﻿namespace PRIO.src.Modules.Measuring.WellAppropriations.Infra.Utils
+﻿namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Utils
 {
-    public static class AppropriationUtils
+    public static class WellProductionUtils
     {
         public static readonly string fluidOil = "oil";
         public static readonly string fluidGas = "gas";
