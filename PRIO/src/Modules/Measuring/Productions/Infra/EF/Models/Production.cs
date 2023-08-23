@@ -29,6 +29,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Models
         public CommentInProduction? Comment { get; set; }
         public List<FieldFR>? FieldsFR { get; set; }
         public List<NFSMsProductions>? NFSMs { get; set; }
-        public List<WellProduction>? WellAppropriations { get; set; }
+        public List<WellProduction>? WellProductions { get; set; }
     }
 }

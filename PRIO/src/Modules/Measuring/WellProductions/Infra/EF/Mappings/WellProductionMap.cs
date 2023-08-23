@@ -47,7 +47,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Mappings
                .HasPrecision(10, 5);
 
             builder.HasOne(x => x.Production)
-                .WithMany(x => x.WellAppropriations)
+                .WithMany(x => x.WellProductions)
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 

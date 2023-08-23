@@ -36,7 +36,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
             if (production is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Production>());
 
-            if (production.WellAppropriations is not null && production.WellAppropriations.Count > 0)
+            if (production.WellProductions is not null && production.WellProductions.Count > 0)
                 throw new ConflictException("Apropriação já foi feita");
 
             var installations = await _installationRepository
