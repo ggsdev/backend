@@ -26,7 +26,7 @@
             }
         }
 
-        public static decimal CalculateWellProduction(decimal productionInField, decimal frFactor, decimal bsw, decimal potencial, string fluidType)
+        public static decimal CalculateWellProduction(decimal productionInField, decimal bsw, decimal potencial, string fluidType)
         {
             switch (fluidType.ToLower())
             {
