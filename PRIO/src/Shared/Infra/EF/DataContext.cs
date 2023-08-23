@@ -138,6 +138,9 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<NFSMHistory> NFSMImportHistories { get; set; }
         public DbSet<WellProduction> WellProductions { get; set; }
         public DbSet<FieldProduction> FieldsProductions { get; set; }
+        public DbSet<CompletionProduction> CompletionProductions { get; set; }
+        public DbSet<ReservoirProduction> ReservoirProductions { get; set; }
+        public DbSet<ZoneProduction> ZoneProductions { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -253,8 +256,14 @@ namespace PRIO.src.Shared.Infra.EF
             modelBuilder.ApplyConfiguration(new GroupPermissionMap());
             modelBuilder.ApplyConfiguration(new UserOperationMap());
             modelBuilder.ApplyConfiguration(new CommentMap());
-            modelBuilder.ApplyConfiguration(new WellProductionMap());
+
+            #region Production
             modelBuilder.ApplyConfiguration(new FieldProductionMap());
+            modelBuilder.ApplyConfiguration(new WellProductionMap());
+            modelBuilder.ApplyConfiguration(new CompletionProductionMap());
+            modelBuilder.ApplyConfiguration(new ReservoirProductionMap());
+            modelBuilder.ApplyConfiguration(new ZoneProductionMap());
+            #endregion
 
             #region Measurement & Relations
             modelBuilder.ApplyConfiguration(new SectionMap());

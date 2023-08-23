@@ -574,8 +574,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 throw new ConflictException("Dados diferentes da importação");
             }
 
-
-
             var content = new BTPBase64
             {
                 Id = body.Validate.ContentId,

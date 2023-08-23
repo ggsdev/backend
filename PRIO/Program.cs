@@ -217,7 +217,7 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddScoped<IUserOperationRepository, UserOperationRepository>();
     services.AddScoped<IGlobalOperationsRepository, GlobalOperationsRepository>();
     services.AddScoped<ICommentRepository, CommentRepository>();
-    services.AddScoped<IWellAppropriationRepository, WellAppropriationRepository>();
+    services.AddScoped<IWellProductionRepository, WellProductionRepository>();
     #endregion
 
     #region Control Access Services
