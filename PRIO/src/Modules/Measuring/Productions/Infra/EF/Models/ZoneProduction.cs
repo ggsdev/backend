@@ -1,6 +1,8 @@
-﻿namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Models
+﻿using PRIO.src.Shared.Infra.EF.Models;
+
+namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Models
 {
-    public class ZoneProduction
+    public class ZoneProduction : BaseModel
     {
         public Guid ProductionId { get; set; }
         public Guid ZoneId { get; set; }
