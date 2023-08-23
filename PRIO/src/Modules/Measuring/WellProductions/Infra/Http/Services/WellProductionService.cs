@@ -75,7 +75,8 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
             //if (wellsInvalids.Count > 0)
             //    throw new BadRequestException($"Todos os poços devem ter um teste de poço válido. Poços sem teste ou com teste inválido:", errors: wellsInvalids);
 
-            if (production.FieldsFR is not null)
+
+            if (production.FieldsFR is not null && production.FieldsFR.Count > 0)
             {
                 foreach (var fieldFR in production.FieldsFR)
                 {
@@ -106,7 +107,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         FieldId = fieldFR.Field.Id,
                         ProductionId = production.Id,
                     } : null;
-
                     foreach (var btp in filtredByApplyDateAndFinal)
                     {
                         var wellPotencialGasAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialGas, totalGasPotencial);
@@ -138,11 +138,11 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                             ProductionWaterAsPercentageOfInstallation = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProductionAsPercentageOfInstallation(wellPotencialWaterAsPercentageOfField, fieldFR.FROil.Value, btp.BSW, WellProductionUtils.fluidWater) : 0,
 
 
-                            ProductionGasInWell = fieldFR.FRGas is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.GasProductionInField, fieldFR.FRGas.Value, btp.BSW, wellPotencialGasAsPercentageOfField, WellProductionUtils.fluidGas) : 0,
+                            ProductionGasInWell = fieldFR.FRGas is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.GasProductionInField, btp.BSW, wellPotencialGasAsPercentageOfField, WellProductionUtils.fluidGas) : 0,
 
-                            ProductionOilInWell = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.OilProductionInField, fieldFR.FROil.Value, btp.BSW, wellPotencialOilAsPercentageOfField, WellProductionUtils.fluidOil) : 0,
+                            ProductionOilInWell = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.OilProductionInField, btp.BSW, wellPotencialOilAsPercentageOfField, WellProductionUtils.fluidOil) : 0,
 
-                            ProductionWaterInWell = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.OilProductionInField, fieldFR.FROil.Value, btp.BSW, wellPotencialWaterAsPercentageOfField, WellProductionUtils.fluidWater) : 0,
+                            ProductionWaterInWell = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.OilProductionInField, btp.BSW, wellPotencialWaterAsPercentageOfField, WellProductionUtils.fluidWater) : 0,
 
                         };
 
@@ -199,11 +199,12 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
             else
             {
+                var totalGasPotencialInstallation = 0m;
+                var totalOilPotencialInstallation = 0m;
+                var totalWaterPotencialInstallation = 0m;
+
                 foreach (var installation in installations)
                 {
-                    var totalGasPotencialInstallation = 0m;
-                    var totalOilPotencialInstallation = 0m;
-                    var totalWaterPotencialInstallation = 0m;
 
                     foreach (var field in installation.Fields)
                     {
@@ -229,6 +230,9 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         totalWaterPotencialInstallation += totalWaterPotencial;
                     }
 
+                    Console.WriteLine("oil inst" + totalOilPotencialInstallation);
+                    Console.WriteLine("gas inst" + totalGasPotencialInstallation);
+                    Console.WriteLine("water inst" + totalWaterPotencialInstallation);
 
                     foreach (var field in installation.Fields)
                     {
@@ -256,8 +260,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         FieldProduction? fieldProduction = filtredByApplyDateAndFinal.Count() > 0 ? new()
                         {
                             Id = Guid.NewGuid(),
-                            FieldId = field.Id,
-                            ProductionId = production.Id,
                         } : null;
 
                         foreach (var btp in filtredByApplyDateAndFinal)
@@ -268,16 +270,12 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                             var wellPotencialWaterAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialWater, totalWaterPotencial);
 
-                            Console.WriteLine("oil poço:" + btp.PotencialOil / (production.Oil is not null ? production.Oil.TotalOil : 1));
-                            Console.WriteLine("gas poço:" + btp.PotencialGas / (production.Gas is not null ? production.Gas.OthersBurn : 1));
-                            Console.WriteLine("water poço:" + btp.PotencialWater / (production.Oil is not null ? production.Oil.TotalOil : 1));
-
                             var wellAppropriation = new WellProduction
                             {
+
                                 Id = Guid.NewGuid(),
 
                                 BtpData = btp,
-
                                 Production = production,
 
                                 ProductionGasAsPercentageOfField = wellPotencialGasAsPercentageOfField,
@@ -291,9 +289,9 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                                 ProductionOilAsPercentageOfInstallation = btp.PotencialOil / totalOilPotencialInstallation,
                                 ProductionWaterAsPercentageOfInstallation = btp.PotencialWater / totalWaterPotencialInstallation,
 
-                                ProductionGasInWell = 0,
-                                ProductionOilInWell = 0,
-                                ProductionWaterInWell = 0,
+                                ProductionGasInWell = btp.PotencialGas / totalGasPotencialInstallation * ((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas : 0)),
+                                ProductionOilInWell = (btp.PotencialOil / totalOilPotencialInstallation * (100 - btp.BSW) / 100) * (production.Oil is not null ? production.Oil.TotalOil : 0),
+                                ProductionWaterInWell = (btp.PotencialWater / totalWaterPotencialInstallation * (btp.BSW / 100)) * (production.Oil is not null ? production.Oil.TotalOil : 0),
                             };
 
                             totalWater += wellAppropriation.ProductionWaterInWell;
@@ -308,6 +306,8 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                             fieldProduction.WaterProductionInField = totalWater;
                             fieldProduction.GasProductionInField = totalGas;
                             fieldProduction.OilProductionInField = totalOil;
+                            fieldProduction.FieldId = field.Id;
+                            fieldProduction.ProductionId = production.Id;
 
                             await _productionRepository.AddFieldProduction(fieldProduction);
                         }
@@ -316,7 +316,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
             }
 
-            //await _repository.Save();
+            await _repository.Save();
         }
     }
 }

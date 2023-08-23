@@ -31,13 +31,13 @@
             switch (fluidType.ToLower())
             {
                 case "oil":
-                    return productionInField * frFactor * ((100 - bsw) / 100);
+                    return productionInField * ((100 - bsw) / 100) * potencial;
 
                 case "gas":
-                    return productionInField * frFactor;
+                    return productionInField * potencial;
 
                 case "water":
-                    return productionInField * frFactor * (bsw / 100);
+                    return productionInField * (bsw / 100) * potencial;
 
                 default:
                     return 0;
