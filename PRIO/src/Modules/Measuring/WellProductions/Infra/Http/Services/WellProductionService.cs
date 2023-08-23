@@ -13,13 +13,13 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 {
     public class WellProductionService
     {
-        private readonly IWellAppropriationRepository _repository;
+        private readonly IWellProductionRepository _repository;
         private readonly IProductionRepository _productionRepository;
         private readonly IBTPRepository _btpRepository;
         private readonly IInstallationRepository _installationRepository;
         private readonly IMapper _mapper;
 
-        public WellProductionService(IWellAppropriationRepository repository, IMapper mapper, IProductionRepository productionRepository, IInstallationRepository installationRepository, IBTPRepository bTPRepository)
+        public WellProductionService(IWellProductionRepository repository, IMapper mapper, IProductionRepository productionRepository, IInstallationRepository installationRepository, IBTPRepository bTPRepository)
         {
             _repository = repository;
             _mapper = mapper;
@@ -66,6 +66,8 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                         if (wellContainBtpValid is false)
                             wellsInvalids.Add(well.Name);
+
+
                     }
                 }
             }
@@ -143,6 +145,39 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                             ProductionWaterInWell = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.OilProductionInField, fieldFR.FROil.Value, btp.BSW, wellPotencialWaterAsPercentageOfField, WellProductionUtils.fluidWater) : 0,
 
                         };
+
+                        foreach (var completion in btp.Well.Completions)
+                        {
+                            var allocationReservoir = completion.AllocationReservoir.Value;
+
+                            var completionProduction = new CompletionProduction
+                            {
+                                Id = Guid.NewGuid(),
+                                GasProductionInCompletion = allocationReservoir * wellAppropriation.ProductionGasInWell,
+                                OilProductionInCompletion = allocationReservoir * wellAppropriation.ProductionOilInWell,
+                                WaterProductionInCompletion = allocationReservoir * wellAppropriation.ProductionWaterInWell,
+                                ProductionId = production.Id,
+                                CompletionId = completion.Id,
+                                WellProduction = wellAppropriation
+                            };
+
+                            //var reservoirProduction = wellAppropriation.ReservoirProductions.FirstOrDefault(rp => rp.ReservoirId == completion.Reservoir.Id);
+
+                            //if (reservoirProduction == null)
+                            //{
+                            //    reservoirProduction = new ReservoirProduction
+                            //    {
+                            //        Id = Guid.NewGuid(),
+                            //        ReservoirId = completion.Reservoir.Id,
+                            //        ProductionId = production.Id,
+                            //    };
+                            //    wellAppropriation.ReservoirProductions.Add(reservoirProduction);
+                            //}
+
+                            //reservoirProduction.GasProductionInReservoir += allocationReservoir * wellAppropriation.ProductionGasInWell;
+                            //reservoirProduction.OilProductionInReservoir += allocationReservoir * wellAppropriation.ProductionOilInWell;
+                            //reservoirProduction.WaterProductionInReservoir += allocationReservoir * wellAppropriation.ProductionWaterInWell;
+                        }
 
                         totalWater += wellAppropriation.ProductionWaterInWell;
                         totalOil += wellAppropriation.ProductionOilInWell;

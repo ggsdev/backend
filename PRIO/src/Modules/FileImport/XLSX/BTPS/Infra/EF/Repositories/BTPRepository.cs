@@ -174,13 +174,14 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
         public async Task<List<BTPData>> GetBtpDatasByFieldId(Guid fieldId)
         {
             var btps = await _context.BTPDatas
-        .Include(x => x.Well)
-            .ThenInclude(x => x.Field)
-            .Where(x => x.Well.Field.Id == fieldId && x.IsValid)
-            //.Where(x => (x.FinalDate == null && DateTime.Parse(x.ApplicationDate) <= productionDate.Date) || (x.FinalDate != null &&
-            //    DateTime.Parse(x.FinalDate) >= productionDate.Date &&
-            //    DateTime.Parse(x.ApplicationDate) <= productionDate.Date))
-        .ToListAsync();
+                .Include(x => x.Well)
+                    .ThenInclude(x => x.Field)
+                .Include(x => x.Well)
+                    .ThenInclude(x => x.Completions)
+                        .ThenInclude(x => x.Reservoir)
+                            .ThenInclude(x => x.Zone)
+                         .Where(x => x.Well.Field.Id == fieldId && x.IsValid)
+                .ToListAsync();
 
             return btps;
         }

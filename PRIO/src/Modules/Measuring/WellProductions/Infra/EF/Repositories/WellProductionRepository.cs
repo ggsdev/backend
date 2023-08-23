@@ -4,10 +4,10 @@ using PRIO.src.Shared.Infra.EF;
 
 namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Repositories
 {
-    public class WellAppropriationRepository : IWellAppropriationRepository
+    public class WellProductionRepository : IWellProductionRepository
     {
         private readonly DataContext _context;
-        public WellAppropriationRepository(DataContext context)
+        public WellProductionRepository(DataContext context)
         {
             _context = context;
         }
@@ -18,7 +18,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Repositories
         }
         public async Task AddAsync(WellProduction wellAppropriation)
         {
-            await _context.WellAppropriations.AddAsync(wellAppropriation);
+            await _context.WellProductions.AddAsync(wellAppropriation);
         }
     }
 }
