@@ -185,6 +185,21 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
 
             return btps;
         }
+        public async Task<List<BTPData>> GetBtpDatasByUEP(string uep)
+        {
+            var btps = await _context.BTPDatas
+                .Include(x => x.Well)
+                    .ThenInclude(x => x.Field)
+                        .ThenInclude(x => x.Installation)
+                .Include(x => x.Well)
+                    .ThenInclude(x => x.Completions)
+                        .ThenInclude(x => x.Reservoir)
+                            .ThenInclude(x => x.Zone)
+                         .Where(x => x.Well.Field.Installation.UepCod == uep && x.IsValid)
+                .ToListAsync();
+
+            return btps;
+        }
 
         public void Update(BTPData data)
         {
