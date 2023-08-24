@@ -7,6 +7,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces
     {
         Task<List<BTP>> GetAllBTPsAsync();
         Task<List<BTPData>> GetBtpDatasByFieldId(Guid fieldId);
+        Task<List<BTPData>> GetBtpDatasByUEP(string uep);
         Task AddBTPAsync(BTP btp);
         Task<Auxiliary?> GetTypeAsync(string type);
         Task<BTP?> GetByNameOrContent(string name, string content);
