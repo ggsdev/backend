@@ -131,7 +131,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
 
                 if (cellCluster is not null && cellCluster.ToUpper().Trim().Contains(getInstanceName.ToUpper().Trim()) is true)
                 {
-                    if (string.IsNullOrWhiteSpace(cellCluster) || string.IsNullOrWhiteSpace(cellInstallationCod) || string.IsNullOrWhiteSpace(cellInstallationCodUep) || string.IsNullOrWhiteSpace(cellInstallationNameUep) || string.IsNullOrWhiteSpace(cellCodeField) || string.IsNullOrWhiteSpace(columnZone) || string.IsNullOrWhiteSpace(columnReservoir) || string.IsNullOrWhiteSpace(cellWellCodeAnp) || string.IsNullOrWhiteSpace(columnCompletion))
+                    if (string.IsNullOrWhiteSpace(cellCluster) || string.IsNullOrWhiteSpace(cellInstallationCod) || string.IsNullOrWhiteSpace(cellInstallationCodUep) || string.IsNullOrWhiteSpace(cellInstallationNameUep) || string.IsNullOrWhiteSpace(cellCodeField) || string.IsNullOrWhiteSpace(columnZone) || string.IsNullOrWhiteSpace(columnReservoir) || string.IsNullOrWhiteSpace(cellWellCodeAnp))
                     {
                         errorCount++;
                         continue;
@@ -502,7 +502,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                 {
                     completion = await _context.Completions
                     .FirstOrDefaultAsync(x => x.Name == columnCompletion);
-
 
                     if (completion is null)
                     {

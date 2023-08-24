@@ -22,6 +22,16 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
         {
             await _context.Productions.AddAsync(production);
         }
+
+        public void UpdateFieldProduction(FieldProduction fieldProduction)
+        {
+            _context.FieldsProductions.Update(fieldProduction);
+        }
+
+        public async Task<FieldProduction?> GetFieldProductionByFieldAndProductionId(Guid fieldId, Guid productionId)
+        {
+            return await _context.FieldsProductions.FirstOrDefaultAsync(x => x.FieldId == fieldId && x.ProductionId == productionId);
+        }
         public async Task AddFieldProduction(FieldProduction fieldProduction)
         {
             await _context.FieldsProductions.AddAsync(fieldProduction);
