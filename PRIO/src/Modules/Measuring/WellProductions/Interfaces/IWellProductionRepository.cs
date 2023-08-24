@@ -6,6 +6,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Interfaces
     public interface IWellProductionRepository
     {
         Task Save();
+        Task<List<FieldProduction>> getAllFieldsProductionsByProductionId(Guid productionId);
         Task AddAsync(WellProduction wellApp);
         void Update(WellProduction wellApp);
         Task AddCompletionProductionAsync(CompletionProduction completionApp);
