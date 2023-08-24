@@ -349,13 +349,12 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     fieldProduction.GasProductionInField = totalGas;
                     fieldProduction.OilProductionInField = totalOil;
 
-                            totalWaterInUep += fieldProduction.WaterProductionInField;
+                    totalWaterInUep += fieldProduction.WaterProductionInField;
 
-                            await _productionRepository.AddFieldProduction(fieldProduction);
-                        }
-                    }
+                    await _productionRepository.AddFieldProduction(fieldProduction);
                 }
             }
+
 
             var waterInUep = new Water
             {
@@ -372,8 +371,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
             _productionRepository.Update(production);
 
 
-                await _repository.Save();
-            }
+            await _repository.Save();
         }
 
         public async Task ReAppropriateWithNfsm(Guid productionId)
