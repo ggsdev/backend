@@ -8,7 +8,9 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Interfaces
         Task Save();
         Task<List<FieldProduction>> getAllFieldsProductionsByProductionId(Guid productionId);
         Task AddAsync(WellProduction wellApp);
+        void Update(WellProduction wellApp);
         Task AddCompletionProductionAsync(CompletionProduction completionApp);
+        Task<List<WellProduction>> GetByProductionId(Guid productionId);
         void UpdateCompletionProduction(CompletionProduction completionApp);
         Task AddReservoirProductionAsync(ReservoirProduction reservoirApp);
         void UpdateReservoirProduction(ReservoirProduction reservoirApp);

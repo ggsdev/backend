@@ -13,6 +13,7 @@
         private static readonly string _equipment = "MeasuringEquipment";
         private static readonly string _measuringPoint = "MeasuringPoint";
         private static readonly string _production = "Production";
+        private static readonly string _nfsm = "NFSM";
         private static readonly string _commentInProduction = "CommentInProduction";
 
         //private readonly IStringLocalizer<ErrorMessages> _localizer;
@@ -60,6 +61,9 @@
 
             if (typeof(TModel).Name == _commentInProduction)
                 return "Comentário" + message;
+
+            if (typeof(TModel).Name == _nfsm)
+                return "Notificação de falha" + message;
 
             return message;
 

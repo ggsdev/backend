@@ -28,6 +28,19 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Repositories
         {
             await _context.WellProductions.AddAsync(wellAppropriation);
         }
+        public void Update(WellProduction wellApp)
+        {
+            _context.WellProductions.Update(wellApp);
+        }
+
+        public async Task<List<WellProduction>> GetByProductionId(Guid productionId)
+        {
+            return await _context.WellProductions
+                .Include(x => x.Production)
+                .Include(x => x.BtpData)
+                .Where(x => x.Production.Id == productionId)
+                .ToListAsync();
+        }
         public async Task AddCompletionProductionAsync(CompletionProduction completionApp)
         {
             await _context.CompletionProductions.AddAsync(completionApp);

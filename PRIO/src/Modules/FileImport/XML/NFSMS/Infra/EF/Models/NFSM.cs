@@ -17,7 +17,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models
         public string? TypeOfNotification { get; set; }
         public string ReponsibleReport { get; set; }
         public string Action { get; set; }
-        //public bool IsApplied { get; set; }
+        public bool IsApplied { get; set; }
         public string Methodology { get; set; }
         public Installation Installation { get; set; }
         public List<Measurement> Measurements { get; set; }
