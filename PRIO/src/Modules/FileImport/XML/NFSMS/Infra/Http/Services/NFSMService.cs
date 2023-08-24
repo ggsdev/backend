@@ -750,8 +750,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     {
                         if (measurement.MeasuringPoint.TagPointMeasuring == nfsmInDatabase.MeasuringPoint.TagPointMeasuring && measurementCorrected.VolumeAfter is not null)
                         {
-                            measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001 = measurementCorrected.VolumeAfter;
-                            measurement.MED_VOLUME_LIQUIDO_MVMDO_001 = measurementCorrected.VolumeAfter;
+                            //measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001 = measurementCorrected.VolumeAfter;
+                            measurement.VolumeAfterManualBsw_001 = measurementCorrected.VolumeAfter;
 
                             _measurementRepository.UpdateMeasurement(measurement);
                             //totalOil += measurementCorrected.VolumeAfter.Value;
@@ -826,7 +826,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     //    }
                     //});
 
-                    //await _wellProductionService.ReAppropriateWithNfsm(productionInDatabase.Id);
+                    await _wellProductionService.ReAppropriateWithNfsm(productionInDatabase.Id);
 
                     nfsmInDatabase.IsApplied = true;
                 }

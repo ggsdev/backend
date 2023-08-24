@@ -587,6 +587,12 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
             };
 
+            var waterDto = new WaterTotalDto
+            {
+                TotalWaterM3 = production.Water is not null ? production.Water.TotalWater : 0,
+                TotalWaterBBL = production.Water is not null ? production.Water.TotalWater * ProductionUtils.m3ToBBLConversionMultiplier : 0,
+            };
+
             var oilFrs = new FRViewModelNull
             {
                 Fields = new(),
@@ -647,7 +653,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 Gas = gasDto,
                 Oil = oilDto,
                 Files = files,
-                Comment = commentDto
+                Comment = commentDto,
+                Water = waterDto,
             };
 
             var gasCalculationByUepCode = await _gasRepository

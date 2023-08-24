@@ -23,6 +23,11 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
             await _context.Productions.AddAsync(production);
         }
 
+        public async Task AddWaterProduction(Water water)
+        {
+            await _context.Waters.AddAsync(water);
+        }
+
         public void UpdateFieldProduction(FieldProduction fieldProduction)
         {
             _context.FieldsProductions.Update(fieldProduction);
@@ -30,7 +35,9 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
 
         public async Task<FieldProduction?> GetFieldProductionByFieldAndProductionId(Guid fieldId, Guid productionId)
         {
-            return await _context.FieldsProductions.FirstOrDefaultAsync(x => x.FieldId == fieldId && x.ProductionId == productionId);
+            return await _context.FieldsProductions
+                .Include(x => x.WellProductions)
+                .FirstOrDefaultAsync(x => x.FieldId == fieldId && x.ProductionId == productionId);
         }
         public async Task AddFieldProduction(FieldProduction fieldProduction)
         {
