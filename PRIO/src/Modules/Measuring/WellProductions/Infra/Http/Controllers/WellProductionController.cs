@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services;
-using PRIO.src.Modules.Measuring.WellProductions.Infra.ViewModels;
 using PRIO.src.Shared.Infra.Http.Filters;
 
 namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Controllers
@@ -17,10 +16,10 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Controllers
             _service = service;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Post(WellProductionViewModel body)
+        [HttpPost("{productionId}")]
+        public async Task<IActionResult> Post([FromRoute] Guid productionId)
         {
-            await _service.CreateAppropriation(body);
+            await _service.CreateAppropriation(productionId);
 
             return Ok();
         }
