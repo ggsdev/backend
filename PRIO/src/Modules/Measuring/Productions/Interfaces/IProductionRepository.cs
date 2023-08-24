@@ -15,6 +15,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Interfaces
         Task<List<Production>> GetAllProductions();
         Task<Production?> GetById(Guid? id);
         Task AddFieldProduction(FieldProduction fieldProduction);
+        Task AddWaterProduction(Water water);
         void UpdateFieldProduction(FieldProduction fieldProduction);
         Task<FieldProduction?> GetFieldProductionByFieldAndProductionId(Guid fieldId, Guid productionId);
     }

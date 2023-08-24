@@ -23,6 +23,11 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
             await _context.Productions.AddAsync(production);
         }
 
+        public async Task AddWaterProduction(Water water)
+        {
+            await _context.Waters.AddAsync(water);
+        }
+
         public void UpdateFieldProduction(FieldProduction fieldProduction)
         {
             _context.FieldsProductions.Update(fieldProduction);

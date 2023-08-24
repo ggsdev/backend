@@ -74,6 +74,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
             //if (wellsInvalids.Count > 0)
             //    throw new BadRequestException($"Todos os poços devem ter um teste de poço válido. Poços sem teste ou com teste inválido:", errors: wellsInvalids);
 
+            var totalWaterInUep = 0m;
 
             if (production.FieldsFR is not null && production.FieldsFR.Count > 0)
             {
@@ -239,6 +240,8 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         fieldProduction.GasProductionInField = totalGas;
                         fieldProduction.OilProductionInField = totalOil;
 
+                        totalWaterInUep += fieldProduction.WaterProductionInField;
+
                         await _productionRepository.AddFieldProduction(fieldProduction);
                     }
                 }
@@ -358,12 +361,27 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                             fieldProduction.FieldId = field.Id;
                             fieldProduction.ProductionId = production.Id;
 
+                            totalWaterInUep += fieldProduction.WaterProductionInField;
+
                             await _productionRepository.AddFieldProduction(fieldProduction);
                         }
                     }
                 }
-
             }
+
+            var waterInUep = new Water
+            {
+                Id = Guid.NewGuid(),
+                Production = production,
+                StatusWater = true,
+                TotalWater = totalWaterInUep,
+            };
+
+            await _productionRepository.AddWaterProduction(waterInUep);
+
+            production.Water = waterInUep;
+
+            _productionRepository.Update(production);
 
             await _repository.Save();
         }
