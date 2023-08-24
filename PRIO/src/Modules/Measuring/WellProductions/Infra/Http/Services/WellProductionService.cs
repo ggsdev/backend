@@ -266,6 +266,9 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                 var totalWaterPotencial = filtredByApplyDateAndFinal
                     .Sum(x => x.PotencialWater);
 
+                var totalLiquidPotencial = filtredByApplyDateAndFinal
+                    .Sum(x => x.PotencialLiquid);
+
                 var totalGas = 0m;
                 var totalOil = 0m;
                 var totalWater = 0m;
@@ -282,7 +285,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     var wellPotencialGasAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialGas, totalGasPotencial);
                     var wellPotencialOilAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialOil, totalOilPotencial);
                     var wellPotencialWaterAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialWater, totalWaterPotencial);
-
+                    var wellPotencialLiquidAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialLiquid, totalLiquidPotencial);
                     var btpsField = await _btpRepository
                         .GetBtpDatasByFieldId(btp.Well.Field.Id);
 
@@ -302,7 +305,8 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     var wellPotencialOilAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialOil, totalOilPotencialField);
                     var wellPotencialWaterAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialWater, totalWaterPotencialField);
 
-
+                    var calcBSWOil = (100 - btp.BSW) / 100;
+                    var calcBSWWater = btp.BSW / 100;
                     var wellAppropriation = new WellProduction
                     {
                         //CONSIDERO CERTO
@@ -321,17 +325,11 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         ProductionOilAsPercentageOfField = wellPotencialOilAsPercentageOfField,
                         ProductionWaterAsPercentageOfField = wellPotencialWaterAsPercentageOfField,
 
-                        ProductionOilInWell = production.Oil.TotalOil * wellPotencialOilAsPercentageOfUEP
-                        * ((100 - btp.BSW) / 100)
+                        ProductionOilInWell = production.Oil.TotalOil * wellPotencialLiquidAsPercentageOfUEP * calcBSWOil
                         ,
-                        ProductionWaterInWell = production.Oil.TotalOil * wellPotencialWaterAsPercentageOfUEP
-                        //* (btp.BSW / 100)
+                        ProductionWaterInWell = production.Oil.TotalOil * wellPotencialLiquidAsPercentageOfUEP * calcBSWWater
                         ,
                     };
-
-
-                    Console.WriteLine(wellPotencialWaterAsPercentageOfUEP);
-                    Console.WriteLine("*****************************************************");
 
 
                     totalWater += wellAppropriation.ProductionWaterInWell;
