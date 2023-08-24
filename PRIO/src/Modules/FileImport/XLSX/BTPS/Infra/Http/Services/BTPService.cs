@@ -479,11 +479,11 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             if (body.Data.Type != BTP.Type)
                 throw new ConflictException($"O modelo do arquivo não corresponde ao tipo {body.Data.Type}");
             if (body.Data.Filename != Validate.Filename)
-                throw new ConflictException($"O modelo do arquivo não corresponde ao tipo {body.Data.Filename}");
+                throw new ConflictException($"O modelo do arquivo não corresponde ao Filenmame {body.Data.Filename}");
             if (body.Data.ApplicationDate != Validate.ApplicationDate)
-                throw new ConflictException($"O modelo do arquivo não corresponde ao tipo {body.Data.ApplicationDate}");
+                throw new ConflictException($"O modelo do arquivo não corresponde a data de aplicação {body.Data.ApplicationDate}");
             if (body.Data.IsValid != Validate.IsValid)
-                throw new ConflictException($"O modelo do arquivo não corresponde ao tipo {body.Data.IsValid}");
+                throw new ConflictException($"O modelo do arquivo não corresponde a validade {body.Data.IsValid}");
 
             var contentBase64 = Validate.content.Replace("data:@file/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,", "");
             using var stream = new MemoryStream(Convert.FromBase64String(contentBase64!));
