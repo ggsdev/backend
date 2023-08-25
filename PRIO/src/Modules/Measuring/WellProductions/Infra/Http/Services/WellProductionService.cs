@@ -861,6 +861,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
             var wellsInvalids = new List<string>();
 
+
             foreach (var installation in installations)
             {
                 foreach (var field in installation.Fields)
@@ -886,6 +887,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     }
                 }
             }
+            var totalWaterInUep = 0m;
 
             if (production.FieldsFR is not null && production.FieldsFR.Count > 0)
             {
@@ -905,7 +907,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     var totalGasPotencial = filtredByApplyDateAndFinal
                         .Sum(x => x.PotencialGas);
 
-
                     var totalOilPotencial = filtredByApplyDateAndFinal
                         .Sum(x => x.PotencialOil);
 
@@ -921,6 +922,8 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         var btpValid = await _btpRepository.GetBTPsDataByWellIdAndActiveAsync(wellProduction.WellId);
                         if (btpValid is null)
                             throw new NotFoundException("");
+
+                        wellProduction.BtpData = btpValid;
 
                         var wellPotencialGasAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btpValid.PotencialGas, totalGasPotencial);
 
@@ -1048,7 +1051,165 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     }
                 }
             }
-            else { }
+            else
+            {
+                var uepFields = await _fieldRepository
+                 .GetFieldsByUepCode(production.Installation.UepCod);
+
+                var btpsUEP = await _btpRepository
+                   .GetBtpDatasByUEP(production.Installation.UepCod);
+
+                var filtredByApplyDateAndFinal = btpsUEP
+                        .Where(x => (x.FinalApplicationDate == null && x.ApplicationDate != null && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date)
+                        || (x.FinalApplicationDate != null && x.ApplicationDate != null && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
+                        && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date));
+
+                var totalGasPotencial = filtredByApplyDateAndFinal
+                   .Sum(x => x.PotencialGas);
+
+                var totalOilPotencial = filtredByApplyDateAndFinal
+                    .Sum(x => x.PotencialOil);
+
+                var totalWaterPotencial = filtredByApplyDateAndFinal
+                    .Sum(x => x.PotencialWater);
+
+                var totalLiquidPotencial = filtredByApplyDateAndFinal
+                    .Sum(x => x.PotencialLiquid);
+
+                foreach (var field in uepFields)
+                {
+                    var fieldProductionInDatabase = await _productionRepository
+                            .GetFieldProductionByFieldAndProductionId(field.Id, productionId);
+
+                    if (fieldProductionInDatabase is null)
+                        throw new NotFoundException("Produção de campo não distribuida");
+
+                    var totalGas = 0m;
+                    var totalOil = 0m;
+                    var totalWater = 0m;
+
+                    foreach (var wellProd in fieldProductionInDatabase.WellProductions)
+                    {
+                        var btpValid = await _btpRepository.GetBTPsDataByWellIdAndActiveAsync(wellProd.WellId);
+                        if (btpValid is null)
+                            throw new NotFoundException("");
+
+                        wellProd.BtpData = btpValid;
+
+                        var wellPotencialGasAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btpValid.PotencialGas, totalGasPotencial);
+                        var wellPotencialLiquidAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btpValid.PotencialLiquid, totalLiquidPotencial);
+
+                        var calcBSWOil = (100 - btpValid.BSW) / 100;
+                        var calcBSWWater = btpValid.BSW / 100;
+
+                        wellProd.ProductionOilInWell = production.Oil is not null ? production.Oil.TotalOil * wellPotencialLiquidAsPercentageOfUEP * calcBSWOil : 0;
+
+                        wellProd.ProductionGasInWell = wellPotencialGasAsPercentageOfUEP * ((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas : 0));
+
+                        wellProd.ProductionWaterInWell = production.Oil is not null ? production.Oil.TotalOil * wellPotencialLiquidAsPercentageOfUEP * calcBSWWater : 0;
+
+                        totalWater += wellProd.ProductionWaterInWell;
+                        totalGas += wellProd.ProductionGasInWell;
+                        totalOil += wellProd.ProductionOilInWell;
+                    }
+
+                    fieldProductionInDatabase.WaterProductionInField = totalWater;
+                    fieldProductionInDatabase.GasProductionInField = totalGas;
+                    fieldProductionInDatabase.OilProductionInField = totalOil;
+
+                    totalWaterInUep += fieldProductionInDatabase.WaterProductionInField;
+
+                    _productionRepository.UpdateFieldProduction(fieldProductionInDatabase);
+
+
+                    var listProductions = await _repository.getAllFieldsProductionsByProductionId(productionId);
+
+                    foreach (var fieldProduction in listProductions)
+                    {
+                        foreach (var wellProduction in fieldProduction.WellProductions)
+                        {
+                            var wellInDatabase = await _wellRepository.GetByIdAsync(wellProduction.WellId);
+
+                            foreach (var completion in wellInDatabase.Completions)
+                            {
+                                var reservoirProduction = await _repository.GetReservoirProductionForWellAndReservoir(productionId, completion.Reservoir.Id);
+
+                                var zoneProduction = await _repository.GetZoneProductionForWellAndReservoir(productionId, completion.Reservoir.Zone.Id);
+
+                                var completionProductionInDatabase = await _repository
+                                    .GetCompletionProduction(completion.Id, productionId);
+
+                                if (completionProductionInDatabase is null)
+                                    throw new NotFoundException($"Distribuição da produção da completação no dia: {production.MeasuredAt} não encontrada.");
+
+                                if (reservoirProduction is null)
+                                    throw new NotFoundException($"Distribuição da produção do reservatório no dia: {production.MeasuredAt} não encontrada.");
+
+                                if (zoneProduction is null)
+                                    throw new NotFoundException($"Distribuição da produção do reservatório no dia: {production.MeasuredAt} não encontrada.");
+
+                                completionProductionInDatabase.OilProductionInCompletion = 0m;
+                                completionProductionInDatabase.GasProductionInCompletion = 0m;
+                                completionProductionInDatabase.WaterProductionInCompletion = 0m;
+
+                                _repository.UpdateCompletionProduction(completionProductionInDatabase);
+
+                                reservoirProduction.OilProductionInReservoir = 0m;
+                                reservoirProduction.GasProductionInReservoir = 0m;
+                                reservoirProduction.WaterProductionInReservoir = 0m;
+
+                                _repository.UpdateReservoirProduction(reservoirProduction);
+
+                                zoneProduction.OilProductionInZone = 0m;
+                                zoneProduction.GasProductionInZone = 0m;
+                                zoneProduction.WaterProductionInZone = 0m;
+
+                                _repository.UpdateZoneProduction(zoneProduction);
+
+                            }
+                        }
+
+                    }
+
+                    foreach (var fieldProduction in listProductions)
+                    {
+                        foreach (var wellProduction in fieldProduction.WellProductions)
+                        {
+                            var wellInDatabase = await _wellRepository.GetByIdAsync(wellProduction.WellId);
+
+                            foreach (var completion in wellInDatabase.Completions)
+                            {
+                                var reservoirProduction = await _repository.GetReservoirProductionForWellAndReservoir(productionId, completion.Reservoir.Id);
+                                var zoneProduction = await _repository.GetZoneProductionForWellAndReservoir(productionId, completion.Reservoir.Zone.Id);
+
+                                var allocationReservoir = completion.AllocationReservoir.Value;
+
+                                var completionProductionInDatabase = await _repository
+                                    .GetCompletionProduction(completion.Id, productionId);
+
+                                completionProductionInDatabase.GasProductionInCompletion = allocationReservoir * wellProduction.ProductionGasInWell;
+                                completionProductionInDatabase.OilProductionInCompletion = allocationReservoir * wellProduction.ProductionOilInWell;
+                                completionProductionInDatabase.WaterProductionInCompletion = allocationReservoir * wellProduction.ProductionWaterInWell;
+
+                                _repository.UpdateCompletionProduction(completionProductionInDatabase);
+
+                                reservoirProduction.GasProductionInReservoir += completionProductionInDatabase.GasProductionInCompletion;
+                                reservoirProduction.OilProductionInReservoir += completionProductionInDatabase.OilProductionInCompletion;
+                                reservoirProduction.WaterProductionInReservoir += completionProductionInDatabase.WaterProductionInCompletion;
+
+                                zoneProduction.GasProductionInZone += completionProductionInDatabase.GasProductionInCompletion;
+                                zoneProduction.OilProductionInZone += completionProductionInDatabase.OilProductionInCompletion;
+                                zoneProduction.WaterProductionInZone += completionProductionInDatabase.WaterProductionInCompletion;
+
+                                _repository.UpdateZoneProduction(zoneProduction);
+
+                            }
+                        }
+                    }
+                }
+
+
+            }
             await _repository.Save();
         }
     }
