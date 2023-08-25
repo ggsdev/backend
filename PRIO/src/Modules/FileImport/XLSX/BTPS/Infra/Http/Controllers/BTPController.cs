@@ -122,7 +122,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Controllers
         }
 
         [HttpPatch("data/{dataId}")]
-        public async Task<IActionResult> RenderBTPData([FromRoute] Guid dataId)
+        public async Task<IActionResult> UpdateBTPData([FromRoute] Guid dataId)
         {
             if (HttpContext.Items["User"] is not User user)
                 return Unauthorized(new ErrorResponseDTO
