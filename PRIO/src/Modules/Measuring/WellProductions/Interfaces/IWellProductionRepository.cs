@@ -12,6 +12,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Interfaces
         Task AddCompletionProductionAsync(CompletionProduction completionApp);
         Task<List<WellProduction>> GetByProductionId(Guid productionId);
         void UpdateCompletionProduction(CompletionProduction completionApp);
+        Task<CompletionProduction?> GetCompletionProduction(Guid completionId, Guid productionId);
         Task AddReservoirProductionAsync(ReservoirProduction reservoirApp);
         void UpdateReservoirProduction(ReservoirProduction reservoirApp);
         Task AddZoneProductionAsync(ZoneProduction zoneApp);
