@@ -772,7 +772,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 var production = await _productionRepository.GetExistingByDate(dateProduction);
                 if (production is not null)
                 {
-                    Console.WriteLine(production.Id);
                     await _wellProductionService.ReAppropriateWithWellTest(production.Id);
                 }
             }
