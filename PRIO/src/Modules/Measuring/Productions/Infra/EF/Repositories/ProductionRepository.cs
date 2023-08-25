@@ -37,6 +37,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
         {
             return await _context.FieldsProductions
                 .Include(x => x.WellProductions)
+                .ThenInclude(x => x.BtpData)
                 .FirstOrDefaultAsync(x => x.FieldId == fieldId && x.ProductionId == productionId);
         }
         public async Task AddFieldProduction(FieldProduction fieldProduction)

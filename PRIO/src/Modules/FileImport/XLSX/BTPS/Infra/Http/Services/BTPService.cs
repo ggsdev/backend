@@ -6,6 +6,8 @@ using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.ViewModels;
 using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
+using PRIO.src.Modules.Measuring.Productions.Interfaces;
+using PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services;
 using PRIO.src.Shared.Errors;
 
 namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
@@ -15,12 +17,16 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
         private readonly IMapper _mapper;
         private readonly IBTPRepository _BTPRepository;
         private readonly IWellRepository _wellRepository;
+        private readonly IProductionRepository _productionRepository;
+        private readonly WellProductionService _wellProductionService;
 
-        public BTPService(IMapper mapper, IBTPRepository btpRepository, IWellRepository wellRepository)
+        public BTPService(IMapper mapper, IBTPRepository btpRepository, IWellRepository wellRepository, IProductionRepository productionRepository, WellProductionService wellProductionService)
         {
             _mapper = mapper;
             _BTPRepository = btpRepository;
             _wellRepository = wellRepository;
+            _productionRepository = productionRepository;
+            _wellProductionService = wellProductionService;
         }
         public async Task<List<BTPDTO>> Get()
         {
@@ -700,13 +706,19 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             var listWellTests = await _BTPRepository.ListBTPSDataActiveByWellId(BTPData.Well.Id);
             DateTime applicationDateFromBody = DateTime.Parse(BTPData.ApplicationDate);
 
+            List<DateTime> listDates = new();
+            List<DateTime> listExistingDates = new();
             if (listWellTests.Count != 0)
             {
                 var greaterThanDate = listWellTests.LastOrDefault(x => DateTime.Parse(x.ApplicationDate) > applicationDateFromBody);
                 var previousDate = listWellTests.FirstOrDefault(x => DateTime.Parse(x.ApplicationDate) < applicationDateFromBody);
-
                 if (previousDate is not null && greaterThanDate is null)
                 {
+                    for (DateTime data = DateTime.Parse(previousDate.ApplicationDate); data <= DateTime.Today; data = data.AddDays(1))
+                    {
+                        listDates.Add(data);
+                    }
+
                     BTPData.IsActive = false;
                     BTPData.IsValid = false;
                     BTPData.FinalApplicationDate = null;
@@ -717,10 +729,14 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
 
                     _BTPRepository.Update(previousDate);
 
-
                 }
                 else if (previousDate is not null && greaterThanDate is not null)
                 {
+                    for (DateTime data = DateTime.Parse(BTPData.ApplicationDate); data <= DateTime.Parse(greaterThanDate.ApplicationDate).AddDays(-1); data = data.AddDays(1))
+                    {
+                        listDates.Add(data);
+                    }
+
                     DateTime previousFinalNewDate = DateTime.Parse(greaterThanDate.ApplicationDate).AddDays(-1);
 
                     BTPData.IsActive = false;
@@ -729,6 +745,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                     BTPData.ApplicationDate = null;
 
                     previousDate.FinalApplicationDate = previousFinalNewDate.ToString();
+
+
                     _BTPRepository.Update(previousDate);
                 }
                 else
@@ -737,10 +755,27 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 }
             }
 
+            foreach (var date in listDates)
+            {
+                var production = await _productionRepository.GetExistingByDate(date);
+                if (production is not null)
+                    listExistingDates.Add(production.MeasuredAt);
+            }
+
             BTPData.IsValid = false;
 
             _BTPRepository.Update(BTPData);
             await _BTPRepository.SaveChangesAsync();
+
+            foreach (var dateProduction in listExistingDates)
+            {
+                var production = await _productionRepository.GetExistingByDate(dateProduction);
+                if (production is not null)
+                {
+                    await _wellProductionService.ReAppropriateWithWellTest(production.Id);
+                }
+            }
+
 
             var BTPDataDTO = _mapper.Map<BTPData, BTPDataDTO>(BTPData);
 

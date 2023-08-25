@@ -48,6 +48,10 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
         {
             return await _context.BTPDatas.Include(x => x.Well).Include(x => x.BTPBase64).ThenInclude(x => x.User).ToListAsync();
         }
+        public async Task<BTPData?> GetBTPsDataByWellIdAndActiveAsync(Guid wellId)
+        {
+            return await _context.BTPDatas.Include(x => x.Well).Where(x => x.Well.Id == wellId && x.IsActive).FirstOrDefaultAsync();
+        }
         public async Task<List<BTPData>?> ListBTPSDataActiveByWellId(Guid wellId)
         {
             var data = await _context.BTPDatas
@@ -62,6 +66,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
 
             return sortedData;
         }
+
         public async Task<BTPData?> GetByWellAndDateXls(Guid wellId, string dateXls)
         {
             return await _context.BTPDatas.Include(x => x.Well).Where(x => x.Well.Id == wellId && x.FinalDate == dateXls).FirstOrDefaultAsync();
