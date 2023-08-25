@@ -230,7 +230,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                                     var productionInDatabase = await _productionRepository.AnyByDate(date);
 
                                     if (productionInDatabase is false)
-                                        errorsInImport.Add($"BSW não encontrado para esta data: {date}");
+                                        errorsInImport.Add($"Produção TAG(DHA_FALHA_BSW) não encontrada para esta data: {date}");
                                 }
                                 else
                                 {
@@ -277,7 +277,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                                     var productionInDatabase = await _productionRepository.AnyByDate(date);
 
                                     if (productionInDatabase is false)
-                                        errorsInImport.Add($"Notificação de falha não encontrada para data: {date}");
+                                        errorsInImport.Add($"Produção, TAG(DHA_MEDICAO) não encontrada para data: {date}");
                                 }
                                 else
                                 {
@@ -710,8 +710,6 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                 var oilChanged = false;
                 var gasDiferencialChanged = false;
                 var gasLinearChanged = false;
-
-                var allMeasurements = new List<Measurement>();
 
                 foreach (var measurement in productionInDatabase.Measurements)
                 {

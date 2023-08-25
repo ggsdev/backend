@@ -163,27 +163,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
         public CreateUpdateCommentDto Comment { get; set; }
     }
 
-    public class WellProductionsDto
-    {
-        public Guid Id { get; set; }
-        public decimal ProductionGasInWellM3 { get; set; }
-        public decimal ProductionWaterInWellM3 { get; set; }
-        public decimal ProductionOilInWellM3 { get; set; }
-
-        public decimal ProductionGasInWellSFC { get; set; }
-        public decimal ProductionWaterInWellBBL { get; set; }
-        public decimal ProductionOilInWellBBL { get; set; }
-    }
-
-    public class FieldProductionsDto
-    {
-        public Guid Id { get; set; }
-        public decimal GasProductionInField { get; set; }
-        public decimal WaterProductionInField { get; set; }
-        public decimal OilProductionInField { get; set; }
-        public List<WellProductionsDto> WellAppropriations { get; set; }
-    }
-
     public class GasBurntDto
     {
         public decimal TotalGasBurnt { get; set; }

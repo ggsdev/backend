@@ -41,6 +41,13 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Repositories
                 .Where(x => x.Production.Id == productionId)
                 .ToListAsync();
         }
+
+        public async Task<CompletionProduction?> GetCompletionProduction(Guid completionId, Guid productionId)
+        {
+            return await _context.CompletionProductions
+                .Where(x => x.CompletionId == completionId && x.ProductionId == productionId)
+                .FirstOrDefaultAsync();
+        }
         public async Task AddCompletionProductionAsync(CompletionProduction completionApp)
         {
             await _context.CompletionProductions.AddAsync(completionApp);
