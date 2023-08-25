@@ -19,9 +19,9 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Controllers
         [HttpPost("{productionId}")]
         public async Task<IActionResult> Post([FromRoute] Guid productionId)
         {
-            await _service.CreateAppropriation(productionId);
+            var data = await _service.CreateAppropriation(productionId);
 
-            return Ok();
+            return Ok(data);
         }
     }
 }

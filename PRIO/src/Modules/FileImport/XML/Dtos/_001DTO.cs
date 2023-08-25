@@ -296,6 +296,7 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
 
     public class WaterDto
     {
+        public Guid Id { get; set; }
         public decimal TotalWaterM3 { get; set; }
         public decimal TotalWaterBBL { get; set; }
     }
