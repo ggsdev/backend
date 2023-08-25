@@ -261,11 +261,13 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     var btpsField = await _btpRepository
                             .GetBtpDatasByFieldId(fieldInDatabase.Id);
 
+                    //BTPS ATIVOS NA DATA
                     var filtredsBTPsField = btpsField
                         .Where(x => (x.FinalApplicationDate == null && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date)
                         || (x.FinalApplicationDate != null && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
                         && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date));
 
+                    //TOTAIS DE POTENCIAIS
                     var totalGasPotencialField = filtredsBTPsField
                           .Sum(x => x.PotencialGas);
                     var totalOilPotencialField = filtredsBTPsField
