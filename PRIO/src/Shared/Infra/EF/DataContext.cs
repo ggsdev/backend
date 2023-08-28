@@ -40,6 +40,8 @@ using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.WellEvents.EF.Mappings;
+using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
 using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models;
 using PRIO.src.Shared.Auxiliaries.Infra.EF.Models;
@@ -141,6 +143,10 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<CompletionProduction> CompletionProductions { get; set; }
         public DbSet<ReservoirProduction> ReservoirProductions { get; set; }
         public DbSet<ZoneProduction> ZoneProductions { get; set; }
+        public DbSet<EventReason> EventReasons { get; set; }
+        public DbSet<WellEvent> WellEvents { get; set; }
+
+
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -256,6 +262,8 @@ namespace PRIO.src.Shared.Infra.EF
             modelBuilder.ApplyConfiguration(new GroupPermissionMap());
             modelBuilder.ApplyConfiguration(new UserOperationMap());
             modelBuilder.ApplyConfiguration(new CommentMap());
+            modelBuilder.ApplyConfiguration(new WellEventMap());
+            modelBuilder.ApplyConfiguration(new EventReasonMap());
 
             #region Production
             modelBuilder.ApplyConfiguration(new FieldProductionMap());
