@@ -81,7 +81,7 @@ namespace PRIO.TESTS.Productions.XmlImport
                 CalculatedImportedBy = _user,
                 MeasuredAt = DateTime.UtcNow,
                 TotalProduction = 0m,
-                StatusProduction = false
+                StatusProduction = "aberto"
             };
 
             _fileType = new FileType()

@@ -44,7 +44,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Controllers
                     Message = "User not identified, please login first"
                 });
 
-            var result = await _service.ImportAndFix(body, user);
+            var result = await _service.Import(body, user);
 
             return Ok(result);
         }
