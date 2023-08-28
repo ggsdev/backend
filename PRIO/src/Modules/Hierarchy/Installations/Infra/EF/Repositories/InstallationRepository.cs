@@ -61,7 +61,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                 .Include(x => x.Field)
                 .Where(x => (x.DailyProduction.MeasuredAt.Year == date.Year &&
                             x.DailyProduction.MeasuredAt.Month == date.Month &&
-                            x.DailyProduction.MeasuredAt.Day == date.Day) && x.Field.Id == fieldId)
+                            x.DailyProduction.MeasuredAt.Day == date.Day) && x.Field.Id == fieldId && x.IsActive && x.DailyProduction.IsActive)
                 .FirstOrDefaultAsync();
         }
 

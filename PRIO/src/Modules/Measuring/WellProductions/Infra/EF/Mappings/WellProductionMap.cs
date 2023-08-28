@@ -20,7 +20,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Mappings
 
             builder.Property(x => x.ProductionGasInWell)
                .HasColumnType("DECIMAL")
-               .HasPrecision(10, 5);
+               .HasPrecision(14, 5);
 
             builder.Property(x => x.ProductionOilAsPercentageOfField)
                 .HasColumnType("DECIMAL")
@@ -32,7 +32,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Mappings
 
             builder.Property(x => x.ProductionOilInWell)
                .HasColumnType("DECIMAL")
-               .HasPrecision(10, 5);
+               .HasPrecision(14, 5);
 
             builder.Property(x => x.ProductionWaterAsPercentageOfField)
                 .HasColumnType("DECIMAL")
@@ -44,7 +44,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Mappings
 
             builder.Property(x => x.ProductionWaterInWell)
                .HasColumnType("DECIMAL")
-               .HasPrecision(10, 5);
+               .HasPrecision(14, 5);
 
             builder.HasOne(x => x.Production)
                 .WithMany(x => x.WellProductions)

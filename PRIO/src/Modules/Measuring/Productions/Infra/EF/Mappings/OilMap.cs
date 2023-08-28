@@ -12,11 +12,11 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Mappings
 
             builder.Property(x => x.TotalOil)
                .HasColumnType("DECIMAL")
-               .HasPrecision(10, 5);
+               .HasPrecision(14, 5);
 
             builder.Property(x => x.TotalOilWithoutBsw)
                .HasColumnType("DECIMAL")
-               .HasPrecision(10, 5);
+               .HasPrecision(14, 5);
 
             builder.Property(x => x.BswAverage)
                .HasColumnType("DECIMAL")

@@ -43,6 +43,9 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
             if (production is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Production>());
 
+            if (production.IsActive is false)
+                throw new NotFoundException(ErrorMessages.Inactive<Production>());
+
             if (production.WellProductions is not null && production.WellProductions.Count > 0)
                 throw new ConflictException("Apropriação já foi feita.");
 
@@ -217,7 +220,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         appropriationDto.FieldProductions.Add(fieldProductionDto);
 
                     }
-
                 }
 
                 await _repository.Save();

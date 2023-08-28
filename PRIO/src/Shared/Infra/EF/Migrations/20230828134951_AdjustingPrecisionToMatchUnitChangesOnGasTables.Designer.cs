@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230828134951_AdjustingPrecisionToMatchUnitChangesOnGasTables")]
+    partial class AdjustingPrecisionToMatchUnitChangesOnGasTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4405,7 +4408,7 @@ namespace PRIO.Migrations
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionGasInWell")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(10, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<Guid>("ProductionId")
@@ -4420,7 +4423,7 @@ namespace PRIO.Migrations
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionOilInWell")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(10, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionWaterAsPercentageOfField")
@@ -4432,7 +4435,7 @@ namespace PRIO.Migrations
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionWaterInWell")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(10, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<DateTime>("UpdatedAt")
