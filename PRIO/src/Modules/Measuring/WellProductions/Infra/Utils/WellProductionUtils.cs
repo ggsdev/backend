@@ -10,39 +10,14 @@
         {
             return potencial / totalPotencialField;
         }
-        public static decimal CalculateWellProductionAsPercentageOfInstallation(decimal potencial, decimal frFactor, decimal bsw, string fluidType)
+        public static decimal CalculateWellProductionAsPercentageOfInstallation(decimal potencial, decimal frFactor)
         {
-            switch (fluidType.ToLower())
-            {
-                case "oil":
-                    return potencial * frFactor * ((100 - bsw) / 100);
-                case "water":
-                    return potencial * frFactor * (bsw / 100);
-                case "gas":
-                    return potencial * frFactor;
-
-                default:
-                    return 0;
-            }
+            return potencial * frFactor;
         }
 
-        public static decimal CalculateWellProduction(decimal productionInField, decimal bsw, decimal potencial, string fluidType)
+        public static decimal CalculateWellProduction(decimal productionInField, decimal potencial)
         {
-            switch (fluidType.ToLower())
-            {
-                case "oil":
-                    return productionInField * ((100 - bsw) / 100) * potencial;
-
-                case "gas":
-                    return productionInField * potencial;
-
-                case "water":
-                    return productionInField * (bsw / 100) * potencial;
-
-                default:
-                    return 0;
-
-            }
+            return productionInField * potencial;
         }
     }
 }

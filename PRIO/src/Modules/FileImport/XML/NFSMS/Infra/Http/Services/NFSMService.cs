@@ -805,6 +805,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                             fieldFr.GasProductionInField = fieldFr.FRGas is not null ? (totalDiferencial + totalLinear) * fieldFr.FRGas.Value : 0;
                             fieldFr.TotalProductionInField = (fieldFr.FRGas is not null ? (totalDiferencial + totalLinear) * fieldFr.FRGas.Value : 0) + (fieldFr.FROil is not null ? totalOil * fieldFr.FROil.Value : 0);
 
+                            fieldFr.ProductionInFieldAsPercentage = fieldFr.TotalProductionInField / productionInDatabase.TotalProduction;
+
                             _installationRepository.UpdateFr(fieldFr);
                         }
 
