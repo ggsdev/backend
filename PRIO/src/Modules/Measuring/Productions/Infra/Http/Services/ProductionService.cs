@@ -12,6 +12,7 @@ using PRIO.src.Modules.Measuring.Productions.Dtos;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Productions.Interfaces;
 using PRIO.src.Modules.Measuring.Productions.Utils;
+using PRIO.src.Modules.Measuring.WellProductions.Dtos;
 using PRIO.src.Shared.Errors;
 
 namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
@@ -22,10 +23,11 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
         private readonly IGasVolumeCalculationRepository _gasRepository;
         private readonly IOilVolumeCalculationRepository _oilRepository;
         private readonly IMeasurementHistoryRepository _fileHistoryRepository;
+        private readonly IFieldRepository _fieldRepository;
         private readonly IInstallationRepository _installationRepository;
         private readonly IMapper _mapper;
 
-        public ProductionService(IProductionRepository productionRepository, IMapper mapper, IGasVolumeCalculationRepository gasVolumeCalculationRepository, IInstallationRepository installationRepository, IOilVolumeCalculationRepository oilVolumeCalculationRepository, IMeasurementHistoryRepository measurementHistoryRepository)
+        public ProductionService(IProductionRepository productionRepository, IMapper mapper, IGasVolumeCalculationRepository gasVolumeCalculationRepository, IInstallationRepository installationRepository, IOilVolumeCalculationRepository oilVolumeCalculationRepository, IMeasurementHistoryRepository measurementHistoryRepository, IFieldRepository fieldRepository)
         {
             _repository = productionRepository;
             _mapper = mapper;
@@ -33,6 +35,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
             _installationRepository = installationRepository;
             _oilRepository = oilVolumeCalculationRepository;
             _fileHistoryRepository = measurementHistoryRepository;
+            _fieldRepository = fieldRepository;
 
         }
 
@@ -587,8 +590,9 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
             };
 
-            var waterDto = new WaterTotalDto
+            var waterDto = new WaterDto
             {
+                Id = production.Water is not null ? production.Water.Id : Guid.Empty,
                 TotalWaterM3 = production.Water is not null ? production.Water.TotalWater : 0,
                 TotalWaterBBL = production.Water is not null ? production.Water.TotalWater * ProductionUtils.m3ToBBLConversionMultiplier : 0,
             };
@@ -645,6 +649,55 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
             var commentDto = _mapper.Map<CreateUpdateCommentDto>(production.Comment);
 
+            var appropriateDto = new AppropriationDto
+            {
+                FieldProductions = new(),
+                WaterProduction = waterDto,
+                ProductionId = production.Id
+            };
+
+            var fieldProductions = await _repository.GetAllFieldProductionByProduction(production.Id);
+
+            foreach (var fieldP in fieldProductions)
+            {
+                var field = await _fieldRepository.GetByIdAsync(fieldP.FieldId);
+
+                var fieldPDto = new FieldProductionDto
+                {
+                    FieldName = field.Name,
+                    FieldProductionId = fieldP.Id,
+                    GasProductionInFieldM3 = fieldP.GasProductionInField,
+                    GasProductionInFieldSCF = fieldP.GasProductionInField * ProductionUtils.m3ToSCFConversionMultipler,
+                    OilProductionInFieldM3 = fieldP.OilProductionInField,
+                    OilProductionInFieldBBL = fieldP.OilProductionInField * ProductionUtils.m3ToBBLConversionMultiplier,
+                    WaterProductionInFieldBBL = fieldP.WaterProductionInField * ProductionUtils.m3ToBBLConversionMultiplier,
+                    WaterProductionInFieldM3 = fieldP.WaterProductionInField,
+                    WellAppropriations = new()
+                };
+
+                appropriateDto.FieldProductions.Add(fieldPDto);
+
+                foreach (var wellP in fieldP.WellProductions)
+                {
+                    fieldPDto.WellAppropriations.Add(new WellProductionDto
+                    {
+                        Downtime = "N/A",
+                        ProductionGasInWellM3 = wellP.ProductionGasInWell,
+                        ProductionGasInWellSCF = wellP.ProductionGasInWell * ProductionUtils.m3ToSCFConversionMultipler,
+
+                        ProductionOilInWellM3 = wellP.ProductionOilInWell,
+                        ProductionOilInWellBBL = wellP.ProductionOilInWell * ProductionUtils.m3ToBBLConversionMultiplier,
+
+                        ProductionWaterInWellM3 = wellP.ProductionWaterInWell,
+
+                        ProductionWaterInWellBBL = wellP.ProductionWaterInWell * ProductionUtils.m3ToBBLConversionMultiplier,
+
+                    });
+
+                }
+
+            }
+
             var productionDto = new ProductionDtoWithNullableDecimals
             {
                 InstallationName = production.Installation.Name,
@@ -655,6 +708,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 Files = files,
                 Comment = commentDto,
                 Water = waterDto,
+                WellAppropriation = appropriateDto
+
             };
 
             var gasCalculationByUepCode = await _gasRepository
@@ -1595,6 +1650,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                     }
                 }
             }
+
 
             return productionDto;
         }
