@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230828134951_AdjustingPrecisionToMatchUnitChangesOnGasTables")]
+    partial class AdjustingPrecisionToMatchUnitChangesOnGasTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4372,86 +4375,6 @@ namespace PRIO.Migrations
                     b.ToTable("ZoneProductions", (string)null);
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.EF.Models.EventReason", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Downtime")
-                        .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("CHAR");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("WellEventId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("WellEventId");
-
-                    b.ToTable("EventReasons", (string)null);
-                });
-
-            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.EF.Models.WellEvent", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Downtime")
-                        .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("CHAR");
-
-                    b.Property<bool>("EventType")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("WellId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("WellId");
-
-                    b.ToTable("WellEvents", (string)null);
-                });
-
             modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellProduction", b =>
                 {
                     b.Property<Guid>("Id")
@@ -4485,7 +4408,7 @@ namespace PRIO.Migrations
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionGasInWell")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(10, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<Guid>("ProductionId")
@@ -4500,7 +4423,7 @@ namespace PRIO.Migrations
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionOilInWell")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(10, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionWaterAsPercentageOfField")
@@ -4512,7 +4435,7 @@ namespace PRIO.Migrations
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionWaterInWell")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(10, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -5465,28 +5388,6 @@ namespace PRIO.Migrations
                     b.Navigation("ZoneProduction");
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.EF.Models.EventReason", b =>
-                {
-                    b.HasOne("PRIO.src.Modules.Measuring.WellEvents.EF.Models.WellEvent", "WellEvent")
-                        .WithMany("EventReasons")
-                        .HasForeignKey("WellEventId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("WellEvent");
-                });
-
-            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.EF.Models.WellEvent", b =>
-                {
-                    b.HasOne("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.Well", "Well")
-                        .WithMany("WellEvents")
-                        .HasForeignKey("WellId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Well");
-                });
-
             modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellProduction", b =>
                 {
                     b.HasOne("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPData", "BtpData")
@@ -5655,8 +5556,6 @@ namespace PRIO.Migrations
                     b.Navigation("BTPDatas");
 
                     b.Navigation("Completions");
-
-                    b.Navigation("WellEvents");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models.Zone", b =>
@@ -5811,11 +5710,6 @@ namespace PRIO.Migrations
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.ZoneProduction", b =>
                 {
                     b.Navigation("ReservoirProductions");
-                });
-
-            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.EF.Models.WellEvent", b =>
-                {
-                    b.Navigation("EventReasons");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellProduction", b =>

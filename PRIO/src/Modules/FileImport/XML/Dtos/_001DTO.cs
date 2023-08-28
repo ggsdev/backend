@@ -129,7 +129,7 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public decimal BswManual { get; set; }
         public Guid? Id { get; set; }
         public ClientInfo Summary { get; set; }
-        public Guid? ImportId { get; set; }
+        public Guid ImportId { get; set; }
         public string FileName { get; set; } = "";
         public string? NUM_SERIE_ELEMENTO_PRIMARIO_001 { get; set; }
         public string COD_INSTALACAO_001 { get; set; } = string.Empty;

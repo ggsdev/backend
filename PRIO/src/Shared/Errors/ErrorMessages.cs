@@ -269,6 +269,9 @@
             if (typeof(TModel).Name == _equipment)
                 return "Equipamento de medição" + message;
 
+            if (typeof(TModel).Name == _production)
+                return "Produção" + message;
+
             return message;
         }
     }

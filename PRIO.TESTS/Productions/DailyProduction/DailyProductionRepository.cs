@@ -88,7 +88,7 @@ namespace PRIO.TESTS.Productions.DailyProduction
                 CalculatedImportedBy = _user,
                 MeasuredAt = DateTime.UtcNow,
                 TotalProduction = 0m,
-                StatusProduction = false
+                StatusProduction = "aberto"
             };
 
             _fileType = new FileType()
@@ -143,7 +143,7 @@ namespace PRIO.TESTS.Productions.DailyProduction
                 CalculatedImportedAt = DateTime.UtcNow,
                 CalculatedImportedBy = _user,
                 MeasuredAt = DateTime.UtcNow,
-                StatusProduction = false,
+                StatusProduction = "aberto",
                 TotalProduction = 0m,
             };
 
@@ -164,7 +164,7 @@ namespace PRIO.TESTS.Productions.DailyProduction
                 CalculatedImportedAt = DateTime.UtcNow,
                 CalculatedImportedBy = _user,
                 MeasuredAt = DateTime.UtcNow,
-                StatusProduction = false,
+                StatusProduction = "aberto",
                 TotalProduction = 0m,
             };
 
@@ -498,7 +498,7 @@ namespace PRIO.TESTS.Productions.DailyProduction
                 Id = Guid.NewGuid(),
                 Installation = _installation,
                 MeasuredAt = DateTime.UtcNow.Date, // Use only the date component
-                StatusProduction = true,
+                StatusProduction = "fechado",
                 TotalProduction = 100.0m,
             };
 
@@ -523,7 +523,7 @@ namespace PRIO.TESTS.Productions.DailyProduction
                 Id = Guid.NewGuid(),
                 Installation = _installation,
                 MeasuredAt = DateTime.UtcNow,
-                StatusProduction = false,
+                StatusProduction = "aberto",
                 TotalProduction = 50.0m
             };
 
@@ -535,7 +535,7 @@ namespace PRIO.TESTS.Productions.DailyProduction
                 Id = existingProduction.Id,
                 Installation = _installation,
                 MeasuredAt = existingProduction.MeasuredAt,
-                StatusProduction = true,
+                StatusProduction = "fechado",
                 TotalProduction = 75.0m
             };
 

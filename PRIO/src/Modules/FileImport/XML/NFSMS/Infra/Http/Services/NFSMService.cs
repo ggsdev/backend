@@ -25,6 +25,7 @@ using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Productions.Interfaces;
 using PRIO.src.Modules.Measuring.Productions.Utils;
 using PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services;
+using PRIO.src.Modules.Measuring.WellProductions.Infra.Utils;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Utils;
 using System.Globalization;
@@ -43,6 +44,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
         private readonly IInstallationRepository _installationRepository;
         private readonly IProductionRepository _productionRepository;
         private readonly IMeasurementHistoryRepository _measurementHistoryRepository;
+        private readonly IOilVolumeCalculationRepository _oilCalculationRepository;
         private readonly WellProductionService _wellProductionService;
         private readonly IOilVolumeCalculationRepository _oilRepository;
         private readonly UserService _userService;
@@ -50,7 +52,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
         public ResponseNFSMDTO _responseResult = new();
 
-        public NFSMService(IMapper mapper, IMeasurementHistoryRepository measurementHistoryRepository, IMeasurementRepository measurementRepository, IInstallationRepository installationRepository, IMeasuringPointRepository measuringPointRepository, IProductionRepository productionRepository, IOilVolumeCalculationRepository oilVolumeCalculation, MeasurementService measurementService, INFSMRepository repository, UserService userService, WellProductionService wellProductionService)
+        public NFSMService(IMapper mapper, IMeasurementHistoryRepository measurementHistoryRepository, IMeasurementRepository measurementRepository, IInstallationRepository installationRepository, IMeasuringPointRepository measuringPointRepository, IProductionRepository productionRepository, IOilVolumeCalculationRepository oilVolumeCalculation, MeasurementService measurementService, INFSMRepository repository, UserService userService, WellProductionService wellProductionService, IOilVolumeCalculationRepository oilVolumeCalculationRepository)
         {
             _wellProductionService = wellProductionService;
             _mapper = mapper;
@@ -63,6 +65,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
             _measurementService = measurementService;
             _repository = repository;
             _userService = userService;
+            _oilCalculationRepository = oilVolumeCalculationRepository;
         }
 
         public async Task<ResponseNFSMDTO> Validate(NFSMImportViewModel data, User user)
@@ -371,7 +374,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
             return responseResult;
         }
 
-        public async Task<NFSMImportResponseDto> ImportAndFix(ResponseNFSMDTO body, User user)
+        public async Task<NFSMImportResponseDto> Import(ResponseNFSMDTO body, User user)
         {
             foreach (var nfsm in body.NFSMs)
             {
@@ -392,6 +395,39 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                 if (measuringPoint is null)
                     throw new NotFoundException(ErrorMessages.NotFound<MeasuringPoint>());
+
+                var fluid = WellProductionUtils.fluidGas;
+
+                var oilCalculation = await _oilCalculationRepository
+                    .GetOilVolumeCalculationByInstallationUEP(installation.UepCod);
+
+                if (oilCalculation is not null)
+                {
+                    foreach (var section in oilCalculation.Sections)
+                    {
+                        if (section.MeasuringPoint is not null && section.MeasuringPoint.TagPointMeasuring == measuringPoint.TagPointMeasuring)
+                            fluid = WellProductionUtils.fluidOil;
+                    }
+
+                    foreach (var tog in oilCalculation.TOGRecoveredOils)
+                    {
+                        if (tog.MeasuringPoint is not null && tog.MeasuringPoint.TagPointMeasuring == measuringPoint.TagPointMeasuring)
+                            fluid = WellProductionUtils.fluidOil;
+                    }
+
+                    foreach (var dor in oilCalculation.DORs)
+                    {
+                        if (dor.MeasuringPoint is not null && dor.MeasuringPoint.TagPointMeasuring == measuringPoint.TagPointMeasuring)
+                            fluid = WellProductionUtils.fluidOil;
+                    }
+
+                    foreach (var drain in oilCalculation.DrainVolumes)
+                    {
+                        if (drain.MeasuringPoint is not null && drain.MeasuringPoint.TagPointMeasuring == measuringPoint.TagPointMeasuring)
+                            fluid = WellProductionUtils.fluidOil;
+                    }
+
+                }
 
                 var measurementsFixed = new List<Measurement>();
                 var nfsmsProductionList = new List<NFSMsProductions>();
@@ -416,10 +452,6 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     //if (Math.Round(productionInDatabase.TotalProduction, 2) != Math.Round(production.DHA_MED_REGISTRADO_039, 2)
                     //    throw new ConflictException($"Valor de produção anterior, difere da MED_REGISTRADO, para data {productionDate}, esperado:{productionInDatabase.TotalProduction} | recebido: {production.DHA_MED_DECLARADO_039}");
 
-                    decimal totalOil = 0m;
-                    decimal totalLinear = 0m;
-                    decimal totalDiferencial = 0m;
-
                     foreach (var measurement in productionInDatabase.Measurements)
                     {
                         measurementsFixed.Add(measurement);
@@ -429,8 +461,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     {
                         Production = productionInDatabase,
                         MeasuredAt = productionInXmlDate,
-                        VolumeAfter = productionInXml.DHA_MED_DECLARADO_039,
-                        VolumeBefore = productionInXml.DHA_MED_REGISTRADO_039,
+                        VolumeAfter = fluid == WellProductionUtils.fluidOil ? productionInXml.DHA_MED_DECLARADO_039 : productionInXml.DHA_MED_DECLARADO_039 * 1000,
+                        VolumeBefore = fluid == WellProductionUtils.fluidOil ? productionInXml.DHA_MED_REGISTRADO_039 : productionInXml.DHA_MED_REGISTRADO_039 * 1000,
                     };
 
                     if (nfsm.LISTA_VOLUME.Count == nfsm.LISTA_BSW.Count)
@@ -443,15 +475,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                         }
 
                     nfsmsProductionList.Add(volumeProduction);
-
                 }
-                //foreach (var productionInXml in nfsm.LISTA_VOLUME)
-                //{
-                //    DateTime productionInXmlDate = productionInXml.DHA_MEDICAO_039 is not null ? productionInXml.DHA_MEDICAO_039.Value : DateTime.MinValue;
-
-                //    var productionInDatabase = await _productionRepository
-                //        .GetExistingByDate(productionInXmlDate);
-                //}
 
                 var fileInfo = new FileBasicInfoDTO
                 {
@@ -480,7 +504,6 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     DetectionDate = nfsm.DHA_DETECCAO_039,
                     ReturnDate = nfsm.DHA_RETORNO_039,
                     TypeOfNotification = nfsm.IND_TIPO_NOTIFICACAO_039,
-
                 };
 
 

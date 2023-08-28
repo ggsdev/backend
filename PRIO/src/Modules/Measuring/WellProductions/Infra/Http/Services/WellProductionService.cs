@@ -43,8 +43,17 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
             if (production is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Production>());
 
+            if (production.IsActive is false)
+                throw new NotFoundException(ErrorMessages.Inactive<Production>());
+
             if (production.WellProductions is not null && production.WellProductions.Count > 0)
-                throw new ConflictException("Apropriação já foi feita");
+                throw new ConflictException("Apropriação já foi feita.");
+
+            if (production.Oil is null)
+                throw new ConflictException("Importação do óleo não foi feita.");
+
+            if (production.Gas is null)
+                throw new ConflictException("Importação do gás não foi feita.");
 
             var installations = await _installationRepository
                 .GetInstallationChildrenOfUEP(production.Installation.UepCod);
@@ -201,7 +210,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         appropriationDto.FieldProductions.Add(fieldProductionDto);
 
                     }
-
                 }
 
                 await _repository.Save();
@@ -390,7 +398,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
             return appropriationDto;
         }
-        public async Task DistributeAccrossEntites(Guid productionId)
+        private async Task DistributeAccrossEntites(Guid productionId)
         {
             var listProductions = await _repository.getAllFieldsProductionsByProductionId(productionId);
 

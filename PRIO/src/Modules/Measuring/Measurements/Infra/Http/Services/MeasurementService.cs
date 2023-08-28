@@ -22,7 +22,7 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.Http.Services
             _mapper = mapper;
         }
 
-        public async Task<MeasurementHistory?> Import(User user, FileBasicInfoDTO File, string base64, DateTime? dateMeasurement)
+        public async Task<MeasurementHistory?> Import(User user, FileBasicInfoDTO File, string base64, DateTime? dateMeasurement, Guid importId)
         {
             var existingHistory = await _measurementHistoryRepository
                 .GetAnyByContent(base64);
@@ -33,7 +33,7 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.Http.Services
             {
                 var history = new MeasurementHistory
                 {
-                    Id = Guid.NewGuid(),
+                    Id = importId,
                     TypeOperation = HistoryColumns.Import,
                     ImportedBy = user,
                     ImportedAt = DateTime.UtcNow.AddHours(-3),

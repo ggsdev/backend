@@ -44,6 +44,9 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                     if (fieldInDatabase is null)
                         throw new NotFoundException(ErrorMessages.NotFound<Field>());
 
+                    if (fieldInDatabase is not null && fieldInDatabase.IsActive is false)
+                        throw new ConflictException(ErrorMessages.Inactive<Field>());
+
                     //if (fieldInDatabase.Installation.Id != body.InstallationId)
                     //    throw new BadRequestException("Poço não pertence a instalação.");
 
@@ -120,6 +123,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                     if (fieldInDatabase is null)
                         throw new NotFoundException(ErrorMessages.NotFound<Field>());
 
+                    if (fieldInDatabase is not null && fieldInDatabase.IsActive is false)
+                        throw new ConflictException(ErrorMessages.Inactive<Field>());
                     //if (fieldInDatabase.Installation.Id != body.InstallationId)
                     //    throw new BadRequestException("Poço não pertence a instalação.");
                 }
@@ -149,6 +154,9 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
                             if (fieldInDatabase is null)
                                 throw new NotFoundException(ErrorMessages.NotFound<Field>());
+
+                            if (fieldInDatabase is not null && fieldInDatabase.IsActive is false)
+                                throw new ConflictException(ErrorMessages.Inactive<Field>());
 
                             if (existingFr is null)
                             {

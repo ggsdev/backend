@@ -467,7 +467,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
 
             builder.Property(x => x.MED_CORRIGIDO_MVMDO_003)
           .HasColumnType("decimal")
-          .HasPrecision(11, 5)
+          .HasPrecision(14, 5)
           ;
 
             #endregion
@@ -966,12 +966,12 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
 
             builder.Property(x => x.MED_BRUTO_MOVIMENTADO_002)
             .HasColumnType("decimal")
-            .HasPrecision(11, 5)
+            .HasPrecision(14, 5)
             ;
 
             builder.Property(x => x.MED_CORRIGIDO_MVMDO_002)
             .HasColumnType("decimal")
-            .HasPrecision(11, 5)
+            .HasPrecision(14, 5)
             ;
 
             #endregion

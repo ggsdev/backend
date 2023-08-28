@@ -108,6 +108,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                 .Include(x => x.Gas)
                 .Include(x => x.Water)
                 .Include(x => x.Oil)
+                .Include(x => x.NFSMs)
                 .Include(x => x.FieldsFR)
                     .ThenInclude(x => x.Field)
                 .Include(x => x.WellProductions)

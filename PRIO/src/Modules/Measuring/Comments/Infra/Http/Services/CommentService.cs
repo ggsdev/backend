@@ -35,6 +35,15 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
             if (prodution.Comment is not null)
                 throw new ConflictException("Produção já tem um comentário.");
 
+            if (prodution.Oil is null)
+                throw new ConflictException("Produção de óleo precisa ser fechada.");
+
+            if (prodution.Gas is null)
+                throw new ConflictException("Produção de gás precisa ser fechada.");
+
+            if (prodution.WellProductions is null)
+                throw new ConflictException("Apropriação da produção precisa ser feita.");
+
             var comment = new CommentInProduction
             {
                 Id = Guid.NewGuid(),
@@ -47,11 +56,8 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
 
             var commentDto = _mapper.Map<CreateUpdateCommentDto>(comment);
 
-            //if (prodution.Oil is not null && prodution.GasLinear is not null && prodution.GasDiferencial is not null && prodution.Water is not null)
-            //{
-            //    prodution.StatusProduction = "fechado";
-            //    _productionRepository.Update(prodution);
-            //}
+            prodution.StatusProduction = "fechado";
+            _productionRepository.Update(prodution);
 
             await _commentRepository.Save();
 

@@ -837,8 +837,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                 MED_PRESSAO_ESTATICA_002 = XmlUtils.DecimalParser(producao?.MED_PRESSAO_ESTATICA_002, errorsInFormat, producaoElement?.Name.LocalName),
                                                 MED_TEMPERATURA_2_002 = XmlUtils.DecimalParser(producao?.MED_TEMPERATURA_2_002, errorsInFormat, producaoElement?.Name.LocalName),
                                                 PRZ_DURACAO_FLUXO_EFETIVO_002 = XmlUtils.DecimalParser(producao?.PRZ_DURACAO_FLUXO_EFETIVO_002, errorsInFormat, producaoElement?.Name.LocalName),
-                                                MED_BRUTO_MOVIMENTADO_002 = XmlUtils.DecimalParser(producao?.MED_BRUTO_MOVIMENTADO_002, errorsInFormat, producaoElement?.Name.LocalName),
-                                                MED_CORRIGIDO_MVMDO_002 = XmlUtils.DecimalParser(producao?.MED_CORRIGIDO_MVMDO_002, errorsInFormat, producaoElement?.Name.LocalName),
+                                                MED_BRUTO_MOVIMENTADO_002 = XmlUtils.DecimalParser(producao?.MED_BRUTO_MOVIMENTADO_002, errorsInFormat, producaoElement?.Name.LocalName) * 1000,
+                                                MED_CORRIGIDO_MVMDO_002 = XmlUtils.DecimalParser(producao?.MED_CORRIGIDO_MVMDO_002, errorsInFormat, producaoElement?.Name.LocalName) * 1000,
                                                 #endregion
 
                                                 FileName = data.Files[i].FileName,
@@ -2274,6 +2274,16 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         throw new BadRequestException("Datas incompatíveis entre medições, data de inicio da medição deve ser igual.");
                     }
                 }
+
+                if (file.File is not null)
+                {
+
+                    var fileInDatabase = await _measurementHistoryRepository
+                        .GetById(file.File.ImportId);
+
+                    if (fileInDatabase is not null)
+                        throw new BadRequestException("Recarregue o arquivo");
+                }
             }
 
             foreach (var file in data._002File)
@@ -2284,6 +2294,16 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     {
                         throw new BadRequestException("Datas incompatíveis entre medições, data de inicio da medição deve ser igual.");
                     }
+                }
+
+                if (file.File is not null)
+                {
+
+                    var fileInDatabase = await _measurementHistoryRepository
+                        .GetById(file.File.ImportId);
+
+                    if (fileInDatabase is not null)
+                        throw new BadRequestException("Recarregue o arquivo");
                 }
             }
 
@@ -2296,6 +2316,16 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         throw new BadRequestException("Datas incompatíveis entre medições, data de inicio da medição deve ser igual.");
                     }
                 }
+                if (file.File is not null)
+                {
+
+                    var fileInDatabase = await _measurementHistoryRepository
+                        .GetById(file.File.ImportId);
+
+                    if (fileInDatabase is not null)
+                        throw new BadRequestException("Recarregue o arquivo");
+                }
+
             }
 
             if (data.GasSummary is not null)
@@ -2329,9 +2359,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             if (installation is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Installation>());
 
+
             var dailyProduction = await _productionRepository.GetExistingByDate(measuredAt);
 
-            if (dailyProduction is null)
+            if (dailyProduction is null || (dailyProduction is not null && dailyProduction.IsActive is false))
             {
                 dailyProduction = new Production
                 {
@@ -2344,7 +2375,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 };
             }
 
-            if (dailyProduction.Gas is null && data.GasSummary is not null)
+            if ((dailyProduction.Gas is null && data.GasSummary is not null) || (dailyProduction.Gas is not null && dailyProduction.Gas.IsActive is false))
             {
                 dailyProduction.Gas = new Gas
                 {
@@ -2365,7 +2396,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             var totalOilWithoutBsw = 0m;
             var totalProduction = 0m;
             var bswAverage = 0m;
-
 
             foreach (var file in data._001File)
             {
@@ -2433,7 +2463,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         }
                     }
 
-                    if (bodyMeasurement.ImportId is not null)
+                    if (bodyMeasurement.ImportId != Guid.Empty)
                     {
                         var fileInfo = new FileBasicInfoDTO
                         {
@@ -2475,7 +2505,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                             if (base64HistoryMap.TryGetValue(base64String, out var history) is false)
                             {
-                                history = await _measurementService.Import(user, fileInfo, base64String, measurement.DHA_INICIO_PERIODO_MEDICAO_001);
+                                history = await _measurementService.Import(user, fileInfo, base64String, measurement.DHA_INICIO_PERIODO_MEDICAO_001, bodyMeasurement.ImportId);
                                 base64HistoryMap.Add(base64String, history);
                             }
 
@@ -2541,7 +2571,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     if (measuringPoint is null)
                         throw new NotFoundException($"{ErrorMessages.NotFound<MeasuringPoint>()} TAG: {measurement.COD_TAG_PONTO_MEDICAO_002}");
 
-                    if (bodyMeasurement.ImportId is not null)
+                    if (bodyMeasurement.ImportId != Guid.Empty)
                     {
                         var fileInfo = new FileBasicInfoDTO
                         {
@@ -2580,7 +2610,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                             if (base64HistoryMap.TryGetValue(base64String, out var history) is false)
                             {
-                                history = await _measurementService.Import(user, fileInfo, base64String, measurement.DHA_INICIO_PERIODO_MEDICAO_002);
+                                history = await _measurementService.Import(user, fileInfo, base64String, measurement.DHA_INICIO_PERIODO_MEDICAO_002, bodyMeasurement.ImportId);
                                 base64HistoryMap.Add(base64String, history);
                             }
 
@@ -2609,7 +2639,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     if (measuringPoint is null)
                         throw new NotFoundException($"{ErrorMessages.NotFound<MeasuringPoint>()} TAG: {measurement.COD_TAG_PONTO_MEDICAO_003}");
 
-                    if (bodyMeasurement.ImportId is not null)
+                    if (bodyMeasurement.ImportId != Guid.Empty)
                     {
                         var fileInfo = new FileBasicInfoDTO
                         {
@@ -2648,7 +2678,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                             if (base64HistoryMap.TryGetValue(base64String, out var history) is false)
                             {
-                                history = await _measurementService.Import(user, fileInfo, base64String, measurement.DHA_INICIO_PERIODO_MEDICAO_003);
+                                history = await _measurementService.Import(user, fileInfo, base64String, measurement.DHA_INICIO_PERIODO_MEDICAO_003, bodyMeasurement.ImportId);
                                 base64HistoryMap.Add(base64String, history);
                             }
 

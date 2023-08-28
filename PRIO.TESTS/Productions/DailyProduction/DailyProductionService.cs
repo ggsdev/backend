@@ -42,6 +42,7 @@ namespace PRIO.TESTS.Productions.DailyProduction
         private IOilVolumeCalculationRepository _oilRepository;
         private IMeasurementHistoryRepository _measurementHistoryRepository;
         private IInstallationRepository _installationRepository;
+        private IFieldRepository _fieldRepository;
         private IMapper _mapper;
 
         [SetUp]
@@ -108,7 +109,7 @@ namespace PRIO.TESTS.Productions.DailyProduction
                 CalculatedImportedBy = _user,
                 MeasuredAt = DateTime.UtcNow,
                 TotalProduction = 0m,
-                StatusProduction = false
+                StatusProduction = "aberto"
             };
 
             _fileType = new FileType()
@@ -127,9 +128,9 @@ namespace PRIO.TESTS.Productions.DailyProduction
             _installationRepository = new InstallationRepository(_context);
             _oilRepository = new OilVolumeCalculationRepository(_context);
             _measurementHistoryRepository = new MeasurementHistoryRepository(_context);
+            _fieldRepository = new FieldRepository(_context);
 
-
-            _service = new ProductionService(_productionRepository, _mapper, _gasRepository, _installationRepository, _oilRepository, _measurementHistoryRepository);
+            _service = new ProductionService(_productionRepository, _mapper, _gasRepository, _installationRepository, _oilRepository, _measurementHistoryRepository, _fieldRepository);
 
             var httpContext = new DefaultHttpContext();
             httpContext.Items["Id"] = _user.Id;
@@ -172,7 +173,7 @@ namespace PRIO.TESTS.Productions.DailyProduction
                 Id = productionId,
                 Installation = _installation,
                 MeasuredAt = productionDate,
-                StatusProduction = true,
+                StatusProduction = "fechado",
                 CalculatedImportedBy = _user,
                 CalculatedImportedAt = DateTime.UtcNow,
                 TotalProduction = 20m,
@@ -243,7 +244,7 @@ namespace PRIO.TESTS.Productions.DailyProduction
                 Id = productionId,
                 Installation = _installation,
                 MeasuredAt = productionDate,
-                StatusProduction = true,
+                StatusProduction = "fechado",
                 CalculatedImportedBy = _user,
                 CalculatedImportedAt = DateTime.UtcNow,
                 TotalProduction = 20m,
@@ -288,7 +289,7 @@ namespace PRIO.TESTS.Productions.DailyProduction
                 Id = Guid.NewGuid(),
                 Installation = _installation,
                 MeasuredAt = DateTime.UtcNow,
-                StatusProduction = true,
+                StatusProduction = "fechado",
                 GasDiferencial = gasDiferencial,
                 GasLinear = gasLinear,
                 Oil = oil,
