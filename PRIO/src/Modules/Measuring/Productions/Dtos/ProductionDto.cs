@@ -3,6 +3,7 @@ using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.ViewModels;
 using PRIO.src.Modules.Measuring.Comments.Dtos;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.WellProductions.Dtos;
 
 namespace PRIO.src.Modules.Measuring.Productions.Dtos
 {
@@ -156,11 +157,13 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
 
         public List<MeasurementHistoryWithMeasurementsDto> Files { get; set; }
 
-        public WaterTotalDto Water { get; set; }
+        public WaterDto Water { get; set; }
         public GasConsultingDtoFrsNull Gas { get; set; }
         public OilConsultingDtoFrsNull Oil { get; set; }
 
         public CreateUpdateCommentDto Comment { get; set; }
+
+        public AppropriationDto WellAppropriation { get; set; }
     }
 
     public class GasBurntDto

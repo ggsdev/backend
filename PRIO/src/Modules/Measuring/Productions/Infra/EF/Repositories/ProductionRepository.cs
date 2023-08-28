@@ -33,6 +33,14 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
             _context.FieldsProductions.Update(fieldProduction);
         }
 
+        public async Task<List<FieldProduction>> GetAllFieldProductionByProduction(Guid productionId)
+        {
+            return await _context.FieldsProductions
+                .Include(x => x.WellProductions)
+                .Where(x => x.ProductionId == productionId)
+                .ToListAsync();
+        }
+
         public async Task<FieldProduction?> GetFieldProductionByFieldAndProductionId(Guid fieldId, Guid productionId)
         {
             return await _context.FieldsProductions
@@ -71,6 +79,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                 .Include(x => x.GasLinear)
                 .Include(x => x.GasDiferencial)
                 .Include(x => x.Gas)
+                .Include(x => x.Water)
                 .Include(x => x.Oil)
                 .Include(x => x.FieldsFR)
                     .ThenInclude(x => x.Field)
@@ -91,6 +100,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                     .ThenInclude(x => x.Fields)
                     .ThenInclude(f => f.Wells)
                     .ThenInclude(d => d.BTPDatas)
+                    .Include(x => x.WellProductions)
+                        .ThenInclude(d => d.FieldProduction)
                 .Include(x => x.Comment)
                 .Include(x => x.GasLinear)
                 .Include(x => x.GasDiferencial)
