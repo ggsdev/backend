@@ -335,7 +335,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                         await _repository.AddAsync(wellAppropriation);
                     }
-
                     if (fieldProduction is not null)
                     {
                         fieldProduction.WaterProductionInField = totalWater;
