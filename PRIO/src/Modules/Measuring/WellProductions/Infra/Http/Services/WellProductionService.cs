@@ -136,7 +136,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                         var productionGas = fieldFR.FRGas is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.GasProductionInField, wellPotencialGasAsPercentageOfField) : 0;
                         var productionOil = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.OilProductionInField, wellPotencialOilAsPercentageOfField) : 0;
-                        var productionWater = (productionOil * btp.BSW) / (100 - btp.BSW);
+                        var productionWater = (productionOil * btp.BSW / 100) / (1 - btp.BSW / 100);
 
                         var wellAppropriation = new WellProduction
                         {
@@ -156,7 +156,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                             ProductionGasAsPercentageOfInstallation = fieldFR.FRGas is not null ? WellProductionUtils.CalculateWellProductionAsPercentageOfInstallation(wellPotencialGasAsPercentageOfField, fieldFR.FRGas.Value) : 0,
                             ProductionOilAsPercentageOfInstallation = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProductionAsPercentageOfInstallation(wellPotencialOilAsPercentageOfField, fieldFR.FROil.Value) : 0,
-                            ProductionWaterAsPercentageOfInstallation = wellPotencialWaterAsPercentageOfField,
+                            ProductionWaterAsPercentageOfInstallation = 0,
                         };
 
                         totalWater += wellAppropriation.ProductionWaterInWell;
@@ -216,6 +216,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                 await DistributeAccrossEntites(productionId);
             }
+
             else
             {
                 var uepFields = await _fieldRepository.GetFieldsByUepCode(production.Installation.UepCod);

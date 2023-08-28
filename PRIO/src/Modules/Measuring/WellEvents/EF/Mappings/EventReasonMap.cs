@@ -16,7 +16,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Mappings
 
             builder.Property(x => x.Downtime)
                .HasColumnType("CHAR")
-               .HasMaxLength(8)
+               .HasMaxLength(15)
                .IsRequired();
 
             builder.Property(x => x.Reason)

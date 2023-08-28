@@ -32,7 +32,10 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Controllers
         [HttpPatch("{id}")]
         public async Task<IActionResult> Patch([FromBody] UpdateCommentViewModel body, [FromRoute] Guid id)
         {
-            var result = await _service.UpdateComment(body, id);
+            if (HttpContext.Items["User"] is not User user)
+                throw new UnauthorizedAccessException("User not identified, please login first");
+
+            var result = await _service.UpdateComment(body, id, user);
 
             return Ok(result);
         }
