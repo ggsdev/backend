@@ -601,7 +601,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     ReturnDateDetected = nfsm.ReturnDate,
                     ResponsibleReport = nfsm.ReponsibleReport,
                     TypeOfNotification = nfsm.TypeOfNotification,
-                    BswsFixed = bswsFixed
+                    BswsFixed = bswsFixed,
+                    IsApplied = nfsm.IsApplied,
                 };
 
                 nfsmsDTO.Add(nfsmDTO);
@@ -642,6 +643,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
             var nfsmDTO = new NFSMGetAllDto
             {
+                Id = nfsm.Id,
                 Action = nfsm.Action,
                 CodeFailure = nfsm.CodeFailure,
                 DateOfOcurrence = nfsm.DateOfOcurrence,
@@ -662,7 +664,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                 ReturnDateDetected = nfsm.ReturnDate,
                 ResponsibleReport = nfsm.ReponsibleReport,
                 TypeOfNotification = nfsm.TypeOfNotification,
-                BswsFixed = bswsFixed
+                BswsFixed = bswsFixed,
+                IsApplied = nfsm.IsApplied
             };
             return nfsmDTO;
 
@@ -700,15 +703,14 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
             foreach (var measurementCorrected in nfsmInDatabase.Productions)
             {
-
                 var productionInDatabase = await _productionRepository
                     .GetExistingByDate(measurementCorrected.MeasuredAt);
 
                 if (productionInDatabase is null)
                     throw new NotFoundException(ErrorMessages.NotFound<Production>());
 
-                //if (productionInDatabase.StatusProduction.ToLower() != ProductionUtils.closedStatus)
-                //    throw new ConflictException("Produção precisa ter sido fechada para ser corrigida.");
+                if (productionInDatabase.StatusProduction.ToLower() != ProductionUtils.closedStatus)
+                    throw new ConflictException("Produção precisa ter sido fechada para ser corrigida.");
 
                 //if (measurementCorrected.DHA_MEDICAO_039 > nfsmInDatabase.Da)
                 //    throw new ConflictException("Data da medição não pode ser maior do que a data que a falha foi corrigida, TAG: DHA_RETORNO.");
@@ -800,7 +802,6 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     }
                 }
 
-
                 if (oilChanged && productionInDatabase.Oil is not null)
                 {
                     productionInDatabase.Oil.TotalOil = totalOil;
@@ -819,7 +820,6 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                 if (originalTotalOil != totalOil || originalTotalGasDiferencial != totalDiferencial || originalTotalGasLinear != totalLinear)
                 {
-                    productionInDatabase.StatusProduction = ProductionUtils.fixedStatus;
 
                     if (productionInDatabase.FieldsFR is not null)
                         foreach (var fieldFr in productionInDatabase.FieldsFR)
@@ -833,6 +833,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                             _installationRepository.UpdateFr(fieldFr);
                         }
 
+                    productionInDatabase.StatusProduction = ProductionUtils.fixedStatus;
+
                     _productionRepository.Update(productionInDatabase);
 
                     //var users = await _userService.GetAllEncryptedAdminUsers();
@@ -841,7 +843,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     //    try
                     //    {
 
-                    //        await SendEmail.Send(nfsm, admin);
+                    //await SendEmail.Send(nfsm, admin);
                     //    }
                     //    catch (Exception ex)
                     //    {
@@ -852,6 +854,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     await _wellProductionService.ReAppropriateWithNfsm(productionInDatabase.Id);
 
                     nfsmInDatabase.IsApplied = true;
+
+                    _repository.Update(nfsmInDatabase);
                 }
             }
 

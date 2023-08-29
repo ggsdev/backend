@@ -4,8 +4,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Models
 {
     public class EventReason : BaseModel
     {
-        public string Reason { get; set; }
-        public string Downtime { get; set; }
+        public string Reason { get; set; } = string.Empty;
+        public string Downtime { get; set; } = string.Empty;
         public WellEvent WellEvent { get; set; }
     }
 }

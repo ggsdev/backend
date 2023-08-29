@@ -64,6 +64,9 @@ using PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.Productions.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Productions.Interfaces;
+using PRIO.src.Modules.Measuring.WellEvents.EF.Repositories;
+using PRIO.src.Modules.Measuring.WellEvents.Http.Services;
+using PRIO.src.Modules.Measuring.WellEvents.Interfaces;
 using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.WellProductions.Interfaces;
@@ -206,6 +209,7 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddScoped<XMLImportService>();
     services.AddScoped<MeasurementService>();
     services.AddScoped<CommentService>();
+    services.AddScoped<WellEventService>();
 
     services.AddScoped<IMenuRepository, MenuRepository>();
     services.AddScoped<IMeasuringPointRepository, MeasuringPointRepository>();
@@ -218,6 +222,7 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddScoped<IGlobalOperationsRepository, GlobalOperationsRepository>();
     services.AddScoped<ICommentRepository, CommentRepository>();
     services.AddScoped<IWellProductionRepository, WellProductionRepository>();
+    services.AddScoped<IWellEventRepository, WellEventRepository>();
     #endregion
 
     #region Control Access Services

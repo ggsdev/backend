@@ -41,7 +41,7 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
             if (prodution.Gas is null)
                 throw new ConflictException("Produção de gás precisa ser fechada.");
 
-            if (prodution.WellProductions is null)
+            if (prodution.WellProductions is null || prodution.WellProductions.Count == 0)
                 throw new ConflictException("Apropriação da produção precisa ser feita.");
 
             var comment = new CommentInProduction
@@ -64,12 +64,16 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
             return commentDto;
         }
 
-        public async Task<CreateUpdateCommentDto> UpdateComment(UpdateCommentViewModel body, Guid id)
+        public async Task<CreateUpdateCommentDto> UpdateComment(UpdateCommentViewModel body, Guid id, User loggedUser)
         {
-            var comment = await _commentRepository.GetById(id);
+            var comment = await _commentRepository
+                .GetById(id);
 
             if (comment is null)
                 throw new NotFoundException(ErrorMessages.NotFound<CommentInProduction>());
+
+            if (comment.CommentedBy.Id != loggedUser.Id)
+                throw new ConflictException("Comentário só pode ser atualizado por quem comentou.");
 
             var updatedProperties = UpdateFields
                 .CompareUpdateReturnOnlyUpdated(comment, body);
