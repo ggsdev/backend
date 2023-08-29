@@ -17,6 +17,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Dtos
         public string? TypeOfNotification { get; set; }
         public string Action { get; set; }
         public string Methodology { get; set; }
+        public bool IsApplied { get; set; }
         public CreateUpdateInstallationDTO Installation { get; set; }
         public List<NFSMsProductionsDto>? MeasurementsFixed { get; set; }
         public List<BswFixedNfsm> BswsFixed { get; set; }

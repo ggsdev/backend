@@ -34,6 +34,11 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Respositories
             await _context.AddAsync(history);
         }
 
+        public void Update(NFSM nfsm)
+        {
+            _context.NFSMs.Update(nfsm);
+        }
+
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
