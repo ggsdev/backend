@@ -17,12 +17,12 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Controllers
             _service = wellEventService;
         }
 
-        [HttpPost]
+        [HttpPost("close")]
         public async Task<IActionResult> Post(CreateClosingEventViewModel body)
         {
-            await _service.CloseWellEvent(body);
+            await _service.CloseWellFieldEvent(body);
 
-            return Ok();
+            return NoContent();
         }
     }
 }

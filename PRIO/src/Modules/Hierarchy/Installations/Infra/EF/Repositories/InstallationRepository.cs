@@ -54,6 +54,11 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                .ToListAsync();
         }
 
+        public async Task<Installation?> GetUepById(Guid? id)
+        {
+            return await _context.Installations.FirstOrDefaultAsync(x => x.Id == id && x.IsProcessingUnit);
+        }
+
         public async Task<FieldFR?> GetFrByDateMeasuredAndFieldId(DateTime date, Guid fieldId)
         {
             return await _context.FieldsFRs

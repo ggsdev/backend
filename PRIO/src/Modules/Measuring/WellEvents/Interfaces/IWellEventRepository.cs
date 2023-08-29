@@ -6,6 +6,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Interfaces
     {
         Task Add(WellEvent wellEvent);
         void Update(WellEvent wellEvent);
+        Task<WellEvent?> GetRelatedEvent(Guid eventRelatedId);
         Task Save();
     }
 }
