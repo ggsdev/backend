@@ -3,6 +3,7 @@ using PRIO.src.Modules.FileImport.XML.Dtos;
 using PRIO.src.Modules.FileImport.XML.Infra.Utils;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
+using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Modules.Measuring.Comments.Dtos;
 using PRIO.src.Modules.Measuring.GasVolumeCalculations.Interfaces;
 using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models;
@@ -20,6 +21,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
     public class ProductionService
     {
         private readonly IProductionRepository _repository;
+        private readonly IWellRepository _wellRepository;
         private readonly IGasVolumeCalculationRepository _gasRepository;
         private readonly IOilVolumeCalculationRepository _oilRepository;
         private readonly IMeasurementHistoryRepository _fileHistoryRepository;
@@ -27,7 +29,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
         private readonly IInstallationRepository _installationRepository;
         private readonly IMapper _mapper;
 
-        public ProductionService(IProductionRepository productionRepository, IMapper mapper, IGasVolumeCalculationRepository gasVolumeCalculationRepository, IInstallationRepository installationRepository, IOilVolumeCalculationRepository oilVolumeCalculationRepository, IMeasurementHistoryRepository measurementHistoryRepository, IFieldRepository fieldRepository)
+        public ProductionService(IProductionRepository productionRepository, IMapper mapper, IGasVolumeCalculationRepository gasVolumeCalculationRepository, IInstallationRepository installationRepository, IOilVolumeCalculationRepository oilVolumeCalculationRepository, IMeasurementHistoryRepository measurementHistoryRepository, IFieldRepository fieldRepository, IWellRepository wellRepository)
         {
             _repository = productionRepository;
             _mapper = mapper;
@@ -36,7 +38,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
             _oilRepository = oilVolumeCalculationRepository;
             _fileHistoryRepository = measurementHistoryRepository;
             _fieldRepository = fieldRepository;
-
+            _wellRepository = wellRepository;
         }
 
         public async Task<ProductionDtoWithNullableDecimals> GetByDate(DateTime date)
@@ -679,20 +681,25 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
                 foreach (var wellP in fieldP.WellProductions)
                 {
-                    fieldPDto.WellAppropriations.Add(new WellProductionDto
-                    {
-                        Downtime = "N/A",
-                        ProductionGasInWellM3 = wellP.ProductionGasInWell,
-                        ProductionGasInWellSCF = wellP.ProductionGasInWell * ProductionUtils.m3ToSCFConversionMultipler,
+                    var well = await _wellRepository
+                        .GetByIdAsync(wellP.WellId);
+                    if (well is not null)
+                        fieldPDto.WellAppropriations.Add(new WellProductionDto
+                        {
+                            WellName = well.Name is not null ? well.Name : string.Empty,
+                            Downtime = "00:00:00",
+                            ProductionGasInWellM3 = wellP.ProductionGasInWell,
+                            ProductionGasInWellSCF = wellP.ProductionGasInWell * ProductionUtils.m3ToSCFConversionMultipler,
 
-                        ProductionOilInWellM3 = wellP.ProductionOilInWell,
-                        ProductionOilInWellBBL = wellP.ProductionOilInWell * ProductionUtils.m3ToBBLConversionMultiplier,
+                            ProductionOilInWellM3 = wellP.ProductionOilInWell,
+                            ProductionOilInWellBBL = wellP.ProductionOilInWell * ProductionUtils.m3ToBBLConversionMultiplier,
 
-                        ProductionWaterInWellM3 = wellP.ProductionWaterInWell,
+                            ProductionWaterInWellM3 = wellP.ProductionWaterInWell,
 
-                        ProductionWaterInWellBBL = wellP.ProductionWaterInWell * ProductionUtils.m3ToBBLConversionMultiplier,
+                            ProductionWaterInWellBBL = wellP.ProductionWaterInWell * ProductionUtils.m3ToBBLConversionMultiplier,
+                            WellProductionId = wellP.Id,
 
-                    });
+                        });
 
                 }
 

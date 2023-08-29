@@ -10,7 +10,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Models
         public string SystemRelated { get; set; } = "";
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public DateTime? Interval { get; set; }
+        public double? Interval { get; set; }
         public string StatusANP { get; set; } = string.Empty;
         public string StateANP { get; set; } = string.Empty;
         public Well Well { get; set; }

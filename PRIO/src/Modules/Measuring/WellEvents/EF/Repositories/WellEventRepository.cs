@@ -17,6 +17,11 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Repositories
             await _context.WellEvents.AddAsync(wellEvent);
         }
 
+        public void Update(WellEvent wellEvent)
+        {
+            _context.WellEvents.Update(wellEvent);
+        }
+
         public async Task Save()
         {
             await _context.SaveChangesAsync();

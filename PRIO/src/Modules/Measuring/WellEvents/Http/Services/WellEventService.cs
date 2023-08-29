@@ -11,8 +11,9 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
             _wellEventRepository = wellEventRepository;
         }
-        public async Task CreateEvent(CreateClosingEventViewModel body)
+        public async Task CloseWellEvent(CreateClosingEventViewModel body)
         {
+
 
         }
     }
