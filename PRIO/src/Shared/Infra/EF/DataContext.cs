@@ -145,8 +145,7 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<ZoneProduction> ZoneProductions { get; set; }
         public DbSet<EventReason> EventReasons { get; set; }
         public DbSet<WellEvent> WellEvents { get; set; }
-
-
+        public DbSet<ProductionLoss> ProductionLosses { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
