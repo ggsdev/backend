@@ -22,6 +22,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models
 
         public FieldProduction FieldProduction { get; set; }
         public List<CompletionProduction>? CompletionProductions { get; set; }
-        public List<WellEventWellProduction>? WellEventsWellProductions { get; set; }
+        public List<ProductionLoss>? ProductionLosses { get; set; }
     }
 }

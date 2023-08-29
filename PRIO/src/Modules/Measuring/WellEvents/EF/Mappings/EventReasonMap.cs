@@ -14,15 +14,13 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Mappings
             builder.Property(x => x.Description)
                 .HasColumnType("TEXT");
 
-            builder.Property(x => x.Downtime)
-               .HasColumnType("CHAR")
-               .HasMaxLength(15)
-               .IsRequired();
-
             builder.Property(x => x.Reason)
                .HasColumnType("VARCHAR")
                .HasMaxLength(1000)
                .IsRequired();
+
+            builder.Property(x => x.Comment)
+              .HasColumnType("text");
 
             builder.HasOne(c => c.WellEvent)
                 .WithMany(u => u.EventReasons)

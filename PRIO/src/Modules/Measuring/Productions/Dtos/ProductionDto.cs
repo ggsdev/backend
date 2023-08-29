@@ -151,6 +151,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
 
     public class ProductionDtoWithNullableDecimals
     {
+        public Guid ProductionId { get; set; }
         public string InstallationName { get; set; }
         public string UepName { get; set; }
         public DailyProduction DailyProduction { get; set; }
