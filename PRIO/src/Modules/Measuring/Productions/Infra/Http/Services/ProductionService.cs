@@ -709,7 +709,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 Files = files,
                 Comment = commentDto,
                 Water = waterDto,
-                WellAppropriation = appropriateDto
+                WellAppropriation = appropriateDto,
+                IsCalculated = production.IsCalculated
 
             };
 
@@ -1688,6 +1689,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                     var productionDto = new GetAllProductionsDto
                     {
                         Id = production.Id,
+                        IsCalculated = production.IsCalculated,
                         DateProduction = production.MeasuredAt.ToString("dd/MM/yyyy"),
                         Gas = new GasTotalDto
                         {

@@ -20,7 +20,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Models
         public GasLinear? GasLinear { get; set; }
         public Gas? Gas { get; set; }
         public GasDiferencial? GasDiferencial { get; set; }
-
+        public bool IsCalculated { get; set; }
         public Water? Water { get; set; }
         public User CalculatedImportedBy { get; set; }
         public string StatusProduction { get; set; } = "aberto";

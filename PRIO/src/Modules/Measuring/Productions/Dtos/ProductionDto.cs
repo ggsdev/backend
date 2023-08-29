@@ -34,8 +34,9 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
 
     public class GetAllProductionsDto
     {
-        public bool IsActive { get; set; }
         public Guid Id { get; set; }
+        public bool IsCalculated { get; set; }
+        public bool IsActive { get; set; }
         public string Status { get; set; }
         public string UepName { get; set; }
         public string DateProduction { get; set; }
@@ -154,6 +155,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
         public Guid ProductionId { get; set; }
         public string InstallationName { get; set; }
         public string UepName { get; set; }
+        public bool IsCalculated { get; set; }
+
         public DailyProduction DailyProduction { get; set; }
 
         public List<MeasurementHistoryWithMeasurementsDto> Files { get; set; }
