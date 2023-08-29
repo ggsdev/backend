@@ -21,23 +21,19 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Mappings
 
             builder.Property(x => x.EventStatus)
               .HasColumnType("char")
-              .HasMaxLength(1)
-              .IsRequired();
+              .HasMaxLength(1);
 
             builder.Property(x => x.SystemRelated)
               .HasColumnType("varchar")
-              .HasMaxLength(20)
-              .IsRequired();
+              .HasMaxLength(20);
 
             builder.Property(x => x.StatusANP)
               .HasColumnType("VARCHAR")
-              .HasMaxLength(100)
-              .IsRequired();
+              .HasMaxLength(100);
 
             builder.Property(x => x.StateANP)
               .HasColumnType("VARCHAR")
-              .HasMaxLength(100)
-              .IsRequired();
+              .HasMaxLength(100);
 
             builder.HasOne(c => c.Well).
                 WithMany(u => u.WellEvents)
