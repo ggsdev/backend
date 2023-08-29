@@ -700,6 +700,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
             var productionDto = new ProductionDtoWithNullableDecimals
             {
+                ProductionId = production.Id,
                 InstallationName = production.Installation.Name,
                 UepName = production.Installation.UepName,
                 DailyProduction = dailyProduction,
