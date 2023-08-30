@@ -1,5 +1,6 @@
-﻿using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
-using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
+﻿using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
+using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
 using PRIO.src.Modules.Measuring.WellEvents.Interfaces;
 using PRIO.src.Modules.Measuring.WellEvents.ViewModels;
@@ -11,15 +12,20 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
     {
         private readonly IWellEventRepository _wellEventRepository;
         private readonly IInstallationRepository _installationRepository;
+        private readonly IWellRepository _wellRepository;
         private readonly IFieldRepository _fieldRepository;
-        public WellEventService(IWellEventRepository wellEventRepository, IInstallationRepository installationRepository, IFieldRepository fieldRepository)
+        public WellEventService(IWellEventRepository wellEventRepository, IInstallationRepository installationRepository, IFieldRepository fieldRepository, IWellRepository wellRepository)
         {
             _wellEventRepository = wellEventRepository;
             _installationRepository = installationRepository;
             _fieldRepository = fieldRepository;
+            _wellRepository = wellRepository;
         }
         public async Task CloseWellFieldEvent(CreateClosingEventViewModel body)
         {
+            if (DateTime.TryParse(body.StartDate, out var parsedStartDate) is false)
+                throw new BadRequestException("Formato de data inválido deve ser 'dd/MM/yyyy'.");
+
             var eventRelated = await _wellEventRepository
                 .GetRelatedEvent(body.EventRelatedId);
 
@@ -29,24 +35,17 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             if (eventRelated.EventStatus.ToUpper() == "F")
                 throw new ConflictException("Evento relacionado não pode ser de tipo 'Fechamento'.");
 
-            var uep = await _installationRepository
-                .GetUepById(body.UepId);
+            var wellsList = new List<Well>();
 
-            if (uep is null)
-                throw new NotFoundException("UEP não encontrada.");
-
-            var field = await _fieldRepository
-                .GetByIdAsync(body.FieldId);
-
-            if (field is null)
-                throw new NotFoundException(ErrorMessages.NotFound<Field>());
-
-            if (field.Wells is null || field.Wells.Count == 0)
-                throw new NotFoundException("Não foram encontrados poços nesse campo.");
-
-            foreach (var well in field.Wells)
+            foreach (var well in body.Wells)
             {
-                var lastEvent = well.WellEvents
+                var wellInDatabase = await _wellRepository
+                    .GetByIdAsync(well.WellId);
+
+                if (wellInDatabase is null)
+                    throw new NotFoundException(ErrorMessages.NotFound<Well>());
+
+                var lastEvent = wellInDatabase.WellEvents
                     .LastOrDefault();
 
                 if (lastEvent is null)
@@ -54,15 +53,14 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
                 if (lastEvent.EventStatus != "A")
                     throw new ConflictException("O último evento do poço deve ser de abertura para que seja possível cadastrar um evento de fechamento.");
-            }
 
-            var parsedStartDate = DateTime.Parse(body.StartDate);
+                wellsList.Add(wellInDatabase);
+            }
 
             var eventReason = new EventReason
             {
                 Id = Guid.NewGuid(),
                 Reason = body.Reason,
-
                 StartDate = parsedStartDate
             };
 
@@ -71,7 +69,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                     eventReason
                 };
 
-            foreach (var well in field.Wells)
+            foreach (var well in wellsList)
             {
                 var lastEvent = well.WellEvents
                    .LastOrDefault();
@@ -112,10 +110,33 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
                     _wellEventRepository.Update(lastEvent);
                 }
-
             }
 
             await _wellEventRepository.Save();
         }
+        //public async Task<List<InstallationDTO>> GetUepsForWellEvent()
+        //{
+        //    var installations = await _installationRepository
+        //        .GetUEPsAsync();
+
+        //    foreach (var installation in installations)
+        //    {
+        //        foreach (var field in installation.Fields)
+        //        {
+        //            foreach (var well in field.Wells)
+        //            {
+        //                foreach (var wellEvent in well.WellEvents)
+        //                {
+        //                    var wellDto = 
+
+
+        //                }
+
+        //            }
+        //        }
+        //    }
+
+        //    return installationsDTO;
+        //}
     }
 }
