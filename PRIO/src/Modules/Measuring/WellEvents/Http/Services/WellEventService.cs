@@ -31,7 +31,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
             var dateNow = DateTime.UtcNow.AddHours(-3);
 
-            if (dateNow > parsedStartDate)
+            if (parsedStartDate > dateNow)
                 throw new ConflictException("Não é possível cadastrar um evento no futuro");
 
             var wellsList = new List<Well>();
@@ -214,6 +214,11 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             if (DateTime.TryParseExact(body.EventDateAndHour, "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedStartDate) is false)
                 throw new BadRequestException("Formato de data inválido deve ser 'dd/MM/yyyy HH:mm'.");
 
+            var dateNow = DateTime.UtcNow.AddHours(-3);
+
+            if (parsedStartDate > dateNow)
+                throw new ConflictException("Não é possível cadastrar um evento no futuro");
+
             var wellsList = new List<Well>();
 
             var wellInDatabase = await _wellRepository
@@ -331,26 +336,22 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
             foreach (var reason in wellEvent.EventReasons)
             {
-                //var reasonDto = new ReasonDetailedDto
-                //{
+                var reasonDto = new ReasonDetailedDto
+                {
+                    //Downtime = reason.Interval,
+                    EndDate = reason.EndDate is not null ? reason.EndDate.Value.ToString("dd/MM/yyyy HH:mm") : "",
+                    StartDate = reason.StartDate.ToString("dd/MM/yyyy HH:mm"),
+                    ProductionLoss = 0,
+                    SystemRelated = "",
+                    TimeOperating = "",
 
-                //    Downtime = reason.Interval,
-                //    EndDate = reason.EndDate is not null ? reason.EndDate.Value.ToString("dd/MM/yyyy HH:mm") : "",
-                //    StartDate = reason.StartDate.ToString("dd/MM/yyyy HH:mm"),
-                //    ProductionLoss = 0,
-                //    SystemRelated = "",
-                //    TimeOperating = "",
+                };
 
-                //};
-
-
-                //reasonsDetailed.Add(reasonDto);
+                reasonsDetailed.Add(reasonDto);
             }
 
             var wellEventDto = new WellEventByIdDto
             {
-
-
             };
 
 
