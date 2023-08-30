@@ -214,7 +214,9 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
             return await _context.Installations
                 .Include(x => x.Cluster)
                 .Include(x => x.User)
-
+                .Include(x => x.Fields)
+                    .ThenInclude(x => x.Wells)
+                        .ThenInclude(x => x.WellEvents)
                 .ToListAsync();
         }
         public async Task<List<Installation>> GetUEPsAsync()
