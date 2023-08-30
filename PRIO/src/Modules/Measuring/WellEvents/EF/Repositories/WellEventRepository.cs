@@ -1,4 +1,5 @@
-﻿using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
 using PRIO.src.Modules.Measuring.WellEvents.Interfaces;
 using PRIO.src.Shared.Infra.EF;
 
@@ -25,6 +26,10 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Repositories
         public async Task Save()
         {
             await _context.SaveChangesAsync();
+        }
+        public async Task<WellEvent?> GetRelatedEvent(Guid eventRelatedId)
+        {
+            return await _context.WellEvents.FirstOrDefaultAsync(x => x.Id == eventRelatedId);
         }
     }
 }

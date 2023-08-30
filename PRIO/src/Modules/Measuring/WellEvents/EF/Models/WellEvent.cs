@@ -11,8 +11,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Models
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public double? Interval { get; set; }
-        public string StatusANP { get; set; } = string.Empty;
-        public string StateANP { get; set; } = string.Empty;
+        public string? StatusANP { get; set; }
+        public string? StateANP { get; set; }
         public Well Well { get; set; }
         public WellEvent? EventRelated { get; set; }
         public List<EventReason> EventReasons { get; set; } = new();
