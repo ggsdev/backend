@@ -54,6 +54,11 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                .ToListAsync();
         }
 
+        public async Task<Installation?> GetUepById(Guid? id)
+        {
+            return await _context.Installations.FirstOrDefaultAsync(x => x.Id == id && x.IsProcessingUnit);
+        }
+
         public async Task<FieldFR?> GetFrByDateMeasuredAndFieldId(DateTime date, Guid fieldId)
         {
             return await _context.FieldsFRs
@@ -209,7 +214,9 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
             return await _context.Installations
                 .Include(x => x.Cluster)
                 .Include(x => x.User)
-
+                .Include(x => x.Fields)
+                    .ThenInclude(x => x.Wells)
+                        .ThenInclude(x => x.WellEvents)
                 .ToListAsync();
         }
         public async Task<List<Installation>> GetUEPsAsync()
@@ -217,6 +224,9 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
             return await _context.Installations
                 .Include(x => x.Cluster)
                 .Include(x => x.User)
+                .Include(x => x.Fields)
+                    .ThenInclude(x => x.Wells)
+                        .ThenInclude(x => x.WellEvents)
                 .Where(x => x.IsProcessingUnit == true)
                 .ToListAsync();
         }

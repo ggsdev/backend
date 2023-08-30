@@ -23,6 +23,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
             return await _context.Fields
                 .Include(x => x.User)
                .Include(x => x.Wells)
+                .ThenInclude(x => x.WellEvents)
                .Include(x => x.Installation)
                .ThenInclude(i => i!.Cluster)
                .FirstOrDefaultAsync(x => x.Id == id);

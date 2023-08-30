@@ -595,8 +595,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
             var waterDto = new WaterDto
             {
                 Id = production.Water is not null ? production.Water.Id : Guid.Empty,
-                TotalWaterM3 = production.Water is not null ? production.Water.TotalWater : 0,
-                TotalWaterBBL = production.Water is not null ? production.Water.TotalWater * ProductionUtils.m3ToBBLConversionMultiplier : 0,
+                TotalWaterM3 = Math.Round(production.Water is not null ? production.Water.TotalWater : 0, 5),
+                TotalWaterBBL = Math.Round(production.Water is not null ? production.Water.TotalWater * ProductionUtils.m3ToBBLConversionMultiplier : 0, 5),
             };
 
             var oilFrs = new FRViewModelNull
@@ -668,12 +668,12 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 {
                     FieldName = field.Name,
                     FieldProductionId = fieldP.Id,
-                    GasProductionInFieldM3 = fieldP.GasProductionInField,
-                    GasProductionInFieldSCF = fieldP.GasProductionInField * ProductionUtils.m3ToSCFConversionMultipler,
-                    OilProductionInFieldM3 = fieldP.OilProductionInField,
-                    OilProductionInFieldBBL = fieldP.OilProductionInField * ProductionUtils.m3ToBBLConversionMultiplier,
-                    WaterProductionInFieldBBL = fieldP.WaterProductionInField * ProductionUtils.m3ToBBLConversionMultiplier,
-                    WaterProductionInFieldM3 = fieldP.WaterProductionInField,
+                    GasProductionInFieldM3 = Math.Round(fieldP.GasProductionInField, 5),
+                    GasProductionInFieldSCF = Math.Round(fieldP.GasProductionInField * ProductionUtils.m3ToSCFConversionMultipler, 5),
+                    OilProductionInFieldM3 = Math.Round(fieldP.OilProductionInField, 5),
+                    OilProductionInFieldBBL = Math.Round(fieldP.OilProductionInField * ProductionUtils.m3ToBBLConversionMultiplier, 5),
+                    WaterProductionInFieldBBL = Math.Round(fieldP.WaterProductionInField * ProductionUtils.m3ToBBLConversionMultiplier, 5),
+                    WaterProductionInFieldM3 = Math.Round(fieldP.WaterProductionInField, 5),
                     WellAppropriations = new()
                 };
 
@@ -688,21 +688,20 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             WellName = well.Name is not null ? well.Name : string.Empty,
                             Downtime = "00:00:00",
-                            ProductionGasInWellM3 = wellP.ProductionGasInWell,
-                            ProductionGasInWellSCF = wellP.ProductionGasInWell * ProductionUtils.m3ToSCFConversionMultipler,
+                            ProductionGasInWellM3 = Math.Round(wellP.ProductionGasInWell, 5),
+                            ProductionGasInWellSCF = Math.Round(wellP.ProductionGasInWell * ProductionUtils.m3ToSCFConversionMultipler, 5),
 
-                            ProductionOilInWellM3 = wellP.ProductionOilInWell,
-                            ProductionOilInWellBBL = wellP.ProductionOilInWell * ProductionUtils.m3ToBBLConversionMultiplier,
+                            ProductionOilInWellM3 = Math.Round(wellP.ProductionOilInWell, 5),
+                            ProductionOilInWellBBL = Math.Round(wellP.ProductionOilInWell * ProductionUtils.m3ToBBLConversionMultiplier, 5),
 
-                            ProductionWaterInWellM3 = wellP.ProductionWaterInWell,
+                            ProductionWaterInWellM3 = Math.Round(wellP.ProductionWaterInWell, 5),
 
-                            ProductionWaterInWellBBL = wellP.ProductionWaterInWell * ProductionUtils.m3ToBBLConversionMultiplier,
+                            ProductionWaterInWellBBL = Math.Round(wellP.ProductionWaterInWell * ProductionUtils.m3ToBBLConversionMultiplier, 5),
                             WellProductionId = wellP.Id,
 
                         });
 
                 }
-
             }
 
             var productionDto = new ProductionDtoWithNullableDecimals
@@ -1830,40 +1829,42 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
             if (production.WellProductions is not null && production.WellProductions.Count > 0)
                 throw new ConflictException("Apropriação já foi feita, não é possível deletar a produção desse dia.");
 
+            var deletedAt = DateTime.UtcNow.AddHours(-3);
+
             if (production.GasLinear is not null)
             {
                 production.GasLinear.IsActive = false;
-                production.GasLinear.DeletedAt = DateTime.UtcNow.AddHours(-3);
+                production.GasLinear.DeletedAt = deletedAt;
             }
 
             if (production.GasDiferencial is not null)
             {
                 production.GasDiferencial.IsActive = false;
-                production.GasDiferencial.DeletedAt = DateTime.UtcNow.AddHours(-3);
+                production.GasDiferencial.DeletedAt = deletedAt;
             }
 
             if (production.Gas is not null)
             {
                 production.Gas.IsActive = false;
-                production.Gas.DeletedAt = DateTime.UtcNow.AddHours(-3);
+                production.Gas.DeletedAt = deletedAt;
             }
 
             if (production.Oil is not null)
             {
                 production.Oil.IsActive = false;
-                production.Oil.DeletedAt = DateTime.UtcNow.AddHours(-3);
+                production.Oil.DeletedAt = deletedAt;
             }
 
             //if (production.Water is not null)
             //{
             //    production.Water.IsActive = false;
-            //    production.Water.DeletedAt = DateTime.UtcNow.AddHours(-3);
+            //    production.Water.DeletedAt = deletedAt;
             //}
 
             //if (production.Comment is not null)
             //{
             //    production.Comment.IsActive = false;
-            //    production.Comment.DeletedAt = DateTime.UtcNow.AddHours(-3);
+            //    production.Comment.DeletedAt = deletedAt;
             //}
 
             if (production.NFSMs is not null)
@@ -1871,7 +1872,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 foreach (var nfsm in production.NFSMs)
                 {
                     nfsm.IsActive = false;
-                    nfsm.DeletedAt = DateTime.UtcNow.AddHours(-3);
+                    nfsm.DeletedAt = deletedAt;
 
                 }
             }
@@ -1881,7 +1882,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 foreach (var fieldFR in production.FieldsFR)
                 {
                     fieldFR.IsActive = false;
-                    fieldFR.DeletedAt = DateTime.UtcNow.AddHours(-3);
+                    fieldFR.DeletedAt = deletedAt;
                 }
             }
 
@@ -1890,13 +1891,12 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 foreach (var measurement in production.Measurements)
                 {
                     measurement.IsActive = false;
-                    measurement.DeletedAt = DateTime.UtcNow.AddHours(-3);
+                    measurement.DeletedAt = deletedAt;
                 }
             }
 
-
             production.IsActive = false;
-            production.DeletedAt = DateTime.UtcNow.AddHours(-3);
+            production.DeletedAt = deletedAt;
 
             _repository.Update(production);
 
