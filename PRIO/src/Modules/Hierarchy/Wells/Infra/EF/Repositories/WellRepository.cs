@@ -60,6 +60,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
         public async Task<Well?> GetWithFieldAsync(Guid? id)
         {
             return await _context.Wells
+                .Include(x => x.WellEvents)
                 .Include(x => x.Field)
                 .Include(x => x.Completions)
                 .FirstOrDefaultAsync(x => x.Id == id);

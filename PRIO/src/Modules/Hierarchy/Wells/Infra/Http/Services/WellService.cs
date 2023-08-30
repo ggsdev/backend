@@ -234,12 +234,14 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
 
             //criação evento de fechamento
             var lastEventOfAll = well.WellEvents
+                .OrderBy(e => e.CreatedAt)
                 .LastOrDefault();
 
             if (lastEventOfAll is not null && lastEventOfAll.EventStatus.ToUpper() == "A")
             {
                 var lastEventOfTypeClosing = well.WellEvents
-               .LastOrDefault(x => x.EventStatus == "F");
+                .OrderBy(e => e.CreatedAt)
+                .LastOrDefault(x => x.EventStatus == "F");
 
                 int lastCode;
                 var codeSequencial = string.Empty;
