@@ -13,6 +13,13 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Repositories
             _context = context;
         }
 
+        public async Task<WellEvent?> GetById(Guid id)
+        {
+            return await _context.WellEvents
+                .Include(x => x.EventReasons)
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public async Task Add(WellEvent wellEvent)
         {
             await _context.WellEvents.AddAsync(wellEvent);
@@ -22,21 +29,9 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Repositories
         {
             _context.WellEvents.Update(wellEvent);
         }
-        public async Task<List<WellEvent>> GetWellsWithEvents(Guid fieldId, string eventType)
-        {
-            return await _context.WellEvents
-                .Include(x => x.Well)
-                    .ThenInclude(x => x.Field)
-                .Where(x => x.EventStatus == eventType && x.Well.Field.Id == fieldId)
-                .ToListAsync();
-        }
         public async Task Save()
         {
             await _context.SaveChangesAsync();
-        }
-        public async Task<WellEvent?> GetRelatedEvent(Guid eventRelatedId)
-        {
-            return await _context.WellEvents.FirstOrDefaultAsync(x => x.Id == eventRelatedId);
         }
     }
 }
