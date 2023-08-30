@@ -372,6 +372,13 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                     throw new ConflictException(ErrorMessages.CodAlreadyExists<Installation>());
             }
 
+            if (body.Name is not null)
+            {
+                var installationInDatabase = await _installationRepository.GetByNameAsync(body.Name);
+                if (installationInDatabase is not null && installationInDatabase.Id != installation.Id)
+                    throw new ConflictException($"Já existe uma instalação com esse nome: {body.Name}");
+            }
+
             var beforeChangesInstallation = _mapper.Map<InstallationHistoryDTO>(installation);
 
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(installation, body);

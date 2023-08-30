@@ -137,6 +137,12 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
                     throw new ConflictException(ErrorMessages.CodAlreadyExists<Field>());
             }
 
+            if (body.Name is not null)
+            {
+                var fieldInDatabase = await _fieldRepository.GetByNameAsync(body.Name);
+                if (fieldInDatabase is not null && fieldInDatabase.Id != field.Id)
+                    throw new ConflictException($"Já existe um campo com esse nome: {body.Name}");
+            }
 
             var beforeChangesField = _mapper.Map<FieldHistoryDTO>(field);
 

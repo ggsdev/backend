@@ -439,6 +439,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
             await _productionRepository.AddWaterProduction(waterInUep);
 
             production.Water = waterInUep;
+            production.IsCalculated = true;
 
             appropriationDto.WaterProduction = waterDto;
 

@@ -116,7 +116,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
             if (body.Name is not null)
             {
                 var clusterInDatabase = await _clusterRepository.GetClusterByNameAsync(body.Name);
-                if (clusterInDatabase is not null)
+                if (clusterInDatabase is not null && clusterInDatabase.Id != cluster.Id)
                     throw new ConflictException($"Já existe um Cluster com esse nome: {body.Name}");
             }
 
