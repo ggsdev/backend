@@ -18,6 +18,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
             return await _context.Wells
                     .FirstOrDefaultAsync(x => x.CodWellAnp == cod);
         }
+
         public async Task<Well?> GetByIdAsync(Guid? id)
         {
             return await _context.Wells

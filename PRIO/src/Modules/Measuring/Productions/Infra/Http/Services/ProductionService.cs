@@ -1829,40 +1829,42 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
             if (production.WellProductions is not null && production.WellProductions.Count > 0)
                 throw new ConflictException("Apropriação já foi feita, não é possível deletar a produção desse dia.");
 
+            var deletedAt = DateTime.UtcNow.AddHours(-3);
+
             if (production.GasLinear is not null)
             {
                 production.GasLinear.IsActive = false;
-                production.GasLinear.DeletedAt = DateTime.UtcNow.AddHours(-3);
+                production.GasLinear.DeletedAt = deletedAt;
             }
 
             if (production.GasDiferencial is not null)
             {
                 production.GasDiferencial.IsActive = false;
-                production.GasDiferencial.DeletedAt = DateTime.UtcNow.AddHours(-3);
+                production.GasDiferencial.DeletedAt = deletedAt;
             }
 
             if (production.Gas is not null)
             {
                 production.Gas.IsActive = false;
-                production.Gas.DeletedAt = DateTime.UtcNow.AddHours(-3);
+                production.Gas.DeletedAt = deletedAt;
             }
 
             if (production.Oil is not null)
             {
                 production.Oil.IsActive = false;
-                production.Oil.DeletedAt = DateTime.UtcNow.AddHours(-3);
+                production.Oil.DeletedAt = deletedAt;
             }
 
             //if (production.Water is not null)
             //{
             //    production.Water.IsActive = false;
-            //    production.Water.DeletedAt = DateTime.UtcNow.AddHours(-3);
+            //    production.Water.DeletedAt = deletedAt;
             //}
 
             //if (production.Comment is not null)
             //{
             //    production.Comment.IsActive = false;
-            //    production.Comment.DeletedAt = DateTime.UtcNow.AddHours(-3);
+            //    production.Comment.DeletedAt = deletedAt;
             //}
 
             if (production.NFSMs is not null)
@@ -1870,7 +1872,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 foreach (var nfsm in production.NFSMs)
                 {
                     nfsm.IsActive = false;
-                    nfsm.DeletedAt = DateTime.UtcNow.AddHours(-3);
+                    nfsm.DeletedAt = deletedAt;
 
                 }
             }
@@ -1880,7 +1882,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 foreach (var fieldFR in production.FieldsFR)
                 {
                     fieldFR.IsActive = false;
-                    fieldFR.DeletedAt = DateTime.UtcNow.AddHours(-3);
+                    fieldFR.DeletedAt = deletedAt;
                 }
             }
 
@@ -1889,13 +1891,12 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 foreach (var measurement in production.Measurements)
                 {
                     measurement.IsActive = false;
-                    measurement.DeletedAt = DateTime.UtcNow.AddHours(-3);
+                    measurement.DeletedAt = deletedAt;
                 }
             }
 
-
             production.IsActive = false;
-            production.DeletedAt = DateTime.UtcNow.AddHours(-3);
+            production.DeletedAt = deletedAt;
 
             _repository.Update(production);
 

@@ -266,5 +266,16 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
             await _wellEventRepository.Save();
         }
+
+        public async Task GetWellsWithEvents(Guid fieldId, string eventType)
+        {
+            if (eventType.ToUpper().Trim() != "F" && eventType != "A".ToUpper().Trim())
+                throw new BadRequestException("Tipos de evento permitidos são 'A' para abertura e 'F' para fechamento");
+
+            var wellEvents = await _wellEventRepository
+                .GetWellsWithEvents(fieldId, eventType);
+
+
+        }
     }
 }
