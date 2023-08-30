@@ -36,7 +36,11 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                 .Where(x => x.Installation.UepCod == code && x.IsActive)
                 .ToListAsync();
         }
-
+        public async Task<bool> Any(Guid id)
+        {
+            return await _context.Fields
+                .AnyAsync(x => x.Id == id);
+        }
 
         public async Task<List<Field>> GetFieldsByInstallationId(Guid id)
         {

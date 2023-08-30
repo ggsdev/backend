@@ -19,6 +19,15 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
                     .FirstOrDefaultAsync(x => x.CodWellAnp == cod);
         }
 
+        public async Task<List<Well>> GetWellsWithEvents(Guid fieldId, string eventType)
+        {
+            return await _context.Wells
+                .Include(x => x.WellEvents)
+                .Include(x => x.Field)
+                .Where(x => x.Field.Id == fieldId)
+                .ToListAsync();
+        }
+
         public async Task<Well?> GetByIdAsync(Guid? id)
         {
             return await _context.Wells
