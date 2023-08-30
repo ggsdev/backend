@@ -41,7 +41,9 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
 
         public async Task<CreateUpdateWellDTO> CreateWell(CreateWellViewModel body, User user)
         {
-            var wellExistingCode = await _wellRepository.GetByCode(body.CodWellAnp);
+            var wellExistingCode = await _wellRepository
+                .GetByCode(body.CodWellAnp);
+
             if (wellExistingCode is not null)
                 throw new ConflictException(ErrorMessages.CodAlreadyExists<Well>());
 
@@ -53,7 +55,9 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             if (field.IsActive is false)
                 throw new NotFoundException(ErrorMessages.Inactive<Field>());
 
-            var wellSameName = await _wellRepository.GetByNameAsync(body.Name);
+            var wellSameName = await _wellRepository
+                .GetByNameAsync(body.Name);
+
             if (wellSameName is not null)
                 throw new ConflictException($"Já existe um poço com o nome: {body.Name}");
 

@@ -29,6 +29,11 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             if (DateTime.TryParseExact(body.EventDateAndHour, "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedStartDate) is false)
                 throw new BadRequestException("Formato de data inválido deve ser 'dd/MM/yyyy HH:mm'.");
 
+            var dateNow = DateTime.UtcNow.AddHours(-3);
+
+            if (dateNow > parsedStartDate)
+                throw new ConflictException("Não é possível cadastrar um evento no futuro");
+
             var wellsList = new List<Well>();
 
             var lastEventWrongList = new List<string>();
@@ -59,7 +64,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
             if (lastEventWrongList.Count > 0)
                 throw new BadRequestException(message: "O último evento do poço deve ser de abertura para que seja possível cadastrar um evento de fechamento.", errors: lastEventWrongList);
-
 
             var eventReason = new EventReason
             {
@@ -114,8 +118,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
                 if (lastEvent is not null)
                 {
-                    if (parsedStartDate > lastEvent.EndDate)
-                        throw new BadRequestException("Data de início, não pode ser maior que data do fim");
 
                     lastEvent.EndDate = parsedStartDate;
                     lastEvent.Interval = (parsedStartDate - lastEvent.StartDate).TotalHours;
