@@ -4,11 +4,11 @@ using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models;
 
 namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Mappings
 {
-    public class BTPDataMap : IEntityTypeConfiguration<BTPData>
+    public class WellTestMap : IEntityTypeConfiguration<WellTests>
     {
-        public void Configure(EntityTypeBuilder<BTPData> builder)
+        public void Configure(EntityTypeBuilder<WellTests> builder)
         {
-            builder.ToTable("BTPDatas");
+            builder.ToTable("WellTests");
 
             builder.Property(x => x.Filename)
              .HasColumnType("VARCHAR")
@@ -94,8 +94,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Mappings
                .IsRequired();
 
             builder.HasOne(x => x.BTPBase64)
-               .WithOne(d => d.BTPData)
-               .HasForeignKey<BTPData>("BTPBase64Id").IsRequired();
+               .WithOne(d => d.WellTest)
+               .HasForeignKey<WellTests>("BTPBase64Id").IsRequired();
         }
     }
 }

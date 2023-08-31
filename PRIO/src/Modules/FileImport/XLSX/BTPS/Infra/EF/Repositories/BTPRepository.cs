@@ -44,15 +44,15 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
         #endregion
 
         #region BTPData
-        public async Task<List<BTPData>> GetAllBTPsDataAsync()
+        public async Task<List<WellTests>> GetAllBTPsDataAsync()
         {
             return await _context.BTPDatas.Include(x => x.Well).Include(x => x.BTPBase64).ThenInclude(x => x.User).ToListAsync();
         }
-        public async Task<BTPData?> GetBTPsDataByWellIdAndActiveAsync(Guid wellId)
+        public async Task<WellTests?> GetBTPsDataByWellIdAndActiveAsync(Guid wellId)
         {
             return await _context.BTPDatas.Include(x => x.Well).Where(x => x.Well.Id == wellId && x.IsActive).FirstOrDefaultAsync();
         }
-        public async Task<List<BTPData>?> ListBTPSDataActiveByWellId(Guid wellId)
+        public async Task<List<WellTests>?> ListBTPSDataActiveByWellId(Guid wellId)
         {
             var data = await _context.BTPDatas
                       .Include(x => x.Well)
@@ -67,31 +67,31 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
             return sortedData;
         }
 
-        public async Task<BTPData?> GetByWellAndDateXls(Guid wellId, string dateXls)
+        public async Task<WellTests?> GetByWellAndDateXls(Guid wellId, string dateXls)
         {
             return await _context.BTPDatas.Include(x => x.Well).Where(x => x.Well.Id == wellId && x.FinalDate == dateXls).FirstOrDefaultAsync();
         }
-        public async Task<BTPData?> GetByWellAndLastDate(Guid wellId, string FinalDate)
+        public async Task<WellTests?> GetByWellAndLastDate(Guid wellId, string FinalDate)
         {
             return await _context.BTPDatas.Include(x => x.Well).Where(x => x.Well.Id == wellId && x.FinalApplicationDate == FinalDate).FirstOrDefaultAsync();
         }
-        public async Task<BTPData?> GetByWellAndApplicationDateXls(Guid wellId, string appDateXls)
+        public async Task<WellTests?> GetByWellAndApplicationDateXls(Guid wellId, string appDateXls)
         {
             return await _context.BTPDatas.Include(x => x.Well).Where(x => x.Well.Id == wellId && x.ApplicationDate == appDateXls).FirstOrDefaultAsync();
         }
-        public async Task<List<BTPData>> GetAllBTPsDataByWellIdAsync(Guid wellId)
+        public async Task<List<WellTests>> GetAllBTPsDataByWellIdAsync(Guid wellId)
         {
             return await _context.BTPDatas.Include(x => x.Well).Where(x => x.Well.Id == wellId).Include(x => x.BTPBase64).ThenInclude(x => x.User).ToListAsync();
         }
-        public async Task<BTPData?> GetAllBTPsDataByDataIdAsync(Guid dataId)
+        public async Task<WellTests?> GetAllBTPsDataByDataIdAsync(Guid dataId)
         {
             return await _context.BTPDatas.Include(x => x.Well).Include(x => x.BTPBase64).ThenInclude(x => x.User).Where(x => x.Id == dataId).FirstOrDefaultAsync();
         }
-        public async Task<BTPData?> GetByDataIdAsync(Guid id)
+        public async Task<WellTests?> GetByDataIdAsync(Guid id)
         {
             return await _context.BTPDatas.Include(x => x.Well).ThenInclude(x => x.Field).Where(x => x.Id == id).FirstOrDefaultAsync();
         }
-        public async Task<BTPData?> GetByDateAsync(string date, Guid wellId)
+        public async Task<WellTests?> GetByDateAsync(string date, Guid wellId)
         {
             return await _context.BTPDatas
                 .Include(x => x.BTPBase64)
@@ -101,7 +101,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
                 .Where(x => x.Well.Id == wellId)
                 .FirstOrDefaultAsync();
         }
-        public async Task AddBTPAsync(BTPData data)
+        public async Task AddBTPAsync(WellTests data)
         {
             await _context.BTPDatas.AddAsync(data);
         }
@@ -176,7 +176,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
         //    }
         //}
 
-        public async Task<List<BTPData>> GetBtpDatasByFieldId(Guid fieldId)
+        public async Task<List<WellTests>> GetBtpDatasByFieldId(Guid fieldId)
         {
             var btps = await _context.BTPDatas
                 .Include(x => x.Well)
@@ -190,7 +190,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
 
             return btps;
         }
-        public async Task<List<BTPData>> GetBtpDatasByUEP(string uep)
+        public async Task<List<WellTests>> GetBtpDatasByUEP(string uep)
         {
             var btps = await _context.BTPDatas
                 .Include(x => x.Well)
@@ -206,7 +206,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
             return btps;
         }
 
-        public void Update(BTPData data)
+        public void Update(WellTests data)
         {
             _context.BTPDatas.Update(data);
         }

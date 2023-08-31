@@ -123,7 +123,7 @@ namespace PRIO.src.Shared.Infra.EF
 
         #region BTP
         public DbSet<BTP> BTPs { get; set; }
-        public DbSet<BTPData> BTPDatas { get; set; }
+        public DbSet<WellTests> BTPDatas { get; set; }
         public DbSet<BTPBase64> BTPBases64 { get; set; }
         public DbSet<InstallationBTP> InstallationBTPs { get; set; }
 
@@ -138,14 +138,14 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<NFSMsProductions> NFSMsProductions { get; set; }
         public DbSet<NFSM> NFSMs { get; set; }
         public DbSet<NFSMHistory> NFSMImportHistories { get; set; }
-        public DbSet<WellProduction> WellProductions { get; set; }
+        public DbSet<WellAllocations> WellProductions { get; set; }
         public DbSet<FieldProduction> FieldsProductions { get; set; }
         public DbSet<CompletionProduction> CompletionProductions { get; set; }
         public DbSet<ReservoirProduction> ReservoirProductions { get; set; }
         public DbSet<ZoneProduction> ZoneProductions { get; set; }
         public DbSet<EventReason> EventReasons { get; set; }
         public DbSet<WellEvent> WellEvents { get; set; }
-        public DbSet<ProductionLoss> ProductionLosses { get; set; }
+        public DbSet<WellLosses> WellLosses { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -246,7 +246,7 @@ namespace PRIO.src.Shared.Infra.EF
             modelBuilder.ApplyConfiguration(new GasMap());
             modelBuilder.ApplyConfiguration(new MeasuringPointMap());
             modelBuilder.ApplyConfiguration(new BTPMap());
-            modelBuilder.ApplyConfiguration(new BTPDataMap());
+            modelBuilder.ApplyConfiguration(new WellTestMap());
             modelBuilder.ApplyConfiguration(new BTPBase64Map());
             modelBuilder.ApplyConfiguration(new BTPMap());
             modelBuilder.ApplyConfiguration(new InstallationBTPMap());
@@ -266,7 +266,7 @@ namespace PRIO.src.Shared.Infra.EF
 
             #region Production
             modelBuilder.ApplyConfiguration(new FieldProductionMap());
-            modelBuilder.ApplyConfiguration(new WellProductionMap());
+            modelBuilder.ApplyConfiguration(new WellAllocationMap());
             modelBuilder.ApplyConfiguration(new CompletionProductionMap());
             modelBuilder.ApplyConfiguration(new ReservoirProductionMap());
             modelBuilder.ApplyConfiguration(new ZoneProductionMap());
