@@ -2,6 +2,7 @@
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
 using PRIO.src.Modules.FileImport.XML.Dtos;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
+using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Productions.Interfaces;
@@ -59,6 +60,9 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                 .GetInstallationChildrenOfUEP(production.Installation.UepCod);
 
             var wellsInvalids = new List<string>();
+            var closedProducingWells = new List<Well>();
+            var openProducingWells = new List<Well>();
+
             //validando se todos poços tem um teste válido
             foreach (var installation in installations)
             {
@@ -73,22 +77,53 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date));
 
                         if (well.BTPDatas is not null)
+                        {
                             foreach (var btp in allBtpsValid)
+                            {
                                 if (btp.IsValid)
                                 {
                                     wellContainBtpValid = true;
                                     break;
                                 }
+                            }
+                        }
 
                         if (wellContainBtpValid is false)
+                        {
                             wellsInvalids.Add(well.Name);
+                            continue;
+                        }
+
+                        var lastEvent = well.WellEvents
+                            .OrderBy(x => x.CreatedAt)
+                            .LastOrDefault(x => x.Well.CategoryOperator is not null && x.Well.CategoryOperator.ToUpper() == "PRODUTOR");
+
+                        if (lastEvent is not null && lastEvent.EventStatus == "F")
+                            closedProducingWells.Add(lastEvent.Well);
+
+                        if (lastEvent is not null && lastEvent.EventStatus == "A")
+                            openProducingWells.Add(lastEvent.Well);
                     }
                 }
             }
 
+            foreach (var well in openProducingWells)
+            {
+                Console.WriteLine("Well");
+                Console.WriteLine(well.Name);
+                Console.WriteLine(well.StatusOperator);
+
+                var lastEvent = well.WellEvents
+                            .OrderBy(x => x.CreatedAt)
+                            .LastOrDefault(x => x.Well.CategoryOperator is not null && x.Well.CategoryOperator.ToUpper() == "PRODUTOR");
+
+                Console.WriteLine("Event");
+                Console.WriteLine(lastEvent?.EventStatus);
+                Console.WriteLine(lastEvent?.StartDate - lastEvent?.EndDate);
+            }
+
             //if (wellsInvalids.Count > 0)
             //    throw new BadRequestException($"Todos os poços devem ter um teste de poço válido. Poços sem teste ou com teste inválido:", errors: wellsInvalids);
-
 
             var appropriationDto = new AppropriationDto
             {
@@ -416,7 +451,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                 }
 
-                await _repository.Save();
+                //await _repository.Save();
 
                 await DistributeAccrossEntites(production.Id);
             }
@@ -445,7 +480,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
             _productionRepository.Update(production);
 
-            await _repository.Save();
+            //await _repository.Save();
 
             return appropriationDto;
         }
