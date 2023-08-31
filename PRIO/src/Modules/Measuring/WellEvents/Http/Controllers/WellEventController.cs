@@ -33,6 +33,14 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Controllers
             return NoContent();
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Get(Guid fieldId, string eventType)
+        {
+            var data = await _service.GetWellsWithEvents(fieldId, eventType);
+
+            return Ok(data);
+        }
+
         [HttpGet("ueps")]
         public async Task<IActionResult> Get()
         {

@@ -18,5 +18,6 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Interfaces
         Task<Well?> GetWithUserAsync(Guid? id);
         Task<Well?> GetWellAndChildren(Guid? id);
         Task SaveChangesAsync();
+        Task<List<Well>> GetWellsWithEvents(Guid fieldId, string eventType);
     }
 }
