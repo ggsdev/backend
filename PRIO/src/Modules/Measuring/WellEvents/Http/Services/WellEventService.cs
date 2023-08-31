@@ -26,8 +26,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
         }
         public async Task CloseWellFieldEvent(CreateClosingEventViewModel body)
         {
-            if (DateTime.TryParseExact(body.EventDateAndHour, "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedStartDate) is false)
-                throw new BadRequestException("Formato de data inválido deve ser 'dd/MM/yyyy HH:mm'.");
+            if (DateTime.TryParseExact(body.EventDateAndHour, "dd/MM/yy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedStartDate) is false)
+                throw new BadRequestException("Formato de data inválido deve ser 'dd/MM/yy HH:mm'.");
 
             var dateNow = DateTime.UtcNow.AddHours(-3);
 
@@ -58,6 +58,9 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                     lastEventWrongList.Add($"Poço: {wellInDatabase.Name}");
                     continue;
                 }
+
+                if (lastEvent is not null && parsedStartDate < lastEvent.StartDate)
+                    throw new BadRequestException("Data de início do evento deve ser maior que a data de início do último evento associado.");
 
                 wellsList.Add(wellInDatabase);
             }
@@ -112,6 +115,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                     StateANP = body.StateAnp,
                     StatusANP = body.StatusAnp,
                     Well = well!,
+                    EventRelatedCode = body.EventRelatedCode,
                 };
 
                 await _wellEventRepository.Add(closingEvent);
@@ -211,8 +215,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
         public async Task OpenWellFieldEvent(CreateOpeningEventViewModel body)
         {
-            if (DateTime.TryParseExact(body.EventDateAndHour, "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedStartDate) is false)
-                throw new BadRequestException("Formato de data inválido deve ser 'dd/MM/yyyy HH:mm'.");
+            if (DateTime.TryParseExact(body.EventDateAndHour, "dd/MM/yy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedStartDate) is false)
+                throw new BadRequestException("Formato de data inválido deve ser 'dd/MM/yy HH:mm'.");
 
             var dateNow = DateTime.UtcNow.AddHours(-3);
 
@@ -231,11 +235,14 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 .OrderBy(e => e.CreatedAt)
                 .LastOrDefault();
 
-            if (lastEvent is null)
+            if (lastEvent is null && wellInDatabase.WellEvents.Count > 0)
                 throw new ConflictException("O poço não possui um evento de fechamento anterior.");
 
-            if (lastEvent.EventStatus != "F")
+            if (lastEvent is not null && lastEvent.EventStatus != "F")
                 throw new BadRequestException("O último evento do poço deve ser de fechamento para que seja possível cadastrar um evento de abertura.");
+
+            if (lastEvent is not null && parsedStartDate < lastEvent.StartDate)
+                throw new BadRequestException("Data de início do evento deve ser maior que a data de início do último evento associado.");
 
             var lastEventOfTypeOpening = wellInDatabase.WellEvents
                 .OrderBy(e => e.CreatedAt)
@@ -334,6 +341,14 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
             var reasonsDetailed = new List<ReasonDetailedDto>();
 
+            if (wellEvent.WellLosses is not null)
+            {
+                foreach (var productionLoss in wellEvent.WellLosses)
+                {
+
+                }
+            }
+
             foreach (var reason in wellEvent.EventReasons)
             {
                 var reasonDto = new ReasonDetailedDto
@@ -344,7 +359,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                     ProductionLoss = 0,
                     SystemRelated = "",
                     TimeOperating = "",
-
+                    Downtime = 0
                 };
 
                 reasonsDetailed.Add(reasonDto);

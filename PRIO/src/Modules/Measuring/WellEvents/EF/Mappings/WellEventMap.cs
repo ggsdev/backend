@@ -39,6 +39,10 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Mappings
               .HasColumnType("VARCHAR")
               .HasMaxLength(100);
 
+            builder.Property(x => x.EventRelatedCode)
+              .HasColumnType("VARCHAR")
+              .HasMaxLength(150);
+
             builder.HasOne(c => c.Well).
                 WithMany(u => u.WellEvents)
                 .OnDelete(DeleteBehavior.NoAction)

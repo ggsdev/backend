@@ -114,6 +114,55 @@ namespace PRIO.Migrations
                 new object[] { Guid.NewGuid(), "/importarDadosTestePoco", "Teste", "Tipo de Teste", "R = Reinterpretação de Teste",  DateTime.UtcNow.AddHours(-3) },
                 new object[] { Guid.NewGuid(), "/importarDadosTestePoco", "Teste", "Tipo de Teste", "A = Abertura de poço",  DateTime.UtcNow.AddHours(-3) },
                 new object[] { Guid.NewGuid(), "/importarDadosTestePoco", "Teste", "Tipo de Teste", "F= Fechamento de poço",  DateTime.UtcNow.AddHours(-3) },
+
+                new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Sistema Relacionado", "Topside",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Sistema Relacionado", "Submarino",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Sistema Relacionado", "Estratégia",  DateTime.UtcNow.AddHours(-3) },
+
+
+                new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Abandonado permanentemente",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Abandonado temporariamente com monitoramento",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Abandonado temporariamente sem monitoramento",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Arrasado",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Produzindo",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Injetando",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Produzindo e injetando",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Retirando gás natural estocado",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Injetando para estocagem",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Equipado aguardando início de operação",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Fechado",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Em observação",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Em perfuração",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Em avaliação",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Em completação",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Em intervenção",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Operando para captação de água",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Cedido para captação de água",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Operando para descarte",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Produzindo e injetando",  DateTime.UtcNow.AddHours(-3) },
+
+                new object[] { Guid.NewGuid(), "/eventosPoco", "Equipado aguardando início de operação", "Status ANP", "Poço-coluna novo",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "Produzindo", "Status ANP", "Operação normal",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "Produzindo", "Status ANP", "Operação com deficiência",  DateTime.UtcNow.AddHours(-3) },
+
+                new object[] { Guid.NewGuid(), "/eventosPoco", "Injetando", "Status ANP", "Operação com deficiência",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "Injetando", "Status ANP", "Operação normal",  DateTime.UtcNow.AddHours(-3) },
+
+                new object[] { Guid.NewGuid(), "/eventosPoco", "Produzindo e injetando", "Status ANP", "Operação com deficiência",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "Produzindo e injetando", "Status ANP", "Operação normal",  DateTime.UtcNow.AddHours(-3) },
+
+                new object[] { Guid.NewGuid(), "/eventosPoco", "Retirando gás natural estocado", "Status ANP", "Operação com deficiência",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "Retirando gás natural estocado", "Status ANP", "Operação normal",  DateTime.UtcNow.AddHours(-3) },
+
+                new object[] { Guid.NewGuid(), "/eventosPoco", "Injetando para estocagem", "Status ANP", "Operação com deficiência",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "Injetando para estocagem", "Status ANP", "Operação normal",  DateTime.UtcNow.AddHours(-3) },
+
+                new object[] { Guid.NewGuid(), "/eventosPoco", "Operando para captação de água", "Status ANP", "Operação com deficiência",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "Operando para captação de água", "Status ANP", "Operação normal",  DateTime.UtcNow.AddHours(-3) },
+
+                new object[] { Guid.NewGuid(), "/eventosPoco", "Fechado", "Status ANP", "Fechado por perda",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/eventosPoco", "Fechado", "Status ANP", "Fechado por estratégia",  DateTime.UtcNow.AddHours(-3) },
+
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Fields", "UF", "ACRE",  DateTime.UtcNow.AddHours(-3) },
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Fields", "UF", "ALAGOAS",  DateTime.UtcNow.AddHours(-3) },
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Fields", "UF", "AMAPÁ",  DateTime.UtcNow.AddHours(-3) },

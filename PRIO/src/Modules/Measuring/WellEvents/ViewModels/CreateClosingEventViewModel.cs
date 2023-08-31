@@ -18,6 +18,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.ViewModels
 
         [Required(ErrorMessage = "Lista de Wells é obrigatória")]
         public List<WellIndividualEventViewModel> Wells { get; set; }
+
+        public string? EventRelatedCode { get; set; }
     }
 
 
