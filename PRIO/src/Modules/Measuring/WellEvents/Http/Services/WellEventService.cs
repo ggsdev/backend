@@ -1,4 +1,5 @@
-﻿using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
+﻿using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Modules.Measuring.WellEvents.Dtos;
@@ -27,6 +28,11 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
         {
             if (DateTime.TryParseExact(body.EventDateAndHour, "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedStartDate) is false)
                 throw new BadRequestException("Formato de data inválido deve ser 'dd/MM/yyyy HH:mm'.");
+
+            var dateNow = DateTime.UtcNow.AddHours(-3);
+
+            if (parsedStartDate > dateNow)
+                throw new ConflictException("Não é possível cadastrar um evento no futuro");
 
             var wellsList = new List<Well>();
 
@@ -112,6 +118,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
                 if (lastEvent is not null)
                 {
+
                     lastEvent.EndDate = parsedStartDate;
                     lastEvent.Interval = (parsedStartDate - lastEvent.StartDate).TotalHours;
 
@@ -207,6 +214,11 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             if (DateTime.TryParseExact(body.EventDateAndHour, "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedStartDate) is false)
                 throw new BadRequestException("Formato de data inválido deve ser 'dd/MM/yyyy HH:mm'.");
 
+            var dateNow = DateTime.UtcNow.AddHours(-3);
+
+            if (parsedStartDate > dateNow)
+                throw new ConflictException("Não é possível cadastrar um evento no futuro");
+
             var wellsList = new List<Well>();
 
             var wellInDatabase = await _wellRepository
@@ -267,15 +279,83 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             await _wellEventRepository.Save();
         }
 
-        public async Task GetWellsWithEvents(Guid fieldId, string eventType)
+        public async Task<List<WellWithEventDto>> GetWellsWithEvents(Guid fieldId, string eventType)
         {
             if (eventType.ToUpper().Trim() != "F" && eventType != "A".ToUpper().Trim())
-                throw new BadRequestException("Tipos de evento permitidos são 'A' para abertura e 'F' para fechamento");
+                throw new BadRequestException("Tipos de evento permitidos são 'A' para abertura e 'F' para fechamento.");
 
-            var wellEvents = await _wellEventRepository
+            var fieldExists = await _fieldRepository
+                .Any(fieldId);
+
+            if (fieldExists is false)
+                throw new NotFoundException(ErrorMessages.NotFound<Field>());
+
+            var wellsInDatabase = await _wellRepository
                 .GetWellsWithEvents(fieldId, eventType);
 
+            if (wellsInDatabase.Count == 0)
+            {
+                var eventTypeDescription = eventType == "F" ? "fechados" : "abertos";
+                throw new NotFoundException($"Não foram encontrados poços {eventTypeDescription} nesse campo.");
+            }
 
+            var wellDtoList = new List<WellWithEventDto>();
+
+            foreach (var well in wellsInDatabase)
+            {
+                var lastEvent = well.WellEvents
+                    .OrderBy(e => e.CreatedAt)
+                    .LastOrDefault();
+
+                if (lastEvent is not null && lastEvent.EventStatus == eventType)
+                {
+                    var wellDto = new WellWithEventDto
+                    {
+                        EventId = lastEvent.Id,
+                        WellId = well.Id,
+                        Status = lastEvent.EventStatus,
+                        DateLastStatus = lastEvent.StartDate.ToString("dd/MM/yyyy HH:mm"),
+                        Name = well.Name
+                    };
+
+                    wellDtoList.Add(wellDto);
+                }
+            }
+
+            return wellDtoList;
+        }
+
+        public async Task<WellEventByIdDto> GetEventById(Guid eventId)
+        {
+            var wellEvent = await _wellEventRepository.GetById(eventId);
+
+            if (wellEvent is null)
+                throw new NotFoundException("Evento não encontrado");
+
+            var reasonsDetailed = new List<ReasonDetailedDto>();
+
+            foreach (var reason in wellEvent.EventReasons)
+            {
+                var reasonDto = new ReasonDetailedDto
+                {
+                    //Downtime = reason.Interval,
+                    EndDate = reason.EndDate is not null ? reason.EndDate.Value.ToString("dd/MM/yyyy HH:mm") : "",
+                    StartDate = reason.StartDate.ToString("dd/MM/yyyy HH:mm"),
+                    ProductionLoss = 0,
+                    SystemRelated = "",
+                    TimeOperating = "",
+
+                };
+
+                reasonsDetailed.Add(reasonDto);
+            }
+
+            var wellEventDto = new WellEventByIdDto
+            {
+            };
+
+
+            return wellEventDto;
         }
     }
 }
