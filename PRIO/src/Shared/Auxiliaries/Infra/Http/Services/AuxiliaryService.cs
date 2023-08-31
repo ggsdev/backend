@@ -16,20 +16,28 @@ namespace PRIO.src.Shared.Auxiliaries.Infra.Http.Services
 
         public async Task<List<Auxiliary>> Get(string table, string route)
         {
-            var validTables = new List<string>
-            {
-                "clusters", "installations", "fields", "zones", "reservoirs", "wells", "completions", "measuringequipments", "elemento primário", "elemento secundário", "teste"
-            };
+            var auxiliaries = await _context.Auxiliaries
+                .Select(x => new
+                {
+                    x.Table,
+                    x.Route,
+                })
+                .ToListAsync();
 
-            if (validTables.Contains(table.ToLower()) is false)
-                throw new BadRequestException($"Invalid table options are: {string.Join(", ", validTables)}");
+            //var validTables = auxiliaries
+            //    .GroupBy(x => new { x.Table })
+            //    .Select(group => group.First().Table?.ToLower())
+            //    .ToList();
 
-            var validRoutes = new List<string>
-            {
-                "/cadastrosBasicos", "/importarDadosTestePoco"
-            };
+            //if (validTables.Contains(table.ToLower()) is false)
+            //    throw new BadRequestException($"Invalid table options are: {string.Join(", ", validTables)}");
 
-            if (validRoutes.Contains(route) is false)
+            var validRoutes = auxiliaries
+                .GroupBy(x => new { x.Route })
+                .Select(group => group.First().Route?.ToLower())
+                .ToList();
+
+            if (validRoutes.Contains(route.ToLower()) is false)
                 throw new BadRequestException($"Invalid route options are: {string.Join(" ", validRoutes)}");
 
             var selectOptions = await _context.Auxiliaries
