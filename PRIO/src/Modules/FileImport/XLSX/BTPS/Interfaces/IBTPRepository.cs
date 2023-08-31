@@ -6,29 +6,29 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces
     public interface IBTPRepository
     {
         Task<List<BTP>> GetAllBTPsAsync();
-        Task<List<BTPData>> GetBtpDatasByFieldId(Guid fieldId);
-        Task<BTPData?> GetBTPsDataByWellIdAndActiveAsync(Guid wellId);
-        Task<List<BTPData>> GetBtpDatasByUEP(string uep);
+        Task<List<WellTests>> GetBtpDatasByFieldId(Guid fieldId);
+        Task<WellTests?> GetBTPsDataByWellIdAndActiveAsync(Guid wellId);
+        Task<List<WellTests>> GetBtpDatasByUEP(string uep);
         Task AddBTPAsync(BTP btp);
         Task<Auxiliary?> GetTypeAsync(string type);
         Task<BTP?> GetByNameOrContent(string name, string content);
-        Task<List<BTPData>> GetAllBTPsDataAsync();
-        Task<List<BTPData>?> ListBTPSDataActiveByWellId(Guid wellId);
-        Task<BTPData?> GetByWellAndDateXls(Guid wellId, string dateXls);
-        Task<BTPData?> GetByWellAndLastDate(Guid wellId, string FinalDate);
-        Task<BTPData?> GetByWellAndApplicationDateXls(Guid wellId, string appDateXls);
-        Task<List<BTPData>> GetAllBTPsDataByWellIdAsync(Guid wellId);
-        Task<BTPData?> GetAllBTPsDataByDataIdAsync(Guid dataId);
+        Task<List<WellTests>> GetAllBTPsDataAsync();
+        Task<List<WellTests>?> ListBTPSDataActiveByWellId(Guid wellId);
+        Task<WellTests?> GetByWellAndDateXls(Guid wellId, string dateXls);
+        Task<WellTests?> GetByWellAndLastDate(Guid wellId, string FinalDate);
+        Task<WellTests?> GetByWellAndApplicationDateXls(Guid wellId, string appDateXls);
+        Task<List<WellTests>> GetAllBTPsDataByWellIdAsync(Guid wellId);
+        Task<WellTests?> GetAllBTPsDataByDataIdAsync(Guid dataId);
         Task<List<BTP>> GetAllBTPsByTypeAsync(string type);
         Task<BTP?> GetByIdAsync(Guid id);
-        Task<BTPData?> GetByDataIdAsync(Guid id);
-        Task<BTPData?> GetByDateAsync(string date, Guid wellId);
-        Task AddBTPAsync(BTPData data);
+        Task<WellTests?> GetByDataIdAsync(Guid id);
+        Task<WellTests?> GetByDateAsync(string date, Guid wellId);
+        Task AddBTPAsync(WellTests data);
         Task RemoveValidate(ValidateBTP validate);
         Task AddBTPValidateAsync(ValidateBTP data);
         Task AddBTPBase64Async(BTPBase64 data);
         Task<ValidateBTP> GetValidate(Guid WellId, Guid BTPId, Guid ContentId, Guid DataId);
-        void Update(BTPData data);
+        void Update(WellTests data);
         Task SaveChangesAsync();
     }
 }

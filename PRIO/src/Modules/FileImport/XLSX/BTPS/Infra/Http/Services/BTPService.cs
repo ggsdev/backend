@@ -105,7 +105,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             var BTPdata = await _BTPRepository.GetByDateAsync(date, wellId);
             if (BTPdata is null)
                 throw new NotFoundException("Dados do BTP não encontrado.");
-            var btpsDTO = _mapper.Map<BTPData, BTPDataDTO>(BTPdata);
+            var btpsDTO = _mapper.Map<WellTests, BTPDataDTO>(BTPdata);
 
             return btpsDTO;
         }
@@ -270,11 +270,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 erros.Add("Erro: Valor da célula para BSW não é um número na célula " + BTP.CellBSW);
             }
 
-            if (erros.Count > 0)
-            {
-                throw new BadRequestException("Arquivo inválido.", erros);
-            }
-
             var convertBtp = btpNumberValue?.ToString();
 
             DateTime? initialDate = (DateTime)initialDateValue;
@@ -285,7 +280,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             }
             try
             {
-                DateTime applicationDate = DateTime.Parse(body.ApplicationDate);
+                DateTime? applicationDate = DateTime.Parse(body.ApplicationDate);
                 if (finalDate > applicationDate)
                 {
                     erros.Add("Erro: Data inicial do teste não pode ser maior do que a data final do teste.");
@@ -296,7 +291,10 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 throw new NotFoundException("Data da Aplicação não é valida");
             }
 
-
+            if (erros.Count > 0)
+            {
+                throw new BadRequestException("Arquivo inválido.", erros);
+            }
 
             //Verify Well
             string? message = well.Name == worksheet.Cells[BTP.CellWellName].Value.ToString() ? "Sucesso: Nome do poço encontrado corresponde ao xls" : throw new ConflictException($"O poço {worksheet.Cells[BTP.CellWellName].Value} do arquivo {body.FileName} não corresponde ao poço {well.Name} selecionado para o teste.");
@@ -332,7 +330,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 IsActive = true,
                 User = user
             };
-            var data = new BTPData
+            var data = new WellTests
             {
                 Id = Guid.NewGuid(),
                 BTPId = body.BTPId,
@@ -456,7 +454,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
 
             await _BTPRepository.AddBTPValidateAsync(validate);
 
-            var BTPdataDTO = _mapper.Map<BTPData, BTPDataDTO>(data);
+            var BTPdataDTO = _mapper.Map<WellTests, BTPDataDTO>(data);
             var createDataDTO = new ValidateDataBTPDTO
             {
                 Message = message,
@@ -592,7 +590,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 User = user
             };
 
-            var data = new BTPData
+            var data = new WellTests
             {
                 Id = body.Validate.DataId,
                 BTPId = body.Validate.BTPId,
@@ -673,7 +671,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             await _BTPRepository.AddBTPAsync(data);
             await _BTPRepository.AddBTPBase64Async(content);
 
-            var BTPdataDTO = _mapper.Map<BTPData, BTPDataDTO>(data);
+            var BTPdataDTO = _mapper.Map<WellTests, BTPDataDTO>(data);
 
             await _BTPRepository.RemoveValidate(Validate);
             await _BTPRepository.SaveChangesAsync();
@@ -689,7 +687,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
         public async Task<List<BTPDataDTO>> GetBTPData()
         {
             var BTPs = await _BTPRepository.GetAllBTPsDataAsync();
-            var btpsDTO = _mapper.Map<List<BTPData>, List<BTPDataDTO>>(BTPs);
+            var btpsDTO = _mapper.Map<List<WellTests>, List<BTPDataDTO>>(BTPs);
 
             return btpsDTO;
         }
@@ -777,21 +775,21 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             }
 
 
-            var BTPDataDTO = _mapper.Map<BTPData, BTPDataDTO>(BTPData);
+            var BTPDataDTO = _mapper.Map<WellTests, BTPDataDTO>(BTPData);
 
             return BTPDataDTO;
         }
         public async Task<List<BTPDataDTO>> GetBTPDataByWellId(Guid wellId)
         {
             var BTPs = await _BTPRepository.GetAllBTPsDataByWellIdAsync(wellId);
-            var btpsDTO = _mapper.Map<List<BTPData>, List<BTPDataDTO>>(BTPs);
+            var btpsDTO = _mapper.Map<List<WellTests>, List<BTPDataDTO>>(BTPs);
 
             return btpsDTO;
         }
         public async Task<BTPDataDTO> GetBTPDataByDataId(Guid dataId)
         {
             var BTPs = await _BTPRepository.GetAllBTPsDataByDataIdAsync(dataId);
-            var btpsDTO = _mapper.Map<BTPData, BTPDataDTO>(BTPs);
+            var btpsDTO = _mapper.Map<WellTests, BTPDataDTO>(BTPs);
 
             return btpsDTO;
         }

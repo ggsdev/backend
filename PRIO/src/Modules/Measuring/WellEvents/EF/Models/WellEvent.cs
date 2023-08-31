@@ -1,4 +1,5 @@
 ﻿using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Measuring.WellEvents.EF.Models
@@ -16,6 +17,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Models
         public Well Well { get; set; }
         public WellEvent? EventRelated { get; set; }
         public List<EventReason> EventReasons { get; set; } = new();
-        public List<ProductionLoss>? ProductionLosses { get; set; }
+        public List<WellLosses>? WellLosses { get; set; }
     }
 }

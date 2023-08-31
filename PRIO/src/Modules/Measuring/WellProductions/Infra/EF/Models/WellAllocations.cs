@@ -1,11 +1,10 @@
 ﻿using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
-using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
 using PRIO.src.Shared.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models
 {
-    public class WellProduction : BaseModel
+    public class WellAllocations : BaseModel
     {
         public decimal ProductionGasInWell { get; set; }
         public decimal ProductionWaterInWell { get; set; }
@@ -17,11 +16,11 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models
         public decimal ProductionOilAsPercentageOfInstallation { get; set; }
         public decimal ProductionWaterAsPercentageOfInstallation { get; set; }
         public Guid WellId { get; set; }
-        public BTPData BtpData { get; set; }
+        public WellTests WellTest { get; set; }
         public Production Production { get; set; }
 
         public FieldProduction FieldProduction { get; set; }
         public List<CompletionProduction>? CompletionProductions { get; set; }
-        public List<ProductionLoss>? ProductionLosses { get; set; }
+        public List<WellLosses>? WellLosses { get; set; }
     }
 }

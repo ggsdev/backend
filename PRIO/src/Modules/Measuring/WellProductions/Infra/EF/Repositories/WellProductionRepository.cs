@@ -24,20 +24,20 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Repositories
                 .Include(x => x.WellProductions)
                     .ThenInclude(x => x.Production).Where(x => x.ProductionId == productionId).ToListAsync();
         }
-        public async Task AddAsync(WellProduction wellAppropriation)
+        public async Task AddAsync(WellAllocations wellAppropriation)
         {
             await _context.WellProductions.AddAsync(wellAppropriation);
         }
-        public void Update(WellProduction wellApp)
+        public void Update(WellAllocations wellApp)
         {
             _context.WellProductions.Update(wellApp);
         }
 
-        public async Task<List<WellProduction>> GetByProductionId(Guid productionId)
+        public async Task<List<WellAllocations>> GetByProductionId(Guid productionId)
         {
             return await _context.WellProductions
                 .Include(x => x.Production)
-                .Include(x => x.BtpData)
+                .Include(x => x.WellTest)
                 .Where(x => x.Production.Id == productionId)
                 .ToListAsync();
         }

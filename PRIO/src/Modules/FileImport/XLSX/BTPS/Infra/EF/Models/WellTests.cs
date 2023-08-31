@@ -4,7 +4,7 @@ using PRIO.src.Shared.Infra.EF.Models;
 
 namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models
 {
-    public class BTPData : BaseModel
+    public class WellTests : BaseModel
     {
         public string Filename { get; set; }
         public string Type { get; set; }
@@ -35,6 +35,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models
         public bool IsValid { get; set; }
         public BTPBase64? BTPBase64 { get; set; }
         public Well? Well { get; set; }
-        public List<WellProduction>? WellAppropriations { get; set; }
+        public List<WellAllocations>? WellAllocations { get; set; }
     }
 }

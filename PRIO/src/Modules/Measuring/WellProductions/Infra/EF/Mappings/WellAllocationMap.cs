@@ -4,11 +4,11 @@ using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Mappings
 {
-    public class WellProductionMap : IEntityTypeConfiguration<WellProduction>
+    public class WellAllocationMap : IEntityTypeConfiguration<WellAllocations>
     {
-        public void Configure(EntityTypeBuilder<WellProduction> builder)
+        public void Configure(EntityTypeBuilder<WellAllocations> builder)
         {
-            builder.ToTable("WellProductions");
+            builder.ToTable("WellAllocations");
 
             builder.Property(x => x.ProductionGasAsPercentageOfField)
                 .HasColumnType("DECIMAL")
@@ -51,8 +51,8 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Mappings
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
-            builder.HasOne(x => x.BtpData)
-                .WithMany(x => x.WellAppropriations)
+            builder.HasOne(x => x.WellTest)
+                .WithMany(x => x.WellAllocations)
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
         }
