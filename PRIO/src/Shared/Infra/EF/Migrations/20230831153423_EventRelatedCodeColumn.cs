@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -11,8 +10,8 @@ namespace PRIO.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "ProductionLosses");
+            //migrationBuilder.DropTable(
+            //    name: "ProductionLosses");
 
             migrationBuilder.AddColumn<string>(
                 name: "EventRelatedCode",
