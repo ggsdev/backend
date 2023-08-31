@@ -18,7 +18,7 @@ namespace PRIO.src.Shared.Auxiliaries.Infra.Http.Services
         {
             var validTables = new List<string>
             {
-                "clusters", "installations", "fields", "zones", "reservoirs", "wells", "completions", "measuringequipments", "elemento primário", "elemento secundário", "teste"
+                "clusters", "installations", "fields", "zones", "reservoirs", "wells", "completions", "measuringequipments", "elemento primário", "elemento secundário", "teste", "wellevents", "Equipado aguardando início de operação", "Produzindo", "Injetando", "Produzindo e injetando","Retirando gás natural estocado", "Injetando para estocagem", "Operando para captação de água", "Fechado"
             };
 
             if (validTables.Contains(table.ToLower()) is false)
@@ -26,7 +26,7 @@ namespace PRIO.src.Shared.Auxiliaries.Infra.Http.Services
 
             var validRoutes = new List<string>
             {
-                "/cadastrosBasicos", "/importarDadosTestePoco"
+                "/cadastrosBasicos", "/importarDadosTestePoco", "/eventosPoco"
             };
 
             if (validRoutes.Contains(route) is false)
