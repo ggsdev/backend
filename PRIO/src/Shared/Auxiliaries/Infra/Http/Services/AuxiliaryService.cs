@@ -18,7 +18,7 @@ namespace PRIO.src.Shared.Auxiliaries.Infra.Http.Services
         {
             var validTables = new List<string>
             {
-                "clusters", "installations", "fields", "zones", "reservoirs", "wells", "completions", "measuringequipments", "elemento primário", "elemento secundário", "teste", "wellevents", "equipado aguardando início de operação", "produzindo", "injetando", "produzindo e injetando","retirando gás natural estocado", "injetando para estocagem", "operando para captação de água", "fechado"
+                "clusters", "installations", "fields", "zones", "reservoirs", "wells", "completions", "measuringequipments", "elemento primário", "elemento secundário", "teste", "wellevents", "equipado aguardando início de operação", "produzindo", "injetando", "produzindo e injetando","retirando gás natural estocado", "injetando para estocagem", "operando para captação de água", "fechado",  "abandonado permanentemente", "abandonado temporariamente com monitoramento","abandonado temporariamente sem monitoramento","arrasado", "em observação","em perfuração", "em avaliação", "em completação", "em intervenção", "cedido para captação de água","operando para descarte",
             };
 
             if (validTables.Contains(table.ToLower()) is false)
