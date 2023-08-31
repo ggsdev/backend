@@ -1,9 +1,9 @@
-﻿using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models;
+﻿using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
 using PRIO.src.Shared.Infra.EF.Models;
 
-namespace PRIO.src.Modules.Measuring.WellEvents.EF.Models
+namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models
 {
-    public class ProductionLoss : BaseModel
+    public class WellLosses : BaseModel
     {
         public DateTime MeasuredAt { get; set; }
         public decimal EfficienceLoss { get; set; }
@@ -11,6 +11,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Models
         public decimal Downtime { get; set; }
         public decimal ProportionalDay { get; set; }
         public WellEvent Event { get; set; }
-        public WellProduction WellProduction { get; set; }
+        public WellAllocations WellAllocation { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230830205126_changeTableNameToWellLosses")]
+    partial class changeTableNameToWellLosses
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -557,48 +560,7 @@ namespace PRIO.Migrations
                     b.ToTable("BTPBases64", (string)null);
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.ValidateBTP", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ApplicationDate")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("BTPId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ContentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("DataId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Filename")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsValid")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("WellId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Validates");
-                });
-
-            modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.WellTests", b =>
+            modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPData", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -741,7 +703,48 @@ namespace PRIO.Migrations
 
                     b.HasIndex("WellId");
 
-                    b.ToTable("WellTests", (string)null);
+                    b.ToTable("BTPDatas", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.ValidateBTP", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ApplicationDate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("BTPId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ContentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("DataId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Filename")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsValid")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("WellId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Validates");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSM", b =>
@@ -4499,6 +4502,9 @@ namespace PRIO.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("BtpDataId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -4559,16 +4565,13 @@ namespace PRIO.Migrations
                     b.Property<Guid>("WellId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("WellTestId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("BtpDataId");
 
                     b.HasIndex("FieldProductionId");
 
                     b.HasIndex("ProductionId");
-
-                    b.HasIndex("WellTestId");
 
                     b.ToTable("WellAllocations", (string)null);
                 });
@@ -4799,11 +4802,11 @@ namespace PRIO.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.WellTests", b =>
+            modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPData", b =>
                 {
                     b.HasOne("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPBase64", "BTPBase64")
-                        .WithOne("WellTest")
-                        .HasForeignKey("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.WellTests", "BTPBase64Id")
+                        .WithOne("BTPData")
+                        .HasForeignKey("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPData", "BTPBase64Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -5587,6 +5590,12 @@ namespace PRIO.Migrations
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellAllocations", b =>
                 {
+                    b.HasOne("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPData", "BtpData")
+                        .WithMany("WellAllocations")
+                        .HasForeignKey("BtpDataId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.FieldProduction", "FieldProduction")
                         .WithMany("WellProductions")
                         .HasForeignKey("FieldProductionId")
@@ -5599,17 +5608,11 @@ namespace PRIO.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.WellTests", "WellTest")
-                        .WithMany("WellAllocations")
-                        .HasForeignKey("WellTestId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                    b.Navigation("BtpData");
 
                     b.Navigation("FieldProduction");
 
                     b.Navigation("Production");
-
-                    b.Navigation("WellTest");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellLosses", b =>
@@ -5706,11 +5709,11 @@ namespace PRIO.Migrations
 
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPBase64", b =>
                 {
-                    b.Navigation("WellTest")
+                    b.Navigation("BTPData")
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.WellTests", b =>
+            modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPData", b =>
                 {
                     b.Navigation("WellAllocations");
                 });

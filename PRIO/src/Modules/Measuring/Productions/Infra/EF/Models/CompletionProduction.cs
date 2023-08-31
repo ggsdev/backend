@@ -10,7 +10,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Models
         public decimal GasProductionInCompletion { get; set; }
         public decimal WaterProductionInCompletion { get; set; }
         public decimal OilProductionInCompletion { get; set; }
-        public WellProduction? WellProduction { get; set; }
+        public WellAllocations? WellAllocation { get; set; }
         public ReservoirProduction? ReservoirProduction { get; set; }
     }
 }

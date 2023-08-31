@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Models
         public decimal GasProductionInField { get; set; }
         public decimal WaterProductionInField { get; set; }
         public decimal OilProductionInField { get; set; }
-        public List<WellProduction> WellProductions { get; set; }
+        public List<WellAllocations> WellProductions { get; set; }
         public Guid ProductionId { get; set; }
         public Guid FieldId { get; set; }
     }

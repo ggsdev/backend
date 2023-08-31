@@ -243,7 +243,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<BTP, BTPDTO>();
             CreateMap<BTP, BTPCreateDTO>();
             CreateMap<BTPBase64, BTPBase64DTO>();
-            CreateMap<BTPData, BTPDataDTO>();
+            CreateMap<WellTests, BTPDataDTO>();
             CreateMap<FieldFR, FRFieldDTO>();
 
             CreateMap<CommentInProduction, CreateUpdateCommentDto>();

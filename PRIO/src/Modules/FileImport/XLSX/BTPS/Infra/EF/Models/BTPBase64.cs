@@ -9,6 +9,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models
         public string Type { get; set; }
         public string FileContent { get; set; }
         public User User { get; set; }
-        public BTPData BTPData { get; set; }
+        public WellTests WellTest { get; set; }
     }
 }
