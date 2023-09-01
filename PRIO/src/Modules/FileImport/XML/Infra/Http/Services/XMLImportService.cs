@@ -147,7 +147,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                 using (var r = XmlReader.Create(pathXml, null, parserContext))
                 {
-                    var result = Functions.CheckFormat(pathXml, pathSchema);
+                    var result = Functions.CheckFormat(pathXml, pathSchema, errorsInFormat);
+                    if (errorsInFormat.Count > 0)
+                        throw new BadRequestException($"Algum(s) erro(s) de formatação ocorreram durante a validação do arquivo de nome: {data.Files[i].FileName}", errors: errorsInFormat);
                     if (result is not null && result.Count > 0)
                         throw new BadRequestException(string.Join(",", result));
                 }
@@ -2518,7 +2520,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             }
 
-            if (dailyProduction.Oil is null && data.Oil is not null)
+            if (data.Oil is not null && ((dailyProduction.Oil is not null && dailyProduction.Oil.IsActive is false) || dailyProduction.Oil is null))
             {
                 data.Oil.TotalOilProductionM3 = totalOilWithBsw;
 

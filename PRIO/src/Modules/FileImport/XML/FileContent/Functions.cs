@@ -9,7 +9,7 @@ namespace PRIO.src.Modules.FileImport.XML.FileContent
     {
         private static List<string>? _result = new();
 
-        public static List<string>? CheckFormat(string xmlFilePath, string xsdFilePath)
+        public static List<string>? CheckFormat(string xmlFilePath, string xsdFilePath, List<string> errorList)
         {
             _result = new();
             var schema = new XmlSchemaSet();
@@ -17,10 +17,20 @@ namespace PRIO.src.Modules.FileImport.XML.FileContent
             schema.Add("", xsdFilePath);
 
             var reader = XmlReader.Create(xmlFilePath);
-            var doc = XDocument.Load(reader);
-            doc.Validate(schema, ValidationEventHandler);
+            try
+            {
+                var doc = XDocument.Load(reader);
+                doc.Validate(schema, ValidationEventHandler);
+            }
+            catch (XmlException ex)
+            {
+                errorList.Add("Modelo arquivo inválido.");
+            }
+            finally
+            {
+                reader.Close();
+            }
 
-            reader.Close();
             return _result;
         }
 
