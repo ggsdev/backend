@@ -28,6 +28,10 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Repositories
         {
             await _context.WellProductions.AddAsync(wellAppropriation);
         }
+        public async Task AddWellLossAsync(WellLosses wellLoss)
+        {
+            await _context.WellLosses.AddAsync(wellLoss);
+        }
         public void Update(WellAllocations wellApp)
         {
             _context.WellProductions.Update(wellApp);
