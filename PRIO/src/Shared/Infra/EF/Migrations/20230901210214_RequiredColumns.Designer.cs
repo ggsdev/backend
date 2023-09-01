@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230901210214_RequiredColumns")]
+    partial class RequiredColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4498,7 +4501,7 @@ namespace PRIO.Migrations
                     b.ToTable("WellEvents", (string)null);
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellLosses", b =>
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellAllocations", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -4512,66 +4515,6 @@ namespace PRIO.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Downtime")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("EfficienceLoss")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid>("EventId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("MeasuredAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("ProductionLost")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("ProportionalDay")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("WellAllocationId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EventId");
-
-                    b.HasIndex("WellAllocationId");
-
-                    b.ToTable("WellLosses");
-                });
-
-            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellProductions", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Downtime")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
-
-                    b.Property<decimal>("EfficienceLoss")
-                        .HasPrecision(14, 5)
-                        .HasColumnType("DECIMAL");
 
                     b.Property<Guid>("FieldProductionId")
                         .HasColumnType("uniqueidentifier");
@@ -4587,20 +4530,12 @@ namespace PRIO.Migrations
                         .HasPrecision(7, 5)
                         .HasColumnType("DECIMAL");
 
-                    b.Property<decimal>("ProductionGasInWellM3")
-                        .HasPrecision(14, 5)
-                        .HasColumnType("DECIMAL");
-
-                    b.Property<decimal>("ProductionGasInWellSCF")
+                    b.Property<decimal>("ProductionGasInWell")
                         .HasPrecision(14, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<Guid>("ProductionId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("ProductionLost")
-                        .HasPrecision(14, 5)
-                        .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionOilAsPercentageOfField")
                         .HasPrecision(7, 5)
@@ -4610,11 +4545,7 @@ namespace PRIO.Migrations
                         .HasPrecision(7, 5)
                         .HasColumnType("DECIMAL");
 
-                    b.Property<decimal>("ProductionOilInWellBBL")
-                        .HasPrecision(14, 5)
-                        .HasColumnType("DECIMAL");
-
-                    b.Property<decimal>("ProductionOilInWellM3")
+                    b.Property<decimal>("ProductionOilInWell")
                         .HasPrecision(14, 5)
                         .HasColumnType("DECIMAL");
 
@@ -4626,15 +4557,7 @@ namespace PRIO.Migrations
                         .HasPrecision(7, 5)
                         .HasColumnType("DECIMAL");
 
-                    b.Property<decimal>("ProductionWaterInWellBBL")
-                        .HasPrecision(14, 5)
-                        .HasColumnType("DECIMAL");
-
-                    b.Property<decimal>("ProductionWaterInWellM3")
-                        .HasPrecision(14, 5)
-                        .HasColumnType("DECIMAL");
-
-                    b.Property<decimal>("ProportionalDay")
+                    b.Property<decimal>("ProductionWaterInWell")
                         .HasPrecision(14, 5)
                         .HasColumnType("DECIMAL");
 
@@ -4655,9 +4578,8 @@ namespace PRIO.Migrations
 
                     b.HasIndex("WellTestId");
 
-
-                    b.ToTable("WellProductions", (string)null);
-
+                    b.ToTable("WellAllocations", (string)null);
+                });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellLosses", b =>
                 {
@@ -4708,7 +4630,6 @@ namespace PRIO.Migrations
                     b.HasIndex("WellAllocationId");
 
                     b.ToTable("WellLosses");
-
                 });
 
             modelBuilder.Entity("PRIO.src.Shared.Auxiliaries.Infra.EF.Models.Auxiliary", b =>
@@ -5555,7 +5476,7 @@ namespace PRIO.Migrations
                         .WithMany("CompletionProductions")
                         .HasForeignKey("ReservoirProductionId");
 
-                    b.HasOne("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellProductions", "WellAllocation")
+                    b.HasOne("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellAllocations", "WellAllocation")
                         .WithMany("CompletionProductions")
                         .HasForeignKey("WellAllocationId");
 
@@ -5672,26 +5593,7 @@ namespace PRIO.Migrations
                     b.Navigation("Well");
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellLosses", b =>
-                {
-                    b.HasOne("PRIO.src.Modules.Measuring.WellEvents.EF.Models.WellEvent", "Event")
-                        .WithMany("WellLosses")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellProductions", "WellAllocation")
-                        .WithMany("WellLosses")
-                        .HasForeignKey("WellAllocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Event");
-
-                    b.Navigation("WellAllocation");
-                });
-
-            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellProductions", b =>
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellAllocations", b =>
                 {
                     b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.FieldProduction", "FieldProduction")
                         .WithMany("WellProductions")
@@ -5716,6 +5618,25 @@ namespace PRIO.Migrations
                     b.Navigation("Production");
 
                     b.Navigation("WellTest");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellLosses", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.WellEvents.EF.Models.WellEvent", "Event")
+                        .WithMany("WellLosses")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellAllocations", "WellAllocation")
+                        .WithMany("WellLosses")
+                        .HasForeignKey("WellAllocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("WellAllocation");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.Group", b =>
@@ -6024,7 +5945,7 @@ namespace PRIO.Migrations
                     b.Navigation("WellLosses");
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellProductions", b =>
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellAllocations", b =>
                 {
                     b.Navigation("CompletionProductions");
 
