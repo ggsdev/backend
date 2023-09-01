@@ -1214,7 +1214,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                         _repository.Update(wellProduction);
                     }
-                    Console.WriteLine(totalWaterWithFieldFR);
 
                     if (fieldProductionInDatabase is not null)
                     {

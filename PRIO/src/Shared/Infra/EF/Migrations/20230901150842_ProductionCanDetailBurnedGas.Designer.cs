@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230901150842_ProductionCanDetailBurnedGas")]
+    partial class ProductionCanDetailBurnedGas
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -76,7 +79,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("GroupPermissionId");
 
-                    b.ToTable("GroupOperations", (string)null);
+                    b.ToTable("GroupOperations");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.GroupPermission", b =>
@@ -215,7 +218,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GlobalOperations", (string)null);
+                    b.ToTable("GlobalOperations");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.Session", b =>
@@ -595,7 +598,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Validates", (string)null);
+                    b.ToTable("Validates");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.WellTests", b =>
@@ -912,11 +915,11 @@ namespace PRIO.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<decimal?>("VolumeAfter")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(10, 5)
                         .HasColumnType("decimal");
 
                     b.Property<decimal?>("VolumeBefore")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(10, 5)
                         .HasColumnType("decimal");
 
                     b.HasKey("Id");
@@ -4331,7 +4334,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Waters", (string)null);
+                    b.ToTable("Waters");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.ZoneProduction", b =>
@@ -4628,7 +4631,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("WellAllocationId");
 
-                    b.ToTable("WellLosses", (string)null);
+                    b.ToTable("WellLosses");
                 });
 
             modelBuilder.Entity("PRIO.src.Shared.Auxiliaries.Infra.EF.Models.Auxiliary", b =>
@@ -4654,7 +4657,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Auxiliaries", (string)null);
+                    b.ToTable("Auxiliaries");
                 });
 
             modelBuilder.Entity("PRIO.src.Shared.SystemHistories.Infra.EF.Models.SystemHistory", b =>
