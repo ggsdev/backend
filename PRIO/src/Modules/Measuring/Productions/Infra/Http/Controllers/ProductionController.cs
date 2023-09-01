@@ -69,7 +69,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{productionId}")]
+        [HttpPatch("{productionId}/gasDetailed")]
         public async Task<IActionResult> UpdateDetailedGas([FromRoute] Guid productionId, UpdateDetailedGasViewModel body)
         {
             var data = await _productionService.UpdateDetailedGas(productionId, body);
