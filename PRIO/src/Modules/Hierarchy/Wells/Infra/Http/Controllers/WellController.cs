@@ -32,11 +32,11 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Controllers
             return Created($"wells/{wellDTO.Id}", wellDTO);
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> Get(int pageNumber = 1, int pageSize = 10)
+        //[HttpGet("paginated")]
+        //public async Task<IActionResult> Get(int pageNumber = 1, int pageSize = 3)
         //{
         //    var requestUrl = Request.GetEncodedUrl();
-        //    var paginatedWellsDTO = await _wellService.GetWells(pageNumber, pageSize, requestUrl);
+        //    var paginatedWellsDTO = await _wellService.GetWellsPaginated(pageNumber, pageSize, requestUrl);
 
         //    return Ok(paginatedWellsDTO);
         //}
