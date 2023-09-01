@@ -126,7 +126,6 @@ namespace PRIO.Migrations
                 new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Arrasado",  DateTime.UtcNow.AddHours(-3) },
                 new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Produzindo",  DateTime.UtcNow.AddHours(-3) },
                 new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Injetando",  DateTime.UtcNow.AddHours(-3) },
-                new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Produzindo e injetando",  DateTime.UtcNow.AddHours(-3) },
                 new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Retirando gás natural estocado",  DateTime.UtcNow.AddHours(-3) },
                 new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Injetando para estocagem",  DateTime.UtcNow.AddHours(-3) },
                 new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Status ANP", "Equipado aguardando início de operação",  DateTime.UtcNow.AddHours(-3) },
