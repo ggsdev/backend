@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230901193434_addMappingInProductionMap")]
+    partial class addMappingInProductionMap
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3012,9 +3015,11 @@ namespace PRIO.Migrations
                         .HasColumnType("varchar");
 
                     b.Property<bool?>("HasSeal")
+                        .IsRequired()
                         .HasColumnType("bit");
 
                     b.Property<bool?>("InOperation")
+                        .IsRequired()
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsActive")
@@ -4564,10 +4569,9 @@ namespace PRIO.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Downtime")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
+                    b.Property<decimal>("Downtime")
+                        .HasPrecision(14, 5)
+                        .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("EfficienceLoss")
                         .HasPrecision(14, 5)
@@ -4655,60 +4659,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("WellTestId");
 
-
                     b.ToTable("WellProductions", (string)null);
-
-
-            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellLosses", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Downtime")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("EfficienceLoss")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid>("EventId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("MeasuredAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("ProductionLost")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("ProportionalDay")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("WellAllocationId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EventId");
-
-                    b.HasIndex("WellAllocationId");
-
-                    b.ToTable("WellLosses");
-
                 });
 
             modelBuilder.Entity("PRIO.src.Shared.Auxiliaries.Infra.EF.Models.Auxiliary", b =>

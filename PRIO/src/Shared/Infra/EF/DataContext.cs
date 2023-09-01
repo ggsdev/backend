@@ -138,7 +138,7 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<NFSMsProductions> NFSMsProductions { get; set; }
         public DbSet<NFSM> NFSMs { get; set; }
         public DbSet<NFSMHistory> NFSMImportHistories { get; set; }
-        public DbSet<WellAllocations> WellProductions { get; set; }
+        public DbSet<WellProductions> WellProductions { get; set; }
         public DbSet<FieldProduction> FieldsProductions { get; set; }
         public DbSet<CompletionProduction> CompletionProductions { get; set; }
         public DbSet<ReservoirProduction> ReservoirProductions { get; set; }
@@ -266,7 +266,7 @@ namespace PRIO.src.Shared.Infra.EF
 
             #region Production
             modelBuilder.ApplyConfiguration(new FieldProductionMap());
-            modelBuilder.ApplyConfiguration(new WellAllocationMap());
+            modelBuilder.ApplyConfiguration(new WellProductionMap());
             modelBuilder.ApplyConfiguration(new CompletionProductionMap());
             modelBuilder.ApplyConfiguration(new ReservoirProductionMap());
             modelBuilder.ApplyConfiguration(new ZoneProductionMap());

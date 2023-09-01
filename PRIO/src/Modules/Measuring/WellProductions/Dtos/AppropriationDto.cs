@@ -21,6 +21,9 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Dtos
         public decimal ProductionGasInWellSCF { get; set; }
         public decimal ProductionWaterInWellBBL { get; set; }
         public decimal ProductionOilInWellBBL { get; set; }
+        public decimal EfficienceLoss { get; set; }
+        public decimal ProductionLost { get; set; }
+        public decimal ProportionalDay { get; set; }
     }
 
     public class FieldProductionDto

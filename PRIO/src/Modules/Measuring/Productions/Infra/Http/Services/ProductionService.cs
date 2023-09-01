@@ -690,15 +690,15 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             WellName = well.Name is not null ? well.Name : string.Empty,
                             Downtime = "00:00:00",
-                            ProductionGasInWellM3 = Math.Round(wellP.ProductionGasInWell, 5),
-                            ProductionGasInWellSCF = Math.Round(wellP.ProductionGasInWell * ProductionUtils.m3ToSCFConversionMultipler, 5),
+                            ProductionGasInWellM3 = Math.Round(wellP.ProductionGasInWellM3, 5),
+                            ProductionGasInWellSCF = Math.Round(wellP.ProductionGasInWellM3 * ProductionUtils.m3ToSCFConversionMultipler, 5),
 
-                            ProductionOilInWellM3 = Math.Round(wellP.ProductionOilInWell, 5),
-                            ProductionOilInWellBBL = Math.Round(wellP.ProductionOilInWell * ProductionUtils.m3ToBBLConversionMultiplier, 5),
+                            ProductionOilInWellM3 = Math.Round(wellP.ProductionOilInWellM3, 5),
+                            ProductionOilInWellBBL = Math.Round(wellP.ProductionOilInWellM3 * ProductionUtils.m3ToBBLConversionMultiplier, 5),
 
-                            ProductionWaterInWellM3 = Math.Round(wellP.ProductionWaterInWell, 5),
+                            ProductionWaterInWellM3 = Math.Round(wellP.ProductionWaterInWellM3, 5),
 
-                            ProductionWaterInWellBBL = Math.Round(wellP.ProductionWaterInWell * ProductionUtils.m3ToBBLConversionMultiplier, 5),
+                            ProductionWaterInWellBBL = Math.Round(wellP.ProductionWaterInWellM3 * ProductionUtils.m3ToBBLConversionMultiplier, 5),
                             WellProductionId = wellP.Id,
 
                         });
