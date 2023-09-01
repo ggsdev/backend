@@ -345,21 +345,23 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             {
                 foreach (var productionLoss in wellEvent.WellLosses)
                 {
-                    foreach (var reason in wellEvent.EventReasons)
-                    {
-                        var reasonDto = new ReasonDetailedDto
-                        {
-                            //Downtime = reason.Interval,
-                            EndDate = reason.EndDate is not null ? reason.EndDate.Value.ToString("dd/MM/yyyy HH:mm") : "",
-                            StartDate = reason.StartDate.ToString("dd/MM/yyyy HH:mm"),
-                            ProductionLoss = 0,
-                            SystemRelated = "",
-                            TimeOperating = "",
-                            Downtime = 0
-                        };
 
-                        reasonsDetailed.Add(reasonDto);
-                    }
+                    //foreach (var reason in wellEvent.EventReasons)
+                    //{
+                    //    var reasonDto = new ReasonDetailedDto
+                    //    {
+                    //        //Downtime = reason.Interval,
+                    //        EndDate = reason.EndDate is not null ? reason.EndDate.Value.ToString("dd/MM/yyyy HH:mm") : "",
+                    //        StartDate = reason.StartDate.ToString("dd/MM/yyyy HH:mm"),
+                    //        ProductionLoss = 0,
+                    //        SystemRelated = "",
+                    //        TimeOperating = "",
+                    //        Downtime = 0,
+
+                    //    };
+
+                    //    reasonsDetailed.Add(reasonDto);
+                    //}
                 }
             }
 

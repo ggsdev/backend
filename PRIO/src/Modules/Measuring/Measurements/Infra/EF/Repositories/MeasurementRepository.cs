@@ -37,11 +37,11 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories
             switch (fileType)
             {
                 case "001":
-                    return await _context.Measurements.FirstOrDefaultAsync(x => x.DHA_INICIO_PERIODO_MEDICAO_001 == date);
+                    return await _context.Measurements.FirstOrDefaultAsync(x => x.DHA_INICIO_PERIODO_MEDICAO_001 == date && x.IsActive);
                 case "002":
-                    return await _context.Measurements.FirstOrDefaultAsync(x => x.DHA_INICIO_PERIODO_MEDICAO_002 == date);
+                    return await _context.Measurements.FirstOrDefaultAsync(x => x.DHA_INICIO_PERIODO_MEDICAO_002 == date && x.IsActive);
                 case "003":
-                    return await _context.Measurements.FirstOrDefaultAsync(x => x.DHA_INICIO_PERIODO_MEDICAO_003 == date);
+                    return await _context.Measurements.FirstOrDefaultAsync(x => x.DHA_INICIO_PERIODO_MEDICAO_003 == date && x.IsActive);
                 default:
                     throw new BadRequestException("arquivo: 001,002,003");
             }

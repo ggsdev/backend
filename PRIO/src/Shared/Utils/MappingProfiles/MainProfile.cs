@@ -70,11 +70,10 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
               .ForMember(dest => dest.DHA_RETORNO_039, opt => opt.MapFrom(src =>
             string.IsNullOrEmpty(src.DHA_RETORNO_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_RETORNO_039, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)));
 
-            CreateMap<VOLUME, Volume>()
-            .ForMember(dest => dest.DHA_MEDICAO_039, opt => opt.MapFrom(src =>
-                string.IsNullOrEmpty(src.DHA_MEDICAO_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_MEDICAO_039, "dd/MM/yyyy", CultureInfo.InvariantCulture)));
+            CreateMap<VOLUME, Volume>();
+            //.ForMember(dest => dest.DHA_MEDICAO_039, opt => opt.MapFrom(src =>
+            //    string.IsNullOrEmpty(src.DHA_MEDICAO_039) ? null : (DateTime?)DateTime.ParseExact(src.DHA_MEDICAO_039, "dd/MM/yyyy 00:00:00", CultureInfo.InvariantCulture)));
 
-            CreateMap<Volume, VOLUME>();
 
             CreateMap<Measurement, _039DTO>();
             CreateMap<_039DTO, Measurement>();
