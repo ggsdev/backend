@@ -185,7 +185,11 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
                     .ThenInclude(x => x.Completions)
                         .ThenInclude(x => x.Reservoir)
                             .ThenInclude(x => x.Zone)
+                            .Include(x => x.Well)
+                            .ThenInclude(x => x.WellEvents)
                          .Where(x => x.Well.Field.Id == fieldId && x.IsValid)
+
+
                 .ToListAsync();
 
             return btps;
@@ -201,6 +205,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
                         .ThenInclude(x => x.Reservoir)
                             .ThenInclude(x => x.Zone)
                          .Where(x => x.Well.Field.Installation.UepCod == uep && x.IsValid)
+                .Include(x => x.Well)
+                    .ThenInclude(x => x.WellEvents)
                 .ToListAsync();
 
             return btps;

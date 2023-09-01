@@ -89,7 +89,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Mappings
              .IsRequired();
 
             builder.HasOne(x => x.Well)
-               .WithMany(u => u.BTPDatas)
+               .WithMany(u => u.WellTests)
                .OnDelete(DeleteBehavior.NoAction)
                .IsRequired();
 

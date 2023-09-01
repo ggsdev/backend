@@ -236,7 +236,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
             return await _context.Installations
                 .Include(x => x.Fields)
                     .ThenInclude(x => x.Wells)
-                        .ThenInclude(x => x.BTPDatas)
+                        .ThenInclude(x => x.WellTests)
                          .Include(x => x.Fields)
                     .ThenInclude(x => x.Wells)
                         .ThenInclude(x => x.WellEvents)

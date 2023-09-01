@@ -99,7 +99,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                 .Include(x => x.Installation)
                     .ThenInclude(x => x.Fields)
                     .ThenInclude(f => f.Wells)
-                    .ThenInclude(d => d.BTPDatas)
+                    .ThenInclude(d => d.WellTests)
                     .Include(x => x.WellProductions)
                         .ThenInclude(d => d.FieldProduction)
                 .Include(x => x.Comment)
