@@ -29,11 +29,7 @@ namespace PRIO.src.Shared.Auxiliaries.Infra.Http.Services
 
             var validRoutes = new List<string>
             {
-<<<<<<< HEAD
-                "/cadastrosbasicos", "/importarDadosTestePoco", "/eventosPoco"
-=======
                 "/cadastrosbasicos", "/importardadostestepoco", "/eventospoco"
->>>>>>> adfcd47329dd8ec4fd32ea0c9c83c397732f70b9
             };
 
 
