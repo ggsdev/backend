@@ -562,7 +562,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
 
                                         var checkGasProductionExists = await _productionRepository.GetProductionGasByDate(dateBeginningMeasurement);
-                                        if (checkGasProductionExists is not null && checkGasProductionExists.Gas is not null)
+                                        if (checkGasProductionExists is not null && checkGasProductionExists.Gas is not null && checkGasProductionExists.IsActive)
                                             errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) já existe produção de gás na data: {producao.DHA_INICIO_PERIODO_MEDICAO_002}");
 
                                     }
@@ -933,7 +933,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                         var checkGasProductionExists = await _productionRepository
                                             .GetProductionGasByDate(dateBeginningMeasurement);
 
-                                        if (checkGasProductionExists is not null && checkGasProductionExists.Gas is not null)
+                                        if (checkGasProductionExists is not null && checkGasProductionExists.Gas is not null && checkGasProductionExists.IsActive)
                                             errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) já existe produção de gás na data: {producao.DHA_INICIO_PERIODO_MEDICAO_003}");
 
                                     }
@@ -1228,14 +1228,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     }
                 }
 
-                if (response003.Measurements.Count == 0 && response002.Measurements.Count == 0 && response001.Measurements.Count == 0)
-                    errorsInImport.Add($"Algum erro ocorreu na hora de achar a configuração de cálculo, certifique-se que os pontos de medição do xml estão associados corretamente na configuração de cálculo dos fluídos, arquivo de nome: {data.Files[i].FileName}");
-
                 if (errorsInImport.Count > 0)
                     throw new BadRequestException($"Algum(s) erro(s) ocorreram durante a validação do arquivo de nome: {data.Files[i].FileName}", errors: errorsInImport);
 
                 if (errorsInFormat.Count > 0)
                     throw new BadRequestException($"Algum(s) erro(s) de formatação ocorreram durante a validação do arquivo de nome: {data.Files[i].FileName}", errors: errorsInFormat);
+
+                if (response003.Measurements.Count == 0 && response002.Measurements.Count == 0 && response001.Measurements.Count == 0)
+                    errorsInImport.Add($"Algum erro ocorreu na hora de achar a configuração de cálculo, certifique-se que os pontos de medição do xml estão associados corretamente na configuração de cálculo dos fluídos, arquivo de nome: {data.Files[i].FileName}");
 
                 if (response003.Measurements.Count > 0)
                     response._003File.Add(response003);
