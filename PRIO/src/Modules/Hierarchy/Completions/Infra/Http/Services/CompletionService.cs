@@ -219,8 +219,17 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             if (completion.IsActive is false)
                 throw new ConflictException(ErrorMessages.Inactive<Completion>());
 
-
             var well = await _wellRepository.GetWithFieldAsync(body.WellId);
+
+            if (well.Completions is not null && well.Completions.Count == 2)
+            {
+                var otherCompletion = well.Completions.Where(completion => completion.Id != id)
+                .FirstOrDefault();
+
+                if (otherCompletion is not null)
+                    if (body.AllocationReservoir + otherCompletion.AllocationReservoir != 1)
+                        throw new ConflictException("A soma das alocações por reservatório deve ser 1.");
+            }
 
             var reservoir = await _reservoirRepository.GetWithZoneFieldAsync(body.ReservoirId);
 
