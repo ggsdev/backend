@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230901150842_ProductionCanDetailBurnedGas")]
+    partial class ProductionCanDetailBurnedGas
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -912,11 +915,11 @@ namespace PRIO.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<decimal?>("VolumeAfter")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(10, 5)
                         .HasColumnType("decimal");
 
                     b.Property<decimal?>("VolumeBefore")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(10, 5)
                         .HasColumnType("decimal");
 
                     b.HasKey("Id");

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PRIO.src.Modules.Measuring.Productions.Infra.Http.Services;
+using PRIO.src.Modules.Measuring.Productions.ViewModels;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.Http.Filters;
 using System.Globalization;
@@ -66,6 +67,14 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Controllers
                 .DeleteProduction(id);
 
             return NoContent();
+        }
+
+        [HttpPatch("{productionId}")]
+        public async Task<IActionResult> UpdateDetailedGas([FromRoute] Guid productionId, UpdateDetailedGasViewModel body)
+        {
+            var data = await _productionService.UpdateDetailedGas(productionId, body);
+
+            return Ok(data);
         }
     }
 }

@@ -419,9 +419,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                             }
                         }
 
-                        Console.WriteLine(totalPotencialGasUEP);
-                        Console.WriteLine(btp.PotencialGas);
-                        Console.WriteLine((decimal)totalInterval / 24);
                         //}
                         //UEP
                         var wellPotencialGasAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfField((btp.PotencialGas * ((24 - (decimal)totalInterval) / 24)), totalPotencialGasUEP);
@@ -517,7 +514,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                 }
 
 
-                //await _repository.Save();
+                await _repository.Save();
 
                 await DistributeAccrossEntites(production.Id);
             }
@@ -546,7 +543,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
             _productionRepository.Update(production);
 
-            //await _repository.Save();
+            await _repository.Save();
 
             return appropriationDto;
         }
@@ -1159,7 +1156,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                         _repository.Update(wellProduction);
                     }
-                    Console.WriteLine(totalWaterWithFieldFR);
 
                     if (fieldProductionInDatabase is not null)
                     {
