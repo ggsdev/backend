@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230901192958_changeTableWellProductions")]
+    partial class changeTableWellProductions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4566,14 +4569,11 @@ namespace PRIO.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Downtime")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
+                    b.Property<decimal>("Downtime")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("EfficienceLoss")
-                        .HasPrecision(14, 5)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid>("FieldProductionId")
                         .HasColumnType("uniqueidentifier");
@@ -4594,15 +4594,13 @@ namespace PRIO.Migrations
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionGasInWellSCF")
-                        .HasPrecision(14, 5)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid>("ProductionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("ProductionLost")
-                        .HasPrecision(14, 5)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("ProductionOilAsPercentageOfField")
                         .HasPrecision(7, 5)
@@ -4613,8 +4611,7 @@ namespace PRIO.Migrations
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionOilInWellBBL")
-                        .HasPrecision(14, 5)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("ProductionOilInWellM3")
                         .HasPrecision(14, 5)
@@ -4629,16 +4626,14 @@ namespace PRIO.Migrations
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionWaterInWellBBL")
-                        .HasPrecision(14, 5)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("ProductionWaterInWellM3")
                         .HasPrecision(14, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProportionalDay")
-                        .HasPrecision(14, 5)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
