@@ -8,6 +8,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Interfaces
         Task Save();
         Task<List<FieldProduction>> getAllFieldsProductionsByProductionId(Guid productionId);
         Task AddAsync(WellAllocations wellApp);
+        Task AddWellLossAsync(WellLosses wellLoss);
         void Update(WellAllocations wellApp);
         Task AddCompletionProductionAsync(CompletionProduction completionApp);
         Task<List<WellAllocations>> GetByProductionId(Guid productionId);
