@@ -13,8 +13,10 @@ using PRIO.src.Modules.Measuring.Productions.Dtos;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Productions.Interfaces;
 using PRIO.src.Modules.Measuring.Productions.Utils;
+using PRIO.src.Modules.Measuring.Productions.ViewModels;
 using PRIO.src.Modules.Measuring.WellProductions.Dtos;
 using PRIO.src.Shared.Errors;
+using PRIO.src.Shared.Utils;
 
 namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 {
@@ -1901,6 +1903,49 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
             _repository.Update(production);
 
             await _repository.SaveChangesAsync();
+        }
+
+        public async Task<DetailedGasBurnedDto> UpdateDetailedGas(Guid productionId, UpdateDetailedGasViewModel body)
+        {
+            var production = await _repository
+                .GetById(productionId);
+
+            if (production is null)
+                throw new NotFoundException(ErrorMessages.NotFound<Production>());
+
+            if (production.CanDetailGasBurned is false)
+                throw new ConflictException("Detalhamento de queima não é possível, somente após notificação de falha.");
+
+            if (production.Gas is null)
+                throw new NotFoundException("Produção de gás não encontrada.");
+
+            var sumOfDetailedBurn = body.OthersBurn + body.EmergencialBurn + body.LimitOperacionalBurn + body.ForCommissioningBurn + body.ScheduledStopBurn + body.VentedGas + body.WellTestBurn;
+
+            var totalBurnedGas = (production.GasLinear is not null ? production.GasLinear.BurntGas : 0) + (production.GasDiferencial is not null ? production.GasDiferencial.BurntGas : 0);
+
+            if (Math.Round(sumOfDetailedBurn, 5) != Math.Round(totalBurnedGas, 5))
+                throw new BadRequestException("Total do volume detalhado deve ser igual ao total do volume de queima.");
+
+            UpdateFields.CompareUpdateReturnOnlyUpdated(production.Gas, body);
+
+            //production.CanDetailGasBurned = false;
+            _repository.Update(production);
+
+            var gasDto = new DetailedGasBurnedDto
+            {
+                GasId = production.Gas.Id,
+                EmergencialBurn = production.Gas.EmergencialBurn,
+                ForCommissioningBurn = production.Gas.ForCommissioningBurn,
+                LimitOperacionalBurn = production.Gas.LimitOperacionalBurn,
+                OthersBurn = production.Gas.OthersBurn,
+                ScheduledStopBurn = production.Gas.ScheduledStopBurn,
+                VentedGas = production.Gas.VentedGas,
+                WellTestBurn = production.Gas.WellTestBurn
+            };
+
+            await _repository.SaveChangesAsync();
+
+            return gasDto;
         }
     }
 }

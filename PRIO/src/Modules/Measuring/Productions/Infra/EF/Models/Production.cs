@@ -15,7 +15,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Models
         public List<Measurement> Measurements { get; set; } = new();
         public DateTime MeasuredAt { get; set; }
         public DateTime CalculatedImportedAt { get; set; } = DateTime.UtcNow.AddHours(-3);
-
+        public bool CanDetailGasBurned { get; set; }
         public Oil? Oil { get; set; }
         public GasLinear? GasLinear { get; set; }
         public Gas? Gas { get; set; }

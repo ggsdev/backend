@@ -62,11 +62,11 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Mappings
 
             builder.Property(x => x.VolumeAfter)
                 .HasColumnType("decimal")
-                .HasPrecision(10, 5);
+                .HasPrecision(14, 5);
 
             builder.Property(x => x.VolumeBefore)
                 .HasColumnType("decimal")
-                .HasPrecision(10, 5);
+                .HasPrecision(14, 5);
 
             builder.HasOne(x => x.Production)
                  .WithMany(x => x.NFSMs)
