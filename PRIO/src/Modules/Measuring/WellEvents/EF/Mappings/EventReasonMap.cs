@@ -17,9 +17,9 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Mappings
             //builder.Property(x => x.Interval)
             //    .HasColumnType("float")
             //    .HasPrecision(15, 6);
-            builder.Property(x => x.Reason)
+            builder.Property(x => x.SystemRelated)
                .HasColumnType("VARCHAR")
-               .HasMaxLength(1000)
+               .HasMaxLength(60)
                .IsRequired();
 
             builder.Property(x => x.Comment)

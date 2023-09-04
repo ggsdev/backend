@@ -27,9 +27,9 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Mappings
               .HasColumnType("char")
               .HasMaxLength(1);
 
-            builder.Property(x => x.SystemRelated)
+            builder.Property(x => x.Reason)
               .HasColumnType("varchar")
-              .HasMaxLength(20);
+              .HasMaxLength(1000);
 
             builder.Property(x => x.StatusANP)
               .HasColumnType("VARCHAR")

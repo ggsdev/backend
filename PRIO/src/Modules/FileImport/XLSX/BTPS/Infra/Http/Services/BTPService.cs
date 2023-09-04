@@ -281,9 +281,9 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             try
             {
                 DateTime? applicationDate = DateTime.Parse(body.ApplicationDate);
-                if (finalDate > applicationDate)
+                if (finalDate.Value.Date > applicationDate)
                 {
-                    erros.Add("Erro: Data inicial do teste não pode ser maior do que a data final do teste.");
+                    erros.Add("Erro: Data final do teste não pode ser maior do que a data de aplicação do teste.");
                 }
             }
             catch

@@ -13,11 +13,14 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Repositories
             _context = context;
         }
 
-        public async Task<WellEvent?> GetById(Guid id)
+        public async Task<WellEvent?> GetClosedEventById(Guid id)
         {
             return await _context.WellEvents
                 .Include(x => x.EventReasons)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .Include(x => x.Well)
+                    .ThenInclude(x => x.Field)
+                        .ThenInclude(x => x.Installation)
+                .FirstOrDefaultAsync(x => x.Id == id && x.EventStatus.ToUpper() == "F");
         }
 
         public async Task Add(WellEvent wellEvent)

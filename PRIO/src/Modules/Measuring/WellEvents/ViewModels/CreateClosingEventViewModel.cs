@@ -33,8 +33,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.ViewModels
     {
         [Required(ErrorMessage = "EventDateAndHour é obrigatório")]
         public string EventDateAndHour { get; set; }
-        [Required(ErrorMessage = "SystemRelated é obrigatório")]
-        public string SystemRelated { get; set; }
+        [Required(ErrorMessage = "Reason é obrigatório")]
+        public string Reason { get; set; }
         public string? StatusAnp { get; set; }
         public string? StateAnp { get; set; }
         [Required(ErrorMessage = "WellId é obrigatório")]
