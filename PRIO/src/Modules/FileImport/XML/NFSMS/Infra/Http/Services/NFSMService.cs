@@ -729,8 +729,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                 if (productionInDatabase is null)
                     throw new NotFoundException(ErrorMessages.NotFound<Production>());
 
-                //if (productionInDatabase.StatusProduction.ToLower() != ProductionUtils.closedStatus)
-                //    throw new ConflictException("Produção precisa ter sido fechada para ser corrigida.");
+                if (productionInDatabase.StatusProduction.ToLower() != ProductionUtils.closedStatus)
+                    throw new ConflictException("Produção precisa ter sido fechada para ser corrigida.");
             }
 
             foreach (var measurementCorrected in nfsmInDatabase.Productions)
