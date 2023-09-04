@@ -234,7 +234,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         totalPotencialWaterField += btp.PotencialWater * (24 - (decimal)totalInterval) / 24;
                     }
 
-                    FieldProduction? fieldProduction = filtredByApplyDateAndFinal.Any ? new()
+                    FieldProduction? fieldProduction = filtredByApplyDateAndFinal.Any() ? new()
 
                     {
                         Id = Guid.NewGuid(),
