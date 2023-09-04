@@ -233,6 +233,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                             };
 
                             bswsFixed.Add(bswFixed);
+                            bswList.Add(bswMapped);
                             //measurement.LISTA_BSW.Add(bswMapped);
                         }
 
