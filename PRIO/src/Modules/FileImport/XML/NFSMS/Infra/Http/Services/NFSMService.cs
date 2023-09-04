@@ -653,7 +653,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     {
                         Bsw = measurementFixed.Bsw,
                         Date = measurementFixed.MeasuredAt,
-                        MaxBsw = measurementFixed.BswMax
+                        MaxBsw = measurementFixed.BswMax,
                     });
 
                 }
