@@ -2364,20 +2364,17 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             var dailyProduction = await _productionRepository.GetExistingByDate(measuredAt);
 
-            if (dailyProduction is null || (dailyProduction is not null && dailyProduction.IsActive is false))
+            dailyProduction ??= new Production
             {
-                dailyProduction = new Production
-                {
-                    Id = Guid.NewGuid(),
-                    CalculatedImportedBy = user,
-                    CalculatedImportedAt = DateTime.UtcNow.AddHours(-3),
-                    MeasuredAt = measuredAt,
-                    Installation = installation,
+                Id = Guid.NewGuid(),
+                CalculatedImportedBy = user,
+                CalculatedImportedAt = DateTime.UtcNow.AddHours(-3),
+                MeasuredAt = measuredAt,
+                Installation = installation,
 
-                };
-            }
+            };
 
-            if ((dailyProduction.Gas is null && data.GasSummary is not null) || (dailyProduction.Gas is not null && dailyProduction.Gas.IsActive is false))
+            if (data.GasSummary is not null && ((dailyProduction.Gas is null) || (dailyProduction.Gas is not null && dailyProduction.Gas.IsActive is false)))
             {
                 dailyProduction.Gas = new Gas
                 {
@@ -2474,6 +2471,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                             Type = XmlUtils.File001
                         };
                         measurement.User = user;
+                        measurement.Id = Guid.NewGuid();
 
                         measurement.FileType = new FileType
                         {
@@ -2543,16 +2541,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 };
 
                 dailyProduction.Oil = oil;
-
-                //var water = new Water
-                //{
-                //    Id = Guid.NewGuid(),
-                //    Production = dailyProduction,
-                //    TotalWater = totalWater,
-                //    StatusWater = true,
-                //};
-
-                //dailyProduction.Water = water;
             }
 
             totalProduction += totalOilWithBsw;
@@ -2582,6 +2570,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                             Type = XmlUtils.File002
                         };
                         measurement.User = user;
+
+                        measurement.Id = Guid.NewGuid();
 
                         measurement.FileType = new FileType
                         {
@@ -2650,6 +2640,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                             Type = XmlUtils.File003
                         };
                         measurement.User = user;
+                        measurement.Id = Guid.NewGuid();
 
                         measurement.FileType = new FileType
                         {
@@ -2753,12 +2744,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             };
 
             await _fieldFRService.ApplyFR(fieldFrViewModel, data.DateProduction);
-
-            //change production status to true
-            //if (dailyProduction.GasDiferencial is not null && dailyProduction.GasLinear is not null && dailyProduction.Oil is not null && dailyProduction.Comment is not null && dailyProduction.Water is not null)
-            //{
-            //    dailyProduction.StatusProduction = "fechado";
-            //}
 
             await _productionRepository.AddOrUpdateProduction(dailyProduction);
             await _repository.AddRangeAsync(measurementsAdded);
