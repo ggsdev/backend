@@ -1477,8 +1477,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         var wellPotencialWaterAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((wellProduction.WellTest.PotencialWater * ((24 - (decimal)totalInterval) / 24)), totalPotencialWaterUEP);
                         var wellPotencialGasAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField((wellProduction.WellTest.PotencialGas * ((24 - (decimal)totalInterval) / 24)), totalPotencialGasField);
 
-
-
                         var wellPotencialOilAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField((wellProduction.WellTest.PotencialOil * ((24 - (decimal)totalInterval) / 24)), totalPotencialOilField);
                         var wellPotencialWaterAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField((wellProduction.WellTest.PotencialWater * ((24 - (decimal)totalInterval) / 24)), totalPotencialWaterField);
                         var productionGas = fieldFR.FRGas is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.GasProductionInField, wellPotencialGasAsPercentageOfField) : 0;
