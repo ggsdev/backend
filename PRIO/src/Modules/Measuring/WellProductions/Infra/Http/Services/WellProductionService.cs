@@ -86,7 +86,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                                     break;
                                 }
                             }
-                            if (allBtpsOfProducingWellsValid.Count() == 0 && well.CategoryOperator == "Injetor")
+                            if (!allBtpsOfProducingWellsValid.Any() && well.CategoryOperator == "Injetor")
                             {
                                 wellContainBtpValid = true;
                                 break;
@@ -234,7 +234,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         totalPotencialWaterField += btp.PotencialWater * (24 - (decimal)totalInterval) / 24;
                     }
 
-                    FieldProduction? fieldProduction = filtredByApplyDateAndFinal.Count() > 0 ? new()
+                    FieldProduction? fieldProduction = filtredByApplyDateAndFinal.Any ? new()
 
                     {
                         Id = Guid.NewGuid(),
