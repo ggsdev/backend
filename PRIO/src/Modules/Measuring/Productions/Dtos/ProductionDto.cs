@@ -156,6 +156,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
         public string InstallationName { get; set; }
         public string UepName { get; set; }
         public bool IsCalculated { get; set; }
+        public bool CanDetailGasBurned { get; set; }
 
         public DailyProduction DailyProduction { get; set; }
 
