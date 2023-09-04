@@ -622,7 +622,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
                 Well = well,
-                BTPBase64 = content
+                BTPBase64 = content,
+                IsActive = body.Data.IsValid == false ? false : true,
             };
 
             var listWellTests = await _BTPRepository.ListBTPSDataActiveByWellId(body.Validate.WellId);
