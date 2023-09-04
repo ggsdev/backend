@@ -157,7 +157,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         totalWaterWithFieldFR += (production.Oil.TotalOil * fieldFR.FROil * wellPotencialOilAsPercentageOfField * btp.BSW) / (100 - btp.BSW);
                     }
                 }
-
                 foreach (var fieldFR in production.FieldsFR)
                 {
                     var totalWater = 0m;
@@ -180,7 +179,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     var totalWaterPotencial = filtredByApplyDateAndFinal
                         .Sum(x => x.PotencialWater);
 
-                    FieldProduction? fieldProduction = filtredByApplyDateAndFinal.Count() > 0 ? new()
+                    FieldProduction? fieldProduction = filtredByApplyDateAndFinal.Any() ? new()
                     {
                         Id = Guid.NewGuid(),
                         FieldId = fieldFR.Field.Id,
@@ -343,7 +342,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                 {
                     var wellAppropiationsDto = new List<WellProductionDto>();
 
-                    FieldProduction? fieldProduction = filtredByApplyDateAndFinal.Count() > 0 ? new()
+                    FieldProduction? fieldProduction = filtredByApplyDateAndFinal.Any() ? new()
                     {
                         Id = Guid.NewGuid(),
                         ProductionId = production.Id,
