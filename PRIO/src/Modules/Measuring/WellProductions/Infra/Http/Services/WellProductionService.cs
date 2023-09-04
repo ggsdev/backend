@@ -893,11 +893,11 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         throw new NotFoundException("Produção de campo não distribuida");
 
                     var totalGasPotencial = fieldProductionInDatabase.WellProductions
-                       .Sum(x => ((24 - CalculateDowntimeInHours(x.Downtime)) / 24) * x.WellTest.PotencialGas);
+                       .Sum(x => ((24 - WellProductionUtils.CalculateDowntimeInHours(x.Downtime)) / 24) * x.WellTest.PotencialGas);
                     var totalOilPotencial = fieldProductionInDatabase.WellProductions
-                       .Sum(x => ((24 - CalculateDowntimeInHours(x.Downtime)) / 24) * x.WellTest.PotencialOil);
+                       .Sum(x => ((24 - WellProductionUtils.CalculateDowntimeInHours(x.Downtime)) / 24) * x.WellTest.PotencialOil);
                     var totalWaterPotencial = fieldProductionInDatabase.WellProductions
-                       .Sum(x => ((24 - CalculateDowntimeInHours(x.Downtime)) / 24) * x.WellTest.PotencialWater);
+                       .Sum(x => ((24 - WellProductionUtils.CalculateDowntimeInHours(x.Downtime)) / 24) * x.WellTest.PotencialWater);
 
                     var totalWater = 0m;
                     var totalOil = 0m;
@@ -915,9 +915,9 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         var productionOil = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.OilProductionInField, wellPotencialOilAsPercentageOfField) : 0;
                         var productionWater = (productionOil * wellProduction.WellTest.BSW) / (100 - wellProduction.WellTest.BSW);
 
-                        wellProduction.ProductionGasInWellM3 = productionGas * (24 - CalculateDowntimeInHours(wellProduction.Downtime)) / 24;
-                        wellProduction.ProductionOilInWellM3 = productionOil * (24 - CalculateDowntimeInHours(wellProduction.Downtime)) / 24;
-                        wellProduction.ProductionWaterInWellM3 = productionWater * (24 - CalculateDowntimeInHours(wellProduction.Downtime)) / 24;
+                        wellProduction.ProductionGasInWellM3 = productionGas * (24 - WellProductionUtils.CalculateDowntimeInHours(wellProduction.Downtime)) / 24;
+                        wellProduction.ProductionOilInWellM3 = productionOil * (24 - WellProductionUtils.CalculateDowntimeInHours(wellProduction.Downtime)) / 24;
+                        wellProduction.ProductionWaterInWellM3 = productionWater * (24 - WellProductionUtils.CalculateDowntimeInHours(wellProduction.Downtime)) / 24;
 
                         totalWater += wellProduction.ProductionWaterInWellM3;
                         totalOil += wellProduction.ProductionOilInWellM3;
@@ -1704,23 +1704,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
             await _repository.Save();
         }
 
-        private decimal CalculateDowntimeInHours(string downtime)
-        {
-            // Analisar a string no formato "hh:mm:ss" em horas, minutos e segundos
-            var partes = downtime.Split(':');
-            if (partes.Length != 3)
-            {
-                throw new InvalidOperationException("Formato de Downtime inválido.");
-            }
 
-            int horas = int.Parse(partes[0]);
-            int minutos = int.Parse(partes[1]);
-            int segundos = int.Parse(partes[2]);
-
-            // Calcular a fração de horas como decimal
-            decimal fracaoDeHoras = horas + (minutos / 60.0m) + (segundos / 3600.0m);
-
-            return fracaoDeHoras;
-        }
     }
 }

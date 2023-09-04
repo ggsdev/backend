@@ -750,7 +750,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                 var totalLinear = 0m;
                 var totalOil = 0m;
                 var totalDiferencial = 0m;
-                var totalGasBurned = 0m;
+                var totalGasBurnedDiferencial = 0m;
+                var totalGasBurnedLinear = 0m;
 
                 var oilChanged = false;
                 var gasDiferencialChanged = false;
@@ -840,12 +841,13 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                             if (hpFlare.MeasuringPoint is not null && hpFlare.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003 && measurement.MED_CORRIGIDO_MVMDO_003 is not null)
                             {
-                                totalGasBurned += measurement.MED_CORRIGIDO_MVMDO_003.Value;
+                                totalGasBurnedDiferencial = measurement.MED_CORRIGIDO_MVMDO_003.Value;
                             }
 
                             if (hpFlare.MeasuringPoint is not null && hpFlare.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 && measurement.MED_CORRIGIDO_MVMDO_002 is not null)
                             {
-                                totalGasBurned += measurement.MED_CORRIGIDO_MVMDO_002.Value;
+                                totalGasBurnedLinear = measurement.MED_CORRIGIDO_MVMDO_002.Value;
+
                             }
 
                         }
@@ -857,12 +859,14 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                             if (lpFlare.MeasuringPoint is not null && lpFlare.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003 && measurement.MED_CORRIGIDO_MVMDO_003 is not null)
                             {
-                                totalGasBurned += measurement.MED_CORRIGIDO_MVMDO_003.Value;
+                                totalGasBurnedDiferencial = measurement.MED_CORRIGIDO_MVMDO_003.Value;
+
                             }
 
                             if (lpFlare.MeasuringPoint is not null && lpFlare.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 && measurement.MED_CORRIGIDO_MVMDO_002 is not null)
                             {
-                                totalGasBurned += measurement.MED_CORRIGIDO_MVMDO_002.Value;
+                                totalGasBurnedLinear = measurement.MED_CORRIGIDO_MVMDO_002.Value;
+
                             }
                         }
 
@@ -873,12 +877,14 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                             if (assistance.MeasuringPoint is not null && assistance.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003 && measurement.MED_CORRIGIDO_MVMDO_003 is not null)
                             {
-                                totalGasBurned += measurement.MED_CORRIGIDO_MVMDO_003.Value;
+                                totalGasBurnedDiferencial = measurement.MED_CORRIGIDO_MVMDO_003.Value;
+
                             }
 
                             if (assistance.MeasuringPoint is not null && assistance.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 && measurement.MED_CORRIGIDO_MVMDO_002 is not null)
                             {
-                                totalGasBurned += measurement.MED_CORRIGIDO_MVMDO_002.Value;
+                                totalGasBurnedLinear = measurement.MED_CORRIGIDO_MVMDO_002.Value;
+
                             }
                         }
 
@@ -889,12 +895,12 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                             if (pilot.MeasuringPoint is not null && pilot.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003 && measurement.MED_CORRIGIDO_MVMDO_003 is not null)
                             {
-                                totalGasBurned += measurement.MED_CORRIGIDO_MVMDO_003.Value;
+                                totalGasBurnedDiferencial = measurement.MED_CORRIGIDO_MVMDO_003.Value;
                             }
 
                             if (pilot.MeasuringPoint is not null && pilot.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 && measurement.MED_CORRIGIDO_MVMDO_002 is not null)
                             {
-                                totalGasBurned += measurement.MED_CORRIGIDO_MVMDO_002.Value;
+                                totalGasBurnedLinear = measurement.MED_CORRIGIDO_MVMDO_002.Value;
                             }
                         }
 
@@ -905,12 +911,12 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                             if (purge.MeasuringPoint is not null && purge.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003 && measurement.MED_CORRIGIDO_MVMDO_003 is not null)
                             {
-                                totalGasBurned += measurement.MED_CORRIGIDO_MVMDO_003.Value;
+                                totalGasBurnedDiferencial = measurement.MED_CORRIGIDO_MVMDO_003.Value;
                             }
 
                             if (purge.MeasuringPoint is not null && purge.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 && measurement.MED_CORRIGIDO_MVMDO_002 is not null)
                             {
-                                totalGasBurned += measurement.MED_CORRIGIDO_MVMDO_002.Value;
+                                totalGasBurnedLinear = measurement.MED_CORRIGIDO_MVMDO_002.Value;
                             }
                         }
                     }
@@ -923,10 +929,17 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                 }
 
                 if (gasDiferencialChanged && productionInDatabase.GasDiferencial is not null)
+                {
                     productionInDatabase.GasDiferencial.TotalGas = totalDiferencial;
+                    productionInDatabase.GasDiferencial.BurntGas = totalGasBurnedDiferencial;
+                }
 
                 if (gasLinearChanged && productionInDatabase.GasLinear is not null)
+                {
+                    productionInDatabase.GasLinear.BurntGas = totalGasBurnedLinear;
                     productionInDatabase.GasLinear.TotalGas = totalLinear;
+                }
+                var totalGasBurned = totalGasBurnedLinear + totalGasBurnedDiferencial;
 
                 if (isGasBurned && productionInDatabase.Gas is not null && originalGasBurned != totalGasBurned)
                 {
