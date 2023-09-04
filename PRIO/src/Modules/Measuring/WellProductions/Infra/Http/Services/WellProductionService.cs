@@ -42,6 +42,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
             var production = await _productionRepository
                 .GetById(productionId);
 
+            #region Validate Errors
             if (production is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Production>());
 
@@ -63,8 +64,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
             var wellsInvalids = new List<string>();
             var closedProducingWells = new List<Well>();
             var producingWells = new List<Well>();
-
-            //validando se todos poços tem um teste válido
             foreach (var installation in installations)
             {
                 foreach (var field in installation.Fields)
@@ -102,9 +101,9 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     }
                 }
             }
-
             if (wellsInvalids.Count > 0)
                 throw new BadRequestException($"Todos os poços devem ter um teste de poço válido. Poços sem teste ou com teste inválido:", errors: wellsInvalids);
+            #endregion
 
             var appropriationDto = new AppropriationDto
             {
@@ -122,27 +121,48 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                 var wellTestsUEP = await _btpRepository
                    .GetBtpDatasByUEP(production.Installation.UepCod);
 
-                //var filtredUEPsByApplyDateAndFinal = wellTestsUEP
-                //        .Where(x => (x.FinalApplicationDate == null && x.ApplicationDate != null && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date)
-                //        || (x.FinalApplicationDate != null && x.ApplicationDate != null && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
-                //        && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date));
-
                 var filtredUEPsByApplyDateAndFinal = wellTestsUEP.Where(x => (x.FinalApplicationDate == null && x.ApplicationDate != null && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date) && x.Well.CategoryOperator is not null && x.Well.CategoryOperator.ToUpper() == "PRODUTOR"
                         || x.Well.CategoryOperator is not null && x.Well.CategoryOperator.ToUpper() == "PRODUTOR" && (x.FinalApplicationDate != null && x.ApplicationDate != null && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
                         && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date));
 
-                var totalGasPotencialUEP = filtredUEPsByApplyDateAndFinal
-                   .Sum(x => x.PotencialGas);
-                var totalOilPotencialUEP = filtredUEPsByApplyDateAndFinal
-                    .Sum(x => x.PotencialOil);
-                var totalWaterPotencialUEP = filtredUEPsByApplyDateAndFinal
-                    .Sum(x => x.PotencialWater);
+                decimal totalPotencialGasUEP = 0;
+                decimal totalPotencialOilUEP = 0;
+                decimal totalPotencialWaterUEP = 0;
+                foreach (var btp in filtredUEPsByApplyDateAndFinal)
+                {
+                    double totalInterval = 0;
+                    var filtredEvents = btp.Well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
+                    || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
+                    foreach (var a in filtredEvents)
+                    {
+
+                        if (a.StartDate < production.MeasuredAt)
+                        {
+                            if (a.StartDate.Date <= production.MeasuredAt && a.EndDate != null)
+                                totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
+                        }
+                        else if (a.StartDate.Date <= production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date >= production.MeasuredAt)
+                        {
+                            if (a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
+                                totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
+
+                            if (a.EndDate is not null && a.EndDate > production.MeasuredAt)
+                                totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                        }
+                        else if (a.StartDate.Date == production.MeasuredAt && a.EndDate is null)
+                        {
+                            totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                        }
+                    }
+                    totalPotencialGasUEP += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
+                    totalPotencialOilUEP += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
+                    totalPotencialWaterUEP += btp.PotencialWater * (24 - (decimal)totalInterval) / 24;
+                }
 
                 foreach (var fieldFR in production.FieldsFR)
                 {
                     var btps = await _btpRepository
                         .GetBtpDatasByFieldId(fieldFR.Field.Id);
-
                     var filtredByApplyDateAndFinal = btps
                         .Where(x => (x.FinalApplicationDate == null && x.Well.CategoryOperator is not null && x.Well.CategoryOperator.ToUpper() == "PRODUTOR" && x.ApplicationDate != null && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date)
                         || (x.FinalApplicationDate != null && x.ApplicationDate != null && x.Well.CategoryOperator is not null && x.Well.CategoryOperator.ToUpper() == "PRODUTOR" && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
@@ -150,7 +170,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                     var totalOilPotencial = filtredByApplyDateAndFinal
                         .Sum(x => x.PotencialOil);
-
                     foreach (var btp in filtredByApplyDateAndFinal)
                     {
                         var wellPotencialOilAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialOil, totalOilPotencial);
@@ -163,10 +182,8 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     var totalOil = 0m;
                     var totalGas = 0m;
 
-                    //FIELD
                     var wellTestsField = await _btpRepository
                         .GetBtpDatasByFieldId(fieldFR.Field.Id);
-
                     var filtredByApplyDateAndFinal = wellTestsField
                         .Where(x => (x.FinalApplicationDate == null && x.Well.CategoryOperator is not null && x.Well.CategoryOperator.ToUpper() == "PRODUTOR" && x.ApplicationDate != null && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date)
                         || (x.FinalApplicationDate != null && x.ApplicationDate != null && x.Well.CategoryOperator is not null && x.Well.CategoryOperator.ToUpper() == "PRODUTOR" && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
@@ -179,7 +196,46 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     var totalWaterPotencial = filtredByApplyDateAndFinal
                         .Sum(x => x.PotencialWater);
 
-                    FieldProduction? fieldProduction = filtredByApplyDateAndFinal.Any() ? new()
+
+                    decimal totalPotencialGasField = 0;
+                    decimal totalPotencialOilField = 0;
+                    decimal totalPotencialWaterField = 0;
+
+                    foreach (var btp in filtredByApplyDateAndFinal)
+                    {
+                        double totalInterval = 0;
+
+                        var filtredEvents = btp.Well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
+                        || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
+
+                        foreach (var a in filtredEvents)
+                        {
+                            if (a.StartDate < production.MeasuredAt)
+                            {
+                                if (a.StartDate.Date <= production.MeasuredAt && a.EndDate != null)
+                                    totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
+                            }
+                            else if (a.StartDate.Date <= production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date >= production.MeasuredAt)
+                            {
+                                if (a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
+                                    totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
+
+                                if (a.EndDate is not null && a.EndDate > production.MeasuredAt)
+                                    totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                            }
+                            else if (a.StartDate.Date == production.MeasuredAt && a.EndDate is null)
+                            {
+                                totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                            }
+                        }
+
+                        totalPotencialGasField += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
+                        totalPotencialOilField += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
+                        totalPotencialWaterField += btp.PotencialWater * (24 - (decimal)totalInterval) / 24;
+                    }
+
+                    FieldProduction? fieldProduction = filtredByApplyDateAndFinal.Count() > 0 ? new()
+
                     {
                         Id = Guid.NewGuid(),
                         FieldId = fieldFR.Field.Id,
@@ -190,20 +246,82 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                     foreach (var btp in filtredByApplyDateAndFinal)
                     {
-                        //POTENTIAL_WELL_REF_UEP ------------------------------
-                        var wellPotencialGasAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialGas, totalGasPotencialUEP);
-                        var wellPotencialOilAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialOil, totalOilPotencialUEP);
-                        var wellPotencialWaterAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialWater, totalWaterPotencialUEP);
+                        double totalInterval = 0;
+                        var filtredEvents = btp.Well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
+                                || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
-                        //POTENTIAL_WELL_REF_FIELD ----------------------------
-                        var wellPotencialGasAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialGas, totalGasPotencial);
-                        var wellPotencialOilAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialOil, totalOilPotencial);
-                        var wellPotencialWaterAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialWater, totalWaterPotencial);
+                        var listEvents = new List<CreateWellLossDTO>();
+                        foreach (var a in filtredEvents)
+                        {
+                            if (a.StartDate < production.MeasuredAt)
+                            {
+                                if (a.EndDate != null)
+                                {
+                                    totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
+                                    listEvents.Add(new CreateWellLossDTO
+                                    {
+                                        Downtime = (decimal)totalInterval,
+                                        Event = a,
+                                        Id = Guid.NewGuid(),
+                                        MeasuredAt = production.MeasuredAt
+                                    });
+                                }
+                            }
+                            else if (a.StartDate.Date <= production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date >= production.MeasuredAt)
+                            {
 
-                        //PRODUCTION_WELL -------------------------------------
+                                if (a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
+                                {
+                                    totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
+                                    listEvents.Add(new CreateWellLossDTO
+                                    {
+                                        Downtime = (decimal)totalInterval,
+                                        Event = a,
+                                        Id = Guid.NewGuid(),
+                                        MeasuredAt = production.MeasuredAt
+                                    });
+                                }
+                                if (a.EndDate is not null && a.EndDate > production.MeasuredAt)
+                                {
+                                    totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                                    listEvents.Add(new CreateWellLossDTO
+                                    {
+                                        Downtime = (decimal)totalInterval,
+                                        Event = a,
+                                        Id = Guid.NewGuid(),
+                                        MeasuredAt = production.MeasuredAt
+                                    });
+                                }
+                            }
+                            else if (a.StartDate.Date == production.MeasuredAt && a.EndDate is null)
+                            {
+                                totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                                listEvents.Add(new CreateWellLossDTO
+                                {
+                                    Downtime = (decimal)totalInterval,
+                                    Event = a,
+                                    Id = Guid.NewGuid(),
+                                    MeasuredAt = production.MeasuredAt
+                                });
+                            }
+                        }
+                        var wellPotencialGasAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((btp.PotencialGas * ((24 - (decimal)totalInterval) / 24)), totalPotencialGasUEP);
+                        var wellPotencialOilAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((btp.PotencialOil * ((24 - (decimal)totalInterval) / 24)), totalPotencialOilUEP);
+                        var wellPotencialWaterAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((btp.PotencialWater * ((24 - (decimal)totalInterval) / 24)), totalPotencialWaterUEP);
+                        var wellPotencialGasAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField((btp.PotencialGas * ((24 - (decimal)totalInterval) / 24)), totalPotencialGasField);
+                        var wellPotencialOilAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField((btp.PotencialOil * ((24 - (decimal)totalInterval) / 24)), totalPotencialOilField);
+                        var wellPotencialWaterAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField((btp.PotencialWater * ((24 - (decimal)totalInterval) / 24)), totalPotencialWaterField);
                         var productionGas = fieldFR.FRGas is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.GasProductionInField, wellPotencialGasAsPercentageOfField) : 0;
                         var productionOil = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.OilProductionInField, wellPotencialOilAsPercentageOfField) : 0;
                         var productionWater = (productionOil * btp.BSW) / (100 - btp.BSW);
+
+                        int hours = (int)totalInterval;
+                        double minutesDecimal = (totalInterval - hours) * 60;
+                        int minutes = (int)minutesDecimal;
+                        double secondsDecimal = (minutesDecimal - minutes) * 60;
+                        int seconds = (int)secondsDecimal;
+                        DateTime dateTime = DateTime.Today.AddHours(hours).AddMinutes(minutes).AddSeconds(seconds);
+                        string formattedTime = dateTime.ToString("HH:mm:ss");
 
                         var wellAppropriation = new EF.Models.WellProductions
                         {
@@ -212,19 +330,16 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                             WellTest = btp,
                             WellId = btp.Well.Id,
                             FieldProduction = fieldProduction,
-
-                            //PRODUCTION DATAS
                             ProductionGasInWellM3 = productionGas,
                             ProductionOilInWellM3 = productionOil,
                             ProductionWaterInWellM3 = productionWater,
-
                             ProductionGasAsPercentageOfField = wellPotencialGasAsPercentageOfField,
                             ProductionOilAsPercentageOfField = wellPotencialOilAsPercentageOfField,
                             ProductionWaterAsPercentageOfField = wellPotencialWaterAsPercentageOfField,
-
                             ProductionGasAsPercentageOfInstallation = fieldFR.FRGas is not null ? WellProductionUtils.CalculateWellProductionAsPercentageOfInstallation(wellPotencialGasAsPercentageOfField, fieldFR.FRGas.Value) : 0,
                             ProductionOilAsPercentageOfInstallation = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProductionAsPercentageOfInstallation(wellPotencialOilAsPercentageOfField, fieldFR.FROil.Value) : 0,
                             ProductionWaterAsPercentageOfInstallation = productionWater / totalWaterWithFieldFR.Value,
+                            Downtime = formattedTime
                         };
 
                         totalWater += wellAppropriation.ProductionWaterInWellM3;
@@ -241,8 +356,35 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                             ProductionGasInWellSCF = Math.Round(wellAppropriation.ProductionGasInWellM3 * ProductionUtils.m3ToSCFConversionMultipler, 5),
                             ProductionOilInWellBBL = Math.Round(wellAppropriation.ProductionOilInWellM3 * ProductionUtils.m3ToBBLConversionMultiplier, 5),
                             ProductionWaterInWellBBL = Math.Round(wellAppropriation.ProductionWaterInWellM3 * ProductionUtils.m3ToBBLConversionMultiplier, 5),
-                            Downtime = "00:00:00"
+                            Downtime = formattedTime
                         };
+
+                        foreach (var ev in listEvents)
+                        {
+                            int year = production.MeasuredAt.Year;
+                            int month = production.MeasuredAt.Month;
+                            int daysInMonth = DateTime.DaysInMonth(year, month);
+
+                            var wellLoss = new WellLosses
+                            {
+                                Id = ev.Id,
+                                MeasuredAt = ev.MeasuredAt,
+                                WellAllocation = wellAppropriation,
+                                Downtime = ev.Downtime,
+                                Event = ev.Event,
+                                EfficienceLoss = (((btp.PotencialOil * ev.Downtime) / 24) / totalPotencialOilField) / daysInMonth,
+                                ProductionLost = (((btp.PotencialOil * ev.Downtime) / totalPotencialOilField) / 24) * fieldFR.OilProductionInField,
+                                ProportionalDay = ((btp.PotencialOil * ev.Downtime) / 24) / totalPotencialOilField,
+                            };
+                            wellAppropriation.EfficienceLoss += wellLoss.EfficienceLoss;
+                            wellAppropriation.ProductionLost += wellLoss.ProductionLost;
+                            wellAppropriation.ProportionalDay += wellLoss.ProportionalDay;
+
+                            await _repository.AddWellLossAsync(wellLoss);
+                        }
+                        wellAppropiationDto.EfficienceLoss = wellAppropriation.EfficienceLoss;
+                        wellAppropiationDto.ProductionLost = wellAppropriation.ProductionLost;
+                        wellAppropiationDto.ProportionalDay = wellAppropriation.ProportionalDay;
 
                         await _repository.AddAsync(wellAppropriation);
                         wellAppropiationsDto.Add(wellAppropiationDto);
@@ -254,9 +396,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         fieldProduction.GasProductionInField = totalGas;
                         fieldProduction.OilProductionInField = totalOil;
 
-
                         await _productionRepository.AddFieldProduction(fieldProduction);
-
                         var fieldProductionDto = new FieldProductionDto
                         {
                             FieldProductionId = fieldProduction.Id,
@@ -264,18 +404,12 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                             GasProductionInFieldM3 = Math.Round(fieldProduction.GasProductionInField, 5),
                             OilProductionInFieldM3 = Math.Round(fieldProduction.OilProductionInField, 5),
                             WaterProductionInFieldM3 = Math.Round(fieldProduction.WaterProductionInField, 5),
-
                             GasProductionInFieldSCF = Math.Round(fieldProduction.GasProductionInField * ProductionUtils.m3ToSCFConversionMultipler, 5),
                             OilProductionInFieldBBL = Math.Round(fieldProduction.OilProductionInField * ProductionUtils.m3ToBBLConversionMultiplier, 5),
                             WaterProductionInFieldBBL = Math.Round(fieldProduction.WaterProductionInField * ProductionUtils.m3ToBBLConversionMultiplier, 5),
-
                             WellAppropriations = wellAppropiationsDto,
-
-
                         };
-
                         appropriationDto.FieldProductions.Add(fieldProductionDto);
-
                     }
                 }
 
@@ -331,8 +465,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                             totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
                         }
                     }
-
-
                     totalPotencialGasUEP += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
                     totalPotencialOilUEP += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
                     totalPotencialWaterUEP += btp.PotencialWater * (24 - (decimal)totalInterval) / 24;
@@ -372,11 +504,9 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     decimal totalPotencialOilField = 0;
                     decimal totalPotencialWaterField = 0;
 
-                    //LOOP INTERVAL - CALC FIELDS
                     foreach (var btp in filtredsBTPsField)
                     {
                         double totalInterval = 0;
-
                         var filtredEvents = btp.Well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
                         || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
@@ -389,27 +519,19 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                             }
                             else if (a.StartDate.Date <= production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date >= production.MeasuredAt)
                             {
-
-
                                 if (a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
                                     totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
-
                                 if (a.EndDate is not null && a.EndDate > production.MeasuredAt)
                                     totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
-
                             }
                             else if (a.StartDate.Date == production.MeasuredAt && a.EndDate is null)
                             {
                                 totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
                             }
                         }
-
-
-
                         totalPotencialGasField += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
                         totalPotencialOilField += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
                         totalPotencialWaterField += btp.PotencialWater * (24 - (decimal)totalInterval) / 24;
-
                     }
 
                     foreach (var btp in filtredsBTPsField)
@@ -438,7 +560,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                             else if (a.StartDate.Date <= production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date >= production.MeasuredAt)
                             {
-
                                 if (a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
                                 {
                                     totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
@@ -450,7 +571,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                                         MeasuredAt = production.MeasuredAt
                                     });
                                 }
-
                                 if (a.EndDate is not null && a.EndDate > production.MeasuredAt)
                                 {
                                     totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
@@ -464,8 +584,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                                 }
 
                             }
-
-
                             else if (a.StartDate.Date == production.MeasuredAt && a.EndDate is null)
                             {
                                 totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
@@ -482,23 +600,13 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         var wellPotencialGasAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfField((btp.PotencialGas * ((24 - (decimal)totalInterval) / 24)), totalPotencialGasUEP);
                         var wellPotencialOilAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfField((btp.PotencialOil * ((24 - (decimal)totalInterval) / 24)), totalPotencialOilUEP);
                         var wellPotencialWaterAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfField((btp.PotencialWater * ((24 - (decimal)totalInterval) / 24)), totalPotencialWaterUEP);
-
                         var wellPotencialGasAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField((btp.PotencialGas * ((24 - (decimal)totalInterval) / 24)), totalPotencialGasField);
                         var wellPotencialOilAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField((btp.PotencialOil * ((24 - (decimal)totalInterval) / 24)), totalPotencialOilField);
                         var wellPotencialWaterAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField((btp.PotencialWater * ((24 - (decimal)totalInterval) / 24)), totalPotencialWaterField);
-
-                        var calcBSWOil = (100 - btp.BSW) / 100;
-                        var calcBSWWater = btp.BSW / 100;
-
-                        Console.WriteLine(wellPotencialOilAsPercentageOfUEP);
-                        Console.WriteLine(totalPotencialGasUEP);
-                        Console.WriteLine(btp.PotencialOil);
-                        Console.WriteLine(totalInterval);
-                        Console.WriteLine(((24 - (decimal)totalInterval) / 24));
-
-
                         var productionGas = wellPotencialGasAsPercentageOfUEP * ((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas : 0));
                         var productionOIl = production.Oil.TotalOil * wellPotencialOilAsPercentageOfUEP;
+                        var calcBSWOil = (100 - btp.BSW) / 100;
+                        var calcBSWWater = btp.BSW / 100;
                         var productionWater = (productionOIl * calcBSWWater) / calcBSWOil;
 
                         int hours = (int)totalInterval;
@@ -508,7 +616,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         int seconds = (int)secondsDecimal;
                         DateTime dateTime = DateTime.Today.AddHours(hours).AddMinutes(minutes).AddSeconds(seconds);
                         string formattedTime = dateTime.ToString("HH:mm:ss");
-
 
                         var wellAppropriation = new EF.Models.WellProductions
                         {
@@ -520,19 +627,18 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                             ProductionWaterAsPercentageOfInstallation = wellPotencialWaterAsPercentageOfUEP,
                             WellId = btp.Well.Id,
                             FieldProduction = fieldProduction,
-
                             ProductionGasInWellM3 = productionGas,
                             ProductionGasInWellSCF = ProductionUtils.m3ToSCFConversionMultipler * productionGas,
                             ProductionOilInWellM3 = productionOIl,
                             ProductionOilInWellBBL = ProductionUtils.m3ToBBLConversionMultiplier * productionOIl,
                             ProductionWaterInWellM3 = productionWater,
                             ProductionWaterInWellBBL = ProductionUtils.m3ToBBLConversionMultiplier * productionWater,
-
                             ProductionGasAsPercentageOfField = wellPotencialGasAsPercentageOfField,
                             ProductionOilAsPercentageOfField = wellPotencialOilAsPercentageOfField,
                             ProductionWaterAsPercentageOfField = wellPotencialWaterAsPercentageOfField,
                             Downtime = formattedTime,
                         };
+
                         var wellAppropiationDto = new WellProductionDto
                         {
                             WellProductionId = wellAppropriation.Id,
@@ -599,15 +705,11 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                             FieldName = fieldInDatabase.Name,
                             GasProductionInFieldM3 = Math.Round(fieldProduction.GasProductionInField, 5),
                             OilProductionInFieldM3 = Math.Round(fieldProduction.OilProductionInField, 5),
-
                             WaterProductionInFieldM3 = Math.Round(fieldProduction.WaterProductionInField, 5),
-
                             GasProductionInFieldSCF = Math.Round(fieldProduction.GasProductionInField * ProductionUtils.m3ToSCFConversionMultipler, 5),
                             OilProductionInFieldBBL = Math.Round(fieldProduction.OilProductionInField * ProductionUtils.m3ToBBLConversionMultiplier, 5),
                             WaterProductionInFieldBBL = Math.Round(fieldProduction.WaterProductionInField * ProductionUtils.m3ToBBLConversionMultiplier, 5),
-
                             WellAppropriations = wellAppropiationsDto,
-
                         };
 
                         appropriationDto.FieldProductions.Add(fieldProductionDto);
@@ -616,7 +718,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     }
                 }
 
-                //await _repository.Save();
+                await _repository.Save();
 
                 await DistributeAccrossEntites(production.Id);
             }
@@ -644,7 +746,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
             appropriationDto.WaterProduction = waterDto;
 
             _productionRepository.Update(production);
-            //await _repository.Save();
+            await _repository.Save();
 
             return appropriationDto;
         }
