@@ -10,6 +10,10 @@
         {
             return potencial / totalPotencialField;
         }
+        public static decimal CalculateWellProductionAsPercentageOfUEP(decimal potencial, decimal totalPotencialUEP)
+        {
+            return potencial / totalPotencialUEP;
+        }
         public static decimal CalculateWellProductionAsPercentageOfInstallation(decimal potencial, decimal frFactor)
         {
             return potencial * frFactor;
