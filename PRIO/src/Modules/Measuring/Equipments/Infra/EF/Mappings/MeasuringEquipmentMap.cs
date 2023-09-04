@@ -38,8 +38,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
                 .HasColumnType("varchar")
                 .HasMaxLength(60);
 
-            builder.Property(x => x.HasSeal)
-                .IsRequired();
+            builder.Property(x => x.HasSeal);
 
             builder.Property(x => x.MVS);
 
@@ -56,8 +55,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
                 .HasMaxLength(60)
                 .IsRequired();
 
-            builder.Property(x => x.InOperation)
-                .IsRequired();
+            builder.Property(x => x.InOperation);
 
             builder.Property(x => x.Fluid)
                 .HasColumnType("varchar")

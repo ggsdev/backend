@@ -13,11 +13,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Repositories
             _context = context;
         }
 
-        public async Task<Completion?> GetByCode(string? code)
-        {
-            return await _context.Completions
-                .FirstOrDefaultAsync(x => x.CodCompletion == code);
-        }
+
         public async Task<Completion?> GetExistingCompletionAsync(Guid? wellId, Guid? reservoirId)
         {
             return await _context.Completions

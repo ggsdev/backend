@@ -7,6 +7,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Interfaces
         Task<List<GroupOperation>> GetGroupOperationsByGroupId(Guid groupId);
         Task<GroupOperation> GetGroupOperationsByMenuIdAndGroupPermissionId(Guid operationId, Guid? groupPermissionId);
         Task<GroupOperation> GetGroupOperationsByOperationIdAndGroupName(Guid OperationId, string groupName);
+        Task RemoveGroupOperations(List<GroupOperation> groupOperations);
         void UpdateGroupOperations(List<GroupOperation> groupOperations);
         void SaveChangesAsync();
     }

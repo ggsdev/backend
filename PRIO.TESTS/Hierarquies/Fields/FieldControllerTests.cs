@@ -6,6 +6,7 @@ using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Completions.Interfaces;
 using PRIO.src.Modules.Hierarchy.Fields.Dtos;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Controllers;
@@ -14,6 +15,9 @@ using PRIO.src.Modules.Hierarchy.Fields.ViewModels;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
+using PRIO.src.Modules.Hierarchy.Reservoirs.Interfaces;
+using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
+using PRIO.src.Modules.Hierarchy.Zones.Interfaces;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
@@ -42,6 +46,10 @@ namespace PRIO.TESTS.Hierarquies.Fields
         private IFieldRepository _fieldRepository;
         private ISystemHistoryRepository _systemHistoryRepository;
         private IInstallationRepository _installationRepository;
+        private IZoneRepository _zoneRepository;
+        private ICompletionRepository _completionRepository;
+        private IWellRepository _wellRepository;
+        private IReservoirRepository _reservoirRepository;
 
         private SystemHistoryService _systemHistoryService;
 
@@ -115,10 +123,8 @@ namespace PRIO.TESTS.Hierarquies.Fields
             _fieldRepository = new FieldRepository(_context);
             _installationRepository = new InstallationRepository(_context);
 
-            _userService = new UserService(_context, _mapper);
-
-            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository, _userService);
-            _service = new FieldService(_mapper, _fieldRepository, _systemHistoryService, _installationRepository);
+            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository);
+            _service = new FieldService(_mapper, _fieldRepository, _systemHistoryService, _installationRepository, _zoneRepository, _wellRepository, _completionRepository, _reservoirRepository);
             _controller = new FieldController(_service);
             _controller.ControllerContext.HttpContext = httpContext;
         }
@@ -169,7 +175,7 @@ namespace PRIO.TESTS.Hierarquies.Fields
             }
             catch (NotFoundException ex)
             {
-                Assert.That(ex.Message, Is.EqualTo($"Installation not found"));
+                Assert.That(ex.Message, Is.EqualTo($"Instalação não encontrado(a)."));
 
             }
         }
@@ -251,13 +257,16 @@ namespace PRIO.TESTS.Hierarquies.Fields
                 InstallationId = _installation2.Id,
                 Name = "UpdatedField"
             };
+            try
+            {
+                var response = await _controller.Update(fieldToUpdate.Id, _updateViewModel);
+                Assert.Fail("Expected ConflictException was not thrown.");
+            }
+            catch (ConflictException ex)
+            {
+                Assert.That(ex.Message, Is.EqualTo("Relacionamento não pode ser alterado."));
 
-            var response = await _controller.Update(fieldToUpdate.Id, _updateViewModel);
-            var updatedResult = (OkObjectResult)response;
-
-            Assert.IsInstanceOf<OkObjectResult>(response);
-            Assert.That(updatedResult.StatusCode, Is.EqualTo(200));
-            Assert.That(((CreateUpdateFieldDTO)updatedResult.Value).Name, Is.EqualTo(_updateViewModel.Name));
+            }
 
         }
 
@@ -272,13 +281,11 @@ namespace PRIO.TESTS.Hierarquies.Fields
             try
             {
                 var response = await _controller.Update(_invalidId, _updateViewModel);
-
                 Assert.Fail("Expected NotFoundException was not thrown.");
-
             }
             catch (NotFoundException ex)
             {
-                Assert.That(ex.Message, Is.EqualTo("Field not found"));
+                Assert.That(ex.Message, Is.EqualTo("Campo não encontrado(a)."));
 
             }
 
@@ -306,37 +313,40 @@ namespace PRIO.TESTS.Hierarquies.Fields
             try
             {
                 var response = await _controller.Update(fieldToUpdate.Id, _updateViewModel);
-
                 Assert.Fail("Expected NotFoundException was not thrown.");
-
             }
-            catch (NotFoundException ex)
+            catch (ConflictException ex)
             {
-                Assert.That(ex.Message, Is.EqualTo("Installation not found"));
-
+                Assert.That(ex.Message, Is.EqualTo("Relacionamento não pode ser alterado."));
             }
         }
 
         [Test]
         public async Task Update_FieldAlsoCreateAHistoryOfTypeUpdateAndPersistsInDatabase()
         {
-            var fieldToUpdate = new Field
+            var fieldToUpdate = new CreateFieldViewModel
             {
                 CodField = "21321",
                 Name = "NameToUpdate",
-                Installation = _installation1,
-                User = _user,
+                InstallationId = _installation1.Id,
             };
 
-            await _context.Fields.AddAsync(fieldToUpdate);
-            await _context.SaveChangesAsync();
+            var create = await _service.CreateField(fieldToUpdate, _user);
+
             _updateViewModel = new()
             {
                 InstallationId = _installation2.Id,
                 Name = "saoidjasdsa"
             };
-
-            await _controller.Update(fieldToUpdate.Id, _updateViewModel);
+            try
+            {
+                var update = await _controller.Update(create.Id, _updateViewModel);
+                Assert.Fail("Expected ConflictException was not thrown.");
+            }
+            catch (Exception ex)
+            {
+                Assert.That(ex.Message, Is.EqualTo("Relacionamento não pode ser alterado."));
+            }
             var field = await _context.Fields.SingleOrDefaultAsync();
             Assert.That(field, Is.Not.Null);
             Assert.That(field.Installation, Is.Not.Null);

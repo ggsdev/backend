@@ -20,6 +20,14 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
             await _context.AddAsync(user);
             await _context.SaveChangesAsync();
         }
+        public async Task<List<User>> GetAdminUsers()
+        {
+            return await _context.Users
+                .Include(x => x.Group)
+                .Where(x => x.Group.Name.ToLower() == "master")
+                .ToListAsync();
+        }
+
         public async Task AddUserPermission(UserPermission userPermission)
         {
             await _context.AddAsync(userPermission);
@@ -27,7 +35,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
         }
         public async Task<List<User>> GetUsers()
         {
-            var users = await _context.Users.ToListAsync();
+            var users = await _context.Users.Include(x => x.Group).ToListAsync();
             return users;
         }
         public async Task<User?> GetUsersByEmail(string email)
@@ -55,10 +63,9 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
         {
             await MenuErrors.ValidateMenu(_context, body);
         }
-        public async Task UpdateUser(User userHasGroup)
+        public void UpdateUser(User userHasGroup)
         {
             _context.Update(userHasGroup);
-            await _context.SaveChangesAsync();
         }
         public async Task UpdateUsers(List<User> users)
         {

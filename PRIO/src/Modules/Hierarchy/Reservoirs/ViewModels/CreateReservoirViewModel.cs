@@ -8,7 +8,6 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.ViewModels
         [StringLength(60, ErrorMessage = "Name cannot exceed 60 characters.")]
         public string? Name { get; set; }
         [StringLength(60, ErrorMessage = "CodReservoir cannot exceed 60 characters.")]
-        public string? CodReservoir { get; set; }
         public string? Description { get; set; }
         [Required(ErrorMessage = "Zone id is required")]
         public Guid? ZoneId { get; set; }

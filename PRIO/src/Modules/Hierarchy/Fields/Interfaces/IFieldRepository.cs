@@ -9,11 +9,15 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Interfaces
         void Delete(Field field);
         void Restore(Field field);
         Task<Field?> GetByIdAsync(Guid? id);
+        Task<bool> Any(Guid id);
+        Task<Field?> GetByNameAsync(string? name);
         Task<Field?> GetFieldAndChildren(Guid? id);
         Task<Field?> GetByCod(string? cod);
         Task<Field?> GetByIdWithWellsAndZonesAsync(Guid? id);
         Task<List<Field>> GetAsync();
         Task<Field?> GetOnlyField(Guid? id);
         Task SaveChangesAsync();
+        Task<List<Field>> GetFieldsByInstallationId(Guid id);
+        Task<List<Field>> GetFieldsByUepCode(string code);
     }
 }

@@ -14,7 +14,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.ViewModels
         [StringLength(120, ErrorMessage = "SerieNumber cannot exceed 120 characters.")]
         public string? SerieNumber { get; set; }
         [Required(ErrorMessage = "Type is a required field.")]
-        [StringLength(10, ErrorMessage = "Type cannot exceed 10 characters.")]
+        [StringLength(60, ErrorMessage = "Type cannot exceed 10 characters.")]
         public string? Type { get; set; }
 
         public string? TypeEquipment { get; set; }

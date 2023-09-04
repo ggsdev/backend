@@ -31,11 +31,30 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Controllers
 
             return Created($"installations/{installationDTO.Id}", installationDTO);
         }
+        //[HttpPost("fr")]
+        //public async Task<IActionResult> ApplyFR([FromBody] CreateFRsFieldsViewModel body)
+        //{
+        //    if (HttpContext.Items["User"] is not User user)
+        //        return Unauthorized(new ErrorResponseDTO
+        //        {
+        //            Message = "User not identified, please login first"
+        //        });
+
+        //    var frsDTO = await _installationService.ApplyFR(body, user);
+
+        //    return Created($"installations/{frsDTO}", frsDTO);
+        //}
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
             var installationsDTO = await _installationService.GetInstallations();
+            return Ok(installationsDTO);
+        }
+        [HttpGet("fr/{installationId}")]
+        public async Task<IActionResult> GetFR([FromRoute] Guid installationId)
+        {
+            var installationsDTO = await _installationService.GetFRsField(installationId);
             return Ok(installationsDTO);
         }
 
@@ -44,6 +63,19 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Controllers
         {
             var installationDTO = await _installationService.GetInstallationById(id);
             return Ok(installationDTO);
+        }
+
+        [HttpGet("ueps")]
+        public async Task<IActionResult> GetUEPs()
+        {
+            var installationsDTO = await _installationService.GetUEPs();
+            return Ok(installationsDTO);
+        }
+        [HttpGet("ueps/create")]
+        public async Task<IActionResult> GetUEPsCreate([FromQuery] string table)
+        {
+            var installationsDTO = await _installationService.GetUEPsCreate(table);
+            return Ok(installationsDTO);
         }
 
         [HttpPatch("{id:guid}")]

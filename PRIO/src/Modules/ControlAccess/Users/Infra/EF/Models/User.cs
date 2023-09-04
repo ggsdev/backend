@@ -1,4 +1,6 @@
 ﻿using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models;
+using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models;
+using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
@@ -6,8 +8,10 @@ using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.Comments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF.Models;
 using System.Text.Json.Serialization;
 
@@ -38,6 +42,11 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models
         public List<Measurement>? Measurements { get; set; }
         public List<MeasurementHistory>? MeasurementsHistories { get; set; }
         public List<MeasuringEquipment>? MeasuringEquipments { get; set; }
+        public List<NFSMHistory> NFSMImportedHistories { get; set; }
+
+        public List<BTPBase64> BTPBases64 { get; set; }
+        public List<Production> Productions { get; set; }
+        public List<CommentInProduction>? Comments { get; set; }
         #endregion
     }
 }

@@ -10,5 +10,6 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models
 
         [JsonIgnore]
         public List<Measurement> Measurements { get; set; }
+        public Guid? ImportId { get; set; }
     }
 }

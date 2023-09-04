@@ -4,7 +4,7 @@
     {
         public Guid MeasuringPointId { get; set; }
 
-        public string MeasuringPointName { get; }
-        public int BSW { get; }
+        public string StaticMeasuringPointName { get; set; }
+        public bool IsApplicable { get; set; }
     }
 }

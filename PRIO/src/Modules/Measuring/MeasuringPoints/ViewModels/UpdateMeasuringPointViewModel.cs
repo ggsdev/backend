@@ -2,7 +2,7 @@
 {
     public class UpdateMeasuringPointViewModel
     {
-        public string? Name { get; set; }
+        public string? DinamicLocalMeasuringPoint { get; set; }
         public string? TagPointMeasuring { get; set; }
         public string? Description { get; set; }
     }

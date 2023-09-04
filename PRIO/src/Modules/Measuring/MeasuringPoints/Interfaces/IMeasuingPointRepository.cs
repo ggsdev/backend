@@ -4,8 +4,10 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces
 {
     public interface IMeasuringPointRepository
     {
+
         Task<MeasuringPoint?> GetByIdAsync(Guid? id);
         Task<List<MeasuringPoint>> GetByInstallationIdAsync(Guid? id);
+        Task<List<MeasuringPoint>> GetByUEPCode(string? uepCode);
         Task<List<MeasuringPoint>> ListAllAsync();
         Task<MeasuringPoint?> GetByTagMeasuringPoint(string? tagMeasuringPoint);
         Task<MeasuringPoint?> GetByTagMeasuringPointUpdate(string? tagMeasuringPoint, Guid installationId, Guid pointMeasuringId);
@@ -16,6 +18,7 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces
         Task Restore(MeasuringPoint measuringPoint);
         Task AddAsync(MeasuringPoint measuringPoint);
         Task<MeasuringPoint?> GetMeasuringPointWithChildren(Guid? id);
+        Task<MeasuringPoint?> GetByTagMeasuringPointXML(string tagPoint, string acronym);
         Task SaveChangesAsync();
     }
 }

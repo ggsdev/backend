@@ -1,7 +1,10 @@
-﻿namespace PRIO.src.Shared.Errors
+﻿using PRIO.src.Modules.FileImport.XML.Infra.Http.Dtos;
+
+namespace PRIO.src.Shared.Errors
 {
     public class BadRequestException : Exception
     {
+        public ErrorXmlResponseDto? Error { get; }
         public List<string>? Errors { get; }
         public string? ReturnStatus { get; }
 
@@ -23,6 +26,11 @@
             : base(message)
         {
             Errors = errors;
+        }
+
+        public BadRequestException(ErrorXmlResponseDto error)
+        {
+            Error = error;
         }
 
         public BadRequestException(string message, Exception innerException)

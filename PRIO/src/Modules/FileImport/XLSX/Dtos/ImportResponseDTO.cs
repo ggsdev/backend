@@ -8,7 +8,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.Dtos
         public string Status { get; set; }
         [JsonProperty("message")]
         public string Message { get; set; }
-
+        [JsonProperty("productionId")]
+        public Guid ProductionId { get; set; }
     }
 
 }

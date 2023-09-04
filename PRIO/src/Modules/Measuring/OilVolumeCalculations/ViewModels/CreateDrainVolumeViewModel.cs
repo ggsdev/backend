@@ -3,6 +3,7 @@
     public class CreateDrainVolumeViewModel
     {
         public Guid MeasuringPointId { get; set; }
-        public string MeasuringPointName { get; }
+        public string StaticMeasuringPointName { get; set; }
+        public bool IsApplicable { get; set; }
     }
 }

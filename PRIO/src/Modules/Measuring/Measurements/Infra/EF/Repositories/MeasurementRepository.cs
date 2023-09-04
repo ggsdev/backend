@@ -8,7 +8,6 @@ using PRIO.src.Shared.Infra.EF;
 
 namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories
 {
-
     public class MeasurementRepository : IMeasurementRepository
     {
         private readonly DataContext _context;
@@ -18,12 +17,40 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories
         {
             await _context.AddAsync(measurement);
         }
+        public async Task<bool> GetAnyImported(Guid? id)
+        {
+            return await _context.MeasurementHistories
+                .AnyAsync(x => x.Id == id);
+        }
 
+        public void UpdateAny<T>(T entity)
+        {
+            _context.Update(entity);
+        }
+        public async Task AddRangeAsync(List<Measurement> measurements)
+        {
+            await _context.Measurements
+                .AddRangeAsync(measurements);
+        }
+        public async Task<Measurement?> GetMeasurementByDate(DateTime? date, string fileType)
+        {
+            switch (fileType)
+            {
+                case "001":
+                    return await _context.Measurements.FirstOrDefaultAsync(x => x.DHA_INICIO_PERIODO_MEDICAO_001 == date && x.IsActive);
+                case "002":
+                    return await _context.Measurements.FirstOrDefaultAsync(x => x.DHA_INICIO_PERIODO_MEDICAO_002 == date && x.IsActive);
+                case "003":
+                    return await _context.Measurements.FirstOrDefaultAsync(x => x.DHA_INICIO_PERIODO_MEDICAO_003 == date && x.IsActive);
+                default:
+                    throw new BadRequestException("arquivo: 001,002,003");
+            }
+        }
         public async Task<Measurement?> GetUnique039Async(string codFailure)
         {
             return await _context.Measurements.FirstOrDefaultAsync(x => x.COD_FALHA_039 == codFailure);
         }
-        public async Task<bool> GetAnyByDate(DateTime date, string fileType)
+        public async Task<bool> GetAnyByDate(DateTime? date, string fileType)
         {
             switch (fileType)
             {
@@ -44,6 +71,11 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories
         public async Task<Measurement?> GetUnique001Async(string numSerie)
         {
             return await _context.Measurements.FirstOrDefaultAsync(x => x.NUM_SERIE_ELEMENTO_PRIMARIO_001 == numSerie);
+        }
+
+        public void UpdateMeasurement(Measurement measurement)
+        {
+            _context.Update(measurement);
         }
 
         public async Task<Measurement?> GetUnique002Async(string numSerie)
@@ -95,6 +127,5 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories
         {
             return _context.Measurements.Count();
         }
-
     }
 }

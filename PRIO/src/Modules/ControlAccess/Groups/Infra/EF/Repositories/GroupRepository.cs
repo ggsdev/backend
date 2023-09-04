@@ -19,7 +19,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
         }
         public async Task<Group?> GetGroupByIdAsync(Guid id)
         {
-            return await _context.Groups.Include(x => x.GroupPermissions).ThenInclude(x => x.Operations).FirstOrDefaultAsync(x => x.Id == id);
+            return await _context.Groups.Include(x => x.GroupPermissions).ThenInclude(x => x.Operations).Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id);
         }
         public async Task<Group?> GetGroupByNameAsync(string groupName)
         {
@@ -29,6 +29,11 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
         public async Task<List<Group>> GetGroups()
         {
             return await _context.Groups.ToListAsync();
+        }
+
+        public async Task ValidateMenu(InsertGroupPermission body)
+        {
+            await MenuErrors.ValidateMenu(_context, body);
         }
         public async Task<Group?> GetGroupWithPermissionsAndOperationsByIdAsync(Guid groupId)
         {
@@ -47,7 +52,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
             {
                 Id = groupId,
                 Name = body.GroupName,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow.AddHours(-3),
                 Description = body.Description is null ? null : body.Description,
             };
             await _context.Groups.AddAsync(group);
@@ -72,7 +77,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
                     MenuName = foundMenuParent.Name,
                     MenuOrder = foundMenuParent.Order,
                     MenuRoute = foundMenuParent.Route,
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.UtcNow.AddHours(-3),
                     Menu = foundMenuParent,
                     GroupName = body.GroupName,
                     hasChildren = foundMenusChildrensInParent.Count == 0 ? false : true,
@@ -101,7 +106,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
                                 MenuName = foundMenuChildren.Name,
                                 MenuOrder = foundMenuChildren.Order,
                                 MenuRoute = foundMenuChildren.Route,
-                                CreatedAt = DateTime.UtcNow,
+                                CreatedAt = DateTime.UtcNow.AddHours(-3),
                                 Menu = foundMenuChildren,
                                 GroupName = body.GroupName,
                                 hasChildren = foundMenusChildrensInChildren.Count == 0 ? false : true,
@@ -146,6 +151,107 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
                 }
             }
 
+
+            return group;
+        }
+        public async Task<Group> NewGroupPermissionsAsync(Group group, InsertGroupPermission body)
+        {
+            await MenuErrors.ValidateMenu(_context, body);
+
+            foreach (var menuParent in body.Menus)
+            {
+                var groupPermissionParentId = Guid.NewGuid();
+
+                var foundMenuParent = await _context.Menus
+                    .Where(x => x.Id == menuParent.MenuId)
+                    .FirstOrDefaultAsync();
+
+                var addDotInOrder = foundMenuParent.Order + ".";
+                var foundMenusChildrensInParent = await _context.Menus
+                    .Where(x => x.Order.Contains(addDotInOrder))
+                    .ToListAsync();
+
+                var createGroupPermissionParent = new GroupPermission
+                {
+                    Id = groupPermissionParentId,
+                    MenuIcon = foundMenuParent.Icon,
+                    MenuName = foundMenuParent.Name,
+                    MenuOrder = foundMenuParent.Order,
+                    MenuRoute = foundMenuParent.Route,
+                    CreatedAt = DateTime.UtcNow.AddHours(-3),
+                    Menu = foundMenuParent,
+                    GroupName = group.Name,
+                    hasChildren = foundMenusChildrensInParent.Count == 0 ? false : true,
+                    hasParent = foundMenuParent.Parent is null ? false : true,
+                    Group = group,
+                };
+                await _context.GroupPermissions.AddAsync(createGroupPermissionParent);
+
+                if (menuParent.Childrens is not null)
+                {
+                    if (menuParent.Childrens.Count != 0)
+                    {
+                        foreach (var menuChildren in menuParent.Childrens)
+                        {
+                            var groupPermissionChildrenId = Guid.NewGuid();
+
+                            var foundMenuChildren = await _context.Menus.Where(x => x.Id == menuChildren.ChildrenId).FirstOrDefaultAsync();
+
+                            var addDotInOrderChildren = foundMenuChildren.Order + ".";
+                            var foundMenusChildrensInChildren = await _context.Menus.Where(x => x.Order.Contains(addDotInOrderChildren)).ToListAsync();
+
+                            var createGroupPermissionChildren = new GroupPermission
+                            {
+                                Id = groupPermissionChildrenId,
+                                MenuIcon = foundMenuChildren.Icon,
+                                MenuName = foundMenuChildren.Name,
+                                MenuOrder = foundMenuChildren.Order,
+                                MenuRoute = foundMenuChildren.Route,
+                                CreatedAt = DateTime.UtcNow.AddHours(-3),
+                                Menu = foundMenuChildren,
+                                GroupName = group.Name,
+                                hasChildren = foundMenusChildrensInChildren.Count == 0 ? false : true,
+                                hasParent = foundMenuChildren.Parent is null ? false : true,
+                                Group = group,
+                            };
+                            await _context.GroupPermissions.AddAsync(createGroupPermissionChildren);
+
+                            foreach (var operationsChildren in menuChildren.Operations)
+                            {
+                                var groupOperationChildrenId = Guid.NewGuid();
+                                var foundOperation = await _context.GlobalOperations.Where(x => x.Id == operationsChildren.OperationId).FirstOrDefaultAsync();
+                                var createGroupOperationChildren = new GroupOperation
+                                {
+                                    Id = groupOperationChildrenId,
+                                    GlobalOperation = foundOperation,
+                                    GroupPermission = createGroupPermissionChildren,
+                                    GroupName = group.Name,
+                                    OperationName = foundOperation.Method
+                                };
+                                await _context.GroupOperations.AddAsync(createGroupOperationChildren);
+                            }
+                        }
+                    }
+                }
+                if (createGroupPermissionParent.hasChildren == false)
+                {
+                    foreach (var operationsParent in menuParent.Operations)
+                    {
+                        var groupOperationParentId = Guid.NewGuid();
+                        var foundOperation = await _context.GlobalOperations.Where(x => x.Id == operationsParent.OperationId).FirstOrDefaultAsync();
+                        var createGroupOperationParent = new GroupOperation
+                        {
+                            Id = groupOperationParentId,
+                            GlobalOperation = foundOperation,
+                            GroupPermission = createGroupPermissionParent,
+                            GroupName = group.Name,
+                            OperationName = foundOperation.Method
+                        };
+                        await _context.GroupOperations.AddAsync(createGroupOperationParent);
+                    }
+                }
+            }
+
             await _context.SaveChangesAsync();
 
             return group;
@@ -172,7 +278,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
                     MenuId = Guid.Parse(permission.Menu.Id),
                     User = userHasGroup,
                     GroupMenu = groupPermission,
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.UtcNow.AddHours(-3),
                 };
 
                 await _context.UserPermissions.AddAsync(userPermission);

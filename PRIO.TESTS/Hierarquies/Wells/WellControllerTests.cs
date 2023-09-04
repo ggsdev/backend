@@ -6,6 +6,7 @@ using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Completions.Interfaces;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories;
@@ -43,6 +44,7 @@ namespace PRIO.TESTS.Hierarquies.Wells
         private IWellRepository _wellRepository;
         private ISystemHistoryRepository _systemHistoryRepository;
         private IFieldRepository _fieldRepository;
+        private ICompletionRepository _completionRepository;
         private SystemHistoryService _systemHistoryService;
 
         private Guid _invalidId = Guid.NewGuid();
@@ -122,8 +124,8 @@ namespace PRIO.TESTS.Hierarquies.Wells
                 StatusOperator = true,
                 Type = "1233a3",
                 WaterDepth = 322.52m,
-                TopOfPerforated = 2.5m,
-                BaseOfPerforated = 2.5m,
+
+
                 ArtificialLift = "1233a3",
                 Latitude4C = "22:03:34,054",
                 Longitude4C = "22:03:34,054",
@@ -146,10 +148,9 @@ namespace PRIO.TESTS.Hierarquies.Wells
             _wellRepository = new WellRepository(_context);
             _fieldRepository = new FieldRepository(_context);
 
-            _userService = new UserService(_context, _mapper);
+            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository);
 
-            _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository, _userService);
-            _service = new WellService(_mapper, _fieldRepository, _systemHistoryService, _wellRepository);
+            _service = new WellService(_mapper, _fieldRepository, _systemHistoryService, _wellRepository, _completionRepository);
 
             _controller = new WellController(_service);
             _controller.ControllerContext.HttpContext = httpContext;
@@ -188,8 +189,8 @@ namespace PRIO.TESTS.Hierarquies.Wells
                 StatusOperator = true,
                 Type = "1233a3",
                 WaterDepth = 322.52m,
-                TopOfPerforated = 2.5m,
-                BaseOfPerforated = 2.5m,
+
+
                 ArtificialLift = "1233a3",
                 Latitude4C = "22:03:34,054",
                 Longitude4C = "22:03:34,054",
@@ -210,7 +211,7 @@ namespace PRIO.TESTS.Hierarquies.Wells
             }
             catch (NotFoundException ex)
             {
-                Assert.That(ex.Message, Is.EqualTo("Field not found"));
+                Assert.That(ex.Message, Is.EqualTo(ErrorMessages.NotFound<Field>()));
 
             }
         }
@@ -257,8 +258,6 @@ namespace PRIO.TESTS.Hierarquies.Wells
             Assert.That(well.StatusOperator, Is.EqualTo(_createViewModel.StatusOperator));
             Assert.That(well.Type, Is.EqualTo(_createViewModel.Type));
             Assert.That(well.WaterDepth, Is.EqualTo(_createViewModel.WaterDepth));
-            Assert.That(well.TopOfPerforated, Is.EqualTo(_createViewModel.TopOfPerforated));
-            Assert.That(well.BaseOfPerforated, Is.EqualTo(_createViewModel.BaseOfPerforated));
             Assert.That(well.ArtificialLift, Is.EqualTo(_createViewModel.ArtificialLift));
             Assert.That(well.Latitude4C, Is.EqualTo(_createViewModel.Latitude4C));
             Assert.That(well.Longitude4C, Is.EqualTo(_createViewModel.Longitude4C));
@@ -281,9 +280,7 @@ namespace PRIO.TESTS.Hierarquies.Wells
             //Assert.That(well.StatusOperator, Is.EqualTo(history.StatusOperator));
             //Assert.That(well.Type, Is.EqualTo(history.Type));
             //Assert.That(well.WaterDepth, Is.EqualTo(history.WaterDepth));
-            //Assert.That(well.TopOfPerforated, Is.EqualTo(history.TopOfPerforated));
-            //Assert.That(well.BaseOfPerforated, Is.EqualTo(history.BaseOfPerforated));
-            //Assert.That(well.ArtificialLift, Is.EqualTo(history.ArtificialLift));
+            //Assert.That(well.EqualTo(history.Assert.That(well.EqualTo(history./Assert.That(well.ArtificialLift, Is.EqualTo(history.ArtificialLift));
             //Assert.That(well.Latitude4C, Is.EqualTo(history.Latitude4C));
             //Assert.That(well.Longitude4C, Is.EqualTo(history.Longitude4C));
             //Assert.That(well.LatitudeDD, Is.EqualTo(history.LatitudeDD));
@@ -318,8 +315,8 @@ namespace PRIO.TESTS.Hierarquies.Wells
                 StatusOperator = true,
                 Type = "1233a3",
                 WaterDepth = 322.52m,
-                TopOfPerforated = 2.5m,
-                BaseOfPerforated = 2.5m,
+
+
                 ArtificialLift = "1233a3",
                 Latitude4C = "22:03:34,054",
                 Longitude4C = "22:03:34,054",
@@ -359,7 +356,7 @@ namespace PRIO.TESTS.Hierarquies.Wells
             }
             catch (NotFoundException ex)
             {
-                Assert.That(ex.Message, Is.EqualTo("Well not found"));
+                Assert.That(ex.Message, Is.EqualTo(ErrorMessages.NotFound<Well>()));
 
             }
         }
@@ -379,8 +376,8 @@ namespace PRIO.TESTS.Hierarquies.Wells
                 StatusOperator = true,
                 Type = "1233a3",
                 WaterDepth = 322.52m,
-                TopOfPerforated = 2.5m,
-                BaseOfPerforated = 2.5m,
+
+
                 ArtificialLift = "1233a3",
                 Latitude4C = "22:03:34,054",
                 Longitude4C = "22:03:34,054",
@@ -408,7 +405,7 @@ namespace PRIO.TESTS.Hierarquies.Wells
             }
             catch (NotFoundException ex)
             {
-                Assert.That(ex.Message, Is.EqualTo("Field not found"));
+                Assert.That(ex.Message, Is.EqualTo(ErrorMessages.NotFound<Field>()));
 
             }
         }
@@ -428,8 +425,8 @@ namespace PRIO.TESTS.Hierarquies.Wells
                 StatusOperator = true,
                 Type = "1233a3",
                 WaterDepth = 322.52m,
-                TopOfPerforated = 2.5m,
-                BaseOfPerforated = 2.5m,
+
+
                 ArtificialLift = "1233a3",
                 Latitude4C = "22:03:34,054",
                 Longitude4C = "22:03:34,054",
@@ -493,8 +490,8 @@ namespace PRIO.TESTS.Hierarquies.Wells
                 StatusOperator = true,
                 Type = "1233a3",
                 WaterDepth = 322.52m,
-                TopOfPerforated = 2.5m,
-                BaseOfPerforated = 2.5m,
+
+
                 ArtificialLift = "1233a3",
                 Latitude4C = "22:03:34,054",
                 Longitude4C = "22:03:34,054",
@@ -540,8 +537,8 @@ namespace PRIO.TESTS.Hierarquies.Wells
                 StatusOperator = true,
                 Type = "1233a3",
                 WaterDepth = 322.52m,
-                TopOfPerforated = 2.5m,
-                BaseOfPerforated = 2.5m,
+
+
                 ArtificialLift = "1233a3",
                 Latitude4C = "22:03:34,054",
                 Longitude4C = "22:03:34,054",

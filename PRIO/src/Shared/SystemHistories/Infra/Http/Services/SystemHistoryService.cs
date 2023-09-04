@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
-using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
 using PRIO.src.Shared.SystemHistories.Dtos;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
 using PRIO.src.Shared.SystemHistories.Interfaces;
@@ -12,18 +11,16 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
     {
         private readonly IMapper _mapper;
         private readonly ISystemHistoryRepository _systemHistoryRepository;
-        private readonly UserService _userService;
 
-        public SystemHistoryService(IMapper mapper, ISystemHistoryRepository systemHistoryRepository, UserService userService)
+        public SystemHistoryService(IMapper mapper, ISystemHistoryRepository systemHistoryRepository)
         {
             _mapper = mapper;
             _systemHistoryRepository = systemHistoryRepository;
-            _userService = userService;
         }
         public async Task Create<T, U>(string tableName, User user, Guid tableItemId, T objectCreated) where T : class where U : class
         {
             dynamic currentData = _mapper.Map<T, U>(objectCreated);
-            var dateCurrent = DateTime.UtcNow;
+            var dateCurrent = DateTime.UtcNow.AddHours(-3);
 
             currentData.createdAt = dateCurrent;
             currentData.updatedAt = dateCurrent;
@@ -105,6 +102,7 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
                     {
                         CreatedAt = history.CreatedAt,
                         CreatedBy = history.CreatedBy,
+                        UpdatedBy = history.UpdatedBy,
                         FileName = fileName,
                     });
 
@@ -125,7 +123,7 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
 
             dynamic currentData = _mapper.Map<T, U>(objectUpdated);
 
-            var dateCurrent = DateTime.UtcNow;
+            var dateCurrent = DateTime.UtcNow.AddHours(-3);
 
             currentData.createdAt = dateCurrent;
             currentData.updatedAt = dateCurrent;
@@ -154,7 +152,7 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
 
             dynamic currentData = _mapper.Map<T, U>(objectDeleted);
 
-            var dateCurrent = DateTime.UtcNow;
+            var dateCurrent = DateTime.UtcNow.AddHours(-3);
 
             currentData.updatedAt = dateCurrent;
             currentData.deletedAt = dateCurrent;
@@ -183,7 +181,7 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
 
             dynamic currentData = _mapper.Map<T, U>(objectRestored);
 
-            currentData.updatedAt = DateTime.UtcNow;
+            currentData.updatedAt = DateTime.UtcNow.AddHours(-3);
             currentData.deletedAt = null;
 
             var history = new SystemHistory
@@ -205,7 +203,7 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
         public async Task Import<T, U>(string tableName, User user, string fileName, Guid tableItemId, T objectCreated) where T : class where U : class
         {
             dynamic currentData = _mapper.Map<T, U>(objectCreated);
-            var dateCurrent = DateTime.UtcNow;
+            var dateCurrent = DateTime.UtcNow.AddHours(-3);
 
             currentData.createdAt = dateCurrent;
             currentData.updatedAt = dateCurrent;
@@ -220,6 +218,7 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
                 Table = tableName,
                 TypeOperation = HistoryColumns.Import,
                 CreatedBy = user?.Id,
+                UpdatedBy = user?.Id,
                 TableItemId = tableItemId,
                 CurrentData = currentData,
                 FieldsChanged = obj
@@ -238,7 +237,7 @@ namespace PRIO.src.Shared.SystemHistories.Infra.Http.Services
             dynamic currentData = _mapper.Map<T, U>(objectUpdated);
 
             changedFields.fileName = fileName;
-            var dateCurrent = DateTime.UtcNow;
+            var dateCurrent = DateTime.UtcNow.AddHours(-3);
 
             currentData.createdAt = dateCurrent;
             currentData.updatedAt = dateCurrent;

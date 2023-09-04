@@ -79,9 +79,15 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponseDTO))]
         public async Task<IActionResult> UpdatePartialAsync([FromRoute] Guid id, [FromBody] UpdateUserViewModel body)
         {
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+
             try
             {
-                var userDTO = await _service.UpdateUserByIdAsync(id, body);
+                var userDTO = await _service.UpdateUserByIdAsync(id, body, user);
                 return Ok(userDTO);
             }
             catch (DbUpdateException e)
@@ -97,8 +103,14 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponseDTO))]
         public async Task<IActionResult> DeleteAsync([FromRoute] Guid id)
         {
+
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
             var userOperationId = (Guid)HttpContext.Items["Id"]!;
-            await _service.DeleteUserByIdAsync(id, userOperationId);
+            await _service.DeleteUserByIdAsync(id, userOperationId, user);
             return NoContent();
         }
         #endregion
@@ -107,8 +119,13 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
         [HttpPatch("{id}/restore")]
         public async Task<IActionResult> Restore([FromRoute] Guid id)
         {
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
             var userOperationId = (Guid)HttpContext.Items["Id"]!;
-            var userDTO = await _service.RestoreUserByIdAsync(id, userOperationId);
+            var userDTO = await _service.RestoreUserByIdAsync(id, userOperationId, user);
             return Ok(userDTO);
         }
         #endregion

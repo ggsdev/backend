@@ -18,6 +18,16 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
             return await _context.Wells
                     .FirstOrDefaultAsync(x => x.CodWellAnp == cod);
         }
+
+        public async Task<List<Well>> GetWellsWithEvents(Guid fieldId, string eventType)
+        {
+            return await _context.Wells
+                .Include(x => x.WellEvents)
+                .Include(x => x.Field)
+                .Where(x => x.Field.Id == fieldId)
+                .ToListAsync();
+        }
+
         public async Task<Well?> GetByIdAsync(Guid? id)
         {
             return await _context.Wells
@@ -29,6 +39,14 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
                 .ThenInclude(f => f.Installation)
                 .ThenInclude(i => i.Cluster)
                 .FirstOrDefaultAsync(x => x.Id == id);
+        }
+        public async Task<Well?> GetByNameAsync(string? name)
+        {
+            return await _context.Wells
+                .Include(x => x.User)
+                .Include(x => x.Completions)
+                .Include(x => x.Field)
+                .FirstOrDefaultAsync(x => x.Name == name);
         }
 
         public async Task<Well?> GetWellAndChildren(Guid? id)
@@ -43,6 +61,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
             return await _context.Wells
                .Include(x => x.User)
                 .Include(x => x.Field)
+                .Include(x => x.WellEvents)
                 .Include(x => x.Completions)
                 .ThenInclude(x => x.Reservoir)
                 .FirstOrDefaultAsync(x => x.Id == id);
@@ -51,7 +70,9 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
         public async Task<Well?> GetWithFieldAsync(Guid? id)
         {
             return await _context.Wells
+                .Include(x => x.WellEvents)
                 .Include(x => x.Field)
+                .Include(x => x.Completions)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 

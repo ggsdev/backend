@@ -60,9 +60,9 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
 
         public async Task<ClusterDTO> CreateCluster(CreateClusterViewModel body, User user)
         {
-            var cluster = await _clusterRepository.GetByCod(body.CodCluster);
+            var cluster = await _clusterRepository.GetClusterByNameAsync(body.Name);
             if (cluster is not null)
-                throw new ConflictException(ErrorMessages.CodAlreadyExists<Cluster>());
+                throw new ConflictException($"Já existe um Cluster com esse nome: {body.Name}");
 
             var clusterId = Guid.NewGuid();
             cluster = new Cluster
@@ -72,7 +72,6 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                 Description = body.Description is not null ? body.Description : null,
                 User = user,
                 IsActive = body.IsActive is not null ? body.IsActive.Value : true,
-                CodCluster = body.CodCluster is not null ? body.CodCluster : "N/A"
             };
 
             await _clusterRepository.AddClusterAsync(cluster);
@@ -114,16 +113,11 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
             if (cluster.IsActive is false)
                 throw new ConflictException(ErrorMessages.Inactive<Cluster>());
 
-            if (cluster.Installations is not null && cluster.Installations.Count > 0)
-                if (body.CodCluster is not null)
-                    if (body.CodCluster != cluster.CodCluster)
-                        throw new ConflictException(ErrorMessages.CodCantBeUpdated<Cluster>());
-
-            if (body.CodCluster is not null)
+            if (body.Name is not null)
             {
-                var clusterInDatabase = await _clusterRepository.GetByCod(body.CodCluster);
-                if (clusterInDatabase is not null)
-                    throw new ConflictException(ErrorMessages.CodAlreadyExists<Cluster>());
+                var clusterInDatabase = await _clusterRepository.GetClusterByNameAsync(body.Name);
+                if (clusterInDatabase is not null && clusterInDatabase.Id != cluster.Id)
+                    throw new ConflictException($"Já existe um Cluster com esse nome: {body.Name}");
             }
 
             var beforeChangesCluster = _mapper.Map<ClusterHistoryDTO>(cluster);
@@ -158,7 +152,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
             var clusterPropertiesToUpdate = new
             {
                 IsActive = false,
-                DeletedAt = DateTime.UtcNow,
+                DeletedAt = DateTime.UtcNow.AddHours(-3),
             };
             var clusterUpdatedProperties = UpdateFields
                 .CompareUpdateReturnOnlyUpdated(cluster, clusterPropertiesToUpdate);
@@ -176,7 +170,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                         var installationPropertiesToUpdate = new
                         {
                             IsActive = false,
-                            DeletedAt = DateTime.UtcNow,
+                            DeletedAt = DateTime.UtcNow.AddHours(-3),
                         };
 
                         var installationUpdatedProperties = UpdateFields
@@ -196,7 +190,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                                 var pointPropertiesToUpdate = new
                                 {
                                     IsActive = false,
-                                    DeletedAt = DateTime.UtcNow,
+                                    DeletedAt = DateTime.UtcNow.AddHours(-3),
                                 };
 
                                 var pointUpdatedProperties = UpdateFields
@@ -215,7 +209,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                                         var equipmentPropertiesToUpdate = new
                                         {
                                             IsActive = false,
-                                            DeletedAt = DateTime.UtcNow,
+                                            DeletedAt = DateTime.UtcNow.AddHours(-3),
                                         };
 
                                         var equipmentUpdatedProperties = UpdateFields
@@ -237,7 +231,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                                 var fieldPropertiesToUpdate = new
                                 {
                                     IsActive = false,
-                                    DeletedAt = DateTime.UtcNow,
+                                    DeletedAt = DateTime.UtcNow.AddHours(-3),
                                 };
 
                                 var fieldUpdatedProperties = UpdateFields
@@ -257,7 +251,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                                         var zonePropertiesToUpdate = new
                                         {
                                             IsActive = false,
-                                            DeletedAt = DateTime.UtcNow,
+                                            DeletedAt = DateTime.UtcNow.AddHours(-3),
                                         };
 
                                         var zoneUpdatedProperties = UpdateFields
@@ -278,7 +272,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                                                 var reservoirPropertiesToUpdate = new
                                                 {
                                                     IsActive = false,
-                                                    DeletedAt = DateTime.UtcNow,
+                                                    DeletedAt = DateTime.UtcNow.AddHours(-3),
                                                 };
 
                                                 var reservoirUpdatedProperties = UpdateFields
@@ -298,7 +292,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                                                         var completionPropertiesToUpdate = new
                                                         {
                                                             IsActive = false,
-                                                            DeletedAt = DateTime.UtcNow,
+                                                            DeletedAt = DateTime.UtcNow.AddHours(-3),
                                                         };
 
                                                         var completionUpdatedProperties = UpdateFields
@@ -321,7 +315,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                                         var wellPropertiesToUpdate = new
                                         {
                                             IsActive = false,
-                                            DeletedAt = DateTime.UtcNow,
+                                            DeletedAt = DateTime.UtcNow.AddHours(-3),
                                         };
 
                                         var wellUpdatedProperties = UpdateFields
@@ -341,7 +335,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                                                 var completionPropertiesToUpdate = new
                                                 {
                                                     IsActive = false,
-                                                    DeletedAt = DateTime.UtcNow,
+                                                    DeletedAt = DateTime.UtcNow.AddHours(-3),
                                                 };
 
                                                 var completionUpdatedProperties = UpdateFields

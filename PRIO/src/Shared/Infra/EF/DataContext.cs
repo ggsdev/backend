@@ -8,6 +8,10 @@ using PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Mappings;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Mappings;
+using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models;
+using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Mappings;
+using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Mappings;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Mappings;
@@ -22,6 +26,8 @@ using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Mappings;
 using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Mappings;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.Comments.Infra.EF.Mappings;
+using PRIO.src.Modules.Measuring.Comments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Mappings;
@@ -32,6 +38,12 @@ using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.Productions.Infra.EF.Mappings;
+using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.WellEvents.EF.Mappings;
+using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
+using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Mappings;
+using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models;
 using PRIO.src.Shared.Auxiliaries.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF.Models;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Mappings;
@@ -47,34 +59,47 @@ namespace PRIO.src.Shared.Infra.EF
     }
     public class DataContext : DbContext
     {
-        public DbSet<User> Users { get; set; }
+        #region Session
         public DbSet<Session> Sessions { get; set; }
-        public DbSet<Cluster> Clusters { get; set; }
-        public DbSet<Installation> Installations { get; set; }
-        public DbSet<Field> Fields { get; set; }
-        public DbSet<Zone> Zones { get; set; }
-        public DbSet<GlobalOperation> GlobalOperations { get; set; }
-        public DbSet<Reservoir> Reservoirs { get; set; }
-        public DbSet<Completion> Completions { get; set; }
-        public DbSet<Well> Wells { get; set; }
-        public DbSet<SystemHistory> SystemHistories { get; set; }
-        public DbSet<Auxiliary> Auxiliaries { get; set; }
+        #endregion
+
+        #region Control Access
+        public DbSet<User> Users { get; set; }
         public DbSet<Group> Groups { get; set; }
-        public DbSet<MeasurementHistory> MeasurementHistories { get; set; }
         public DbSet<GroupOperation> GroupOperations { get; set; }
         public DbSet<UserOperation> UserOperations { get; set; }
         public DbSet<GroupPermission> GroupPermissions { get; set; }
         public DbSet<UserPermission> UserPermissions { get; set; }
         public DbSet<Menu> Menus { get; set; }
+        public DbSet<GlobalOperation> GlobalOperations { get; set; }
+        #endregion
+
+        #region Hierarchy
+        public DbSet<Cluster> Clusters { get; set; }
+        public DbSet<Installation> Installations { get; set; }
+        public DbSet<Field> Fields { get; set; }
+        public DbSet<Zone> Zones { get; set; }
+        public DbSet<Reservoir> Reservoirs { get; set; }
+        public DbSet<Completion> Completions { get; set; }
+        public DbSet<Well> Wells { get; set; }
+        #endregion
+
         #region Measurement & Relations
+        public DbSet<MeasurementHistory> MeasurementHistories { get; set; }
         public DbSet<MeasuringEquipment> MeasuringEquipments { get; set; }
+
+        public DbSet<Production> Productions { get; set; }
+        public DbSet<Oil> Oils { get; set; }
+        public DbSet<GasLinear> GasesLinears { get; set; }
+        public DbSet<Gas> Gases { get; set; }
+        public DbSet<GasDiferencial> GasesDiferencials { get; set; }
+
         public DbSet<MeasuringPoint> MeasuringPoints { get; set; }
         public DbSet<OilVolumeCalculation> OilVolumeCalculations { get; set; }
         public DbSet<Section> Sections { get; set; }
         public DbSet<TOGRecoveredOil> TOGRecoveredOils { get; set; }
         public DbSet<DrainVolume> DrainVolumes { get; set; }
         public DbSet<DOR> DORs { get; set; }
-
 
         public DbSet<AssistanceGas> AssistanceGases { get; set; }
         public DbSet<ExportGas> ExportGases { get; set; }
@@ -91,8 +116,36 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<FileType> FileTypes { get; set; }
         public DbSet<Volume> Volume { get; set; }
         public DbSet<Calibration> Calibrations { get; set; }
+        public DbSet<Water> Waters { get; set; }
+
         public DbSet<Bsw> Bsws { get; set; }
         #endregion
+
+        #region BTP
+        public DbSet<BTP> BTPs { get; set; }
+        public DbSet<WellTests> BTPDatas { get; set; }
+        public DbSet<BTPBase64> BTPBases64 { get; set; }
+        public DbSet<InstallationBTP> InstallationBTPs { get; set; }
+
+        #endregion
+
+        public DbSet<FieldFR> FieldsFRs { get; set; }
+
+        public DbSet<SystemHistory> SystemHistories { get; set; }
+        public DbSet<Auxiliary> Auxiliaries { get; set; }
+        public DbSet<CommentInProduction> Comments { get; set; }
+        public DbSet<ValidateBTP> Validates { get; set; }
+        public DbSet<NFSMsProductions> NFSMsProductions { get; set; }
+        public DbSet<NFSM> NFSMs { get; set; }
+        public DbSet<NFSMHistory> NFSMImportHistories { get; set; }
+        public DbSet<WellProductions> WellProductions { get; set; }
+        public DbSet<FieldProduction> FieldsProductions { get; set; }
+        public DbSet<CompletionProduction> CompletionProductions { get; set; }
+        public DbSet<ReservoirProduction> ReservoirProductions { get; set; }
+        public DbSet<ZoneProduction> ZoneProductions { get; set; }
+        public DbSet<EventReason> EventReasons { get; set; }
+        public DbSet<WellEvent> WellEvents { get; set; }
+        public DbSet<WellLosses> WellLosses { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -145,19 +198,19 @@ namespace PRIO.src.Shared.Infra.EF
                 {
                     if (entry.Entity is BaseModel baseModel)
                     {
-                        baseModel.CreatedAt = DateTime.UtcNow;
-                        baseModel.UpdatedAt = DateTime.UtcNow;
+                        baseModel.CreatedAt = DateTime.UtcNow.AddHours(-3);
+                        baseModel.UpdatedAt = DateTime.UtcNow.AddHours(-3);
                     }
                     if (entry.Entity is SystemHistory systemHistoryModel)
                     {
-                        systemHistoryModel.CreatedAt = DateTime.UtcNow;
+                        systemHistoryModel.CreatedAt = DateTime.UtcNow.AddHours(-3);
                     }
                 }
                 if (entry.State == EntityState.Modified)
                 {
                     if (entry.Entity is BaseModel baseModel)
                     {
-                        baseModel.UpdatedAt = DateTime.UtcNow;
+                        baseModel.UpdatedAt = DateTime.UtcNow.AddHours(-3);
                     }
                 }
             }
@@ -186,14 +239,38 @@ namespace PRIO.src.Shared.Infra.EF
 
             modelBuilder.ApplyConfiguration(new MeasuringEquipmentMap());
             modelBuilder.ApplyConfiguration(new MeasurementHistoryMap());
+            modelBuilder.ApplyConfiguration(new ProductionMap());
+            modelBuilder.ApplyConfiguration(new OilMap());
+            modelBuilder.ApplyConfiguration(new GasLinearMap());
+            modelBuilder.ApplyConfiguration(new GasDiferencialMap());
+            modelBuilder.ApplyConfiguration(new GasMap());
             modelBuilder.ApplyConfiguration(new MeasuringPointMap());
-
+            modelBuilder.ApplyConfiguration(new BTPMap());
+            modelBuilder.ApplyConfiguration(new WellTestMap());
+            modelBuilder.ApplyConfiguration(new BTPBase64Map());
+            modelBuilder.ApplyConfiguration(new BTPMap());
+            modelBuilder.ApplyConfiguration(new InstallationBTPMap());
+            modelBuilder.ApplyConfiguration(new FieldFRsMap());
+            modelBuilder.ApplyConfiguration(new NFSMMap());
+            modelBuilder.ApplyConfiguration(new NFSMsProductionsMap());
+            modelBuilder.ApplyConfiguration(new NFSMHistoryMap());
 
             modelBuilder.ApplyConfiguration(new GroupMap());
             modelBuilder.ApplyConfiguration(new MenuMap());
             modelBuilder.ApplyConfiguration(new UserPermissionMap());
             modelBuilder.ApplyConfiguration(new GroupPermissionMap());
             modelBuilder.ApplyConfiguration(new UserOperationMap());
+            modelBuilder.ApplyConfiguration(new CommentMap());
+            modelBuilder.ApplyConfiguration(new WellEventMap());
+            modelBuilder.ApplyConfiguration(new EventReasonMap());
+
+            #region Production
+            modelBuilder.ApplyConfiguration(new FieldProductionMap());
+            modelBuilder.ApplyConfiguration(new WellProductionMap());
+            modelBuilder.ApplyConfiguration(new CompletionProductionMap());
+            modelBuilder.ApplyConfiguration(new ReservoirProductionMap());
+            modelBuilder.ApplyConfiguration(new ZoneProductionMap());
+            #endregion
 
             #region Measurement & Relations
             modelBuilder.ApplyConfiguration(new SectionMap());

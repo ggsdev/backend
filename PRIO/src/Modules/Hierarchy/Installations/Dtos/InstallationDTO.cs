@@ -1,5 +1,6 @@
 ﻿using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.Hierarchy.Clusters.Dtos;
+using PRIO.src.Modules.Hierarchy.Fields.Dtos;
 
 namespace PRIO.src.Modules.Hierarchy.Installations.Dtos
 {
@@ -17,5 +18,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Dtos
         public DateTime UpdatedAt { get; set; }
         public UserDTO? User { get; set; }
         public ClusterDTO? Cluster { get; set; }
+        public List<FieldWithZonesAndWellsDTO> Fields { get; set; }
     }
 }

@@ -17,6 +17,11 @@ namespace PRIO.src.Shared.Errors
             await ValidateMenuInternal(_context, body.Menus);
         }
 
+        public static async Task ValidateMenu(DataContext _context, InsertGroupPermission body)
+        {
+            await ValidateMenuInternal(_context, body.Menus);
+        }
+
         private static async Task ValidateMenuInternal(DataContext _context, List<MenuParentInGroupViewModel> menus)
         {
             if (menus is null)
@@ -60,36 +65,26 @@ namespace PRIO.src.Shared.Errors
                         }
                     }
                 }
-                if(foundMenuParent.Parent == null){
+                if (foundMenuParent.Parent == null)
+                {
 
                     var verifyChildren = await _context.Menus
                     .Where(x => !x.Id.Equals(foundMenuParent.Id))
                     .Where(x => x.Order.Equals(foundMenuParent.Order))
                     .FirstOrDefaultAsync();
 
-                    if (verifyChildren is null && menuParent.Operations is not null){
-                        throw new NotFoundException("Menu Parent don't need operations");
-                    }else if (verifyChildren is not null && menuParent.Operations is null){
-                        throw new NotFoundException("Menu Parent need operations");
-                    }else if (verifyChildren is null && menuParent.Operations is not null){
-                        if(menuParent.Operations.Count == 0){
-                            throw new NotFoundException("Menu Parent need almost one operationId");
-                        }
-                         foreach (var operationsParent in menuParent.Operations)
-                        {
-                            var foundOperationParent = await _context.GlobalOperations
-                                .Where(x => x.Id == operationsParent.OperationId)
-                                .FirstOrDefaultAsync();
-
-                            if (foundOperationParent is null)
-                                throw new NotFoundException("Operation Parent is not found");
-                        }
-                    }
-
-                }else{
-                    if(menuParent.Operations is not null && menuParent.Operations.Count > 0 )
+                    if (verifyChildren is null && menuParent.Operations is not null)
                     {
-                        if(menuParent.Operations.Count == 0){
+                        throw new NotFoundException("Menu Parent don't need operations");
+                    }
+                    else if (verifyChildren is not null && menuParent.Operations is null)
+                    {
+                        throw new NotFoundException("Menu Parent need operations");
+                    }
+                    else if (verifyChildren is null && menuParent.Operations is not null)
+                    {
+                        if (menuParent.Operations.Count == 0)
+                        {
                             throw new NotFoundException("Menu Parent need almost one operationId");
                         }
                         foreach (var operationsParent in menuParent.Operations)
@@ -101,8 +96,30 @@ namespace PRIO.src.Shared.Errors
                             if (foundOperationParent is null)
                                 throw new NotFoundException("Operation Parent is not found");
                         }
-                    }else if(menuParent.Operations is null){
-                            throw new NotFoundException("Menu Children need operations");
+                    }
+
+                }
+                else
+                {
+                    if (menuParent.Operations is not null && menuParent.Operations.Count > 0)
+                    {
+                        if (menuParent.Operations.Count == 0)
+                        {
+                            throw new NotFoundException("Menu Parent need almost one operationId");
+                        }
+                        foreach (var operationsParent in menuParent.Operations)
+                        {
+                            var foundOperationParent = await _context.GlobalOperations
+                                .Where(x => x.Id == operationsParent.OperationId)
+                                .FirstOrDefaultAsync();
+
+                            if (foundOperationParent is null)
+                                throw new NotFoundException("Operation Parent is not found");
+                        }
+                    }
+                    else if (menuParent.Operations is null)
+                    {
+                        throw new NotFoundException("Menu Children need operations");
                     }
                 }
             }

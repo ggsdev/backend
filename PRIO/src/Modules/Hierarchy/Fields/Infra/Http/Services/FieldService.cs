@@ -58,6 +58,10 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
             if (installationInDatabase.IsActive is false)
                 throw new ConflictException(ErrorMessages.Inactive<Installation>());
 
+            var fieldSameName = await _fieldRepository.GetByNameAsync(body.Name);
+            if (fieldSameName is not null)
+                throw new ConflictException($"Já existe um campo com o nome: {body.Name}.");
+
             var fieldId = Guid.NewGuid();
 
             var field = new Field
@@ -129,10 +133,16 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
             if (body.CodField is not null)
             {
                 var fieldInDatabase = await _fieldRepository.GetByCod(body.CodField);
-                if (fieldInDatabase is not null)
+                if (fieldInDatabase is not null && fieldInDatabase.Id != field.Id)
                     throw new ConflictException(ErrorMessages.CodAlreadyExists<Field>());
             }
 
+            if (body.Name is not null)
+            {
+                var fieldInDatabase = await _fieldRepository.GetByNameAsync(body.Name);
+                if (fieldInDatabase is not null && fieldInDatabase.Id != field.Id)
+                    throw new ConflictException($"Já existe um campo com esse nome: {body.Name}");
+            }
 
             var beforeChangesField = _mapper.Map<FieldHistoryDTO>(field);
 
@@ -177,7 +187,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
             var propertiesUpdated = new
             {
                 IsActive = false,
-                DeletedAt = DateTime.UtcNow,
+                DeletedAt = DateTime.UtcNow.AddHours(-3),
             };
 
             var updatedProperties = UpdateFields
@@ -196,7 +206,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
                         var zonePropertiesToUpdate = new
                         {
                             IsActive = false,
-                            DeletedAt = DateTime.UtcNow,
+                            DeletedAt = DateTime.UtcNow.AddHours(-3),
                         };
 
                         var zoneUpdatedProperties = UpdateFields
@@ -216,7 +226,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
                                 var reservoirPropertiesToUpdate = new
                                 {
                                     IsActive = false,
-                                    DeletedAt = DateTime.UtcNow,
+                                    DeletedAt = DateTime.UtcNow.AddHours(-3),
                                 };
 
                                 var reservoirUpdatedProperties = UpdateFields
@@ -236,7 +246,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
                                         var completionPropertiesToUpdate = new
                                         {
                                             IsActive = false,
-                                            DeletedAt = DateTime.UtcNow,
+                                            DeletedAt = DateTime.UtcNow.AddHours(-3),
                                         };
 
                                         var completionUpdatedProperties = UpdateFields
@@ -259,7 +269,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
                         var wellPropertiesToUpdate = new
                         {
                             IsActive = false,
-                            DeletedAt = DateTime.UtcNow,
+                            DeletedAt = DateTime.UtcNow.AddHours(-3),
                         };
 
                         var wellUpdatedProperties = UpdateFields
@@ -279,7 +289,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
                                 var completionPropertiesToUpdate = new
                                 {
                                     IsActive = false,
-                                    DeletedAt = DateTime.UtcNow,
+                                    DeletedAt = DateTime.UtcNow.AddHours(-3),
                                 };
 
                                 var completionUpdatedProperties = UpdateFields

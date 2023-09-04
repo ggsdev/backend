@@ -9,6 +9,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Interfaces
         void Delete(Well well);
         void Restore(Well well);
         Task<Well?> GetByIdAsync(Guid? id);
+        Task<Well?> GetByNameAsync(string? name);
         Task<List<Well>> GetAsync();
         Task<Well?> GetByCode(string? cod);
         Task<Well?> GetWithFieldAsync(Guid? id);
@@ -17,5 +18,6 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Interfaces
         Task<Well?> GetWithUserAsync(Guid? id);
         Task<Well?> GetWellAndChildren(Guid? id);
         Task SaveChangesAsync();
+        Task<List<Well>> GetWellsWithEvents(Guid fieldId, string eventType);
     }
 }

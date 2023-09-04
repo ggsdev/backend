@@ -11,6 +11,10 @@
         private static readonly string _zone = "Zone";
         private static readonly string _user = "User";
         private static readonly string _equipment = "MeasuringEquipment";
+        private static readonly string _measuringPoint = "MeasuringPoint";
+        private static readonly string _production = "Production";
+        private static readonly string _nfsm = "NFSM";
+        private static readonly string _commentInProduction = "CommentInProduction";
 
         //private readonly IStringLocalizer<ErrorMessages> _localizer;
 
@@ -46,8 +50,20 @@
             if (typeof(TModel).Name == _equipment)
                 return "Equipamento de medição" + message;
 
+            if (typeof(TModel).Name == _measuringPoint)
+                return "Ponto de medição" + message;
+
             if (typeof(TModel).Name == _user)
                 return "Usuário" + message;
+
+            if (typeof(TModel).Name == _production)
+                return "Produção" + message;
+
+            if (typeof(TModel).Name == _commentInProduction)
+                return "Comentário" + message;
+
+            if (typeof(TModel).Name == _nfsm)
+                return "Notificação de falha" + message;
 
             return message;
 
@@ -82,6 +98,9 @@
             if (typeof(TModel).Name == _equipment)
                 return "Equipamento de medição" + message;
 
+            if (typeof(TModel).Name == _production)
+                return "Produção" + message;
+
             return message;
         }
 
@@ -113,6 +132,8 @@
             if (typeof(TModel).Name == _equipment)
                 return "Equipamento de medição" + message;
 
+
+
             return message;
         }
 
@@ -143,6 +164,9 @@
 
             if (typeof(TModel).Name == _equipment)
                 return "Esse Equipamento de medição" + message;
+
+            if (typeof(TModel).Name == _commentInProduction)
+                return "Esse Comentário" + message;
 
             return message;
         }
@@ -244,6 +268,9 @@
 
             if (typeof(TModel).Name == _equipment)
                 return "Equipamento de medição" + message;
+
+            if (typeof(TModel).Name == _production)
+                return "Produção" + message;
 
             return message;
         }

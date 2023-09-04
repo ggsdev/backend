@@ -68,7 +68,6 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
                 User = user,
                 IsActive = body.IsActive is not null ? body.IsActive.Value : true,
             };
-
             await _zoneRepository.AddAsync(zone);
 
             await _systemHistoryService
@@ -125,7 +124,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
             if (body.CodZone is not null)
             {
                 var zoneInDatabase = await _zoneRepository.GetByCode(body.CodZone);
-                if (zoneInDatabase is not null)
+                if (zoneInDatabase is not null && zoneInDatabase.Id != zone.Id)
                     throw new ConflictException(ErrorMessages.CodAlreadyExists<Zone>());
             }
 
@@ -172,7 +171,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
             var propertiesUpdated = new
             {
                 IsActive = false,
-                DeletedAt = DateTime.UtcNow,
+                DeletedAt = DateTime.UtcNow.AddHours(-3),
             };
 
             var updatedProperties = UpdateFields
@@ -191,7 +190,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
                         var reservoirPropertiesToUpdate = new
                         {
                             IsActive = false,
-                            DeletedAt = DateTime.UtcNow,
+                            DeletedAt = DateTime.UtcNow.AddHours(-3),
                         };
 
                         var reservoirUpdatedProperties = UpdateFields
@@ -211,7 +210,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
                                 var completionPropertiesToUpdate = new
                                 {
                                     IsActive = false,
-                                    DeletedAt = DateTime.UtcNow,
+                                    DeletedAt = DateTime.UtcNow.AddHours(-3),
                                 };
 
                                 var completionUpdatedProperties = UpdateFields

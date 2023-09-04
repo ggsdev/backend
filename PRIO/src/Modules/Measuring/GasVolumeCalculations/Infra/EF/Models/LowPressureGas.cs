@@ -5,9 +5,10 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models
 {
     public class LowPressureGas : BaseModel
     {
-        public string Name { get; set; } = string.Empty;
+        public string StaticLocalMeasuringPoint { get; set; } = string.Empty;
         public GasVolumeCalculation GasVolumeCalculation { get; set; }
         public MeasuringPoint MeasuringPoint { get; set; }
+        public bool IsApplicable { get; set; }
 
     }
 }
