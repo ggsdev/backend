@@ -29,7 +29,7 @@ namespace PRIO.src.Shared.Errors
             foreach (var menuParent in menus)
             {
                 var foundMenuParent = await _context.Menus
-                .Include(x => x.Parent)
+                    .Include(x => x.Parent)
                     .Where(x => x.Id == menuParent.MenuId)
                     .FirstOrDefaultAsync();
 
@@ -72,15 +72,15 @@ namespace PRIO.src.Shared.Errors
                     .Where(x => x.Order.StartsWith(foundMenuParent.Order))
                     .ToListAsync();
 
-                    if (verifyChildren is not null && verifyChildren.Count != 0 && menuParent.Operations is not null)
+                    if (verifyChildren is not null && verifyChildren.Count != 0 && menuParent.Operations is not null && menuParent.Operations.Count != 0)
                     {
                         throw new NotFoundException("Menu Parent don't need operations");
                     }
-                    else if (verifyChildren is not null && menuParent.Operations is null)
+                    else if (verifyChildren is not null && verifyChildren.Count == 0 && menuParent.Operations is null)
                     {
                         throw new NotFoundException("Menu Parent need operations");
                     }
-                    else if (verifyChildren is null && menuParent.Operations is not null)
+                    else if (verifyChildren is not null && verifyChildren.Count == 0 && menuParent.Operations is not null)
                     {
                         if (menuParent.Operations.Count == 0)
                         {
