@@ -67,13 +67,12 @@ namespace PRIO.src.Shared.Errors
                 }
                 if (foundMenuParent.Parent == null)
                 {
-
                     var verifyChildren = await _context.Menus
                     .Where(x => !x.Id.Equals(foundMenuParent.Id))
-                    .Where(x => x.Order.Equals(foundMenuParent.Order))
-                    .FirstOrDefaultAsync();
+                    .Where(x => x.Order.StartsWith(foundMenuParent.Order))
+                    .ToListAsync();
 
-                    if (verifyChildren is null && menuParent.Operations is not null)
+                    if (verifyChildren is not null && verifyChildren.Count != 0 && menuParent.Operations is not null)
                     {
                         throw new NotFoundException("Menu Parent don't need operations");
                     }
