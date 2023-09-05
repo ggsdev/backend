@@ -114,7 +114,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
                     await _oilVolumeCalculationRepository.AddDrain(installationInDatabase.OilVolumeCalculation, MeasuringPoint, drain);
                 }
 
-            await _oilVolumeCalculationRepository.SaveChangesAsync();
+            //await _oilVolumeCalculationRepository.SaveChangesAsync();
             var OilVolumeCalculationDTO = _mapper.Map<OilVolumeCalculation, OilVolumeCalculationDTO>(installationInDatabase.OilVolumeCalculation);
 
             return OilVolumeCalculationDTO;
@@ -564,7 +564,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
         }
         private static void HasDuplicateIds(CreateOilVolumeCalculationViewModel body)
         {
-            HashSet<Guid> idSet = new HashSet<Guid>();
+            List<Guid> idSet = new List<Guid>();
             if (body.Sections != null)
             {
                 foreach (var section in body.Sections)
@@ -585,9 +585,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
                 foreach (var dor in body.DORs)
                     idSet.Add(dor.MeasuringPointId);
             }
-
             bool haRepetidos = idSet.Count != idSet.Distinct().Count();
-
             if (haRepetidos)
                 throw new ConflictException("Ponto de medição está sendo utilizado em múltiplos locais.");
         }
