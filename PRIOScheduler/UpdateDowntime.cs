@@ -1,5 +1,6 @@
 ﻿using dotenv.net;
 using Microsoft.EntityFrameworkCore;
+using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
 using PRIO.src.Shared.Infra.EF;
 
 namespace PRIOScheduler
@@ -23,15 +24,33 @@ namespace PRIOScheduler
                 var dateToday = DateTime.UtcNow.AddHours(-3).Date;
 
                 var wellEvents = await dbContext.WellEvents
-                    .Where(x => (x.StartDate.Date < dateToday && x.EndDate == null))
-                    .Where(x => x.EventStatus == "F")
+                    .Include(x => x.Reason)
+                    .Where(x => x.StartDate < dateToday && x.EndDate == null).Where(x => x.EventStatus == "F")
                     .ToListAsync();
 
-                Console.WriteLine(wellEvents.Any());
+                foreach (var wellEvent in wellEvents)
+                {
+                    foreach (var reason in wellEvent.EventReasons)
+                    {
+                        if (reason.StartDate < dateToday && reason.EndDate is null)
+                        {
+                            reason.EndDate = dateToday.AddMilliseconds(-10);
+                            reason.Interval = (reason.EndDate - reason.StartDate).ToString();
+                            var newEventReason = new EventReason
+                            {
+                                Id = Guid.NewGuid(),
+                                SystemRelated = reason.SystemRelated,
+                                Comment = reason.Comment,
+                                WellEvent = wellEvent,
+                                StartDate = dateToday,
+                                IsActive = true,
+                            };
+                            await dbContext.EventReasons.AddAsync(newEventReason);
+                        }
+                    }
+                }
 
-
-
-
+                await dbContext.SaveChangesAsync();
                 Console.WriteLine($"Job executado com sucesso.");
             }
             catch (Exception ex)
