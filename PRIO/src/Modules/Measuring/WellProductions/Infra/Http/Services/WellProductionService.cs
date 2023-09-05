@@ -120,7 +120,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     .GetFieldsByUepCode(production.Installation.UepCod);
                 var wellTestsUEP = await _btpRepository
                    .GetBtpDatasByUEP(production.Installation.UepCod);
-
                 var filtredUEPsByApplyDateAndFinal = wellTestsUEP.Where(x => (x.FinalApplicationDate == null && x.ApplicationDate != null && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date) && x.Well.CategoryOperator is not null && x.Well.CategoryOperator.ToUpper() == "PRODUTOR"
                         || x.Well.CategoryOperator is not null && x.Well.CategoryOperator.ToUpper() == "PRODUTOR" && (x.FinalApplicationDate != null && x.ApplicationDate != null && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
                         && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date));
@@ -188,7 +187,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     var totalWater = 0m;
                     var totalOil = 0m;
                     var totalGas = 0m;
-
                     var wellTestsField = await _btpRepository
                         .GetBtpDatasByFieldId(fieldFR.Field.Id);
                     var filtredByApplyDateAndFinal = wellTestsField
@@ -203,15 +201,12 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     var totalWaterPotencial = filtredByApplyDateAndFinal
                         .Sum(x => x.PotencialWater);
 
-
                     decimal totalPotencialGasField = 0;
                     decimal totalPotencialOilField = 0;
                     decimal totalPotencialWaterField = 0;
-
                     foreach (var btp in filtredByApplyDateAndFinal)
                     {
                         double totalInterval = 0;
-
                         var filtredEvents = btp.Well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
                         || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
@@ -249,7 +244,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     }
 
                     FieldProduction? fieldProduction = filtredByApplyDateAndFinal.Any() ? new()
-
                     {
                         Id = Guid.NewGuid(),
                         FieldId = fieldFR.Field.Id,
@@ -257,7 +251,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     } : null;
 
                     var wellAppropiationsDto = new List<WellProductionDto>();
-
                     foreach (var btp in filtredByApplyDateAndFinal)
                     {
                         double totalInterval = 0;
