@@ -718,7 +718,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 Comment = commentDto,
                 Water = waterDto,
                 WellAppropriation = appropriateDto,
-                IsCalculated = production.IsCalculated
+                IsCalculated = production.IsCalculated,
+                CanDetailGasBurned = production.CanDetailGasBurned
 
             };
 

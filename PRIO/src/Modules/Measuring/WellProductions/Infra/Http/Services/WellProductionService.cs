@@ -135,19 +135,25 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
                     foreach (var a in filtredEvents)
                     {
-
-                        if (a.StartDate < production.MeasuredAt)
+                        if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
                         {
-                            if (a.StartDate.Date <= production.MeasuredAt && a.EndDate != null)
-                                totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
+                            totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
                         }
-                        else if (a.StartDate.Date <= production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date >= production.MeasuredAt)
+                        else if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt)
                         {
-                            if (a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
-                                totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
-
-                            if (a.EndDate is not null && a.EndDate > production.MeasuredAt)
-                                totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                            totalInterval += 24;
+                        }
+                        else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt.Date)
+                        {
+                            totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
+                        }
+                        else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt.Date)
+                        {
+                            totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                        }
+                        else if (a.StartDate < production.MeasuredAt && a.EndDate is null)
+                        {
+                            totalInterval += 24;
                         }
                         else if (a.StartDate.Date == production.MeasuredAt && a.EndDate is null)
                         {
@@ -211,18 +217,25 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                         foreach (var a in filtredEvents)
                         {
-                            if (a.StartDate < production.MeasuredAt)
+                            if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
                             {
-                                if (a.StartDate.Date <= production.MeasuredAt && a.EndDate != null)
-                                    totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
+                                totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
                             }
-                            else if (a.StartDate.Date <= production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date >= production.MeasuredAt)
+                            else if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt)
                             {
-                                if (a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
-                                    totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
-
-                                if (a.EndDate is not null && a.EndDate > production.MeasuredAt)
-                                    totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                                totalInterval += 24;
+                            }
+                            else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt.Date)
+                            {
+                                totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
+                            }
+                            else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt.Date)
+                            {
+                                totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                            }
+                            else if (a.StartDate < production.MeasuredAt && a.EndDate is null)
+                            {
+                                totalInterval += 24;
                             }
                             else if (a.StartDate.Date == production.MeasuredAt && a.EndDate is null)
                             {
@@ -254,49 +267,70 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         var listEvents = new List<CreateWellLossDTO>();
                         foreach (var a in filtredEvents)
                         {
-                            if (a.StartDate < production.MeasuredAt)
+                            if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
                             {
-                                if (a.EndDate != null)
+                                double interval = ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
+                                totalInterval += interval;
+                                listEvents.Add(new CreateWellLossDTO
                                 {
-                                    totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
-                                    listEvents.Add(new CreateWellLossDTO
-                                    {
-                                        Downtime = (decimal)totalInterval,
-                                        Event = a,
-                                        Id = Guid.NewGuid(),
-                                        MeasuredAt = production.MeasuredAt
-                                    });
-                                }
+                                    Downtime = (decimal)interval,
+                                    Event = a,
+                                    Id = Guid.NewGuid(),
+                                    MeasuredAt = production.MeasuredAt
+                                });
                             }
-                            else if (a.StartDate.Date <= production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date >= production.MeasuredAt)
+                            else if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt)
                             {
-
-                                if (a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
+                                double interval = 24;
+                                totalInterval += interval;
+                                listEvents.Add(new CreateWellLossDTO
                                 {
-                                    totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
-                                    listEvents.Add(new CreateWellLossDTO
-                                    {
-                                        Downtime = (decimal)totalInterval,
-                                        Event = a,
-                                        Id = Guid.NewGuid(),
-                                        MeasuredAt = production.MeasuredAt
-                                    });
-                                }
-                                if (a.EndDate is not null && a.EndDate > production.MeasuredAt)
+                                    Downtime = (decimal)interval,
+                                    Event = a,
+                                    Id = Guid.NewGuid(),
+                                    MeasuredAt = production.MeasuredAt
+                                });
+                            }
+                            else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt.Date)
+                            {
+                                double interval = ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
+                                totalInterval += interval;
+                                listEvents.Add(new CreateWellLossDTO
                                 {
-                                    totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
-                                    listEvents.Add(new CreateWellLossDTO
-                                    {
-                                        Downtime = (decimal)totalInterval,
-                                        Event = a,
-                                        Id = Guid.NewGuid(),
-                                        MeasuredAt = production.MeasuredAt
-                                    });
-                                }
+                                    Downtime = (decimal)totalInterval,
+                                    Event = a,
+                                    Id = Guid.NewGuid(),
+                                    MeasuredAt = production.MeasuredAt
+                                });
+                            }
+                            else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt.Date)
+                            {
+                                double interval = ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                                totalInterval += interval;
+                                listEvents.Add(new CreateWellLossDTO
+                                {
+                                    Downtime = (decimal)totalInterval,
+                                    Event = a,
+                                    Id = Guid.NewGuid(),
+                                    MeasuredAt = production.MeasuredAt
+                                });
+                            }
+                            else if (a.StartDate < production.MeasuredAt && a.EndDate is null)
+                            {
+                                double interval = 24;
+                                totalInterval += interval;
+                                listEvents.Add(new CreateWellLossDTO
+                                {
+                                    Downtime = (decimal)totalInterval,
+                                    Event = a,
+                                    Id = Guid.NewGuid(),
+                                    MeasuredAt = production.MeasuredAt
+                                });
                             }
                             else if (a.StartDate.Date == production.MeasuredAt && a.EndDate is null)
                             {
-                                totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                                double interval = ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                                totalInterval += interval;
                                 listEvents.Add(new CreateWellLossDTO
                                 {
                                     Downtime = (decimal)totalInterval,
@@ -445,21 +479,25 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                     foreach (var a in filtredEvents)
                     {
-
-                        if (a.StartDate < production.MeasuredAt)
+                        if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
                         {
-                            if (a.StartDate.Date <= production.MeasuredAt && a.EndDate != null)
-                                totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
+                            totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
                         }
-                        else if (a.StartDate.Date <= production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date >= production.MeasuredAt)
+                        else if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt)
                         {
-
-                            if (a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
-                                totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
-
-                            if (a.EndDate is not null && a.EndDate > production.MeasuredAt)
-                                totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
-
+                            totalInterval += 24;
+                        }
+                        else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt.Date)
+                        {
+                            totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
+                        }
+                        else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt.Date)
+                        {
+                            totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                        }
+                        else if (a.StartDate < production.MeasuredAt && a.EndDate is null)
+                        {
+                            totalInterval += 24;
                         }
                         else if (a.StartDate.Date == production.MeasuredAt && a.EndDate is null)
                         {
@@ -513,17 +551,25 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                         foreach (var a in filtredEvents)
                         {
-                            if (a.StartDate < production.MeasuredAt)
+                            if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
                             {
-                                if (a.StartDate.Date <= production.MeasuredAt && a.EndDate != null)
-                                    totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
+                                totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
                             }
-                            else if (a.StartDate.Date <= production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date >= production.MeasuredAt)
+                            else if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt)
                             {
-                                if (a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
-                                    totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
-                                if (a.EndDate is not null && a.EndDate > production.MeasuredAt)
-                                    totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                                totalInterval += 24;
+                            }
+                            else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt.Date)
+                            {
+                                totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
+                            }
+                            else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt.Date)
+                            {
+                                totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                            }
+                            else if (a.StartDate < production.MeasuredAt && a.EndDate is null)
+                            {
+                                totalInterval += 24;
                             }
                             else if (a.StartDate.Date == production.MeasuredAt && a.EndDate is null)
                             {
@@ -544,50 +590,70 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         var listEvents = new List<CreateWellLossDTO>();
                         foreach (var a in filtredEvents)
                         {
-                            if (a.StartDate < production.MeasuredAt)
+                            if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
                             {
-                                if (a.EndDate != null)
+                                double interval = ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
+                                totalInterval += interval;
+                                listEvents.Add(new CreateWellLossDTO
                                 {
-                                    totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
-                                    listEvents.Add(new CreateWellLossDTO
-                                    {
-                                        Downtime = (decimal)totalInterval,
-                                        Event = a,
-                                        Id = Guid.NewGuid(),
-                                        MeasuredAt = production.MeasuredAt
-                                    });
-                                }
+                                    Downtime = (decimal)interval,
+                                    Event = a,
+                                    Id = Guid.NewGuid(),
+                                    MeasuredAt = production.MeasuredAt
+                                });
                             }
-
-                            else if (a.StartDate.Date <= production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date >= production.MeasuredAt)
+                            else if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt)
                             {
-                                if (a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
+                                double interval = 24;
+                                totalInterval += interval;
+                                listEvents.Add(new CreateWellLossDTO
                                 {
-                                    totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
-                                    listEvents.Add(new CreateWellLossDTO
-                                    {
-                                        Downtime = (decimal)totalInterval,
-                                        Event = a,
-                                        Id = Guid.NewGuid(),
-                                        MeasuredAt = production.MeasuredAt
-                                    });
-                                }
-                                if (a.EndDate is not null && a.EndDate > production.MeasuredAt)
+                                    Downtime = (decimal)interval,
+                                    Event = a,
+                                    Id = Guid.NewGuid(),
+                                    MeasuredAt = production.MeasuredAt
+                                });
+                            }
+                            else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt.Date)
+                            {
+                                double interval = ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
+                                totalInterval += interval;
+                                listEvents.Add(new CreateWellLossDTO
                                 {
-                                    totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
-                                    listEvents.Add(new CreateWellLossDTO
-                                    {
-                                        Downtime = (decimal)totalInterval,
-                                        Event = a,
-                                        Id = Guid.NewGuid(),
-                                        MeasuredAt = production.MeasuredAt
-                                    });
-                                }
-
+                                    Downtime = (decimal)totalInterval,
+                                    Event = a,
+                                    Id = Guid.NewGuid(),
+                                    MeasuredAt = production.MeasuredAt
+                                });
+                            }
+                            else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt.Date)
+                            {
+                                double interval = ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                                totalInterval += interval;
+                                listEvents.Add(new CreateWellLossDTO
+                                {
+                                    Downtime = (decimal)totalInterval,
+                                    Event = a,
+                                    Id = Guid.NewGuid(),
+                                    MeasuredAt = production.MeasuredAt
+                                });
+                            }
+                            else if (a.StartDate < production.MeasuredAt && a.EndDate is null)
+                            {
+                                double interval = 24;
+                                totalInterval += interval;
+                                listEvents.Add(new CreateWellLossDTO
+                                {
+                                    Downtime = (decimal)totalInterval,
+                                    Event = a,
+                                    Id = Guid.NewGuid(),
+                                    MeasuredAt = production.MeasuredAt
+                                });
                             }
                             else if (a.StartDate.Date == production.MeasuredAt && a.EndDate is null)
                             {
-                                totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                                double interval = ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                                totalInterval += interval;
                                 listEvents.Add(new CreateWellLossDTO
                                 {
                                     Downtime = (decimal)totalInterval,
@@ -894,11 +960,11 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         throw new NotFoundException("Produção de campo não distribuida");
 
                     var totalGasPotencial = fieldProductionInDatabase.WellProductions
-                       .Sum(x => ((24 - CalculateDowntimeInHours(x.Downtime)) / 24) * x.WellTest.PotencialGas);
+                       .Sum(x => ((24 - WellProductionUtils.CalculateDowntimeInHours(x.Downtime)) / 24) * x.WellTest.PotencialGas);
                     var totalOilPotencial = fieldProductionInDatabase.WellProductions
-                       .Sum(x => ((24 - CalculateDowntimeInHours(x.Downtime)) / 24) * x.WellTest.PotencialOil);
+                       .Sum(x => ((24 - WellProductionUtils.CalculateDowntimeInHours(x.Downtime)) / 24) * x.WellTest.PotencialOil);
                     var totalWaterPotencial = fieldProductionInDatabase.WellProductions
-                       .Sum(x => ((24 - CalculateDowntimeInHours(x.Downtime)) / 24) * x.WellTest.PotencialWater);
+                       .Sum(x => ((24 - WellProductionUtils.CalculateDowntimeInHours(x.Downtime)) / 24) * x.WellTest.PotencialWater);
 
                     var totalWater = 0m;
                     var totalOil = 0m;
@@ -916,9 +982,9 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         var productionOil = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.OilProductionInField, wellPotencialOilAsPercentageOfField) : 0;
                         var productionWater = (productionOil * wellProduction.WellTest.BSW) / (100 - wellProduction.WellTest.BSW);
 
-                        wellProduction.ProductionGasInWellM3 = productionGas * (24 - CalculateDowntimeInHours(wellProduction.Downtime)) / 24;
-                        wellProduction.ProductionOilInWellM3 = productionOil * (24 - CalculateDowntimeInHours(wellProduction.Downtime)) / 24;
-                        wellProduction.ProductionWaterInWellM3 = productionWater * (24 - CalculateDowntimeInHours(wellProduction.Downtime)) / 24;
+                        wellProduction.ProductionGasInWellM3 = productionGas * (24 - WellProductionUtils.CalculateDowntimeInHours(wellProduction.Downtime)) / 24;
+                        wellProduction.ProductionOilInWellM3 = productionOil * (24 - WellProductionUtils.CalculateDowntimeInHours(wellProduction.Downtime)) / 24;
+                        wellProduction.ProductionWaterInWellM3 = productionWater * (24 - WellProductionUtils.CalculateDowntimeInHours(wellProduction.Downtime)) / 24;
 
                         totalWater += wellProduction.ProductionWaterInWellM3;
                         totalOil += wellProduction.ProductionOilInWellM3;
@@ -1051,21 +1117,25 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                     foreach (var a in filtredEvents)
                     {
-
-                        if (a.StartDate < production.MeasuredAt)
+                        if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
                         {
-                            if (a.StartDate.Date <= production.MeasuredAt && a.EndDate != null)
-                                totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
+                            totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
                         }
-                        else if (a.StartDate.Date <= production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date >= production.MeasuredAt)
+                        else if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt)
                         {
-
-                            if (a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
-                                totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
-
-                            if (a.EndDate is not null && a.EndDate > production.MeasuredAt)
-                                totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
-
+                            totalInterval += 24;
+                        }
+                        else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt.Date)
+                        {
+                            totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
+                        }
+                        else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt.Date)
+                        {
+                            totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                        }
+                        else if (a.StartDate < production.MeasuredAt && a.EndDate is null)
+                        {
+                            totalInterval += 24;
                         }
                         else if (a.StartDate.Date == production.MeasuredAt && a.EndDate is null)
                         {
@@ -1095,59 +1165,31 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         var filtredEvents = wellProd.WellTest.Well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
                                 || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
-                        var listEvents = new List<CreateWellLossDTO>();
                         foreach (var a in filtredEvents)
                         {
-                            if (a.StartDate < production.MeasuredAt)
+                            if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
                             {
-                                if (a.EndDate != null)
-                                {
-                                    totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
-                                    listEvents.Add(new CreateWellLossDTO
-                                    {
-                                        Downtime = (decimal)totalInterval,
-                                        Event = a,
-                                        Id = Guid.NewGuid(),
-                                        MeasuredAt = production.MeasuredAt
-                                    });
-                                }
+                                totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
                             }
-                            else if (a.StartDate.Date <= production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date >= production.MeasuredAt)
+                            else if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt)
                             {
-                                if (a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
-                                {
-                                    totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
-                                    listEvents.Add(new CreateWellLossDTO
-                                    {
-                                        Downtime = (decimal)totalInterval,
-                                        Event = a,
-                                        Id = Guid.NewGuid(),
-                                        MeasuredAt = production.MeasuredAt
-                                    });
-                                }
-                                if (a.EndDate is not null && a.EndDate > production.MeasuredAt)
-                                {
-                                    totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
-                                    listEvents.Add(new CreateWellLossDTO
-                                    {
-                                        Downtime = (decimal)totalInterval,
-                                        Event = a,
-                                        Id = Guid.NewGuid(),
-                                        MeasuredAt = production.MeasuredAt
-                                    });
-                                }
-
+                                totalInterval += 24;
+                            }
+                            else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt.Date)
+                            {
+                                totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
+                            }
+                            else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt.Date)
+                            {
+                                totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                            }
+                            else if (a.StartDate < production.MeasuredAt && a.EndDate is null)
+                            {
+                                totalInterval += 24;
                             }
                             else if (a.StartDate.Date == production.MeasuredAt && a.EndDate is null)
                             {
                                 totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
-                                listEvents.Add(new CreateWellLossDTO
-                                {
-                                    Downtime = (decimal)totalInterval,
-                                    Event = a,
-                                    Id = Guid.NewGuid(),
-                                    MeasuredAt = production.MeasuredAt
-                                });
                             }
                         }
 
@@ -1332,19 +1374,25 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
                     foreach (var a in filtredEvents)
                     {
-
-                        if (a.StartDate < production.MeasuredAt)
+                        if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
                         {
-                            if (a.StartDate.Date <= production.MeasuredAt && a.EndDate != null)
-                                totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
+                            totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
                         }
-                        else if (a.StartDate.Date <= production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date >= production.MeasuredAt)
+                        else if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt)
                         {
-                            if (a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
-                                totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
-
-                            if (a.EndDate is not null && a.EndDate > production.MeasuredAt)
-                                totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                            totalInterval += 24;
+                        }
+                        else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt.Date)
+                        {
+                            totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
+                        }
+                        else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt.Date)
+                        {
+                            totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                        }
+                        else if (a.StartDate < production.MeasuredAt && a.EndDate is null)
+                        {
+                            totalInterval += 24;
                         }
                         else if (a.StartDate.Date == production.MeasuredAt && a.EndDate is null)
                         {
@@ -1410,18 +1458,25 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                         foreach (var a in filtredEvents)
                         {
-                            if (a.StartDate < production.MeasuredAt)
+                            if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
                             {
-                                if (a.StartDate.Date <= production.MeasuredAt && a.EndDate != null)
-                                    totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
+                                totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
                             }
-                            else if (a.StartDate.Date <= production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date >= production.MeasuredAt)
+                            else if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt)
                             {
-                                if (a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
-                                    totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
-
-                                if (a.EndDate is not null && a.EndDate > production.MeasuredAt)
-                                    totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                                totalInterval += 24;
+                            }
+                            else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt.Date)
+                            {
+                                totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
+                            }
+                            else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt.Date)
+                            {
+                                totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                            }
+                            else if (a.StartDate < production.MeasuredAt && a.EndDate is null)
+                            {
+                                totalInterval += 24;
                             }
                             else if (a.StartDate.Date == production.MeasuredAt && a.EndDate is null)
                             {
@@ -1447,23 +1502,25 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                         foreach (var a in filtredEvents)
                         {
-                            if (a.StartDate < production.MeasuredAt)
+                            if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
                             {
-                                if (a.EndDate != null)
-                                {
-                                    totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
-                                }
+                                totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
                             }
-                            else if (a.StartDate.Date <= production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date >= production.MeasuredAt)
+                            else if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt)
                             {
-                                if (a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
-                                {
-                                    totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
-                                }
-                                if (a.EndDate is not null && a.EndDate > production.MeasuredAt)
-                                {
-                                    totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
-                                }
+                                totalInterval += 24;
+                            }
+                            else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt.Date)
+                            {
+                                totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
+                            }
+                            else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt.Date)
+                            {
+                                totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                            }
+                            else if (a.StartDate < production.MeasuredAt && a.EndDate is null)
+                            {
+                                totalInterval += 24;
                             }
                             else if (a.StartDate.Date == production.MeasuredAt && a.EndDate is null)
                             {
@@ -1618,21 +1675,25 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                     foreach (var a in filtredEvents)
                     {
-
-                        if (a.StartDate < production.MeasuredAt)
+                        if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
                         {
-                            if (a.StartDate.Date <= production.MeasuredAt && a.EndDate != null)
-                                totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
+                            totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
                         }
-                        else if (a.StartDate.Date <= production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date >= production.MeasuredAt)
+                        else if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt)
                         {
-
-                            if (a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
-                                totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
-
-                            if (a.EndDate is not null && a.EndDate > production.MeasuredAt)
-                                totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
-
+                            totalInterval += 24;
+                        }
+                        else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt.Date)
+                        {
+                            totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
+                        }
+                        else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt.Date)
+                        {
+                            totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                        }
+                        else if (a.StartDate < production.MeasuredAt && a.EndDate is null)
+                        {
+                            totalInterval += 24;
                         }
                         else if (a.StartDate.Date == production.MeasuredAt && a.EndDate is null)
                         {
@@ -1643,13 +1704,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     totalPotencialOilUEP += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
                     totalPotencialWaterUEP += btp.PotencialWater * (24 - (decimal)totalInterval) / 24;
                 }
-
-                //var totalGasPotencial = filtredByApplyDateAndFinal
-                //   .Sum(x => x.PotencialGas);
-                //var totalOilPotencial = filtredByApplyDateAndFinal
-                //    .Sum(x => x.PotencialOil);
-                //var totalWaterPotencial = filtredByApplyDateAndFinal
-                //    .Sum(x => x.PotencialWater);
 
                 foreach (var field in uepFields)
                 {
@@ -1689,17 +1743,25 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                         foreach (var a in filtredEvents)
                         {
-                            if (a.StartDate < production.MeasuredAt)
+                            if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
                             {
-                                if (a.StartDate.Date <= production.MeasuredAt && a.EndDate != null)
-                                    totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
+                                totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
                             }
-                            else if (a.StartDate.Date <= production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date >= production.MeasuredAt)
+                            else if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt)
                             {
-                                if (a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
-                                    totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
-                                if (a.EndDate is not null && a.EndDate > production.MeasuredAt)
-                                    totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                                totalInterval += 24;
+                            }
+                            else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt.Date)
+                            {
+                                totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
+                            }
+                            else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt.Date)
+                            {
+                                totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                            }
+                            else if (a.StartDate < production.MeasuredAt && a.EndDate is null)
+                            {
+                                totalInterval += 24;
                             }
                             else if (a.StartDate.Date == production.MeasuredAt && a.EndDate is null)
                             {
@@ -1726,19 +1788,25 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         var listEvents = new List<CreateWellLossDTO>();
                         foreach (var a in filtredEvents)
                         {
-                            if (a.StartDate < production.MeasuredAt)
+                            if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
                             {
-                                if (a.EndDate != null)
-                                {
-                                    totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
-                                }
+                                totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
                             }
-                            else if (a.StartDate.Date <= production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date >= production.MeasuredAt)
+                            else if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt)
                             {
-                                if (a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
-                                    totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
-                                if (a.EndDate is not null && a.EndDate > production.MeasuredAt)
-                                    totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                                totalInterval += 24;
+                            }
+                            else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt.Date)
+                            {
+                                totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
+                            }
+                            else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt.Date)
+                            {
+                                totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                            }
+                            else if (a.StartDate < production.MeasuredAt && a.EndDate is null)
+                            {
+                                totalInterval += 24;
                             }
                             else if (a.StartDate.Date == production.MeasuredAt && a.EndDate is null)
                             {
@@ -1749,7 +1817,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         var wellPotencialGasAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((wellProd.WellTest.PotencialGas * ((24 - (decimal)totalInterval) / 24)), totalPotencialGasUEP);
                         var wellPotencialOilAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((wellProd.WellTest.PotencialOil * ((24 - (decimal)totalInterval) / 24)), totalPotencialOilUEP);
                         var wellPotencialWaterAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((wellProd.WellTest.PotencialWater * ((24 - (decimal)totalInterval) / 24)), totalPotencialWaterUEP);
-
                         var wellPotencialGasAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField((wellProd.WellTest.PotencialGas * ((24 - (decimal)totalInterval) / 24)), totalPotencialGasField);
                         var wellPotencialOilAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField((wellProd.WellTest.PotencialOil * ((24 - (decimal)totalInterval) / 24)), totalPotencialOilField);
                         var wellPotencialWaterAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField((wellProd.WellTest.PotencialWater * ((24 - (decimal)totalInterval) / 24)), totalPotencialWaterField);
@@ -1836,7 +1903,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                                 zoneProduction.WaterProductionInZone = 0m;
 
                                 _repository.UpdateZoneProduction(zoneProduction);
-
                             }
                         }
 
@@ -1882,24 +1948,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
             }
             await _repository.Save();
-        }
-        private decimal CalculateDowntimeInHours(string downtime)
-        {
-            // Analisar a string no formato "hh:mm:ss" em horas, minutos e segundos
-            var partes = downtime.Split(':');
-            if (partes.Length != 3)
-            {
-                throw new InvalidOperationException("Formato de Downtime inválido.");
-            }
-
-            int horas = int.Parse(partes[0]);
-            int minutos = int.Parse(partes[1]);
-            int segundos = int.Parse(partes[2]);
-
-            // Calcular a fração de horas como decimal
-            decimal fracaoDeHoras = horas + (minutos / 60.0m) + (segundos / 3600.0m);
-
-            return fracaoDeHoras;
         }
     }
 }
