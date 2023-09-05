@@ -1,5 +1,6 @@
 ﻿using dotenv.net;
 using Microsoft.EntityFrameworkCore;
+using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
 using PRIO.src.Shared.Infra.EF;
 
 namespace PRIOScheduler
@@ -20,20 +21,36 @@ namespace PRIOScheduler
 
                 using var dbContext = new DataContext(dbContextOptions);
 
-                var dateYesterday = DateTime.UtcNow.AddHours(-3).Date.AddDays(-1);
-                var wellTests = await dbContext.WellEvents
+                var dateToday = DateTime.UtcNow.AddHours(-3).Date.AddDays(-1);
+                var wellEvents = await dbContext.WellEvents.Include(x => x.Reason)
                     .Where(
-                    x => x.StartDate < dateYesterday && x.EndDate != null && x.EndDate.Value.Date == dateYesterday ||
-                    x.StartDate < dateYesterday && x.EndDate != null && x.EndDate.Value.Date > dateYesterday ||
-                    x.StartDate.Date == dateYesterday.Date && x.EndDate != null && x.EndDate.Value.Date == dateYesterday.Date ||
-                    x.StartDate.Date == dateYesterday.Date && x.EndDate != null && x.EndDate.Value.Date > dateYesterday.Date ||
-                    x.StartDate < dateYesterday && x.EndDate == null ||
-                    x.StartDate.Date == dateYesterday && x.EndDate == null
-                )
+                    x => x.StartDate < dateToday && x.EndDate == null
+                ).Where(x => x.EventStatus == "F")
                 .ToListAsync();
 
-                Console.WriteLine(wellTests.Count);
+                foreach (var wellEvent in wellEvents)
+                {
+                    foreach (var reason in wellEvent.EventReasons)
+                    {
+                        if (reason.StartDate < dateToday && reason.EndDate is null)
+                        {
+                            reason.EndDate = dateToday;
+                            var newEventReason = new EventReason
+                            {
+                                Id = Guid.NewGuid(),
+                                SystemRelated = reason.SystemRelated,
+                                Comment = reason.Comment,
+                                WellEvent = wellEvent,
+                                StartDate = dateToday,
+                                IsActive = true,
+                            };
+                            await dbContext.EventReasons.AddAsync(newEventReason);
+                            await dbContext.SaveChangesAsync();
+                        }
+                    }
+                }
 
+                Console.WriteLine(wellEvents.Count);
                 Console.WriteLine($"Job executado com sucesso.");
 
             }
