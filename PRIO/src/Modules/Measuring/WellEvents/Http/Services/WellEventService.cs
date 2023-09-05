@@ -406,7 +406,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             var wellEventDto = new WellEventByIdDto
             {
                 Id = wellEvent.Id,
-                EventDateAndHour = wellEvent.StartDate.ToString("dd:MM/yyyy HH:mm"),
+                EventDateAndHour = wellEvent.StartDate.ToString("dd:MM/yyyy : HH:mm"),
                 EventRelated = wellEvent.EventRelatedCode,
                 Field = wellEvent.Well.Field.Name,
                 Installation = wellEvent.Well.Field.Installation.Name,
