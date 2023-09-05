@@ -9,7 +9,7 @@
         public string EventDateAndHour { get; set; }
         public string? EventRelated { get; set; }
         public string SystemRelated { get; set; }
-        public string InitialReason { get; set; }
+        public string Reason { get; set; }
         public string? StatusAnp { get; set; }
         public string? StateAnp { get; set; }
 
@@ -21,6 +21,6 @@
         public string SystemRelated { get; set; }
         public string StartDate { get; set; }
         public string? Downtime { get; set; }
-        public TimeSpan? TimeOperating { get; set; }
+        public string? TimeOperating { get; set; }
     }
 }

@@ -20,7 +20,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Controllers
         [HttpPost("close")]
         public async Task<IActionResult> Post(CreateClosingEventViewModel body)
         {
-            await _service.CloseWellFieldEvent(body);
+            await _service.CloseWellEvent(body);
 
             return NoContent();
         }
@@ -28,7 +28,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Controllers
         [HttpPost("open")]
         public async Task<IActionResult> Post(CreateOpeningEventViewModel body)
         {
-            await _service.OpenWellFieldEvent(body);
+            await _service.OpenWellEvent(body);
 
             return NoContent();
         }

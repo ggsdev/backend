@@ -84,6 +84,8 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 DotEnv.Load();
+var envVars = DotEnv.Read();
+
 
 IConfiguration configuration = builder.Configuration;
 ConfigureServices(builder.Services, configuration);
@@ -105,14 +107,19 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-ConfigureMiddlewares(app);
+//var serviceProvider = builder.Services.BuildServiceProvider();
+//var dataContext = serviceProvider.GetRequiredService<DataContext>();
+//var jobScheduler = new JobScheduler(dataContext);
 
+
+ConfigureMiddlewares(app);
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -131,6 +138,10 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
         config.Filters.Add(new AuthorizeFilter(policy));
         //config.ModelBinderProviders.Insert(0, new GuidBinderProvider());
     });
+
+    //services.AddHangfire(x => x.UseSqlServerStorage($"Server={envVars["SERVER"]},{envVars["PORT"]}\\{envVars["SERVER_INSTANCE"]};Database={envVars["DATABASE"]};User ID={envVars["USER_ID"]};Password={envVars["PASSWORD"]};Encrypt={envVars["ENCRYPT"]}"))
+    //    .AddHangfireServer()
+    //    ;
 
     services.AddCors(options =>
     {
@@ -240,7 +251,6 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddScoped<NFSMService>();
     services.AddScoped<WellProductionService>();
 
-
     #endregion
 
     services.AddScoped<BTPService>();
@@ -308,3 +318,4 @@ static void ConfigureMiddlewares(IApplicationBuilder app)
     app.UseCors("CorsPolicy");
     app.UseRouting();
 }
+
