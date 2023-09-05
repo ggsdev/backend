@@ -68,6 +68,7 @@ namespace PRIOScheduler
                                 WellEvent = wellEvent,
                                 StartDate = dateToday,
                                 IsActive = true,
+
                             };
 
                             await dbContext.EventReasons.AddAsync(newEventReason);
