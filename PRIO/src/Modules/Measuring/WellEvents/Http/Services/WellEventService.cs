@@ -2,11 +2,11 @@
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
+using PRIO.src.Modules.Measuring.Productions.Interfaces;
 using PRIO.src.Modules.Measuring.WellEvents.Dtos;
 using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
 using PRIO.src.Modules.Measuring.WellEvents.Interfaces;
 using PRIO.src.Modules.Measuring.WellEvents.ViewModels;
-using PRIO.src.Modules.Measuring.WellProductions.Infra.Utils;
 using PRIO.src.Shared.Errors;
 using System.Globalization;
 
@@ -16,16 +16,18 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
     {
         private readonly IWellEventRepository _wellEventRepository;
         private readonly IInstallationRepository _installationRepository;
+        private readonly IProductionRepository _productionRepository;
         private readonly IWellRepository _wellRepository;
         private readonly IFieldRepository _fieldRepository;
-        public WellEventService(IWellEventRepository wellEventRepository, IInstallationRepository installationRepository, IFieldRepository fieldRepository, IWellRepository wellRepository)
+        public WellEventService(IWellEventRepository wellEventRepository, IInstallationRepository installationRepository, IFieldRepository fieldRepository, IWellRepository wellRepository, IProductionRepository productionRepository)
         {
             _wellEventRepository = wellEventRepository;
             _installationRepository = installationRepository;
             _fieldRepository = fieldRepository;
             _wellRepository = wellRepository;
+            _productionRepository = productionRepository;
         }
-        public async Task CloseWellFieldEvent(CreateClosingEventViewModel body)
+        public async Task CloseWellEvent(CreateClosingEventViewModel body)
         {
             if (DateTime.TryParseExact(body.EventDateAndHour, "dd/MM/yy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedStartDate) is false)
                 throw new BadRequestException("Formato de data inválido deve ser 'dd/MM/yy HH:mm'.");
@@ -71,7 +73,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
             foreach (var well in wellsList)
             {
-
 
                 var lastEvent = well.WellEvents
                     .OrderBy(e => e.CreatedAt)
@@ -213,7 +214,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             return closingEventDto;
         }
 
-        public async Task OpenWellFieldEvent(CreateOpeningEventViewModel body)
+        public async Task OpenWellEvent(CreateOpeningEventViewModel body)
         {
             if (DateTime.TryParseExact(body.EventDateAndHour, "dd/MM/yy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedStartDate) is false)
                 throw new BadRequestException("Formato de data inválido deve ser 'dd/MM/yy HH:mm'.");
@@ -243,6 +244,17 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
             if (lastEvent is not null && parsedStartDate < lastEvent.StartDate)
                 throw new BadRequestException("Data de início do evento deve ser maior que a data de início do último evento associado.");
+
+
+            //retroativo com evento no passado
+            //var productionInStartDate = await _productionRepository
+            //    .AnyByDate(parsedStartDate);
+
+            //if(productionInStartDate is not null)
+            //{
+
+            //}
+
 
             var lastEventOfTypeOpening = wellInDatabase.WellEvents
                 .OrderBy(e => e.CreatedAt)
@@ -365,31 +377,22 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
             var reasonsDetailed = new List<ReasonDetailedDto>();
 
-            if (wellEvent.EventReasons.Any())
+            var lastEventReason = wellEvent.EventReasons
+                .OrderBy(x => x.CreatedAt)
+                .LastOrDefault();
+
+            if (wellEvent.EventReasons.Any() && lastEventReason is not null)
             {
-                foreach (var eventReason in wellEvent.EventReasons)
+                foreach (var wellReason in wellEvent.EventReasons)
                 {
                     var reasonDetailedDto = new ReasonDetailedDto
                     {
-                        Downtime = eventReason.Interval,
-                        StartDate = wellEvent.StartDate.ToString("dd/MM/yyyy : HH:mm"),
-                        SystemRelated = eventReason.SystemRelated,
+                        //Downtime = wellReason.,
+                        StartDate = wellReason.EndDate is not null ? wellReason.EndDate.Value.ToString("dd/MM/yyyy : HH:mm") : "N/A",
+                        SystemRelated = wellReason.SystemRelated,
+                        Downtime = "",
+                        TimeOperating = ""
                     };
-                    if (eventReason.Interval is not null)
-                    {
-                        var timeOperating = WellProductionUtils.CalculateDowntimeInHours(eventReason.Interval);
-
-                        int hours = (int)timeOperating;
-                        var minutesDecimal = (timeOperating - hours) * 60;
-                        int minutes = (int)minutesDecimal;
-                        var secondsDecimal = (minutesDecimal - minutes) * 60;
-                        int seconds = (int)secondsDecimal;
-                        DateTime dateTime = DateTime.Today.AddHours(hours).AddMinutes(minutes).AddSeconds(seconds);
-                        var timeOperatingTime = DateTime.Today.AddDays(1) - dateTime;
-                        //var timeOperatingFormated = timeOperatingTime.ToString("HH:mm:ss");
-
-                        reasonDetailedDto.TimeOperating = timeOperatingTime;
-                    }
 
                     reasonsDetailed.Add(reasonDetailedDto);
                 }
@@ -397,9 +400,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
             var uep = await _installationRepository.GetByUEPCod(wellEvent.Well.Field.Installation.UepCod);
 
-            var lastEventReason = wellEvent.EventReasons
-                .OrderBy(x => x.CreatedAt)
-                .LastOrDefault();
 
             var wellEventDto = new WellEventByIdDto
             {
@@ -409,7 +409,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 Field = wellEvent.Well.Field.Name,
                 Installation = wellEvent.Well.Field.Installation.Name,
                 Uep = uep.Name,
-                InitialReason = wellEvent.Reason,
+                Reason = wellEvent.Reason,
                 StateAnp = wellEvent.StateANP,
                 StatusAnp = wellEvent.StatusANP,
                 SystemRelated = lastEventReason.SystemRelated,
@@ -459,16 +459,25 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             if (lastEventReason is not null)
             {
                 var resultTimeSpan = (dateNow - lastEventReason.StartDate).TotalHours;
-                Console.WriteLine(resultTimeSpan);
-                Console.WriteLine(lastEventReason.StartDate);
 
                 int hours = (int)resultTimeSpan;
                 var minutesDecimal = (resultTimeSpan - hours) * 60;
                 int minutes = (int)minutesDecimal;
                 var secondsDecimal = (minutesDecimal - minutes) * 60;
                 int seconds = (int)secondsDecimal;
-                DateTime dateTime = DateTime.Today.AddHours(hours).AddMinutes(minutes).AddSeconds(seconds);
-                var formattedTime = dateTime.ToString("HH:mm:ss");
+
+                string formattedHours;
+                if (hours >= 1000)
+                {
+                    int digitCount = (int)Math.Floor(Math.Log10(hours)) + 1;
+                    formattedHours = hours.ToString(new string('0', digitCount));
+                }
+                else
+                {
+                    formattedHours = hours.ToString("00");
+                }
+                var formattedTime = $"{formattedHours}:{minutes}:{seconds}";
+
                 lastEventReason.Interval = formattedTime;
                 lastEventReason.EndDate = DateTime.UtcNow.AddHours(-3);
 
