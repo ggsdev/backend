@@ -20,22 +20,19 @@ namespace PRIOScheduler
 
                 using var dbContext = new DataContext(dbContextOptions);
 
-                var dateYesterday = DateTime.UtcNow.AddHours(-3).Date.AddDays(-1);
-                var wellTests = await dbContext.WellEvents
-                    .Where(
-                    x => x.StartDate < dateYesterday && x.EndDate != null && x.EndDate.Value.Date == dateYesterday ||
-                    x.StartDate < dateYesterday && x.EndDate != null && x.EndDate.Value.Date > dateYesterday ||
-                    x.StartDate.Date == dateYesterday.Date && x.EndDate != null && x.EndDate.Value.Date == dateYesterday.Date ||
-                    x.StartDate.Date == dateYesterday.Date && x.EndDate != null && x.EndDate.Value.Date > dateYesterday.Date ||
-                    x.StartDate < dateYesterday && x.EndDate == null ||
-                    x.StartDate.Date == dateYesterday && x.EndDate == null
-                )
-                .ToListAsync();
+                var dateToday = DateTime.UtcNow.AddHours(-3).Date;
 
-                Console.WriteLine(wellTests.Count);
+                var wellEvents = await dbContext.WellEvents
+                    .Where(x => (x.StartDate.Date < dateToday && x.EndDate == null))
+                    .Where(x => x.EventStatus == "F")
+                    .ToListAsync();
+
+                Console.WriteLine(wellEvents.Any());
+
+
+
 
                 Console.WriteLine($"Job executado com sucesso.");
-
             }
             catch (Exception ex)
             {
