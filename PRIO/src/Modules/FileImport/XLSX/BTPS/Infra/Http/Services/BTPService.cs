@@ -286,14 +286,14 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 {
                     erros.Add("Erro: Data final do teste não pode ser maior do que a data de aplicação do teste.");
                 }
-                if (alignDate.Value.Date > initialDate.Value.Date)
-                {
-                    erros.Add("Erro: Data do alinhamento do poço não pode ser maior do que a data inicial do teste.");
-                }
             }
             catch
             {
                 throw new NotFoundException("Data da Aplicação não é valida");
+            }
+            if (alignDate.Value.Date > initialDate.Value.Date)
+            {
+                erros.Add("Erro: Data do alinhamento do poço não pode ser maior do que a data inicial do teste.");
             }
 
             if (erros.Count > 0)
