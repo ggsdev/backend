@@ -274,6 +274,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
 
             DateTime? initialDate = (DateTime)initialDateValue;
             DateTime? finalDate = (DateTime)finalDateValue;
+            DateTime? alignDate = (DateTime)wellAlignmentDataValue;
             if (initialDate > finalDate)
             {
                 erros.Add("Erro: Data inicial do teste não pode ser maior do que a data final do teste.");
@@ -284,6 +285,10 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 if (finalDate.Value.Date > applicationDate)
                 {
                     erros.Add("Erro: Data final do teste não pode ser maior do que a data de aplicação do teste.");
+                }
+                if (alignDate.Value.Date > initialDate.Value.Date)
+                {
+                    erros.Add("Erro: Data do alinhamento do poço não pode ser maior do que a data inicial do teste.");
                 }
             }
             catch
