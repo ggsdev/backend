@@ -114,7 +114,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
                     await _oilVolumeCalculationRepository.AddDrain(installationInDatabase.OilVolumeCalculation, MeasuringPoint, drain);
                 }
 
-            //await _oilVolumeCalculationRepository.SaveChangesAsync();
+            await _oilVolumeCalculationRepository.SaveChangesAsync();
             var OilVolumeCalculationDTO = _mapper.Map<OilVolumeCalculation, OilVolumeCalculationDTO>(installationInDatabase.OilVolumeCalculation);
 
             return OilVolumeCalculationDTO;
