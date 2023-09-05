@@ -1,6 +1,8 @@
 ﻿using dotenv.net;
 using Microsoft.EntityFrameworkCore;
+using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
 using PRIO.src.Shared.Infra.EF;
+using System.Data;
 
 namespace PRIOScheduler
 {
@@ -20,64 +22,62 @@ namespace PRIOScheduler
 
                 using var dbContext = new DataContext(dbContextOptions);
 
-                var dateYesterday = DateTime.UtcNow.AddHours(-3).Date.AddDays(-1);
+                var dateToday = DateTime.UtcNow.AddHours(-3).Date;
 
-                var production = await dbContext.Productions
-                    .Include(p => p.WellProductions)
-                    .FirstOrDefaultAsync(x => x.MeasuredAt.Date == dateYesterday);
+                var wellEvents = await dbContext.WellEvents
+                    .Include(x => x.EventReasons)
+                    .Where(x => x.StartDate < dateToday && x.EndDate == null).Where(x => x.EventStatus == "F")
+                    .ToListAsync();
 
-                if (production is not null)
+                foreach (var wellEvent in wellEvents)
                 {
-                    var wellEvents = await dbContext.WellEvents
-                        .Include(we => we.Well)
-                        .Where(x => (production != null && x.StartDate <= production.MeasuredAt.Date && x.EndDate == null)
-                        || (production != null && x.StartDate.Date <= production.MeasuredAt.Date && x.EndDate != null && production.MeasuredAt.Date >= x.EndDate.Value.Date))
-                        .Where(x => x.EventStatus == "F")
-                        .ToListAsync();
-
-                    foreach (var wellEvent in wellEvents)
+                    for (int i = 0; i < wellEvent.EventReasons.Count; i++)
                     {
-                        var totalDowtimeDaily = 0d;
+                        var reason = wellEvent.EventReasons[i];
 
-                        if (wellEvent.StartDate < production.MeasuredAt && wellEvent.EndDate is not null && wellEvent.EndDate.Value.Date == production.MeasuredAt)
+                        if (reason.StartDate < dateToday && reason.EndDate is null)
                         {
-                            totalDowtimeDaily += ((wellEvent.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
-                        }
-                        else if (wellEvent.StartDate < production.MeasuredAt && wellEvent.EndDate is not null && wellEvent.EndDate.Value.Date > production.MeasuredAt)
-                        {
-                            totalDowtimeDaily += 24;
-                        }
-                        else if (wellEvent.StartDate.Date == production.MeasuredAt.Date && wellEvent.EndDate is not null && wellEvent.EndDate.Value.Date == production.MeasuredAt.Date)
-                        {
-                            totalDowtimeDaily += ((wellEvent.EndDate.Value - wellEvent.StartDate).TotalMinutes) / 60;
-                        }
-                        else if (wellEvent.StartDate.Date == production.MeasuredAt.Date && wellEvent.EndDate is not null && wellEvent.EndDate.Value.Date > production.MeasuredAt.Date)
-                        {
-                            totalDowtimeDaily += ((production.MeasuredAt.AddDays(1) - wellEvent.StartDate).TotalMinutes) / 60;
-                        }
-                        else if (wellEvent.StartDate < production.MeasuredAt && wellEvent.EndDate is null)
-                        {
-                            totalDowtimeDaily += 24;
-                        }
-                        else if (wellEvent.StartDate.Date == production.MeasuredAt && wellEvent.EndDate is null)
-                        {
-                            totalDowtimeDaily += ((production.MeasuredAt.AddDays(1) - wellEvent.StartDate).TotalMinutes) / 60;
-                        }
+                            reason.EndDate = dateToday.AddMilliseconds(-10);
 
+                            var resultTimeSpan = (reason.EndDate.Value - reason.StartDate).TotalHours;
 
+                            int hours = (int)resultTimeSpan;
+                            var minutesDecimal = (resultTimeSpan - hours) * 60;
+                            int minutes = (int)minutesDecimal;
+                            var secondsDecimal = (minutesDecimal - minutes) * 60;
+                            int seconds = (int)secondsDecimal;
+
+                            string formattedHours;
+                            if (hours >= 1000)
+                            {
+                                int digitCount = (int)Math.Floor(Math.Log10(hours)) + 1;
+                                formattedHours = hours.ToString(new string('0', digitCount));
+                            }
+                            else
+                            {
+                                formattedHours = hours.ToString("00");
+                            }
+                            var formattedTime = $"{formattedHours}:{minutes}:{seconds}";
+
+                            reason.Interval = formattedTime;
+                            var newEventReason = new EventReason
+                            {
+                                Id = Guid.NewGuid(),
+                                SystemRelated = reason.SystemRelated,
+                                Comment = reason.Comment,
+                                WellEvent = wellEvent,
+                                StartDate = dateToday,
+                                IsActive = true,
+
+                            };
+
+                            await dbContext.EventReasons.AddAsync(newEventReason);
+                        }
                     }
-
                 }
 
-                foreach (var wellProduction in production.WellProductions)
-                {
-
-
-
-                }
-
+                await dbContext.SaveChangesAsync();
                 Console.WriteLine($"Job executado com sucesso.");
-
             }
             catch (Exception ex)
             {

@@ -29,6 +29,9 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Mappings
                 .WithMany(u => u.EventReasons)
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
+
+            builder.HasIndex(x => new { x.WellEventId, x.StartDate })
+                .IsUnique();
         }
     }
 }
