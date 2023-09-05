@@ -21,11 +21,9 @@ namespace PRIOScheduler
 
                 using var dbContext = new DataContext(dbContextOptions);
 
-                var dateToday = DateTime.UtcNow.AddHours(-3).Date.AddDays(-1);
+                var dateToday = DateTime.UtcNow.AddHours(-3).Date;
                 var wellEvents = await dbContext.WellEvents.Include(x => x.Reason)
-                    .Where(
-                    x => x.StartDate < dateToday && x.EndDate == null
-                ).Where(x => x.EventStatus == "F")
+                    .Where(x => x.StartDate < dateToday && x.EndDate == null).Where(x => x.EventStatus == "F")
                 .ToListAsync();
 
                 foreach (var wellEvent in wellEvents)
@@ -34,7 +32,8 @@ namespace PRIOScheduler
                     {
                         if (reason.StartDate < dateToday && reason.EndDate is null)
                         {
-                            reason.EndDate = dateToday;
+                            reason.EndDate = dateToday.AddMilliseconds(-1);
+                            reason.Interval = (reason.EndDate - reason.StartDate).ToString();
                             var newEventReason = new EventReason
                             {
                                 Id = Guid.NewGuid(),
@@ -45,12 +44,11 @@ namespace PRIOScheduler
                                 IsActive = true,
                             };
                             await dbContext.EventReasons.AddAsync(newEventReason);
-                            await dbContext.SaveChangesAsync();
+                            //await dbContext.SaveChangesAsync();
                         }
                     }
                 }
 
-                Console.WriteLine(wellEvents.Count);
                 Console.WriteLine($"Job executado com sucesso.");
 
             }
