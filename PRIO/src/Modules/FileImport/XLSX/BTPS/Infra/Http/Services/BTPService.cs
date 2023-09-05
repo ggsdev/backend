@@ -275,6 +275,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             DateTime? initialDate = (DateTime)initialDateValue;
             DateTime? finalDate = (DateTime)finalDateValue;
             DateTime? alignDate = (DateTime)wellAlignmentDataValue;
+            DateTime? alignHour = (DateTime)wellAlignmentHourValue;
             if (initialDate > finalDate)
             {
                 erros.Add("Erro: Data inicial do teste não pode ser maior do que a data final do teste.");
@@ -294,6 +295,20 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             if (alignDate.Value.Date > initialDate.Value.Date)
             {
                 erros.Add("Erro: Data do alinhamento do poço não pode ser maior do que a data inicial do teste.");
+                if (alignDate.Value.Date == initialDate.Value.Date)
+                {
+                    if (wellAlignmentHourValue is DateTime)
+                    {
+                        if (alignHour.Value.Hour > initialDate.Value.Hour)
+                        {
+                            erros.Add("Erro: Hora do alinhamento do poço não pode ser maior do que a hora inicial do teste.");
+                        }
+                    }
+                    else if (wellAlignmentHourValue is double)
+                    {
+                    }
+
+                }
             }
 
             if (erros.Count > 0)
@@ -384,34 +399,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             //Trated aligmentHour
             if (wellAlignmentHourValue is double)
             {
-                string valorDaCelula = worksheet.Cells[BTP.CellWellAlignmentHour].Value.ToString();
-                bool checkAlignHour = decimal.TryParse(valorDaCelula, out var valor);
-                string? align = "";
-                if (checkAlignHour is true)
-                {
-                    decimal x = valor * 24 * 60;
-                    int horas = (int)x / 60;
-                    int minutos = (int)x % 60;
-                    int segundos = (int)(x * 60) % 60;
-                    if (segundos == 59)
-                    {
-                        segundos = 0;
-                        minutos += 1;
-
-                        if (minutos == 60)
-                        {
-                            minutos = 0;
-                            horas += 1;
-                        }
-                    }
-                    TimeSpan horaMinuto = new TimeSpan(horas, minutos, segundos);
-                    align = horaMinuto.ToString();
-                    data.WellAlignmentHour = align;
-                }
-                else
-                {
-                    throw new ConflictException("Dados decimais não podem ser convertidos.");
-                }
+                string? align = convertDoubleToTimeSpan(worksheet.Cells[BTP.CellWellAlignmentHour].Value.ToString());
+                data.WellAlignmentHour = align;
 
             }
             else if (wellAlignmentHourValue is DateTime)
@@ -797,6 +786,35 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             var btpsDTO = _mapper.Map<WellTests, BTPDataDTO>(BTPs);
 
             return btpsDTO;
+        }
+        private static string convertDoubleToTimeSpan(string valorDaCelula)
+        {
+            bool checkAlignHour = decimal.TryParse(valorDaCelula, out var valor);
+            if (checkAlignHour is true)
+            {
+                decimal x = valor * 24 * 60;
+                int horas = (int)x / 60;
+                int minutos = (int)x % 60;
+                int segundos = (int)(x * 60) % 60;
+                if (segundos == 59)
+                {
+                    segundos = 0;
+                    minutos += 1;
+
+                    if (minutos == 60)
+                    {
+                        minutos = 0;
+                        horas += 1;
+                    }
+                }
+                TimeSpan horaMinuto = new TimeSpan(horas, minutos, segundos);
+                string? align = horaMinuto.ToString();
+                return align;
+            }
+            else
+            {
+                throw new ConflictException("Dados decimais não podem ser convertidos.");
+            }
         }
     }
 }
