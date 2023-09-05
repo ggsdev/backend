@@ -589,7 +589,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
             bool haRepetidos = idSet.Count != idSet.Distinct().Count();
 
             if (haRepetidos)
-                throw new ConflictException("");
+                throw new ConflictException("Ponto de medição está sendo utilizado em múltiplos locais.");
         }
     }
 }
