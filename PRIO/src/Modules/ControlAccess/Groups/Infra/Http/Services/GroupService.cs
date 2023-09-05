@@ -51,7 +51,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
             var returnGroup = await _groupRepository.GetGroupWithPermissionsAndOperationsByIdAsync(group.Id);
             var returnGroupDTO = _mapper.Map<Group, GroupWithMenusDTO>(returnGroup);
 
-            //await _systemHistoryService.Create<Group, GroupHistoryDTO>(HistoryColumns.TableGroups, loggedUser, group.Id, group);
+            await _systemHistoryService.Create<Group, GroupHistoryDTO>(HistoryColumns.TableGroups, loggedUser, group.Id, group);
 
             return returnGroupDTO;
         }

@@ -141,6 +141,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<GroupOperation, GroupOperationDTO>();
             CreateMap<User, UserGroupDTO>();
             CreateMap<Group, GroupWithMenusDTO>();
+            CreateMap<Group, GroupHistoryDTO>();
             CreateMap<Reservoir, ReservoirWithZoneDTO>();
             #endregion
 
