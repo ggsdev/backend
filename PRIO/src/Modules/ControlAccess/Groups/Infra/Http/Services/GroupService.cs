@@ -38,10 +38,10 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
 
         public async Task<GroupWithMenusDTO> CreateGroup(CreateGroupViewModel body, User loggedUser)
         {
-            if (body.GroupName is null)
+            if (body.Name is null)
                 throw new ConflictException("Group Name is Required.");
 
-            var foundGroup = await _groupRepository.GetGroupByNameAsync(body.GroupName);
+            var foundGroup = await _groupRepository.GetGroupByNameAsync(body.Name);
             if (foundGroup is not null)
                 throw new ConflictException("Group Name is already exists.");
 
@@ -208,7 +208,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
             if (updatedProperties.Any() is false)
                 throw new BadRequestException("No properties were updated, try other values");
 
-            if (updatedProperties.TryGetValue("name", out var groupName))
+            if (updatedProperties.TryGetValue("groupname", out var groupName))
             {
                 var userPermissions = await _userPermissionRepository.GetUserPermissionsByGroupId();
 
