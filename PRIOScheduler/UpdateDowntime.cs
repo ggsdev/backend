@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
 using PRIO.src.Shared.Infra.EF;
+using System.Data;
 
 namespace PRIOScheduler
 {
@@ -24,18 +25,41 @@ namespace PRIOScheduler
                 var dateToday = DateTime.UtcNow.AddHours(-3).Date;
 
                 var wellEvents = await dbContext.WellEvents
-                    .Include(x => x.Reason)
+                    .Include(x => x.EventReasons)
                     .Where(x => x.StartDate < dateToday && x.EndDate == null).Where(x => x.EventStatus == "F")
                     .ToListAsync();
 
                 foreach (var wellEvent in wellEvents)
                 {
-                    foreach (var reason in wellEvent.EventReasons)
+                    for (int i = 0; i < wellEvent.EventReasons.Count; i++)
                     {
+                        var reason = wellEvent.EventReasons[i];
+
                         if (reason.StartDate < dateToday && reason.EndDate is null)
                         {
                             reason.EndDate = dateToday.AddMilliseconds(-10);
-                            reason.Interval = (reason.EndDate - reason.StartDate).ToString();
+
+                            var resultTimeSpan = (reason.EndDate.Value - reason.StartDate).TotalHours;
+
+                            int hours = (int)resultTimeSpan;
+                            var minutesDecimal = (resultTimeSpan - hours) * 60;
+                            int minutes = (int)minutesDecimal;
+                            var secondsDecimal = (minutesDecimal - minutes) * 60;
+                            int seconds = (int)secondsDecimal;
+
+                            string formattedHours;
+                            if (hours >= 1000)
+                            {
+                                int digitCount = (int)Math.Floor(Math.Log10(hours)) + 1;
+                                formattedHours = hours.ToString(new string('0', digitCount));
+                            }
+                            else
+                            {
+                                formattedHours = hours.ToString("00");
+                            }
+                            var formattedTime = $"{formattedHours}:{minutes}:{seconds}";
+
+                            reason.Interval = formattedTime;
                             var newEventReason = new EventReason
                             {
                                 Id = Guid.NewGuid(),
@@ -45,6 +69,7 @@ namespace PRIOScheduler
                                 StartDate = dateToday,
                                 IsActive = true,
                             };
+
                             await dbContext.EventReasons.AddAsync(newEventReason);
                         }
                     }

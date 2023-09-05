@@ -385,16 +385,18 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             {
                 foreach (var wellReason in wellEvent.EventReasons)
                 {
-                    var reasonDetailedDto = new ReasonDetailedDto
+                    if (wellReason.EndDate is not null && wellReason.Interval is not null)
                     {
-                        //Downtime = wellReason.,
-                        StartDate = wellReason.EndDate is not null ? wellReason.EndDate.Value.ToString("dd/MM/yyyy : HH:mm") : "N/A",
-                        SystemRelated = wellReason.SystemRelated,
-                        Downtime = "",
-                        TimeOperating = ""
-                    };
+                        var reasonDetailedDto = new ReasonDetailedDto
+                        {
+                            StopDate = wellReason.StartDate.ToString("dd/MM/yyyy : HH:mm"),
+                            SystemRelated = wellReason.SystemRelated,
+                            Downtime = wellReason.Interval,
+                            EndDate = wellReason.EndDate.Value.ToString("dd:MM:yyyy : HH:mm"),
+                        };
 
-                    reasonsDetailed.Add(reasonDetailedDto);
+                        reasonsDetailed.Add(reasonDetailedDto);
+                    }
                 }
             }
 

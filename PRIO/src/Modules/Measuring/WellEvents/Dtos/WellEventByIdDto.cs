@@ -19,8 +19,8 @@
     public class ReasonDetailedDto
     {
         public string SystemRelated { get; set; }
-        public string StartDate { get; set; }
+        public string StopDate { get; set; }
+        public string? EndDate { get; set; }
         public string? Downtime { get; set; }
-        public string? TimeOperating { get; set; }
     }
 }
