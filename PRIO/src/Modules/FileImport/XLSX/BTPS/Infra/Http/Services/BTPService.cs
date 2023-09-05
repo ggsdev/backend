@@ -314,8 +314,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             var bswCheck = decimal.TryParse(worksheet.Cells[BTP.CellBSW].Value.ToString(), out var bswDecimal);
             decimal bswDecimalFormated = Math.Round(bswDecimal, 5, MidpointRounding.AwayFromZero);
 
-            if (oilCheck is false || gasCheck is false || waterCheck is false || rgoCheck is false || bswCheck is false
-                )
+            if (oilCheck is false || gasCheck is false || waterCheck is false || rgoCheck is false || bswCheck is false)
             {
                 throw new ConflictException("Dados decimais não podem ser convertidos.");
             }
@@ -769,7 +768,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             foreach (var dateProduction in listExistingDates)
             {
                 var production = await _productionRepository.GetExistingByDate(dateProduction);
-                if (production is not null)
+                if (production is not null && production.WellProductions is not null && production.WellProductions.Count > 0)
                 {
                     await _wellProductionService.ReAppropriateWithWellTest(production.Id);
                 }

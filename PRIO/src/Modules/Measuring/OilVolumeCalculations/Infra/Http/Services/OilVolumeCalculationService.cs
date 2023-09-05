@@ -81,6 +81,8 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
                         throw new ConflictException($"Equipamento já possui relação com o cálculo da instalação {drainFound.OilVolumeCalculation.Installation.Name}");
                 }
 
+            HasDuplicateIds(body);
+
             if (installationInDatabase.OilVolumeCalculation is null)
                 throw new NotFoundException("Calculo de volume de óleo não encontrado ");
 
@@ -117,7 +119,6 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
 
             return OilVolumeCalculationDTO;
         }
-
         public async Task<OilVolumeCalculationDTO?> GetById(Guid installationId)
         {
             var installationInDatabase = await _installationRepository.GetByIdAsync(installationId);
@@ -155,7 +156,6 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
             var oilVolumeCalculationDTO = _mapper.Map<List<OilVolumeCalculation>, List<OilVolumeCalculationDTO>>(oilVolumeCalculation);
             return oilVolumeCalculationDTO;
         }
-
         public async Task<object> GetEquation(Guid installationId)
         {
             var installationInDatabase = await _installationRepository.GetByIdAsync(installationId);
@@ -267,7 +267,6 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
             var eq = new { equation = equation };
             return eq;
         }
-
         public async Task<OilVolumeCalculationDTO> Update(Guid installationId, CreateOilVolumeCalculationViewModel body)
         {
             var installationInDatabase = await _installationRepository.GetByIdWithCalculationsAsync(installationId);
@@ -376,7 +375,6 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
 
             return OilVolumeCalculationDTO;
         }
-
         public async Task<OilVolumeCalculationDTO> Refresh(Guid installationId)
         {
             var installationInDatabase = await _installationRepository.GetByIdWithCalculationsAsync(installationId);
@@ -441,7 +439,6 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
             var OilVolumeCalculationDTO = _mapper.Map<OilVolumeCalculation, OilVolumeCalculationDTO>(oilCalculationInDatabase);
             return OilVolumeCalculationDTO;
         }
-
         public async Task Delete(Guid installationId, CreateOilVolumeCalculationViewModel body)
         {
             var installationInDatabase = await _installationRepository.GetByIdWithCalculationsAsync(installationId);
@@ -564,6 +561,54 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services
             }
 
             await _oilVolumeCalculationRepository.SaveChangesAsync();
+        }
+        private static void HasDuplicateIds(CreateOilVolumeCalculationViewModel body)
+        {
+            HashSet<Guid> idSet = new HashSet<Guid>();
+            if (body.Sections != null)
+            {
+                foreach (var section in body.Sections)
+                    idSet.Add(section.MeasuringPointId);
+            }
+            if (body.TOGs != null)
+            {
+                foreach (var tog in body.TOGs)
+                    idSet.Add(tog.MeasuringPointId);
+            }
+            if (body.Drains != null)
+            {
+                foreach (var drain in body.Drains)
+                    idSet.Add(drain.MeasuringPointId);
+            }
+            if (body.DORs != null)
+            {
+                foreach (var dor in body.DORs)
+                    idSet.Add(dor.MeasuringPointId);
+            }
+            if (body.Sections != null)
+            {
+                foreach (var section in body.Sections)
+                    if (idSet.Contains(section.MeasuringPointId))
+                        throw new ConflictException("Ponto de medição foi configurado para mais de um local.");
+            }
+            if (body.TOGs != null)
+            {
+                foreach (var tog in body.TOGs)
+                    if (idSet.Contains(tog.MeasuringPointId))
+                        throw new ConflictException("Ponto de medição foi configurado para mais de um local.");
+            }
+            if (body.Drains != null)
+            {
+                foreach (var drain in body.Drains)
+                    if (idSet.Contains(drain.MeasuringPointId))
+                        throw new ConflictException("Ponto de medição foi configurado para mais de um local.");
+            }
+            if (body.DORs != null)
+            {
+                foreach (var dor in body.DORs)
+                    if (idSet.Contains(dor.MeasuringPointId))
+                        throw new ConflictException("Ponto de medição foi configurado para mais de um local.");
+            }
         }
     }
 }
