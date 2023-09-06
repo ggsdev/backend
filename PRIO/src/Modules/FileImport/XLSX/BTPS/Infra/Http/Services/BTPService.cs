@@ -491,7 +491,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             if (foundApllicationDate is not null)
                 throw new ConflictException("Já existe um teste para este poço nesta data de aplicação");
 
-            if (body.Data.Filename.EndsWith(".xlsx") is false)
+            if (body.Data.Filename.EndsWith(".xlsx") is false && body.Data.Filename.EndsWith(".xlsm") is false)
                 throw new BadRequestException("O arquivo deve ter a extensão .xlsx", status: "Error");
 
             if (body.Data.Type != BTP.Type)
