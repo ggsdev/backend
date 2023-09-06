@@ -16,7 +16,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
         public async Task AddUserOperation(UserOperation userOperation)
         {
             await _context.AddAsync(userOperation);
-            await _context.SaveChangesAsync();
         }
 
         public async Task<List<UserOperation>> GetUserOperationsByUserId(Guid userId)

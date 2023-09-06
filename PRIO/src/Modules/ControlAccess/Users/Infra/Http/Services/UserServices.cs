@@ -36,7 +36,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             _systemHistoryService = systemHistoryService;
         }
 
-
         public async Task<List<UserDTO>> GetUsers()
         {
             var users = await _userRepository.GetUsers();
@@ -95,8 +94,8 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             await _systemHistoryService.Create<User, UserHistoryDTO>(_table, loggedUser, userId, user);
 
 
-            await _userRepository.SaveChangesAsync();
             var userDTO = _mapper.Map<User, UserDTO>(user);
+            await _userRepository.SaveChangesAsync();
 
             return userDTO;
         }
@@ -109,7 +108,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             if (userId.ToString() != user.Id.ToString())
                 throw new ConflictException("User don't have permission to do that.");
 
-            var userDTO = buildPermissions(user);
+            var userDTO = BuildPermissions(user);
             return userDTO;
         }
         public async Task<UserWithPermissionsDTO?> GetUserByIdAsync(Guid id)
@@ -118,7 +117,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             if (user is null)
                 throw new NotFoundException("User not found");
 
-            var userDTO = buildPermissions(user);
+            var userDTO = BuildPermissions(user);
             return userDTO;
         }
         public async Task<UserDTO?> UpdateUserByIdAsync(Guid id, UpdateUserViewModel body, User loggedUser)
@@ -155,8 +154,8 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
 
             _userRepository.UpdateUser(user);
 
-            await _userRepository.SaveChangesAsync();
             var userDTO = _mapper.Map<User, UserDTO>(user);
+            await _userRepository.SaveChangesAsync();
             return userDTO;
         }
         public async Task DeleteUserByIdAsync(Guid id, Guid userOperationId, User loggedUser)
@@ -211,9 +210,9 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
 
             await _systemHistoryService.Delete<User, UserHistoryDTO>(_table, loggedUser, updatedProperties, user.Id, user);
 
-            await _userRepository.SaveChangesAsync();
 
             var UserDTO = _mapper.Map<User, UserDTO>(user);
+            await _userRepository.SaveChangesAsync();
             return UserDTO;
         }
         public async Task<ProfileDTO?> EditPermissionUserByIdAsync(InsertUserPermissionViewModel body, Guid id)
@@ -555,8 +554,8 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                 }
             }
 
-            await _userRepository.SaveChangesAsync();
             var userDTO = _mapper.Map<User, ProfileDTO>(userWithPermissions);
+            await _userRepository.SaveChangesAsync();
             return userDTO;
         }
         public async Task<UserGroupDTO> RefreshPermissionUserByIdAsync(Guid id)
@@ -620,8 +619,8 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             }
             user.IsPermissionDefault = true;
             _userRepository.UpdateUser(user);
-            await _userRepository.SaveChangesAsync();
             var userDTO = _mapper.Map<User, UserGroupDTO>(user);
+            await _userRepository.SaveChangesAsync();
 
             return userDTO;
 
@@ -630,7 +629,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
         {
             return await _userRepository.GetAdminUsers();
         }
-        private UserWithPermissionsDTO buildPermissions(User user)
+        private UserWithPermissionsDTO BuildPermissions(User user)
         {
             user.UserPermissions = user.UserPermissions.OrderBy(x => x.MenuOrder).ToList();
             var userDTO = _mapper.Map<User, UserWithPermissionsDTO>(user);
