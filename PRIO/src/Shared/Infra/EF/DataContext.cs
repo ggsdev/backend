@@ -123,7 +123,7 @@ namespace PRIO.src.Shared.Infra.EF
 
         #region BTP
         public DbSet<BTP> BTPs { get; set; }
-        public DbSet<WellTests> BTPDatas { get; set; }
+        public DbSet<WellTests> WellTests { get; set; }
         public DbSet<BTPBase64> BTPBases64 { get; set; }
         public DbSet<InstallationBTP> InstallationBTPs { get; set; }
 
