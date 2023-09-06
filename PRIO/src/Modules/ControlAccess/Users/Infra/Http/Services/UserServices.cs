@@ -44,7 +44,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
 
             return userDTOS;
         }
-
         public async Task<UserDTO> CreateUserAsync(CreateUserViewModel body, User loggedUser)
         {
             var treatedUsername = body.Username.Split('@')[0];
@@ -101,60 +100,27 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
 
             return userDTO;
         }
-
-        public async Task<ProfileDTO?> ProfileAsync(Guid userId)
+        public async Task<UserWithPermissionsDTO?> ProfileAsync(Guid userId)
         {
             var user = await _userRepository.GetUserById(userId);
-
             if (user is null)
                 throw new NotFoundException("User not found");
 
             if (userId.ToString() != user.Id.ToString())
                 throw new ConflictException("User don't have permission to do that.");
 
-
-            user.UserPermissions = user.UserPermissions.OrderBy(x => x.MenuOrder).ToList();
-            var userDTO = _mapper.Map<User, ProfileDTO>(user);
-            var parentElements = new List<UserPermissionParentDTO>();
-            foreach (var permission in userDTO.UserPermissions)
-            {
-                if (permission.hasParent == false && permission.hasChildren == true)
-                {
-                    permission.Children = new List<UserPermissionChildrenDTO>();
-                    parentElements.Add(permission);
-                }
-                else if (permission.hasParent == true && permission.hasChildren == false)
-                {
-                    var parentOrder = permission.MenuOrder.Split('.')[0];
-                    var parentElement = parentElements.FirstOrDefault(x => x.MenuOrder.StartsWith(parentOrder));
-                    if (parentElement != null)
-                    {
-                        var childrenDTO = _mapper.Map<UserPermissionParentDTO, UserPermissionChildrenDTO>(permission);
-                        parentElement.Children.Add(childrenDTO);
-                        parentElements.Remove(permission);
-                    }
-                }
-
-                foreach (var operation in permission.UserOperation)
-                {
-                    var operationName = operation.OperationName;
-                }
-            }
-
-            userDTO.UserPermissions.RemoveAll(permission => permission.MenuOrder.Contains("."));
+            var userDTO = buildPermissions(user);
             return userDTO;
         }
-
-        public async Task<UserDTO?> GetUserByIdAsync(Guid id)
+        public async Task<UserWithPermissionsDTO?> GetUserByIdAsync(Guid id)
         {
             var user = await _userRepository.GetUserById(id);
             if (user is null)
                 throw new NotFoundException("User not found");
 
-            var userDTO = _mapper.Map<User, UserDTO>(user);
+            var userDTO = buildPermissions(user);
             return userDTO;
         }
-
         public async Task<UserDTO?> UpdateUserByIdAsync(Guid id, UpdateUserViewModel body, User loggedUser)
         {
             var user = await _userRepository.GetUserById(id);
@@ -193,7 +159,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             var userDTO = _mapper.Map<User, UserDTO>(user);
             return userDTO;
         }
-
         public async Task DeleteUserByIdAsync(Guid id, Guid userOperationId, User loggedUser)
         {
             var user = await _userRepository.GetUserById(id);
@@ -220,7 +185,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             _userRepository.UpdateUser(user);
             await _userRepository.SaveChangesAsync();
         }
-
         public async Task<UserDTO?> RestoreUserByIdAsync(Guid id, Guid userOperationId, User loggedUser)
         {
             var user = await _userRepository.GetUserById(id);
@@ -252,7 +216,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             var UserDTO = _mapper.Map<User, UserDTO>(user);
             return UserDTO;
         }
-
         public async Task<ProfileDTO?> EditPermissionUserByIdAsync(InsertUserPermissionViewModel body, Guid id)
         {
             if (body.Menus is null)
@@ -596,7 +559,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             var userDTO = _mapper.Map<User, ProfileDTO>(userWithPermissions);
             return userDTO;
         }
-
         public async Task<UserGroupDTO> RefreshPermissionUserByIdAsync(Guid id)
         {
             var user = await _userRepository.GetUserWithGroupAndPermissionsAsync(id);
@@ -664,10 +626,43 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             return userDTO;
 
         }
-
         public async Task<List<User>> GetAllEncryptedAdminUsers()
         {
             return await _userRepository.GetAdminUsers();
+        }
+        private UserWithPermissionsDTO buildPermissions(User user)
+        {
+            user.UserPermissions = user.UserPermissions.OrderBy(x => x.MenuOrder).ToList();
+            var userDTO = _mapper.Map<User, UserWithPermissionsDTO>(user);
+
+            var parentElements = new List<UserPermissionParentDTO>();
+            foreach (var permission in userDTO.UserPermissions)
+            {
+                if (permission.hasParent == false && permission.hasChildren == true)
+                {
+                    permission.Children = new List<UserPermissionChildrenDTO>();
+                    parentElements.Add(permission);
+                }
+                else if (permission.hasParent == true && permission.hasChildren == false)
+                {
+                    var parentOrder = permission.MenuOrder.Split('.')[0];
+                    var parentElement = parentElements.FirstOrDefault(x => x.MenuOrder.StartsWith(parentOrder));
+                    if (parentElement != null)
+                    {
+                        var childrenDTO = _mapper.Map<UserPermissionParentDTO, UserPermissionChildrenDTO>(permission);
+                        parentElement.Children.Add(childrenDTO);
+                        parentElements.Remove(permission);
+                    }
+                }
+
+                foreach (var operation in permission.UserOperation)
+                {
+                    var operationName = operation.OperationName;
+                }
+            }
+
+            userDTO.UserPermissions.RemoveAll(permission => permission.MenuOrder.Contains("."));
+            return userDTO;
         }
 
 
