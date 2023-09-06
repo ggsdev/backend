@@ -11,6 +11,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models
         public decimal Downtime { get; set; }
         public decimal ProportionalDay { get; set; }
         public WellEvent Event { get; set; }
-        public WellProductions WellAllocation { get; set; }
+        public WellProduction WellAllocation { get; set; }
     }
 }
