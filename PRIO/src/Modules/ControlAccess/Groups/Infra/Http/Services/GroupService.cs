@@ -46,12 +46,12 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
                 throw new ConflictException("Group Name is already exists.");
 
             var group = await _groupRepository.CreateGroupAsync(body);
+            await _groupRepository.SaveChangesAsync();
 
             var returnGroup = await _groupRepository.GetGroupWithPermissionsAndOperationsByIdAsync(group.Id);
             var returnGroupDTO = _mapper.Map<Group, GroupWithMenusDTO>(returnGroup);
 
-            //await _systemHistoryService.Create<Group, GroupHistoryDTO>(HistoryColumns.TableGroups, loggedUser, group.Id, group);
-            await _groupRepository.SaveChangesAsync();
+            await _systemHistoryService.Create<Group, GroupHistoryDTO>(HistoryColumns.TableGroups, loggedUser, group.Id, group);
 
             return returnGroupDTO;
         }
