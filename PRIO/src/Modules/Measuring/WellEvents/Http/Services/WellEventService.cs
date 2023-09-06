@@ -245,17 +245,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             if (lastEvent is not null && parsedStartDate < lastEvent.StartDate)
                 throw new BadRequestException("Data de início do evento deve ser maior que a data de início do último evento associado.");
 
-
-            //retroativo com evento no passado
-            //var productionInStartDate = await _productionRepository
-            //    .AnyByDate(parsedStartDate);
-
-            //if(productionInStartDate is not null)
-            //{
-
-            //}
-
-
             var lastEventOfTypeOpening = wellInDatabase.WellEvents
                 .OrderBy(e => e.CreatedAt)
                 .LastOrDefault(x => x.EventStatus == "A");
@@ -385,18 +374,15 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             {
                 foreach (var wellReason in wellEvent.EventReasons)
                 {
-                    if (wellReason.EndDate is not null && wellReason.Interval is not null)
+                    var reasonDetailedDto = new ReasonDetailedDto
                     {
-                        var reasonDetailedDto = new ReasonDetailedDto
-                        {
-                            StartDate = wellReason.StartDate.ToString("dd/MM/yyyy : HH:mm"),
-                            SystemRelated = wellReason.SystemRelated,
-                            Downtime = wellReason.Interval,
-                            EndDate = wellReason.EndDate.Value.ToString("dd:MM:yyyy : HH:mm"),
-                        };
+                        StartDate = wellReason.StartDate.ToString("dd/MM/yyyy : HH:mm"),
+                        SystemRelated = wellReason.SystemRelated,
+                        Downtime = wellReason.Interval,
+                        EndDate = wellReason.EndDate?.ToString("dd:MM:yyyy : HH:mm"),
+                    };
 
-                        reasonsDetailed.Add(reasonDetailedDto);
-                    }
+                    reasonsDetailed.Add(reasonDetailedDto);
                 }
             }
 
