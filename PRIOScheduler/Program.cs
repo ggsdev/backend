@@ -29,7 +29,7 @@ RecurringJob.AddOrUpdate(
           Cron.Daily);
 
 RecurringJob.AddOrUpdate(
-          "myrecurringjob",
+          "myrecurringjob2",
           () => UpdateWellTest.Execute(),
           Cron.Daily);
 
