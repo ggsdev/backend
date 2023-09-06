@@ -24,7 +24,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Repositories
                 .Include(x => x.WellProductions)
                     .ThenInclude(x => x.Production).Where(x => x.ProductionId == productionId).ToListAsync();
         }
-        public async Task AddAsync(Models.WellProductions wellAppropriation)
+        public async Task AddAsync(Models.WellProduction wellAppropriation)
         {
             await _context.WellProductions.AddAsync(wellAppropriation);
         }
@@ -32,12 +32,19 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Repositories
         {
             await _context.WellLosses.AddAsync(wellLoss);
         }
-        public void Update(Models.WellProductions wellApp)
+        public void Update(Models.WellProduction wellApp)
         {
             _context.WellProductions.Update(wellApp);
         }
+        public async Task<List<WellProduction>> GetWellProductionsByEventDate(DateTime eventDate)
+        {
+            return await _context.WellProductions
+                .Include(x => x.Production)
+                .Where(x => x.Production.MeasuredAt.Date == eventDate.Date)
+                .ToListAsync();
+        }
 
-        public async Task<List<Models.WellProductions>> GetByProductionId(Guid productionId)
+        public async Task<List<WellProduction>> GetByProductionId(Guid productionId)
         {
             return await _context.WellProductions
                 .Include(x => x.Production)
