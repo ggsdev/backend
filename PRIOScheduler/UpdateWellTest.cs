@@ -41,7 +41,7 @@ namespace PRIOScheduler
                 }
 
                 await dbContext.SaveChangesAsync();
-                Console.WriteLine($"Job executado com sucesso.");
+                Console.WriteLine($"Job UpdateWellTest executado em {dateToday} com sucesso.");
             }
             catch (Exception ex)
             {

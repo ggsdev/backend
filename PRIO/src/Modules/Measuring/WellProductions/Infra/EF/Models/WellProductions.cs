@@ -17,7 +17,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models
         public decimal ProductionWaterAsPercentageOfField { get; set; }
         public decimal ProductionGasAsPercentageOfInstallation { get; set; }
         public decimal ProductionOilAsPercentageOfInstallation { get; set; }
-        public decimal ProductionWaterAsPercentageOfInstallation { get; set; }
+        public decimal? ProductionWaterAsPercentageOfInstallation { get; set; }
         public decimal EfficienceLoss { get; set; }
         public decimal ProductionLost { get; set; }
         public string Downtime { get; set; }

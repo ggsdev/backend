@@ -74,19 +74,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             if (lastEventWrongList.Count > 0)
                 throw new BadRequestException(message: "O último evento do poço deve ser de abertura para que seja possível cadastrar um evento de fechamento.", errors: lastEventWrongList);
 
-            //var wellProductionsOfTheDay = await _wellProductionRepository
-            //    .GetWellProductionsByEventDate(parsedStartDate);
-
-            //var isProductionAlreadyAllocated = wellProductionsOfTheDay.Any();
-
-            //if (isProductionAlreadyAllocated)
-            //{
-
-            //}
-
             foreach (var well in wellsList)
             {
-
                 var lastEvent = well.WellEvents
                     .OrderBy(e => e.CreatedAt)
                     .LastOrDefault();
@@ -142,6 +131,13 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
                     _wellEventRepository.Update(lastEvent);
                 }
+
+                //caso evento seja no passado recalcular
+                if (dateNow.Date > parsedStartDate.Date)
+                {
+
+                }
+
             }
 
             await _wellEventRepository.Save();
@@ -247,6 +243,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
             var lastEvent = wellInDatabase.WellEvents
                 .OrderBy(e => e.CreatedAt)
+                .Where(x => x.StartDate.Date < parsedStartDate.Date) //checar logica pensando em criação de um evento no passado
                 .LastOrDefault();
 
             if (lastEvent is null && wellInDatabase.WellEvents.Count > 0)
@@ -292,7 +289,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             if (lastEvent is not null)
             {
                 lastEvent.EndDate = parsedStartDate;
-                lastEvent.Interval = (parsedStartDate - lastEvent.StartDate).TotalHours;
+                lastEvent.Interval = (parsedStartDate - lastEvent.StartDate)
+                    .TotalHours;
 
                 var lastEventReason = lastEvent.EventReasons
                     .OrderBy(x => x.CreatedAt)
@@ -300,25 +298,36 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
                 if (lastEventReason is not null)
                 {
-                    var resultTimeSpan = (parsedStartDate - lastEventReason.StartDate).TotalHours;
+                    var resultTimeSpan = (parsedStartDate - lastEventReason.StartDate)
+                        .TotalHours;
 
-                    int hours = (int)resultTimeSpan;
+                    var hours = (int)resultTimeSpan;
                     var minutesDecimal = (resultTimeSpan - hours) * 60;
-                    int minutes = (int)minutesDecimal;
+                    var minutes = (int)minutesDecimal;
                     var secondsDecimal = (minutesDecimal - minutes) * 60;
-                    int seconds = (int)secondsDecimal;
-                    DateTime dateTime = DateTime.Today.AddHours(hours).AddMinutes(minutes).AddSeconds(seconds);
+                    var seconds = (int)secondsDecimal;
+                    var dateTime = DateTime.Today.AddHours(hours).AddMinutes(minutes).AddSeconds(seconds);
                     var timeOperating = DateTime.Today.AddDays(1) - dateTime;
                     var formattedTime = dateTime.ToString("HH:mm:ss");
                     var formattedTimeTimeOperating = timeOperating.ToString("HH:mm:ss");
 
                     lastEventReason.Interval = formattedTime;
-                    lastEventReason.EndDate = DateTime.UtcNow.AddHours(-3);
+                    lastEventReason.EndDate = parsedStartDate;
 
-                    _wellEventRepository.UpdateReason(lastEventReason);
+                    _wellEventRepository
+                        .UpdateReason(lastEventReason);
                 }
 
-                _wellEventRepository.Update(lastEvent);
+                _wellEventRepository
+                    .Update(lastEvent);
+            }
+
+            //recalcular caso seja no passado ao menos d-1, podendo pegar vários dias
+            if (dateNow > parsedStartDate.Date)
+            {
+
+
+
             }
 
             await _wellEventRepository.Save();
