@@ -275,7 +275,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             DateTime? initialDate = (DateTime)initialDateValue;
             DateTime? finalDate = (DateTime)finalDateValue;
             DateTime? alignDate = (DateTime)wellAlignmentDataValue;
-            DateTime? alignHour = (DateTime)wellAlignmentHourValue;
             if (initialDate > finalDate)
             {
                 erros.Add("Erro: Data inicial do teste não pode ser maior do que a data final do teste.");
@@ -292,22 +291,33 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             {
                 throw new NotFoundException("Data da Aplicação não é valida");
             }
+
             if (alignDate.Value.Date > initialDate.Value.Date)
             {
+
                 erros.Add("Erro: Data do alinhamento do poço não pode ser maior do que a data inicial do teste.");
-                if (alignDate.Value.Date == initialDate.Value.Date)
+
+            }
+            else if (alignDate.Value.Date == initialDate.Value.Date)
+            {
+                if (wellAlignmentHourValue is DateTime)
                 {
-                    if (wellAlignmentHourValue is DateTime)
+                    DateTime? alignHour = (DateTime)wellAlignmentHourValue;
+                    if (alignHour.Value.Hour > initialDate.Value.Hour)
                     {
-                        if (alignHour.Value.Hour > initialDate.Value.Hour)
+                        erros.Add("Erro: Hora do alinhamento do poço não pode ser maior do que a hora inicial do teste.");
+                    }
+                }
+                else if (wellAlignmentHourValue is double)
+                {
+                    {
+                        string? align = ConvertDoubleToTimeSpan(worksheet.Cells[BTP.CellWellAlignmentHour].Value.ToString());
+                        DateTime? alignHour = DateTime.Parse(align);
+                        if (alignHour.Value.TimeOfDay > initialDate.Value.TimeOfDay)
                         {
                             erros.Add("Erro: Hora do alinhamento do poço não pode ser maior do que a hora inicial do teste.");
                         }
                     }
-                    else if (wellAlignmentHourValue is double)
-                    {
-                    }
-
                 }
             }
 
@@ -399,7 +409,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             //Trated aligmentHour
             if (wellAlignmentHourValue is double)
             {
-                string? align = convertDoubleToTimeSpan(worksheet.Cells[BTP.CellWellAlignmentHour].Value.ToString());
+                string? align = ConvertDoubleToTimeSpan(worksheet.Cells[BTP.CellWellAlignmentHour].Value.ToString());
                 data.WellAlignmentHour = align;
 
             }
@@ -787,7 +797,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
 
             return btpsDTO;
         }
-        private static string convertDoubleToTimeSpan(string valorDaCelula)
+        private static string ConvertDoubleToTimeSpan(string valorDaCelula)
         {
             bool checkAlignHour = decimal.TryParse(valorDaCelula, out var valor);
             if (checkAlignHour is true)
