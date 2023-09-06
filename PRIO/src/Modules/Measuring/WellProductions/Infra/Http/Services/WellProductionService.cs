@@ -351,7 +351,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         DateTime dateTime = DateTime.Today.AddHours(hours).AddMinutes(minutes).AddSeconds(seconds);
                         string formattedTime = dateTime.ToString("HH:mm:ss");
 
-                        var wellAppropriation = new EF.Models.WellProductions
+                        var wellAppropriation = new EF.Models.WellProduction
                         {
                             Id = Guid.NewGuid(),
                             Production = production,
@@ -677,7 +677,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         DateTime dateTime = DateTime.Today.AddHours(hours).AddMinutes(minutes).AddSeconds(seconds);
                         string formattedTime = dateTime.ToString("HH:mm:ss");
 
-                        var wellAppropriation = new EF.Models.WellProductions
+                        var wellAppropriation = new EF.Models.WellProduction
                         {
                             Id = Guid.NewGuid(),
                             WellTest = btp,

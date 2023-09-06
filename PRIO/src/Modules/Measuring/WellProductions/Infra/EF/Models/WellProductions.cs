@@ -4,7 +4,7 @@ using PRIO.src.Shared.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models
 {
-    public class WellProductions : BaseModel
+    public class WellProduction : BaseModel
     {
         public decimal ProductionGasInWellM3 { get; set; }
         public decimal ProductionGasInWellSCF { get; set; }

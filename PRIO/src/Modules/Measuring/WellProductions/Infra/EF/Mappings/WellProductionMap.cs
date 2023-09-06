@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Mappings
 {
-    public class WellProductionMap : IEntityTypeConfiguration<Models.WellProductions>
+    public class WellProductionMap : IEntityTypeConfiguration<Models.WellProduction>
     {
-        public void Configure(EntityTypeBuilder<Models.WellProductions> builder)
+        public void Configure(EntityTypeBuilder<Models.WellProduction> builder)
         {
             builder.ToTable("WellProductions");
 

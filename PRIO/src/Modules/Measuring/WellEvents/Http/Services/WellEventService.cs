@@ -7,6 +7,7 @@ using PRIO.src.Modules.Measuring.WellEvents.Dtos;
 using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
 using PRIO.src.Modules.Measuring.WellEvents.Interfaces;
 using PRIO.src.Modules.Measuring.WellEvents.ViewModels;
+using PRIO.src.Modules.Measuring.WellProductions.Interfaces;
 using PRIO.src.Shared.Errors;
 using System.Globalization;
 
@@ -18,14 +19,16 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
         private readonly IInstallationRepository _installationRepository;
         private readonly IProductionRepository _productionRepository;
         private readonly IWellRepository _wellRepository;
+        private readonly IWellProductionRepository _wellProductionRepository;
         private readonly IFieldRepository _fieldRepository;
-        public WellEventService(IWellEventRepository wellEventRepository, IInstallationRepository installationRepository, IFieldRepository fieldRepository, IWellRepository wellRepository, IProductionRepository productionRepository)
+        public WellEventService(IWellEventRepository wellEventRepository, IInstallationRepository installationRepository, IFieldRepository fieldRepository, IWellRepository wellRepository, IProductionRepository productionRepository, IWellProductionRepository wellProductionRepository)
         {
             _wellEventRepository = wellEventRepository;
             _installationRepository = installationRepository;
             _fieldRepository = fieldRepository;
             _wellRepository = wellRepository;
             _productionRepository = productionRepository;
+            _wellProductionRepository = wellProductionRepository;
         }
         public async Task CloseWellEvent(CreateClosingEventViewModel body)
         {
@@ -35,7 +38,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             var dateNow = DateTime.UtcNow.AddHours(-3);
 
             if (parsedStartDate > dateNow)
-                throw new ConflictException("Não é possível cadastrar um evento no futuro");
+                throw new ConflictException("Não é possível cadastrar um evento no futuro.");
 
             var wellsList = new List<Well>();
 
@@ -70,6 +73,16 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
             if (lastEventWrongList.Count > 0)
                 throw new BadRequestException(message: "O último evento do poço deve ser de abertura para que seja possível cadastrar um evento de fechamento.", errors: lastEventWrongList);
+
+            //var wellProductionsOfTheDay = await _wellProductionRepository
+            //    .GetWellProductionsByEventDate(parsedStartDate);
+
+            //var isProductionAlreadyAllocated = wellProductionsOfTheDay.Any();
+
+            //if (isProductionAlreadyAllocated)
+            //{
+
+            //}
 
             foreach (var well in wellsList)
             {
