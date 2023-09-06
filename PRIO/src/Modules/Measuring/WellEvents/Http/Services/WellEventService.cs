@@ -389,8 +389,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             var uep = await _installationRepository.GetByUEPCod(wellEvent.Well.Field.Installation.UepCod);
 
             reasonsDetailed = reasonsDetailed
-                .OrderBy(x => x.StartDate)
-                .ToList();
+                    .OrderBy(x => DateTime.ParseExact(x.StartDate, "dd/MM/yyyy : HH:mm", CultureInfo.InvariantCulture))
+                    .ToList();
 
             var wellEventDto = new WellEventByIdDto
             {
@@ -435,7 +435,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
             if (systemsRelated.Contains(body.SystemRelated.ToLower()) is false)
                 throw new BadRequestException($"Sistemas relacionados permitidos são: {string.Join(", ", systemsRelated)}");
-
 
             var dateNow = DateTime.UtcNow.AddHours(-3);
 
