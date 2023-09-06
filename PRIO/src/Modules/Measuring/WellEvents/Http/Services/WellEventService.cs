@@ -354,12 +354,16 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
                 if (lastEvent is not null && lastEvent.EventStatus == eventType)
                 {
+                    var lastEventReason = lastEvent.EventReasons
+                        .OrderBy(x => x.CreatedAt)
+                        .LastOrDefault();
+
                     var wellDto = new WellWithEventDto
                     {
                         EventId = lastEvent.Id,
                         WellId = well.Id,
                         Status = lastEvent.EventStatus,
-                        DateLastStatus = lastEvent.StartDate.ToString("dd/MM/yyyy HH:mm"),
+                        DateLastStatus = lastEventReason is not null ? lastEventReason.StartDate.ToString("dd/MM/yyyy HH:mm") : lastEvent.StartDate.ToString("dd/MM/yyyy HH:mm"),
                         Name = well.Name
                     };
 
