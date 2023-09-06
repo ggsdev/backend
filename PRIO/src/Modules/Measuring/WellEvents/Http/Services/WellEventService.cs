@@ -242,8 +242,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 throw new NotFoundException(ErrorMessages.NotFound<Well>());
 
             var lastEvent = wellInDatabase.WellEvents
-                .OrderBy(e => e.CreatedAt)
-                .Where(x => x.StartDate.Date < parsedStartDate.Date) //checar logica pensando em criação de um evento no passado
+                .OrderBy(e => e.StartDate)
+                //.Where(x => x.StartDate < parsedStartDate) //checar logica pensando em criação de um evento no passado
                 .LastOrDefault();
 
             if (lastEvent is null && wellInDatabase.WellEvents.Count > 0)
@@ -321,16 +321,19 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 _wellEventRepository
                     .Update(lastEvent);
             }
-
+            var dateRange = new List<DateTime>();
             //recalcular caso seja no passado ao menos d-1, podendo pegar vários dias
             if (dateNow > parsedStartDate.Date)
             {
+                for (DateTime date = parsedStartDate; date <= dateNow; date = date.AddDays(1))
+                {
+                    dateRange.Add(date);
 
-
-
+                    Console.WriteLine(date);
+                }
             }
 
-            await _wellEventRepository.Save();
+            //await _wellEventRepository.Save();
         }
 
         public async Task<List<WellWithEventDto>> GetWellsWithEvents(Guid fieldId, string eventType)
