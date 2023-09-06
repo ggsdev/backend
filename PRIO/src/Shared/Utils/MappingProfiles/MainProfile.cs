@@ -125,6 +125,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<Menu, MenuParentDTO>();
             CreateMap<Menu, MenuChildrenDTO>();
             CreateMap<User, ProfileDTO>();
+            CreateMap<User, UserWithPermissionsDTO>();
             CreateMap<UserPermission, UserPermissionParentDTO>();
             CreateMap<UserPermission, UserPermissionChildrenDTO>();
             CreateMap<UserOperation, UserOperationsDTO>();
