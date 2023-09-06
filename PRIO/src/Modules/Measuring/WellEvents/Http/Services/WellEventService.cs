@@ -389,7 +389,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                     {
                         var reasonDetailedDto = new ReasonDetailedDto
                         {
-                            StopDate = wellReason.StartDate.ToString("dd/MM/yyyy : HH:mm"),
+                            StartDate = wellReason.StartDate.ToString("dd/MM/yyyy : HH:mm"),
                             SystemRelated = wellReason.SystemRelated,
                             Downtime = wellReason.Interval,
                             EndDate = wellReason.EndDate.Value.ToString("dd:MM:yyyy : HH:mm"),
@@ -402,6 +402,9 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
             var uep = await _installationRepository.GetByUEPCod(wellEvent.Well.Field.Installation.UepCod);
 
+            reasonsDetailed = reasonsDetailed
+                .OrderBy(x => x.StartDate)
+                .ToList();
 
             var wellEventDto = new WellEventByIdDto
             {
