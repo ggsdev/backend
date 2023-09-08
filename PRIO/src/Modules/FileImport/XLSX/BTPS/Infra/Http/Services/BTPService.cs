@@ -544,12 +544,11 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             var bswCheck = decimal.TryParse(worksheet.Cells[BTP.CellBSW].Value.ToString(), out var bswDecimal);
             decimal bswDecimalFormated = Math.Round(bswDecimal, 5, MidpointRounding.AwayFromZero);
 
-            if (oilCheck is false || gasCheck is false || waterCheck is false || liquidCheck is false || rgoCheck is false || bswCheck is false)
+            if (oilCheck is false || gasCheck is false || waterCheck is false || rgoCheck is false || bswCheck is false)
             {
                 throw new ConflictException("Dados decimais não podem ser convertidos.");
             }
 
-            var _validatePotencialLiquid = body.Data.PotencialLiquid == liquidDecimalFormated;
             var _validatePotenialOil = body.Data.PotencialOil == oilDecimalFormated;
             var _validatePotencialGas = body.Data.PotencialGas == gasDecimalFormated;
             var _validatePotencialWater = body.Data.PotencialWater == waterDecimalFormated;
@@ -584,7 +583,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             string concatenatedString = string.Join(", ", concatenatedValues);
             var _validateMPointOil = body.Data.MPointOil == concatenatedString;
 
-            if (_validatePotencialLiquid is false || _validatePotenialOil is false || _validatePotencialGas is false || _validatePotencialWater is false || _validateDuration is false || _validateInitialDate is false || _validateFinalDate is false || _validateBTPNumber is false || _validateMPointGas is false || _validateMPointOil is false || _validateMPointWater is false || _validateBsw is false || _validateRGO is false || _validateWellAlignDate is false || _validateWellAlignHour is false || _validateWellName is false || _validateBTPSheet is false)
+            if (_validatePotenialOil is false || _validatePotencialGas is false || _validatePotencialWater is false || _validateDuration is false || _validateInitialDate is false || _validateFinalDate is false || _validateBTPNumber is false || _validateMPointGas is false || _validateMPointOil is false || _validateMPointWater is false || _validateBsw is false || _validateRGO is false || _validateWellAlignDate is false || _validateWellAlignHour is false || _validateWellName is false || _validateBTPSheet is false)
             {
                 throw new ConflictException("Dados diferentes da importação");
             }
