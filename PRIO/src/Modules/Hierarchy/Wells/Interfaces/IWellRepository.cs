@@ -9,6 +9,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Interfaces
         void Delete(Well well);
         void Restore(Well well);
         Task<Well?> GetByIdAsync(Guid? id);
+        Task<Well?> GetByIdWithEventsAsync(Guid? id);
         Task<Well?> GetByNameAsync(string? name);
         Task<List<Well>> GetAsync();
         Task<Well?> GetByCode(string? cod);

@@ -41,6 +41,8 @@ using PRIO.src.Modules.Measuring.OilVolumeCalculations.Dtos;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Productions.Dtos;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.WellEvents.Dtos;
+using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
 using PRIO.src.Shared.SystemHistories.Dtos;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Dtos.UserDtos;
@@ -249,6 +251,8 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
 
             CreateMap<CommentInProduction, CreateUpdateCommentDto>();
             CreateMap<Production, ProductionDto>();
+            CreateMap<WellEvent, EventWithReasonDTO>();
+            CreateMap<EventReason, EventReasonDTO>();
         }
 
         private static decimal? TruncateTwoDecimals(decimal? value)

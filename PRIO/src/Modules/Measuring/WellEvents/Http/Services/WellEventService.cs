@@ -1,4 +1,5 @@
-﻿using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
+﻿using AutoMapper;
+using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
@@ -24,7 +25,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
         private readonly IBTPRepository _btpRepository;
         private readonly IWellProductionRepository _wellProductionRepository;
         private readonly IFieldRepository _fieldRepository;
-        public WellEventService(IWellEventRepository wellEventRepository, IInstallationRepository installationRepository, IFieldRepository fieldRepository, IWellRepository wellRepository, IProductionRepository productionRepository, IWellProductionRepository wellProductionRepository, IBTPRepository bTPRepository)
+        private readonly IMapper _mapper;
+        public WellEventService(IWellEventRepository wellEventRepository, IInstallationRepository installationRepository, IFieldRepository fieldRepository, IWellRepository wellRepository, IProductionRepository productionRepository, IWellProductionRepository wellProductionRepository, IBTPRepository bTPRepository, IMapper mapper)
         {
             _wellEventRepository = wellEventRepository;
             _installationRepository = installationRepository;
@@ -33,6 +35,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             _productionRepository = productionRepository;
             _wellProductionRepository = wellProductionRepository;
             _btpRepository = bTPRepository;
+            _mapper = mapper;
         }
         public async Task CloseWellEvent(CreateClosingEventViewModel body)
         {
@@ -707,6 +710,44 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             }
 
             return wellDtoList;
+        }
+
+        public async Task<List<EventWithReasonDTO>> GetWellEvents(Guid wellId, string date)
+        {
+            if (date == null)
+                throw new NotFoundException("Data não informada");
+            var checkDate = DateTime.TryParse(date, out DateTime day);
+            if (checkDate is false)
+                throw new ConflictException("Data não é válida.");
+
+            var dateToday = DateTime.UtcNow.AddHours(-3).Date;
+            if (dateToday <= day)
+                throw new NotFoundException("Downtime não foi fechado para esse dia.");
+
+            var wellExists = await _wellRepository.GetByIdWithEventsAsync(wellId) ?? throw new NotFoundException("Poço não encontrado");
+            var events = await _wellEventRepository.GetAllWellEvent(wellId);
+            if (events.Count == 0)
+            {
+                throw new NotFoundException($"Não foram encontrados eventos para o poço {wellExists.Name}.");
+            }
+
+
+            var filtredEventsByDate = events.Where(x =>
+                (x.StartDate.Date <= day && (x.EndDate == null || x.EndDate.Value.Date >= day))
+                || (x.StartDate.Date < day && x.EndDate != null && x.EndDate.Value.Date >= day)
+                )
+                .Select(eventItem =>
+                {
+                    eventItem.EventReasons = eventItem.EventReasons
+                        .Where(reason => (reason.StartDate.Date <= day && reason.EndDate != null && reason.EndDate.Value.Date >= day)
+                        || (reason.StartDate.Date <= day && reason.EndDate == null))
+                        .ToList();
+                    return eventItem;
+                }).ToList();
+
+            var eventsDTO = _mapper.Map<List<WellEvent>, List<EventWithReasonDTO>>(filtredEventsByDate);
+
+            return eventsDTO;
         }
 
         public async Task<WellEventByIdDto> GetClosedEventById(Guid eventId)
