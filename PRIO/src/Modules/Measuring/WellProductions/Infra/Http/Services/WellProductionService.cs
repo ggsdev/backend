@@ -360,8 +360,11 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                             WellId = btp.Well.Id,
                             FieldProduction = fieldProduction,
                             ProductionGasInWellM3 = productionGas,
+                            ProductionGasInWellSCF = ProductionUtils.m3ToSCFConversionMultipler * productionGas,
                             ProductionOilInWellM3 = productionOil,
+                            ProductionOilInWellBBL = ProductionUtils.m3ToBBLConversionMultiplier * productionOil,
                             ProductionWaterInWellM3 = productionWater,
+                            ProductionWaterInWellBBL = ProductionUtils.m3ToBBLConversionMultiplier * productionWater,
                             ProductionGasAsPercentageOfField = wellPotencialGasAsPercentageOfField,
                             ProductionOilAsPercentageOfField = wellPotencialOilAsPercentageOfField,
                             ProductionWaterAsPercentageOfField = wellPotencialWaterAsPercentageOfField,
@@ -407,6 +410,10 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                             wellAppropriation.EfficienceLoss += wellLoss.EfficienceLoss;
                             wellAppropriation.ProductionLost += wellLoss.ProductionLost;
                             wellAppropriation.ProportionalDay += wellLoss.ProportionalDay;
+
+                            wellAppropiationDto.EfficienceLoss *= wellLoss.EfficienceLoss;
+                            wellAppropiationDto.ProductionLost += wellLoss.ProductionLost;
+                            wellAppropiationDto.ProportionalDay += wellLoss.ProportionalDay;
 
                             await _repository.AddWellLossAsync(wellLoss);
                         }
@@ -740,6 +747,10 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                             wellAppropriation.EfficienceLoss += wellLoss.EfficienceLoss;
                             wellAppropriation.ProductionLost += wellLoss.ProductionLost;
                             wellAppropriation.ProportionalDay += wellLoss.ProportionalDay;
+
+                            wellAppropiationDto.EfficienceLoss *= wellLoss.EfficienceLoss;
+                            wellAppropiationDto.ProductionLost += wellLoss.ProductionLost;
+                            wellAppropiationDto.ProportionalDay += wellLoss.ProportionalDay;
 
                             await _repository.AddWellLossAsync(wellLoss);
                         }
