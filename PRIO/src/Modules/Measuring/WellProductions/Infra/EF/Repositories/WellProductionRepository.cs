@@ -36,6 +36,11 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Repositories
         {
             _context.WellProductions.Update(wellApp);
         }
+
+        public void UpdateWellLost(WellLosses wellLost)
+        {
+            _context.WellLosses.Update(wellLost);
+        }
         public async Task<List<WellProduction>> GetWellProductionsByEventDate(DateTime eventDate)
         {
             return await _context.WellProductions

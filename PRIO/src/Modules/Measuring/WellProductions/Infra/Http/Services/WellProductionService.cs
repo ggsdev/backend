@@ -576,6 +576,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                                 totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
                             }
                         }
+
                         totalPotencialGasField += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
                         totalPotencialOilField += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
                         totalPotencialWaterField += btp.PotencialWater * (24 - (decimal)totalInterval) / 24;
@@ -684,7 +685,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         DateTime dateTime = DateTime.Today.AddHours(hours).AddMinutes(minutes).AddSeconds(seconds);
                         string formattedTime = dateTime.ToString("HH:mm:ss");
 
-                        var wellAppropriation = new EF.Models.WellProduction
+                        var wellAppropriation = new WellProduction
                         {
                             Id = Guid.NewGuid(),
                             WellTest = btp,
@@ -762,6 +763,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         await _repository.AddAsync(wellAppropriation);
 
                     }
+
                     if (fieldProduction is not null)
                     {
                         fieldProduction.WaterProductionInField = totalWater;
