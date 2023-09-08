@@ -718,6 +718,9 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
             if (nfsmInDatabase is null)
                 throw new NotFoundException(ErrorMessages.NotFound<NFSM>());
 
+            if (nfsmInDatabase.IsApplied)
+                throw new ConflictException("Notificação de falha já foi aplicada anteriormente.");
+
             //if (nfsmInDatabase.DateOfOcurrence > nfsmInDatabase.Da)
             //    throw new ConflictException("Data da medição não pode ser maior do que a data que a falha foi corrigida, TAG: DHA_RETORNO.");
 
@@ -729,8 +732,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                 if (productionInDatabase is null)
                     throw new NotFoundException(ErrorMessages.NotFound<Production>());
 
-                //if (productionInDatabase.StatusProduction.ToLower() != ProductionUtils.closedStatus)
-                //    throw new ConflictException("Produção precisa ter sido fechada para ser corrigida.");
+                if (productionInDatabase.StatusProduction.ToLower() != ProductionUtils.closedStatus)
+                    throw new ConflictException("Produção precisa ter sido fechada para ser corrigida.");
             }
 
             foreach (var measurementCorrected in nfsmInDatabase.Productions)
@@ -1010,7 +1013,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     //    }
                     //});
 
-                    //await _wellProductionService.ReAppropriateWithNfsm(productionInDatabase.Id);
+                    await _wellProductionService.ReAppropriateWithNfsm(productionInDatabase.Id);
 
                     nfsmInDatabase.IsApplied = true;
 
