@@ -313,7 +313,7 @@ namespace PRIO.TESTS.Productions.DailyProduction
             decimal expectedOilTotalBBL = Math.Round(oil.TotalOil * ProductionUtils.m3ToBBLConversionMultiplier, 2);
             decimal expectedOilTotalM3 = Math.Round(oil.TotalOil, 2);
 
-            Assert.That(retrievedDto.Gas.TotalGasBBL, Is.EqualTo(expectedGasTotalBBL));
+            Assert.That(retrievedDto.Gas.TotalGasSCF, Is.EqualTo(expectedGasTotalBBL));
             Assert.That(retrievedDto.Gas.TotalGasM3, Is.EqualTo(expectedGasTotalM3));
 
             Assert.That(retrievedDto.Oil.TotalOilBBL, Is.EqualTo(expectedOilTotalBBL));

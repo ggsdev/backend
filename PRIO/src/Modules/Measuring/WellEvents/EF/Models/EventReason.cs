@@ -13,5 +13,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Models
         public WellEvent WellEvent { get; set; }
         [ForeignKey("WellEvent")]
         public Guid WellEventId { get; set; }
+        public bool IsJobGenerated { get; set; }
     }
 }
