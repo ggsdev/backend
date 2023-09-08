@@ -539,9 +539,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             var waterCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialWater].Value.ToString(), out var waterDecimal);
             decimal waterDecimalFormated = Math.Round(waterDecimal, 5, MidpointRounding.AwayFromZero);
             decimal waterPerHourDecimalFormated = Math.Round(waterDecimal / 24, 5, MidpointRounding.AwayFromZero);
-            var liquidCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialLiquid].Value.ToString(), out var liquidDecimal);
-            decimal liquidDecimalFormated = Math.Round(liquidDecimal, 5, MidpointRounding.AwayFromZero);
-            decimal liquidPerHourDecimalFormated = Math.Round(liquidDecimal / 24, 5, MidpointRounding.AwayFromZero);
             var rgoCheck = decimal.TryParse(worksheet.Cells[BTP.CellRGO].Value.ToString(), out var rgoDecimal);
             decimal rgoDecimalFormated = Math.Round(rgoDecimal, 5, MidpointRounding.AwayFromZero);
             var bswCheck = decimal.TryParse(worksheet.Cells[BTP.CellBSW].Value.ToString(), out var bswDecimal);
@@ -612,8 +609,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 Filename = body.Data.Filename,
                 IsValid = body.Data.IsValid,
                 ApplicationDate = body.Data.ApplicationDate,
-                PotencialLiquid = liquidDecimalFormated,
-                PotencialLiquidPerHour = liquidPerHourDecimalFormated,
                 PotencialOil = oilDecimalFormated,
                 PotencialOilPerHour = oilPerHourDecimalFormated,
                 PotencialGas = gasDecimalFormated,
@@ -639,6 +634,20 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 BTPBase64 = content,
                 IsActive = body.Data.IsValid == false ? false : true,
             };
+            if (BTP.CellPotencialLiquid != "" || BTP.CellPotencialLiquid != null)
+            {
+                var liquidCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialLiquid].Value.ToString(), out var liquidDecimal);
+                decimal liquidDecimalFormated = Math.Round(liquidDecimal, 5, MidpointRounding.AwayFromZero);
+                decimal liquidPerHourDecimalFormated = Math.Round(liquidDecimal / 24, 5, MidpointRounding.AwayFromZero);
+
+                data.PotencialLiquid = liquidDecimalFormated;
+                data.PotencialLiquidPerHour = liquidPerHourDecimalFormated;
+            }
+            else
+            {
+                data.PotencialLiquid = oilDecimalFormated + waterDecimalFormated;
+                data.PotencialLiquidPerHour = oilPerHourDecimalFormated + waterPerHourDecimalFormated;
+            }
 
             var listWellTests = await _BTPRepository.ListBTPSDataActiveByWellId(body.Validate.WellId);
             DateTime applicationDateFromBody = DateTime.Parse(body.Data.ApplicationDate);
