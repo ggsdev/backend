@@ -517,7 +517,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                                 response.UepName = installation.UepName;
                                                 response.UepCode = installation.UepCod;
-                                                response.DateProduction = dateBeginningMeasurement;
+                                                response.DateProduction = dateBeginningMeasurement.ToString("dd/MM/yyyy");
                                                 response.InstallationId = installation.Id;
                                                 response001.Measurements.Add(measurement001DTO);
                                             }
@@ -872,7 +872,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                             response.UepCode = installation.UepCod;
                                             response.InstallationId = installation.Id;
                                             response.UepName = installation.UepName;
-                                            response.DateProduction = dateBeginningMeasurement;
+                                            response.DateProduction = dateBeginningMeasurement.ToString("dd/MM/yyyy");
                                             response002.Measurements.Add(measurement002DTO);
                                         }
                                     }
@@ -1217,7 +1217,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                             response.InstallationId = installation.Id;
                                             response.UepName = installation.UepName;
                                             response.UepCode = installation.UepCod;
-                                            response.DateProduction = dateBeginningMeasurement;
+                                            response.DateProduction = dateBeginningMeasurement.ToString("dd/MM/yyyy");
                                             response003.Measurements.Add(measurement003DTO);
                                         }
                                     }
@@ -2243,8 +2243,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 response.Gas.FR = frProduction;
             }
 
+
+            var dateParsed = DateTime.Parse(response.DateProduction);
             var productionOfTheDay = await _productionRepository
-                .GetExistingByDate(response.DateProduction);
+                .GetExistingByDate(dateParsed);
 
             if (productionOfTheDay is null)
                 response.StatusProduction = "aberto";
@@ -2742,8 +2744,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 Production = dailyProduction,
 
             };
-
-            await _fieldFRService.ApplyFR(fieldFrViewModel, data.DateProduction);
+            var dateParsed = DateTime.Parse(data.DateProduction);
+            await _fieldFRService.ApplyFR(fieldFrViewModel, dateParsed);
 
             await _productionRepository.AddOrUpdateProduction(dailyProduction);
             await _repository.AddRangeAsync(measurementsAdded);

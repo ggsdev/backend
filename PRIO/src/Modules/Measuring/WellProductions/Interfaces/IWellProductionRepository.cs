@@ -10,6 +10,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Interfaces
         Task AddAsync(Infra.EF.Models.WellProduction wellApp);
         Task AddWellLossAsync(WellLosses wellLoss);
         void Update(Infra.EF.Models.WellProduction wellApp);
+        void UpdateWellLost(WellLosses wellLost);
         Task AddCompletionProductionAsync(CompletionProduction completionApp);
         Task<List<Infra.EF.Models.WellProduction>> GetByProductionId(Guid productionId);
         void UpdateCompletionProduction(CompletionProduction completionApp);

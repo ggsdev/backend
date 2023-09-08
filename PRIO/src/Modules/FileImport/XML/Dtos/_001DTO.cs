@@ -307,7 +307,7 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public string UepCode { get; set; }
         public Guid InstallationId { get; set; }
         public string StatusProduction { get; set; }
-        public DateTime DateProduction { get; set; }
+        public string DateProduction { get; set; }
         public GasDto? Gas { get; set; }
         public OilDto? Oil { get; set; }
         public GasSummary? GasSummary { get; set; }

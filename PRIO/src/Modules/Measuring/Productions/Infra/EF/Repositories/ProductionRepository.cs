@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Productions.Interfaces;
+using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF;
 
 namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
@@ -47,6 +48,21 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                 .Include(x => x.WellProductions)
                 .ThenInclude(x => x.WellTest)
                 .FirstOrDefaultAsync(x => x.FieldId == fieldId && x.ProductionId == productionId);
+        }
+
+        public async Task<WellLosses?> GetWellLossByEventAndWellProductionId(Guid eventId, Guid wellProductionId)
+        {
+            return await _context.WellLosses
+                .Include(x => x.Event)
+                .Include(x => x.WellAllocation)
+                .FirstOrDefaultAsync(x => x.Event.Id == eventId && x.WellAllocation.Id == wellProductionId);
+        }
+        public async Task<WellProduction?> GetWellProductionByWellAndProductionId(Guid wellId, Guid productionId)
+        {
+            return await _context.WellProductions
+                .Include(x => x.Production)
+                .Include(x => x.FieldProduction)
+                .FirstOrDefaultAsync(x => x.Id == wellId && x.Production.Id == productionId);
         }
         public async Task AddFieldProduction(FieldProduction fieldProduction)
         {

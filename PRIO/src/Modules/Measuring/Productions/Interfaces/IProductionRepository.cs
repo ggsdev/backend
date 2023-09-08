@@ -1,4 +1,5 @@
 ﻿using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Measuring.Productions.Interfaces
 {
@@ -19,6 +20,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Interfaces
         Task AddWaterProduction(Water water);
         void UpdateFieldProduction(FieldProduction fieldProduction);
         Task<FieldProduction?> GetFieldProductionByFieldAndProductionId(Guid fieldId, Guid productionId);
+        Task<WellProduction?> GetWellProductionByWellAndProductionId(Guid wellId, Guid productionId);
+        Task<WellLosses?> GetWellLossByEventAndWellProductionId(Guid eventId, Guid wellProductionId);
         Task<List<FieldProduction>> GetAllFieldProductionByProduction(Guid productionId);
     }
 }

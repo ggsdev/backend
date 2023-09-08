@@ -19,7 +19,6 @@ namespace PRIOScheduler
                 var dbContextOptions = new DbContextOptionsBuilder<DataContext>()
                     .UseSqlServer(_connectionString)
                     .Options;
-
                 using var dbContext = new DataContext(dbContextOptions);
 
                 var dateToday = DateTime.UtcNow.AddHours(-3).Date;
@@ -34,19 +33,17 @@ namespace PRIOScheduler
                     for (int i = 0; i < wellEvent.EventReasons.Count; i++)
                     {
                         var reason = wellEvent.EventReasons[i];
-
                         if (reason.StartDate < dateToday && reason.EndDate is null)
                         {
-                            reason.EndDate = dateToday.AddMilliseconds(-10);
+                            var dif = (dateToday - reason.StartDate).TotalHours / 24;
+                            reason.EndDate = reason.StartDate.Date.AddDays(1).AddMilliseconds(-10);
 
                             var resultTimeSpan = (reason.EndDate.Value - reason.StartDate).TotalHours;
-
                             int hours = (int)resultTimeSpan;
                             var minutesDecimal = (resultTimeSpan - hours) * 60;
                             int minutes = (int)minutesDecimal;
                             var secondsDecimal = (minutesDecimal - minutes) * 60;
                             int seconds = (int)secondsDecimal;
-
                             string formattedHours;
                             if (hours >= 1000)
                             {
@@ -58,21 +55,56 @@ namespace PRIOScheduler
                                 formattedHours = hours.ToString("00");
                             }
                             var formattedTime = $"{formattedHours}:{minutes}:{seconds}";
-
                             reason.Interval = formattedTime;
-                            var newEventReason = new EventReason
+
+                            DateTime refStartDate = reason.StartDate.Date.AddDays(1);
+                            DateTime refStartEnd = refStartDate.AddDays(1).AddMilliseconds(-10);
+                            for (int j = 0; j < dif; j++)
                             {
-                                Id = Guid.NewGuid(),
-                                SystemRelated = reason.SystemRelated,
-                                Comment = reason.Comment,
-                                WellEvent = wellEvent,
-                                StartDate = dateToday,
-                                IsActive = true,
-                                IsJobGenerated = true,
+                                var rest = dif - j;
+                                var newEventReason = new EventReason
+                                {
+                                    Id = Guid.NewGuid(),
+                                    SystemRelated = reason.SystemRelated,
+                                    Comment = reason.Comment,
+                                    WellEvent = wellEvent,
+                                    StartDate = refStartDate,
+                                    IsActive = true,
+                                    IsJobGenerated = true,
+                                };
+                                if (rest < 1)
+                                {
+                                    newEventReason.EndDate = null;
+                                }
+                                else
+                                {
+                                    newEventReason.EndDate = refStartEnd;
 
-                            };
+                                    var resultReasonTimeSpan = (newEventReason.EndDate.Value - newEventReason.StartDate).TotalHours;
+                                    int reasonHours = (int)resultReasonTimeSpan;
+                                    var reasonMinutesDecimal = (resultReasonTimeSpan - reasonHours) * 60;
+                                    int reasonMinutes = (int)reasonMinutesDecimal;
+                                    var reasonSecondsDecimal = (reasonMinutesDecimal - reasonMinutes) * 60;
+                                    int reasonSeconds = (int)reasonSecondsDecimal;
+                                    string ReasonFormattedHours;
+                                    if (reasonHours >= 1000)
+                                    {
+                                        int digitCount = (int)Math.Floor(Math.Log10(hours)) + 1;
+                                        ReasonFormattedHours = hours.ToString(new string('0', digitCount));
+                                    }
+                                    else
+                                    {
+                                        ReasonFormattedHours = hours.ToString("00");
+                                    }
+                                    var reasonFormattedTime = $"{formattedHours}:{minutes}:{seconds}";
+                                    newEventReason.Interval = reasonFormattedTime;
 
-                            await dbContext.EventReasons.AddAsync(newEventReason);
+                                }
+                                refStartDate = newEventReason.StartDate.AddDays(1);
+                                refStartEnd = refStartDate.AddMilliseconds(-10);
+
+                                await dbContext.EventReasons.AddAsync(newEventReason);
+                            }
                         }
                     }
                 }
