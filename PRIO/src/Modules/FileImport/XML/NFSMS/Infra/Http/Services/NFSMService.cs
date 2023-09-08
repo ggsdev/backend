@@ -729,8 +729,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                 if (productionInDatabase is null)
                     throw new NotFoundException(ErrorMessages.NotFound<Production>());
 
-                if (productionInDatabase.StatusProduction.ToLower() != ProductionUtils.closedStatus)
-                    throw new ConflictException("Produção precisa ter sido fechada para ser corrigida.");
+                //if (productionInDatabase.StatusProduction.ToLower() != ProductionUtils.closedStatus)
+                //    throw new ConflictException("Produção precisa ter sido fechada para ser corrigida.");
             }
 
             foreach (var measurementCorrected in nfsmInDatabase.Productions)
@@ -841,12 +841,12 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                             if (hpFlare.MeasuringPoint is not null && hpFlare.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003 && measurement.MED_CORRIGIDO_MVMDO_003 is not null)
                             {
-                                totalGasBurnedDiferencial = measurement.MED_CORRIGIDO_MVMDO_003.Value;
+                                totalGasBurnedDiferencial += measurement.MED_CORRIGIDO_MVMDO_003.Value;
                             }
 
                             if (hpFlare.MeasuringPoint is not null && hpFlare.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 && measurement.MED_CORRIGIDO_MVMDO_002 is not null)
                             {
-                                totalGasBurnedLinear = measurement.MED_CORRIGIDO_MVMDO_002.Value;
+                                totalGasBurnedLinear += measurement.MED_CORRIGIDO_MVMDO_002.Value;
 
                             }
 
@@ -859,13 +859,13 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                             if (lpFlare.MeasuringPoint is not null && lpFlare.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003 && measurement.MED_CORRIGIDO_MVMDO_003 is not null)
                             {
-                                totalGasBurnedDiferencial = measurement.MED_CORRIGIDO_MVMDO_003.Value;
+                                totalGasBurnedDiferencial += measurement.MED_CORRIGIDO_MVMDO_003.Value;
 
                             }
 
                             if (lpFlare.MeasuringPoint is not null && lpFlare.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 && measurement.MED_CORRIGIDO_MVMDO_002 is not null)
                             {
-                                totalGasBurnedLinear = measurement.MED_CORRIGIDO_MVMDO_002.Value;
+                                totalGasBurnedLinear += measurement.MED_CORRIGIDO_MVMDO_002.Value;
 
                             }
                         }
@@ -877,13 +877,13 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                             if (assistance.MeasuringPoint is not null && assistance.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003 && measurement.MED_CORRIGIDO_MVMDO_003 is not null)
                             {
-                                totalGasBurnedDiferencial = measurement.MED_CORRIGIDO_MVMDO_003.Value;
+                                totalGasBurnedDiferencial += measurement.MED_CORRIGIDO_MVMDO_003.Value;
 
                             }
 
                             if (assistance.MeasuringPoint is not null && assistance.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 && measurement.MED_CORRIGIDO_MVMDO_002 is not null)
                             {
-                                totalGasBurnedLinear = measurement.MED_CORRIGIDO_MVMDO_002.Value;
+                                totalGasBurnedLinear += measurement.MED_CORRIGIDO_MVMDO_002.Value;
 
                             }
                         }
@@ -895,12 +895,12 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                             if (pilot.MeasuringPoint is not null && pilot.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003 && measurement.MED_CORRIGIDO_MVMDO_003 is not null)
                             {
-                                totalGasBurnedDiferencial = measurement.MED_CORRIGIDO_MVMDO_003.Value;
+                                totalGasBurnedDiferencial += measurement.MED_CORRIGIDO_MVMDO_003.Value;
                             }
 
                             if (pilot.MeasuringPoint is not null && pilot.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 && measurement.MED_CORRIGIDO_MVMDO_002 is not null)
                             {
-                                totalGasBurnedLinear = measurement.MED_CORRIGIDO_MVMDO_002.Value;
+                                totalGasBurnedLinear += measurement.MED_CORRIGIDO_MVMDO_002.Value;
                             }
                         }
 
@@ -911,12 +911,12 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                             if (purge.MeasuringPoint is not null && purge.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003 && measurement.MED_CORRIGIDO_MVMDO_003 is not null)
                             {
-                                totalGasBurnedDiferencial = measurement.MED_CORRIGIDO_MVMDO_003.Value;
+                                totalGasBurnedDiferencial += measurement.MED_CORRIGIDO_MVMDO_003.Value;
                             }
 
                             if (purge.MeasuringPoint is not null && purge.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 && measurement.MED_CORRIGIDO_MVMDO_002 is not null)
                             {
-                                totalGasBurnedLinear = measurement.MED_CORRIGIDO_MVMDO_002.Value;
+                                totalGasBurnedLinear += measurement.MED_CORRIGIDO_MVMDO_002.Value;
                             }
                         }
                     }
@@ -990,7 +990,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     //    }
                     //});
 
-                    await _wellProductionService.ReAppropriateWithNfsm(productionInDatabase.Id);
+                    //await _wellProductionService.ReAppropriateWithNfsm(productionInDatabase.Id);
 
                     nfsmInDatabase.IsApplied = true;
 
