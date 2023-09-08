@@ -61,8 +61,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
                     var decimalPlaces = BitConverter.GetBytes(decimal.GetBits(field.FluidFr)[3])[2];
 
-                    if (decimalPlaces > 5)
-                        throw new BadRequestException("Fator de rateio do gás pode ter no máximo cinco casas decimais.");
+                    if (decimalPlaces > 4)
+                        throw new BadRequestException("Fator de rateio do óleo pode ter no máximo duas casas decimais.");
 
                     if (body.Gas.FR.IsApplicable)
                         sumGas += field.FluidFr;
@@ -143,8 +143,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
                     var decimalPlaces = BitConverter.GetBytes(decimal.GetBits(field.FluidFr)[3])[2];
 
-                    if (decimalPlaces > 5)
-                        throw new BadRequestException("Fator de rateio do óleo pode ter no máximo cinco casas decimais.");
+                    if (decimalPlaces > 4)
+                        throw new BadRequestException("Fator de rateio do óleo pode ter no máximo duas casas decimais.");
 
                     if (body.Oil.FR.IsApplicable)
                         sumOil += field.FluidFr;
