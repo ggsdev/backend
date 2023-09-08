@@ -261,6 +261,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
             foreach (var permission in groupPermissionsDTO)
             {
                 var groupPermission = await _context.GroupPermissions
+                    .Include(x => x.Group)
                     .Where(x => x.Id == permission.Id)
                     .FirstOrDefaultAsync();
 
