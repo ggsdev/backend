@@ -515,19 +515,21 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             if (wellAlignmentHourValue is double)
             {
                 string? align = ConvertDoubleToTimeSpan(worksheet.Cells[BTP.CellWellAlignmentHour].Value.ToString());
-                if (align != body.Data.WellAlignmentHour)
+                if (align != body.Data.WellAlignmentHour){
                     throw new ConflictException("Horário do alinhamento do poço não corresponde a validação");
+                }
 
             }
             else if (wellAlignmentHourValue is DateTime)
             {
                 var splitAlignHour = wellAlignmentHourValue.ToString().Split(" ");
                 var splitAlignHourSecondPosition = splitAlignHour[1];
-                throw new ConflictException("Horário do alinhamento do poço não corresponde a validação");
+
+
+                if (splitAlignHourSecondPosition != body.Data.WellAlignmentHour){
+                    throw new ConflictException("Horário do alinhamento do poço não corresponde a validação");
+                }
             }
-
-
-
 
             //Trated Duration
             string[] duration = worksheet.Cells[BTP.CellDuration].Value.ToString().Split(' ');
