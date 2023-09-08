@@ -717,6 +717,16 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
         public async Task<List<EventWithReasonDTO>> GetWellEvents(Guid wellId, string date)
         {
+            if (date == null)
+                throw new NotFoundException("Data não informada");
+            var checkDate = DateTime.TryParse(date, out DateTime day);
+            if (checkDate is false)
+                throw new ConflictException("Data não é válida.");
+
+            var dateToday = DateTime.UtcNow.AddHours(-3).Date;
+            if (dateToday <= day)
+                throw new NotFoundException("Downtime não foi fechado para esse dia.");
+
             var wellExists = await _wellRepository.GetByIdWithEventsAsync(wellId) ?? throw new NotFoundException("Poço não encontrado");
             var events = await _wellEventRepository.GetAllWellEvent(wellId);
             if (events.Count == 0)
@@ -724,12 +734,10 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 throw new NotFoundException($"Não foram encontrados eventos para o poço {wellExists.Name}.");
             }
 
-            var checkDate = DateTime.TryParse(date, out DateTime day);
-            if (checkDate is false)
-                throw new ConflictException("Data não é válida.");
 
-            var filtredEventsByDate = events.Where(x => x.StartDate.Date <= day && x.EndDate != null && x.EndDate.Value.Date >= day
-                || x.StartDate.Date <= day && x.EndDate == null
+            var filtredEventsByDate = events.Where(x =>
+                (x.StartDate.Date <= day && (x.EndDate == null || x.EndDate.Value.Date >= day))
+                || (x.StartDate.Date < day && x.EndDate != null && x.EndDate.Value.Date >= day)
                 )
                 .Select(eventItem =>
                 {
