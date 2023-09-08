@@ -1,4 +1,5 @@
-﻿using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
+﻿using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
+using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
@@ -19,9 +20,10 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
         private readonly IInstallationRepository _installationRepository;
         private readonly IProductionRepository _productionRepository;
         private readonly IWellRepository _wellRepository;
+        private readonly IBTPRepository _btpRepository;
         private readonly IWellProductionRepository _wellProductionRepository;
         private readonly IFieldRepository _fieldRepository;
-        public WellEventService(IWellEventRepository wellEventRepository, IInstallationRepository installationRepository, IFieldRepository fieldRepository, IWellRepository wellRepository, IProductionRepository productionRepository, IWellProductionRepository wellProductionRepository)
+        public WellEventService(IWellEventRepository wellEventRepository, IInstallationRepository installationRepository, IFieldRepository fieldRepository, IWellRepository wellRepository, IProductionRepository productionRepository, IWellProductionRepository wellProductionRepository, IBTPRepository bTPRepository)
         {
             _wellEventRepository = wellEventRepository;
             _installationRepository = installationRepository;
@@ -29,6 +31,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             _wellRepository = wellRepository;
             _productionRepository = productionRepository;
             _wellProductionRepository = wellProductionRepository;
+            _btpRepository = bTPRepository;
         }
         public async Task CloseWellEvent(CreateClosingEventViewModel body)
         {
@@ -74,19 +77,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             if (lastEventWrongList.Count > 0)
                 throw new BadRequestException(message: "O último evento do poço deve ser de abertura para que seja possível cadastrar um evento de fechamento.", errors: lastEventWrongList);
 
-            //var wellProductionsOfTheDay = await _wellProductionRepository
-            //    .GetWellProductionsByEventDate(parsedStartDate);
-
-            //var isProductionAlreadyAllocated = wellProductionsOfTheDay.Any();
-
-            //if (isProductionAlreadyAllocated)
-            //{
-
-            //}
-
             foreach (var well in wellsList)
             {
-
                 var lastEvent = well.WellEvents
                     .OrderBy(e => e.CreatedAt)
                     .LastOrDefault();
@@ -142,6 +134,13 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
                     _wellEventRepository.Update(lastEvent);
                 }
+
+                //caso evento seja no passado recalcular
+                if (dateNow.Date > parsedStartDate.Date)
+                {
+
+                }
+
             }
 
             await _wellEventRepository.Save();
@@ -246,10 +245,11 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 throw new NotFoundException(ErrorMessages.NotFound<Well>());
 
             var lastEvent = wellInDatabase.WellEvents
-                .OrderBy(e => e.CreatedAt)
+                .OrderBy(e => e.StartDate)
+                .Where(x => x.StartDate <= parsedStartDate) //checar logica pensando em criação de um evento no passado
                 .LastOrDefault();
 
-            if (lastEvent is null && wellInDatabase.WellEvents.Count > 0)
+            if (lastEvent is null)
                 throw new ConflictException("O poço não possui um evento de fechamento anterior.");
 
             if (lastEvent is not null && lastEvent.EventStatus != "F")
@@ -259,7 +259,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 throw new BadRequestException("Data de início do evento deve ser maior que a data de início do último evento associado.");
 
             var lastEventOfTypeOpening = wellInDatabase.WellEvents
-                .OrderBy(e => e.CreatedAt)
+                .OrderBy(e => e.StartDate)
                 .LastOrDefault(x => x.EventStatus == "A");
 
             var codeSequencial = string.Empty;
@@ -292,36 +292,145 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             if (lastEvent is not null)
             {
                 lastEvent.EndDate = parsedStartDate;
-                lastEvent.Interval = (parsedStartDate - lastEvent.StartDate).TotalHours;
+                lastEvent.Interval = (parsedStartDate - lastEvent.StartDate)
+                    .TotalHours;
 
                 var lastEventReason = lastEvent.EventReasons
-                    .OrderBy(x => x.CreatedAt)
+                    .OrderBy(x => x.StartDate)
                     .LastOrDefault();
 
                 if (lastEventReason is not null)
                 {
-                    var resultTimeSpan = (parsedStartDate - lastEventReason.StartDate).TotalHours;
+                    var resultTimeSpan = (parsedStartDate - lastEventReason.StartDate)
+                        .TotalHours;
 
-                    int hours = (int)resultTimeSpan;
+                    var hours = (int)resultTimeSpan;
                     var minutesDecimal = (resultTimeSpan - hours) * 60;
-                    int minutes = (int)minutesDecimal;
+                    var minutes = (int)minutesDecimal;
                     var secondsDecimal = (minutesDecimal - minutes) * 60;
-                    int seconds = (int)secondsDecimal;
-                    DateTime dateTime = DateTime.Today.AddHours(hours).AddMinutes(minutes).AddSeconds(seconds);
+                    var seconds = (int)secondsDecimal;
+                    var dateTime = DateTime.Today.AddHours(hours).AddMinutes(minutes).AddSeconds(seconds);
                     var timeOperating = DateTime.Today.AddDays(1) - dateTime;
                     var formattedTime = dateTime.ToString("HH:mm:ss");
                     var formattedTimeTimeOperating = timeOperating.ToString("HH:mm:ss");
 
                     lastEventReason.Interval = formattedTime;
-                    lastEventReason.EndDate = DateTime.UtcNow.AddHours(-3);
+                    lastEventReason.EndDate = parsedStartDate;
 
-                    _wellEventRepository.UpdateReason(lastEventReason);
+                    _wellEventRepository
+                        .UpdateReason(lastEventReason);
                 }
 
-                _wellEventRepository.Update(lastEvent);
+                _wellEventRepository
+                    .Update(lastEvent);
             }
+            //var dateRange = new List<DateTime>();
+            ////recalcular caso seja no passado ao menos d-1, podendo pegar vários dias
+            //if (dateNow.Date > parsedStartDate.Date)
+            //{
+            //    for (var date = parsedStartDate; date <= dateNow; date = date.AddDays(1))
+            //    {
+            //        dateRange.Add(date);
 
-            await _wellEventRepository.Save();
+            //    }
+
+            //    foreach (var date in dateRange)
+            //    {
+
+            //        var production = await _productionRepository.GetExistingByDate(date);
+
+            //        if (production is null)
+            //            continue;
+
+            //        var totalWaterInUep = 0m;
+            //        decimal? totalWaterWithFieldFR = 0m;
+
+            //        if (production.FieldsFR is not null && production.FieldsFR.Count > 0)
+            //        {
+
+            //            var uepFields = await _fieldRepository
+            //        .GetFieldsByUepCode(production.Installation.UepCod);
+            //            var wellTestsUEP = await _btpRepository
+            //               .GetBtpDatasByUEP(production.Installation.UepCod);
+            //            var filtredUEPsByApplyDateAndFinal = wellTestsUEP.Where(x => (x.FinalApplicationDate == null && x.ApplicationDate != null && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date) && x.Well.CategoryOperator is not null && x.Well.CategoryOperator.ToUpper() == "PRODUTOR"
+            //                    || x.Well.CategoryOperator is not null && x.Well.CategoryOperator.ToUpper() == "PRODUTOR" && (x.FinalApplicationDate != null && x.ApplicationDate != null && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
+            //                    && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date));
+
+            //            decimal totalPotencialGasUEP = 0;
+            //            decimal totalPotencialOilUEP = 0;
+            //            decimal totalPotencialWaterUEP = 0;
+
+            //            foreach (var btp in filtredUEPsByApplyDateAndFinal)
+            //            {
+            //                double totalInterval = 0;
+
+            //                var filtredEvents = btp.Well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
+            //                || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F")
+            //                    .OrderBy(x => x.StartDate);
+
+            //                foreach (var a in filtredEvents)
+            //                {
+            //                    if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
+            //                    {
+            //                        totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
+            //                    }
+            //                    else if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt)
+            //                    {
+            //                        totalInterval += 24;
+            //                    }
+            //                    else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt.Date)
+            //                    {
+            //                        totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
+            //                    }
+            //                    else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt.Date)
+            //                    {
+            //                        totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+            //                    }
+            //                    else if (a.StartDate < production.MeasuredAt && a.EndDate is null)
+            //                    {
+            //                        totalInterval += 24;
+            //                    }
+
+            //                    else if (a.StartDate.Date == production.MeasuredAt && a.EndDate is null)
+            //                    {
+            //                        totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+            //                    }
+            //                }
+            //                totalPotencialGasUEP += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
+            //                totalPotencialOilUEP += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
+            //                totalPotencialWaterUEP += btp.PotencialWater * (24 - (decimal)totalInterval) / 24;
+
+            //            }
+
+            //            foreach (var fieldFR in production.FieldsFR)
+            //            {
+            //                var btps = await _btpRepository
+            //                    .GetBtpDatasByFieldId(fieldFR.Field.Id);
+            //                var filtredByApplyDateAndFinal = btps
+            //                    .Where(x => (x.FinalApplicationDate == null && x.Well.CategoryOperator is not null && x.Well.CategoryOperator.ToUpper() == "PRODUTOR" && x.ApplicationDate != null && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date)
+            //                    || (x.FinalApplicationDate != null && x.ApplicationDate != null && x.Well.CategoryOperator is not null && x.Well.CategoryOperator.ToUpper() == "PRODUTOR" && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
+            //                    && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date));
+
+            //                var totalOilPotencial = filtredByApplyDateAndFinal
+            //                    .Sum(x => x.PotencialOil);
+            //                if (fieldFR.FROil is not null)
+            //                {
+            //                    foreach (var btp in filtredByApplyDateAndFinal)
+            //                    {
+            //                        var wellPotencialOilAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField(btp.PotencialOil, totalOilPotencial);
+            //                        totalWaterWithFieldFR += (production.Oil.TotalOil * fieldFR.FROil * wellPotencialOilAsPercentageOfField * btp.BSW) / (100 - btp.BSW);
+            //                    }
+            //                }
+            //            }
+            //        }
+
+            //        else
+            //        {
+            //        }
+            //    }
+            //}
+
+            //await _wellEventRepository.Save();
         }
 
         public async Task<List<WellWithEventDto>> GetWellsWithEvents(Guid fieldId, string eventType)

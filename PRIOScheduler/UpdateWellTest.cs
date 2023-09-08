@@ -20,12 +20,20 @@ namespace PRIOScheduler
 
                 using var dbContext = new DataContext(dbContextOptions);
 
-                var dateToday = DateTime.UtcNow.AddHours(-3).Date.ToString();
-                var wellTests = await dbContext.WellTests.Include(x => x.Well).Where(x => x.ApplicationDate == dateToday && x.IsValid == true && x.IsActive == false).ToListAsync();
+                var dateToday = DateTime.UtcNow.AddHours(-3).Date;
+                var dateSplit = dateToday.ToString().Split(" ")[0];
+
+                var wellTests = await dbContext.WellTests
+                    .Include(x => x.Well)
+                    .Where(x => x.ApplicationDate == dateSplit && x.IsValid == true && x.IsActive == false)
+                    .ToListAsync();
 
                 foreach (var wellTest in wellTests)
                 {
-                    var oldWellTest = await dbContext.WellTests.Where(x => x.Well.Id == wellTest.Well.Id && x.IsValid == true && x.IsActive == true).FirstOrDefaultAsync();
+                    var oldWellTest = await dbContext.WellTests
+                        .Where(x => x.Well.Id == wellTest.Well.Id && x.IsValid == true && x.IsActive == true)
+                        .FirstOrDefaultAsync();
+
                     if (oldWellTest is not null)
                         oldWellTest.IsActive = false;
 
@@ -33,7 +41,7 @@ namespace PRIOScheduler
                 }
 
                 await dbContext.SaveChangesAsync();
-                Console.WriteLine($"Job executado com sucesso.");
+                Console.WriteLine($"Job UpdateWellTest executado em {dateToday} com sucesso.");
             }
             catch (Exception ex)
             {

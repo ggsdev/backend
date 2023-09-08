@@ -93,6 +93,19 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<Production?> GetExistingByDateWithProductionAllocation(DateTime date)
+        {
+            return await _context.Productions
+                .Include(x => x.WellProductions)
+                    .ThenInclude(x => x.FieldProduction)
+                .Include(x => x.FieldsFR)
+                    .ThenInclude(x => x.Field)
+                .Where(x => x.MeasuredAt.Year == date.Year &&
+                            x.MeasuredAt.Month == date.Month &&
+                            x.MeasuredAt.Day == date.Day && x.IsActive)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<Production?> GetById(Guid? id)
         {
             return await _context.Productions
