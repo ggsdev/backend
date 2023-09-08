@@ -21,7 +21,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
 
     public class DailyProduction
     {
-        public decimal TotalGasBBL { get; set; }
+        public decimal TotalGasSCF { get; set; }
         public decimal TotalGasM3 { get; set; }
 
         public decimal TotalOilBBL { get; set; }
@@ -73,7 +73,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
 
     public class GasTotalDto
     {
-        public decimal TotalGasBBL { get; set; }
+        public decimal TotalGasSCF { get; set; }
         public decimal TotalGasM3 { get; set; }
     }
 
