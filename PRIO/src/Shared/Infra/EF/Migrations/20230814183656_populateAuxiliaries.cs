@@ -58,6 +58,9 @@ namespace PRIO.Migrations
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Wells", "TypeBaseCoordinate", "Definitiva",  DateTime.UtcNow.AddHours(-3) },
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Wells", "TypeBaseCoordinate", "Provisória",  DateTime.UtcNow.AddHours(-3) },
 
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Fields", "Location", "Terra",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Fields", "Location", "Mar",  DateTime.UtcNow.AddHours(-3) },
+
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "Tramo A",  DateTime.UtcNow.AddHours(-3) },
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "Tramo B",  DateTime.UtcNow.AddHours(-3) },
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "Tramo C",  DateTime.UtcNow.AddHours(-3) },
