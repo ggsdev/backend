@@ -515,7 +515,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             if (wellAlignmentHourValue is double)
             {
                 string? align = ConvertDoubleToTimeSpan(worksheet.Cells[BTP.CellWellAlignmentHour].Value.ToString());
-                if (align != body.Data.WellAlignmentHour){
+                if (align != body.Data.WellAlignmentHour)
+                {
                     throw new ConflictException("Horário do alinhamento do poço não corresponde a validação");
                 }
 
@@ -526,7 +527,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 var splitAlignHourSecondPosition = splitAlignHour[1];
 
 
-                if (splitAlignHourSecondPosition != body.Data.WellAlignmentHour){
+                if (splitAlignHourSecondPosition != body.Data.WellAlignmentHour)
+                {
                     throw new ConflictException("Horário do alinhamento do poço não corresponde a validação");
                 }
             }
@@ -765,7 +767,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                     BTPData.IsActive = false;
                     BTPData.IsValid = false;
                     BTPData.FinalApplicationDate = null;
-                    BTPData.ApplicationDate = null;
 
                     previousDate.FinalApplicationDate = null;
                     previousDate.IsActive = true;
@@ -785,7 +786,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                     BTPData.IsActive = false;
                     BTPData.IsValid = false;
                     BTPData.FinalApplicationDate = null;
-                    BTPData.ApplicationDate = null;
 
                     previousDate.FinalApplicationDate = previousFinalNewDate.ToString();
 
