@@ -20,13 +20,23 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
         }
         public async Task<Field?> GetByIdAsync(Guid? id)
         {
-            return await _context.Fields
-                .Include(x => x.User)
-               .Include(x => x.Wells)
-                .ThenInclude(x => x.WellEvents)
-               .Include(x => x.Installation)
-               .ThenInclude(i => i!.Cluster)
-               .FirstOrDefaultAsync(x => x.Id == id);
+            var field = await _context.Fields
+                    .Include(x => x.User)
+                    .Include(x => x.Wells)
+                        .ThenInclude(x => x.WellEvents)
+                    .Include(x => x.Installation)
+                        .ThenInclude(i => i!.Cluster)
+                    .Where(x => x.Id == id)
+                    .FirstOrDefaultAsync();
+
+            if (field != null && field.Wells is not null)
+            {
+                field.Wells = field.Wells
+                    .OrderBy(w => w.Name)
+                    .ToList();
+            }
+
+            return field;
         }
 
         public async Task<List<Field>> GetFieldsByUepCode(string code)
