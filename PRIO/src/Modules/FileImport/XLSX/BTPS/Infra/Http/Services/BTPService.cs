@@ -509,18 +509,25 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             var workbook = package.Workbook;
             var worksheet = BTP.BTPSheet is not null ? workbook.Worksheets[BTP.BTPSheet] : workbook.Worksheets[0];
 
+
             //Trated aligmentHour
-            string valorDaCelula = worksheet.Cells[BTP.CellWellAlignmentHour].Value.ToString();
-            bool checkAlignHour = decimal.TryParse(valorDaCelula, out var valor);
-            string? align = "";
-            if (checkAlignHour is true)
+            object? wellAlignmentHourValue = worksheet.Cells[BTP.CellWellAlignmentHour].Value;
+            if (wellAlignmentHourValue is double)
             {
-                decimal x = valor * 24 * 60;
-                int horas = (int)x / 60;
-                int minutos = (int)x % 60;
-                TimeSpan horaMinuto = new TimeSpan(horas, minutos, 0);
-                align = horaMinuto.ToString();
+                string? align = ConvertDoubleToTimeSpan(worksheet.Cells[BTP.CellWellAlignmentHour].Value.ToString());
+                if (align != body.Data.WellAlignmentHour)
+                    throw new ConflictException("Horário do alinhamento do poço não corresponde a validação");
+
             }
+            else if (wellAlignmentHourValue is DateTime)
+            {
+                var splitAlignHour = wellAlignmentHourValue.ToString().Split(" ");
+                var splitAlignHourSecondPosition = splitAlignHour[1];
+                throw new ConflictException("Horário do alinhamento do poço não corresponde a validação");
+            }
+
+
+
 
             //Trated Duration
             string[] duration = worksheet.Cells[BTP.CellDuration].Value.ToString().Split(' ');
@@ -623,7 +630,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 BSW = bswDecimalFormated,
                 RGO = rgoDecimalFormated,
                 WellAlignmentData = worksheet.Cells[BTP.CellWellAlignmentData].Value.ToString(),
-                WellAlignmentHour = align,
                 WellName = worksheet.Cells[BTP.CellWellName].Value.ToString(),
                 BTPSheet = BTP.BTPSheet,
                 CreatedAt = DateTime.Now,
@@ -646,6 +652,21 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 data.PotencialLiquid = oilDecimalFormated + waterDecimalFormated;
                 data.PotencialLiquidPerHour = oilPerHourDecimalFormated + waterPerHourDecimalFormated;
             }
+
+            //Trated aligmentHour
+            if (wellAlignmentHourValue is double)
+            {
+                string? align = ConvertDoubleToTimeSpan(worksheet.Cells[BTP.CellWellAlignmentHour].Value.ToString());
+                data.WellAlignmentHour = align;
+
+            }
+            else if (wellAlignmentHourValue is DateTime)
+            {
+                var splitAlignHour = wellAlignmentHourValue.ToString().Split(" ");
+                var splitAlignHourSecondPosition = splitAlignHour[1];
+                data.WellAlignmentHour = splitAlignHourSecondPosition;
+            }
+
 
             var listWellTests = await _BTPRepository.ListBTPSDataActiveByWellId(body.Validate.WellId);
             DateTime applicationDateFromBody = DateTime.Parse(body.Data.ApplicationDate);
