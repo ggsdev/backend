@@ -12,11 +12,11 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Mappings
 
             builder.Property(x => x.FROil)
                .HasColumnType("decimal")
-               .HasPrecision(4, 2);
+               .HasPrecision(10, 5);
 
             builder.Property(x => x.FRGas)
                .HasColumnType("decimal")
-               .HasPrecision(4, 2);
+               .HasPrecision(10, 5);
 
             builder.Property(x => x.TotalProductionInField)
                .HasColumnType("decimal")
