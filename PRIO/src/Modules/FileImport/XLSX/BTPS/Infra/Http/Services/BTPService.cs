@@ -561,7 +561,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             var _validateBsw = body.Data.BSW == bswDecimalFormated;
             var _validateRGO = body.Data.RGO == rgoDecimalFormated;
             var _validateWellAlignDate = body.Data.WellAlignmentData == worksheet.Cells[BTP.CellWellAlignmentData].Value.ToString();
-            var _validateWellAlignHour = body.Data.WellAlignmentHour == align;
             var _validateWellName = body.Data.WellName == worksheet.Cells[BTP.CellWellName].Value.ToString();
             var _validateBTPSheet = body.Data.BTPSheet == BTP.BTPSheet;
 
@@ -583,7 +582,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             string concatenatedString = string.Join(", ", concatenatedValues);
             var _validateMPointOil = body.Data.MPointOil == concatenatedString;
 
-            if (_validatePotenialOil is false || _validatePotencialGas is false || _validatePotencialWater is false || _validateDuration is false || _validateInitialDate is false || _validateFinalDate is false || _validateBTPNumber is false || _validateMPointGas is false || _validateMPointOil is false || _validateMPointWater is false || _validateBsw is false || _validateRGO is false || _validateWellAlignDate is false || _validateWellAlignHour is false || _validateWellName is false || _validateBTPSheet is false)
+            if (_validatePotenialOil is false || _validatePotencialGas is false || _validatePotencialWater is false || _validateDuration is false || _validateInitialDate is false || _validateFinalDate is false || _validateBTPNumber is false || _validateMPointGas is false || _validateMPointOil is false || _validateMPointWater is false || _validateBsw is false || _validateRGO is false || _validateWellAlignDate is false || _validateWellName is false || _validateBTPSheet is false)
             {
                 throw new ConflictException("Dados diferentes da importação");
             }
@@ -633,7 +632,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 BTPBase64 = content,
                 IsActive = body.Data.IsValid == false ? false : true,
             };
-            if (BTP.CellPotencialLiquid != "" || BTP.CellPotencialLiquid != null)
+            if (BTP.CellPotencialLiquid != "" && BTP.CellPotencialLiquid != null)
             {
                 var liquidCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialLiquid].Value.ToString(), out var liquidDecimal);
                 decimal liquidDecimalFormated = Math.Round(liquidDecimal, 5, MidpointRounding.AwayFromZero);
