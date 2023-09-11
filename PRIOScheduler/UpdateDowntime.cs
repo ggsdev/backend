@@ -38,27 +38,35 @@ namespace PRIOScheduler
                             var dif = (dateToday - reason.StartDate).TotalHours / 24;
                             reason.EndDate = reason.StartDate.Date.AddDays(1).AddMilliseconds(-10);
 
-                            var resultTimeSpan = (reason.EndDate.Value - reason.StartDate).TotalHours;
-                            int hours = (int)resultTimeSpan;
-                            var minutesDecimal = (resultTimeSpan - hours) * 60;
-                            int minutes = (int)minutesDecimal;
-                            var secondsDecimal = (minutesDecimal - minutes) * 60;
-                            int seconds = (int)secondsDecimal;
-                            string formattedHours;
-                            if (hours >= 1000)
+                            var FirstresultIntervalTimeSpan = (reason.StartDate.Date.AddDays(1).AddMilliseconds(-10) - reason.StartDate).TotalHours;
+                            int FirstintervalHours = (int)FirstresultIntervalTimeSpan;
+                            var FirstintervalMinutesDecimal = (FirstresultIntervalTimeSpan - FirstintervalHours) * 60;
+                            int FirstintervalMinutes = (int)FirstintervalMinutesDecimal;
+                            var FirstintervalSecondsDecimal = (FirstintervalMinutesDecimal - FirstintervalMinutes) * 60;
+                            int FirstintervalSeconds = (int)FirstintervalSecondsDecimal;
+                            string FirstReasonFormattedHours;
+                            if (FirstintervalHours >= 1000)
                             {
-                                int digitCount = (int)Math.Floor(Math.Log10(hours)) + 1;
-                                formattedHours = hours.ToString(new string('0', digitCount));
+                                int digitCount = (int)Math.Floor(Math.Log10(FirstintervalHours)) + 1;
+                                FirstReasonFormattedHours = FirstintervalHours.ToString(new string('0', digitCount));
                             }
                             else
                             {
-                                formattedHours = hours.ToString("00");
+                                FirstReasonFormattedHours = FirstintervalHours.ToString("00");
                             }
-                            var formattedTime = $"{formattedHours}:{minutes}:{seconds}";
-                            reason.Interval = formattedTime;
+                            var FirstReasonFormattedTime = $"{FirstReasonFormattedHours}:{FirstintervalMinutes}:{FirstintervalSeconds}";
+                            reason.Interval = FirstReasonFormattedTime;
 
                             DateTime refStartDate = reason.StartDate.Date.AddDays(1);
                             DateTime refStartEnd = refStartDate.AddDays(1).AddMilliseconds(-10);
+
+                            var resultIntervalTimeSpan = (refStartEnd - refStartDate).TotalHours;
+                            int intervalHours = (int)resultIntervalTimeSpan;
+                            var intervalMinutesDecimal = (resultIntervalTimeSpan - intervalHours) * 60;
+                            int intervalMinutes = (int)intervalMinutesDecimal;
+                            var intervalSecondsDecimal = (intervalMinutesDecimal - intervalMinutes) * 60;
+                            int intervalSeconds = (int)intervalSecondsDecimal;
+
                             for (int j = 0; j < dif; j++)
                             {
                                 var rest = dif - j;
@@ -80,28 +88,21 @@ namespace PRIOScheduler
                                 {
                                     newEventReason.EndDate = refStartEnd;
 
-                                    var resultReasonTimeSpan = (newEventReason.EndDate.Value - newEventReason.StartDate).TotalHours;
-                                    int reasonHours = (int)resultReasonTimeSpan;
-                                    var reasonMinutesDecimal = (resultReasonTimeSpan - reasonHours) * 60;
-                                    int reasonMinutes = (int)reasonMinutesDecimal;
-                                    var reasonSecondsDecimal = (reasonMinutesDecimal - reasonMinutes) * 60;
-                                    int reasonSeconds = (int)reasonSecondsDecimal;
                                     string ReasonFormattedHours;
-                                    if (reasonHours >= 1000)
+                                    if (intervalHours >= 1000)
                                     {
-                                        int digitCount = (int)Math.Floor(Math.Log10(hours)) + 1;
-                                        ReasonFormattedHours = hours.ToString(new string('0', digitCount));
+                                        int digitCount = (int)Math.Floor(Math.Log10(intervalHours)) + 1;
+                                        ReasonFormattedHours = intervalHours.ToString(new string('0', digitCount));
                                     }
                                     else
                                     {
-                                        ReasonFormattedHours = hours.ToString("00");
+                                        ReasonFormattedHours = intervalHours.ToString("00");
                                     }
-                                    var reasonFormattedTime = $"{formattedHours}:{minutes}:{seconds}";
+                                    var reasonFormattedTime = $"{ReasonFormattedHours}:{intervalMinutes}:{intervalSeconds}";
                                     newEventReason.Interval = reasonFormattedTime;
-
+                                    refStartDate = newEventReason.StartDate.AddDays(1);
+                                    refStartEnd = refStartDate.AddDays(1).AddMilliseconds(-10);
                                 }
-                                refStartDate = newEventReason.StartDate.AddDays(1);
-                                refStartEnd = refStartDate.AddMilliseconds(-10);
 
                                 await dbContext.EventReasons.AddAsync(newEventReason);
                             }
