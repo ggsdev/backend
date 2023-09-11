@@ -47,6 +47,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
             return await _context.FieldsProductions
                 .Include(x => x.WellProductions)
                 .ThenInclude(x => x.WellTest)
+                .Include(x => x.WellProductions)
+                .ThenInclude(x => x.WellLosses)
                 .FirstOrDefaultAsync(x => x.FieldId == fieldId && x.ProductionId == productionId);
         }
 
@@ -143,7 +145,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                 .Include(x => x.WellProductions)
                 .Include(x => x.Measurements)
                     .ThenInclude(m => m.MeasurementHistory)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive);
         }
 
         public async Task<List<Production>> GetAllProductions()
