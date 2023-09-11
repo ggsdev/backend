@@ -86,7 +86,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                                     break;
                                 }
                             }
-                            if (!allBtpsOfProducingWellsValid.Any() && well.CategoryOperator == "Injetor")
+                            if (!allBtpsOfProducingWellsValid.Any() && well.CategoryOperator is not null && well.CategoryOperator.ToUpper().Contains("INJETOR"))
                             {
                                 wellContainBtpValid = true;
                                 break;
@@ -1019,6 +1019,13 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     var totalWaterPotencial = fieldProductionInDatabase.WellProductions
                        .Sum(x => ((24 - WellProductionUtils.CalculateDowntimeInHours(x.Downtime)) / 24) * x.WellTest.PotencialWater);
 
+                    var totalGasPotencialWithoutDowntime = fieldProductionInDatabase.WellProductions
+                .Sum(x => x.WellTest.PotencialGas);
+                    var totalOilPotencialWithoutDowntime = fieldProductionInDatabase.WellProductions
+                       .Sum(x => x.WellTest.PotencialOil);
+                    var totalWaterPotencialWithoutDowntime = fieldProductionInDatabase.WellProductions
+                       .Sum(x => x.WellTest.PotencialWater);
+
                     var totalWater = 0m;
                     var totalOil = 0m;
                     var totalGas = 0m;
@@ -1029,7 +1036,8 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         var wellPotencialGasAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField(wellProduction.WellTest.PotencialGas, totalGasPotencial);
                         var wellPotencialOilAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField(wellProduction.WellTest.PotencialOil, totalOilPotencial);
                         var wellPotencialWaterAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField(wellProduction.WellTest.PotencialWater, totalWaterPotencial);
-
+                        var calcBSWOil = (100 - wellProduction.WellTest.BSW) / 100;
+                        var calcBSWWater = wellProduction.WellTest.BSW / 100;
                         //PRODUCTIONS
                         var productionGas = fieldFR.FRGas is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.GasProductionInField, wellPotencialGasAsPercentageOfField) : 0;
                         var productionOil = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.OilProductionInField, wellPotencialOilAsPercentageOfField) : 0;
@@ -1038,6 +1046,25 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         wellProduction.ProductionGasInWellM3 = productionGas * (24 - WellProductionUtils.CalculateDowntimeInHours(wellProduction.Downtime)) / 24;
                         wellProduction.ProductionOilInWellM3 = productionOil * (24 - WellProductionUtils.CalculateDowntimeInHours(wellProduction.Downtime)) / 24;
                         wellProduction.ProductionWaterInWellM3 = productionWater * (24 - WellProductionUtils.CalculateDowntimeInHours(wellProduction.Downtime)) / 24;
+
+                        wellProduction.ProductionOilInWellBBL = wellProduction.ProductionOilInWellM3 * ProductionUtils.m3ToBBLConversionMultiplier;
+                        wellProduction.ProductionGasInWellSCF = wellProduction.ProductionGasInWellM3 * ProductionUtils.m3ToSCFConversionMultipler;
+                        wellProduction.ProductionWaterInWellBBL = wellProduction.ProductionWaterInWellM3 * ProductionUtils.m3ToBBLConversionMultiplier;
+
+                        foreach (var wellLoss in wellProduction.WellLosses)
+                        {
+
+                            wellLoss.ProductionLostOil = (((wellProduction.WellTest.PotencialOil / totalOilPotencialWithoutDowntime) * (production.Oil is not null ? production.Oil.TotalOil : 0) * (fieldFR.FROil is not null ? fieldFR.FROil.Value : 0))) * wellLoss.Downtime / 24;
+
+                            wellLoss.ProductionLostGas = ((wellProduction.WellTest.PotencialGas / totalGasPotencialWithoutDowntime * (fieldFR.FRGas is not null ? fieldFR.FRGas.Value : 0)) * ((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas : 0))) * wellLoss.Downtime / 24;
+                            wellLoss.ProductionLostWater = (((wellProduction.WellTest.PotencialOil / totalOilPotencialWithoutDowntime) * production.Oil.TotalOil * fieldFR.FROil.Value) * wellLoss.Downtime / 24) * calcBSWWater / calcBSWOil;
+
+                            _repository.UpdateWellLost(wellLoss);
+                        }
+
+                        wellProduction.ProductionLostGas = wellProduction.WellLosses.Sum(x => x.ProductionLostGas);
+                        wellProduction.ProductionLostOil = wellProduction.WellLosses.Sum(x => x.ProductionLostOil);
+                        wellProduction.ProductionLostWater = wellProduction.WellLosses.Sum(x => x.ProductionLostWater);
 
                         totalWater += wellProduction.ProductionWaterInWellM3;
                         totalOil += wellProduction.ProductionOilInWellM3;
@@ -1257,9 +1284,30 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         wellProd.ProductionOilInWellM3 = productionOIl;
                         wellProd.ProductionGasInWellM3 = productionGas;
                         wellProd.ProductionWaterInWellM3 = productionWater;
+
+                        wellProd.ProductionOilInWellBBL = productionOIl * ProductionUtils.m3ToBBLConversionMultiplier;
+                        wellProd.ProductionGasInWellSCF = productionGas * ProductionUtils.m3ToSCFConversionMultipler;
+                        wellProd.ProductionWaterInWellBBL = productionWater * ProductionUtils.m3ToBBLConversionMultiplier;
+
+                        foreach (var wellLoss in wellProd.WellLosses)
+                        {
+
+                            wellLoss.ProductionLostOil = ((wellProd.WellTest.PotencialOil / totalPotencialOilUEP) * production.Oil.TotalOil) * wellLoss.Downtime / 24;
+                            wellLoss.ProductionLostGas = ((wellProd.WellTest.PotencialGas / totalPotencialGasUEP) * ((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas : 0))) * wellLoss.Downtime / 24;
+                            wellLoss.ProductionLostWater = (((wellProd.WellTest.PotencialOil / totalPotencialOilUEP) * production.Oil.TotalOil) * wellLoss.Downtime / 24) * calcBSWWater / calcBSWOil;
+
+                            _repository.UpdateWellLost(wellLoss);
+                        }
+
+                        wellProd.ProductionLostGas = wellProd.WellLosses.Sum(x => x.ProductionLostGas);
+                        wellProd.ProductionLostOil = wellProd.WellLosses.Sum(x => x.ProductionLostOil);
+                        wellProd.ProductionLostWater = wellProd.WellLosses.Sum(x => x.ProductionLostWater);
+
                         totalWater += wellProd.ProductionWaterInWellM3;
                         totalGas += wellProd.ProductionGasInWellM3;
                         totalOil += wellProd.ProductionOilInWellM3;
+
+                        _repository.Update(wellProd);
                     }
 
                     fieldProductionInDatabase.WaterProductionInField = totalWater;

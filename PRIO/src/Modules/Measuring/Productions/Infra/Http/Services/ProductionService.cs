@@ -1924,6 +1924,9 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 {
                     measurement.IsActive = false;
                     measurement.DeletedAt = deletedAt;
+
+                    measurement.MeasurementHistory.IsActive = false;
+                    measurement.MeasurementHistory.DeletedAt = deletedAt;
                 }
             }
 

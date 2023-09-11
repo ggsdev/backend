@@ -126,7 +126,7 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Repositories
             return await _context.MeasurementHistories
                 .Where(x => x.MeasuredAt.Year == date.Year &&
                             x.MeasuredAt.Month == date.Month &&
-                            x.MeasuredAt.Day == date.Day)
+                            x.MeasuredAt.Day == date.Day && x.IsActive)
                 .ToListAsync();
         }
     }
