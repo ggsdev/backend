@@ -18,10 +18,19 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models
         public decimal ProductionGasAsPercentageOfInstallation { get; set; }
         public decimal ProductionOilAsPercentageOfInstallation { get; set; }
         public decimal? ProductionWaterAsPercentageOfInstallation { get; set; }
-        public decimal EfficienceLoss { get; set; }
-        public decimal ProductionLost { get; set; }
+        public decimal EfficienceLossOil { get; set; }
+        public decimal ProductionLostOil { get; set; }
+        public decimal ProportionalDayOil { get; set; }
+
+        public decimal EfficienceLossGas { get; set; }
+        public decimal ProductionLostGas { get; set; }
+        public decimal ProportionalDayGas { get; set; }
+
+        public decimal EfficienceLossWater { get; set; }
+        public decimal ProductionLostWater { get; set; }
+        public decimal ProportionalDayWater { get; set; }
+
         public string Downtime { get; set; }
-        public decimal ProportionalDay { get; set; }
         public Guid WellId { get; set; }
         public WellTests WellTest { get; set; }
         public Production Production { get; set; }
