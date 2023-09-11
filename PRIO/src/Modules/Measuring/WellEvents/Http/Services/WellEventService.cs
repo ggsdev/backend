@@ -1376,7 +1376,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             int minutes = (int)minutesDecimal;
             var secondsDecimal = (minutesDecimal - minutes) * 60;
             int seconds = (int)secondsDecimal;
-
+            string formattedMinutes = minutes < 10 ? $"0{minutes}" : minutes.ToString();
+            string formattedSecond = seconds < 10 ? $"0{seconds}" : seconds.ToString();
             string formattedHours;
             if (hours >= 1000)
             {
@@ -1388,7 +1389,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 formattedHours = hours.ToString("00");
             }
 
-            return $"{formattedHours}:{minutes}:{seconds}";
+            return $"{formattedHours}:{formattedMinutes}:{formattedSecond}";
         }
     }
 }

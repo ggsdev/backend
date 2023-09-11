@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models;
@@ -12,9 +11,7 @@ using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Modules.Hierarchy.Wells.ViewModels;
 using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
 using PRIO.src.Modules.Measuring.WellEvents.Interfaces;
-using PRIO.src.Shared.Dtos;
 using PRIO.src.Shared.Errors;
-using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
 using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
@@ -26,14 +23,14 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
     {
         private readonly IMapper _mapper;
         private readonly IFieldRepository _fieldRepository;
-        private readonly DataContext _context;
+        //private readonly DataContext _context;
         private readonly IWellRepository _wellRepository;
         private readonly IWellEventRepository _eventWellRepository;
         private readonly ICompletionRepository _completionRepository;
         private readonly SystemHistoryService _systemHistoryService;
         private readonly string _tableName = HistoryColumns.TableWells;
 
-        public WellService(IMapper mapper, IFieldRepository fieldRepository, SystemHistoryService systemHistoryService, IWellRepository wellRepository, ICompletionRepository completionRepositor, IWellEventRepository wellEventRepository, DataContext cpn)
+        public WellService(IMapper mapper, IFieldRepository fieldRepository, SystemHistoryService systemHistoryService, IWellRepository wellRepository, ICompletionRepository completionRepositor, IWellEventRepository wellEventRepository)
         {
             _mapper = mapper;
             _fieldRepository = fieldRepository;
@@ -41,7 +38,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             _completionRepository = completionRepositor;
             _systemHistoryService = systemHistoryService;
             _eventWellRepository = wellEventRepository;
-            _context = cpn;
+            //_context = cpn;
         }
 
         public async Task<CreateUpdateWellDTO> CreateWell(CreateWellViewModel body, User user)
@@ -343,51 +340,51 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
         }
 
 
-        public async Task<PaginatedDataDTO<WellDTO>> GetWellsPaginated(int pageNumber, int pageSize, string requestUrl)
-        {
-            var totalCount = await _context.Wells.CountAsync();
+        //public async Task<PaginatedDataDTO<WellDTO>> GetWellsPaginated(int pageNumber, int pageSize, string requestUrl)
+        //{
+        //    var totalCount = await _context.Wells.CountAsync();
 
-            var wells = await _context.Wells
-                    .Include(x => x.User)
-                    .Include(x => x.Completions)
-                    .Include(x => x.Field)
-                    .ThenInclude(f => f.Installation)
-                    .ThenInclude(i => i.Cluster)
-                    .OrderBy(x => x.Id)
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToListAsync();
+        //    var wells = await _context.Wells
+        //            .Include(x => x.User)
+        //            .Include(x => x.Completions)
+        //            .Include(x => x.Field)
+        //            .ThenInclude(f => f.Installation)
+        //            .ThenInclude(i => i.Cluster)
+        //            .OrderBy(x => x.Id)
+        //            .Skip((pageNumber - 1) * pageSize)
+        //            .Take(pageSize)
+        //            .ToListAsync();
 
-            var wellsDTO = _mapper.Map<List<Well>, List<WellDTO>>(wells);
+        //    var wellsDTO = _mapper.Map<List<Well>, List<WellDTO>>(wells);
 
-            var paginatedData = new PaginatedDataDTO<WellDTO>
-            {
-                Count = wellsDTO.Count,
-                Data = wellsDTO
-            };
+        //    var paginatedData = new PaginatedDataDTO<WellDTO>
+        //    {
+        //        Count = wellsDTO.Count,
+        //        Data = wellsDTO
+        //    };
 
-            var previousPageNumber = pageNumber > 1 ? pageNumber - 1 : 0;
-            var nextPageNumber = pageNumber * pageSize < totalCount ? pageNumber + 1 : 0;
+        //    var previousPageNumber = pageNumber > 1 ? pageNumber - 1 : 0;
+        //    var nextPageNumber = pageNumber * pageSize < totalCount ? pageNumber + 1 : 0;
 
-            var uriBuilder = new UriBuilder(requestUrl);
-            var queryParams = System.Web.HttpUtility.ParseQueryString(uriBuilder.Query);
+        //    var uriBuilder = new UriBuilder(requestUrl);
+        //    var queryParams = System.Web.HttpUtility.ParseQueryString(uriBuilder.Query);
 
-            if (previousPageNumber > 0)
-            {
-                queryParams.Set("pageNumber", previousPageNumber.ToString());
-                uriBuilder.Query = queryParams.ToString();
-                paginatedData.PreviousPage = uriBuilder.ToString();
-            }
+        //    if (previousPageNumber > 0)
+        //    {
+        //        queryParams.Set("pageNumber", previousPageNumber.ToString());
+        //        uriBuilder.Query = queryParams.ToString();
+        //        paginatedData.PreviousPage = uriBuilder.ToString();
+        //    }
 
-            if (nextPageNumber > 0)
-            {
-                queryParams.Set("pageNumber", nextPageNumber.ToString());
-                uriBuilder.Query = queryParams.ToString();
-                paginatedData.NextPage = uriBuilder.ToString();
-            }
+        //    if (nextPageNumber > 0)
+        //    {
+        //        queryParams.Set("pageNumber", nextPageNumber.ToString());
+        //        uriBuilder.Query = queryParams.ToString();
+        //        paginatedData.NextPage = uriBuilder.ToString();
+        //    }
 
-            return paginatedData;
-        }
+        //    return paginatedData;
+        //}
 
     }
 }

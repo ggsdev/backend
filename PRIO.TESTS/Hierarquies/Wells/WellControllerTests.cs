@@ -18,6 +18,8 @@ using PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Controllers;
 using PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Modules.Hierarchy.Wells.ViewModels;
+using PRIO.src.Modules.Measuring.WellEvents.EF.Repositories;
+using PRIO.src.Modules.Measuring.WellEvents.Interfaces;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
@@ -45,6 +47,7 @@ namespace PRIO.TESTS.Hierarquies.Wells
         private ISystemHistoryRepository _systemHistoryRepository;
         private IFieldRepository _fieldRepository;
         private ICompletionRepository _completionRepository;
+        private IWellEventRepository _eventRepository;
         private SystemHistoryService _systemHistoryService;
 
         private Guid _invalidId = Guid.NewGuid();
@@ -147,10 +150,11 @@ namespace PRIO.TESTS.Hierarquies.Wells
             _systemHistoryRepository = new SystemHistoryRepository(_context);
             _wellRepository = new WellRepository(_context);
             _fieldRepository = new FieldRepository(_context);
+            _eventRepository = new WellEventRepository(_context);
 
             _systemHistoryService = new SystemHistoryService(_mapper, _systemHistoryRepository);
 
-            _service = new WellService(_mapper, _fieldRepository, _systemHistoryService, _wellRepository, _completionRepository);
+            _service = new WellService(_mapper, _fieldRepository, _systemHistoryService, _wellRepository, _completionRepository, _eventRepository);
 
             _controller = new WellController(_service);
             _controller.ControllerContext.HttpContext = httpContext;
