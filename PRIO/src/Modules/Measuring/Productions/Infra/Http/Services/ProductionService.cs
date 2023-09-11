@@ -47,8 +47,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
         {
             var production = await _repository.GetExistingByDate(date);
 
-            Console.WriteLine("asdas");
-
             if (production is null)
                 throw new NotFoundException($"Produção na data: {date.ToString("dd/MM/yyyy")} não encontrada");
 
@@ -484,7 +482,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             var measuringPoint = new LocalOilPointDto
                             {
                                 DateMeasuring = measurementDateOil,
-                                VolumeAfterBsw = measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001 * (1 - measurement.BswManual_001),
+                                VolumeAfterBsw = measurement.VolumeAfterManualBsw_001/*MED_VOLUME_BRTO_CRRGO_MVMDO_001 * (1 - measurement.BswManual_001)*/,
                                 VolumeBeforeBsw = measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001,
                                 LocalPoint = section.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = section.MeasuringPoint.TagPointMeasuring,
@@ -505,7 +503,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             var measuringPoint = new LocalOilPointDto
                             {
                                 DateMeasuring = measurementDateOil,
-                                VolumeAfterBsw = measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001 * (1 - measurement.BswManual_001),
+                                VolumeAfterBsw = measurement.VolumeAfterManualBsw_001,
                                 VolumeBeforeBsw = measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001,
                                 LocalPoint = dor.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = dor.MeasuringPoint.TagPointMeasuring,
@@ -526,7 +524,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             var measuringPoint = new LocalOilPointDto
                             {
                                 DateMeasuring = measurementDateOil,
-                                VolumeAfterBsw = measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001,
+                                VolumeAfterBsw = measurement.VolumeAfterManualBsw_001,
                                 VolumeBeforeBsw = measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001,
                                 LocalPoint = drain.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = drain.MeasuringPoint.TagPointMeasuring,
@@ -547,7 +545,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             var measuringPoint = new LocalOilPointDto
                             {
                                 DateMeasuring = measurementDateOil,
-                                VolumeAfterBsw = measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001,
+                                VolumeAfterBsw = measurement.VolumeAfterManualBsw_001,
                                 VolumeBeforeBsw = measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001,
                                 LocalPoint = tog.StaticLocalMeasuringPoint,
                                 TagMeasuringPoint = tog.MeasuringPoint.TagPointMeasuring,
@@ -1539,7 +1537,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     LocationMeasuringPoint = section.StaticLocalMeasuringPoint,
                                     StatusMeasuringPoint = true,
                                     TagMeasuringPoint = section.MeasuringPoint.TagPointMeasuring,
-                                    Volume = measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001,
+                                    Volume = measurementResponse.VolumeAfterManualBsw_001,
 
                                 };
                                 file.Summary.Add(summary);
@@ -1581,7 +1579,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     LocationMeasuringPoint = dor.StaticLocalMeasuringPoint,
                                     StatusMeasuringPoint = true,
                                     TagMeasuringPoint = dor.MeasuringPoint.TagPointMeasuring,
-                                    Volume = measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001,
+                                    Volume = measurementResponse.VolumeAfterManualBsw_001,
 
                                 };
                                 file.Summary.Add(summary);
@@ -1623,7 +1621,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     LocationMeasuringPoint = drain.StaticLocalMeasuringPoint,
                                     StatusMeasuringPoint = true,
                                     TagMeasuringPoint = drain.MeasuringPoint.TagPointMeasuring,
-                                    Volume = measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001,
+                                    Volume = measurementResponse.VolumeAfterManualBsw_001,
 
                                 };
                                 file.Summary.Add(summary);
@@ -1664,7 +1662,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     LocationMeasuringPoint = tog.StaticLocalMeasuringPoint,
                                     StatusMeasuringPoint = true,
                                     TagMeasuringPoint = tog.MeasuringPoint.TagPointMeasuring,
-                                    Volume = measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001,
+                                    Volume = measurementResponse.VolumeAfterManualBsw_001,
 
                                 };
                                 file.Summary.Add(summary);

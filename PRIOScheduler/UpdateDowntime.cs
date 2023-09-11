@@ -45,6 +45,8 @@ namespace PRIOScheduler
                             var FirstintervalSecondsDecimal = (FirstintervalMinutesDecimal - FirstintervalMinutes) * 60;
                             int FirstintervalSeconds = (int)FirstintervalSecondsDecimal;
                             string FirstReasonFormattedHours;
+                            string firstFormattedMinutes = FirstintervalMinutes < 10 ? $"0{FirstintervalMinutes}" : FirstintervalMinutes.ToString();
+                            string firstFormattedSecond = FirstintervalSeconds < 10 ? $"0{FirstintervalSeconds}" : FirstintervalSeconds.ToString();
                             if (FirstintervalHours >= 1000)
                             {
                                 int digitCount = (int)Math.Floor(Math.Log10(FirstintervalHours)) + 1;
@@ -54,7 +56,7 @@ namespace PRIOScheduler
                             {
                                 FirstReasonFormattedHours = FirstintervalHours.ToString("00");
                             }
-                            var FirstReasonFormattedTime = $"{FirstReasonFormattedHours}:{FirstintervalMinutes}:{FirstintervalSeconds}";
+                            var FirstReasonFormattedTime = $"{FirstReasonFormattedHours}:{firstFormattedMinutes}:{firstFormattedSecond}";
                             reason.Interval = FirstReasonFormattedTime;
 
                             DateTime refStartDate = reason.StartDate.Date.AddDays(1);
@@ -66,6 +68,7 @@ namespace PRIOScheduler
                             int intervalMinutes = (int)intervalMinutesDecimal;
                             var intervalSecondsDecimal = (intervalMinutesDecimal - intervalMinutes) * 60;
                             int intervalSeconds = (int)intervalSecondsDecimal;
+
 
                             for (int j = 0; j < dif; j++)
                             {
@@ -88,6 +91,8 @@ namespace PRIOScheduler
                                 {
                                     newEventReason.EndDate = refStartEnd;
 
+                                    string ReasonFormattedMinutes = intervalMinutes < 10 ? $"0{intervalMinutes}" : intervalMinutes.ToString();
+                                    string ReasonFormattedSecond = intervalSeconds < 10 ? $"0{intervalSeconds}" : intervalSeconds.ToString();
                                     string ReasonFormattedHours;
                                     if (intervalHours >= 1000)
                                     {
@@ -98,7 +103,7 @@ namespace PRIOScheduler
                                     {
                                         ReasonFormattedHours = intervalHours.ToString("00");
                                     }
-                                    var reasonFormattedTime = $"{ReasonFormattedHours}:{intervalMinutes}:{intervalSeconds}";
+                                    var reasonFormattedTime = $"{ReasonFormattedHours}:{ReasonFormattedMinutes}:{ReasonFormattedSecond}";
                                     newEventReason.Interval = reasonFormattedTime;
                                     refStartDate = newEventReason.StartDate.AddDays(1);
                                     refStartEnd = refStartDate.AddDays(1).AddMilliseconds(-10);
