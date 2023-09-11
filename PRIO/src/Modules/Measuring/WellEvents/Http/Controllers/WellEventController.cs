@@ -20,7 +20,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Controllers
         [HttpPost("close")]
         public async Task<IActionResult> Post(CreateClosingEventViewModel body)
         {
-            await _service.CloseWellFieldEvent(body);
+            await _service.CloseWellEvent(body);
 
             return NoContent();
         }
@@ -28,7 +28,15 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Controllers
         [HttpPost("open")]
         public async Task<IActionResult> Post(CreateOpeningEventViewModel body)
         {
-            await _service.OpenWellFieldEvent(body);
+            await _service.OpenWellEvent(body);
+
+            return NoContent();
+        }
+
+        [HttpPost("{eventId}/reasons")]
+        public async Task<IActionResult> Post(Guid eventId, CreateReasonViewModel body)
+        {
+            await _service.AddReasonClosedEvent(eventId, body);
 
             return NoContent();
         }
@@ -37,6 +45,22 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Controllers
         public async Task<IActionResult> Get(Guid fieldId, string eventType)
         {
             var data = await _service.GetWellsWithEvents(fieldId, eventType);
+
+            return Ok(data);
+        }
+
+        [HttpGet("well/{wellId}")]
+        public async Task<IActionResult> GetWellEvents([FromRoute] Guid wellId, [FromQuery] string date)
+        {
+            var data = await _service.GetWellEvents(wellId, date);
+
+            return Ok(data);
+        }
+
+        [HttpGet("{eventId}")]
+        public async Task<IActionResult> Get([FromRoute] Guid eventId)
+        {
+            var data = await _service.GetClosedEventById(eventId);
 
             return Ok(data);
         }

@@ -5,8 +5,19 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Interfaces
     public interface IWellEventRepository
     {
         Task Add(WellEvent wellEvent);
-        Task<WellEvent?> GetById(Guid id);
+        Task<WellEvent?> GetClosedEventById(Guid id);
+        Task<List<WellEvent>> GetAllWellEvent(Guid wellId);
         void Update(WellEvent wellEvent);
         Task Save();
+
+
+
+        #region Reason
+        void UpdateReason(EventReason reason);
+        Task AddReasonClosedEvent(EventReason data);
+
+        void DeleteReason(EventReason reason);
+        #endregion
+
     }
 }

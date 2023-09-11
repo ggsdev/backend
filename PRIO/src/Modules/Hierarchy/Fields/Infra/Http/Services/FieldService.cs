@@ -105,6 +105,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
             if (field is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Field>());
 
+
             var fieldDTO = _mapper.Map<Field, FieldDTO>(field);
             return fieldDTO;
         }

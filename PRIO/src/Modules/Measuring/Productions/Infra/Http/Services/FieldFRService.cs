@@ -59,6 +59,11 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                     if (body.Gas.FR is null)
                         throw new ConflictException("Fator de rateio do campo não encontrado.");
 
+                    var decimalPlaces = BitConverter.GetBytes(decimal.GetBits(field.FluidFr)[3])[2];
+
+                    if (decimalPlaces > 4)
+                        throw new BadRequestException("Fator de rateio do óleo pode ter no máximo duas casas decimais.");
+
                     if (body.Gas.FR.IsApplicable)
                         sumGas += field.FluidFr;
                 }
@@ -66,7 +71,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 if (sumGas != 1 && body.Gas.FR.IsApplicable)
                     throw new ConflictException("Gás: Soma dos fatores de rateio deve ser 1.");
 
-                if (/*body.BothGas &&*/ body.Gas.FR.IsApplicable)
+                if (body.Gas.FR.IsApplicable)
                 {
                     foreach (var field in body.Gas.FR.Fields)
                     {
@@ -135,6 +140,11 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 {
                     if (body.Oil.FR is null)
                         throw new ConflictException("Fator de rateio do campo não encontrado.");
+
+                    var decimalPlaces = BitConverter.GetBytes(decimal.GetBits(field.FluidFr)[3])[2];
+
+                    if (decimalPlaces > 4)
+                        throw new BadRequestException("Fator de rateio do óleo pode ter no máximo duas casas decimais.");
 
                     if (body.Oil.FR.IsApplicable)
                         sumOil += field.FluidFr;

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Productions.Interfaces;
+using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF;
 
 namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
@@ -48,6 +49,21 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                 .ThenInclude(x => x.WellTest)
                 .FirstOrDefaultAsync(x => x.FieldId == fieldId && x.ProductionId == productionId);
         }
+
+        public async Task<WellLosses?> GetWellLossByEventAndWellProductionId(Guid eventId, Guid wellProductionId)
+        {
+            return await _context.WellLosses
+                .Include(x => x.Event)
+                .Include(x => x.WellAllocation)
+                .FirstOrDefaultAsync(x => x.Event.Id == eventId && x.WellAllocation.Id == wellProductionId);
+        }
+        public async Task<WellProduction?> GetWellProductionByWellAndProductionId(Guid wellId, Guid productionId)
+        {
+            return await _context.WellProductions
+                .Include(x => x.Production)
+                .Include(x => x.FieldProduction)
+                .FirstOrDefaultAsync(x => x.Id == wellId && x.Production.Id == productionId);
+        }
         public async Task AddFieldProduction(FieldProduction fieldProduction)
         {
             await _context.FieldsProductions.AddAsync(fieldProduction);
@@ -87,6 +103,19 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                     .ThenInclude(m => m.MeasurementHistory)
                 .Include(x => x.Measurements)
                     .ThenInclude(d => d.MeasuringPoint)
+                .Where(x => x.MeasuredAt.Year == date.Year &&
+                            x.MeasuredAt.Month == date.Month &&
+                            x.MeasuredAt.Day == date.Day && x.IsActive)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<Production?> GetExistingByDateWithProductionAllocation(DateTime date)
+        {
+            return await _context.Productions
+                .Include(x => x.WellProductions)
+                    .ThenInclude(x => x.FieldProduction)
+                .Include(x => x.FieldsFR)
+                    .ThenInclude(x => x.Field)
                 .Where(x => x.MeasuredAt.Year == date.Year &&
                             x.MeasuredAt.Month == date.Month &&
                             x.MeasuredAt.Day == date.Day && x.IsActive)

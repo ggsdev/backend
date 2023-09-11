@@ -16,7 +16,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
         public async Task AddUserPermission(UserPermission userPermission)
         {
             await _context.AddAsync(userPermission);
-            await _context.SaveChangesAsync();
         }
 
         public async Task<List<UserPermission>> GetUserPermissionsByUserId(Guid userId)

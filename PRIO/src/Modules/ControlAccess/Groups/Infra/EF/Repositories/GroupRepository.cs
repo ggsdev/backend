@@ -51,7 +51,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
             var group = new Group
             {
                 Id = groupId,
-                Name = body.GroupName,
+                Name = body.Name,
                 CreatedAt = DateTime.UtcNow.AddHours(-3),
                 Description = body.Description is null ? null : body.Description,
             };
@@ -79,7 +79,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
                     MenuRoute = foundMenuParent.Route,
                     CreatedAt = DateTime.UtcNow.AddHours(-3),
                     Menu = foundMenuParent,
-                    GroupName = body.GroupName,
+                    GroupName = body.Name,
                     hasChildren = foundMenusChildrensInParent.Count == 0 ? false : true,
                     hasParent = foundMenuParent.Parent is null ? false : true,
                     Group = group,
@@ -108,7 +108,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
                                 MenuRoute = foundMenuChildren.Route,
                                 CreatedAt = DateTime.UtcNow.AddHours(-3),
                                 Menu = foundMenuChildren,
-                                GroupName = body.GroupName,
+                                GroupName = body.Name,
                                 hasChildren = foundMenusChildrensInChildren.Count == 0 ? false : true,
                                 hasParent = foundMenuChildren.Parent is null ? false : true,
                                 Group = group,
@@ -124,7 +124,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
                                     Id = groupOperationChildrenId,
                                     GlobalOperation = foundOperation,
                                     GroupPermission = createGroupPermissionChildren,
-                                    GroupName = body.GroupName,
+                                    GroupName = body.Name,
                                     OperationName = foundOperation.Method
                                 };
                                 await _context.GroupOperations.AddAsync(createGroupOperationChildren);
@@ -143,7 +143,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
                             Id = groupOperationParentId,
                             GlobalOperation = foundOperation,
                             GroupPermission = createGroupPermissionParent,
-                            GroupName = body.GroupName,
+                            GroupName = body.Name,
                             OperationName = foundOperation.Method
                         };
                         await _context.GroupOperations.AddAsync(createGroupOperationParent);
@@ -261,6 +261,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
             foreach (var permission in groupPermissionsDTO)
             {
                 var groupPermission = await _context.GroupPermissions
+                    .Include(x => x.Group)
                     .Where(x => x.Id == permission.Id)
                     .FirstOrDefaultAsync();
 

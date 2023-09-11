@@ -38,10 +38,10 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
 
         public async Task<GroupWithMenusDTO> CreateGroup(CreateGroupViewModel body, User loggedUser)
         {
-            if (body.GroupName is null)
+            if (body.Name is null)
                 throw new ConflictException("Group Name is Required.");
 
-            var foundGroup = await _groupRepository.GetGroupByNameAsync(body.GroupName);
+            var foundGroup = await _groupRepository.GetGroupByNameAsync(body.Name);
             if (foundGroup is not null)
                 throw new ConflictException("Group Name is already exists.");
 
@@ -51,11 +51,10 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
             var returnGroup = await _groupRepository.GetGroupWithPermissionsAndOperationsByIdAsync(group.Id);
             var returnGroupDTO = _mapper.Map<Group, GroupWithMenusDTO>(returnGroup);
 
-            //await _systemHistoryService.Create<Group, GroupHistoryDTO>(HistoryColumns.TableGroups, loggedUser, group.Id, group);
+            await _systemHistoryService.Create<Group, GroupHistoryDTO>(HistoryColumns.TableGroups, loggedUser, group.Id, group);
 
             return returnGroupDTO;
         }
-
         public async Task<UserGroupDTO> InsertUserInGroup(Guid groupId, Guid userId, User userLoggedIn)
         {
             var group = await _groupRepository.GetGroupByIdAsync(groupId);
@@ -106,7 +105,6 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
                 throw;
             }
         }
-
         public async Task RemoveUserInGroup(Guid groupId, Guid userId, User userLoggedIn)
         {
             var group = await _groupRepository.GetGroupByIdAsync(groupId);
@@ -145,14 +143,12 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
             await _groupRepository.SaveChangesAsync();
 
         }
-
         public async Task<List<GroupDTO>> GetGroups()
         {
             var groups = await _groupRepository.GetGroups();
             var groupsDTO = _mapper.Map<List<Group>, List<GroupDTO>>(groups);
             return groupsDTO;
         }
-
         public async Task<GroupWithGroupPermissionDTO> GetGroupById(Guid id)
         {
             var group = await _groupRepository.GetGroupByIdAsync(id);
@@ -194,7 +190,6 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
             groupDTO.GroupPermissions.RemoveAll(permission => permission.MenuOrder.Contains("."));
             return groupDTO;
         }
-
         public async Task<GroupDTO> UpdateGroup(Guid id, UpdateGroupViewModel body, User loggedUser)
         {
             var group = await _groupRepository.GetGroupByIdAsync(id);
@@ -208,7 +203,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
             if (updatedProperties.Any() is false)
                 throw new BadRequestException("No properties were updated, try other values");
 
-            if (updatedProperties.TryGetValue("name", out var groupName))
+            if (updatedProperties.TryGetValue("groupname", out var groupName))
             {
                 var userPermissions = await _userPermissionRepository.GetUserPermissionsByGroupId();
 
@@ -316,7 +311,6 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
 
             return groupDTO;
         }
-
         public async Task DeleteGroup(Guid id)
         {
             var group = await _groupRepository.GetGroupByIdAsync(id);
@@ -351,7 +345,6 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
 
             await _groupRepository.SaveChangesAsync();
         }
-
         public async Task RestoreGroup(Guid id)
         {
             var group = await _groupRepository.GetGroupByIdAsync(id);
@@ -411,6 +404,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
                     }
                 }
             }
+            await _groupRepository.SaveChangesAsync();
         }
     }
 }

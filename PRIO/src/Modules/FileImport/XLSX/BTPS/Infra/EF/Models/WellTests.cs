@@ -35,6 +35,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models
         public bool IsValid { get; set; }
         public BTPBase64? BTPBase64 { get; set; }
         public Well? Well { get; set; }
-        public List<WellProductions>? WellAllocations { get; set; }
+        public List<WellProduction>? WellAllocations { get; set; }
     }
 }

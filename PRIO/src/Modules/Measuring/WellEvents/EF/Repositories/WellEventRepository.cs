@@ -13,11 +13,22 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Repositories
             _context = context;
         }
 
-        public async Task<WellEvent?> GetById(Guid id)
+        public async Task<WellEvent?> GetClosedEventById(Guid id)
         {
             return await _context.WellEvents
                 .Include(x => x.EventReasons)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .Include(x => x.Well)
+                    .ThenInclude(x => x.Field)
+                        .ThenInclude(x => x.Installation)
+                .FirstOrDefaultAsync(x => x.Id == id && x.EventStatus.ToUpper() == "F");
+        }
+        public async Task<List<WellEvent>> GetAllWellEvent(Guid wellId)
+        {
+            return await _context.WellEvents
+                .Include(x => x.EventReasons)
+                .Include(x => x.Well)
+                .Where(x => x.Well.Id == wellId)
+                .ToListAsync();
         }
 
         public async Task Add(WellEvent wellEvent)
@@ -28,6 +39,21 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Repositories
         public void Update(WellEvent wellEvent)
         {
             _context.WellEvents.Update(wellEvent);
+        }
+
+        public void DeleteReason(EventReason reason)
+        {
+            _context.EventReasons.Remove(reason);
+        }
+
+        public void UpdateReason(EventReason reason)
+        {
+            _context.EventReasons.Update(reason);
+        }
+
+        public async Task AddReasonClosedEvent(EventReason data)
+        {
+            await _context.EventReasons.AddAsync(data);
         }
         public async Task Save()
         {
