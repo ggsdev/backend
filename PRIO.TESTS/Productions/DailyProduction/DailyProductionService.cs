@@ -6,6 +6,8 @@ using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
+using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories;
+using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.GasVolumeCalculations.Interfaces;
@@ -42,6 +44,7 @@ namespace PRIO.TESTS.Productions.DailyProduction
         private IOilVolumeCalculationRepository _oilRepository;
         private IMeasurementHistoryRepository _measurementHistoryRepository;
         private IInstallationRepository _installationRepository;
+        private IWellRepository _wellRepository;
         private IFieldRepository _fieldRepository;
         private IMapper _mapper;
 
@@ -127,10 +130,11 @@ namespace PRIO.TESTS.Productions.DailyProduction
             _gasRepository = new GasVolumeCalculationRepository(_context);
             _installationRepository = new InstallationRepository(_context);
             _oilRepository = new OilVolumeCalculationRepository(_context);
+            _wellRepository = new WellRepository(_context);
             _measurementHistoryRepository = new MeasurementHistoryRepository(_context);
             _fieldRepository = new FieldRepository(_context);
 
-            _service = new ProductionService(_productionRepository, _mapper, _gasRepository, _installationRepository, _oilRepository, _measurementHistoryRepository, _fieldRepository);
+            _service = new ProductionService(_productionRepository, _mapper, _gasRepository, _installationRepository, _oilRepository, _measurementHistoryRepository, _fieldRepository, _wellRepository);
 
             var httpContext = new DefaultHttpContext();
             httpContext.Items["Id"] = _user.Id;
