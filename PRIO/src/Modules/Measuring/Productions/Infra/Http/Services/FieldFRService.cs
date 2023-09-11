@@ -69,7 +69,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 }
 
                 if (sumGas != 1 && body.Gas.FR.IsApplicable)
-                    throw new ConflictException("Gás: Soma dos fatores de rateio deve ser 1.");
+                    throw new ConflictException("Gás: Soma dos fatores de rateio deve ser 100%.");
 
                 if (body.Gas.FR.IsApplicable)
                 {
@@ -151,7 +151,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 }
 
                 if (sumOil != 1 && body.Oil.FR.IsApplicable)
-                    throw new ConflictException("Óleo: Soma dos fatores de rateio deve ser 1.");
+                    throw new ConflictException("Óleo: Soma dos fatores de rateio deve ser 100%.");
 
                 if (body.Oil.FR.IsApplicable)
                     foreach (var field in body.Oil.FR.Fields)

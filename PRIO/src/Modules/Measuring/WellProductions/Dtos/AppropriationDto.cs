@@ -14,28 +14,26 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Dtos
         public string WellName { get; set; }
         public string Downtime { get; set; }
 
-        public decimal ProductionGasInWellM3 { get; set; }
-        public decimal ProductionWaterInWellM3 { get; set; }
         public decimal ProductionOilInWellM3 { get; set; }
-
-        public decimal ProductionGasInWellSCF { get; set; }
-        public decimal ProductionWaterInWellBBL { get; set; }
         public decimal ProductionOilInWellBBL { get; set; }
 
-        public decimal EfficienceLossOil { get; set; }
+        public decimal ProductionGasInWellM3 { get; set; }
+        public decimal ProductionGasInWellSCF { get; set; }
+
+        public decimal ProductionWaterInWellM3 { get; set; }
+        public decimal ProductionWaterInWellBBL { get; set; }
+
         public decimal ProductionLostOilM3 { get; set; }
         public decimal ProductionLostOilBBL { get; set; }
-        public decimal ProportionalDayOil { get; set; }
 
-        public decimal EfficienceLossGas { get; set; }
         public decimal ProductionLostGasM3 { get; set; }
         public decimal ProductionLostGasSCF { get; set; }
-        public decimal ProportionalDayGas { get; set; }
 
-        public decimal EfficienceLossWater { get; set; }
         public decimal ProductionLostWaterM3 { get; set; }
         public decimal ProductionLostWaterBBL { get; set; }
-        public decimal ProportionalDayWater { get; set; }
+
+        public decimal EfficienceLoss { get; set; }
+        public decimal ProportionalDay { get; set; }
     }
 
     public class FieldProductionDto

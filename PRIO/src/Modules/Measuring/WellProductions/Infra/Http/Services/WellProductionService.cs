@@ -337,9 +337,12 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         var wellPotencialGasAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((btp.PotencialGas * ((24 - (decimal)totalInterval) / 24)), totalPotencialGasUEP);
                         var wellPotencialOilAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((btp.PotencialOil * ((24 - (decimal)totalInterval) / 24)), totalPotencialOilUEP);
                         var wellPotencialWaterAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((btp.PotencialWater * ((24 - (decimal)totalInterval) / 24)), totalPotencialWaterUEP);
+
                         var wellPotencialGasAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField((btp.PotencialGas * ((24 - (decimal)totalInterval) / 24)), totalPotencialGasField);
                         var wellPotencialOilAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField((btp.PotencialOil * ((24 - (decimal)totalInterval) / 24)), totalPotencialOilField);
+
                         var wellPotencialWaterAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField((btp.PotencialWater * ((24 - (decimal)totalInterval) / 24)), totalPotencialWaterField);
+
                         var productionGas = fieldFR.FRGas is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.GasProductionInField, wellPotencialGasAsPercentageOfField) : 0;
                         var productionOil = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.OilProductionInField, wellPotencialOilAsPercentageOfField) : 0;
                         var productionWater = (productionOil * btp.BSW) / (100 - btp.BSW);
@@ -371,8 +374,9 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                             ProductionGasAsPercentageOfInstallation = fieldFR.FRGas is not null ? WellProductionUtils.CalculateWellProductionAsPercentageOfInstallation(wellPotencialGasAsPercentageOfField, fieldFR.FRGas.Value) : 0,
                             ProductionOilAsPercentageOfInstallation = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProductionAsPercentageOfInstallation(wellPotencialOilAsPercentageOfField, fieldFR.FROil.Value) : 0,
                             ProductionWaterAsPercentageOfInstallation = totalWaterWithFieldFR != 0 ? productionWater / totalWaterWithFieldFR.Value : 0,
-                            Downtime = formattedTime
+                            Downtime = formattedTime,
                         };
+
                         totalWater += wellAppropriation.ProductionWaterInWellM3;
                         totalOil += wellAppropriation.ProductionOilInWellM3;
                         totalGas += wellAppropriation.ProductionGasInWellM3;
@@ -404,49 +408,36 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                                 WellAllocation = wellAppropriation,
                                 Downtime = ev.Downtime,
                                 Event = ev.Event,
-                                EfficienceLossOil = (((btp.PotencialOil * ev.Downtime) / 24) / totalPotencialOilField) / daysInMonth,
+
+                                EfficienceLoss = (((btp.PotencialOil * ev.Downtime) / 24) / totalPotencialOilField) / daysInMonth,
                                 ProductionLostOil = (((btp.PotencialOil * ev.Downtime) / totalPotencialOilField) / 24) * fieldFR.OilProductionInField,
-                                ProportionalDayOil = ((btp.PotencialOil * ev.Downtime) / 24) / totalPotencialOilField,
+                                ProportionalDay = ((btp.PotencialOil * ev.Downtime) / 24) / totalPotencialOilField,
 
-
-                                EfficienceLossGas = (((btp.PotencialGas * ev.Downtime) / 24) / totalPotencialGasField) / daysInMonth,
                                 ProductionLostGas = (((btp.PotencialGas * ev.Downtime) / totalPotencialGasField) / 24) * fieldFR.GasProductionInField,
-                                ProportionalDayGas = ((btp.PotencialGas * ev.Downtime) / 24) / totalPotencialGasField,
 
-                                //EfficienceLossWater = (((btp.PotencialWater * ev.Downtime) / 24) / totalPotencialWaterField) / daysInMonth,
-                                //ProductionLostWater = (((btp.PotencialWater * ev.Downtime) / totalPotencialWaterField) / 24) * fieldFR.OilProductionInField,
-                                //ProportionalDayWater = ((btp.PotencialWater * ev.Downtime) / 24) / totalPotencialWaterField,
-
-
+                                ProductionLostWater = (((btp.PotencialWater * ev.Downtime) / totalPotencialWaterField) / 24) * fieldFR.OilProductionInField,
                             };
-                            wellAppropriation.EfficienceLossOil += wellLoss.EfficienceLossOil;
+
+                            wellAppropriation.EfficienceLoss += wellLoss.EfficienceLoss;
                             wellAppropriation.ProductionLostOil += wellLoss.ProductionLostOil;
-                            wellAppropriation.ProportionalDayOil += wellLoss.ProportionalDayOil;
+                            wellAppropriation.ProportionalDay += wellLoss.ProportionalDay;
 
-                            wellAppropriation.EfficienceLossGas += wellLoss.EfficienceLossGas;
                             wellAppropriation.ProductionLostGas += wellLoss.ProductionLostGas;
-                            wellAppropriation.ProportionalDayGas += wellLoss.ProportionalDayGas;
 
-                            wellAppropriation.EfficienceLossWater += wellLoss.EfficienceLossWater;
                             wellAppropriation.ProductionLostWater += wellLoss.ProductionLostWater;
-                            wellAppropriation.ProportionalDayWater += wellLoss.ProportionalDayWater;
 
                             await _repository.AddWellLossAsync(wellLoss);
                         }
-                        wellAppropiationDto.EfficienceLossOil = wellAppropriation.EfficienceLossOil;
+                        wellAppropiationDto.EfficienceLoss = wellAppropriation.EfficienceLoss;
                         wellAppropiationDto.ProductionLostOilM3 = wellAppropriation.ProductionLostOil;
                         wellAppropiationDto.ProductionLostOilBBL = wellAppropriation.ProductionLostOil * ProductionUtils.m3ToBBLConversionMultiplier;
-                        wellAppropiationDto.ProportionalDayOil = wellAppropriation.ProportionalDayOil;
+                        wellAppropiationDto.ProportionalDay = wellAppropriation.ProportionalDay;
 
-                        wellAppropiationDto.EfficienceLossGas = wellAppropriation.EfficienceLossGas;
                         wellAppropiationDto.ProductionLostGasM3 = wellAppropriation.ProductionLostGas;
                         wellAppropiationDto.ProductionLostGasSCF = wellAppropriation.ProductionLostGas * ProductionUtils.m3ToSCFConversionMultipler;
-                        wellAppropiationDto.ProportionalDayGas = wellAppropriation.ProportionalDayGas;
 
-                        wellAppropiationDto.EfficienceLossWater = wellAppropriation.EfficienceLossWater;
                         wellAppropiationDto.ProductionLostWaterBBL = wellAppropriation.ProductionLostWater * ProductionUtils.m3ToBBLConversionMultiplier;
                         wellAppropiationDto.ProductionLostWaterM3 = wellAppropriation.ProductionLostWater;
-                        wellAppropiationDto.ProportionalDayWater = wellAppropriation.ProportionalDayWater;
 
                         await _repository.AddAsync(wellAppropriation);
                         wellAppropiationsDto.Add(wellAppropiationDto);
@@ -769,50 +760,39 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                                 WellAllocation = wellAppropriation,
                                 Downtime = ev.Downtime,
                                 Event = ev.Event,
-                                EfficienceLossOil = (((btp.PotencialOil * ev.Downtime) / 24) / totalOilPotencialField) / daysInMonth,
-                                ProductionLostOil = (btp.PotencialOil * ev.Downtime) / 24,
-                                ProportionalDayOil = ((btp.PotencialOil * ev.Downtime) / 24) / totalOilPotencialField,
+                                EfficienceLoss = (((btp.PotencialOil * ev.Downtime) / 24) / totalOilPotencialField) / daysInMonth,
+                                ProductionLostOil = ((btp.PotencialOil / totalPotencialOilUEP) * production.Oil.TotalOil) * ev.Downtime / 24,
+                                ProportionalDay = ((btp.PotencialOil * ev.Downtime) / 24) / totalOilPotencialField,
 
-                                EfficienceLossGas = (((btp.PotencialGas * ev.Downtime) / 24) / totalGasPotencialField) / daysInMonth,
-                                ProductionLostGas = (btp.PotencialGas * ev.Downtime) / 24,
-                                ProportionalDayGas = ((btp.PotencialGas * ev.Downtime) / 24) / totalGasPotencialField,
+                                ProductionLostGas = ((btp.PotencialGas / totalPotencialGasUEP) * ((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas : 0))) * ev.Downtime / 24,
 
-                                //EfficienceLossWater = (((btp.PotencialWater * ev.Downtime) / 24) / totalWaterPotencialField) / daysInMonth,
-                                //ProductionLostWater = (btp.PotencialWater * ev.Downtime) / 24,
-                                //ProportionalDayWater = ((btp.PotencialWater * ev.Downtime) / 24) / totalWaterPotencialField,
+
+                                ProductionLostWater = (((btp.PotencialOil / totalPotencialOilUEP) * production.Oil.TotalOil) * ev.Downtime / 24) * calcBSWWater / calcBSWOil,
 
                             };
-                            wellAppropriation.EfficienceLossOil += wellLoss.EfficienceLossOil;
+                            wellAppropriation.EfficienceLoss += wellLoss.EfficienceLoss;
                             wellAppropriation.ProductionLostOil += wellLoss.ProductionLostOil;
-                            wellAppropriation.ProportionalDayOil += wellLoss.ProportionalDayOil;
+                            wellAppropriation.ProportionalDay += wellLoss.ProportionalDay;
 
-                            wellAppropriation.EfficienceLossGas += wellLoss.EfficienceLossGas;
                             wellAppropriation.ProductionLostGas += wellLoss.ProductionLostGas;
-                            wellAppropriation.ProportionalDayGas += wellLoss.ProportionalDayGas;
 
-                            wellAppropriation.EfficienceLossWater += wellLoss.EfficienceLossWater;
                             wellAppropriation.ProductionLostWater += wellLoss.ProductionLostWater;
-                            wellAppropriation.ProportionalDayWater += wellLoss.ProportionalDayWater;
 
                             await _repository.AddWellLossAsync(wellLoss);
                         }
 
-                        wellAppropiationDto.EfficienceLossOil = Math.Round(wellAppropriation.EfficienceLossOil, 5);
+                        wellAppropiationDto.EfficienceLoss = Math.Round(wellAppropriation.EfficienceLoss, 5);
                         wellAppropiationDto.ProductionLostOilM3 = Math.Round(wellAppropriation.ProductionLostOil, 5);
-                        wellAppropiationDto.ProportionalDayOil = Math.Round(wellAppropriation.ProportionalDayOil, 5);
+                        wellAppropiationDto.ProportionalDay = Math.Round(wellAppropriation.ProportionalDay, 5);
 
-                        wellAppropiationDto.EfficienceLossGas = Math.Round(wellAppropriation.EfficienceLossGas, 5);
                         wellAppropiationDto.ProductionLostGasM3 = Math.Round(wellAppropriation.ProductionLostGas, 5);
-                        wellAppropiationDto.ProportionalDayGas = Math.Round(wellAppropriation.ProportionalDayGas, 5);
 
-                        wellAppropiationDto.EfficienceLossWater = Math.Round(wellAppropriation.EfficienceLossWater, 5);
                         wellAppropiationDto.ProductionLostWaterM3 = Math.Round(wellAppropriation.ProductionLostWater, 5);
 
                         wellAppropiationDto.ProductionLostGasSCF = Math.Round(wellAppropriation.ProductionLostGas * ProductionUtils.m3ToSCFConversionMultipler, 5);
                         wellAppropiationDto.ProductionLostWaterBBL = Math.Round(wellAppropriation.ProductionLostWater * ProductionUtils.m3ToBBLConversionMultiplier, 5);
                         wellAppropiationDto.ProductionLostOilBBL = Math.Round(wellAppropriation.ProductionLostOil * ProductionUtils.m3ToBBLConversionMultiplier, 5);
 
-                        wellAppropiationDto.ProportionalDayWater = Math.Round(wellAppropriation.ProportionalDayWater, 5);
 
                         wellAppropiationsDto.Add(wellAppropiationDto);
                         await _repository.AddAsync(wellAppropriation);

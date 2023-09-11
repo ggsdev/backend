@@ -47,6 +47,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
         {
             var production = await _repository.GetExistingByDate(date);
 
+            Console.WriteLine("asdas");
+
             if (production is null)
                 throw new NotFoundException($"Produção na data: {date.ToString("dd/MM/yyyy")} não encontrada");
 
@@ -702,17 +704,13 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
                             WellProductionId = wellP.Id,
 
-                            EfficienceLossOil = Math.Round(wellP.EfficienceLossOil, 5),
+                            EfficienceLoss = Math.Round(wellP.EfficienceLoss, 5),
                             ProductionLostOilM3 = Math.Round(wellP.ProductionLostOil, 5),
-                            ProportionalDayOil = Math.Round(wellP.ProportionalDayOil, 5),
+                            ProportionalDay = Math.Round(wellP.ProportionalDay, 5),
 
-                            EfficienceLossGas = Math.Round(wellP.EfficienceLossGas, 5),
                             ProductionLostGasM3 = Math.Round(wellP.ProductionLostGas, 5),
-                            ProportionalDayGas = Math.Round(wellP.ProportionalDayGas, 5),
 
-                            EfficienceLossWater = Math.Round(wellP.EfficienceLossWater, 5),
                             ProductionLostWaterM3 = Math.Round(wellP.ProductionLostWater, 5),
-                            ProportionalDayWater = Math.Round(wellP.ProportionalDayWater, 5),
 
                             ProductionLostGasSCF = Math.Round(wellP.ProductionLostGas * ProductionUtils.m3ToSCFConversionMultipler, 5),
                             ProductionLostOilBBL = Math.Round(wellP.ProductionLostOil * ProductionUtils.m3ToBBLConversionMultiplier, 5),
