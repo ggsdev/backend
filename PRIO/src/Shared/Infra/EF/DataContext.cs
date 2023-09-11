@@ -263,6 +263,7 @@ namespace PRIO.src.Shared.Infra.EF
             modelBuilder.ApplyConfiguration(new CommentMap());
             modelBuilder.ApplyConfiguration(new WellEventMap());
             modelBuilder.ApplyConfiguration(new EventReasonMap());
+            modelBuilder.ApplyConfiguration(new WaterMap());
 
             #region Production
             modelBuilder.ApplyConfiguration(new FieldProductionMap());

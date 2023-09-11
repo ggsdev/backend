@@ -1054,9 +1054,9 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         foreach (var wellLoss in wellProduction.WellLosses)
                         {
 
-                            wellLoss.ProductionLostOil = (((wellProduction.WellTest.PotencialOil / totalOilPotencialWithoutDowntime) * production.Oil.TotalOil * fieldFR.FROil.Value)) * wellLoss.Downtime / 24;
+                            wellLoss.ProductionLostOil = (((wellProduction.WellTest.PotencialOil / totalOilPotencialWithoutDowntime) * (production.Oil is not null ? production.Oil.TotalOil : 0) * (fieldFR.FROil is not null ? fieldFR.FROil.Value : 0))) * wellLoss.Downtime / 24;
 
-                            wellLoss.ProductionLostGas = ((wellProduction.WellTest.PotencialGas / totalGasPotencialWithoutDowntime * fieldFR.FRGas.Value) * ((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas : 0))) * wellLoss.Downtime / 24;
+                            wellLoss.ProductionLostGas = ((wellProduction.WellTest.PotencialGas / totalGasPotencialWithoutDowntime * (fieldFR.FRGas is not null ? fieldFR.FRGas.Value : 0)) * ((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas : 0))) * wellLoss.Downtime / 24;
                             wellLoss.ProductionLostWater = (((wellProduction.WellTest.PotencialOil / totalOilPotencialWithoutDowntime) * production.Oil.TotalOil * fieldFR.FROil.Value) * wellLoss.Downtime / 24) * calcBSWWater / calcBSWOil;
 
                             _repository.UpdateWellLost(wellLoss);
