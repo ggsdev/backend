@@ -36,6 +36,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
     {
         public Guid Id { get; set; }
         public bool IsCalculated { get; set; }
+        public bool CanDetailGasBurned { get; set; }
         public bool IsActive { get; set; }
         public string Status { get; set; }
         public string UepName { get; set; }

@@ -1747,7 +1747,9 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             TotalWaterM3 = Math.Round(production.Water is not null ? production.Water.TotalWater : 0, 2),
                             TotalWaterBBL = Math.Round(production.Water is not null ? production.Water.TotalWater * ProductionUtils.m3ToBBLConversionMultiplier : 0, 2)
-                        }
+                        },
+                        CanDetailGasBurned = production.CanDetailGasBurned,
+
                     };
 
                     productionsDto.Add(productionDto);
