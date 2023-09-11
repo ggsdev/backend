@@ -143,7 +143,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             }
 
             object finalDateValue = worksheet.Cells[BTP.CellFinalDate].Value;
-            if (!(finalDateValue is DateTime))
+            if (!(finalDateValue is DateTime) && !(finalDateValue is string))
             {
                 erros.Add("Erro: Valor da célula para data final não é um data na célula " + BTP.CellFinalDate);
             }
@@ -271,56 +271,118 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             }
 
             var convertBtp = btpNumberValue?.ToString();
-
             if (initialDateValue is not null && finalDateValue is not null)
             {
-                DateTime? finalDate = (DateTime)finalDateValue;
-                DateTime? initialDate = (DateTime)initialDateValue;
-
-                if (initialDate > finalDate)
+                if (finalDateValue is string)
                 {
-                    erros.Add("Erro: Data inicial do teste não pode ser maior do que a data final do teste.");
-                }
-                try
-                {
-                    DateTime? applicationDate = DateTime.Parse(body.ApplicationDate);
-                    if (finalDate.Value.Date > applicationDate)
+                    bool checkFinalDateValue = DateTime.TryParse(finalDateValue.ToString(), out var date);
+                    DateTime? initialDate = (DateTime)initialDateValue;
+                    if (checkFinalDateValue)
                     {
-                        erros.Add("Erro: Data final do teste não pode ser maior do que a data de aplicação do teste.");
-                    }
-                }
-                catch
-                {
-                    throw new NotFoundException("Data da Aplicação não é valida");
-                }
-                if (wellAlignmentDataValue is not null)
-                {
-                    DateTime? alignDate = (DateTime)wellAlignmentDataValue;
-
-                    if (alignDate.Value.Date > initialDate.Value.Date)
-                    {
-
-                        erros.Add("Erro: Data do alinhamento do poço não pode ser maior do que a data inicial do teste.");
-
-                    }
-                    else if (alignDate.Value.Date == initialDate.Value.Date)
-                    {
-                        if (wellAlignmentHourValue is DateTime)
+                        if (initialDate > date)
                         {
-                            DateTime? alignHour = (DateTime)wellAlignmentHourValue;
-                            if (alignHour.Value.Hour > initialDate.Value.Hour)
+                            erros.Add("Erro: Data inicial do teste não pode ser maior do que a data final do teste.");
+                        }
+                        try
+                        {
+                            DateTime? applicationDate = DateTime.Parse(body.ApplicationDate);
+                            if (date.Date > applicationDate)
                             {
-                                erros.Add("Erro: Hora do alinhamento do poço não pode ser maior do que a hora inicial do teste.");
+                                erros.Add("Erro: Data final do teste não pode ser maior do que a data de aplicação do teste.");
                             }
                         }
-                        else if (wellAlignmentHourValue is double)
+                        catch
                         {
+                            throw new NotFoundException("Data da Aplicação não é valida");
+                        }
+                        if (wellAlignmentDataValue is not null)
+                        {
+                            DateTime? alignDate = (DateTime)wellAlignmentDataValue;
+
+                            if (alignDate.Value.Date > initialDate.Value.Date)
                             {
-                                string? align = ConvertDoubleToTimeSpan(worksheet.Cells[BTP.CellWellAlignmentHour].Value.ToString());
-                                DateTime? alignHour = DateTime.Parse(align);
-                                if (alignHour.Value.TimeOfDay > initialDate.Value.TimeOfDay)
+
+                                erros.Add("Erro: Data do alinhamento do poço não pode ser maior do que a data inicial do teste.");
+
+                            }
+                            else if (alignDate.Value.Date == initialDate.Value.Date)
+                            {
+                                if (wellAlignmentHourValue is DateTime)
+                                {
+                                    DateTime? alignHour = (DateTime)wellAlignmentHourValue;
+                                    if (alignHour.Value.Hour > initialDate.Value.Hour)
+                                    {
+                                        erros.Add("Erro: Hora do alinhamento do poço não pode ser maior do que a hora inicial do teste.");
+                                    }
+                                }
+                                else if (wellAlignmentHourValue is double)
+                                {
+                                    {
+                                        string? align = ConvertDoubleToTimeSpan(worksheet.Cells[BTP.CellWellAlignmentHour].Value.ToString());
+                                        DateTime? alignHour = DateTime.Parse(align);
+                                        if (alignHour.Value.TimeOfDay > initialDate.Value.TimeOfDay)
+                                        {
+                                            erros.Add("Erro: Hora do alinhamento do poço não pode ser maior do que a hora inicial do teste.");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        erros.Add("Erro: Padrão data e hora é dd/MM/yyyy hh:mm");
+                    }
+                }
+                else
+                {
+                    DateTime? finalDate = (DateTime)finalDateValue;
+                    DateTime? initialDate = (DateTime)initialDateValue;
+                    if (initialDate > finalDate)
+                    {
+                        erros.Add("Erro: Data inicial do teste não pode ser maior do que a data final do teste.");
+                    }
+                    try
+                    {
+                        DateTime? applicationDate = DateTime.Parse(body.ApplicationDate);
+                        if (finalDate.Value.Date > applicationDate)
+                        {
+                            erros.Add("Erro: Data final do teste não pode ser maior do que a data de aplicação do teste.");
+                        }
+                    }
+                    catch
+                    {
+                        throw new NotFoundException("Data da Aplicação não é valida");
+                    }
+                    if (wellAlignmentDataValue is not null)
+                    {
+                        DateTime? alignDate = (DateTime)wellAlignmentDataValue;
+
+                        if (alignDate.Value.Date > initialDate.Value.Date)
+                        {
+
+                            erros.Add("Erro: Data do alinhamento do poço não pode ser maior do que a data inicial do teste.");
+
+                        }
+                        else if (alignDate.Value.Date == initialDate.Value.Date)
+                        {
+                            if (wellAlignmentHourValue is DateTime)
+                            {
+                                DateTime? alignHour = (DateTime)wellAlignmentHourValue;
+                                if (alignHour.Value.Hour > initialDate.Value.Hour)
                                 {
                                     erros.Add("Erro: Hora do alinhamento do poço não pode ser maior do que a hora inicial do teste.");
+                                }
+                            }
+                            else if (wellAlignmentHourValue is double)
+                            {
+                                {
+                                    string? align = ConvertDoubleToTimeSpan(worksheet.Cells[BTP.CellWellAlignmentHour].Value.ToString());
+                                    DateTime? alignHour = DateTime.Parse(align);
+                                    if (alignHour.Value.TimeOfDay > initialDate.Value.TimeOfDay)
+                                    {
+                                        erros.Add("Erro: Hora do alinhamento do poço não pode ser maior do que a hora inicial do teste.");
+                                    }
                                 }
                             }
                         }
