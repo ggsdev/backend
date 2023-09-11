@@ -57,7 +57,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Mappings
                .HasColumnType("DECIMAL")
                .HasPrecision(22, 5);
 
-            builder.Property(x => x.EfficienceLossOil)
+            builder.Property(x => x.EfficienceLoss)
                .HasColumnType("DECIMAL")
                .HasPrecision(22, 5);
 
@@ -68,11 +68,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Mappings
             builder.Property(x => x.Downtime)
                .HasMaxLength(15);
 
-            builder.Property(x => x.ProportionalDayOil)
-               .HasColumnType("DECIMAL")
-               .HasPrecision(22, 5);
-
-            builder.Property(x => x.ProportionalDayWater)
+            builder.Property(x => x.ProportionalDay)
                .HasColumnType("DECIMAL")
                .HasPrecision(22, 5);
 
@@ -83,18 +79,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Mappings
             builder.Property(x => x.ProductionLostWater)
              .HasColumnType("DECIMAL")
              .HasPrecision(22, 5);
-
-            builder.Property(x => x.ProportionalDayGas)
-            .HasColumnType("DECIMAL")
-            .HasPrecision(22, 5);
-
-            builder.Property(x => x.EfficienceLossGas)
-            .HasColumnType("DECIMAL")
-            .HasPrecision(22, 5);
-
-            builder.Property(x => x.EfficienceLossWater)
-            .HasColumnType("DECIMAL")
-            .HasPrecision(22, 5);
 
             builder.HasOne(x => x.Production)
                 .WithMany(x => x.WellProductions)

@@ -2271,7 +2271,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 {
 
                     if (measurement.BswManual < 0 || measurement.BswManual > 1)
-                        throw new BadRequestException("BSW deve ser um valor entre 0 e 1");
+                        throw new BadRequestException("BSW deve ser um valor entre 0% e 100%");
 
                     if (measurement.DHA_INICIO_PERIODO_MEDICAO_001 != date001)
                     {

@@ -589,29 +589,21 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                                         if (wellLoss is not null)
                                         {
                                             wellLoss.Downtime = ev.Downtime;
-                                            wellLoss.EfficienceLossOil = (((btp.PotencialOil * ev.Downtime) / 24) / totalPotencialOilField) / daysInMonth;
+                                            wellLoss.EfficienceLoss = (((btp.PotencialOil * ev.Downtime) / 24) / totalPotencialOilField) / daysInMonth;
                                             wellLoss.ProductionLostOil = (((btp.PotencialOil * ev.Downtime) / totalPotencialOilField) / 24) * fieldFR.OilProductionInField;
-                                            wellLoss.ProportionalDayOil = ((btp.PotencialOil * ev.Downtime) / 24) / totalPotencialOilField;
+                                            wellLoss.ProportionalDay = ((btp.PotencialOil * ev.Downtime) / 24) / totalPotencialOilField;
 
-                                            wellProd.EfficienceLossOil += wellLoss.EfficienceLossOil;
+                                            wellProd.EfficienceLoss += wellLoss.EfficienceLoss;
                                             wellProd.ProductionLostOil += wellLoss.ProductionLostOil;
-                                            wellProd.ProportionalDayOil += wellLoss.ProportionalDayOil;
+                                            wellProd.ProportionalDay += wellLoss.ProportionalDay;
 
-                                            wellLoss.EfficienceLossGas = (((btp.PotencialGas * ev.Downtime) / 24) / totalPotencialGasField) / daysInMonth;
                                             wellLoss.ProductionLostGas = (((btp.PotencialGas * ev.Downtime) / totalPotencialGasField) / 24) * fieldFR.GasProductionInField;
-                                            wellLoss.ProportionalDayGas = ((btp.PotencialGas * ev.Downtime) / 24) / totalPotencialGasField;
 
-                                            wellProd.EfficienceLossGas += wellLoss.EfficienceLossGas;
                                             wellProd.ProductionLostGas += wellLoss.ProductionLostGas;
-                                            wellProd.ProportionalDayGas += wellLoss.ProportionalDayGas;
 
-                                            wellLoss.EfficienceLossWater = (((btp.PotencialWater * ev.Downtime) / 24) / totalPotencialWaterField) / daysInMonth;
                                             //wellLoss.ProductionLostWater = (((btp.PotencialWater * ev.Downtime) / totalPotencialWaterField) / 24) * fieldFR.OilProductionInField;
-                                            wellLoss.ProportionalDayWater = ((btp.PotencialWater * ev.Downtime) / 24) / totalPotencialWaterField;
 
-                                            wellProd.EfficienceLossWater += wellLoss.EfficienceLossWater;
                                             wellProd.ProductionLostWater += wellLoss.ProductionLostWater;
-                                            wellProd.ProportionalDayWater += wellLoss.ProportionalDayWater;
 
                                             _wellProductionRepository.UpdateWellLost(wellLoss);
                                         }
@@ -991,29 +983,21 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                                             wellLoss.Downtime = ev.Downtime;
                                             wellLoss.MeasuredAt = ev.MeasuredAt;
 
-                                            wellLoss.EfficienceLossOil = (((btp.PotencialOil * ev.Downtime) / 24) / totalOilPotencialField) / daysInMonth;
+                                            wellLoss.EfficienceLoss = (((btp.PotencialOil * ev.Downtime) / 24) / totalOilPotencialField) / daysInMonth;
                                             wellLoss.ProductionLostOil = (btp.PotencialOil * ev.Downtime) / 24;
-                                            wellLoss.ProportionalDayOil = ((btp.PotencialOil * ev.Downtime) / 24) / totalOilPotencialField;
+                                            wellLoss.ProportionalDay = ((btp.PotencialOil * ev.Downtime) / 24) / totalOilPotencialField;
 
-                                            wellProd.EfficienceLossOil += wellLoss.EfficienceLossOil;
+                                            wellProd.EfficienceLoss += wellLoss.EfficienceLoss;
                                             wellProd.ProductionLostOil += wellLoss.ProductionLostOil;
-                                            wellProd.ProportionalDayOil += wellLoss.ProportionalDayOil;
+                                            wellProd.ProportionalDay += wellLoss.ProportionalDay;
 
-                                            wellLoss.EfficienceLossGas = (((btp.PotencialGas * ev.Downtime) / 24) / totalGasPotencialField) / daysInMonth;
                                             wellLoss.ProductionLostGas = (btp.PotencialGas * ev.Downtime) / 24;
-                                            wellLoss.ProportionalDayGas = ((btp.PotencialGas * ev.Downtime) / 24) / totalGasPotencialField;
 
-                                            wellProd.EfficienceLossGas += wellLoss.EfficienceLossGas;
                                             wellProd.ProductionLostGas += wellLoss.ProductionLostGas;
-                                            wellProd.ProportionalDayGas += wellLoss.ProportionalDayGas;
 
-                                            wellLoss.EfficienceLossWater = (((btp.PotencialWater * ev.Downtime) / 24) / totalWaterPotencialField) / daysInMonth;
                                             wellLoss.ProductionLostWater = (btp.PotencialWater * ev.Downtime) / 24;
-                                            wellLoss.ProportionalDayWater = ((btp.PotencialWater * ev.Downtime) / 24) / totalWaterPotencialField;
 
-                                            wellProd.EfficienceLossWater += wellLoss.EfficienceLossWater;
                                             wellProd.ProductionLostWater += wellLoss.ProductionLostWater;
-                                            wellProd.ProportionalDayWater += wellLoss.ProportionalDayWater;
 
                                             _wellProductionRepository.UpdateWellLost(wellLoss);
                                         }
