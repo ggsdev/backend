@@ -12,7 +12,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Mappings
 
             builder.Property(x => x.TotalWater)
                .HasColumnType("DECIMAL")
-               .HasPrecision(20, 5);
+               .HasPrecision(22, 16);
         }
     }
 }

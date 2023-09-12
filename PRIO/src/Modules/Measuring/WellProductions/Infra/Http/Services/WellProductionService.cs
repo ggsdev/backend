@@ -543,6 +543,10 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     var totalOil = 0m;
                     var totalWater = 0m;
 
+                    var totalGasDto = 0m;
+                    var totalOilDto = 0m;
+                    var totalWaterDto = 0m;
+
                     var btpsField = await _btpRepository
                             .GetBtpDatasByFieldId(fieldInDatabase.Id);
                     var filtredsBTPsField = btpsField
@@ -743,6 +747,10 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         totalOil += wellAppropriation.ProductionOilInWellM3;
                         totalGas += wellAppropriation.ProductionGasInWellM3;
 
+                        totalWaterDto += wellAppropiationDto.ProductionWaterInWellM3;
+                        totalOilDto += wellAppropiationDto.ProductionOilInWellM3;
+                        totalGasDto += wellAppropiationDto.ProductionGasInWellM3;
+
                         if (fieldProduction is not null)
                             fieldProduction.FieldId = btp.Well.Field.Id;
 
@@ -819,12 +827,12 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         {
                             FieldProductionId = fieldProduction.Id,
                             FieldName = fieldInDatabase.Name,
-                            GasProductionInFieldM3 = Math.Round(fieldProduction.GasProductionInField, 5),
-                            OilProductionInFieldM3 = Math.Round(fieldProduction.OilProductionInField, 5),
-                            WaterProductionInFieldM3 = Math.Round(fieldProduction.WaterProductionInField, 5),
-                            GasProductionInFieldSCF = Math.Round(fieldProduction.GasProductionInField * ProductionUtils.m3ToSCFConversionMultipler, 5),
-                            OilProductionInFieldBBL = Math.Round(fieldProduction.OilProductionInField * ProductionUtils.m3ToBBLConversionMultiplier, 5),
-                            WaterProductionInFieldBBL = Math.Round(fieldProduction.WaterProductionInField * ProductionUtils.m3ToBBLConversionMultiplier, 5),
+                            GasProductionInFieldM3 = Math.Round(totalGasDto, 5),
+                            OilProductionInFieldM3 = Math.Round(totalOilDto, 5),
+                            WaterProductionInFieldM3 = Math.Round(totalWaterDto, 5),
+                            GasProductionInFieldSCF = Math.Round(totalGasDto * ProductionUtils.m3ToSCFConversionMultipler, 5),
+                            OilProductionInFieldBBL = Math.Round(totalOilDto * ProductionUtils.m3ToBBLConversionMultiplier, 5),
+                            WaterProductionInFieldBBL = Math.Round(totalWaterDto * ProductionUtils.m3ToBBLConversionMultiplier, 5),
                             WellAppropriations = orderedWellAppropriationsDto,
 
                             GasLossInFieldM3 = Math.Round(fieldLossGas, 5),

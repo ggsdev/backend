@@ -724,9 +724,9 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
                 fieldPDto.WellAppropriations = orderedWellAppropriationsDto;
 
-                var fieldLossOil = fieldP.WellProductions.Sum(x => x.ProductionLostOil);
-                var fieldLossGas = fieldP.WellProductions.Sum(x => x.ProductionLostGas);
-                var fieldLossWater = fieldP.WellProductions.Sum(x => x.ProductionLostWater);
+                var fieldLossOil = fieldPDto.WellAppropriations.Sum(x => x.ProductionLostOilM3);
+                var fieldLossGas = fieldPDto.WellAppropriations.Sum(x => x.ProductionLostGasM3);
+                var fieldLossWater = fieldPDto.WellAppropriations.Sum(x => x.ProductionLostWaterM3);
 
                 fieldPDto.WaterLossInFieldM3 = Math.Round(fieldLossWater, 5);
                 fieldPDto.GasLossInFieldM3 = Math.Round(fieldLossGas, 5);
