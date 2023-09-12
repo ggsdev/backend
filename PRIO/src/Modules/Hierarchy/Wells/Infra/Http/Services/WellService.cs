@@ -156,7 +156,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
                 if (well.Completions.Count > 0)
                     if (body.FieldId is not null)
                         if (body.FieldId != well.Field.Id)
-                            throw new ConflictException("Código da instalação não pode ser alterado.");
+                            throw new ConflictException("Campo associado não pode ser alterado.");
 
             if (body.CodWellAnp is not null)
             {
