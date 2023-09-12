@@ -35,6 +35,7 @@ namespace PRIOScheduler
                         var reason = wellEvent.EventReasons[i];
                         if (reason.StartDate < dateToday && reason.EndDate is null)
                         {
+
                             var dif = (dateToday - reason.StartDate).TotalHours / 24;
                             reason.EndDate = reason.StartDate.Date.AddDays(1).AddMilliseconds(-10);
 
@@ -58,6 +59,7 @@ namespace PRIOScheduler
                             }
                             var FirstReasonFormattedTime = $"{FirstReasonFormattedHours}:{firstFormattedMinutes}:{firstFormattedSecond}";
                             reason.Interval = FirstReasonFormattedTime;
+                            reason.IsJobGenerated = true;
 
                             DateTime refStartDate = reason.StartDate.Date.AddDays(1);
                             DateTime refStartEnd = refStartDate.AddDays(1).AddMilliseconds(-10);
