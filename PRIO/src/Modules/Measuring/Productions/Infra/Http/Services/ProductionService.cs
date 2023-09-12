@@ -718,6 +718,12 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
                 }
 
+                var orderedWellAppropriationsDto = fieldPDto.WellAppropriations
+                           .OrderBy(x => x.WellName)
+                           .ToList();
+
+                fieldPDto.WellAppropriations = orderedWellAppropriationsDto;
+
                 var fieldLossOil = fieldP.WellProductions.Sum(x => x.ProductionLostOil);
                 var fieldLossGas = fieldP.WellProductions.Sum(x => x.ProductionLostGas);
                 var fieldLossWater = fieldP.WellProductions.Sum(x => x.ProductionLostWater);
@@ -1979,4 +1985,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
             return gasDto;
         }
     }
+
+
 }
