@@ -60,7 +60,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Controllers
         [HttpGet("{eventId}")]
         public async Task<IActionResult> Get([FromRoute] Guid eventId)
         {
-            var data = await _service.GetClosedEventById(eventId);
+            var data = await _service.GetEventById(eventId);
 
             return Ok(data);
         }

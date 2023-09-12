@@ -2,7 +2,7 @@
 {
     public class MeasuringPointHistoryDTO
     {
-        public string? name { get; set; }
+        public string? dinamicLocalMeasuringPoint { get; set; }
         public string? tagPointMeasuring { get; set; }
         public DateTime createdAt { get; set; }
         public DateTime updatedAt { get; set; }

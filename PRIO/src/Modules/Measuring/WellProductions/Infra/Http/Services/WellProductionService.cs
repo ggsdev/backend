@@ -811,6 +811,10 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                         totalWaterInUep += fieldProduction.WaterProductionInField;
 
+                        var orderedWellAppropriationsDto = wellAppropiationsDto
+                            .OrderBy(x => x.WellName)
+                            .ToList();
+
                         var fieldProductionDto = new FieldProductionDto
                         {
                             FieldProductionId = fieldProduction.Id,
@@ -821,7 +825,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                             GasProductionInFieldSCF = Math.Round(fieldProduction.GasProductionInField * ProductionUtils.m3ToSCFConversionMultipler, 5),
                             OilProductionInFieldBBL = Math.Round(fieldProduction.OilProductionInField * ProductionUtils.m3ToBBLConversionMultiplier, 5),
                             WaterProductionInFieldBBL = Math.Round(fieldProduction.WaterProductionInField * ProductionUtils.m3ToBBLConversionMultiplier, 5),
-                            WellAppropriations = wellAppropiationsDto,
+                            WellAppropriations = orderedWellAppropriationsDto,
 
                             GasLossInFieldM3 = Math.Round(fieldLossGas, 5),
                             OilLossInFieldM3 = Math.Round(fieldLossOil, 5),

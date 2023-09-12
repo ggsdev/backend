@@ -8,8 +8,8 @@
         public string Field { get; set; }
         public string EventDateAndHour { get; set; }
         public string? EventRelated { get; set; }
-        public string SystemRelated { get; set; }
-        public string Reason { get; set; }
+        public string? SystemRelated { get; set; }
+        public string? Reason { get; set; }
         public string? StatusAnp { get; set; }
         public string? StateAnp { get; set; }
 
