@@ -277,9 +277,13 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
             var lastEventReasonGeneratedByJob = lastEvent.EventReasons
                 .OrderBy(x => x.StartDate)
+                .Where(x => x.IsJobGenerated)
                 .LastOrDefault();
 
-            if (dateNow.Date > parsedStartDate.Date && lastEventReasonGeneratedByJob is not null && lastEventReasonGeneratedByJob.IsJobGenerated)
+            //if (lastEventReasonGeneratedByJob is not null && lastEventReasonGeneratedByJob.EndDate is not null)
+            //    throw new ConflictException("Última justificativa para fechamento do poço deve estar em aberto.");//verificar
+
+            if (dateNow.Date > parsedStartDate.Date && lastEventReasonGeneratedByJob is not null)
             {
                 _wellEventRepository.DeleteReason(lastEventReasonGeneratedByJob);
 
@@ -298,15 +302,12 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
                 await _wellEventRepository.Add(openingEvent);
 
-                if (lastEvent is not null)
-                {
-                    lastEvent.EndDate = parsedStartDate;
-                    lastEvent.Interval = (parsedStartDate - lastEvent.StartDate)
-                        .TotalHours;
+                lastEvent.EndDate = parsedStartDate;
+                lastEvent.Interval = (parsedStartDate - lastEvent.StartDate)
+                    .TotalHours;
 
-                    _wellEventRepository
-                    .Update(lastEvent);
-                }
+                _wellEventRepository
+                .Update(lastEvent);
 
                 var production = await _productionRepository
                     .GetExistingByDate(parsedStartDate);

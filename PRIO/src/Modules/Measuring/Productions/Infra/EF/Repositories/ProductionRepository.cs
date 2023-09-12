@@ -91,6 +91,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
         public async Task<Production?> GetExistingByDate(DateTime date)
         {
             return await _context.Productions
+                .Include(x => x.WellProductions)
                 .Include(x => x.Installation)
                 .Include(x => x.Comment)
                     .ThenInclude(x => x.CommentedBy)

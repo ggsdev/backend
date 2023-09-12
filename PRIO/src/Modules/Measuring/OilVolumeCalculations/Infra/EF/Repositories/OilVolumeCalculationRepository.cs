@@ -32,9 +32,9 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Repositories
         {
             var oilVolumeCalculation = await _context.OilVolumeCalculations.Include(x => x.Installation)
                 .Include(x => x.DrainVolumes)
-                .ThenInclude(x => x.MeasuringPoint)
+                    .ThenInclude(x => x.MeasuringPoint)
                 .Include(x => x.DORs)
-                .ThenInclude(x => x.MeasuringPoint)
+                    .ThenInclude(x => x.MeasuringPoint)
                 .Include(x => x.Sections)
                 .ThenInclude(x => x.MeasuringPoint)
                 .Include(x => x.TOGRecoveredOils)
