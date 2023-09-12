@@ -1355,12 +1355,19 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
             if (lastEventReason is not null)
             {
-                var formattedTime = FormatTimeInterval(dateNow, lastEventReason);
+                if (dateNow > lastEventReason.StartDate)
+                {
+                    var formattedTime = FormatTimeInterval(dateNow, lastEventReason);
 
-                lastEventReason.Interval = formattedTime;
-                lastEventReason.EndDate = DateTime.UtcNow.AddHours(-3);
+                    lastEventReason.Interval = formattedTime;
+                    lastEventReason.EndDate = DateTime.UtcNow.AddHours(-3);
 
-                _wellEventRepository.UpdateReason(lastEventReason);
+                    _wellEventRepository.UpdateReason(lastEventReason);
+                }
+                else
+                {
+                    throw new ConflictException("Erro: Data atual está menor do que o inicio do ultimo evento.");
+                }
             }
 
             await _wellEventRepository.AddReasonClosedEvent(eventReason);
