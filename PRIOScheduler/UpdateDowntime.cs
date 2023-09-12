@@ -59,7 +59,6 @@ namespace PRIOScheduler
                             }
                             var FirstReasonFormattedTime = $"{FirstReasonFormattedHours}:{firstFormattedMinutes}:{firstFormattedSecond}";
                             reason.Interval = FirstReasonFormattedTime;
-                            reason.IsJobGenerated = true;
 
                             DateTime refStartDate = reason.StartDate.Date.AddDays(1);
                             DateTime refStartEnd = refStartDate.AddDays(1).AddMilliseconds(-10);
