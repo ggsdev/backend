@@ -221,6 +221,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                 if (dadosBasicos is not null && dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_001 is not null && dadosBasicos.COD_TAG_PONTO_MEDICAO_001 is not null && dadosBasicos.COD_INSTALACAO_001 is not null && producao is not null && producao.DHA_INICIO_PERIODO_MEDICAO_001 is not null)
                                 {
+
                                     if (DateTime.TryParseExact(producao.DHA_INICIO_PERIODO_MEDICAO_001, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateBeginningMeasurement))
                                     {
                                         var checkDateExists = await _repository.GetMeasurementByDate(dateBeginningMeasurement, XmlUtils.File001);
@@ -327,12 +328,18 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                 if (oilCalculation.DORs is not null)
                                                 {
                                                     foreach (var dor in oilCalculation.DORs)
+                                                    {
+
                                                         if (dor.IsActive && dor.MeasuringPoint.TagPointMeasuring == measuringPoint.TagPointMeasuring)
                                                         {
                                                             containsInCalculation = true;
                                                             if (dor.IsApplicable)
+                                                            {
                                                                 applicable = true;
+
+                                                            }
                                                         }
+                                                    }
                                                 }
 
                                                 if (oilCalculation.Sections is not null)
@@ -520,6 +527,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                 response.DateProduction = dateBeginningMeasurement.ToString("dd/MM/yyyy");
                                                 response.InstallationId = installation.Id;
                                                 response001.Measurements.Add(measurement001DTO);
+
                                             }
                                         }
                                     }
@@ -1320,13 +1328,15 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                 var containDOR = false;
 
+
                 foreach (var dor in oilCalculationByUepCode.DORs)
                 {
                     for (int i = 0; i < file001.Measurements.Count; ++i)
                     {
+
                         var measurementResponse = file001.Measurements[i];
 
-                        if (dor.IsApplicable && dor.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_001)
+                        if (dor.IsApplicable && dor.MeasuringPoint.TagPointMeasuring.ToUpper().Contains(measurementResponse.COD_TAG_PONTO_MEDICAO_001.ToUpper()))
                         {
                             containDOR = true;
                             totalOil -= measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001 * (1 - measurementResponse.BswManual);
@@ -1350,6 +1360,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                 Volume = 0
                             }
                         };
+
                         file001.Measurements.Add(measurementWrong);
                     }
                 }

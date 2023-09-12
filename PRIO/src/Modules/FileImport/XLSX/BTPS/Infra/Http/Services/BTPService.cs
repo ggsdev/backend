@@ -859,7 +859,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                     throw new ConflictException("Só existe este BTP para este poço.");
                 }
             }
-
             foreach (var date in listDates)
             {
                 var production = await _productionRepository.GetExistingByDate(date);
@@ -877,12 +876,14 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 var production = await _productionRepository.GetExistingByDate(dateProduction);
                 if (production is not null && production.WellProductions is not null && production.WellProductions.Count > 0)
                 {
+
                     await _wellProductionService.ReAppropriateWithWellTest(production.Id);
                 }
             }
 
 
             var BTPDataDTO = _mapper.Map<WellTests, BTPDataDTO>(BTPData);
+
 
             return BTPDataDTO;
         }
