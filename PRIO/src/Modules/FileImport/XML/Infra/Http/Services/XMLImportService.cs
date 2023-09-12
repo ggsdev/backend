@@ -2204,11 +2204,21 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                 fieldsConverted.Add(fieldViewModel);
             }
+            var dateParsed = DateTime.Parse(response.DateProduction);
+            var productionOfTheDay = await _productionRepository
+                .GetExistingByDate(dateParsed);
+
+            var isApplicable = false;
+
+            if (productionOfTheDay is not null && productionOfTheDay.FieldsFR is not null && productionOfTheDay.FieldsFR.Any())
+            {
+                isApplicable = true;
+            }
 
             var frProduction = new FRViewModel
             {
                 Fields = fieldsConverted,
-                IsApplicable = false,
+                IsApplicable = isApplicable,
             };
 
             if (response._001File.Count > 0)
@@ -2255,9 +2265,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             }
 
 
-            var dateParsed = DateTime.Parse(response.DateProduction);
-            var productionOfTheDay = await _productionRepository
-                .GetExistingByDate(dateParsed);
+
 
             if (productionOfTheDay is null)
                 response.StatusProduction = "aberto";
