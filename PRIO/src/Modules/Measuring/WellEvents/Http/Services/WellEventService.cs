@@ -285,7 +285,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
             if (dateNow.Date > parsedStartDate.Date && lastEventReasonGeneratedByJob is not null)
             {
-                Console.WriteLine("oi");
                 _wellEventRepository.DeleteReason(lastEventReasonGeneratedByJob);
 
                 var openingEvent = new WellEvent
