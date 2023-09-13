@@ -1335,6 +1335,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             return wellEventDtoOpen;
         }
 
+
         public async Task<ReasonDetailedDto> UpdateReason(Guid reasonId, UpdateReasonViewModel body)
         {
             var wellReason = await _wellEventRepository.GetEventReasonById(reasonId);
@@ -1350,9 +1351,9 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             //    throw new BadRequestException("Sistema relacionado deve ser diferente do anterior");
 
             var systemsRelated = new List<string>
-            {
-                "submarino","topside","estratégia"
-            };
+     {
+         "submarino","topside","estratégia"
+     };
 
             if (systemsRelated.Contains(body.SystemRelated.ToLower()) is false)
                 throw new BadRequestException($"Sistemas relacionados permitidos são: {string.Join(", ", systemsRelated)}");
@@ -1374,8 +1375,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
             return dto;
         }
-
-
         public async Task AddReasonClosedEvent(Guid eventId, CreateReasonViewModel body)
         {
             var closingEvent = await _wellEventRepository
