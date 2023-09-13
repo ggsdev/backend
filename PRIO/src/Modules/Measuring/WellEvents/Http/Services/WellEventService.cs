@@ -1502,7 +1502,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 throw new BadRequestException($"Sistemas relacionados permitidos são: {string.Join(", ", systemsRelated)}");
 
             var dateNow = DateTime.UtcNow.AddHours(-3);
-
             if (dateNow < lastEventReason.StartDate)
                 throw new ConflictException("Data de atualização é menor que a data de inicio do ultimo sistema relacionado.");
 
@@ -1532,7 +1531,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 var FirstReasonFormattedTime = $"{FirstReasonFormattedHours}:{firstFormattedMinutes}:{firstFormattedSecond}";
                 lastEventReason.Interval = FirstReasonFormattedTime;
 
-
                 DateTime refStartDate = lastEventReason.StartDate.Date.AddDays(1);
                 DateTime refStartEnd = refStartDate.AddDays(1).AddMilliseconds(-10);
 
@@ -1543,12 +1541,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 var intervalSecondsDecimal = (intervalMinutesDecimal - intervalMinutes) * 60;
                 int intervalSeconds = (int)intervalSecondsDecimal;
 
-
                 for (int j = 0; j < dif; j++)
                 {
-
-                    var rest = dif - j;
-
                     var newEventReason = new EventReason
                     {
                         Id = Guid.NewGuid(),
@@ -1559,6 +1553,20 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                         IsActive = true,
                         IsJobGenerated = false,
                     };
+                    if (j == 0)
+                    {
+                        if (dateNow.Date == lastEventReason.StartDate.Date)
+                        {
+                            lastEventReason.EndDate = dateNow;
+                            var Interval = FormatTimeInterval(dateNow, lastEventReason);
+                            lastEventReason.Interval = Interval;
+
+                            newEventReason.StartDate = dateNow;
+                            newEventReason.SystemRelated = body.SystemRelated;
+                            await _wellEventRepository.AddReasonClosedEvent(newEventReason);
+                            break;
+                        }
+                    }
                     if (dateNow.Date == refStartDate)
                     {
                         var newEventReason2 = new EventReason
@@ -1569,7 +1577,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                             WellEvent = closingEvent,
                             StartDate = refStartDate,
                             EndDate = dateNow,
-
                             IsActive = true,
                             IsJobGenerated = false,
                         };
