@@ -49,7 +49,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Controllers
             return Ok(data);
         }
 
-        [HttpPatch("/reason/{id}")]
+        [HttpPatch("reason/{id}")]
         public async Task<IActionResult> UpdateReason(Guid id, UpdateReasonViewModel body)
         {
             var data = await _service.UpdateReason(id, body);
