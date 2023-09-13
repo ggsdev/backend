@@ -79,6 +79,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
         {
             return await _context.Wells
                 .Include(x => x.WellEvents)
+                .ThenInclude(x => x.EventReasons)
                 .Include(x => x.Field)
                 .Include(x => x.Completions)
                 .FirstOrDefaultAsync(x => x.Id == id);
