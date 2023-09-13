@@ -333,15 +333,24 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                                     MeasuredAt = production.MeasuredAt
                                 });
                             }
+
                         }
+                        if (totalPotencialOilUEP == 0)
+                            throw new ConflictException("Erro: Somatório dos potenciais do óleo está zerado.");
+
+                        if (totalPotencialGasUEP == 0)
+                            throw new ConflictException("Erro: Somatório dos potenciais do gás está zerado.");
+
+                        if (totalPotencialWaterUEP == 0)
+                            throw new ConflictException("Erro: Somatório dos potenciais do água está zerado.");
+
                         var wellPotencialGasAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((btp.PotencialGas * ((24 - (decimal)totalInterval) / 24)), totalPotencialGasUEP);
                         var wellPotencialOilAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((btp.PotencialOil * ((24 - (decimal)totalInterval) / 24)), totalPotencialOilUEP);
                         var wellPotencialWaterAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((btp.PotencialWater * ((24 - (decimal)totalInterval) / 24)), totalPotencialWaterUEP);
 
-                        var wellPotencialGasAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField((btp.PotencialGas * ((24 - (decimal)totalInterval) / 24)), totalPotencialGasField);
-                        var wellPotencialOilAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField((btp.PotencialOil * ((24 - (decimal)totalInterval) / 24)), totalPotencialOilField);
-
-                        var wellPotencialWaterAsPercentageOfField = WellProductionUtils.CalculateWellProductionAsPercentageOfField((btp.PotencialWater * ((24 - (decimal)totalInterval) / 24)), totalPotencialWaterField);
+                        var wellPotencialGasAsPercentageOfField = totalPotencialGasField != 0 ? WellProductionUtils.CalculateWellProductionAsPercentageOfField((btp.PotencialGas * ((24 - (decimal)totalInterval) / 24)), totalPotencialGasField) : 0;
+                        var wellPotencialOilAsPercentageOfField = totalPotencialOilField != 0 ? WellProductionUtils.CalculateWellProductionAsPercentageOfField((btp.PotencialOil * ((24 - (decimal)totalInterval) / 24)), totalPotencialOilField) : 0;
+                        var wellPotencialWaterAsPercentageOfField = totalPotencialWaterField != 0 ? WellProductionUtils.CalculateWellProductionAsPercentageOfField((btp.PotencialWater * ((24 - (decimal)totalInterval) / 24)), totalPotencialWaterField) : 0;
 
                         var productionGas = fieldFR.FRGas is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.GasProductionInField, wellPotencialGasAsPercentageOfField) : 0;
                         var productionOil = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.OilProductionInField, wellPotencialOilAsPercentageOfField) : 0;
@@ -686,6 +695,15 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                                 });
                             }
                         }
+
+                        if (totalPotencialOilUEP == 0)
+                            throw new ConflictException("Erro: Somatório dos potenciais do óleo está zerado.");
+
+                        if (totalPotencialGasUEP == 0)
+                            throw new ConflictException("Erro: Somatório dos potenciais do gás está zerado.");
+
+                        if (totalPotencialWaterUEP == 0)
+                            throw new ConflictException("Erro: Somatório dos potenciais do água está zerado.");
 
                         var wellPotencialGasAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((btp.PotencialGas * ((24 - (decimal)totalInterval) / 24)), totalPotencialGasUEP);
                         var wellPotencialOilAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((btp.PotencialOil * ((24 - (decimal)totalInterval) / 24)), totalPotencialOilUEP);
