@@ -85,7 +85,9 @@ namespace PRIO.TESTS.Hierarquies.Completions
                 cfg.CreateMap<Zone, ZoneDTO>();
                 cfg.CreateMap<Zone, ZoneWithoutFieldDTO>();
                 cfg.CreateMap<Field, FieldDTO>();
+                cfg.CreateMap<Field, FieldWithZonesAndWellsDTO>();
                 cfg.CreateMap<Installation, InstallationDTO>();
+                cfg.CreateMap<Installation, InstallationWithoutClusterDTO>();
                 cfg.CreateMap<Cluster, ClusterDTO>();
                 cfg.CreateMap<Well, WellDTO>();
                 cfg.CreateMap<Well, WellWithoutFieldDTO>();
