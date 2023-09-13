@@ -18,6 +18,7 @@
 
     public class ReasonDetailedDto
     {
+        public Guid Id { get; set; }
         public string SystemRelated { get; set; }
         public string StartDate { get; set; }
         public string? EndDate { get; set; }

@@ -22,6 +22,18 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Repositories
                         .ThenInclude(x => x.Installation)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
+
+        public async Task<EventReason?> GetEventReasonById(Guid id)
+        {
+            return await _context.EventReasons
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public void UpdateEventReasonById(EventReason eventReason)
+        {
+            _context.EventReasons
+                .Update(eventReason);
+        }
         public async Task<List<WellEvent>> GetAllWellEvent(Guid wellId)
         {
             return await _context.WellEvents

@@ -1283,6 +1283,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 {
                     var reasonDetailedDto = new ReasonDetailedDto
                     {
+                        Id = wellReason.Id,
                         StartDate = wellReason.StartDate.ToString("dd/MM/yyyy HH:mm"),
                         SystemRelated = wellReason.SystemRelated,
                         Downtime = wellReason.Interval,
@@ -1333,6 +1334,47 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
             return wellEventDtoOpen;
         }
+
+        public async Task<ReasonDetailedDto> UpdateReason(Guid reasonId, UpdateReasonViewModel body)
+        {
+            var wellReason = await _wellEventRepository.GetEventReasonById(reasonId);
+
+            if (wellReason is null)
+                throw new NotFoundException("Razão do evento não encontrada.");
+
+            //var lastEventReason = _wellEventRepository.EventReasons
+            //  .OrderBy(x => x.CreatedAt)
+            //  .LastOrDefault();
+
+            //if (lastEventReason is not null && lastEventReason.SystemRelated.ToLower() == body.SystemRelated.ToLower())
+            //    throw new BadRequestException("Sistema relacionado deve ser diferente do anterior");
+
+            var systemsRelated = new List<string>
+            {
+                "submarino","topside","estratégia"
+            };
+
+            if (systemsRelated.Contains(body.SystemRelated.ToLower()) is false)
+                throw new BadRequestException($"Sistemas relacionados permitidos são: {string.Join(", ", systemsRelated)}");
+
+
+            wellReason.SystemRelated = body.SystemRelated;
+
+            _wellEventRepository.UpdateReason(wellReason);
+
+            var dto = new ReasonDetailedDto
+            {
+                Id = wellReason.Id,
+                StartDate = wellReason.StartDate.ToString("dd/MM/yyyy HH:mm"),
+                SystemRelated = wellReason.SystemRelated,
+                Downtime = wellReason.Interval,
+                EndDate = wellReason.EndDate?.ToString("dd/MM/yyyy HH:mm"),
+            };
+
+
+            return dto;
+        }
+
 
         public async Task AddReasonClosedEvent(Guid eventId, CreateReasonViewModel body)
         {
