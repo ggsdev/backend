@@ -247,8 +247,8 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                     {
                         GroupId = userWithPermissions.Group.Id,
                         GroupName = userWithPermissions.Group.Name,
-                        hasParent = false,
-                        hasChildren = true,
+                        hasParent = verifyRelationMenuParent.hasParent,
+                        hasChildren = verifyRelationMenuParent.hasChildren,
                         Id = Guid.NewGuid(),
                         MenuIcon = verifyRelationMenuParent.MenuIcon,
                         MenuName = verifyRelationMenuParent.MenuName,
