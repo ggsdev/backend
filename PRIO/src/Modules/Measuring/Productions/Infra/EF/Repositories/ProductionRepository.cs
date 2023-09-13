@@ -104,6 +104,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                     .ThenInclude(x => x.Field)
                 .Include(x => x.Measurements)
                     .ThenInclude(m => m.MeasurementHistory)
+                        .ThenInclude(x => x.ImportedBy)
                 .Include(x => x.Measurements)
                     .ThenInclude(d => d.MeasuringPoint)
                 .Where(x => x.MeasuredAt.Year == date.Year &&
