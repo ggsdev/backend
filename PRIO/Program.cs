@@ -114,10 +114,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//var serviceProvider = builder.Services.BuildServiceProvider();
-//var dataContext = serviceProvider.GetRequiredService<DataContext>();
-//var jobScheduler = new JobScheduler(dataContext);
-
 
 ConfigureMiddlewares(app);
 app.UseAuthentication();
@@ -139,9 +135,6 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
         //config.ModelBinderProviders.Insert(0, new GuidBinderProvider());
     });
 
-    //services.AddHangfire(x => x.UseSqlServerStorage($"Server={envVars["SERVER"]},{envVars["PORT"]}\\{envVars["SERVER_INSTANCE"]};Database={envVars["DATABASE"]};User ID={envVars["USER_ID"]};Password={envVars["PASSWORD"]};Encrypt={envVars["ENCRYPT"]}"))
-    //    .AddHangfireServer()
-    //    ;
 
     services.AddCors(options =>
     {
