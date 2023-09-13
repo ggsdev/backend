@@ -1351,9 +1351,9 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             //    throw new BadRequestException("Sistema relacionado deve ser diferente do anterior");
 
             var systemsRelated = new List<string>
-     {
-         "submarino","topside","estratégia"
-     };
+            {
+                "submarino","topside","estratégia"
+            };
 
             if (systemsRelated.Contains(body.SystemRelated.ToLower()) is false)
                 throw new BadRequestException($"Sistemas relacionados permitidos são: {string.Join(", ", systemsRelated)}");
@@ -1446,7 +1446,9 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
                     for (int j = 0; j < dif; j++)
                     {
+
                         var rest = dif - j;
+
                         var newEventReason = new EventReason
                         {
                             Id = Guid.NewGuid(),
@@ -1457,14 +1459,34 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                             IsActive = true,
                             IsJobGenerated = false,
                         };
-                        if (rest < 1)
+                        if (dateNow.Date == refStartDate)
                         {
+                            var newEventReason2 = new EventReason
+                            {
+                                Id = Guid.NewGuid(),
+                                SystemRelated = lastEventReason.SystemRelated,
+                                Comment = lastEventReason.Comment,
+                                WellEvent = closingEvent,
+                                StartDate = refStartDate,
+                                EndDate = dateNow,
+
+                                IsActive = true,
+                                IsJobGenerated = false,
+                            };
+                            var Interval = FormatTimeInterval(dateNow, newEventReason2);
+                            newEventReason2.Interval = Interval;
+
                             newEventReason.EndDate = null;
+                            newEventReason.StartDate = dateNow;
+                            newEventReason.SystemRelated = body.SystemRelated;
+
+                            await _wellEventRepository.AddReasonClosedEvent(newEventReason2);
+                            await _wellEventRepository.AddReasonClosedEvent(newEventReason);
+                            break;
                         }
                         else
                         {
                             newEventReason.EndDate = refStartEnd;
-
                             string ReasonFormattedMinutes = intervalMinutes < 10 ? $"0{intervalMinutes}" : intervalMinutes.ToString();
                             string ReasonFormattedSecond = intervalSeconds < 10 ? $"0{intervalSeconds}" : intervalSeconds.ToString();
                             string ReasonFormattedHours;
