@@ -1371,7 +1371,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 EndDate = wellReason.EndDate?.ToString("dd/MM/yyyy HH:mm"),
             };
 
-
+            await _wellEventRepository.Save();
             return dto;
         }
 
