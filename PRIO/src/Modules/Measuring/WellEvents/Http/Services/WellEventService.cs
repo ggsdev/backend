@@ -1283,6 +1283,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 {
                     var reasonDetailedDto = new ReasonDetailedDto
                     {
+                        Id = wellReason.Id,
                         StartDate = wellReason.StartDate.ToString("dd/MM/yyyy HH:mm"),
                         SystemRelated = wellReason.SystemRelated,
                         Downtime = wellReason.Interval,
