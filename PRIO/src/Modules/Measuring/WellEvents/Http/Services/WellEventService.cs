@@ -1502,126 +1502,126 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 throw new BadRequestException($"Sistemas relacionados permitidos são: {string.Join(", ", systemsRelated)}");
 
             var dateNow = DateTime.UtcNow.AddHours(-3);
-            var diff = (dateNow - lastEventReason.StartDate).TotalHours;
 
-            if (diff > 24)
+            if (dateNow < lastEventReason.StartDate)
+                throw new ConflictException("Data de atualização é menor que a data de inicio do ultimo sistema relacionado.");
+
+            if (lastEventReason.StartDate < dateNow && lastEventReason.EndDate is null)
             {
-                if (lastEventReason.StartDate < dateNow && lastEventReason.EndDate is null)
+                var dif = (dateNow - lastEventReason.StartDate).TotalHours / 24;
+                lastEventReason.EndDate = lastEventReason.StartDate.Date.AddDays(1).AddMilliseconds(-10);
+
+                var FirstresultIntervalTimeSpan = (lastEventReason.StartDate.Date.AddDays(1).AddMilliseconds(-10) - lastEventReason.StartDate).TotalHours;
+                int FirstintervalHours = (int)FirstresultIntervalTimeSpan;
+                var FirstintervalMinutesDecimal = (FirstresultIntervalTimeSpan - FirstintervalHours) * 60;
+                int FirstintervalMinutes = (int)FirstintervalMinutesDecimal;
+                var FirstintervalSecondsDecimal = (FirstintervalMinutesDecimal - FirstintervalMinutes) * 60;
+                int FirstintervalSeconds = (int)FirstintervalSecondsDecimal;
+                string FirstReasonFormattedHours;
+                string firstFormattedMinutes = FirstintervalMinutes < 10 ? $"0{FirstintervalMinutes}" : FirstintervalMinutes.ToString();
+                string firstFormattedSecond = FirstintervalSeconds < 10 ? $"0{FirstintervalSeconds}" : FirstintervalSeconds.ToString();
+                if (FirstintervalHours >= 1000)
                 {
-                    var dif = (dateNow - lastEventReason.StartDate).TotalHours / 24;
-                    lastEventReason.EndDate = lastEventReason.StartDate.Date.AddDays(1).AddMilliseconds(-10);
+                    int digitCount = (int)Math.Floor(Math.Log10(FirstintervalHours)) + 1;
+                    FirstReasonFormattedHours = FirstintervalHours.ToString(new string('0', digitCount));
+                }
+                else
+                {
+                    FirstReasonFormattedHours = FirstintervalHours.ToString("00");
+                }
+                var FirstReasonFormattedTime = $"{FirstReasonFormattedHours}:{firstFormattedMinutes}:{firstFormattedSecond}";
+                lastEventReason.Interval = FirstReasonFormattedTime;
 
-                    var FirstresultIntervalTimeSpan = (lastEventReason.StartDate.Date.AddDays(1).AddMilliseconds(-10) - lastEventReason.StartDate).TotalHours;
-                    int FirstintervalHours = (int)FirstresultIntervalTimeSpan;
-                    var FirstintervalMinutesDecimal = (FirstresultIntervalTimeSpan - FirstintervalHours) * 60;
-                    int FirstintervalMinutes = (int)FirstintervalMinutesDecimal;
-                    var FirstintervalSecondsDecimal = (FirstintervalMinutesDecimal - FirstintervalMinutes) * 60;
-                    int FirstintervalSeconds = (int)FirstintervalSecondsDecimal;
-                    string FirstReasonFormattedHours;
-                    string firstFormattedMinutes = FirstintervalMinutes < 10 ? $"0{FirstintervalMinutes}" : FirstintervalMinutes.ToString();
-                    string firstFormattedSecond = FirstintervalSeconds < 10 ? $"0{FirstintervalSeconds}" : FirstintervalSeconds.ToString();
-                    if (FirstintervalHours >= 1000)
+
+                DateTime refStartDate = lastEventReason.StartDate.Date.AddDays(1);
+                DateTime refStartEnd = refStartDate.AddDays(1).AddMilliseconds(-10);
+
+                var resultIntervalTimeSpan = (refStartEnd - refStartDate).TotalHours;
+                int intervalHours = (int)resultIntervalTimeSpan;
+                var intervalMinutesDecimal = (resultIntervalTimeSpan - intervalHours) * 60;
+                int intervalMinutes = (int)intervalMinutesDecimal;
+                var intervalSecondsDecimal = (intervalMinutesDecimal - intervalMinutes) * 60;
+                int intervalSeconds = (int)intervalSecondsDecimal;
+
+
+                for (int j = 0; j < dif; j++)
+                {
+
+                    var rest = dif - j;
+
+                    var newEventReason = new EventReason
                     {
-                        int digitCount = (int)Math.Floor(Math.Log10(FirstintervalHours)) + 1;
-                        FirstReasonFormattedHours = FirstintervalHours.ToString(new string('0', digitCount));
-                    }
-                    else
+                        Id = Guid.NewGuid(),
+                        SystemRelated = lastEventReason.SystemRelated,
+                        Comment = lastEventReason.Comment,
+                        WellEvent = closingEvent,
+                        StartDate = refStartDate,
+                        IsActive = true,
+                        IsJobGenerated = false,
+                    };
+                    if (dateNow.Date == refStartDate)
                     {
-                        FirstReasonFormattedHours = FirstintervalHours.ToString("00");
-                    }
-                    var FirstReasonFormattedTime = $"{FirstReasonFormattedHours}:{firstFormattedMinutes}:{firstFormattedSecond}";
-                    lastEventReason.Interval = FirstReasonFormattedTime;
-
-
-                    DateTime refStartDate = lastEventReason.StartDate.Date.AddDays(1);
-                    DateTime refStartEnd = refStartDate.AddDays(1).AddMilliseconds(-10);
-
-                    var resultIntervalTimeSpan = (refStartEnd - refStartDate).TotalHours;
-                    int intervalHours = (int)resultIntervalTimeSpan;
-                    var intervalMinutesDecimal = (resultIntervalTimeSpan - intervalHours) * 60;
-                    int intervalMinutes = (int)intervalMinutesDecimal;
-                    var intervalSecondsDecimal = (intervalMinutesDecimal - intervalMinutes) * 60;
-                    int intervalSeconds = (int)intervalSecondsDecimal;
-
-
-                    for (int j = 0; j < dif; j++)
-                    {
-
-                        var rest = dif - j;
-
-                        var newEventReason = new EventReason
+                        var newEventReason2 = new EventReason
                         {
                             Id = Guid.NewGuid(),
                             SystemRelated = lastEventReason.SystemRelated,
                             Comment = lastEventReason.Comment,
                             WellEvent = closingEvent,
                             StartDate = refStartDate,
+                            EndDate = dateNow,
+
                             IsActive = true,
                             IsJobGenerated = false,
                         };
-                        if (dateNow.Date == refStartDate)
+                        var Interval = FormatTimeInterval(dateNow, newEventReason2);
+                        newEventReason2.Interval = Interval;
+
+                        newEventReason.EndDate = null;
+                        newEventReason.StartDate = dateNow;
+                        newEventReason.SystemRelated = body.SystemRelated;
+
+                        await _wellEventRepository.AddReasonClosedEvent(newEventReason2);
+                        await _wellEventRepository.AddReasonClosedEvent(newEventReason);
+                        break;
+                    }
+                    else
+                    {
+                        newEventReason.EndDate = refStartEnd;
+                        string ReasonFormattedMinutes = intervalMinutes < 10 ? $"0{intervalMinutes}" : intervalMinutes.ToString();
+                        string ReasonFormattedSecond = intervalSeconds < 10 ? $"0{intervalSeconds}" : intervalSeconds.ToString();
+                        string ReasonFormattedHours;
+                        if (intervalHours >= 1000)
                         {
-                            var newEventReason2 = new EventReason
-                            {
-                                Id = Guid.NewGuid(),
-                                SystemRelated = lastEventReason.SystemRelated,
-                                Comment = lastEventReason.Comment,
-                                WellEvent = closingEvent,
-                                StartDate = refStartDate,
-                                EndDate = dateNow,
-
-                                IsActive = true,
-                                IsJobGenerated = false,
-                            };
-                            var Interval = FormatTimeInterval(dateNow, newEventReason2);
-                            newEventReason2.Interval = Interval;
-
-                            newEventReason.EndDate = null;
-                            newEventReason.StartDate = dateNow;
-                            newEventReason.SystemRelated = body.SystemRelated;
-
-                            await _wellEventRepository.AddReasonClosedEvent(newEventReason2);
-                            await _wellEventRepository.AddReasonClosedEvent(newEventReason);
-                            break;
+                            int digitCount = (int)Math.Floor(Math.Log10(intervalHours)) + 1;
+                            ReasonFormattedHours = intervalHours.ToString(new string('0', digitCount));
                         }
                         else
                         {
-                            newEventReason.EndDate = refStartEnd;
-                            string ReasonFormattedMinutes = intervalMinutes < 10 ? $"0{intervalMinutes}" : intervalMinutes.ToString();
-                            string ReasonFormattedSecond = intervalSeconds < 10 ? $"0{intervalSeconds}" : intervalSeconds.ToString();
-                            string ReasonFormattedHours;
-                            if (intervalHours >= 1000)
-                            {
-                                int digitCount = (int)Math.Floor(Math.Log10(intervalHours)) + 1;
-                                ReasonFormattedHours = intervalHours.ToString(new string('0', digitCount));
-                            }
-                            else
-                            {
-                                ReasonFormattedHours = intervalHours.ToString("00");
-                            }
-                            var reasonFormattedTime = $"{ReasonFormattedHours}:{ReasonFormattedMinutes}:{ReasonFormattedSecond}";
-                            newEventReason.Interval = reasonFormattedTime;
-                            refStartDate = newEventReason.StartDate.AddDays(1);
-                            refStartEnd = refStartDate.AddDays(1).AddMilliseconds(-10);
+                            ReasonFormattedHours = intervalHours.ToString("00");
                         }
-
-                        await _wellEventRepository.AddReasonClosedEvent(newEventReason);
+                        var reasonFormattedTime = $"{ReasonFormattedHours}:{ReasonFormattedMinutes}:{ReasonFormattedSecond}";
+                        newEventReason.Interval = reasonFormattedTime;
+                        refStartDate = newEventReason.StartDate.AddDays(1);
+                        refStartEnd = refStartDate.AddDays(1).AddMilliseconds(-10);
                     }
+
+                    await _wellEventRepository.AddReasonClosedEvent(newEventReason);
                 }
             }
-            else
-            {
 
-                var eventReason = new EventReason
-                {
-                    Id = Guid.NewGuid(),
-                    SystemRelated = body.SystemRelated,
-                    StartDate = dateNow,
-                    WellEvent = closingEvent,
-                };
+            //else
+            //{
 
-                await _wellEventRepository.AddReasonClosedEvent(eventReason);
-            }
+            //    var eventReason = new EventReason
+            //    {
+            //        Id = Guid.NewGuid(),
+            //        SystemRelated = body.SystemRelated,
+            //        StartDate = dateNow,
+            //        WellEvent = closingEvent,
+            //    };
+
+            //    await _wellEventRepository.AddReasonClosedEvent(eventReason);
+            //}
 
             if (lastEventReason is null)
             {
