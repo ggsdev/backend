@@ -37,10 +37,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
             if (body.Gas is not null)
             {
                 if (body.Production.Oil is not null && body.Production.FieldsFR is not null && body.Production.FieldsFR.Any() is false && body.Gas.FR.IsApplicable)
-                    throw new BadRequestException("Óleo não foi rateado, logo não é possível ratear o gás.", status: "FR");
+                    throw new BadRequestException("Óleo não foi rateado, logo não é possível ratear o gás.", status: "GÁS");
 
                 if (body.Production.Oil is not null && body.Production.FieldsFR is not null && body.Production.FieldsFR.Any() && body.Gas.FR.IsApplicable is false)
-                    throw new BadRequestException("Óleo foi rateado, logo é necessário ratear o gás.", status: "FR");
+                    throw new BadRequestException("Óleo foi rateado, logo é necessário ratear o gás.", status: "GÁS");
 
                 foreach (var field in body.Gas.FR.Fields)
                 {
@@ -125,10 +125,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
             if (body.Oil is not null)
             {
                 if (body.Production.Gas is not null && body.Production.FieldsFR is not null && body.Production.FieldsFR.Any() is false && body.Oil.FR.IsApplicable)
-                    throw new BadRequestException("Gás não foi rateado, logo não é possível ratear o óleo.", status: "FR");
+                    throw new BadRequestException("Gás não foi rateado, logo não é possível ratear o óleo.", status: "ÓLEO");
 
                 if (body.Production.Gas is not null && body.Production.FieldsFR is not null && body.Production.FieldsFR.Any() && body.Oil.FR.IsApplicable is false)
-                    throw new BadRequestException("Gás foi rateado, logo é necessário ratear o óleo.", status: "FR");
+                    throw new BadRequestException("Gás foi rateado, logo é necessário ratear o óleo.", status: "ÓLEO");
 
                 foreach (var field in body.Oil.FR.Fields)
                 {
