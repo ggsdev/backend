@@ -982,7 +982,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                                      (productionInDatabase.GasDiferencial?.TotalGas ?? 0) +
                                      (productionInDatabase.GasLinear?.TotalGas ?? 0);
 
-                if (oilChanged || gasDiferencialChanged || gasLinearChanged && nfsmInDatabase.IsApplied is true)
+                if (oilChanged || gasDiferencialChanged || gasLinearChanged)
                 {
                     if (productionInDatabase.FieldsFR is not null)
                         foreach (var fieldFr in productionInDatabase.FieldsFR)
