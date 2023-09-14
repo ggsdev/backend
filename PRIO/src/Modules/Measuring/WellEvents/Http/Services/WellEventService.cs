@@ -1418,6 +1418,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
                 return wellEventDto;
             }
+
             var wellEventDtoOpen = new WellEventByIdDto
             {
                 Id = wellEvent.Id,
