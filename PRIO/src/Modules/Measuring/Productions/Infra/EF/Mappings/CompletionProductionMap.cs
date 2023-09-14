@@ -12,15 +12,15 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Mappings
 
             builder.Property(x => x.GasProductionInCompletion)
               .HasColumnType("DECIMAL")
-               .HasPrecision(22, 16);
+               .HasPrecision(38, 16);
 
             builder.Property(x => x.WaterProductionInCompletion)
                 .HasColumnType("DECIMAL")
-               .HasPrecision(22, 16);
+               .HasPrecision(38, 16);
 
             builder.Property(x => x.OilProductionInCompletion)
                 .HasColumnType("DECIMAL")
-               .HasPrecision(22, 16);
+               .HasPrecision(38, 16);
 
             builder.Property(x => x.CompletionId)
                 .HasColumnType("uniqueidentifier")
