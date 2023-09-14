@@ -12,26 +12,26 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Mappings
 
             builder.Property(x => x.EfficienceLoss)
                .HasColumnType("DECIMAL")
-               .HasPrecision(22, 16);
+               .HasPrecision(38, 16);
 
             builder.Property(x => x.ProductionLostOil)
                .HasColumnType("DECIMAL")
-               .HasPrecision(22, 16);
+               .HasPrecision(38, 16);
 
             builder.Property(x => x.Downtime)
                .HasMaxLength(15);
 
             builder.Property(x => x.ProportionalDay)
                .HasColumnType("DECIMAL")
-               .HasPrecision(22, 16);
+               .HasPrecision(38, 16);
 
             builder.Property(x => x.ProductionLostGas)
               .HasColumnType("DECIMAL")
-               .HasPrecision(22, 16);
+               .HasPrecision(38, 16);
 
             builder.Property(x => x.ProductionLostWater)
              .HasColumnType("DECIMAL")
-               .HasPrecision(22, 16);
+               .HasPrecision(38, 16);
 
         }
     }
