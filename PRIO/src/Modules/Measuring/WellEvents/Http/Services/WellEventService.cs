@@ -275,11 +275,9 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 codeSequencial = "0001";
             }
 
-
             var lastEventReasonGeneratedByJob = lastEvent.EventReasons
                 .OrderBy(x => x.StartDate)
                 .LastOrDefault();
-
 
             if (lastEventReasonGeneratedByJob is not null && lastEventReasonGeneratedByJob.StartDate > parsedStartDate.Date && lastEventReasonGeneratedByJob.IsJobGenerated)
             {
