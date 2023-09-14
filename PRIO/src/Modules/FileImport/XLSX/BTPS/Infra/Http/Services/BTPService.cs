@@ -275,11 +275,14 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             }
 
             var convertBtp = btpNumberValue?.ToString();
+            DateTime? finalDateTest = DateTime.MinValue;
+            DateTime? inicialDateTest = DateTime.MinValue;
+            DateTime? alignDate = DateTime.MinValue;
             if (initialDateValue is not null && finalDateValue is not null)
             {
+                finalDateTest = finalDateValue is string ? DateTime.Parse(finalDateValue.ToString()) : finalDateValue is DateTime ? (DateTime)finalDateValue : finalDateValue is double ? DateTime.FromOADate((double)finalDateValue) : null;
+                inicialDateTest = initialDateValue is string ? DateTime.Parse(initialDateValue.ToString()) : initialDateValue is DateTime ? (DateTime)initialDateValue : initialDateValue is double ? DateTime.FromOADate((double)initialDateValue) : null;
 
-                DateTime? finalDateTest = finalDateValue is string ? DateTime.Parse(finalDateValue.ToString()) : finalDateValue is DateTime ? (DateTime)finalDateValue : finalDateValue is double ? DateTime.FromOADate((double)finalDateValue) : null;
-                DateTime? inicialDateTest = initialDateValue is string ? DateTime.Parse(initialDateValue.ToString()) : initialDateValue is DateTime ? (DateTime)initialDateValue : initialDateValue is double ? DateTime.FromOADate((double)initialDateValue) : null;
 
                 if (finalDateTest is null || inicialDateTest is null)
                 {
@@ -308,7 +311,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                     }
                     if (wellAlignmentDataValue is not null)
                     {
-                        DateTime? alignDate = wellAlignmentDataValue is DateTime ? (DateTime)wellAlignmentDataValue : wellAlignmentDataValue is double ? DateTime.FromOADate((double)wellAlignmentDataValue) : null;
+                        alignDate = wellAlignmentDataValue is DateTime ? (DateTime)wellAlignmentDataValue : wellAlignmentDataValue is double ? DateTime.FromOADate((double)wellAlignmentDataValue) : null;
                         if (alignDate is not null)
                         {
                             if (alignDate.Value.Date > initialDate.Value.Date)
@@ -394,6 +397,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 IsActive = true,
                 User = user
             };
+
             var data = new WellTests
             {
                 Id = Guid.NewGuid(),
@@ -408,16 +412,15 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 PotencialGasPerHour = gasPerHourDecimalFormated,
                 PotencialWater = waterDecimalFormated,
                 PotencialWaterPerHour = waterPerHourDecimalFormated,
-                InitialDate = worksheet.Cells[BTP.CellInitialDate].Value.ToString(),
-                FinalDate = worksheet.Cells[BTP.CellFinalDate].Value.ToString(),
+                InitialDate = inicialDateTest is not null ? inicialDateTest.ToString() : DateTime.MinValue.ToString(),
+                FinalDate = finalDateTest is not null ? finalDateTest.ToString() : DateTime.MinValue.ToString(),
                 BTPNumber = convertBtp,
                 MPointGas = worksheet.Cells[BTP.CellMPointGas].Value.ToString(),
                 MPointOil = concatenatedString,
                 MPointWater = worksheet.Cells[BTP.CellMPointWater].Value.ToString(),
                 BSW = bswDecimalFormated,
                 RGO = rgoDecimalFormated,
-                WellAlignmentData = worksheet.Cells[BTP.CellWellAlignmentData].Value.ToString(),
-                //WellAlignmentHour = align,
+                WellAlignmentData = alignDate is not null ? alignDate.ToString().Split(" ")[0] : DateTime.MinValue.ToString(),
                 WellName = worksheet.Cells[BTP.CellWellName].Value.ToString(),
                 BTPSheet = BTP.BTPSheet,
                 Well = well,
@@ -430,15 +433,19 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             {
                 if (duration[1] is null)
                     throw new ConflictException("Conteúdo da célula duração é inválido");
-
                 string valorTempo = duration[1];
                 data.Duration = valorTempo;
             }
             else if (duration.Length == 1)
             {
-
                 string valorTempo = duration[0];
                 data.Duration = valorTempo;
+                if (worksheet.Cells[BTP.CellDuration].Value is double)
+                {
+                    var attData = ConvertDoubleToTimeSpan(worksheet.Cells[BTP.CellDuration].Value.ToString());
+                    data.Duration = attData.ToString();
+
+                }
             }
 
             //Trated aligmentHour
@@ -517,7 +524,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
 
             if (body.Data.Filename.EndsWith(".xlsx") is false && body.Data.Filename.EndsWith(".xlsm") is false)
                 throw new BadRequestException("O arquivo deve ter a extensão .xlsx ou .xlsm", status: "Error");
-
             if (body.Data.Type != BTP.Type)
                 throw new ConflictException($"O modelo do arquivo não corresponde ao tipo {body.Data.Type}");
             if (body.Data.Filename != Validate.Filename)
@@ -533,38 +539,49 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             var workbook = package.Workbook;
             var worksheet = BTP.BTPSheet is not null ? workbook.Worksheets[BTP.BTPSheet] : workbook.Worksheets[0];
 
-
             //Trated aligmentHour
             object? wellAlignmentHourValue = worksheet.Cells[BTP.CellWellAlignmentHour].Value;
             if (wellAlignmentHourValue is double)
             {
                 string? align = ConvertDoubleToTimeSpan(worksheet.Cells[BTP.CellWellAlignmentHour].Value.ToString());
                 if (align != body.Data.WellAlignmentHour)
-                {
                     throw new ConflictException("Horário do alinhamento do poço não corresponde a validação");
-                }
-
             }
             else if (wellAlignmentHourValue is DateTime)
             {
                 var splitAlignHour = wellAlignmentHourValue.ToString().Split(" ");
                 var splitAlignHourSecondPosition = splitAlignHour[1];
-
-
                 if (splitAlignHourSecondPosition != body.Data.WellAlignmentHour)
-                {
                     throw new ConflictException("Horário do alinhamento do poço não corresponde a validação");
-                }
             }
 
             //Trated Duration
             string[] duration = worksheet.Cells[BTP.CellDuration].Value.ToString().Split(' ');
-            string valorTempo = duration[1];
+            string valorTempo = "";
+            if (duration.Length == 2)
+            {
+                if (duration[1] is null)
+                    throw new ConflictException("Conteúdo da célula duração é inválido");
+                valorTempo = duration[1];
+            }
+            else if (duration.Length == 1)
+            {
+                valorTempo = duration[0];
+                if (worksheet.Cells[BTP.CellDuration].Value is double)
+                {
+                    var attData = ConvertDoubleToTimeSpan(worksheet.Cells[BTP.CellDuration].Value.ToString());
+                    valorTempo = attData;
+                }
+            }
+            var finalDateValue = worksheet.Cells[BTP.CellFinalDate].Value;
+            var initialDateValue = worksheet.Cells[BTP.CellInitialDate].Value;
+            var wellAlignmentDataValue = worksheet.Cells[BTP.CellWellAlignmentData].Value;
+            DateTime? finalDateTest = finalDateValue is string ? DateTime.Parse(finalDateValue.ToString()) : finalDateValue is DateTime ? (DateTime)finalDateValue : finalDateValue is double ? DateTime.FromOADate((double)finalDateValue) : null;
+            DateTime? initialDateTest = initialDateValue is string ? DateTime.Parse(initialDateValue.ToString()) : initialDateValue is DateTime ? (DateTime)initialDateValue : initialDateValue is double ? DateTime.FromOADate((double)initialDateValue) : null;
+            DateTime? alignDate = wellAlignmentDataValue is DateTime ? (DateTime)wellAlignmentDataValue : wellAlignmentDataValue is double ? DateTime.FromOADate((double)wellAlignmentDataValue) : null;
 
-            //Verify Well
             string? message = well.Name == worksheet.Cells[BTP.CellWellName].Value.ToString() ? "Sucess: Nome do poço encontrado corresponde ao xls" : throw new ConflictException($"O poço {worksheet.Cells[BTP.CellWellName].Value.ToString()} do arquivo {body.Data.Filename} não corresponde ao poço {well.Name} selecionado para o teste.");
 
-            //ToDecimal
             var oilCheck = decimal.TryParse(worksheet.Cells[BTP.CellPotencialOil].Value.ToString(), out var oilDecimal);
             decimal oilDecimalFormated = Math.Round(oilDecimal, 5, MidpointRounding.AwayFromZero);
             decimal oilPerHourDecimalFormated = Math.Round(oilDecimal / 24, 5, MidpointRounding.AwayFromZero);
@@ -580,22 +597,20 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             decimal bswDecimalFormated = Math.Round(bswDecimal, 5, MidpointRounding.AwayFromZero);
 
             if (oilCheck is false || gasCheck is false || waterCheck is false || rgoCheck is false || bswCheck is false)
-            {
                 throw new ConflictException("Dados decimais não podem ser convertidos.");
-            }
 
             var _validatePotenialOil = body.Data.PotencialOil == oilDecimalFormated;
             var _validatePotencialGas = body.Data.PotencialGas == gasDecimalFormated;
             var _validatePotencialWater = body.Data.PotencialWater == waterDecimalFormated;
             var _validateDuration = body.Data.Duration == valorTempo;
-            var _validateInitialDate = body.Data.InitialDate == worksheet.Cells[BTP.CellInitialDate].Value.ToString();
-            var _validateFinalDate = body.Data.FinalDate == worksheet.Cells[BTP.CellFinalDate].Value.ToString();
+            var _validateInitialDate = body.Data.InitialDate == initialDateTest.ToString();
+            var _validateFinalDate = body.Data.FinalDate == finalDateTest.ToString();
             var _validateBTPNumber = body.Data.BTPNumber == worksheet.Cells[BTP.CellBTPNumber].Value.ToString();
             var _validateMPointGas = body.Data.MPointGas == worksheet.Cells[BTP.CellMPointGas].Value.ToString();
             var _validateMPointWater = body.Data.MPointWater == worksheet.Cells[BTP.CellMPointWater].Value.ToString();
             var _validateBsw = body.Data.BSW == bswDecimalFormated;
             var _validateRGO = body.Data.RGO == rgoDecimalFormated;
-            var _validateWellAlignDate = body.Data.WellAlignmentData == worksheet.Cells[BTP.CellWellAlignmentData].Value.ToString();
+            var _validateWellAlignDate = body.Data.WellAlignmentData == alignDate.ToString().Split(" ")[0];
             var _validateWellName = body.Data.WellName == worksheet.Cells[BTP.CellWellName].Value.ToString();
             var _validateBTPSheet = body.Data.BTPSheet == BTP.BTPSheet;
 
@@ -649,15 +664,15 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 PotencialWater = waterDecimalFormated,
                 PotencialWaterPerHour = waterPerHourDecimalFormated,
                 Duration = valorTempo,
-                InitialDate = worksheet.Cells[BTP.CellInitialDate].Value.ToString(),
-                FinalDate = worksheet.Cells[BTP.CellFinalDate].Value.ToString(),
+                InitialDate = initialDateTest is not null ? initialDateTest.ToString() : DateTime.MinValue.ToString(),
+                FinalDate = finalDateTest is not null ? finalDateTest.ToString() : DateTime.MinValue.ToString(),
                 BTPNumber = worksheet.Cells[BTP.CellBTPNumber].Value.ToString(),
                 MPointGas = worksheet.Cells[BTP.CellMPointGas].Value.ToString(),
                 MPointOil = worksheet.Cells[BTP.CellMPointOil].Value.ToString(),
                 MPointWater = worksheet.Cells[BTP.CellMPointWater].Value.ToString(),
                 BSW = bswDecimalFormated,
                 RGO = rgoDecimalFormated,
-                WellAlignmentData = worksheet.Cells[BTP.CellWellAlignmentData].Value.ToString(),
+                WellAlignmentData = alignDate is not null ? alignDate.ToString().Split(" ")[0] : DateTime.MinValue.ToString(),
                 WellName = worksheet.Cells[BTP.CellWellName].Value.ToString(),
                 BTPSheet = BTP.BTPSheet,
                 CreatedAt = DateTime.Now,
