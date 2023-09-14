@@ -672,7 +672,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
                 MPointWater = worksheet.Cells[BTP.CellMPointWater].Value.ToString(),
                 BSW = bswDecimalFormated,
                 RGO = rgoDecimalFormated,
-                WellAlignmentData = alignDate is not null ? alignDate.ToString() : DateTime.MinValue.ToString(),
+                WellAlignmentData = alignDate is not null ? alignDate.ToString().Split(" ")[0] : DateTime.MinValue.ToString(),
                 WellName = worksheet.Cells[BTP.CellWellName].Value.ToString(),
                 BTPSheet = BTP.BTPSheet,
                 CreatedAt = DateTime.Now,
