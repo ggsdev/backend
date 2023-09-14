@@ -277,16 +277,30 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
             var lastEventReasonGeneratedByJob = lastEvent.EventReasons
                 .OrderBy(x => x.StartDate)
-                .Where(x => x.IsJobGenerated)
                 .LastOrDefault();
 
-            //if (lastEventReasonGeneratedByJob is not null && lastEventReasonGeneratedByJob.EndDate is not null)
-            //    throw new ConflictException("Última justificativa para fechamento do poço deve estar em aberto.");//verificar
-
-            if (dateNow.Date > parsedStartDate.Date && lastEventReasonGeneratedByJob is not null)
+            if (lastEventReasonGeneratedByJob is not null && lastEventReasonGeneratedByJob.StartDate > parsedStartDate.Date && lastEventReasonGeneratedByJob.IsJobGenerated)
             {
+                var list = lastEvent.EventReasons
+                    .OrderBy(x => x.StartDate)
+                    .TakeLast(2)
+                    .ToList();
+
+                if (lastEvent.StartDate > parsedStartDate)
+                    throw new ConflictException("A data do evento de abertura deve ser maior que a ultima data de fechamento.");
+
+                if (lastEventReasonGeneratedByJob.EndDate is not null)
+                    throw new ConflictException("Última justificativa para fechamento do poço deve estar em aberto.");
+
+                var beforeLastEventReasonGeneratedByJob = list[0];
+                if (parsedStartDate < beforeLastEventReasonGeneratedByJob.StartDate)
+                    throw new ConflictException("Existe um evento de fechamento atualizado pelo sistema, o evento de abertura deve estar entre esse e seu antecessor.");
+
                 _wellEventRepository.DeleteReason(lastEventReasonGeneratedByJob);
 
+                beforeLastEventReasonGeneratedByJob.EndDate = parsedStartDate;
+                beforeLastEventReasonGeneratedByJob.Interval = FormatTimeInterval(parsedStartDate, beforeLastEventReasonGeneratedByJob);
+                _wellEventRepository.UpdateReason(beforeLastEventReasonGeneratedByJob);
                 var openingEvent = new WellEvent
                 {
                     Id = Guid.NewGuid(),
@@ -299,41 +313,11 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                     StatusANP = body.StatusAnp,
                     Well = well,
                 };
-
                 await _wellEventRepository.Add(openingEvent);
 
                 lastEvent.EndDate = parsedStartDate;
-                lastEvent.Interval = (parsedStartDate - lastEvent.StartDate)
-                    .TotalHours;
-
-                _wellEventRepository
-                .Update(lastEvent);
-
-                var lastEventReason = lastEvent.EventReasons
-                       .OrderBy(x => x.StartDate)
-                       .LastOrDefault();
-
-                if (lastEventReason is not null)
-                {
-                    var resultTimeSpan = (parsedStartDate - lastEventReason.StartDate)
-                        .TotalHours;
-
-                    var hours = (int)resultTimeSpan;
-                    var minutesDecimal = (resultTimeSpan - hours) * 60;
-                    var minutes = (int)minutesDecimal;
-                    var secondsDecimal = (minutesDecimal - minutes) * 60;
-                    var seconds = (int)secondsDecimal;
-                    var dateTime = DateTime.Today.AddHours(hours).AddMinutes(minutes).AddSeconds(seconds);
-                    var timeOperating = DateTime.Today.AddDays(1) - dateTime;
-                    var formattedTime = dateTime.ToString("HH:mm:ss");
-                    var formattedTimeTimeOperating = timeOperating.ToString("HH:mm:ss");
-
-                    lastEventReason.Interval = formattedTime;
-                    lastEventReason.EndDate = parsedStartDate;
-
-                    _wellEventRepository
-                        .UpdateReason(lastEventReason);
-                }
+                lastEvent.Interval = (parsedStartDate - lastEvent.StartDate).TotalHours;
+                _wellEventRepository.Update(lastEvent);
 
                 var production = await _productionRepository
                     .GetExistingByDate(parsedStartDate);
@@ -346,7 +330,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                     if (production.FieldsFR is not null && production.FieldsFR.Any())
                     {
                         var uepFields = await _fieldRepository
-                   .GetFieldsByUepCode(production.Installation.UepCod);
+                           .GetFieldsByUepCode(production.Installation.UepCod);
                         var wellTestsUEP = await _btpRepository
                            .GetBtpDatasByUEP(production.Installation.UepCod);
                         var filtredUEPsByApplyDateAndFinal = wellTestsUEP.Where(x => (x.FinalApplicationDate == null && x.ApplicationDate != null && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date) && x.Well.CategoryOperator is not null && x.Well.CategoryOperator.ToUpper() == "PRODUTOR"
@@ -699,7 +683,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
                                 }
                             }
-
                         }
 
                         foreach (var field in listProductions)
@@ -737,7 +720,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                             }
                         }
                     }
-
                     else
                     {
                         var uepFields = await _fieldRepository.GetFieldsByUepCode(production.Installation.UepCod);
@@ -1144,7 +1126,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 }
 
             }
-
             else
             {
                 var openingEvent = new WellEvent
@@ -1161,7 +1142,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 };
 
                 await _wellEventRepository.Add(openingEvent);
-
                 if (lastEvent is not null)
                 {
                     lastEvent.EndDate = parsedStartDate;
@@ -1222,6 +1202,19 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                                     IsActive = true,
                                     IsJobGenerated = false,
                                 };
+                                if (j == 0)
+                                {
+                                    if (parsedStartDate.Date == lastEventReason.StartDate.Date)
+                                    {
+                                        lastEventReason.EndDate = parsedStartDate;
+                                        var Interval = FormatTimeInterval(parsedStartDate, lastEventReason);
+                                        lastEventReason.Interval = Interval;
+
+                                        break;
+                                    }
+                                }
+
+
                                 if (parsedStartDate.Date == refStartDate)
                                 {
                                     var newEventReason2 = new EventReason
@@ -1237,7 +1230,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                                     };
                                     var Interval = FormatTimeInterval(parsedStartDate, newEventReason2);
                                     newEventReason2.Interval = Interval;
-
 
                                     await _wellEventRepository.AddReasonClosedEvent(newEventReason2);
                                     break;
@@ -1640,7 +1632,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
             await _wellEventRepository.Save();
         }
-
         private static string FormatTimeInterval(DateTime dateNow, EventReason lastEventReason)
         {
             var resultTimeSpan = (dateNow - lastEventReason.StartDate).TotalHours;
