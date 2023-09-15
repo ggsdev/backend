@@ -3,7 +3,6 @@
     public class WellWithoutFieldDTO
     {
         public Guid Id { get; set; }
-        public string? CodWell { get; set; }
         public string? Name { get; set; }
         public string? WellOperatorName { get; set; }
         public string? CodWellAnp { get; set; }
