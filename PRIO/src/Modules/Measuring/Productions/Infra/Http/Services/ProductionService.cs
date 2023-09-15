@@ -596,7 +596,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
             var waterDto = new WaterDto
             {
-                Id = production.Water is not null ? production.Water.Id : Guid.Empty,
+                Id = production.Water is not null ? production.Water.Id : null,
                 TotalWaterM3 = Math.Round(production.Water is not null ? production.Water.TotalWater : 0, 5),
                 TotalWaterBBL = Math.Round(production.Water is not null ? production.Water.TotalWater * ProductionUtils.m3ToBBLConversionMultiplier : 0, 5),
             };

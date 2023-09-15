@@ -37,7 +37,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Mappings
             builder.Property(x => x.ProductionLostWater)
              .HasColumnType("DECIMAL")
                .HasPrecision(38, 16);
-
         }
     }
 }
