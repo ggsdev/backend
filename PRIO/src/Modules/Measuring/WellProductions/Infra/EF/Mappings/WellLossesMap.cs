@@ -18,9 +18,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Mappings
                .HasColumnType("DECIMAL")
                .HasPrecision(38, 16);
 
-            builder.Property(x => x.Downtime)
-               .HasMaxLength(15);
-
             builder.Property(x => x.ProportionalDay)
                .HasColumnType("DECIMAL")
                .HasPrecision(38, 16);
@@ -33,6 +30,13 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Mappings
              .HasColumnType("DECIMAL")
                .HasPrecision(38, 16);
 
+            builder.Property(x => x.Downtime)
+             .HasColumnType("DECIMAL")
+               .HasPrecision(38, 16);
+
+            builder.Property(x => x.ProductionLostWater)
+             .HasColumnType("DECIMAL")
+               .HasPrecision(38, 16);
         }
     }
 }

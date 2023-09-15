@@ -10,6 +10,9 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
         {
             builder.ToTable("Measurements");
 
+            builder.Property(x => x.VolumeAfterManualBsw_001)
+             .HasColumnType("decimal")
+             .HasPrecision(22, 5);
 
             #region 039
 

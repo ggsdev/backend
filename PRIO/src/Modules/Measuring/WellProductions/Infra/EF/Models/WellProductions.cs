@@ -24,8 +24,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models
         public decimal EfficienceLoss { get; set; }
         public decimal ProportionalDay { get; set; }
 
-
-
         public string Downtime { get; set; }
         public Guid WellId { get; set; }
         public WellTests WellTest { get; set; }

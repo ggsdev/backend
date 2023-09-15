@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
@@ -25,7 +24,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
 
         #region Get
         [HttpGet]
-        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserDTO>))]
         public async Task<IActionResult> Get()
         {
