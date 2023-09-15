@@ -68,6 +68,14 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Mappings
                 .HasColumnType("decimal")
                 .HasPrecision(20, 5);
 
+            builder.Property(x => x.Bsw)
+                .HasColumnType("decimal")
+                .HasPrecision(10, 5);
+
+            builder.Property(x => x.BswMax)
+                .HasColumnType("decimal")
+                .HasPrecision(10, 5);
+
             builder.HasOne(x => x.Production)
                  .WithMany(x => x.NFSMs)
                  .OnDelete(DeleteBehavior.NoAction)

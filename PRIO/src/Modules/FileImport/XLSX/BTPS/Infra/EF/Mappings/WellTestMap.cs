@@ -30,6 +30,16 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Mappings
              .HasPrecision(15, 5)
              .IsRequired();
 
+            builder.Property(x => x.PotencialLiquid)
+            .HasColumnType("decimal")
+            .HasPrecision(15, 5)
+            .IsRequired();
+
+            builder.Property(x => x.PotencialLiquidPerHour)
+           .HasColumnType("decimal")
+           .HasPrecision(15, 5)
+           .IsRequired();
+
             builder.Property(x => x.PotencialGas)
              .HasColumnType("decimal")
                 .HasPrecision(15, 5)
