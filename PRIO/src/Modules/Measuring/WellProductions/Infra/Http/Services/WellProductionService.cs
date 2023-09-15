@@ -133,7 +133,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
                     foreach (var a in filtredEvents)
-                        totalInterval *= CalcInterval(a, production);
+                        totalInterval += CalcInterval(a, production);
 
                     totalPotencialGasUEP += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
                     totalPotencialOilUEP += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
@@ -179,7 +179,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
                         foreach (var a in filtredEvents)
-                            totalInterval *= CalcInterval(a, production);
+                            totalInterval += CalcInterval(a, production);
 
                         totalPotencialGasField += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
                         totalPotencialOilField += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
@@ -428,7 +428,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                 var uepFields = await _fieldRepository.GetFieldsByUepCode(production.Installation.UepCod);
                 var btpsUEP = await _btpRepository
                     .GetBtpDatasByUEP(production.Installation.UepCod);
-           
                 var filtredByApplyDateAndFinal = FilterBtp(btpsUEP, production);
 
                 decimal totalPotencialGasUEP = 0;
@@ -438,12 +437,11 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                 foreach (var btp in filtredByApplyDateAndFinal)
                 {
                     double totalInterval = 0;
-
                     var filtredEvents = btp.Well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
                     || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
                     foreach (var a in filtredEvents)
-                        totalInterval *= CalcInterval(a, production);
+                        totalInterval += CalcInterval(a, production);
 
                     totalPotencialGasUEP += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
                     totalPotencialOilUEP += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
@@ -492,7 +490,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
                         foreach (var a in filtredEvents)
-                            totalInterval *= CalcInterval(a, production);
+                            totalInterval += CalcInterval(a, production);
 
                         totalPotencialGasField += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
                         totalPotencialOilField += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
@@ -1109,7 +1107,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
                     foreach (var a in filtredEvents)
-                        totalInterval *= CalcInterval(a, production);
+                        totalInterval += CalcInterval(a, production);
 
                     totalPotencialGasUEP += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
                     totalPotencialOilUEP += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
@@ -1135,7 +1133,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                                 || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
                         foreach (var a in filtredEvents)
-                            totalInterval *= CalcInterval(a, production);
+                            totalInterval += CalcInterval(a, production);
 
                         var wellPotencialGasAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((wellProd.WellTest.PotencialGas * ((24 - (decimal)totalInterval) / 24)), totalPotencialGasUEP);
                         var wellPotencialOilAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((wellProd.WellTest.PotencialOil * ((24 - (decimal)totalInterval) / 24)), totalPotencialOilUEP);
@@ -1419,7 +1417,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
                         foreach (var a in filtredEvents)
-                            totalInterval *= CalcInterval(a, production);
+                            totalInterval += CalcInterval(a, production);
 
                         totalPotencialGasField += wellTest.PotencialGas * (24 - (decimal)totalInterval) / 24;
                         totalPotencialOilField += wellTest.PotencialOil * (24 - (decimal)totalInterval) / 24;
@@ -1439,7 +1437,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                                 || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
                         foreach (var a in filtredEvents)
-                            totalInterval *= CalcInterval(a, production);
+                            totalInterval += CalcInterval(a, production);
 
                         var wellPotencialGasAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((wellProduction.WellTest.PotencialGas * ((24 - (decimal)totalInterval) / 24)), totalPotencialGasUEP);
                         var wellPotencialOilAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((wellProduction.WellTest.PotencialOil * ((24 - (decimal)totalInterval) / 24)), totalPotencialOilUEP);
@@ -1598,7 +1596,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
                     foreach (var a in filtredEvents)
-                        totalInterval *= CalcInterval(a, production);
+                        totalInterval += CalcInterval(a, production);
 
                     totalPotencialGasUEP += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
                     totalPotencialOilUEP += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
@@ -1639,7 +1637,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
                         foreach (var a in filtredEvents)
-                            totalInterval *= CalcInterval(a, production);
+                            totalInterval += CalcInterval(a, production);
 
                         totalPotencialGasField += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
                         totalPotencialOilField += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
@@ -1660,7 +1658,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                         var listEvents = new List<CreateWellLossDTO>();
                         foreach (var a in filtredEvents)
-                            totalInterval *= CalcInterval(a, production);
+                            totalInterval += CalcInterval(a, production);
 
                         var wellPotencialGasAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((wellProd.WellTest.PotencialGas * ((24 - (decimal)totalInterval) / 24)), totalPotencialGasUEP);
                         var wellPotencialOilAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((wellProd.WellTest.PotencialOil * ((24 - (decimal)totalInterval) / 24)), totalPotencialOilUEP);
