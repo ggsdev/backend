@@ -428,11 +428,8 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                 var uepFields = await _fieldRepository.GetFieldsByUepCode(production.Installation.UepCod);
                 var btpsUEP = await _btpRepository
                     .GetBtpDatasByUEP(production.Installation.UepCod);
-
-                var filtredByApplyDateAndFinal = btpsUEP
-                        .Where(x => (x.FinalApplicationDate == null && x.Well.CategoryOperator is not null && x.Well.CategoryOperator.ToUpper() == "PRODUTOR" && x.ApplicationDate != null && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date)
-                        || (x.FinalApplicationDate != null && x.ApplicationDate != null && x.Well.CategoryOperator is not null && x.Well.CategoryOperator.ToUpper() == "PRODUTOR" && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
-                        && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date));
+           
+                var filtredByApplyDateAndFinal = FilterBtp(btpsUEP, production);
 
                 decimal totalPotencialGasUEP = 0;
                 decimal totalPotencialOilUEP = 0;
