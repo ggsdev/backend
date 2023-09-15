@@ -428,7 +428,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                 var uepFields = await _fieldRepository.GetFieldsByUepCode(production.Installation.UepCod);
                 var btpsUEP = await _btpRepository
                     .GetBtpDatasByUEP(production.Installation.UepCod);
-
+           
                 var filtredByApplyDateAndFinal = FilterBtp(btpsUEP, production);
 
                 decimal totalPotencialGasUEP = 0;

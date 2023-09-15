@@ -187,7 +187,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
                             .ThenInclude(x => x.Zone)
                             .Include(x => x.Well)
                             .ThenInclude(x => x.WellEvents)
-                         .Where(x => x.Well.Field.Id == fieldId && x.IsValid && x.Well.IsActive)
+                         .Where(x => x.Well.Field.Id == fieldId && x.IsValid && x.Well.IsActive && x.Well.CategoryOperator.ToUpper() == "PRODUTOR")
 
 
                 .ToListAsync();
@@ -204,7 +204,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
                     .ThenInclude(x => x.Completions)
                         .ThenInclude(x => x.Reservoir)
                             .ThenInclude(x => x.Zone)
-                         .Where(x => x.Well.Field.Installation.UepCod == uep && x.IsValid && x.Well.IsActive)
+                         .Where(x => x.Well.Field.Installation.UepCod == uep && x.IsValid && x.Well.IsActive && x.Well.CategoryOperator.ToUpper() == "PRODUTOR")
                 .Include(x => x.Well)
                     .ThenInclude(x => x.WellEvents)
 
