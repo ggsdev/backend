@@ -5,6 +5,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Dtos
     public class BTPDataDTO
     {
         public string? Id { get; set; }
+        public Guid BTPId { get; set; }
         public string Filename { get; set; }
         public string BTPSheet { get; set; }
         public string Type { get; set; }
