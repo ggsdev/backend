@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using dotenv.net;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
@@ -30,6 +31,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
         private readonly IWellProductionRepository _wellProductionRepository;
         private readonly IFieldRepository _fieldRepository;
         private readonly IMapper _mapper;
+        private readonly IDictionary<string, string> variablesEnv = DotEnv.Read();
         public WellEventService(IWellEventRepository wellEventRepository, IInstallationRepository installationRepository, IFieldRepository fieldRepository, IWellRepository wellRepository, IProductionRepository productionRepository, IWellProductionRepository wellProductionRepository, IBTPRepository bTPRepository, IMapper mapper)
         {
             _wellEventRepository = wellEventRepository;
@@ -232,6 +234,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
         public async Task OpenWellEvent(CreateOpeningEventViewModel body)
         {
+            var appDate = variablesEnv["APPLICATIONSTARTDATE"];
+            var convertAppDate = DateTime.Parse(appDate);
             if (DateTime.TryParseExact(body.EventDateAndHour, "dd/MM/yy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedStartDate) is false)
                 throw new BadRequestException("Formato de data inválido deve ser 'dd/MM/yy HH:mm'.");
 
@@ -246,15 +250,17 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 .GetWithFieldAsync(body.WellId)
                 ?? throw new NotFoundException(ErrorMessages.NotFound<Well>());
 
+            if (parsedStartDate < convertAppDate)
+                throw new ConflictException("Data do evento está menor que data do inicio da aplicação ");
+
             var lastEvent = well.WellEvents
                 .OrderBy(e => e.StartDate)
                 .Where(x => x.StartDate <= parsedStartDate) //checar logica pensando em criação de um evento no passado
-                .Where(x => x.EventStatus == "F")
-                .LastOrDefault()
-                ?? throw new ConflictException("O último evento do poço deve ser de fechamento para que seja possível cadastrar um evento de abertura.");
+                .LastOrDefault();
 
-            //if (lastEvent.EventStatus != "F")
-            //    throw new BadRequestException("O último evento do poço deve ser de fechamento para que seja possível cadastrar um evento de abertura.");
+            if (lastEvent is not null && lastEvent.EventStatus == "A")
+                throw new ConflictException("O último evento do poço deve ser de fechamento para que seja possível cadastrar um evento de abertura.");
+
 
             if (parsedStartDate < lastEvent.StartDate)
                 throw new BadRequestException("Data de início do evento deve ser maior que a data de início do último evento associado.");
