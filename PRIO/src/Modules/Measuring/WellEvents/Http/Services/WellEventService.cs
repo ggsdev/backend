@@ -45,6 +45,9 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
         }
         public async Task CloseWellEvent(CreateClosingEventViewModel body)
         {
+            var appDate = variablesEnv["APPLICATIONSTARTDATE"];
+            var convertAppDate = DateTime.Parse(appDate);
+
             if (DateTime.TryParseExact(body.EventDateAndHour, "dd/MM/yy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedStartDate) is false)
                 throw new BadRequestException("Formato de data inválido deve ser 'dd/MM/yy HH:mm'.");
 
@@ -52,6 +55,9 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
             if (parsedStartDate > dateNow)
                 throw new ConflictException("Não é possível cadastrar um evento no futuro.");
+
+            if (parsedStartDate < convertAppDate)
+                throw new ConflictException("Data do evento está menor que data do inicio da aplicação ");
 
             var wellsList = new List<Well>();
 
