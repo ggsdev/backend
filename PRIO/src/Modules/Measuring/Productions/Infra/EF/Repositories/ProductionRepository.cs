@@ -88,6 +88,19 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                 .AnyAsync();
         }
 
+
+        public async Task<Production?> GetExistingByDateWithProductionAllocation(DateTime date)
+        {
+            return await _context.Productions
+                .Include(x => x.WellProductions)
+                    .ThenInclude(x => x.FieldProduction)
+                .Include(x => x.FieldsFR)
+                    .ThenInclude(x => x.Field)
+                .Where(x => x.MeasuredAt.Year == date.Year &&
+                            x.MeasuredAt.Month == date.Month &&
+                            x.MeasuredAt.Day == date.Day && x.IsActive)
+                .FirstOrDefaultAsync();
+        }
         public async Task<Production?> GetExistingByDate(DateTime date)
         {
             return await _context.Productions
@@ -107,19 +120,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                         .ThenInclude(x => x.ImportedBy)
                 .Include(x => x.Measurements)
                     .ThenInclude(d => d.MeasuringPoint)
-                .Where(x => x.MeasuredAt.Year == date.Year &&
-                            x.MeasuredAt.Month == date.Month &&
-                            x.MeasuredAt.Day == date.Day && x.IsActive)
-                .FirstOrDefaultAsync();
-        }
-
-        public async Task<Production?> GetExistingByDateWithProductionAllocation(DateTime date)
-        {
-            return await _context.Productions
-                .Include(x => x.WellProductions)
-                    .ThenInclude(x => x.FieldProduction)
-                .Include(x => x.FieldsFR)
-                    .ThenInclude(x => x.Field)
                 .Where(x => x.MeasuredAt.Year == date.Year &&
                             x.MeasuredAt.Month == date.Month &&
                             x.MeasuredAt.Day == date.Day && x.IsActive)

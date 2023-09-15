@@ -39,6 +39,9 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Mappings
                 .HasColumnType("decimal")
                 .HasPrecision(20, 5);
 
+            builder.HasIndex(x => x.MeasuredAt)
+                .IsUnique();
+
             //builder.HasOne(x => x.Water)
             //  .WithOne(d => d.Production)
             //  .HasForeignKey<Production>("WaterId")
