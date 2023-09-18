@@ -140,7 +140,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                     SystemRelated = body.SystemRelated,
                     StartDate = parsedStartDate,
                     WellEvent = closingEvent,
-
                 };
 
                 await _wellEventRepository.AddReasonClosedEvent(eventReason);
