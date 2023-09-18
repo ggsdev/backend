@@ -1533,14 +1533,17 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             if (closingEvent is null)
                 throw new NotFoundException("Evento de fechamento não encontrado.");
 
-            //if ((closingEvent.WellLosses is null || closingEvent.WellLosses.Any()) && (body.StartDate is not null || body.EndDate is not null))
-            //    throw new ConflictException("Não é possível editar um evento após a produção ter sido apropriada.");
+            if (closingEvent is not null && closingEvent.EventStatus != "F")
+                throw new NotFoundException("Evento deve ser de fechamento para ser atualizado.");
+
+            if ((closingEvent.WellLosses is null || closingEvent.WellLosses.Any()) && (body.StartDate is not null || body.EndDate is not null))
+                throw new ConflictException("Não é possível editar um evento após a produção ter sido apropriada.");
 
             if (closingEvent.EventReasons.Any() is false)
                 throw new BadRequestException("É preciso ter um motivo anterior.");
 
             var lastEventReason = closingEvent.EventReasons
-              .OrderBy(x => x.CreatedAt)
+              .OrderBy(x => x.StartDate)
               .LastOrDefault();
 
             if (body.SystemRelated is not null && lastEventReason is not null && lastEventReason.SystemRelated.ToLower() == body.SystemRelated.ToLower())
@@ -1551,14 +1554,19 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 "submarino","topside","estratégia"
             };
 
-            if (systemsRelated.Contains(body.SystemRelated.ToLower()) is false)
+            if (body.SystemRelated is not null && systemsRelated.Contains(body.SystemRelated.ToLower()) is false)
                 throw new BadRequestException($"Sistemas relacionados permitidos são: {string.Join(", ", systemsRelated)}");
 
             var dateNow = DateTime.UtcNow.AddHours(-3);
-            if (dateNow < lastEventReason.StartDate)
-                throw new ConflictException("Data de atualização é menor que a data de inicio do ultimo sistema relacionado.");
 
-            if (lastEventReason.StartDate < dateNow && lastEventReason.EndDate is null)
+
+            if (lastEventReason is not null)
+            {
+                if (dateNow < lastEventReason.StartDate)
+                    throw new ConflictException("Erro: Data atual está menor do que o inicio do ultimo evento.");
+            }
+
+            if (lastEventReason.StartDate < dateNow && lastEventReason.EndDate is null && body.SystemRelated is not null)
             {
                 var dif = (dateNow - lastEventReason.StartDate).TotalHours / 24;
                 lastEventReason.EndDate = lastEventReason.StartDate.Date.AddDays(1).AddMilliseconds(-10);
@@ -1672,29 +1680,176 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 }
             }
 
-            //else
-            //{
-
-            //    var eventReason = new EventReason
-            //    {
-            //        Id = Guid.NewGuid(),
-            //        SystemRelated = body.SystemRelated,
-            //        StartDate = dateNow,
-            //        WellEvent = closingEvent,
-            //    };
-
-            //    await _wellEventRepository.AddReasonClosedEvent(eventReason);
-            //}
-
-            if (lastEventReason is null)
+            if (body.StartDate is not null && body.EndDate is not null)
             {
-                if (dateNow < lastEventReason.StartDate)
-                    throw new ConflictException("Erro: Data atual está menor do que o inicio do ultimo evento.");
+                if (DateTime.TryParseExact(body.StartDate, "dd/MM/yy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedStartDate) is true && DateTime.TryParseExact(body.EndDate, "dd/MM/yy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedEndDate) is true)
+                {
+                    if (parsedStartDate > parsedEndDate)
+                        throw new BadRequestException("Data de início do evento não pode ser maior que data de fim.");
+
+                    var currentDate = parsedStartDate;
+
+                    while (currentDate <= parsedEndDate)
+                    {
+                        var productionInDate = await _productionRepository.GetCleanByDate(currentDate);
+
+                        if (productionInDate is not null && productionInDate.IsCalculated)
+                            throw new BadRequestException($"Não é possível editar evento, existe uma produção já apropriada no dia: {currentDate:dd/MM/yyyy}");
+
+                        currentDate = currentDate.AddDays(1);
+                    }
+
+                    closingEvent.StartDate = parsedStartDate;
+                    closingEvent.EndDate = parsedEndDate;
+                    closingEvent.EventRelated.EndDate = parsedStartDate;
+
+                    var firstEventReason = closingEvent.EventReasons
+                        .OrderBy(x => x.StartDate)
+                        .FirstOrDefault();
+
+                    if (firstEventReason is not null)
+                    {
+                        firstEventReason.StartDate = parsedStartDate;
+
+                        if (firstEventReason.EndDate is not null)
+                        {
+                            var dif = (firstEventReason.EndDate.Value - firstEventReason.StartDate).TotalHours / 24;
+
+                            var formatedInterval = FormatTimeInterval(firstEventReason.EndDate.Value, firstEventReason);
+
+                            firstEventReason.Interval = formatedInterval;
+                        }
+
+
+                        _wellEventRepository.UpdateReason(firstEventReason);
+                    }
+
+                    if (closingEvent.EventReasons.Count > 1)
+                    {
+                        var formatedInterval = FormatTimeInterval(parsedEndDate, lastEventReason);
+
+                        lastEventReason.EndDate = parsedEndDate;
+                        lastEventReason.Interval = formatedInterval;
+
+                        _wellEventRepository.UpdateReason(lastEventReason);
+                    }
+
+                    var nextEvent = await _wellEventRepository
+                        .GetNextEvent(parsedStartDate, parsedEndDate);
+
+                    if (nextEvent is not null)
+                    {
+                        nextEvent.StartDate = parsedEndDate;
+                        _wellEventRepository.Update(nextEvent);
+                    }
+
+                    _wellEventRepository.Update(closingEvent);
+                }
+                else
+                    throw new BadRequestException("Formato de data de início ou fim inválido(s) deve(m) ser 'dd/MM/yy HH:mm'.");
 
             }
 
+            if (body.EndDate is not null && body.StartDate is null)
+            {
+                if (DateTime.TryParseExact(body.EndDate, "dd/MM/yy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedEndDate) is true)
+                {
+                    if (parsedEndDate < closingEvent.StartDate)
+                        throw new BadRequestException("Data de fim do evento não pode ser menor que data de início.");
 
-            await _wellEventRepository.Save();
+                    var currentDate = closingEvent.StartDate;
+
+                    while (currentDate <= parsedEndDate)
+                    {
+                        var productionInDate = await _productionRepository.GetCleanByDate(currentDate);
+
+                        if (productionInDate is not null && productionInDate.IsCalculated)
+                            throw new BadRequestException($"Não é possível editar evento, existe uma produção já apropriada no dia: {currentDate:dd/MM/yyyy}");
+
+                        currentDate = currentDate.AddDays(1);
+                    }
+
+                    if (closingEvent.EventReasons.Count > 1)
+                    {
+                        lastEventReason.EndDate = parsedEndDate;
+
+                        _wellEventRepository.UpdateReason(lastEventReason);
+                    }
+
+                    closingEvent.EndDate = parsedEndDate;
+
+                    var nextEvent = await _wellEventRepository
+                        .GetNextEvent(closingEvent.StartDate, parsedEndDate);
+
+                    if (nextEvent is not null)
+                    {
+                        nextEvent.StartDate = parsedEndDate;
+                        _wellEventRepository.Update(nextEvent);
+                    }
+
+                    _wellEventRepository.Update(closingEvent);
+
+                }
+                else
+                    throw new BadRequestException("Formato de data fim inválido deve ser 'dd/MM/yy HH:mm'.");
+            }
+
+            if (body.StartDate is not null && body.EndDate is null)
+            {
+                if (DateTime.TryParseExact(body.StartDate, "dd/MM/yy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedStartDate) is true)
+                {
+                    if (parsedStartDate > closingEvent.EndDate && closingEvent.EndDate is not null)
+                        throw new BadRequestException("Data de início do evento não pode ser maior que data de fim.");
+
+                    var currentDate = closingEvent.StartDate;
+
+                    if (closingEvent.EndDate.HasValue)
+                    {
+                        while (currentDate <= closingEvent.EndDate)
+                        {
+                            var productionInDate = await _productionRepository.GetCleanByDate(currentDate);
+
+                            if (productionInDate is not null && productionInDate.IsCalculated)
+                                throw new BadRequestException($"Não é possível editar evento, existe uma produção já apropriada no dia: {currentDate:dd/MM/yyyy}");
+
+                            currentDate = currentDate.AddDays(1);
+                        }
+                    }
+                    else
+                    {
+                        currentDate = closingEvent.StartDate;
+
+                        while (currentDate <= dateNow)
+                        {
+                            var productionInDate = await _productionRepository.GetCleanByDate(currentDate);
+
+                            if (productionInDate is not null && productionInDate.IsCalculated)
+                                throw new BadRequestException($"Não é possível editar evento, existe uma produção já apropriada no dia: {currentDate:dd/MM/yyyy}");
+
+                            currentDate = currentDate.AddDays(1);
+                        }
+                    }
+
+                    var firstEventReason = closingEvent.EventReasons
+                        .OrderBy(x => x.StartDate)
+                        .FirstOrDefault();
+
+                    if (firstEventReason is not null)
+                    {
+                        firstEventReason.StartDate = parsedStartDate;
+                        _wellEventRepository.UpdateReason(firstEventReason);
+                    }
+
+                    closingEvent.StartDate = parsedStartDate;
+                    closingEvent.EventRelated.EndDate = parsedStartDate;
+
+                    _wellEventRepository.Update(closingEvent);
+                }
+                else
+                    throw new BadRequestException("Formato de data de início inválido deve ser 'dd/MM/yy HH:mm'.");
+            }
+
+            //await _wellEventRepository.Save();
         }
         private static string FormatTimeInterval(DateTime dateNow, EventReason lastEventReason)
         {
