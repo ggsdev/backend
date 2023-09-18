@@ -6,6 +6,7 @@
         public string Name { get; set; }
         public string Status { get; set; }
         public string DateLastStatus { get; set; }
+        public string CategoryOperator { get; set; }
         public Guid EventId { get; set; }
     }
 }
