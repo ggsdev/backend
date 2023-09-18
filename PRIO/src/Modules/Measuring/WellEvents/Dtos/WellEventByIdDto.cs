@@ -1,4 +1,6 @@
-﻿namespace PRIO.src.Modules.Measuring.WellEvents.Dtos
+﻿using PRIO.src.Modules.ControlAccess.Users.Dtos;
+
+namespace PRIO.src.Modules.Measuring.WellEvents.Dtos
 {
     public class WellEventByIdDto
     {
@@ -13,6 +15,8 @@
         public string? Reason { get; set; }
         public string? StatusAnp { get; set; }
         public string? StateAnp { get; set; }
+        public UserDTO CreatedBy { get; set; }
+        public UserDTO? UpdatedBy { get; set; }
 
         public List<ReasonDetailedDto> DetailedClosing { get; set; }
     }
@@ -24,5 +28,8 @@
         public string StartDate { get; set; }
         public string? EndDate { get; set; }
         public string? Downtime { get; set; }
+        public UserDTO? UpdatedBy { get; set; }
+        public UserDTO CreatedBy { get; set; }
+
     }
 }

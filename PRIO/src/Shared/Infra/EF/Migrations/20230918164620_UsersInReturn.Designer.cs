@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230918164620_UsersInReturn")]
+    partial class UsersInReturn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4442,7 +4445,7 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UpdatedById")
+                    b.Property<Guid>("UpdatedById")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("WellEventId")
@@ -5667,7 +5670,8 @@ namespace PRIO.Migrations
                     b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "UpdatedBy")
                         .WithMany("UpdatedEventReasons")
                         .HasForeignKey("UpdatedById")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("PRIO.src.Modules.Measuring.WellEvents.EF.Models.WellEvent", "WellEvent")
                         .WithMany("EventReasons")

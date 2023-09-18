@@ -47,6 +47,15 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Mappings
                 WithMany(u => u.WellEvents)
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
+
+            builder.HasOne(c => c.CreatedBy).
+               WithMany(u => u.CreatedWellEvents)
+               .OnDelete(DeleteBehavior.NoAction)
+               .IsRequired();
+
+            builder.HasOne(c => c.UpdatedBy).
+               WithMany(u => u.UpdatedWellEvents)
+               .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }
