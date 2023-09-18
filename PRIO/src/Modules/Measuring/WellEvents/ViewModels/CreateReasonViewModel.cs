@@ -1,10 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace PRIO.src.Modules.Measuring.WellEvents.ViewModels
+﻿namespace PRIO.src.Modules.Measuring.WellEvents.ViewModels
 {
     public class CreateReasonViewModel
     {
-        [Required(ErrorMessage = "SystemRelated é obrigatório")]
-        public string SystemRelated { get; set; }
+        public string? SystemRelated { get; set; }
+        public string? StartDate { get; set; }
+        public string? EndDate { get; set; }
     }
 }

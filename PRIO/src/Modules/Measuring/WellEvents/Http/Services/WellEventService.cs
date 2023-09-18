@@ -1189,26 +1189,26 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                             var dif = (parsedStartDate - lastEventReason.StartDate).TotalHours / 24;
                             lastEventReason.EndDate = lastEventReason.StartDate.Date.AddDays(1).AddMilliseconds(-10);
 
-                            var FirstresultIntervalTimeSpan = (lastEventReason.StartDate.Date.AddDays(1).AddMilliseconds(-10) - lastEventReason.StartDate).TotalHours;
-                            int FirstintervalHours = (int)FirstresultIntervalTimeSpan;
-                            var FirstintervalMinutesDecimal = (FirstresultIntervalTimeSpan - FirstintervalHours) * 60;
-                            int FirstintervalMinutes = (int)FirstintervalMinutesDecimal;
-                            var FirstintervalSecondsDecimal = (FirstintervalMinutesDecimal - FirstintervalMinutes) * 60;
-                            int FirstintervalSeconds = (int)FirstintervalSecondsDecimal;
-                            string FirstReasonFormattedHours;
-                            string firstFormattedMinutes = FirstintervalMinutes < 10 ? $"0{FirstintervalMinutes}" : FirstintervalMinutes.ToString();
-                            string firstFormattedSecond = FirstintervalSeconds < 10 ? $"0{FirstintervalSeconds}" : FirstintervalSeconds.ToString();
-                            if (FirstintervalHours >= 1000)
+                            var firstresultIntervalTimeSpan = (lastEventReason.StartDate.Date.AddDays(1).AddMilliseconds(-10) - lastEventReason.StartDate).TotalHours;
+                            int firstintervalHours = (int)firstresultIntervalTimeSpan;
+                            var firstintervalMinutesDecimal = (firstresultIntervalTimeSpan - firstintervalHours) * 60;
+                            int firstintervalMinutes = (int)firstintervalMinutesDecimal;
+                            var firstintervalSecondsDecimal = (firstintervalMinutesDecimal - firstintervalMinutes) * 60;
+                            int firstintervalSeconds = (int)firstintervalSecondsDecimal;
+                            string firstReasonFormattedHours;
+                            string firstFormattedMinutes = firstintervalMinutes < 10 ? $"0{firstintervalMinutes}" : firstintervalMinutes.ToString();
+                            string firstFormattedSecond = firstintervalSeconds < 10 ? $"0{firstintervalSeconds}" : firstintervalSeconds.ToString();
+                            if (firstintervalHours >= 1000)
                             {
-                                int digitCount = (int)Math.Floor(Math.Log10(FirstintervalHours)) + 1;
-                                FirstReasonFormattedHours = FirstintervalHours.ToString(new string('0', digitCount));
+                                int digitCount = (int)Math.Floor(Math.Log10(firstintervalHours)) + 1;
+                                firstReasonFormattedHours = firstintervalHours.ToString(new string('0', digitCount));
                             }
                             else
                             {
-                                FirstReasonFormattedHours = FirstintervalHours.ToString("00");
+                                firstReasonFormattedHours = firstintervalHours.ToString("00");
                             }
-                            var FirstReasonFormattedTime = $"{FirstReasonFormattedHours}:{firstFormattedMinutes}:{firstFormattedSecond}";
-                            lastEventReason.Interval = FirstReasonFormattedTime;
+                            var firstReasonFormattedTime = $"{firstReasonFormattedHours}:{firstFormattedMinutes}:{firstFormattedSecond}";
+                            lastEventReason.Interval = firstReasonFormattedTime;
 
                             DateTime refStartDate = lastEventReason.StartDate.Date.AddDays(1);
                             DateTime refStartEnd = refStartDate.AddDays(1).AddMilliseconds(-10);
@@ -1533,6 +1533,9 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             if (closingEvent is null)
                 throw new NotFoundException("Evento de fechamento não encontrado.");
 
+            //if ((closingEvent.WellLosses is null || closingEvent.WellLosses.Any()) && (body.StartDate is not null || body.EndDate is not null))
+            //    throw new ConflictException("Não é possível editar um evento após a produção ter sido apropriada.");
+
             if (closingEvent.EventReasons.Any() is false)
                 throw new BadRequestException("É preciso ter um motivo anterior.");
 
@@ -1540,7 +1543,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
               .OrderBy(x => x.CreatedAt)
               .LastOrDefault();
 
-            if (lastEventReason is not null && lastEventReason.SystemRelated.ToLower() == body.SystemRelated.ToLower())
+            if (body.SystemRelated is not null && lastEventReason is not null && lastEventReason.SystemRelated.ToLower() == body.SystemRelated.ToLower())
                 throw new BadRequestException("Sistema relacionado deve ser diferente do anterior");
 
             var systemsRelated = new List<string>
@@ -1560,26 +1563,26 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 var dif = (dateNow - lastEventReason.StartDate).TotalHours / 24;
                 lastEventReason.EndDate = lastEventReason.StartDate.Date.AddDays(1).AddMilliseconds(-10);
 
-                var FirstresultIntervalTimeSpan = (lastEventReason.StartDate.Date.AddDays(1).AddMilliseconds(-10) - lastEventReason.StartDate).TotalHours;
-                int FirstintervalHours = (int)FirstresultIntervalTimeSpan;
-                var FirstintervalMinutesDecimal = (FirstresultIntervalTimeSpan - FirstintervalHours) * 60;
-                int FirstintervalMinutes = (int)FirstintervalMinutesDecimal;
-                var FirstintervalSecondsDecimal = (FirstintervalMinutesDecimal - FirstintervalMinutes) * 60;
-                int FirstintervalSeconds = (int)FirstintervalSecondsDecimal;
-                string FirstReasonFormattedHours;
-                string firstFormattedMinutes = FirstintervalMinutes < 10 ? $"0{FirstintervalMinutes}" : FirstintervalMinutes.ToString();
-                string firstFormattedSecond = FirstintervalSeconds < 10 ? $"0{FirstintervalSeconds}" : FirstintervalSeconds.ToString();
-                if (FirstintervalHours >= 1000)
+                var firstresultIntervalTimeSpan = (lastEventReason.StartDate.Date.AddDays(1).AddMilliseconds(-10) - lastEventReason.StartDate).TotalHours;
+                int firstintervalHours = (int)firstresultIntervalTimeSpan;
+                var firstintervalMinutesDecimal = (firstresultIntervalTimeSpan - firstintervalHours) * 60;
+                int firstintervalMinutes = (int)firstintervalMinutesDecimal;
+                var firstintervalSecondsDecimal = (firstintervalMinutesDecimal - firstintervalMinutes) * 60;
+                int firstintervalSeconds = (int)firstintervalSecondsDecimal;
+                string firstReasonFormattedHours;
+                string firstFormattedMinutes = firstintervalMinutes < 10 ? $"0{firstintervalMinutes}" : firstintervalMinutes.ToString();
+                string firstFormattedSecond = firstintervalSeconds < 10 ? $"0{firstintervalSeconds}" : firstintervalSeconds.ToString();
+                if (firstintervalHours >= 1000)
                 {
-                    int digitCount = (int)Math.Floor(Math.Log10(FirstintervalHours)) + 1;
-                    FirstReasonFormattedHours = FirstintervalHours.ToString(new string('0', digitCount));
+                    int digitCount = (int)Math.Floor(Math.Log10(firstintervalHours)) + 1;
+                    firstReasonFormattedHours = firstintervalHours.ToString(new string('0', digitCount));
                 }
                 else
                 {
-                    FirstReasonFormattedHours = FirstintervalHours.ToString("00");
+                    firstReasonFormattedHours = firstintervalHours.ToString("00");
                 }
-                var FirstReasonFormattedTime = $"{FirstReasonFormattedHours}:{firstFormattedMinutes}:{firstFormattedSecond}";
-                lastEventReason.Interval = FirstReasonFormattedTime;
+                var firstReasonFormattedTime = $"{firstReasonFormattedHours}:{firstFormattedMinutes}:{firstFormattedSecond}";
+                lastEventReason.Interval = firstReasonFormattedTime;
 
                 DateTime refStartDate = lastEventReason.StartDate.Date.AddDays(1);
                 DateTime refStartEnd = refStartDate.AddDays(1).AddMilliseconds(-10);
