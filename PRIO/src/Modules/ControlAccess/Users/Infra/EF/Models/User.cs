@@ -12,6 +12,7 @@ using PRIO.src.Modules.Measuring.Comments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
 using PRIO.src.Shared.Infra.EF.Models;
 using System.Text.Json.Serialization;
 
@@ -47,6 +48,11 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models
         public List<BTPBase64> BTPBases64 { get; set; }
         public List<Production> Productions { get; set; }
         public List<CommentInProduction>? Comments { get; set; }
+        public List<WellEvent>? CreatedWellEvents { get; set; }
+        public List<WellEvent>? UpdatedWellEvents { get; set; }
+        public List<EventReason>? CreatedEventReasons { get; set; }
+        public List<EventReason>? UpdatedEventReasons { get; set; }
+
         #endregion
     }
 }
