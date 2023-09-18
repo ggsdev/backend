@@ -1330,42 +1330,48 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             return wellDtoList;
         }
 
-        public async Task<List<EventWithReasonDTO>> GetWellEvents(Guid wellId, string date)
+        public async Task<List<EventWithReasonDTO>> GetWellEvents(Guid wellId, string? date)
         {
-            if (date == null)
-                throw new NotFoundException("Data não informada");
-            var checkDate = DateTime.TryParse(date, out DateTime day);
-            if (checkDate is false)
-                throw new ConflictException("Data não é válida.");
-
-            var dateToday = DateTime.UtcNow.AddHours(-3).Date;
-            if (dateToday <= day)
-                throw new NotFoundException("Downtime não foi fechado para esse dia.");
-
             var wellExists = await _wellRepository.GetByIdWithEventsAsync(wellId) ?? throw new NotFoundException("Poço não encontrado");
             var events = await _wellEventRepository.GetAllWellEvent(wellId);
             if (events.Count == 0)
-            {
                 throw new NotFoundException($"Não foram encontrados eventos para o poço {wellExists.Name}.");
+
+            if (date == null)
+            {
+                var eventsDTO = _mapper.Map<List<WellEvent>, List<EventWithReasonDTO>>(events);
+
+                return eventsDTO;
             }
+            else
+            {
+                var checkDate = DateTime.TryParse(date, out DateTime day);
+                if (checkDate is false)
+                    throw new ConflictException("Data não é válida.");
+
+                var dateToday = DateTime.UtcNow.AddHours(-3).Date;
+                if (dateToday <= day)
+                    throw new NotFoundException("Downtime não foi fechado para esse dia.");
 
 
-            var filtredEventsByDate = events.Where(x =>
-                (x.StartDate.Date <= day && (x.EndDate == null || x.EndDate.Value.Date >= day))
-                || (x.StartDate.Date < day && x.EndDate != null && x.EndDate.Value.Date >= day)
-                )
-                .Select(eventItem =>
-                {
-                    eventItem.EventReasons = eventItem.EventReasons
-                        .Where(reason => (reason.StartDate.Date <= day && reason.EndDate != null && reason.EndDate.Value.Date >= day)
-                        || (reason.StartDate.Date <= day && reason.EndDate == null))
-                        .ToList();
-                    return eventItem;
-                }).ToList();
 
-            var eventsDTO = _mapper.Map<List<WellEvent>, List<EventWithReasonDTO>>(filtredEventsByDate);
+                var filtredEventsByDate = events.Where(x =>
+                    (x.StartDate.Date <= day && (x.EndDate == null || x.EndDate.Value.Date >= day))
+                    || (x.StartDate.Date < day && x.EndDate != null && x.EndDate.Value.Date >= day)
+                    )
+                    .Select(eventItem =>
+                    {
+                        eventItem.EventReasons = eventItem.EventReasons
+                            .Where(reason => (reason.StartDate.Date <= day && reason.EndDate != null && reason.EndDate.Value.Date >= day)
+                            || (reason.StartDate.Date <= day && reason.EndDate == null))
+                            .ToList();
+                        return eventItem;
+                    }).ToList();
 
-            return eventsDTO;
+                var eventsDTO = _mapper.Map<List<WellEvent>, List<EventWithReasonDTO>>(filtredEventsByDate);
+
+                return eventsDTO;
+            }
         }
 
         public async Task<WellEventByIdDto> GetEventById(Guid eventId)
@@ -1439,7 +1445,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
             return wellEventDtoOpen;
         }
-
 
         public async Task<ReasonDetailedDto> UpdateReason(Guid reasonId, UpdateReasonViewModel body)
         {

@@ -58,7 +58,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Controllers
         }
 
         [HttpGet("well/{wellId}")]
-        public async Task<IActionResult> GetWellEvents([FromRoute] Guid wellId, [FromQuery] string date)
+        public async Task<IActionResult> GetWellEvents([FromRoute] Guid wellId, [FromQuery] string? date)
         {
             var data = await _service.GetWellEvents(wellId, date);
 
