@@ -1,4 +1,5 @@
-﻿using PRIO.src.Shared.Infra.EF.Models;
+﻿using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Shared.Infra.EF.Models;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PRIO.src.Modules.Measuring.WellEvents.EF.Models
@@ -14,5 +15,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Models
         [ForeignKey("WellEvent")]
         public Guid WellEventId { get; set; }
         public bool IsJobGenerated { get; set; }
+        public User CreatedBy { get; set; }
+        public User? UpdatedBy { get; set; }
+
     }
 }

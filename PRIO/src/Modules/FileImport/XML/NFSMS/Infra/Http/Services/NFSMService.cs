@@ -170,21 +170,27 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     if (installation is null)
                         errorsInImport.Add($"Arquivo {data.File.FileName}, {k + 1}ª notificação(DADOS_BASICOS): {ErrorMessages.NotFound<Installation>()}");
 
+                    if (installation is not null && installation.IsActive is false)
+                        errorsInImport.Add($"Arquivo {data.File.FileName}, {k + 1}ª notificação(DADOS_BASICOS), instalação: {installation.Name} está inativa.");
+
                     var measuringPoint = await _measuringPointRepository
                         .GetByTagMeasuringPointXML(dadosBasicos.COD_TAG_PONTO_MEDICAO_039, XmlUtils.File039);
 
                     if (measuringPoint is null)
                         errorsInImport.Add($"Arquivo {data.File.FileName}, {k + 1}ª notificação(DADOS_BASICOS), ponto de medição TAG: {dadosBasicos.COD_TAG_PONTO_MEDICAO_039}: {ErrorMessages.NotFound<MeasuringPoint>()}");
 
-                    if (installation is not null && installation.MeasuringPoints is not null)
+                    if (measuringPoint is not null && measuringPoint.IsActive is false)
+                        errorsInImport.Add($"Arquivo {data.File.FileName}, {k + 1}ª notificação(DADOS_BASICOS), ponto de medição TAG: {dadosBasicos.COD_TAG_PONTO_MEDICAO_039} está inativo.");
+
+                    if (installation is not null && installation.MeasuringPoints is not null && installation.IsActive)
                     {
                         bool contains = false;
 
                         foreach (var point in installation.MeasuringPoints)
-                            if (measuringPoint is not null && measuringPoint.TagPointMeasuring == point.TagPointMeasuring)
+                            if (measuringPoint is not null && measuringPoint.TagPointMeasuring == point.TagPointMeasuring && measuringPoint.IsActive)
                                 contains = true;
 
-                        if (contains is false)
+                        if (contains is false && measuringPoint.IsActive)
                             errorsInImport.Add($"Arquivo {data.File.FileName}, {k + 1}ª notificação(DADOS_BASICOS), TAG do ponto de medição não encontrado nessa instalação");
                     }
 
@@ -720,6 +726,9 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
             if (nfsmInDatabase.IsApplied)
                 throw new ConflictException("Notificação de falha já foi aplicada anteriormente.");
+
+            if (nfsmInDatabase.MeasuringPoint.IsActive is false)
+                throw new ConflictException($"Não foi possível aplicar a notificação de falha, ponto de medição: {nfsmInDatabase.MeasuringPoint.TagPointMeasuring} está inativo.");
 
             //if (nfsmInDatabase.DateOfOcurrence > nfsmInDatabase.Da)
             //    throw new ConflictException("Data da medição não pode ser maior do que a data que a falha foi corrigida, TAG: DHA_RETORNO.");

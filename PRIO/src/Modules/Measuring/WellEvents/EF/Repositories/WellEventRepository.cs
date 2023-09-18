@@ -16,6 +16,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Repositories
         public async Task<WellEvent?> GetEventById(Guid id)
         {
             return await _context.WellEvents
+                .Include(x => x.WellLosses)
                 .Include(x => x.EventReasons)
                 .Include(x => x.Well)
                     .ThenInclude(x => x.Field)

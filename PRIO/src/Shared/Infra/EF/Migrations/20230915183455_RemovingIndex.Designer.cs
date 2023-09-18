@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230915183455_RemovingIndex")]
+    partial class RemovingIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4410,9 +4413,6 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("CreatedById")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
@@ -4442,17 +4442,10 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UpdatedById")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("WellEventId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("UpdatedById");
 
                     b.HasIndex("WellEventId", "StartDate")
                         .IsUnique();
@@ -4468,9 +4461,6 @@ namespace PRIO.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<Guid>("CreatedById")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
@@ -4524,19 +4514,12 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UpdatedById")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("WellId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedById");
-
                     b.HasIndex("EventRelatedId");
-
-                    b.HasIndex("UpdatedById");
 
                     b.HasIndex("WellId");
 
@@ -5658,46 +5641,20 @@ namespace PRIO.Migrations
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.EF.Models.EventReason", b =>
                 {
-                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "CreatedBy")
-                        .WithMany("CreatedEventReasons")
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "UpdatedBy")
-                        .WithMany("UpdatedEventReasons")
-                        .HasForeignKey("UpdatedById")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.HasOne("PRIO.src.Modules.Measuring.WellEvents.EF.Models.WellEvent", "WellEvent")
                         .WithMany("EventReasons")
                         .HasForeignKey("WellEventId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("UpdatedBy");
-
                     b.Navigation("WellEvent");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.EF.Models.WellEvent", b =>
                 {
-                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "CreatedBy")
-                        .WithMany("CreatedWellEvents")
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("PRIO.src.Modules.Measuring.WellEvents.EF.Models.WellEvent", "EventRelated")
                         .WithMany()
                         .HasForeignKey("EventRelatedId");
-
-                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "UpdatedBy")
-                        .WithMany("UpdatedWellEvents")
-                        .HasForeignKey("UpdatedById")
-                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.Well", "Well")
                         .WithMany("WellEvents")
@@ -5705,11 +5662,7 @@ namespace PRIO.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("CreatedBy");
-
                     b.Navigation("EventRelated");
-
-                    b.Navigation("UpdatedBy");
 
                     b.Navigation("Well");
                 });
@@ -5798,10 +5751,6 @@ namespace PRIO.Migrations
 
                     b.Navigation("Completions");
 
-                    b.Navigation("CreatedEventReasons");
-
-                    b.Navigation("CreatedWellEvents");
-
                     b.Navigation("Fields");
 
                     b.Navigation("Installations");
@@ -5819,10 +5768,6 @@ namespace PRIO.Migrations
                     b.Navigation("Reservoirs");
 
                     b.Navigation("Session");
-
-                    b.Navigation("UpdatedEventReasons");
-
-                    b.Navigation("UpdatedWellEvents");
 
                     b.Navigation("UserPermissions");
 
