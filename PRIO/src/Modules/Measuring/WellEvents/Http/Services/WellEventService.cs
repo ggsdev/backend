@@ -1319,6 +1319,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                         WellId = well.Id,
                         Status = lastEvent.EventStatus,
                         DateLastStatus = lastEventReason is not null ? lastEventReason.StartDate.ToString("dd/MM/yyyy HH:mm") : lastEvent.StartDate.ToString("dd/MM/yyyy HH:mm"),
+                        CategoryOperator = well.CategoryOperator,
                         Name = well.Name
                     };
 
