@@ -1533,8 +1533,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             if (closingEvent is null)
                 throw new NotFoundException("Evento de fechamento não encontrado.");
 
-            if ((closingEvent.WellLosses is null || closingEvent.WellLosses.Any()) && (body.StartDate is not null || body.EndDate is not null))
-                throw new ConflictException("Não é possível editar um evento após a produção ter sido apropriada.");
+            //if ((closingEvent.WellLosses is null || closingEvent.WellLosses.Any()) && (body.StartDate is not null || body.EndDate is not null))
+            //    throw new ConflictException("Não é possível editar um evento após a produção ter sido apropriada.");
 
             if (closingEvent.EventReasons.Any() is false)
                 throw new BadRequestException("É preciso ter um motivo anterior.");
@@ -1543,7 +1543,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
               .OrderBy(x => x.CreatedAt)
               .LastOrDefault();
 
-            if (lastEventReason is not null && lastEventReason.SystemRelated.ToLower() == body.SystemRelated.ToLower())
+            if (body.SystemRelated is not null && lastEventReason is not null && lastEventReason.SystemRelated.ToLower() == body.SystemRelated.ToLower())
                 throw new BadRequestException("Sistema relacionado deve ser diferente do anterior");
 
             var systemsRelated = new List<string>
