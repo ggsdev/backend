@@ -35,6 +35,24 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<EventReason?> GetNextReason(DateTime startDate, Guid wellEventId)
+        {
+            return await _context.EventReasons
+                .Include(x => x.WellEvent)
+                .Where(x => x.StartDate > startDate && x.WellEvent.Id == wellEventId)
+                .OrderBy(x => x.StartDate)
+                    .FirstOrDefaultAsync();
+        }
+
+        public async Task<EventReason?> GetBeforeReason(DateTime startDate, Guid wellEventId)
+        {
+            return await _context.EventReasons
+                .Include(x => x.WellEvent)
+                .Where(x => x.StartDate < startDate && x.WellEvent.Id == wellEventId)
+                .OrderByDescending(x => x.StartDate)
+                    .FirstOrDefaultAsync();
+        }
+
         public async Task<EventReason?> GetEventReasonById(Guid id)
         {
             return await _context.EventReasons
