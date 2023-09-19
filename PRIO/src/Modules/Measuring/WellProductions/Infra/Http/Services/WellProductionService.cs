@@ -129,11 +129,18 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                 foreach (var btp in filtredUEPsByApplyDateAndFinal)
                 {
                     double totalInterval = 0;
+                    decimal? totalAllocationByReservoir = 0;
+
                     var filtredEvents = btp.Well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
                     || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
                     foreach (var a in filtredEvents)
+                    {
                         totalInterval += CalcInterval(a, production);
+
+                        var completions = a.Well.Completions.Where(c => c.IsActive == true);
+                        totalAllocationByReservoir += completions.Sum(c => c.AllocationReservoir);
+                    }
 
                     totalPotencialGasUEP += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
                     totalPotencialOilUEP += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
