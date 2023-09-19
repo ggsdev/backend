@@ -13,6 +13,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models
         public string? State { get; set; }
         public string? Basin { get; set; }
         public string? Location { get; set; }
+        public DateTime? InactivatedAt { get; set; }
         public User? User { get; set; }
         public Installation? Installation { get; set; }
         public List<Zone>? Zones { get; set; }

@@ -24,6 +24,8 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Mappings
 
             builder.Property(x => x.DeletedAt);
 
+            builder.Property(x => x.InactivatedAt);
+
             builder.Property(x => x.IsActive);
 
             builder.HasOne(c => c.User).

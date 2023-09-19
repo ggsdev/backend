@@ -8,6 +8,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models
     public class Cluster : BaseModel
     {
         public string? Name { get; set; }
+        public DateTime? InactivatedAt { get; set; }
         [JsonIgnore]
         public User? User { get; set; }
         public List<Installation>? Installations { get; set; }
