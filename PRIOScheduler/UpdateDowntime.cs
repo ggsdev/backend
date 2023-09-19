@@ -22,7 +22,6 @@ namespace PRIOScheduler
                 using var dbContext = new DataContext(dbContextOptions);
 
                 var dateToday = DateTime.UtcNow.AddHours(-3).Date;
-                Console.WriteLine(DateTime.UtcNow.AddHours(-3));
 
                 var wellEvents = await dbContext.WellEvents
                     .Include(x => x.EventReasons)
