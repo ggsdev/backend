@@ -38,12 +38,12 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Controllers
             return NoContent();
         }
 
-        [HttpPost("{eventId}/reasons")]
+        [HttpPatch("{eventId}")]
         public async Task<IActionResult> Post(Guid eventId, CreateReasonViewModel body)
         {
             var user = HttpContext.Items["User"] as User;
 
-            await _service.AddReasonClosedEvent(eventId, body, user);
+            await _service.UpdateClosedEvent(eventId, body, user);
 
             return NoContent();
         }

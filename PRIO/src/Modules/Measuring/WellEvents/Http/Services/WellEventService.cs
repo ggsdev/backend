@@ -1563,22 +1563,25 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             await _wellEventRepository.Save();
             return dto;
         }
-        public async Task AddReasonClosedEvent(Guid eventId, CreateReasonViewModel body, User loggedUser)
+        public async Task UpdateClosedEvent(Guid eventId, CreateReasonViewModel body, User loggedUser)
         {
             var closingEvent = await _wellEventRepository
                 .GetEventById(eventId);
 
             if (closingEvent is null)
-                throw new NotFoundException("Evento de fechamento não encontrado.");
+                throw new NotFoundException("Evento não encontrado.");
 
-            //if ((closingEvent.WellLosses is null || closingEvent.WellLosses.Any()) && (body.StartDate is not null || body.EndDate is not null))
-            //    throw new ConflictException("Não é possível editar um evento após a produção ter sido apropriada.");
+            if (closingEvent.EventStatus != "F")
+                throw new NotFoundException("Evento deve ser de fechamento para ser atualizado.");
+
+            if ((closingEvent.WellLosses is null || closingEvent.WellLosses.Any()) && (body.StartDate is not null || body.EndDate is not null))
+                throw new ConflictException("Não é possível editar um evento após a produção ter sido apropriada.");
 
             if (closingEvent.EventReasons.Any() is false)
                 throw new BadRequestException("É preciso ter um motivo anterior.");
 
             var lastEventReason = closingEvent.EventReasons
-              .OrderBy(x => x.CreatedAt)
+              .OrderBy(x => x.StartDate)
               .LastOrDefault();
 
             if (body.SystemRelated is not null && lastEventReason is not null && lastEventReason.SystemRelated.ToLower() == body.SystemRelated.ToLower())
@@ -1589,148 +1592,329 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 "submarino","topside","estratégia"
             };
 
-            if (systemsRelated.Contains(body.SystemRelated.ToLower()) is false)
+            if (body.SystemRelated is not null && systemsRelated.Contains(body.SystemRelated.ToLower()) is false)
                 throw new BadRequestException($"Sistemas relacionados permitidos são: {string.Join(", ", systemsRelated)}");
 
             var dateNow = DateTime.UtcNow.AddHours(-3);
-            if (dateNow < lastEventReason.StartDate)
-                throw new ConflictException("Data de atualização é menor que a data de inicio do ultimo sistema relacionado.");
 
-            if (lastEventReason.StartDate < dateNow && lastEventReason.EndDate is null)
+
+            if (lastEventReason is not null)
             {
-                var dif = (dateNow - lastEventReason.StartDate).TotalHours / 24;
-                lastEventReason.EndDate = lastEventReason.StartDate.Date.AddDays(1).AddMilliseconds(-10);
+                if (dateNow < lastEventReason.StartDate)
+                    throw new ConflictException("Erro: Data atual está menor do que o inicio do ultimo evento.");
 
-                var firstresultIntervalTimeSpan = (lastEventReason.StartDate.Date.AddDays(1).AddMilliseconds(-10) - lastEventReason.StartDate).TotalHours;
-                int firstintervalHours = (int)firstresultIntervalTimeSpan;
-                var firstintervalMinutesDecimal = (firstresultIntervalTimeSpan - firstintervalHours) * 60;
-                int firstintervalMinutes = (int)firstintervalMinutesDecimal;
-                var firstintervalSecondsDecimal = (firstintervalMinutesDecimal - firstintervalMinutes) * 60;
-                int firstintervalSeconds = (int)firstintervalSecondsDecimal;
-                string firstReasonFormattedHours;
-                string firstFormattedMinutes = firstintervalMinutes < 10 ? $"0{firstintervalMinutes}" : firstintervalMinutes.ToString();
-                string firstFormattedSecond = firstintervalSeconds < 10 ? $"0{firstintervalSeconds}" : firstintervalSeconds.ToString();
-                if (firstintervalHours >= 1000)
+                if (lastEventReason.StartDate < dateNow && lastEventReason.EndDate is null && body.SystemRelated is not null)
                 {
-                    int digitCount = (int)Math.Floor(Math.Log10(firstintervalHours)) + 1;
-                    firstReasonFormattedHours = firstintervalHours.ToString(new string('0', digitCount));
-                }
-                else
-                {
-                    firstReasonFormattedHours = firstintervalHours.ToString("00");
-                }
-                var firstReasonFormattedTime = $"{firstReasonFormattedHours}:{firstFormattedMinutes}:{firstFormattedSecond}";
-                lastEventReason.Interval = firstReasonFormattedTime;
+                    var dif = (dateNow - lastEventReason.StartDate).TotalHours / 24;
+                    lastEventReason.EndDate = lastEventReason.StartDate.Date.AddDays(1).AddMilliseconds(-10);
 
-                DateTime refStartDate = lastEventReason.StartDate.Date.AddDays(1);
-                DateTime refStartEnd = refStartDate.AddDays(1).AddMilliseconds(-10);
-
-                var resultIntervalTimeSpan = (refStartEnd - refStartDate).TotalHours;
-                int intervalHours = (int)resultIntervalTimeSpan;
-                var intervalMinutesDecimal = (resultIntervalTimeSpan - intervalHours) * 60;
-                int intervalMinutes = (int)intervalMinutesDecimal;
-                var intervalSecondsDecimal = (intervalMinutesDecimal - intervalMinutes) * 60;
-                int intervalSeconds = (int)intervalSecondsDecimal;
-
-                for (int j = 0; j < dif; j++)
-                {
-                    var newEventReason = new EventReason
+                    var firstresultIntervalTimeSpan = (lastEventReason.StartDate.Date.AddDays(1).AddMilliseconds(-10) - lastEventReason.StartDate).TotalHours;
+                    int firstintervalHours = (int)firstresultIntervalTimeSpan;
+                    var firstintervalMinutesDecimal = (firstresultIntervalTimeSpan - firstintervalHours) * 60;
+                    int firstintervalMinutes = (int)firstintervalMinutesDecimal;
+                    var firstintervalSecondsDecimal = (firstintervalMinutesDecimal - firstintervalMinutes) * 60;
+                    int firstintervalSeconds = (int)firstintervalSecondsDecimal;
+                    string firstReasonFormattedHours;
+                    string firstFormattedMinutes = firstintervalMinutes < 10 ? $"0{firstintervalMinutes}" : firstintervalMinutes.ToString();
+                    string firstFormattedSecond = firstintervalSeconds < 10 ? $"0{firstintervalSeconds}" : firstintervalSeconds.ToString();
+                    if (firstintervalHours >= 1000)
                     {
-                        Id = Guid.NewGuid(),
-                        SystemRelated = lastEventReason.SystemRelated,
-                        Comment = lastEventReason.Comment,
-                        WellEvent = closingEvent,
-                        StartDate = refStartDate,
-                        IsActive = true,
-                        IsJobGenerated = false,
-                        CreatedBy = loggedUser
-                    };
-                    if (j == 0)
-                    {
-                        if (dateNow.Date == lastEventReason.StartDate.Date)
-                        {
-                            lastEventReason.EndDate = dateNow;
-                            var Interval = FormatTimeInterval(dateNow, lastEventReason);
-                            lastEventReason.Interval = Interval;
-
-                            newEventReason.StartDate = dateNow;
-                            newEventReason.SystemRelated = body.SystemRelated;
-                            await _wellEventRepository.AddReasonClosedEvent(newEventReason);
-                            break;
-                        }
+                        int digitCount = (int)Math.Floor(Math.Log10(firstintervalHours)) + 1;
+                        firstReasonFormattedHours = firstintervalHours.ToString(new string('0', digitCount));
                     }
-                    if (dateNow.Date == refStartDate)
+                    else
                     {
-                        var newEventReason2 = new EventReason
+                        firstReasonFormattedHours = firstintervalHours.ToString("00");
+                    }
+                    var firstReasonFormattedTime = $"{firstReasonFormattedHours}:{firstFormattedMinutes}:{firstFormattedSecond}";
+                    lastEventReason.Interval = firstReasonFormattedTime;
+
+                    DateTime refStartDate = lastEventReason.StartDate.Date.AddDays(1);
+                    DateTime refStartEnd = refStartDate.AddDays(1).AddMilliseconds(-10);
+
+                    var resultIntervalTimeSpan = (refStartEnd - refStartDate).TotalHours;
+                    int intervalHours = (int)resultIntervalTimeSpan;
+                    var intervalMinutesDecimal = (resultIntervalTimeSpan - intervalHours) * 60;
+                    int intervalMinutes = (int)intervalMinutesDecimal;
+                    var intervalSecondsDecimal = (intervalMinutesDecimal - intervalMinutes) * 60;
+                    int intervalSeconds = (int)intervalSecondsDecimal;
+
+                    for (int j = 0; j < dif; j++)
+                    {
+                        var newEventReason = new EventReason
                         {
                             Id = Guid.NewGuid(),
                             SystemRelated = lastEventReason.SystemRelated,
                             Comment = lastEventReason.Comment,
                             WellEvent = closingEvent,
                             StartDate = refStartDate,
-                            EndDate = dateNow,
                             IsActive = true,
                             IsJobGenerated = false,
                             CreatedBy = loggedUser
-
                         };
-                        var Interval = FormatTimeInterval(dateNow, newEventReason2);
-                        newEventReason2.Interval = Interval;
-
-                        newEventReason.EndDate = null;
-                        newEventReason.StartDate = dateNow;
-                        newEventReason.SystemRelated = body.SystemRelated;
-
-                        await _wellEventRepository.AddReasonClosedEvent(newEventReason2);
-                        await _wellEventRepository.AddReasonClosedEvent(newEventReason);
-                        break;
-                    }
-                    else
-                    {
-                        newEventReason.EndDate = refStartEnd;
-                        string ReasonFormattedMinutes = intervalMinutes < 10 ? $"0{intervalMinutes}" : intervalMinutes.ToString();
-                        string ReasonFormattedSecond = intervalSeconds < 10 ? $"0{intervalSeconds}" : intervalSeconds.ToString();
-                        string ReasonFormattedHours;
-                        if (intervalHours >= 1000)
+                        if (j == 0)
                         {
-                            int digitCount = (int)Math.Floor(Math.Log10(intervalHours)) + 1;
-                            ReasonFormattedHours = intervalHours.ToString(new string('0', digitCount));
+                            if (dateNow.Date == lastEventReason.StartDate.Date)
+                            {
+                                lastEventReason.EndDate = dateNow;
+                                var Interval = FormatTimeInterval(dateNow, lastEventReason);
+                                lastEventReason.Interval = Interval;
+
+                                newEventReason.StartDate = dateNow;
+                                newEventReason.SystemRelated = body.SystemRelated;
+                                await _wellEventRepository.AddReasonClosedEvent(newEventReason);
+                                break;
+                            }
+                        }
+                        if (dateNow.Date == refStartDate)
+                        {
+                            var newEventReason2 = new EventReason
+                            {
+                                Id = Guid.NewGuid(),
+                                SystemRelated = lastEventReason.SystemRelated,
+                                Comment = lastEventReason.Comment,
+                                WellEvent = closingEvent,
+                                StartDate = refStartDate,
+                                EndDate = dateNow,
+                                IsActive = true,
+                                IsJobGenerated = false,
+                                CreatedBy = loggedUser
+
+                            };
+                            var Interval = FormatTimeInterval(dateNow, newEventReason2);
+                            newEventReason2.Interval = Interval;
+
+                            newEventReason.EndDate = null;
+                            newEventReason.StartDate = dateNow;
+                            newEventReason.SystemRelated = body.SystemRelated;
+
+                            await _wellEventRepository.AddReasonClosedEvent(newEventReason2);
+                            await _wellEventRepository.AddReasonClosedEvent(newEventReason);
+                            break;
                         }
                         else
                         {
-                            ReasonFormattedHours = intervalHours.ToString("00");
+                            newEventReason.EndDate = refStartEnd;
+                            string ReasonFormattedMinutes = intervalMinutes < 10 ? $"0{intervalMinutes}" : intervalMinutes.ToString();
+                            string ReasonFormattedSecond = intervalSeconds < 10 ? $"0{intervalSeconds}" : intervalSeconds.ToString();
+                            string ReasonFormattedHours;
+                            if (intervalHours >= 1000)
+                            {
+                                int digitCount = (int)Math.Floor(Math.Log10(intervalHours)) + 1;
+                                ReasonFormattedHours = intervalHours.ToString(new string('0', digitCount));
+                            }
+                            else
+                            {
+                                ReasonFormattedHours = intervalHours.ToString("00");
+                            }
+                            var reasonFormattedTime = $"{ReasonFormattedHours}:{ReasonFormattedMinutes}:{ReasonFormattedSecond}";
+                            newEventReason.Interval = reasonFormattedTime;
+                            refStartDate = newEventReason.StartDate.AddDays(1);
+                            refStartEnd = refStartDate.AddDays(1).AddMilliseconds(-10);
                         }
-                        var reasonFormattedTime = $"{ReasonFormattedHours}:{ReasonFormattedMinutes}:{ReasonFormattedSecond}";
-                        newEventReason.Interval = reasonFormattedTime;
-                        refStartDate = newEventReason.StartDate.AddDays(1);
-                        refStartEnd = refStartDate.AddDays(1).AddMilliseconds(-10);
+
+                        await _wellEventRepository.AddReasonClosedEvent(newEventReason);
+                    }
+                }
+
+            }
+
+            if (body.StartDate is not null && body.EndDate is not null)
+            {
+                if (DateTime.TryParseExact(body.StartDate, "dd/MM/yy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedStartDate) is true && DateTime.TryParseExact(body.EndDate, "dd/MM/yy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedEndDate) is true)
+                {
+                    if (parsedStartDate > parsedEndDate)
+                        throw new BadRequestException("Data de início do evento não pode ser maior que data de fim.");
+
+                    if (parsedStartDate < closingEvent.EventRelated.StartDate)
+                        throw new ConflictException($"Não é possível atualizar para uma data anterior a data de início do evento relacionado: {closingEvent.EventRelated.IdAutoGenerated}.");
+
+                    var currentDate = parsedStartDate;
+
+                    while (currentDate <= parsedEndDate)
+                    {
+                        var productionInDate = await _productionRepository.GetCleanByDate(currentDate);
+
+                        if (productionInDate is not null && productionInDate.IsCalculated)
+                            throw new BadRequestException($"Não é possível editar evento, existe uma produção já apropriada no dia: {currentDate:dd/MM/yyyy}");
+
+                        currentDate = currentDate.AddDays(1);
                     }
 
-                    await _wellEventRepository.AddReasonClosedEvent(newEventReason);
+                    var firstEventReason = closingEvent.EventReasons
+                        .OrderBy(x => x.StartDate)
+                        .FirstOrDefault();
+
+                    if (firstEventReason is not null)
+                    {
+                        firstEventReason.StartDate = parsedStartDate;
+
+                        if (firstEventReason.EndDate is not null)
+                        {
+                            var dif = (firstEventReason.EndDate.Value - firstEventReason.StartDate).TotalHours / 24;
+
+                            var formatedInterval = FormatTimeInterval(firstEventReason.EndDate.Value, firstEventReason);
+
+                            firstEventReason.Interval = formatedInterval;
+                        }
+
+
+                        _wellEventRepository.UpdateReason(firstEventReason);
+                    }
+
+                    if (closingEvent.EventReasons.Count > 1)
+                    {
+                        lastEventReason.EndDate = parsedEndDate;
+                        var formatedInterval = FormatTimeInterval(parsedEndDate, lastEventReason);
+
+                        lastEventReason.Interval = formatedInterval;
+
+                        _wellEventRepository.UpdateReason(lastEventReason);
+                    }
+
+                    var nextEvent = await _wellEventRepository
+                        .GetNextEvent(parsedStartDate, parsedEndDate);
+
+                    if (nextEvent is not null)
+                    {
+                        nextEvent.StartDate = parsedEndDate;
+                        _wellEventRepository.Update(nextEvent);
+                    }
+
+                    closingEvent.StartDate = parsedStartDate;
+                    closingEvent.EndDate = parsedEndDate;
+                    closingEvent.EventRelated.EndDate = parsedStartDate;
+                    closingEvent.EventRelated.Interval = (closingEvent.EventRelated.EndDate.Value - parsedStartDate).TotalHours;
+                    closingEvent.Interval = (parsedEndDate - parsedStartDate).TotalHours;
+
+                    _wellEventRepository.Update(closingEvent);
                 }
+                else
+                    throw new BadRequestException("Formato de data de início ou fim inválido(s) deve(m) ser 'dd/MM/yy HH:mm'.");
+
             }
 
-            //else
-            //{
-
-            //    var eventReason = new EventReason
-            //    {
-            //        Id = Guid.NewGuid(),
-            //        SystemRelated = body.SystemRelated,
-            //        StartDate = dateNow,
-            //        WellEvent = closingEvent,
-            //    };
-
-            //    await _wellEventRepository.AddReasonClosedEvent(eventReason);
-            //}
-
-            if (lastEventReason is null)
+            if (body.EndDate is not null && body.StartDate is null)
             {
-                if (dateNow < lastEventReason.StartDate)
-                    throw new ConflictException("Erro: Data atual está menor do que o inicio do ultimo evento.");
+                if (DateTime.TryParseExact(body.EndDate, "dd/MM/yy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedEndDate) is true)
+                {
+                    if (parsedEndDate < closingEvent.StartDate)
+                        throw new BadRequestException("Data de fim do evento não pode ser menor que data de início.");
 
+                    var currentDate = closingEvent.StartDate;
+
+                    while (currentDate <= parsedEndDate)
+                    {
+                        var productionInDate = await _productionRepository.GetCleanByDate(currentDate);
+
+                        if (productionInDate is not null && productionInDate.IsCalculated)
+                            throw new BadRequestException($"Não é possível editar evento, existe uma produção já apropriada no dia: {currentDate:dd/MM/yyyy}");
+
+                        currentDate = currentDate.AddDays(1);
+                    }
+
+                    if (closingEvent.EventReasons.Count > 1)
+                    {
+                        lastEventReason.EndDate = parsedEndDate;
+
+                        _wellEventRepository.UpdateReason(lastEventReason);
+                    }
+
+                    var nextEvent = await _wellEventRepository
+                        .GetNextEvent(closingEvent.StartDate, parsedEndDate);
+
+                    if (nextEvent is not null)
+                    {
+                        nextEvent.StartDate = parsedEndDate;
+                        _wellEventRepository.Update(nextEvent);
+                    }
+
+                    closingEvent.EndDate = parsedEndDate;
+                    closingEvent.Interval = (parsedEndDate - closingEvent.StartDate).TotalHours;
+
+                    _wellEventRepository.Update(closingEvent);
+
+                }
+                else
+                    throw new BadRequestException("Formato de data fim inválido deve ser 'dd/MM/yy HH:mm'.");
             }
 
+            if (body.StartDate is not null && body.EndDate is null)
+            {
+                if (DateTime.TryParseExact(body.StartDate, "dd/MM/yy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedStartDate) is true)
+                {
+                    if (parsedStartDate > closingEvent.EndDate && closingEvent.EndDate is not null)
+                        throw new BadRequestException("Data de início do evento não pode ser maior que data de fim.");
+
+                    if (parsedStartDate < closingEvent.EventRelated.StartDate)
+                        throw new ConflictException($"Não é possível atualizar para uma data anterior a data de início do evento relacionado: {closingEvent.EventRelated.IdAutoGenerated}.");
+
+                    if (closingEvent.EndDate is not null && parsedStartDate < closingEvent.EndDate)
+                        throw new ConflictException($"Não é possível atualizar para uma data anterior a data de fim do evento.");
+
+                    var currentDate = closingEvent.StartDate;
+
+                    if (closingEvent.EndDate.HasValue)
+                    {
+                        while (currentDate <= closingEvent.EndDate)
+                        {
+                            var productionInDate = await _productionRepository.GetCleanByDate(currentDate);
+
+                            if (productionInDate is not null && productionInDate.IsCalculated)
+                                throw new BadRequestException($"Não é possível editar evento, existe uma produção já apropriada no dia: {currentDate:dd/MM/yyyy}");
+
+                            currentDate = currentDate.AddDays(1);
+                        }
+                    }
+                    else
+                    {
+                        currentDate = closingEvent.StartDate;
+
+                        while (currentDate <= dateNow)
+                        {
+                            var productionInDate = await _productionRepository.GetCleanByDate(currentDate);
+
+                            if (productionInDate is not null && productionInDate.IsCalculated)
+                                throw new BadRequestException($"Não é possível editar evento, existe uma produção já apropriada no dia: {currentDate:dd/MM/yyyy}");
+
+                            currentDate = currentDate.AddDays(1);
+                        }
+                    }
+
+                    var firstEventReason = closingEvent.EventReasons
+                        .OrderBy(x => x.StartDate)
+                        .FirstOrDefault();
+
+                    if (firstEventReason is not null)
+                    {
+                        firstEventReason.StartDate = parsedStartDate;
+
+                        if (firstEventReason.EndDate is not null)
+                        {
+                            var dif = (firstEventReason.EndDate.Value - firstEventReason.StartDate).TotalHours / 24;
+
+                            var formatedInterval = FormatTimeInterval(firstEventReason.EndDate.Value, firstEventReason);
+
+                            firstEventReason.Interval = formatedInterval;
+                        }
+
+                        _wellEventRepository.UpdateReason(firstEventReason);
+                    }
+
+                    closingEvent.StartDate = parsedStartDate;
+                    closingEvent.EventRelated.EndDate = parsedStartDate;
+                    closingEvent.EventRelated.Interval = (parsedStartDate - closingEvent.EventRelated.StartDate).TotalHours;
+
+                    if (closingEvent.EndDate is not null)
+                    {
+                        closingEvent.Interval = (closingEvent.EndDate.Value - parsedStartDate).TotalHours;
+                    }
+
+                    _wellEventRepository.Update(closingEvent);
+                }
+                else
+                    throw new BadRequestException("Formato de data de início inválido deve ser 'dd/MM/yy HH:mm'.");
+            }
 
             await _wellEventRepository.Save();
         }

@@ -17,11 +17,22 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Repositories
         {
             return await _context.WellEvents
                 .Include(x => x.WellLosses)
+                .Include(x => x.EventRelated)
                 .Include(x => x.EventReasons)
                 .Include(x => x.Well)
                     .ThenInclude(x => x.Field)
                         .ThenInclude(x => x.Installation)
                 .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task<WellEvent?> GetNextEvent(DateTime startDate, DateTime endDate)
+        {
+            return await _context.WellEvents
+                .OrderBy(x => x.StartDate)
+                .Where(x => x.StartDate >= startDate)
+                .Where(x => x.EndDate >= endDate || x.EndDate == null)
+                    .Where(x => x.EventStatus == "A")
+                .FirstOrDefaultAsync();
         }
 
         public async Task<EventReason?> GetEventReasonById(Guid id)
