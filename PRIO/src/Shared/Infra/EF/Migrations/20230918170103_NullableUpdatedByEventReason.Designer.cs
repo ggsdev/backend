@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230918170103_NullableUpdatedByEventReason")]
+    partial class NullableUpdatedByEventReason
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -947,9 +950,6 @@ namespace PRIO.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("InactivatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -993,9 +993,6 @@ namespace PRIO.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("InactivatedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -1054,9 +1051,6 @@ namespace PRIO.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("InactivatedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("InstallationId")
                         .HasColumnType("uniqueidentifier");
@@ -1182,9 +1176,6 @@ namespace PRIO.Migrations
                         .HasPrecision(10, 4)
                         .HasColumnType("decimal");
 
-                    b.Property<DateTime?>("InactivatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -1272,9 +1263,6 @@ namespace PRIO.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("InactivatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -1356,9 +1344,6 @@ namespace PRIO.Migrations
 
                     b.Property<Guid>("FieldId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("InactivatedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -1442,9 +1427,6 @@ namespace PRIO.Migrations
 
                     b.Property<Guid>("FieldId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("InactivatedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");

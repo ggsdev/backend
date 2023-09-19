@@ -59,7 +59,7 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        public async Task<IActionResult> Delete([FromRoute] Guid id, [FromHeader] string StatusDate)
         {
             if (HttpContext.Items["User"] is not User user)
                 return Unauthorized(new ErrorResponseDTO
@@ -67,7 +67,7 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Controllers
                     Message = "User not identified, please login first"
                 });
 
-            await _reservoirService.DeleteReservoir(id, user);
+            await _reservoirService.DeleteReservoir(id, user, StatusDate);
             return NoContent();
         }
 

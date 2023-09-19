@@ -14,9 +14,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Mappings
             builder.Property(x => x.Description)
                 .HasColumnType("TEXT");
 
-            //builder.Property(x => x.Interval)
-            //    .HasColumnType("float")
-            //    .HasPrecision(15, 6);
             builder.Property(x => x.SystemRelated)
                .HasColumnType("VARCHAR")
                .HasMaxLength(60)
@@ -32,6 +29,15 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Mappings
 
             builder.HasIndex(x => new { x.WellEventId, x.StartDate })
                 .IsUnique();
+
+            builder.HasOne(c => c.CreatedBy).
+               WithMany(u => u.CreatedEventReasons)
+               .OnDelete(DeleteBehavior.NoAction)
+               .IsRequired();
+
+            builder.HasOne(c => c.UpdatedBy).
+               WithMany(u => u.UpdatedEventReasons)
+               .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

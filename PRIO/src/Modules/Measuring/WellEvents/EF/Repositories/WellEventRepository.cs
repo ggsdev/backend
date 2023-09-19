@@ -16,6 +16,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Repositories
         public async Task<WellEvent?> GetEventById(Guid id)
         {
             return await _context.WellEvents
+                .Include(x => x.WellLosses)
+                .Include(x => x.EventRelated)
                 .Include(x => x.EventReasons)
                 .Include(x => x.Well)
                     .ThenInclude(x => x.Field)
@@ -23,9 +25,39 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Repositories
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
+        public async Task<WellEvent?> GetNextEvent(DateTime startDate, DateTime endDate)
+        {
+            return await _context.WellEvents
+                .OrderBy(x => x.StartDate)
+                .Where(x => x.StartDate >= startDate)
+                .Where(x => x.EndDate >= endDate || x.EndDate == null)
+                    .Where(x => x.EventStatus == "A")
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<EventReason?> GetNextReason(DateTime startDate, Guid wellEventId, Guid eventReasonId)
+        {
+            return await _context.EventReasons
+                .Include(x => x.WellEvent)
+                .Where(x => x.StartDate > startDate && x.WellEvent.Id == wellEventId && x.Id != eventReasonId)
+                .OrderBy(x => x.StartDate)
+                    .FirstOrDefaultAsync();
+        }
+
+        public async Task<EventReason?> GetBeforeReason(DateTime startDate, Guid wellEventId, Guid eventReasonId)
+        {
+            return await _context.EventReasons
+                .Include(x => x.WellEvent)
+                .Where(x => x.StartDate < startDate && x.WellEvent.Id == wellEventId && x.Id != eventReasonId)
+                .OrderByDescending(x => x.StartDate)
+                    .FirstOrDefaultAsync();
+        }
+
         public async Task<EventReason?> GetEventReasonById(Guid id)
         {
             return await _context.EventReasons
+                .Include(x => x.WellEvent)
+                    .ThenInclude(x => x.EventReasons)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 

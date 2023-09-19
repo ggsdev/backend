@@ -157,8 +157,26 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
             return zoneDTO;
         }
 
-        public async Task DeleteZone(Guid id, User user)
+        public async Task DeleteZone(Guid id, User user, string StatusDate)
         {
+            DateTime date;
+            if (StatusDate is null)
+            {
+                throw new ConflictException("Data da inativação não informada");
+            }
+            else
+            {
+                var checkDate = DateTime.TryParse(StatusDate, out DateTime day);
+                if (checkDate is false)
+                    throw new ConflictException("Data não é válida.");
+
+                var dateToday = DateTime.UtcNow.AddHours(-3);
+                if (dateToday < day)
+                    throw new NotFoundException("Data fornecida é maior que a data atual.");
+
+                date = day;
+            }
+
             var zone = await _zoneRepository
                 .GetZoneAndChildren(id);
 
@@ -171,6 +189,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
             var propertiesUpdated = new
             {
                 IsActive = false,
+                InactivatedAt = date,
                 DeletedAt = DateTime.UtcNow.AddHours(-3),
             };
 
@@ -190,6 +209,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
                         var reservoirPropertiesToUpdate = new
                         {
                             IsActive = false,
+                            InactivatedAt = date,
                             DeletedAt = DateTime.UtcNow.AddHours(-3),
                         };
 
@@ -210,6 +230,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
                                 var completionPropertiesToUpdate = new
                                 {
                                     IsActive = false,
+                                    InactivatedAt = date,
                                     DeletedAt = DateTime.UtcNow.AddHours(-3),
                                 };
 

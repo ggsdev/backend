@@ -75,7 +75,10 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                             .ThenInclude(z => z.Reservoirs)
                                 .ThenInclude(r => r.Completions)
                         .Include(f => f.Wells)
-                            .ThenInclude(r => r.Completions)
+                             .ThenInclude(w => w.WellEvents)
+                                .ThenInclude(r => r.EventReasons)
+                        .Include(f => f.Wells)
+                             .ThenInclude(w => w.Completions)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 

@@ -26,6 +26,8 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Mappings
 
             builder.Property(x => x.IsActive);
 
+            builder.Property(x => x.InactivatedAt);
+
             builder.HasOne(c => c.User).
                 WithMany(u => u.Reservoirs)
                 .OnDelete(DeleteBehavior.NoAction)

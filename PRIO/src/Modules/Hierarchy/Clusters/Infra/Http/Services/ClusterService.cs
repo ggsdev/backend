@@ -20,6 +20,8 @@ using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Interfaces;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
+using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
+using PRIO.src.Modules.Measuring.WellEvents.Interfaces;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
@@ -40,10 +42,11 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
         private readonly IReservoirRepository _reservoirRepository;
         private readonly IMeasuringPointRepository _pointRepository;
         private readonly IEquipmentRepository _equipmentRepository;
+        private readonly IWellEventRepository _eventWellRepository;
         private readonly SystemHistoryService _systemHistoryService;
         private readonly string _tableName = HistoryColumns.TableClusters;
 
-        public ClusterService(IMapper mapper, IClusterRepository clusterRepository, SystemHistoryService systemHistoryService, IInstallationRepository installationRepository, IFieldRepository fieldRepository, IZoneRepository zoneRepository, IWellRepository wellRepository, IReservoirRepository reservoirRepository, ICompletionRepository completionRepository, IMeasuringPointRepository measuringPointRepository, IEquipmentRepository equipmentRepository)
+        public ClusterService(IMapper mapper, IClusterRepository clusterRepository, SystemHistoryService systemHistoryService, IInstallationRepository installationRepository, IFieldRepository fieldRepository, IZoneRepository zoneRepository, IWellRepository wellRepository, IReservoirRepository reservoirRepository, ICompletionRepository completionRepository, IMeasuringPointRepository measuringPointRepository, IEquipmentRepository equipmentRepository, IWellEventRepository wellEventRepository)
         {
             _mapper = mapper;
             _clusterRepository = clusterRepository;
@@ -56,6 +59,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
             _systemHistoryService = systemHistoryService;
             _pointRepository = measuringPointRepository;
             _equipmentRepository = equipmentRepository;
+            _eventWellRepository = wellEventRepository;
         }
 
         public async Task<ClusterDTO> CreateCluster(CreateClusterViewModel body, User user)
@@ -138,8 +142,26 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
             return clusterDTO;
         }
 
-        public async Task DeleteCluster(Guid id, User user)
+        public async Task DeleteCluster(Guid id, User user, string StatusDate)
         {
+            DateTime date;
+            if (StatusDate is null)
+            {
+                throw new ConflictException("Data da inativação não informada");
+            }
+            else
+            {
+                var checkDate = DateTime.TryParse(StatusDate, out DateTime day);
+                if (checkDate is false)
+                    throw new ConflictException("Data não é válida.");
+
+                var dateToday = DateTime.UtcNow.AddHours(-3);
+                if (dateToday < day)
+                    throw new NotFoundException("Data fornecida é maior que a data atual.");
+
+                date = day;
+            }
+
             var cluster = await _clusterRepository
                 .GetClusterAndChildren(id);
 
@@ -152,6 +174,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
             var clusterPropertiesToUpdate = new
             {
                 IsActive = false,
+                InactivatedAt = date,
                 DeletedAt = DateTime.UtcNow.AddHours(-3),
             };
             var clusterUpdatedProperties = UpdateFields
@@ -170,6 +193,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                         var installationPropertiesToUpdate = new
                         {
                             IsActive = false,
+                            InactivatedAt = date,
                             DeletedAt = DateTime.UtcNow.AddHours(-3),
                         };
 
@@ -231,6 +255,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                                 var fieldPropertiesToUpdate = new
                                 {
                                     IsActive = false,
+                                    InactivatedAt = date,
                                     DeletedAt = DateTime.UtcNow.AddHours(-3),
                                 };
 
@@ -251,6 +276,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                                         var zonePropertiesToUpdate = new
                                         {
                                             IsActive = false,
+                                            InactivatedAt = date,
                                             DeletedAt = DateTime.UtcNow.AddHours(-3),
                                         };
 
@@ -272,6 +298,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                                                 var reservoirPropertiesToUpdate = new
                                                 {
                                                     IsActive = false,
+                                                    InactivatedAt = date,
                                                     DeletedAt = DateTime.UtcNow.AddHours(-3),
                                                 };
 
@@ -292,6 +319,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                                                         var completionPropertiesToUpdate = new
                                                         {
                                                             IsActive = false,
+                                                            InactivatedAt = date,
                                                             DeletedAt = DateTime.UtcNow.AddHours(-3),
                                                         };
 
@@ -315,6 +343,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                                         var wellPropertiesToUpdate = new
                                         {
                                             IsActive = false,
+                                            InactivatedAt = date,
                                             DeletedAt = DateTime.UtcNow.AddHours(-3),
                                         };
 
@@ -323,6 +352,181 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
 
                                         await _systemHistoryService
                                             .Delete<Well, WellHistoryDTO>(HistoryColumns.TableWells, user, wellUpdatedProperties, well.Id, well);
+
+                                        var lastEventOfAll = well.WellEvents
+                                           .OrderBy(e => e.StartDate)
+                                           .LastOrDefault();
+
+                                        if (lastEventOfAll is not null && lastEventOfAll.EventStatus.ToUpper() == "A")
+                                        {
+                                            var lastEventOfTypeClosing = well.WellEvents
+                                            .OrderBy(e => e.StartDate)
+                                            .LastOrDefault(x => x.EventStatus == "F");
+
+                                            int lastCode;
+                                            var codeSequencial = string.Empty;
+                                            if (lastEventOfTypeClosing is not null && int.TryParse(lastEventOfTypeClosing.IdAutoGenerated.Split(" ")[0].Substring(3), out lastCode))
+                                            {
+                                                lastCode++;
+                                                codeSequencial = lastCode.ToString("0000");
+                                            }
+
+                                            if (lastEventOfTypeClosing is null)
+                                                codeSequencial = "0001";
+
+                                            var wellEvent = new WellEvent
+                                            {
+                                                Id = Guid.NewGuid(),
+                                                StartDate = date,
+                                                IdAutoGenerated = $"{well.Field?.Name?.Substring(0, 3)}{codeSequencial} {well.Name}",
+                                                Well = well,
+                                                EventStatus = "F",
+                                                StateANP = "4",
+                                                StatusANP = "Fechado",
+                                                CreatedBy = user
+
+                                            };
+                                            await _eventWellRepository.Add(wellEvent);
+
+                                            var newEventReason = new EventReason
+                                            {
+                                                Id = Guid.NewGuid(),
+                                                SystemRelated = "Inativo",
+                                                StartDate = date,
+                                                WellEvent = wellEvent,
+                                                CreatedBy = user
+                                            };
+
+                                            await _eventWellRepository.AddReasonClosedEvent(newEventReason);
+
+                                            lastEventOfAll.Interval = (date - lastEventOfAll.StartDate).TotalHours;
+                                            lastEventOfAll.EndDate = date;
+
+                                            _eventWellRepository.Update(lastEventOfAll);
+                                        }
+                                        else if (lastEventOfAll is not null && lastEventOfAll.EventStatus.ToUpper() == "F" && lastEventOfAll.EndDate is null)
+                                        {
+                                            var eventReason = lastEventOfAll.EventReasons.OrderBy(x => x.StartDate).LastOrDefault();
+                                            if (eventReason.StartDate >= date)
+                                                throw new ConflictException("Data da inativação não pode ser menor que data do último evento.");
+
+                                            if (eventReason.StartDate < date && eventReason.EndDate is null)
+                                            {
+                                                var dif = (date - lastEventOfAll.StartDate).TotalHours / 24;
+                                                eventReason.EndDate = eventReason.StartDate.Date.AddDays(1).AddMilliseconds(-10);
+
+                                                var FirstresultIntervalTimeSpan = (eventReason.StartDate.Date.AddDays(1).AddMilliseconds(-10) - eventReason.StartDate).TotalHours;
+                                                int FirstintervalHours = (int)FirstresultIntervalTimeSpan;
+                                                var FirstintervalMinutesDecimal = (FirstresultIntervalTimeSpan - FirstintervalHours) * 60;
+                                                int FirstintervalMinutes = (int)FirstintervalMinutesDecimal;
+                                                var FirstintervalSecondsDecimal = (FirstintervalMinutesDecimal - FirstintervalMinutes) * 60;
+                                                int FirstintervalSeconds = (int)FirstintervalSecondsDecimal;
+                                                string FirstReasonFormattedHours;
+                                                string firstFormattedMinutes = FirstintervalMinutes < 10 ? $"0{FirstintervalMinutes}" : FirstintervalMinutes.ToString();
+                                                string firstFormattedSecond = FirstintervalSeconds < 10 ? $"0{FirstintervalSeconds}" : FirstintervalSeconds.ToString();
+                                                if (FirstintervalHours >= 1000)
+                                                {
+                                                    int digitCount = (int)Math.Floor(Math.Log10(FirstintervalHours)) + 1;
+                                                    FirstReasonFormattedHours = FirstintervalHours.ToString(new string('0', digitCount));
+                                                }
+                                                else
+                                                {
+                                                    FirstReasonFormattedHours = FirstintervalHours.ToString("00");
+                                                }
+                                                var FirstReasonFormattedTime = $"{FirstReasonFormattedHours}:{firstFormattedMinutes}:{firstFormattedSecond}";
+                                                eventReason.Interval = FirstReasonFormattedTime;
+
+                                                DateTime refStartDate = eventReason.StartDate.Date.AddDays(1);
+                                                DateTime refStartEnd = refStartDate.AddDays(1).AddMilliseconds(-10);
+
+                                                var resultIntervalTimeSpan = (refStartEnd - refStartDate).TotalHours;
+                                                int intervalHours = (int)resultIntervalTimeSpan;
+                                                var intervalMinutesDecimal = (resultIntervalTimeSpan - intervalHours) * 60;
+                                                int intervalMinutes = (int)intervalMinutesDecimal;
+                                                var intervalSecondsDecimal = (intervalMinutesDecimal - intervalMinutes) * 60;
+                                                int intervalSeconds = (int)intervalSecondsDecimal;
+
+                                                for (int j = 0; j < dif; j++)
+                                                {
+                                                    var newEventReason = new EventReason
+                                                    {
+                                                        Id = Guid.NewGuid(),
+                                                        StartDate = refStartDate,
+                                                        WellEvent = lastEventOfAll,
+                                                        SystemRelated = eventReason.SystemRelated,
+                                                        CreatedBy = user
+                                                    };
+                                                    if (j == 0)
+                                                    {
+                                                        if (date.Date == eventReason.StartDate.Date)
+                                                        {
+                                                            Console.WriteLine("oi");
+                                                            eventReason.EndDate = date;
+                                                            var Interval = FormatTimeInterval(date, eventReason);
+                                                            eventReason.Interval = Interval;
+
+                                                            newEventReason.StartDate = date;
+                                                            newEventReason.SystemRelated = "Inativo";
+                                                            await _eventWellRepository.AddReasonClosedEvent(newEventReason);
+                                                            break;
+                                                        }
+                                                    }
+                                                    if (date.Date == refStartDate)
+                                                    {
+                                                        var newEventReason2 = new EventReason
+                                                        {
+                                                            Id = Guid.NewGuid(),
+                                                            SystemRelated = eventReason.SystemRelated,
+                                                            Comment = eventReason.Comment,
+                                                            WellEvent = lastEventOfAll,
+                                                            StartDate = refStartDate,
+                                                            EndDate = date,
+                                                            IsActive = true,
+                                                            IsJobGenerated = false,
+                                                            CreatedBy = user
+                                                        };
+                                                        var Interval = FormatTimeInterval(date, newEventReason2);
+                                                        newEventReason2.Interval = Interval;
+
+                                                        newEventReason.EndDate = null;
+                                                        newEventReason.StartDate = date;
+                                                        newEventReason.SystemRelated = "Inativo";
+
+                                                        await _eventWellRepository.AddReasonClosedEvent(newEventReason2);
+                                                        await _eventWellRepository.AddReasonClosedEvent(newEventReason);
+                                                        break;
+                                                    }
+                                                    else
+                                                    {
+                                                        newEventReason.EndDate = refStartEnd;
+                                                        string ReasonFormattedMinutes = intervalMinutes < 10 ? $"0{intervalMinutes}" : intervalMinutes.ToString();
+                                                        string ReasonFormattedSecond = intervalSeconds < 10 ? $"0{intervalSeconds}" : intervalSeconds.ToString();
+                                                        string ReasonFormattedHours;
+                                                        if (intervalHours >= 1000)
+                                                        {
+                                                            int digitCount = (int)Math.Floor(Math.Log10(intervalHours)) + 1;
+                                                            ReasonFormattedHours = intervalHours.ToString(new string('0', digitCount));
+                                                        }
+                                                        else
+                                                        {
+                                                            ReasonFormattedHours = intervalHours.ToString("00");
+                                                        }
+                                                        var reasonFormattedTime = $"{ReasonFormattedHours}:{ReasonFormattedMinutes}:{ReasonFormattedSecond}";
+                                                        newEventReason.Interval = reasonFormattedTime;
+                                                        refStartDate = newEventReason.StartDate.AddDays(1);
+                                                        refStartEnd = refStartDate.AddDays(1).AddMilliseconds(-10);
+                                                    }
+
+                                                    await _eventWellRepository.AddReasonClosedEvent(newEventReason);
+                                                }
+                                            }
+                                            //await _eventWellRepository.AddReasonClosedEvent(newEventReason);
+
+                                            //eventReason.Interval = (date - lastEventOfAll.StartDate).TotalHours.ToString();
+                                            //eventReason.EndDate = date;
+
+                                            //_eventWellRepository.UpdateReason(eventReason);
+                                        }
 
                                         _wellRepository.Delete(well);
                                     }
@@ -383,7 +587,30 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
 
             return clusterDTO;
         }
+        private static string FormatTimeInterval(DateTime dateNow, EventReason lastEventReason)
+        {
+            var resultTimeSpan = (dateNow - lastEventReason.StartDate).TotalHours;
 
+            int hours = (int)resultTimeSpan;
+            var minutesDecimal = (resultTimeSpan - hours) * 60;
+            int minutes = (int)minutesDecimal;
+            var secondsDecimal = (minutesDecimal - minutes) * 60;
+            int seconds = (int)secondsDecimal;
+            string formattedMinutes = minutes < 10 ? $"0{minutes}" : minutes.ToString();
+            string formattedSecond = seconds < 10 ? $"0{seconds}" : seconds.ToString();
+            string formattedHours;
+            if (hours >= 1000)
+            {
+                int digitCount = (int)Math.Floor(Math.Log10(hours)) + 1;
+                formattedHours = hours.ToString(new string('0', digitCount));
+            }
+            else
+            {
+                formattedHours = hours.ToString("00");
+            }
+
+            return $"{formattedHours}:{formattedMinutes}:{formattedSecond}";
+        }
         public async Task<List<SystemHistory>> GetClusterHistory(Guid id)
         {
             var clusterHistories = await _systemHistoryService

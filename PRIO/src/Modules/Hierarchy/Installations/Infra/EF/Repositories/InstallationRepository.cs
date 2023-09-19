@@ -108,6 +108,10 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                     .Include(i => i.Fields)
                         .ThenInclude(f => f.Wells)
                                 .ThenInclude(r => r.Completions)
+                    .Include(i => i.Fields)
+                        .ThenInclude(f => f.Wells)
+                        .ThenInclude(w => w.WellEvents)
+                        .ThenInclude(we => we.EventReasons)
                     .Include(x => x.MeasuringPoints)
                         .ThenInclude(x => x.MeasuringEquipments)
                      .Include(x => x.MeasuringPoints)
@@ -237,9 +241,10 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                 .Include(x => x.Fields)
                     .ThenInclude(x => x.Wells)
                         .ThenInclude(x => x.WellTests)
-                         .Include(x => x.Fields)
+                .Include(x => x.Fields)
                     .ThenInclude(x => x.Wells)
                         .ThenInclude(x => x.WellEvents)
+                            .ThenInclude(we => we.EventReasons)
                 .Where(x => x.UepCod == uepCode)
                 .ToListAsync();
         }

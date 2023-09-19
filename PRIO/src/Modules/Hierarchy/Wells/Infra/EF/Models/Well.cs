@@ -30,6 +30,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models
         public string? CoordY { get; set; }
         public User? User { get; set; }
         public Field? Field { get; set; }
+        public DateTime? InactivatedAt { get; set; }
         public List<Completion>? Completions { get; set; }
         public List<WellTests>? WellTests { get; set; }
         public List<WellEvent> WellEvents { get; set; } = new();

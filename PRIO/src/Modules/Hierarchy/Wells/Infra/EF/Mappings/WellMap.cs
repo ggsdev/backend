@@ -101,6 +101,8 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Mappings
             builder.Property(e => e.DeletedAt)
                 .HasColumnType("DATETIME");
 
+            builder.Property(x => x.InactivatedAt);
+
             builder.HasOne(x => x.User).
                 WithMany(u => u.Wells)
                 .OnDelete(DeleteBehavior.NoAction)

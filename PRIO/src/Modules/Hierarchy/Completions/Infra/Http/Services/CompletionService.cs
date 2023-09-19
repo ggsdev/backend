@@ -287,8 +287,26 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             return completionDTO;
         }
 
-        public async Task DeleteCompletion(Guid id, User user)
+        public async Task DeleteCompletion(Guid id, User user, string StatusDate)
         {
+            DateTime date;
+            if (StatusDate is null)
+            {
+                throw new ConflictException("Data da inativação não informada");
+            }
+            else
+            {
+                var checkDate = DateTime.TryParse(StatusDate, out DateTime day);
+                if (checkDate is false)
+                    throw new ConflictException("Data não é válida.");
+
+                var dateToday = DateTime.UtcNow.AddHours(-3);
+                if (dateToday < day)
+                    throw new NotFoundException("Data fornecida é maior que a data atual.");
+
+                date = day;
+            }
+
             var completion = await _completionRepository.GetOnlyCompletion(id);
 
             if (completion is null)
@@ -301,6 +319,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             {
                 IsActive = false,
                 DeletedAt = DateTime.UtcNow.AddHours(-3),
+                InactivatedAt = date
             };
 
             var updatedProperties = UpdateFields

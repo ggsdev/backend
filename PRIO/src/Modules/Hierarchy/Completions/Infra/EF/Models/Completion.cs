@@ -11,6 +11,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models
         public decimal? TopOfPerforated { get; set; }
         public decimal? BaseOfPerforated { get; set; }
         public decimal? AllocationReservoir { get; set; } = 1;
+        public DateTime? InactivatedAt { get; set; }
         public Reservoir? Reservoir { get; set; }
         public Well? Well { get; set; }
         public User? User { get; set; }

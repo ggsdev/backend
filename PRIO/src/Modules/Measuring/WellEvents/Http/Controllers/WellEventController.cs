@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.WellEvents.Http.Services;
 using PRIO.src.Modules.Measuring.WellEvents.ViewModels;
 using PRIO.src.Shared.Infra.Http.Filters;
@@ -20,7 +21,9 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Controllers
         [HttpPost("close")]
         public async Task<IActionResult> Post(CreateClosingEventViewModel body)
         {
-            await _service.CloseWellEvent(body);
+            var user = HttpContext.Items["User"] as User;
+
+            await _service.CloseWellEvent(body, user);
 
             return NoContent();
         }
@@ -28,15 +31,19 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Controllers
         [HttpPost("open")]
         public async Task<IActionResult> Post(CreateOpeningEventViewModel body)
         {
-            await _service.OpenWellEvent(body);
+            var user = HttpContext.Items["User"] as User;
+
+            await _service.OpenWellEvent(body, user);
 
             return NoContent();
         }
 
-        [HttpPost("{eventId}/reasons")]
-        public async Task<IActionResult> Post(Guid eventId, CreateReasonViewModel body)
+        [HttpPatch("{eventId}")]
+        public async Task<IActionResult> Post(Guid eventId, UpdateEventAndSystemRelated body)
         {
-            await _service.AddReasonClosedEvent(eventId, body);
+            var user = HttpContext.Items["User"] as User;
+
+            await _service.UpdateClosedEvent(eventId, body, user);
 
             return NoContent();
         }
@@ -52,13 +59,15 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Controllers
         [HttpPatch("reason/{id}")]
         public async Task<IActionResult> UpdateReason(Guid id, UpdateReasonViewModel body)
         {
-            var data = await _service.UpdateReason(id, body);
+            var user = HttpContext.Items["User"] as User;
+
+            var data = await _service.UpdateReason(id, body, user);
 
             return Ok(data);
         }
 
         [HttpGet("well/{wellId}")]
-        public async Task<IActionResult> GetWellEvents([FromRoute] Guid wellId, [FromQuery] string date)
+        public async Task<IActionResult> GetWellEvents([FromRoute] Guid wellId, [FromQuery] string? date)
         {
             var data = await _service.GetWellEvents(wellId, date);
 

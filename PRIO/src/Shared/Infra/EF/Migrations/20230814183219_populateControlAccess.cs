@@ -122,6 +122,7 @@ namespace PRIO.Migrations
                 new object[] { "Gestão da Produção", "Gear", "3", "/gestaoProducao", Guid.NewGuid(), true, false   },
                 new object[] { "Abertura de Poço", "Gear", "3.1", "/pocosFechados", Guid.NewGuid(), false, true},
                 new object[] { "Fechamento de Poço", "Gear", "3.2", "/pocosAbertos", Guid.NewGuid(), false, true   },
+                new object[] { "Consultar Eventos do Poço", "Gear", "3.3", "/consultarEventos", Guid.NewGuid(), false, true   },
 
                 new object[] { "Notificação de Falhas", "WarningOctagon", "4", "/notificacaoFalhas", Guid.NewGuid(), false, false   },
 
