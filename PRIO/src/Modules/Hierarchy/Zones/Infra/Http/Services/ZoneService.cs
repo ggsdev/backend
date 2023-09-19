@@ -157,7 +157,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
             return zoneDTO;
         }
 
-        public async Task DeleteZone(Guid id, User user)
+        public async Task DeleteZone(Guid id, User user, string StatusDate)
         {
             DateTime date;
             if (StatusDate is null)
