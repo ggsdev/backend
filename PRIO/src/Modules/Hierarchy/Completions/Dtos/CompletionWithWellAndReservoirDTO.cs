@@ -15,6 +15,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Dtos
         public decimal? BaseOfPerforated { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public DateTime? InactivatedAt { get; set; }
         public bool? IsActive { get; set; }
         public UserDTO? User { get; set; }
         public ReservoirDTO? Reservoir { get; set; }
