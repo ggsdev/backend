@@ -134,18 +134,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
                     foreach (var a in filtredEvents)
-                    {
-                        var completions = a.Well.Completions
-                            .Where(c => c.IsActive == true);
-                        if (completions.Count() == 0)
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            totalInterval += CalcInterval(a, production);
-                        }
-                    }
+                        totalInterval += CalcInterval(a, production);
 
                     totalPotencialGasUEP += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
                     totalPotencialOilUEP += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
@@ -191,15 +180,8 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
                         foreach (var a in filtredEvents)
-                        {
-                            var completions = a.Well.Completions
-                                .Where(c => c.IsActive == true);
+                            totalInterval += CalcInterval(a, production);
 
-                            if (completions.Count() == 0)
-                                break;
-                            else
-                                totalInterval += CalcInterval(a, production);
-                        }
 
                         totalPotencialGasField += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
                         totalPotencialOilField += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
@@ -306,8 +288,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         if (totalPotencialWaterUEP == 0)
                             throw new ConflictException("Erro: Somatório dos potenciais do água está zerado.");
 
-                        if (btp.Well.Completions.Count() == 0)
-                            continue;
+
 
                         var wellPotencialGasAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((btp.PotencialGas * ((24 - (decimal)totalInterval) / 24)), totalPotencialGasUEP);
                         var wellPotencialOilAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((btp.PotencialOil * ((24 - (decimal)totalInterval) / 24)), totalPotencialOilUEP);
@@ -463,19 +444,9 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     var filtredEvents = btp.Well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
                     || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
+
                     foreach (var a in filtredEvents)
-                    {
-                        var completions = a.Well.Completions
-                            .Where(c => c.IsActive == true);
-                        if (completions.Count() == 0)
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            totalInterval += CalcInterval(a, production);
-                        }
-                    }
+                        totalInterval += CalcInterval(a, production);
 
                     totalPotencialGasUEP += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
                     totalPotencialOilUEP += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
@@ -523,19 +494,10 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         var filtredEvents = btp.Well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
                         || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
+
+
                         foreach (var a in filtredEvents)
-                        {
-                            var completions = a.Well.Completions
-                                .Where(c => c.IsActive == true);
-                            if (completions.Count() == 0)
-                            {
-                                break;
-                            }
-                            else
-                            {
-                                totalInterval += CalcInterval(a, production);
-                            }
-                        }
+                            totalInterval += CalcInterval(a, production);
 
                         totalPotencialGasField += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
                         totalPotencialOilField += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
@@ -634,8 +596,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         if (totalPotencialWaterUEP == 0)
                             throw new ConflictException("Erro: Somatório dos potenciais do água está zerado.");
 
-                        if (btp.Well.Completions.Count() == 0)
-                            continue;
 
                         var wellPotencialGasAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((btp.PotencialGas * ((24 - (decimal)totalInterval) / 24)), totalPotencialGasUEP);
                         var wellPotencialOilAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((btp.PotencialOil * ((24 - (decimal)totalInterval) / 24)), totalPotencialOilUEP);
@@ -1903,7 +1863,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
         {
             return wellTests.Where(x => (x.FinalApplicationDate == null && x.ApplicationDate != null && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date) && x.Well.CategoryOperator is not null && x.Well.CategoryOperator.ToUpper() == "PRODUTOR"
                         || x.Well.CategoryOperator is not null && x.Well.CategoryOperator.ToUpper() == "PRODUTOR" && (x.FinalApplicationDate != null && x.ApplicationDate != null && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
-                        && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date));
+                        && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date)).Where(X => X.Well.Completions.Count() != 0);
         }
     }
 }
