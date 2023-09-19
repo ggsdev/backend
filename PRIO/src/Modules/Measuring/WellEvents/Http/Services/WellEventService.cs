@@ -1480,7 +1480,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
         }
 
         public async Task<ReasonDetailedDto> UpdateReason(Guid reasonId, UpdateReasonViewModel body, User loggedUser)
-
         {
             var wellReason = await _wellEventRepository.GetEventReasonById(reasonId);
 
