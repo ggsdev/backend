@@ -239,6 +239,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
                         var completionPropertiesToUpdate = new
                         {
                             IsActive = false,
+                            InactivatedAt = date,
                             DeletedAt = DateTime.UtcNow.AddHours(-3),
                         };
 
