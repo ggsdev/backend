@@ -193,6 +193,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                         var installationPropertiesToUpdate = new
                         {
                             IsActive = false,
+                            InactivatedAt = date,
                             DeletedAt = DateTime.UtcNow.AddHours(-3),
                         };
 
