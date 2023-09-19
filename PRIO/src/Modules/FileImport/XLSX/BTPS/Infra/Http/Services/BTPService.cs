@@ -795,7 +795,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             if (listWellTests.Count != 0)
             {
                 var greaterThanDate = listWellTests.OrderBy(x => DateTime.Parse(x.ApplicationDate)).FirstOrDefault(x => DateTime.Parse(x.ApplicationDate) > applicationDateFromBody);
-                var previousDate = listWellTests.OrderBy(x => DateTime.Parse(x.ApplicationDate)).LastOrDefault(x => DateTime.Parse(x.ApplicationDate) < applicationDateFromBody);
+                var previousDate = listWellTests.Where(date => DateTime.Parse(date.ApplicationDate) < applicationDateFromBody).OrderByDescending(date => DateTime.Parse(date.ApplicationDate)).FirstOrDefault();
                 if (previousDate is not null && greaterThanDate is null)
                 {
                     for (DateTime data = DateTime.Parse(previousDate.ApplicationDate); data <= DateTime.Today; data = data.AddDays(1))
