@@ -1392,8 +1392,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 if (dateToday <= day)
                     throw new NotFoundException("Downtime não foi fechado para esse dia.");
 
-
-
                 var filtredEventsByDate = events.Where(x =>
                     (x.StartDate.Date <= day && (x.EndDate == null || x.EndDate.Value.Date >= day))
                     || (x.StartDate.Date < day && x.EndDate != null && x.EndDate.Value.Date >= day)

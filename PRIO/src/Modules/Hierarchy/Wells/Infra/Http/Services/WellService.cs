@@ -227,7 +227,8 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             {
                 IsActive = false,
                 DeletedAt = DateTime.UtcNow.AddHours(-3),
-                StatusOperator = false
+                StatusOperator = false,
+                InactivatedAt = date
             };
 
             if (well.Completions is not null)
@@ -264,7 +265,6 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
 
             if (lastEventOfAll is not null && lastEventOfAll.EventStatus.ToUpper() == "A")
             {
-                Console.WriteLine("oi2");
                 var lastEventOfTypeClosing = well.WellEvents
                 .OrderBy(e => e.StartDate)
                 .LastOrDefault(x => x.EventStatus == "F");
@@ -288,7 +288,9 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
                     Well = well,
                     EventStatus = "F",
                     StateANP = "4",
-                    StatusANP = "Fechado"
+                    StatusANP = "Fechado",
+                    CreatedBy = user
+
                 };
                 await _eventWellRepository.Add(wellEvent);
 
@@ -298,6 +300,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
                     SystemRelated = "Inativo",
                     StartDate = date,
                     WellEvent = wellEvent,
+                    CreatedBy = user
                 };
 
                 await _eventWellRepository.AddReasonClosedEvent(newEventReason);
@@ -357,6 +360,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
                             StartDate = refStartDate,
                             WellEvent = lastEventOfAll,
                             SystemRelated = eventReason.SystemRelated,
+                            CreatedBy = user
                         };
                         if (j == 0)
                         {
@@ -385,6 +389,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
                                 EndDate = date,
                                 IsActive = true,
                                 IsJobGenerated = false,
+                                CreatedBy = user
                             };
                             var Interval = FormatTimeInterval(date, newEventReason2);
                             newEventReason2.Interval = Interval;

@@ -40,6 +40,8 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Mappings
 
             builder.Property(x => x.IsActive);
 
+            builder.Property(x => x.InactivatedAt);
+
             builder.HasOne(c => c.User).
                 WithMany(u => u.Completions)
                 .OnDelete(DeleteBehavior.NoAction)
