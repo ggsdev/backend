@@ -238,6 +238,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<BTP, BTPDTO>();
             CreateMap<BTP, BTPCreateDTO>();
             CreateMap<BTP, BTPBase64DTO>();
+            CreateMap<BTPBase64, BTPBase64RelationWellTestDTO>();
             CreateMap<BTPBase64, BTPBase64DTO>();
             CreateMap<WellTests, BTPDataDTO>();//TEM QUE CONSERTAR AQ
             //.ForPath(dest => dest.BTPBase64.Name, opt => opt.MapFrom(src => src.Filename));
