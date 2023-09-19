@@ -1339,7 +1339,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                         Status = lastEvent.EventStatus,
                         DateLastStatus = lastEventReason is not null ? lastEventReason.StartDate.ToString("dd/MM/yyyy HH:mm") : lastEvent.StartDate.ToString("dd/MM/yyyy HH:mm"),
                         CategoryOperator = well.CategoryOperator,
-                        Name = well.Name
+                        Name = well.Name,
                     };
 
                     wellDtoList.Add(wellDto);
@@ -1516,6 +1516,23 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                     if (parsedStartDate.Date != wellReason.StartDate.Date)
                         throw new BadRequestException("Data de edição deve ser no mesmo dia.");
 
+                    if (body.EndDate is not null)
+                    {
+                        if (DateTime.TryParseExact(body.EndDate, "dd/MM/yy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedEndDate) is true)
+                        {
+                            if (parsedEndDate < parsedStartDate)
+                                throw new BadRequestException("Data fim não pode ser menor que data inicial.");
+                        }
+
+                        else
+                            throw new BadRequestException("Formato de data fim inválido deve ser 'dd/MM/yy HH:mm'.");
+                    }
+                    else
+                    {
+                        if (parsedStartDate > wellReason.EndDate)
+                            throw new BadRequestException("Data inicial não pode ser maior que data final.");
+                    }
+
                     wellReason.StartDate = parsedStartDate;
 
                     if (wellReason.EndDate is not null)
@@ -1523,7 +1540,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                         wellReason.Interval = FormatTimeInterval(wellReason.EndDate.Value, wellReason);
                     }
 
-                    var beforeReason = await _wellEventRepository.GetBeforeReason(parsedStartDate, wellReason.WellEventId);
+                    var beforeReason = await _wellEventRepository
+                        .GetBeforeReason(parsedStartDate, wellReason.WellEventId, reasonId);
 
                     if (beforeReason is not null)
                     {
@@ -1532,8 +1550,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
                         _wellEventRepository.UpdateReason(beforeReason);
                     }
-
-                    _wellEventRepository.UpdateReason(wellReason);
                 }
 
                 else
@@ -1547,8 +1563,25 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                     if (parsedEndDate.Date != wellReason.StartDate.Date)
                         throw new BadRequestException("Data de edição deve ser no mesmo dia.");
 
+                    if (body.StartDate is not null)
+                    {
+                        if (DateTime.TryParseExact(body.StartDate, "dd/MM/yy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedStartDate) is true)
+                        {
+                            if (parsedEndDate < parsedStartDate)
+                                throw new BadRequestException("Data fim não pode ser menor que data inicial.");
+                        }
+
+                        else
+                            throw new BadRequestException("Formato de data de início inválido deve ser 'dd/MM/yy HH:mm'.");
+                    }
+                    else
+                    {
+                        if (parsedEndDate < wellReason.StartDate)
+                            throw new BadRequestException("Data fim não pode ser menor que data inicial.");
+                    }
+
                     var nextReason = await _wellEventRepository
-                                           .GetNextReason(parsedEndDate, wellReason.WellEvent.Id);
+                                           .GetNextReason(parsedEndDate, wellReason.WellEventId, reasonId);
 
                     if (nextReason is not null)
                     {
@@ -1565,8 +1598,9 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                     wellReason.EndDate = parsedEndDate;
                     wellReason.Interval = FormatTimeInterval(parsedEndDate, wellReason);
 
-                    _wellEventRepository.UpdateReason(wellReason);
                 }
+                else
+                    throw new BadRequestException("Formato de data de fim inválido deve ser 'dd/MM/yy HH:mm'.");
             }
 
             wellReason.UpdatedBy = loggedUser;
@@ -1720,7 +1754,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
                             currentDate = currentDate.AddDays(1);
                         }
-
 
                         if (lastEventReason.StartDate < dateNow && lastEventReason.EndDate is null && body.SystemRelated is not null)
                         {
