@@ -16,6 +16,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Dtos
         public bool? IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public DateTime? InactivatedAt { get; set; }
         public UserDTO? User { get; set; }
         public ClusterDTO? Cluster { get; set; }
         public List<FieldWithZonesAndWellsDTO> Fields { get; set; }

@@ -18,6 +18,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Dtos
         public List<WellWithoutFieldDTO>? Wells { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public DateTime? InactivatedAt { get; set; }
         public bool? IsActive { get; set; }
     }
 }

@@ -41,6 +41,12 @@ public class ClusterRepository : IClusterRepository
                             .ThenInclude(r => r.Completions)
 
             .Include(x => x.Installations)
+                .ThenInclude(i => i.Fields)
+                    .ThenInclude(f => f.Wells)
+                        .ThenInclude(w => w.WellEvents)
+                            .ThenInclude(we => we.EventReasons)
+
+            .Include(x => x.Installations)
                 .ThenInclude(i => i.MeasuringPoints)
                     .ThenInclude(m => m.MeasuringEquipments)
             .FirstOrDefaultAsync(c => c.Id == id);
