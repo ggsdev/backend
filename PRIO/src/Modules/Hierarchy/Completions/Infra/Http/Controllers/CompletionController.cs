@@ -74,14 +74,14 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        public async Task<IActionResult> Delete([FromRoute] Guid id, [FromHeader] string StatusDate)
         {
             if (HttpContext.Items["User"] is not User user)
                 return Unauthorized(new ErrorResponseDTO
                 {
                     Message = "User not identified, please login first"
                 });
-            await _completionService.DeleteCompletion(id, user);
+            await _completionService.DeleteCompletion(id, user, StatusDate);
 
             return NoContent();
         }
