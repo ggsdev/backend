@@ -7,6 +7,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Interfaces
         Task Add(WellEvent wellEvent);
         Task<WellEvent?> GetEventById(Guid id);
         Task<WellEvent?> GetNextEvent(DateTime startDate, DateTime endDate);
+        Task<EventReason?> GetNextReason(DateTime startDate, Guid wellEventId);
+        Task<EventReason?> GetBeforeReason(DateTime startDate, Guid wellEventId);
         Task<EventReason?> GetEventReasonById(Guid id);
         void UpdateEventReasonById(EventReason eventReason);
         Task<List<WellEvent>> GetAllWellEvent(Guid wellId);
