@@ -192,8 +192,8 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
                 if (checkDate is false)
                     throw new ConflictException("Data não é válida.");
 
-                var dateToday = DateTime.UtcNow.AddHours(-3).Date;
-                if (dateToday <= day)
+                var dateToday = DateTime.UtcNow.AddHours(-3);
+                if (dateToday < day)
                     throw new NotFoundException("Data fornecida é maior que a data atual.");
 
                 date = day;
