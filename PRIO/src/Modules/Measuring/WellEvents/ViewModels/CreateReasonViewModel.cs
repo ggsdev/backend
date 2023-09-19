@@ -1,9 +1,9 @@
 ﻿namespace PRIO.src.Modules.Measuring.WellEvents.ViewModels
 {
-    public class CreateReasonViewModel
+    public class UpdateEventAndSystemRelated
     {
         public string? SystemRelated { get; set; }
-        public string? StartDate { get; set; }
-        public string? EndDate { get; set; }
+        public string? EventDateAndHour { get; set; }
+        public string? DateSystemRelated { get; set; }
     }
 }

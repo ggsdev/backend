@@ -39,7 +39,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Controllers
         }
 
         [HttpPatch("{eventId}")]
-        public async Task<IActionResult> Post(Guid eventId, CreateReasonViewModel body)
+        public async Task<IActionResult> Post(Guid eventId, UpdateEventAndSystemRelated body)
         {
             var user = HttpContext.Items["User"] as User;
 
