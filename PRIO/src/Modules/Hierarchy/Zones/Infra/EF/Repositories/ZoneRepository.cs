@@ -33,6 +33,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Repositories
             return await _context.Zones
                             .Include(z => z.Reservoirs)
                                 .ThenInclude(r => r.Completions)
+                                .ThenInclude(c => c.Well)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
         public async Task<Zone?> GetWithField(Guid? id)

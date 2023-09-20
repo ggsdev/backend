@@ -20,6 +20,7 @@ using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Interfaces;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
+using PRIO.src.Modules.Measuring.Productions.Interfaces;
 using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
 using PRIO.src.Modules.Measuring.WellEvents.Interfaces;
 using PRIO.src.Shared.Errors;
@@ -43,10 +44,11 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
         private readonly IMeasuringPointRepository _pointRepository;
         private readonly IEquipmentRepository _equipmentRepository;
         private readonly IWellEventRepository _eventWellRepository;
+        private readonly IProductionRepository _productionRepository;
         private readonly SystemHistoryService _systemHistoryService;
         private readonly string _tableName = HistoryColumns.TableClusters;
 
-        public ClusterService(IMapper mapper, IClusterRepository clusterRepository, SystemHistoryService systemHistoryService, IInstallationRepository installationRepository, IFieldRepository fieldRepository, IZoneRepository zoneRepository, IWellRepository wellRepository, IReservoirRepository reservoirRepository, ICompletionRepository completionRepository, IMeasuringPointRepository measuringPointRepository, IEquipmentRepository equipmentRepository, IWellEventRepository wellEventRepository)
+        public ClusterService(IMapper mapper, IClusterRepository clusterRepository, SystemHistoryService systemHistoryService, IInstallationRepository installationRepository, IFieldRepository fieldRepository, IZoneRepository zoneRepository, IWellRepository wellRepository, IReservoirRepository reservoirRepository, ICompletionRepository completionRepository, IMeasuringPointRepository measuringPointRepository, IEquipmentRepository equipmentRepository, IWellEventRepository wellEventRepository, IProductionRepository productionRepository)
         {
             _mapper = mapper;
             _clusterRepository = clusterRepository;
@@ -60,6 +62,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
             _pointRepository = measuringPointRepository;
             _equipmentRepository = equipmentRepository;
             _eventWellRepository = wellEventRepository;
+            _productionRepository = productionRepository;
         }
 
         public async Task<ClusterDTO> CreateCluster(CreateClusterViewModel body, User user)
@@ -161,6 +164,9 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
 
                 date = day;
             }
+            var production = _productionRepository.GetCleanByDate(date);
+            if (production is not null)
+                throw new ConflictException("Existe uma produção para essa data.");
 
             var cluster = await _clusterRepository
                 .GetClusterAndChildren(id);

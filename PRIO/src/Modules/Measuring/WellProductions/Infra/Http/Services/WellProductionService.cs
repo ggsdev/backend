@@ -78,7 +78,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         || well.CategoryOperator is not null && well.CategoryOperator.ToUpper() == "PRODUTOR" && (x.FinalApplicationDate != null && x.ApplicationDate != null && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
                         && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date));
 
-                        if (allBtpsOfProducingWellsValid is not null)
+                        if (allBtpsOfProducingWellsValid is not null && allBtpsOfProducingWellsValid.Any())
                         {
                             foreach (var btp in allBtpsOfProducingWellsValid)
                             {
@@ -493,8 +493,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         double totalInterval = 0;
                         var filtredEvents = btp.Well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
                         || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
-
-
 
                         foreach (var a in filtredEvents)
                             totalInterval += CalcInterval(a, production);

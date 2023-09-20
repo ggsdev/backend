@@ -9,6 +9,7 @@ using PRIO.src.Modules.Hierarchy.Wells.Dtos;
 using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Modules.Hierarchy.Wells.ViewModels;
+using PRIO.src.Modules.Measuring.Productions.Interfaces;
 using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
 using PRIO.src.Modules.Measuring.WellEvents.Interfaces;
 using PRIO.src.Shared.Errors;
@@ -28,10 +29,11 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
         private readonly IWellRepository _wellRepository;
         private readonly IWellEventRepository _eventWellRepository;
         private readonly ICompletionRepository _completionRepository;
+        private readonly IProductionRepository _productionRepository;
         private readonly SystemHistoryService _systemHistoryService;
         private readonly string _tableName = HistoryColumns.TableWells;
 
-        public WellService(IMapper mapper, IFieldRepository fieldRepository, SystemHistoryService systemHistoryService, IWellRepository wellRepository, ICompletionRepository completionRepositor, IWellEventRepository wellEventRepository)
+        public WellService(IMapper mapper, IFieldRepository fieldRepository, SystemHistoryService systemHistoryService, IWellRepository wellRepository, ICompletionRepository completionRepositor, IWellEventRepository wellEventRepository, IProductionRepository productionRepository)
         {
             _mapper = mapper;
             _fieldRepository = fieldRepository;
@@ -39,6 +41,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             _completionRepository = completionRepositor;
             _systemHistoryService = systemHistoryService;
             _eventWellRepository = wellEventRepository;
+            _productionRepository = productionRepository;
             //_context = cpn;
         }
 
@@ -214,6 +217,9 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
 
                 date = day;
             }
+            var production = _productionRepository.GetCleanByDate(date);
+            if (production is not null)
+                throw new ConflictException("Existe uma produção para essa data.");
 
             var well = await _wellRepository.GetByIdWithFieldAndCompletions(id);
 
