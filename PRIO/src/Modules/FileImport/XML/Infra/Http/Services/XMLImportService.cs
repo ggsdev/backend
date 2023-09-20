@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using dotenv.net;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.Dtos;
@@ -67,6 +68,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
         public async Task<ResponseXmlDto> Validate(RequestXmlViewModel data, User user)
         {
+            var envVars = DotEnv.Read();
+            var applicationDate = envVars["APPLICATIONSTARTDATE"];
+
             #region client side validations
             for (int i = 0; i < data.Files.Count; ++i)
             {
@@ -224,6 +228,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                     if (DateTime.TryParseExact(producao.DHA_INICIO_PERIODO_MEDICAO_001, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateBeginningMeasurement))
                                     {
+                                        if (DateTime.TryParse(applicationDate, out var applicationParsed))
+                                        {
+                                            if (applicationParsed < dateBeginningMeasurement)
+                                                errorsInImport.Add($"Data da medição deve ser posterior a data de início do sistema: {applicationParsed:dd/MM/yyyy}");
+                                        }
+                                        else
+                                            throw new BadRequestException("Data de início da aplicação formato inválido: dd/MM/yyyy");
+
                                         var checkDateExists = await _repository.GetMeasurementByDate(dateBeginningMeasurement, XmlUtils.File001);
 
                                         if (checkDateExists is not null && checkDateExists.IsActive)
@@ -240,52 +252,23 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                     if (installation is null)
                                         errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): {ErrorMessages.NotFound<Installation>()}");
 
+                                    if (installation is not null && installation.IsActive is false)
+                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): Instalação:{installation.Name} está inativa");
+
+
                                     var measuringPoint = await _measuringPointRepository
                                         .GetByTagMeasuringPointXML(dadosBasicos.COD_TAG_PONTO_MEDICAO_001, XmlUtils.File001);
 
-                                    if (installation is not null)
+                                    if (measuringPoint is not null && measuringPoint.IsActive is false)
+                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): Ponto de medição: {measuringPoint.TagPointMeasuring} está inativo.");
+
+
+                                    if (installation is not null && installation.IsActive is true)
                                     {
                                         var oilCalculation = await _oilCalculationRepository
                                             .GetOilVolumeCalculationByInstallationId(installation.Id);
 
-                                        if (measuringPoint is null && oilCalculation is not null)
-                                        {
-
-                                            //var containsAnySection = oilCalculation.Sections is not null ? oilCalculation.Sections.Any(oil =>
-                                            //    dadosBasicos.COD_TAG_PONTO_MEDICAO_001 != oil.MeasuringPoint.TagPointMeasuring) : false;
-
-                                            //var containsAnyDrain = oilCalculation.DrainVolumes is not null ? oilCalculation.DrainVolumes.Any(oil =>
-                                            //    dadosBasicos.COD_TAG_PONTO_MEDICAO_001 != oil.MeasuringPoint.TagPointMeasuring) : false;
-
-                                            //var containsAnyDOR = oilCalculation.DORs is not null ? oilCalculation.DORs.Any(oil =>
-                                            //    dadosBasicos.COD_TAG_PONTO_MEDICAO_001 != oil.MeasuringPoint.TagPointMeasuring) : false;
-
-                                            //var containsAnyTOGRecoveredOil = oilCalculation.TOGRecoveredOils is not null ? oilCalculation.TOGRecoveredOils.Any(oil =>
-                                            //    dadosBasicos.COD_TAG_PONTO_MEDICAO_001 != oil.MeasuringPoint.TagPointMeasuring) : false;
-
-                                            //if (!containsAnySection || !containsAnyDrain || !containsAnyDOR || !containsAnyTOGRecoveredOil)
-                                            //{
-                                            //    response001.Measurements.Add(new Client001DTO
-                                            //    {
-                                            //        DHA_INICIO_PERIODO_MEDICAO_001 = dateBeginningMeasurement,
-                                            //        COD_INSTALACAO_001 = dadosBasicos.COD_INSTALACAO_001,
-                                            //        COD_TAG_PONTO_MEDICAO_001 = dadosBasicos.COD_TAG_PONTO_MEDICAO_001,
-
-                                            //        Summary = new ClientInfo
-                                            //        {
-                                            //            Status = false,
-                                            //            Date = dateBeginningMeasurement,
-                                            //            LocationMeasuringPoint = string.Empty,
-                                            //            TagMeasuringPoint = dadosBasicos.COD_TAG_PONTO_MEDICAO_001,
-                                            //            Volume = 0
-                                            //        }
-
-                                            //    });
-                                            //}
-
-                                        }
-
-                                        if (installation.MeasuringPoints is not null && measuringPoint is not null)
+                                        if (installation.MeasuringPoints is not null && measuringPoint is not null && measuringPoint.IsActive)
                                         {
                                             var containsInInstallation = false;
 
@@ -293,7 +276,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                 if (measuringPoint is not null && measuringPoint.TagPointMeasuring == point.TagPointMeasuring && point.IsActive && measuringPoint.IsActive)
                                                     containsInInstallation = true;
 
-                                            if (containsInInstallation is false)
+                                            if (containsInInstallation is false && measuringPoint.IsActive)
                                                 errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), TAG do ponto de medição: {measuringPoint.TagPointMeasuring} não encontrado na instalação: {installation.Name}");
                                         }
 
@@ -304,7 +287,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                         if (oilCalculation is not null && oilCalculation.DrainVolumes.Count == 0 && oilCalculation.DORs.Count == 0 && oilCalculation.Sections.Count == 0 && oilCalculation.TOGRecoveredOils.Count == 0)
                                             errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), cálculo de óleo não configurado nesta instalação, não foi encontrado nenhum ponto de medição vinculado ao cálculo");
 
-                                        if (measuringPoint is not null)
+                                        if (measuringPoint is not null && measuringPoint.IsActive)
                                         {
                                             var containsInCalculation = false;
                                             var applicable = false;
@@ -565,11 +548,19 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                     if (DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_002, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateBeginningMeasurement))
                                     {
+
+                                        if (DateTime.TryParse(applicationDate, out var applicationParsed))
+                                        {
+                                            if (applicationParsed < dateBeginningMeasurement)
+                                                errorsInImport.Add($"Data da medição deve ser posterior a data de início do sistema: {applicationParsed:dd/MM/yyyy}");
+                                        }
+                                        else
+                                            throw new BadRequestException("Data de início da aplicação formato inválido: dd/MM/yyyy");
+
                                         var checkDateExists = await _repository.GetMeasurementByDate(dateBeginningMeasurement, XmlUtils.File002);
 
                                         if (checkDateExists is not null && checkDateExists.IsActive)
                                             errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) data: {producao.DHA_INICIO_PERIODO_MEDICAO_002} já existente.");
-
 
                                         var checkGasProductionExists = await _productionRepository.GetProductionGasByDate(dateBeginningMeasurement);
                                         if (checkGasProductionExists is not null && checkGasProductionExists.Gas is not null && checkGasProductionExists.IsActive)
@@ -590,20 +581,25 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                     var measuringPoint = await _measuringPointRepository
                                         .GetByTagMeasuringPointXML(dadosBasicos.COD_TAG_PONTO_MEDICAO_002, XmlUtils.File002);
 
+                                    if (measuringPoint is not null && measuringPoint.IsActive is false)
+                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): Ponto de medição: {measuringPoint.TagPointMeasuring} está inativo.");
+
+                                    if (installation is not null && installation.IsActive is false)
+                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): Instalação:{installation.Name} está inativa");
                                     //if (measuringPoint is null)
                                     //    errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), ponto de medição com TAG: {dadosBasicos.COD_TAG_PONTO_MEDICAO_002}, {ErrorMessages.NotFound<MeasuringPoint>()}");
 
-                                    if (installation is not null && measuringPoint is not null)
+                                    if (installation is not null && measuringPoint is not null && installation.IsActive)
                                     {
                                         if (installation.MeasuringPoints is not null)
                                         {
                                             var containsInInstallation = false;
 
                                             foreach (var point in installation.MeasuringPoints)
-                                                if (measuringPoint is not null && measuringPoint.TagPointMeasuring == point.TagPointMeasuring)
+                                                if (measuringPoint is not null && measuringPoint.TagPointMeasuring == point.TagPointMeasuring && measuringPoint.IsActive)
                                                     containsInInstallation = true;
 
-                                            if (containsInInstallation is false)
+                                            if (containsInInstallation is false && measuringPoint.IsActive)
                                                 errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), TAG do ponto de medição: {measuringPoint.TagPointMeasuring} não encontrado na instalação: {installation.Name}");
                                         }
 
@@ -935,6 +931,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                     if (DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_003, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateBeginningMeasurement))
                                     {
+                                        if (DateTime.TryParse(applicationDate, out var applicationParsed))
+                                        {
+                                            if (applicationParsed < dateBeginningMeasurement)
+                                                errorsInImport.Add($"Data da medição deve ser posterior a data de início do sistema: {applicationParsed:dd/MM/yyyy}");
+                                        }
+                                        else
+                                            throw new BadRequestException("Data de início da aplicação formato inválido: dd/MM/yyyy");
+
                                         var checkDateExists = await _repository.GetMeasurementByDate(dateBeginningMeasurement, XmlUtils.File003);
 
                                         if (checkDateExists is not null && checkDateExists.IsActive)
@@ -957,13 +961,19 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                     if (installation is null)
                                         errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): {ErrorMessages.NotFound<Installation>()}");
 
+                                    if (installation is not null && installation.IsActive is false)
+                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): Instalação:{installation.Name} está inativa");
+
                                     var measuringPoint = await _measuringPointRepository
                                         .GetByTagMeasuringPointXML(dadosBasicos.COD_TAG_PONTO_MEDICAO_003, XmlUtils.File003);
+
+                                    if (measuringPoint is not null && measuringPoint.IsActive is false)
+                                        errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS): Ponto de medição: {measuringPoint.TagPointMeasuring} está inativo.");
 
                                     //if (measuringPoint is null)
                                     //    errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), ponto de medição TAG: {dadosBasicos.COD_TAG_PONTO_MEDICAO_003}: {ErrorMessages.NotFound<MeasuringPoint>()}");
 
-                                    if (installation is not null && measuringPoint is not null)
+                                    if (installation is not null && measuringPoint is not null && installation.IsActive)
                                     {
 
                                         if (installation.MeasuringPoints is not null)
@@ -971,10 +981,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                             var containsInInstallation = false;
 
                                             foreach (var point in installation.MeasuringPoints)
-                                                if (measuringPoint is not null && measuringPoint.TagPointMeasuring == point.TagPointMeasuring)
+                                                if (measuringPoint is not null && measuringPoint.TagPointMeasuring == point.TagPointMeasuring && measuringPoint.IsActive)
                                                     containsInInstallation = true;
 
-                                            if (containsInInstallation is false)
+                                            if (containsInInstallation is false && measuringPoint.IsActive)
                                                 errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS), TAG do ponto de medição: {measuringPoint.TagPointMeasuring} não encontrado na instalação: {installation.Name}");
                                         }
 
