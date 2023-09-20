@@ -78,7 +78,8 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         || well.CategoryOperator is not null && well.CategoryOperator.ToUpper() == "PRODUTOR" && (x.FinalApplicationDate != null && x.ApplicationDate != null && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
                         && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date));
 
-                        if (allBtpsOfProducingWellsValid is not null)
+
+                        if (allBtpsOfProducingWellsValid is not null && allBtpsOfProducingWellsValid.Any())
                         {
                             foreach (var btp in allBtpsOfProducingWellsValid)
                             {
@@ -104,7 +105,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                 }
             }
             if (wellsInvalids.Count > 0)
-                throw new BadRequestException($"Todos os poços devem ter um teste de poço válido. Poços sem teste ou com teste inválido:", errors: wellsInvalids);
+                throw new BadRequestException($"Todos os poços devem ter um teste de poço válido e com data de aplicação anterior a data da medição. Poços sem teste ou com teste inválido:", errors: wellsInvalids);
             #endregion
 
             var appropriationDto = new AppropriationDto

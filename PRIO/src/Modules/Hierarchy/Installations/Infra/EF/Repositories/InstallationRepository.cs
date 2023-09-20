@@ -234,14 +234,22 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
         public async Task<List<Installation>> GetInstallationChildrenOfUEP(string uepCode)
         {
             return await _context.Installations
-                .Include(x => x.Fields)
-                    .ThenInclude(x => x.Wells)
-                        .ThenInclude(x => x.WellTests)
-                         .Include(x => x.Fields)
-                    .ThenInclude(x => x.Wells)
-                        .ThenInclude(x => x.WellEvents)
-                .Where(x => x.UepCod == uepCode)
-                .ToListAsync();
+            .Include(x => x.Fields)
+             .ThenInclude(x => x.Wells)
+                 .ThenInclude(x => x.WellTests)
+             .Include(x => x.Fields)
+                 .ThenInclude(x => x.Wells)
+                     .ThenInclude(x => x.WellEvents)
+                         .ThenInclude(we => we.EventReasons)
+             .Where(x => x.UepCod == uepCode)
+             .Select(installation => new Installation
+             {
+                 Fields = installation.Fields.Select(field => new Field
+                 {
+                     Wells = field.Wells.Where(well => well.CategoryOperator.ToUpper() == "PRODUTOR").ToList()
+                 }).ToList()
+             })
+             .ToListAsync();
         }
         public async Task<List<Installation>> GetUEPsCreateAsync(string table)
         {
