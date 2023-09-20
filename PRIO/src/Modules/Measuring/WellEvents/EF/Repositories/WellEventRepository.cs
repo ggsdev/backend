@@ -79,6 +79,10 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Repositories
         {
             await _context.WellEvents.AddAsync(wellEvent);
         }
+        public async Task AddRangeReasons(List<EventReason> eventReasons)
+        {
+            await _context.EventReasons.AddRangeAsync(eventReasons);
+        }
 
         public void Update(WellEvent wellEvent)
         {

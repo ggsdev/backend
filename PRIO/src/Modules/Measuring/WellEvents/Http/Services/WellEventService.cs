@@ -1669,26 +1669,26 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
         }
         public async Task UpdateClosedEvent(Guid eventId, UpdateEventAndSystemRelated body, User loggedUser)
         {
+            if (body.SystemRelated is null && body.DateSystemRelated is not null)
+                throw new BadRequestException("Sistema relacionado é obrigatório.");
+
+            if (body.SystemRelated is not null && body.DateSystemRelated is null)
+                throw new BadRequestException("Data do sistema relacionado é obrigatória.");
+
             var wellEvent = await _wellEventRepository
                 .GetEventById(eventId);
 
             if (wellEvent is null)
                 throw new NotFoundException("Evento não encontrado.");
 
+            if (wellEvent.EventStatus != "F")
+                throw new BadRequestException("Evento deve ser de fechamento para ser editado.");
+
             if (wellEvent.EventRelated is null)
                 throw new ConflictException("Não é possível editar o evento inicial do sistema.");
 
             if ((wellEvent.WellLosses is null || wellEvent.WellLosses.Any()) && (body.EventDateAndHour is not null || body.DateSystemRelated is not null))
                 throw new ConflictException("Não é possível editar um evento após a produção ter sido apropriada.");
-
-            if (wellEvent.EventStatus != "F")
-                throw new BadRequestException("Evento deve ser de fechamento para ser editado.");
-
-            if (body.SystemRelated is null && body.DateSystemRelated is not null)
-                throw new BadRequestException("Sistema relacionado é obrigatório.");
-
-            if (body.SystemRelated is not null && body.DateSystemRelated is null)
-                throw new BadRequestException("Data do sistema relacionado é obrigatória.");
 
             if (wellEvent.EventReasons.Any() is false)
                 throw new BadRequestException("É preciso ter um motivo anterior.");
@@ -1750,23 +1750,64 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                         }
                     }
 
-
-                    var firstEventReason = wellEvent.EventReasons
-                       .OrderBy(x => x.StartDate)
-                       .FirstOrDefault();
-
-                    if (firstEventReason is not null && lastEventReason is not null && firstEventReason.Id != lastEventReason.Id)
+                    //se a mudança for no mesmo dia
+                    if (wellEvent.StartDate.Date == parsedStartDate.Date)
                     {
-                        firstEventReason.StartDate = parsedStartDate;
+                        var firstEventReason = wellEvent.EventReasons
+                           .OrderBy(x => x.StartDate)
+                           .FirstOrDefault();
 
-                        if (firstEventReason.EndDate is not null)
+                        if (firstEventReason is not null && lastEventReason is not null && firstEventReason.Id != lastEventReason.Id)
                         {
-                            var formatedInterval = FormatTimeInterval(firstEventReason.EndDate.Value, firstEventReason);
+                            firstEventReason.StartDate = parsedStartDate;
 
-                            firstEventReason.Interval = formatedInterval;
+                            if (firstEventReason.EndDate is not null)
+                            {
+                                var formatedInterval = FormatTimeInterval(firstEventReason.EndDate.Value, firstEventReason);
+
+                                firstEventReason.Interval = formatedInterval;
+                            }
+
+                            _wellEventRepository.UpdateReason(firstEventReason);
                         }
 
-                        _wellEventRepository.UpdateReason(firstEventReason);
+                    }
+
+                    //se a mudança for em outro dia criar eventReasons para cada dia da mudança (maior)
+                    if (wellEvent.StartDate.Date > parsedStartDate.Date)
+                    {
+                        var dateInterval = (wellEvent.StartDate - parsedStartDate).TotalDays;
+
+                        for (int day = 0; day < dateInterval; ++day)
+                        {
+
+                        }
+                    }
+
+                    //se a mudança for em outro dia criar eventReasons para cada dia da mudança (menor)
+                    if (parsedStartDate.Date > wellEvent.StartDate.Date)
+                    {
+                        //var dateInterval = (parsedStartDate.Date - wellEvent.StartDate.Date).TotalDays;
+
+                        var eventReasonsCreated = new List<EventReason>();
+
+                        for (DateTime date = wellEvent.StartDate.Date; date <= parsedStartDate.Date; date = date.AddDays(1))
+                        {
+                            var eventReason = new EventReason
+                            {
+                                SystemRelated = lastEventReason.SystemRelated,
+                                Id = Guid.NewGuid(),
+                                WellEvent = wellEvent,
+                                CreatedBy = loggedUser,
+                                WellEventId = wellEvent.Id,
+                                StartDate = date
+                            };
+
+                            eventReasonsCreated.Add(eventReason);
+                        }
+
+
+                        await _wellEventRepository.AddRangeReasons(eventReasonsCreated);
                     }
 
                     wellEvent.StartDate = parsedStartDate;
