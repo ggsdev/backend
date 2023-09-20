@@ -1535,7 +1535,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measurementResponse = production.Measurements[i];
 
-                            if (section.IsApplicable && section.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_001 && pointAlreadyInserted is false && measurementResponse.VolumeAfterManualBsw_001 is not null)
+                            if (section.IsApplicable && section.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_001 && pointAlreadyInserted is false && measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001 is not null)
                             {
                                 var summary = new SummaryGeneric
                                 {
@@ -1543,7 +1543,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     LocationMeasuringPoint = section.StaticLocalMeasuringPoint,
                                     StatusMeasuringPoint = true,
                                     TagMeasuringPoint = section.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.VolumeAfterManualBsw_001.Value, 5),
+                                    Volume = Math.Round(measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001.Value, 5),
 
                                 };
                                 file.Summary.Add(summary);
@@ -1577,7 +1577,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measurementResponse = production.Measurements[i];
 
-                            if (dor.IsApplicable && dor.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_001 && pointAlreadyInserted is false && measurementResponse.VolumeAfterManualBsw_001 is not null)
+                            if (dor.IsApplicable && dor.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_001 && pointAlreadyInserted is false && measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001 is not null)
                             {
                                 var summary = new SummaryGeneric
                                 {
@@ -1585,7 +1585,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     LocationMeasuringPoint = dor.StaticLocalMeasuringPoint,
                                     StatusMeasuringPoint = true,
                                     TagMeasuringPoint = dor.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.VolumeAfterManualBsw_001.Value, 5),
+                                    Volume = Math.Round(measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001.Value, 5),
 
                                 };
                                 file.Summary.Add(summary);
@@ -1619,7 +1619,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measurementResponse = production.Measurements[i];
 
-                            if (drain.IsApplicable && drain.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_001 && pointAlreadyInserted is false && measurementResponse.VolumeAfterManualBsw_001 is not null)
+                            if (drain.IsApplicable && drain.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_001 && pointAlreadyInserted is false && measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001 is not null)
                             {
                                 var summary = new SummaryGeneric
                                 {
@@ -1627,7 +1627,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     LocationMeasuringPoint = drain.StaticLocalMeasuringPoint,
                                     StatusMeasuringPoint = true,
                                     TagMeasuringPoint = drain.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.VolumeAfterManualBsw_001.Value, 5),
+                                    Volume = Math.Round(measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001.Value, 5),
 
                                 };
                                 file.Summary.Add(summary);
@@ -1660,7 +1660,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measurementResponse = production.Measurements[i];
 
-                            if (tog.IsApplicable && tog.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_001 && pointAlreadyInserted is false && measurementResponse.VolumeAfterManualBsw_001 is not null)
+                            if (tog.IsApplicable && tog.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_001 && pointAlreadyInserted is false && measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001 is not null)
                             {
                                 var summary = new SummaryGeneric
                                 {
@@ -1668,7 +1668,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     LocationMeasuringPoint = tog.StaticLocalMeasuringPoint,
                                     StatusMeasuringPoint = true,
                                     TagMeasuringPoint = tog.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.VolumeAfterManualBsw_001.Value, 5),
+                                    Volume = Math.Round(measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001.Value, 5),
 
                                 };
                                 file.Summary.Add(summary);
