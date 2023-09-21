@@ -1697,6 +1697,19 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
               .OrderBy(x => x.StartDate)
               .LastOrDefault();
 
+            //if (body.EventDateAndHour is not null && body.DateSystemRelated is not null)
+            //{
+            //    if (DateTime.TryParseExact(body.DateSystemRelated, "dd/MM/yy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDateSystem) is true && DateTime.TryParseExact(body.EventDateAndHour, "dd/MM/yy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedStartDate) is true)
+            //    {
+            //        if (lastEventReason is not null && lastEventReason.StartDate == wellEvent.StartDate && lastEventReason.EndDate is null && parsedDateSystem != parsedStartDate)
+            //        {
+            //            throw new BadRequestException("");
+            //        }
+            //    }
+            //    else
+            //        throw new BadRequestException("Formato de data de sistema relacionado e evento deve ser 'dd/MM/yy HH:mm'.");
+            //}
+
             if (body.SystemRelated is not null && lastEventReason is not null && lastEventReason.SystemRelated.ToLower() == body.SystemRelated.ToLower())
                 throw new BadRequestException("Sistema relacionado deve ser diferente do anterior");
 
@@ -1856,7 +1869,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                     throw new BadRequestException("Formato de data de início do evento inválido deve ser 'dd/MM/yy HH:mm'.");
             }
 
-            if (body.DateSystemRelated is not null && body.SystemRelated is not null)
+            if (body.DateSystemRelated is not null)
             {
                 if (DateTime.TryParseExact(body.DateSystemRelated, "dd/MM/yy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDateSystem) is true)
                 {
@@ -1874,6 +1887,9 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
                         currentDate = currentDate.AddDays(1);
                     }
+
+
+
 
                     if (lastEventReason.StartDate < parsedDateSystem && lastEventReason.EndDate is null)
                     {
