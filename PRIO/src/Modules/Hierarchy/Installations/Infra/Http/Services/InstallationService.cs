@@ -445,7 +445,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
                 date = day;
             }
 
-            var production = _productionRepository.GetCleanByDate(date);
+            var production = await _productionRepository.GetCleanByDate(date);
             if (production is not null)
                 throw new ConflictException("Existe uma produção para essa data.");
 

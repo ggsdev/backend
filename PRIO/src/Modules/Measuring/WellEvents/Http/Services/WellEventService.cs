@@ -1244,6 +1244,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                                     StartDate = refStartDate,
                                     IsActive = true,
                                     IsJobGenerated = false,
+                                    CreatedBy = loggedUser,
                                 };
                                 if (j == 0)
                                 {
@@ -1270,6 +1271,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                                         EndDate = parsedStartDate,
                                         IsActive = true,
                                         IsJobGenerated = false,
+                                        CreatedBy = loggedUser,
                                     };
                                     var Interval = FormatTimeInterval(parsedStartDate, newEventReason2);
                                     newEventReason2.Interval = Interval;

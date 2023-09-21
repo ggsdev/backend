@@ -45,6 +45,7 @@ using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
 using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models;
 using PRIO.src.Shared.Auxiliaries.Infra.EF.Models;
+using PRIO.src.Shared.Infra.EF.Mappings;
 using PRIO.src.Shared.Infra.EF.Models;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Mappings;
 using PRIO.src.Shared.SystemHistories.Infra.EF.Models;
@@ -146,6 +147,7 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<EventReason> EventReasons { get; set; }
         public DbSet<WellEvent> WellEvents { get; set; }
         public DbSet<WellLosses> WellLosses { get; set; }
+        public DbSet<Backup> Backups { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -300,6 +302,8 @@ namespace PRIO.src.Shared.Infra.EF
             modelBuilder.ApplyConfiguration(new BswMap());
 
             #endregion
+
+            modelBuilder.ApplyConfiguration(new BackupMap());
         }
     }
 }
