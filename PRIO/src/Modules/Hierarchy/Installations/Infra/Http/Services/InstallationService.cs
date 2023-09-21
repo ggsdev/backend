@@ -615,8 +615,8 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
 
                                 //criação evento de fechamento
                                 var lastEventOfAll = well.WellEvents
-                                    .OrderBy(e => e.StartDate)
-                                    .LastOrDefault();
+                                   .Where(we => we.EndDate == null)
+                                   .LastOrDefault();
 
                                 if (lastEventOfAll is not null && lastEventOfAll.EventStatus.ToUpper() == "A")
                                 {

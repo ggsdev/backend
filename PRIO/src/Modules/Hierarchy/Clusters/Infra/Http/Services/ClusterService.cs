@@ -360,7 +360,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
                                             .Delete<Well, WellHistoryDTO>(HistoryColumns.TableWells, user, wellUpdatedProperties, well.Id, well);
 
                                         var lastEventOfAll = well.WellEvents
-                                           .OrderBy(e => e.StartDate)
+                                           .Where(we => we.EndDate == null)
                                            .LastOrDefault();
 
                                         if (lastEventOfAll is not null && lastEventOfAll.EventStatus.ToUpper() == "A")
