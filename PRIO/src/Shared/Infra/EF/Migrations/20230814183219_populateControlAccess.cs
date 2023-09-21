@@ -132,6 +132,9 @@ namespace PRIO.Migrations
                 new object[] { "Geração de Arquivos", "File", "6", "/geracaoArquivos", Guid.NewGuid(), false, false  },
 
                 new object[] { "Relatórios", "Files", "7", "/relatorios", Guid.NewGuid(), false, false },
+                new object[] { "Gestão de Dados Operacionais", "Operational", "8", "/dadosOperacionais", Guid.NewGuid(), true, false },
+                new object[] { "Consultar Dados Operacionais (PI)", "Operational", "8.1", "/consultarPI", Guid.NewGuid(), false, true   },
+
             };
 
             foreach (var menu in menuData)
