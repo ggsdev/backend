@@ -93,6 +93,10 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Repositories
         {
             _context.EventReasons.Remove(reason);
         }
+        public void DeleteRangeReason(List<EventReason> reasons)
+        {
+            _context.EventReasons.RemoveRange(reasons);
+        }
 
         public void UpdateReason(EventReason reason)
         {

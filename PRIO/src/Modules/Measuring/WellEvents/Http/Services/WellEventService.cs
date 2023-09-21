@@ -1750,14 +1750,9 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                         }
                     }
 
-                    //se a mudança for no mesmo dia
                     if (wellEvent.StartDate.Date == parsedStartDate.Date)
                     {
-                        var firstEventReason = wellEvent.EventReasons
-                           .OrderBy(x => x.StartDate)
-                           .FirstOrDefault();
-
-                        if (lastEventReason is not null && lastEventReason is not null && lastEventReason.Id != lastEventReason.Id)
+                        if (lastEventReason is not null && lastEventReason is not null)
                         {
                             lastEventReason.StartDate = parsedStartDate;
 
@@ -1773,14 +1768,11 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
                     }
 
-                    //se a mudança for em outro dia criar eventReasons para cada dia da mudança (maior)
-
-
                     if (wellEvent.StartDate.Date > parsedStartDate.Date)
                     {
                         var eventReasonsCreated = new List<EventReason>();
 
-                        for (DateTime date = wellEvent.StartDate.Date; date >= parsedStartDate.Date; date = date.AddDays(-1))
+                        for (DateTime date = wellEvent.StartDate; date >= parsedStartDate; date = date.AddDays(-1))
                         {
                             var endOfDay = date.AddDays(1);
 
@@ -1821,50 +1813,33 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                         await _wellEventRepository.AddRangeReasons(eventReasonsCreated);
                     }
 
-                    //se a mudança for em outro dia criar eventReasons para cada dia da mudança (menor)
-                    //if (parsedStartDate.Date > wellEvent.StartDate.Date)
-                    //{
-                    //    var eventReasonsCreated = new List<EventReason>();
-                    //    for (DateTime date = wellEvent.StartDate; date < parsedStartDate.AddDays(1); date = date.AddDays(1))
-                    //    {
-                    //        var endOfDay = date.AddDays(1);
+                    if (parsedStartDate.Date > wellEvent.StartDate.Date)
+                    {
+                        for (DateTime date = wellEvent.StartDate; date < parsedStartDate.AddDays(1); date = date.AddDays(1))
+                        {
+                            var endOfDay = date.AddDays(1);
 
-                    //        if (date == wellEvent.StartDate)
-                    //        {
-                    //            lastEventReason.EndDate = endOfDay.Date.AddMilliseconds(-1);
+                            var reasonsToDelete = new List<EventReason>();
 
-                    //            var intervalFormated = FormatTimeInterval(lastEventReason.EndDate.Value, lastEventReason);
+                            foreach (var reason in wellEvent.EventReasons)
+                            {
+                                if (reason.StartDate < wellEvent.StartDate)
+                                {
+                                    reasonsToDelete.Add(reason);
+                                }
 
-                    //            lastEventReason.Interval = intervalFormated;
+                                if (reason.StartDate == wellEvent.StartDate)
+                                {
+                                    reason.StartDate = parsedStartDate;
 
-                    //            _wellEventRepository.UpdateReason(lastEventReason);
-                    //            continue;
-                    //        }
+                                    _wellEventRepository.UpdateReason(reason);
+                                }
 
-                    //        var eventReason = new EventReason
-                    //        {
-                    //            SystemRelated = lastEventReason.SystemRelated,
-                    //            Id = Guid.NewGuid(),
-                    //            WellEvent = wellEvent,
-                    //            CreatedBy = loggedUser,
-                    //            WellEventId = wellEvent.Id,
-                    //            StartDate = date.Date,
-                    //            EndDate = endOfDay.Date.AddMilliseconds(-1)
-                    //        };
+                            }
 
-                    //        var interval = FormatTimeInterval(eventReason.EndDate.Value, eventReason);
-
-                    //        eventReason.Interval = interval;
-
-                    //        eventReasonsCreated.Add(eventReason);
-                    //    }
-
-                    //    var activeEventReason = eventReasonsCreated.Last();
-                    //    activeEventReason.EndDate = null;
-                    //    activeEventReason.Interval = null;
-
-                    //    await _wellEventRepository.AddRangeReasons(eventReasonsCreated);
-                    //}
+                            _wellEventRepository.DeleteRangeReason(reasonsToDelete);
+                        }
+                    }
 
                     wellEvent.StartDate = parsedStartDate;
                     wellEvent.EventRelated.EndDate = parsedStartDate;
