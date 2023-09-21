@@ -48,12 +48,12 @@ namespace PRIO.Migrations
 
             var usersData = new List<object[]>
             {
-                   new object[] { "Alina", "afernandes@prio3.com.br", null, "afernandes", Guid.NewGuid()},
-                new object[] { "Fabrício", "falmeida@prio3.com.br", null, "falmeida", Guid.NewGuid()},
-                new object[] { "Alfredo", "amolisani@prio3.com.br", null, "amolisani", Guid.NewGuid()},
-                new object[] { "Thais", "tgoncalves@prio3.com.br", null, "tgoncalves", Guid.NewGuid()},
+                   new object[] { "Loirinho", "matheus@prio3.com.br", null, "matheus", Guid.NewGuid()},
+                new object[] { "Star Killer", "filipe@prio3.com.br", null, "filipe", Guid.NewGuid()},
+                new object[] { "Gracinha", "gabriel@prio3.com.br", null, "gabriel", Guid.NewGuid()},
+                new object[] { "Pablo Resenha", "pablo@prio3.com.br", null, "pablo", Guid.NewGuid()},
+                new object[] { "Soneca na ex", "alessandro@prio3.com.br", null, "alessandro", Guid.NewGuid()},
                 new object[] { "Fernando", "falberdi.globalhitts@prio3.com.br", null, "falberdi.globalhitts", Guid.NewGuid()},
-                new object[] { "Julia", "jdias@prio3.com.br", null, "jdias", Guid.NewGuid()}
             };
 
 
@@ -132,8 +132,9 @@ namespace PRIO.Migrations
                 new object[] { "Geração de Arquivos", "File", "6", "/geracaoArquivos", Guid.NewGuid(), false, false  },
 
                 new object[] { "Relatórios", "Files", "7", "/relatorios", Guid.NewGuid(), false, false },
-                new object[] { "Gestão de Dados Operacionais", "Operational", "8", "/dadosOperacionais", Guid.NewGuid(), true, false },
-                new object[] { "Consultar Dados Operacionais (PI)", "Operational", "8.1", "/consultarPI", Guid.NewGuid(), false, true   },
+                new object[] { "Gestão de Dados Operacionais", "wrench", "8", "/dadosOperacionais", Guid.NewGuid(), true, false },
+                new object[] { "Consultar Dados Operacionais (PI)", "wrench", "8.1", "/consultarPI", Guid.NewGuid(), false, true   },
+                new object[] { "Configuração dos Dados Operacionais (PI)", "wrench", "8.2", "/configurarDadosOperacionais", Guid.NewGuid(), false, true   },
 
             };
 
