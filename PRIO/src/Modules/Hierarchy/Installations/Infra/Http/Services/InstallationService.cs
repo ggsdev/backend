@@ -817,8 +817,8 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
 
                     _installationRepository.Update(installation);
 
-                    await _installationRepository.SaveChangesAsync();
                 }
+            await _installationRepository.SaveChangesAsync();
 
         }
 
