@@ -280,8 +280,9 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             DateTime? alignDate = DateTime.MinValue;
             if (initialDateValue is not null && finalDateValue is not null)
             {
-                finalDateTest = finalDateValue is string ? DateTime.Parse(finalDateValue.ToString()) : finalDateValue is DateTime ? (DateTime)finalDateValue : finalDateValue is double ? DateTime.FromOADate((double)finalDateValue) : null;
-                inicialDateTest = initialDateValue is string ? DateTime.Parse(initialDateValue.ToString()) : initialDateValue is DateTime ? (DateTime)initialDateValue : initialDateValue is double ? DateTime.FromOADate((double)initialDateValue) : null;
+                finalDateTest = finalDateValue is string ? DateTime.TryParse(finalDateValue.ToString(), out var checkFinalTest) is true ? DateTime.Parse(finalDateValue.ToString()) : null : finalDateValue is DateTime ? (DateTime)finalDateValue : finalDateValue is double ? DateTime.FromOADate((double)finalDateValue) : null;
+
+                inicialDateTest = initialDateValue is string ? DateTime.TryParse(initialDateValue.ToString(), out var checkInicialTest) is true ? DateTime.Parse(initialDateValue.ToString()) : null : initialDateValue is DateTime ? (DateTime)initialDateValue : initialDateValue is double ? DateTime.FromOADate((double)initialDateValue) : null;
 
 
                 if (finalDateTest is null || inicialDateTest is null)
