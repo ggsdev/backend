@@ -132,9 +132,9 @@ namespace PRIO.Migrations
                 new object[] { "Geração de Arquivos", "File", "6", "/geracaoArquivos", Guid.NewGuid(), false, false  },
 
                 new object[] { "Relatórios", "Files", "7", "/relatorios", Guid.NewGuid(), false, false },
-                new object[] { "Gestão de Dados Operacionais", "wrench", "8", "/dadosOperacionais", Guid.NewGuid(), true, false },
-                new object[] { "Consultar Dados Operacionais (PI)", "wrench", "8.1", "/consultarPI", Guid.NewGuid(), false, true   },
-                new object[] { "Configuração dos Dados Operacionais (PI)", "wrench", "8.2", "/configurarDadosOperacionais", Guid.NewGuid(), false, true   },
+                new object[] { "Gestão de Dados Operacionais", "Wrench", "8", "/dadosOperacionais", Guid.NewGuid(), true, false },
+                new object[] { "Consultar Dados Operacionais (PI)", "Wrench", "8.1", "/consultarPI", Guid.NewGuid(), false, true   },
+                new object[] { "Configuração dos Dados Operacionais (PI)", "Wrench", "8.2", "/configurarDadosOperacionais", Guid.NewGuid(), false, true   },
 
             };
 
