@@ -5,6 +5,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Interfaces
     public interface IWellEventRepository
     {
         Task Add(WellEvent wellEvent);
+        Task AddRangeReasons(List<EventReason> eventReasons);
         Task<WellEvent?> GetEventById(Guid id);
         Task<WellEvent?> GetNextEvent(DateTime startDate, DateTime endDate);
         Task<EventReason?> GetNextReason(DateTime startDate, Guid wellEventId, Guid eventReasonId);
