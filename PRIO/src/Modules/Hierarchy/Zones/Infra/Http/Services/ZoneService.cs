@@ -258,7 +258,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
                                 if (completionsActive.Count() == 0)
                                 {
                                     var lastEventOfAll = well.WellEvents
-                                        .OrderBy(e => e.StartDate)
+                                        .Where(we => we.EndDate == null)
                                         .LastOrDefault();
 
                                     if (lastEventOfAll is not null && lastEventOfAll.EventStatus.ToUpper() == "A")

@@ -23,6 +23,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Interfaces
         Task AddReasonClosedEvent(EventReason data);
 
         void DeleteReason(EventReason reason);
+        void DeleteRangeReason(List<EventReason> reasons);
         #endregion
 
     }
