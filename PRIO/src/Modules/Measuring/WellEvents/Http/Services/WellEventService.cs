@@ -1670,7 +1670,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 _wellEventRepository.UpdateReason(wellReason);
 
             }
-            var updatedByUser = _mapper.Map<UserDTO>(loggedUser);
 
             var dto = new ReasonDetailedDto
             {
