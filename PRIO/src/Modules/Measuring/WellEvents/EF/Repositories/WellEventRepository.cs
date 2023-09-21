@@ -77,6 +77,12 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Repositories
                 .Where(x => x.Well.Id == wellId)
                 .ToListAsync();
         }
+        public async Task<WellEvent?> GetLastWellEvent(string typeEvent)
+        {
+            return await _context.WellEvents
+                .Where(x => x.EndDate == null && x.EventStatus == typeEvent)
+                .FirstOrDefaultAsync();
+        }
 
         public async Task Add(WellEvent wellEvent)
         {
