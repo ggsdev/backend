@@ -54,7 +54,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
                 .Include(x => x.User)
                 .Include(x => x.Completions)
                 .Include(x => x.Field)
-                .FirstOrDefaultAsync(x => x.Name == name);
+                .FirstOrDefaultAsync(x => x.Name.Trim() == name.Trim());
         }
 
         public async Task<Well?> GetWellAndChildren(Guid? id)
