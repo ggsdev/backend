@@ -23,6 +23,7 @@ using PRIO.src.Modules.Measuring.GasVolumeCalculations.Interfaces;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces;
+using PRIO.src.Modules.Measuring.Productions.Interfaces;
 using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
 using PRIO.src.Modules.Measuring.WellEvents.Interfaces;
 using PRIO.src.Shared.Errors;
@@ -48,10 +49,11 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
         private readonly IOilVolumeCalculationRepository _oilVolumeCalculationRepository;
         private readonly IGasVolumeCalculationRepository _gasVolumeCalculationRepository;
         private readonly IWellEventRepository _eventWellRepository;
+        private readonly IProductionRepository _productionRepository;
         private readonly SystemHistoryService _systemHistoryService;
         private readonly string _tableName = HistoryColumns.TableInstallations;
 
-        public InstallationService(IMapper mapper, IInstallationRepository installationRepository, IClusterRepository clusterRepository, SystemHistoryService systemHistoryService, IFieldRepository fieldRepository, IZoneRepository zoneRepository, IWellRepository wellRepository, IReservoirRepository reservoirRepository, ICompletionRepository completionRepository, IMeasuringPointRepository measuringPointRepository, IEquipmentRepository equipmentRepository, IOilVolumeCalculationRepository oilVolumeCalculationRepository, IGasVolumeCalculationRepository gasVolumeCalculationRepository, IWellEventRepository wellEventRepository)
+        public InstallationService(IMapper mapper, IInstallationRepository installationRepository, IClusterRepository clusterRepository, SystemHistoryService systemHistoryService, IFieldRepository fieldRepository, IZoneRepository zoneRepository, IWellRepository wellRepository, IReservoirRepository reservoirRepository, ICompletionRepository completionRepository, IMeasuringPointRepository measuringPointRepository, IEquipmentRepository equipmentRepository, IOilVolumeCalculationRepository oilVolumeCalculationRepository, IGasVolumeCalculationRepository gasVolumeCalculationRepository, IWellEventRepository wellEventRepository, IProductionRepository productionRepository)
         {
             _mapper = mapper;
             _clusterRepository = clusterRepository;
@@ -67,6 +69,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
             _systemHistoryService = systemHistoryService;
             _gasVolumeCalculationRepository = gasVolumeCalculationRepository;
             _eventWellRepository = wellEventRepository;
+            _productionRepository = productionRepository;
         }
 
         public async Task<CreateUpdateInstallationDTO> CreateInstallation(CreateInstallationViewModel body, User user)
@@ -441,6 +444,10 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
 
                 date = day;
             }
+
+            var production = await _productionRepository.GetCleanByDate(date);
+            if (production is not null)
+                throw new ConflictException("Existe uma produção para essa data.");
 
             var installation = await _installationRepository
                 .GetInstallationAndChildren(id);

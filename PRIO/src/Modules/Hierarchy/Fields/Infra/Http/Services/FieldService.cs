@@ -14,6 +14,7 @@ using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Zones.Interfaces;
+using PRIO.src.Modules.Measuring.Productions.Interfaces;
 using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
 using PRIO.src.Modules.Measuring.WellEvents.Interfaces;
 using PRIO.src.Shared.Errors;
@@ -35,9 +36,10 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
         private readonly IReservoirRepository _reservoirRepository;
         private readonly IWellRepository _wellRepository;
         private readonly ICompletionRepository _completionRepository;
+        private readonly IProductionRepository _productionRepository;
         private readonly IWellEventRepository _eventWellRepository;
 
-        public FieldService(IMapper mapper, IFieldRepository fieldRepository, SystemHistoryService systemHistoryService, IInstallationRepository installationRepository, IZoneRepository zoneRepository, IWellRepository wellRepository, ICompletionRepository completionRepository, IReservoirRepository reservoirRepository, IWellEventRepository wellEventRepository)
+        public FieldService(IMapper mapper, IFieldRepository fieldRepository, SystemHistoryService systemHistoryService, IInstallationRepository installationRepository, IZoneRepository zoneRepository, IWellRepository wellRepository, ICompletionRepository completionRepository, IReservoirRepository reservoirRepository, IWellEventRepository wellEventRepository, IProductionRepository productionRepository)
         {
             _mapper = mapper;
             _fieldRepository = fieldRepository;
@@ -48,6 +50,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
             _completionRepository = completionRepository;
             _reservoirRepository = reservoirRepository;
             _eventWellRepository = wellEventRepository;
+            _productionRepository = productionRepository;
         }
 
         public async Task<CreateUpdateFieldDTO> CreateField(CreateFieldViewModel body, User user)
@@ -198,6 +201,10 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
 
                 date = day;
             }
+
+            var production = await _productionRepository.GetCleanByDate(date);
+            if (production is not null)
+                throw new ConflictException("Existe uma produção para essa data.");
 
             var field = await _fieldRepository.GetFieldAndChildren(id);
 

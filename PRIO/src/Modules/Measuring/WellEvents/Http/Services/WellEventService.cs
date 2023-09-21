@@ -58,7 +58,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             if (productionInDate is not null && (productionInDate.WellProductions is null || productionInDate.WellProductions.Any()))
                 throw new ConflictException("Não é possível cadastrar nessa data, a produção já foi apropriada.");
 
-
             var dateNow = DateTime.UtcNow.AddHours(-3);
 
             if (parsedStartDate > dateNow)
@@ -68,8 +67,19 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 throw new ConflictException("Data do evento está menor que data do inicio da aplicação ");
 
             var wellsList = new List<Well>();
-
+            var wellsInactive = new List<Well>();
             var lastEventWrongList = new List<string>();
+
+
+            foreach (var well in body.Wells)
+            {
+                var foundWell = await _wellRepository.GetOnlyWellAsync(well.WellId);
+                if (foundWell.IsActive is false)
+                    wellsInactive.Add(foundWell);
+            }
+
+            if (wellsInactive.Count() != 0)
+                throw new ConflictException("Erro: Poços precisam estar ativos para criação de evento de fechamento.");
 
             foreach (var well in body.Wells)
             {
@@ -270,6 +280,9 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             var well = await _wellRepository
                 .GetWithFieldAsync(body.WellId)
                 ?? throw new NotFoundException(ErrorMessages.NotFound<Well>());
+
+            if (well.IsActive is false)
+                throw new ConflictException("Erro: Poço precisa estar ativo para criação de evento de abertura.");
 
             if (parsedStartDate < convertAppDate)
                 throw new ConflictException("Data do evento está menor que data do inicio da aplicação");
@@ -1231,6 +1244,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                                     StartDate = refStartDate,
                                     IsActive = true,
                                     IsJobGenerated = false,
+                                    CreatedBy = loggedUser,
                                 };
                                 if (j == 0)
                                 {
@@ -1257,6 +1271,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                                         EndDate = parsedStartDate,
                                         IsActive = true,
                                         IsJobGenerated = false,
+                                        CreatedBy = loggedUser,
                                     };
                                     var Interval = FormatTimeInterval(parsedStartDate, newEventReason2);
                                     newEventReason2.Interval = Interval;
@@ -1540,6 +1555,11 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
             if (body.SystemRelated is not null && systemsRelated.Contains(body.SystemRelated.ToLower()) is false)
                 throw new BadRequestException($"Sistemas relacionados permitidos são: {string.Join(", ", systemsRelated)}");
+
+            if (wellReason.WellEvent.Well.IsActive is false)
+                throw new ConflictException("Erro: Poço precisa estar ativo para mudança de evento relacionado.");
+
+            var updatedByUser = _mapper.Map<UserDTO>(loggedUser);
 
             var createdByUser = _mapper.Map<UserDTO>(wellReason.CreatedBy);
 

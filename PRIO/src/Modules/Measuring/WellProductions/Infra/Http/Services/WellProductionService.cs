@@ -78,7 +78,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         || well.CategoryOperator is not null && well.CategoryOperator.ToUpper() == "PRODUTOR" && (x.FinalApplicationDate != null && x.ApplicationDate != null && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
                         && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date));
 
-                        if (allBtpsOfProducingWellsValid is not null)
+                        if (allBtpsOfProducingWellsValid is not null && allBtpsOfProducingWellsValid.Any())
                         {
                             foreach (var btp in allBtpsOfProducingWellsValid)
                             {
@@ -118,6 +118,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
             if (production.FieldsFR is not null && production.FieldsFR.Count > 0)
             {
+                //var wellTestUEPS = 
                 var wellTestsUEP = await _btpRepository.GetBtpDatasByUEP(production.Installation.UepCod);
                 var filtredUEPsByApplyDateAndFinal = FilterBtp(wellTestsUEP, production);
 
@@ -128,44 +129,17 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                 foreach (var btp in filtredUEPsByApplyDateAndFinal)
                 {
                     double totalInterval = 0;
-                    decimal? totalAllocationByReservoir = 0;
 
                     var filtredEvents = btp.Well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
                     || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
                     foreach (var a in filtredEvents)
-                    {
                         totalInterval += CalcInterval(a, production);
 
-                        var completions = a.Well.Completions
-                            .Where(c => (c.IsActive == true) || (c.IsActive == false && c.InactivatedAt <= production.MeasuredAt));
-
-                        if (completions.Count() != 0)
-                        {
-                            foreach (var completion in completions)
-                            {
-                                if (completion.IsActive == true)
-                                {
-                                    totalAllocationByReservoir += completion.AllocationReservoir;
-                                }
-                                else
-                                {
-                                    double hoursDifference = (completion.InactivatedAt.Value - production.MeasuredAt).TotalHours;
-                                    decimal allocationFraction = (24 - (decimal)hoursDifference) / 24;
-                                    totalAllocationByReservoir += completion.AllocationReservoir * allocationFraction;
-                                }
-                            }
-                            if (totalAllocationByReservoir is null)
-                                throw new ConflictException($"Alocações das completações do poço {a.Well.Name} estão com valores nulos.");
-                        }
-
-                    }
-
-                    totalPotencialGasUEP += btp.PotencialGas * totalAllocationByReservoir.Value * (24 - (decimal)totalInterval) / 24;
-                    totalPotencialOilUEP += btp.PotencialOil * totalAllocationByReservoir.Value * (24 - (decimal)totalInterval) / 24;
-                    totalPotencialWaterUEP += btp.PotencialWater * totalAllocationByReservoir.Value * (24 - (decimal)totalInterval) / 24;
+                    totalPotencialGasUEP += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
+                    totalPotencialOilUEP += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
+                    totalPotencialWaterUEP += btp.PotencialWater * (24 - (decimal)totalInterval) / 24;
                 }
-
                 foreach (var fieldFR in production.FieldsFR)
                 {
                     var wellTestsByField = await _btpRepository
@@ -173,7 +147,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     var filtredByApplyDateAndFinal = FilterBtp(wellTestsByField, production);
                     var totalOilPotencial = filtredByApplyDateAndFinal
                         .Sum(x => x.PotencialOil);
-
                     if (fieldFR.FROil is not null)
                     {
                         foreach (var btp in filtredByApplyDateAndFinal)
@@ -203,40 +176,16 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     foreach (var btp in filtredByApplyDateAndFinal)
                     {
                         double totalInterval = 0;
-                        decimal? totalAllocationByReservoir = 0;
                         var filtredEvents = btp.Well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
                         || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
                         foreach (var a in filtredEvents)
-                        {
                             totalInterval += CalcInterval(a, production);
 
-                            var completions = a.Well.Completions
-                                .Where(c => (c.IsActive == true) || (c.IsActive == false && c.InactivatedAt <= production.MeasuredAt));
 
-                            if (completions.Count() != 0)
-                            {
-                                foreach (var completion in completions)
-                                {
-                                    if (completion.IsActive == true)
-                                    {
-                                        totalAllocationByReservoir += completion.AllocationReservoir;
-                                    }
-                                    else
-                                    {
-                                        double hoursDifference = (completion.InactivatedAt.Value - production.MeasuredAt).TotalHours;
-                                        decimal allocationFraction = (24 - (decimal)hoursDifference) / 24;
-                                        totalAllocationByReservoir += completion.AllocationReservoir * allocationFraction;
-                                    }
-                                }
-                                if (totalAllocationByReservoir is null)
-                                    throw new ConflictException($"Alocações das completações do poço {a.Well.Name} estão com valores nulos.");
-                            }
-                        }
-
-                        totalPotencialGasField += btp.PotencialGas * totalAllocationByReservoir.Value * (24 - (decimal)totalInterval) / 24;
-                        totalPotencialOilField += btp.PotencialOil * totalAllocationByReservoir.Value * (24 - (decimal)totalInterval) / 24;
-                        totalPotencialWaterField += btp.PotencialWater * totalAllocationByReservoir.Value * (24 - (decimal)totalInterval) / 24;
+                        totalPotencialGasField += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
+                        totalPotencialOilField += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
+                        totalPotencialWaterField += btp.PotencialWater * (24 - (decimal)totalInterval) / 24;
                     }
 
                     FieldProduction? fieldProduction = filtredByApplyDateAndFinal.Any() ? new()
@@ -328,6 +277,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                                     MeasuredAt = production.MeasuredAt
                                 });
                             }
+
                         }
                         if (totalPotencialOilUEP == 0)
                             throw new ConflictException("Erro: Somatório dos potenciais do óleo está zerado.");
@@ -338,34 +288,15 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         if (totalPotencialWaterUEP == 0)
                             throw new ConflictException("Erro: Somatório dos potenciais do água está zerado.");
 
-                        decimal? totalAllocationByReservoir = 0;
-                        var completions = btp.Well.Completions.Where(c => (c.IsActive == true) || (c.IsActive == false && c.InactivatedAt <= production.MeasuredAt));
-                        if (completions.Count() != 0)
-                        {
-                            foreach (var completion in completions)
-                            {
-                                if (completion.IsActive == true)
-                                {
-                                    totalAllocationByReservoir += completion.AllocationReservoir;
-                                }
-                                else
-                                {
-                                    double hoursDifference = (completion.InactivatedAt.Value - production.MeasuredAt).TotalHours;
-                                    decimal allocationFraction = (24 - (decimal)hoursDifference) / 24;
-                                    totalAllocationByReservoir += completion.AllocationReservoir * allocationFraction;
-                                }
-                            }
-                            if (totalAllocationByReservoir is null)
-                                throw new ConflictException($"Alocações das completações do poço {btp.Well.Name} estão com valores nulos.");
-                        }
 
-                        var wellPotencialGasAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((btp.PotencialGas * totalAllocationByReservoir.Value * ((24 - (decimal)totalInterval) / 24)), totalPotencialGasUEP);
-                        var wellPotencialOilAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((btp.PotencialOil * totalAllocationByReservoir.Value * ((24 - (decimal)totalInterval) / 24)), totalPotencialOilUEP);
-                        var wellPotencialWaterAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((btp.PotencialWater * totalAllocationByReservoir.Value * ((24 - (decimal)totalInterval) / 24)), totalPotencialWaterUEP);
 
-                        var wellPotencialGasAsPercentageOfField = totalPotencialGasField != 0 ? WellProductionUtils.CalculateWellProductionAsPercentageOfField((btp.PotencialGas * totalAllocationByReservoir.Value * ((24 - (decimal)totalInterval) / 24)), totalPotencialGasField) : 0;
-                        var wellPotencialOilAsPercentageOfField = totalPotencialOilField != 0 ? WellProductionUtils.CalculateWellProductionAsPercentageOfField((btp.PotencialOil * totalAllocationByReservoir.Value * ((24 - (decimal)totalInterval) / 24)), totalPotencialOilField) : 0;
-                        var wellPotencialWaterAsPercentageOfField = totalPotencialWaterField != 0 ? WellProductionUtils.CalculateWellProductionAsPercentageOfField((btp.PotencialWater * totalAllocationByReservoir.Value * ((24 - (decimal)totalInterval) / 24)), totalPotencialWaterField) : 0;
+                        var wellPotencialGasAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((btp.PotencialGas * ((24 - (decimal)totalInterval) / 24)), totalPotencialGasUEP);
+                        var wellPotencialOilAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((btp.PotencialOil * ((24 - (decimal)totalInterval) / 24)), totalPotencialOilUEP);
+                        var wellPotencialWaterAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((btp.PotencialWater * ((24 - (decimal)totalInterval) / 24)), totalPotencialWaterUEP);
+
+                        var wellPotencialGasAsPercentageOfField = totalPotencialGasField != 0 ? WellProductionUtils.CalculateWellProductionAsPercentageOfField((btp.PotencialGas * ((24 - (decimal)totalInterval) / 24)), totalPotencialGasField) : 0;
+                        var wellPotencialOilAsPercentageOfField = totalPotencialOilField != 0 ? WellProductionUtils.CalculateWellProductionAsPercentageOfField((btp.PotencialOil * ((24 - (decimal)totalInterval) / 24)), totalPotencialOilField) : 0;
+                        var wellPotencialWaterAsPercentageOfField = totalPotencialWaterField != 0 ? WellProductionUtils.CalculateWellProductionAsPercentageOfField((btp.PotencialWater * ((24 - (decimal)totalInterval) / 24)), totalPotencialWaterField) : 0;
 
                         var productionGas = fieldFR.FRGas is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.GasProductionInField, wellPotencialGasAsPercentageOfField) : 0;
                         var productionOil = fieldFR.FROil is not null ? WellProductionUtils.CalculateWellProduction(fieldFR.OilProductionInField, wellPotencialOilAsPercentageOfField) : 0;
@@ -416,6 +347,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                             ProductionOilInWellBBL = Math.Round(wellAppropriation.ProductionOilInWellM3 * ProductionUtils.m3ToBBLConversionMultiplier, 5),
                             ProductionWaterInWellBBL = Math.Round(wellAppropriation.ProductionWaterInWellM3 * ProductionUtils.m3ToBBLConversionMultiplier, 5),
                             Downtime = formattedTime,
+
                         };
 
                         foreach (var ev in listEvents)
@@ -423,6 +355,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                             int year = production.MeasuredAt.Year;
                             int month = production.MeasuredAt.Month;
                             int daysInMonth = DateTime.DaysInMonth(year, month);
+
                             var wellLoss = new WellLosses
                             {
                                 Id = ev.Id,
@@ -430,17 +363,22 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                                 WellAllocation = wellAppropriation,
                                 Downtime = ev.Downtime,
                                 Event = ev.Event,
+
                                 EfficienceLoss = (((btp.PotencialOil * ev.Downtime) / 24) / totalPotencialOilField) / daysInMonth,
                                 ProductionLostOil = (((btp.PotencialOil * ev.Downtime) / totalPotencialOilField) / 24) * fieldFR.OilProductionInField,
                                 ProportionalDay = ((btp.PotencialOil * ev.Downtime) / 24) / totalPotencialOilField,
+
                                 ProductionLostGas = (((btp.PotencialGas * ev.Downtime) / totalPotencialGasField) / 24) * fieldFR.GasProductionInField,
+
                                 ProductionLostWater = (((btp.PotencialWater * ev.Downtime) / totalPotencialWaterField) / 24) * fieldFR.OilProductionInField,
                             };
 
                             wellAppropriation.EfficienceLoss += wellLoss.EfficienceLoss;
                             wellAppropriation.ProductionLostOil += wellLoss.ProductionLostOil;
                             wellAppropriation.ProportionalDay += wellLoss.ProportionalDay;
+
                             wellAppropriation.ProductionLostGas += wellLoss.ProductionLostGas;
+
                             wellAppropriation.ProductionLostWater += wellLoss.ProductionLostWater;
 
                             await _repository.AddWellLossAsync(wellLoss);
@@ -503,36 +441,12 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                 foreach (var btp in filtredByApplyDateAndFinal)
                 {
                     double totalInterval = 0;
-                    decimal? totalAllocationByReservoir = 0;
                     var filtredEvents = btp.Well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
                     || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
+
                     foreach (var a in filtredEvents)
-                    {
                         totalInterval += CalcInterval(a, production);
-
-                        var completions = a.Well.Completions
-                            .Where(c => (c.IsActive == true) || (c.IsActive == false && c.InactivatedAt <= production.MeasuredAt));
-
-                        if (completions.Count() != 0)
-                        {
-                            foreach (var completion in completions)
-                            {
-                                if (completion.IsActive == true)
-                                {
-                                    totalAllocationByReservoir += completion.AllocationReservoir;
-                                }
-                                else
-                                {
-                                    double hoursDifference = (completion.InactivatedAt.Value - production.MeasuredAt).TotalHours;
-                                    decimal allocationFraction = (24 - (decimal)hoursDifference) / 24;
-                                    totalAllocationByReservoir += completion.AllocationReservoir * allocationFraction;
-                                }
-                            }
-                            if (totalAllocationByReservoir is null)
-                                throw new ConflictException($"Alocações das completações do poço {a.Well.Name} estão com valores nulos.");
-                        }
-                    }
 
                     totalPotencialGasUEP += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
                     totalPotencialOilUEP += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
@@ -577,36 +491,11 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     foreach (var btp in filtredsBTPsField)
                     {
                         double totalInterval = 0;
-                        decimal? totalAllocationByReservoir = 0;
                         var filtredEvents = btp.Well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
                         || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
                         foreach (var a in filtredEvents)
-                        {
                             totalInterval += CalcInterval(a, production);
-
-                            var completions = a.Well.Completions
-                                .Where(c => (c.IsActive == true) || (c.IsActive == false && c.InactivatedAt <= production.MeasuredAt));
-
-                            if (completions.Count() != 0)
-                            {
-                                foreach (var completion in completions)
-                                {
-                                    if (completion.IsActive == true)
-                                    {
-                                        totalAllocationByReservoir += completion.AllocationReservoir;
-                                    }
-                                    else
-                                    {
-                                        double hoursDifference = (completion.InactivatedAt.Value - production.MeasuredAt).TotalHours;
-                                        decimal allocationFraction = (24 - (decimal)hoursDifference) / 24;
-                                        totalAllocationByReservoir += completion.AllocationReservoir * allocationFraction;
-                                    }
-                                }
-                                if (totalAllocationByReservoir is null)
-                                    throw new ConflictException($"Alocações das completações do poço {a.Well.Name} estão com valores nulos.");
-                            }
-                        }
 
                         totalPotencialGasField += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
                         totalPotencialOilField += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
@@ -705,26 +594,6 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         if (totalPotencialWaterUEP == 0)
                             throw new ConflictException("Erro: Somatório dos potenciais do água está zerado.");
 
-                        decimal? totalAllocationByReservoir = 0;
-                        var completions = btp.Well.Completions.Where(c => (c.IsActive == true) || (c.IsActive == false && c.InactivatedAt <= production.MeasuredAt));
-                        if (completions.Count() != 0)
-                        {
-                            foreach (var completion in completions)
-                            {
-                                if (completion.IsActive == true)
-                                {
-                                    totalAllocationByReservoir += completion.AllocationReservoir;
-                                }
-                                else
-                                {
-                                    double hoursDifference = (completion.InactivatedAt.Value - production.MeasuredAt).TotalHours;
-                                    decimal allocationFraction = (24 - (decimal)hoursDifference) / 24;
-                                    totalAllocationByReservoir += completion.AllocationReservoir * allocationFraction;
-                                }
-                            }
-                            if (totalAllocationByReservoir is null)
-                                throw new ConflictException($"Alocações das completações do poço {btp.Well.Name} estão com valores nulos.");
-                        }
 
                         var wellPotencialGasAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((btp.PotencialGas * ((24 - (decimal)totalInterval) / 24)), totalPotencialGasUEP);
                         var wellPotencialOilAsPercentageOfUEP = WellProductionUtils.CalculateWellProductionAsPercentageOfUEP((btp.PotencialOil * ((24 - (decimal)totalInterval) / 24)), totalPotencialOilUEP);
@@ -1992,7 +1861,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
         {
             return wellTests.Where(x => (x.FinalApplicationDate == null && x.ApplicationDate != null && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date) && x.Well.CategoryOperator is not null && x.Well.CategoryOperator.ToUpper() == "PRODUTOR"
                         || x.Well.CategoryOperator is not null && x.Well.CategoryOperator.ToUpper() == "PRODUTOR" && (x.FinalApplicationDate != null && x.ApplicationDate != null && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
-                        && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date));
+                        && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date)).Where(X => X.Well.Completions.Count() != 0);
         }
     }
 }

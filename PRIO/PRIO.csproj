@@ -96,7 +96,6 @@
     <Folder Include="src\Modules\Measuring\Measurements\Dtos\" />
     <Folder Include="src\Modules\Measuring\Measurements\Infra\Http\Controllers\" />
     <Folder Include="src\Modules\Measuring\Measurements\ViewModels\" />
-    <Folder Include="src\Shared\Infra\EF\Mappings\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -250,6 +250,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<Production, ProductionDto>();
             CreateMap<WellEvent, EventWithReasonDTO>();
             CreateMap<EventReason, EventReasonDTO>();
+
         }
 
         private static decimal? TruncateTwoDecimals(decimal? value)

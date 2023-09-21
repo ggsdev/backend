@@ -55,10 +55,13 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Repositories
 
         public async Task<EventReason?> GetEventReasonById(Guid id)
         {
+
             return await _context.EventReasons
                 .Include(x => x.WellEvent)
                     .ThenInclude(x => x.EventReasons)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .Include(er => er.WellEvent)
+                    .ThenInclude(we => we.Well)
+               .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public void UpdateEventReasonById(EventReason eventReason)
