@@ -741,7 +741,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                     throw new ConflictException("Não é possível editar a data de início do primeiro sistema relacionado, considere atualizar a data de início do evento.");
 
                 if (firstEventReason.EndDate is null && body.EndDate is not null)
-                    throw new ConflictException("Não é possível editar a data de início do primeiro sistema relacionado, considere atualizar a data de início do evento.");
+                    throw new ConflictException("Não é possível editar a data de fim do primeiro sistema relacionado, considere abrir esse poço.");
             }
 
             var systemsRelated = new List<string>
