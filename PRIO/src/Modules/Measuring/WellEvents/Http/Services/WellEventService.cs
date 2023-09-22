@@ -328,11 +328,11 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 var beforeLastEventReasonGeneratedByJob = list[0];
                 if (parsedStartDate < beforeLastEventReasonGeneratedByJob.StartDate)
                     throw new ConflictException("Existe um evento de fechamento atualizado pelo sistema, o evento de abertura deve estar entre esse e seu antecessor.");
-
                 _wellEventRepository.DeleteReason(lastEventReasonGeneratedByJob);
 
                 beforeLastEventReasonGeneratedByJob.EndDate = parsedStartDate;
                 beforeLastEventReasonGeneratedByJob.Interval = FormatTimeInterval(parsedStartDate, beforeLastEventReasonGeneratedByJob);
+
                 _wellEventRepository.UpdateReason(beforeLastEventReasonGeneratedByJob);
                 var openingEvent = new WellEvent
                 {
@@ -385,9 +385,11 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                         .OrderBy(x => x.StartDate)
                         .LastOrDefault();
 
+
                     if (lastEventReason is not null)
                     {
-                        if (lastEventReason.StartDate < parsedStartDate && lastEventReason.EndDate is null)
+
+                        if (lastEventReason.StartDate <= parsedStartDate && lastEventReason.EndDate is null)
                         {
                             var dif = (parsedStartDate - lastEventReason.StartDate).TotalHours / 24;
                             lastEventReason.EndDate = lastEventReason.StartDate.Date.AddDays(1).AddMilliseconds(-10);
@@ -423,7 +425,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                             var intervalSecondsDecimal = (intervalMinutesDecimal - intervalMinutes) * 60;
                             int intervalSeconds = (int)intervalSecondsDecimal;
 
-                            for (int j = 0; j < dif; j++)
+                            for (int j = 0; j <= dif; j++)
                             {
                                 var newEventReason = new EventReason
                                 {
@@ -491,6 +493,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
                                 await _wellEventRepository.AddReasonClosedEvent(newEventReason);
                             }
+
+                            _wellEventRepository.UpdateReason(lastEventReason);
                         }
                     }
 
@@ -744,6 +748,15 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                     throw new ConflictException("Não é possível editar a data de fim do primeiro sistema relacionado, considere abrir esse poço.");
             }
 
+            var lastEventReason = wellReason
+              .WellEvent
+              .EventReasons
+              .Where(x => x.EndDate == null)
+              .FirstOrDefault();
+
+            if (lastEventReason is not null && body.EndDate is not null && lastEventReason.Id == reasonId)
+                throw new ConflictException("Não é possível editar a data de fim do último sistema relacionado, considere abrir esse poço.");
+
             var systemsRelated = new List<string>
             {
                 "submarino","topside","estratégia"
@@ -785,7 +798,11 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                     {
                         if (parsedStartDate > wellReason.EndDate)
                             throw new BadRequestException("Data inicial não pode ser maior que data final.");
+
                     }
+
+                    var beforeReason = await _wellEventRepository
+                      .GetBeforeReason(parsedStartDate, wellReason.WellEventId, reasonId);
 
                     wellReason.StartDate = parsedStartDate;
 
@@ -794,15 +811,48 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                         wellReason.Interval = FormatTimeInterval(wellReason.EndDate.Value, wellReason);
                     }
 
-                    var beforeReason = await _wellEventRepository
-                        .GetBeforeReason(parsedStartDate, wellReason.WellEventId, reasonId);
-
                     if (beforeReason is not null)
                     {
-                        beforeReason.EndDate = parsedStartDate;
-                        beforeReason.Interval = FormatTimeInterval(parsedStartDate, beforeReason);
+                        if (parsedStartDate <= beforeReason.StartDate)
+                            throw new ConflictException("Data de início não pode ser menor ou igual a data de início do sistema relacionado anterior.");
 
-                        _wellEventRepository.UpdateReason(beforeReason);
+                        if (wellReason.EndDate is null)
+                        {
+                            if (parsedStartDate.Date != beforeReason.StartDate.Date)
+                            {
+                                beforeReason.EndDate = beforeReason.StartDate.Date.AddDays(1).AddMilliseconds(-1);
+                            }
+                            else
+                            {
+                                beforeReason.EndDate = parsedStartDate;
+                            }
+
+                            beforeReason.UpdatedBy = loggedUser;
+                            beforeReason.Interval = FormatTimeInterval(parsedStartDate, beforeReason);
+
+                            _wellEventRepository.UpdateReason(beforeReason);
+                        }
+                        else
+                        {
+                            var createdEventReason = new EventReason
+                            {
+                                Id = Guid.NewGuid(),
+                                CreatedBy = loggedUser,
+                                UpdatedBy = loggedUser,
+                                WellEvent = beforeReason.WellEvent,
+                                Comment = beforeReason.Comment,
+                                SystemRelated = beforeReason.SystemRelated,
+                                WellEventId = beforeReason.WellEventId,
+                                StartDate = parsedStartDate.Date,
+                                EndDate = parsedStartDate,
+                            };
+
+                            var interNewEventReason = FormatTimeInterval(parsedStartDate, createdEventReason);
+                            createdEventReason.Interval = interNewEventReason;
+                            await _wellEventRepository.AddReasonClosedEvent(createdEventReason);
+                        }
+
+
                     }
                 }
 
@@ -834,26 +884,62 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                             throw new BadRequestException("Data fim não pode ser menor que data inicial.");
                     }
 
-                    var nextReason = await _wellEventRepository
-                                           .GetNextReason(parsedEndDate, wellReason.WellEventId, reasonId);
+                    var nextReason =
+                        await _wellEventRepository.GetNextReason(wellReason.StartDate, wellReason.WellEventId, reasonId);
 
                     if (nextReason is not null)
                     {
-                        nextReason.StartDate = parsedEndDate;
+                        if (parsedEndDate < wellReason.EndDate)
+                        {
+                            var createdEventReason = new EventReason
+                            {
+                                Id = Guid.NewGuid(),
+                                CreatedBy = loggedUser,
+                                SystemRelated = nextReason.SystemRelated,
+                                WellEvent = nextReason.WellEvent,
+                                StartDate = parsedEndDate,
+                                WellEventId = nextReason.WellEventId,
+                            };
+                            if (nextReason.StartDate.TimeOfDay == TimeSpan.Zero)
+                            {
+                                createdEventReason.EndDate = parsedEndDate.Date.AddDays(1).AddMilliseconds(-1);
+                                nextReason.StartDate = wellReason.EndDate.Value.Date.AddDays(1);
+                            }
+                            else
+                            {
+                                createdEventReason.EndDate = wellReason.EndDate.Value;
+                                nextReason.StartDate = createdEventReason.EndDate.Value;
+                            }
+
+                            var interval = FormatTimeInterval(createdEventReason.EndDate.Value, createdEventReason);
+                            createdEventReason.Interval = interval;
+
+                            await _wellEventRepository.AddReasonClosedEvent(createdEventReason);
+                        }
+
+                        if (parsedEndDate >= wellReason.EndDate)
+                        {
+                            wellReason.EndDate = parsedEndDate;
+                            nextReason.StartDate = parsedEndDate;
+                        }
+                        //nextReason.StartDate = parsedEndDate;
 
                         if (nextReason.EndDate is not null)
                         {
+                            if (parsedEndDate > nextReason.EndDate)
+                                throw new ConflictException("Data de fim não pode ser maior que a data fim do sistema relacionado posterior.");
+
                             var intervalNext = FormatTimeInterval(nextReason.EndDate.Value, nextReason);
                             nextReason.Interval = intervalNext;
-
                         }
 
+                        nextReason.UpdatedBy = loggedUser;
                         _wellEventRepository.UpdateReason(nextReason);
                     }
 
                     wellReason.EndDate = parsedEndDate;
                     wellReason.Interval = FormatTimeInterval(parsedEndDate, wellReason);
-
+                    wellReason.UpdatedBy = loggedUser;
                 }
                 else
                     throw new BadRequestException("Formato de data de fim inválido deve ser 'dd/MM/yy HH:mm'.");

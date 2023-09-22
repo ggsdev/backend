@@ -110,31 +110,30 @@ namespace PRIO.Migrations
             var menuData = new List<object[]>
             {
                 new object[] { "Administração", "User", "1", "/administracao", Guid.NewGuid(), true, false },
-                new object[] { "Cadastros Básicos", "icon_cadastro", "1.1", "/cadastrosBasicos", Guid.NewGuid(), false, true },
-                new object[] { "Grupos", "icon_grupo", "1.2", "/grupos", Guid.NewGuid(), false, true  },
-                new object[] { "Usuários", "icon_usuario", "1.3", "/usuarios", Guid.NewGuid(), false, true },
-                new object[] { "Configurar Cálculos", "icon_configuracao", "1.4", "/configurarCalculos", Guid.NewGuid(), false, true  },
+                new object[] { "Cadastros Básicos", "", "1.1", "/cadastrosBasicos", Guid.NewGuid(), false, true },
+                new object[] { "Grupos", "", "1.2", "/grupos", Guid.NewGuid(), false, true  },
+                new object[] { "Usuários", "", "1.3", "/usuarios", Guid.NewGuid(), false, true },
+                new object[] { "Configurar Cálculos", "", "1.4", "/configurarCalculos", Guid.NewGuid(), false, true  },
                 new object[] { "Importar Dados de Hierarquia", "", "1.5", "/importarDadosHierarquia", Guid.NewGuid(), false, true },
 
-                new object[] { "Dados de Produção", "FileArrowUp", "2", "/dadosProducao", Guid.NewGuid(), true, false  },
-                new object[] { "Importação dos Dados de Produção", "", "2.1", "/importarDadosProducao", Guid.NewGuid(), false, true },
+                new object[] { "Gestão de Dados de Produção", "Gear", "2", "/dadosProducao", Guid.NewGuid(), true, false  },
+                new object[] { "Dados de Produção", "", "2.1", "/importarDadosProducao", Guid.NewGuid(), false, true },
+                new object[] { "Testes de Poços", "", "2.2", "/importarDadosTestePoco", Guid.NewGuid(), false, true },
+                new object[] { "Notificação de Falhas", "", "2.3", "/notificacaoFalhas", Guid.NewGuid(), false, true   },
 
-                new object[] { "Gestão da Produção", "Gear", "3", "/gestaoProducao", Guid.NewGuid(), true, false   },
-                new object[] { "Abertura de Poço", "Gear", "3.1", "/pocosFechados", Guid.NewGuid(), false, true},
-                new object[] { "Fechamento de Poço", "Gear", "3.2", "/pocosAbertos", Guid.NewGuid(), false, true   },
-                new object[] { "Consultar Eventos do Poço", "Gear", "3.3", "/consultarEventos", Guid.NewGuid(), false, true   },
+                new object[] { "Dados Operacionais", "Wrench", "3", "/dadosOperacionais", Guid.NewGuid(), true, false },
+                new object[] { "Configuração de Dados", "", "3.1", "/configurarDados", Guid.NewGuid(), false, true   },
+                new object[] { "Gestão de Dados Operacionais", "", "3.2", "/gestaoDadosOperacionais", Guid.NewGuid(), false, true   },
 
-                new object[] { "Notificação de Falhas", "WarningOctagon", "4", "/notificacaoFalhas", Guid.NewGuid(), false, false   },
+                new object[] { "Eventos de Poço", "ClockClockwise", "4", "/eventosDePoco", Guid.NewGuid(), true, false   },
+                new object[] { "Abertura de Poço", "", "4.1", "/pocosFechados", Guid.NewGuid(), false, true},
+                new object[] { "Fechamento de Poço", "", "4.2", "/pocosAbertos", Guid.NewGuid(), false, true   },
+                new object[] { "Consultar Eventos do Poço", "", "4.3", "/consultarEventos", Guid.NewGuid(), false, true   },
 
-                new object[] { "Testes de Poços", "ClipboardText", "5", "/testePocos", Guid.NewGuid(), true, false },
-                new object[] { "Importar Dados Teste de Poço", "icon_importar_dados", "5.1", "/importarDadosTestePoco", Guid.NewGuid(), false, true  },
 
-                new object[] { "Geração de Arquivos", "File", "6", "/geracaoArquivos", Guid.NewGuid(), false, false  },
+                new object[] { "Geração de Arquivos", "File", "5", "/geracaoArquivos", Guid.NewGuid(), false, false  },
 
-                new object[] { "Relatórios", "Files", "7", "/relatorios", Guid.NewGuid(), false, false },
-                new object[] { "Gestão de Dados Operacionais", "Wrench", "8", "/dadosOperacionais", Guid.NewGuid(), true, false },
-                new object[] { "Consultar Dados Operacionais (PI)", "Wrench", "8.1", "/consultarPI", Guid.NewGuid(), false, true   },
-                new object[] { "Injeção Diária", "Wrench", "8.2", "/injecaoDiaria", Guid.NewGuid(), false, true   },
+                new object[] { "Relatórios", "Files", "6", "/relatorios", Guid.NewGuid(), false, false },
 
             };
 
