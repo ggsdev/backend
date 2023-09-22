@@ -873,8 +873,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                             throw new BadRequestException("Data fim não pode ser menor que data inicial.");
                     }
 
-                    var nextReason = await _wellEventRepository
-                                           .GetNextReason(wellReason.StartDate, wellReason.WellEventId, reasonId);
+                    var nextReason =
+                        await _wellEventRepository.GetNextReason(wellReason.StartDate, wellReason.WellEventId, reasonId);
 
                     if (nextReason is not null)
                     {
@@ -882,13 +882,14 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
                         if (nextReason.EndDate is not null)
                         {
+                            if (parsedEndDate > nextReason.EndDate)
+                                throw new ConflictException("Data de fim não pode ser maior que a data fim do sistema relacionado posterior.");
+
                             var intervalNext = FormatTimeInterval(nextReason.EndDate.Value, nextReason);
                             nextReason.Interval = intervalNext;
-
                         }
 
                         _wellEventRepository.UpdateReason(nextReason);
-
                     }
 
                     wellReason.EndDate = parsedEndDate;
