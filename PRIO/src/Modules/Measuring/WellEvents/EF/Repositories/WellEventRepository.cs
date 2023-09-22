@@ -39,7 +39,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Repositories
         {
             return await _context.EventReasons
                 .Include(x => x.WellEvent)
-                .Where(x => x.StartDate > startDate && x.WellEvent.Id == wellEventId && x.Id != eventReasonId)
+                .Where(x => x.StartDate >= startDate && x.WellEvent.Id == wellEventId && x.Id != eventReasonId)
                 .OrderBy(x => x.StartDate)
                     .FirstOrDefaultAsync();
         }
@@ -49,7 +49,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Repositories
             return await _context.EventReasons
                 .Include(x => x.WellEvent)
                 .Include(x => x.CreatedBy)
-                .Where(x => x.StartDate < startDate && x.WellEvent.Id == wellEventId && x.Id != eventReasonId)
+                .Where(x => x.StartDate <= startDate && x.WellEvent.Id == wellEventId && x.Id != eventReasonId)
                 .OrderByDescending(x => x.StartDate)
                     .FirstOrDefaultAsync();
         }
