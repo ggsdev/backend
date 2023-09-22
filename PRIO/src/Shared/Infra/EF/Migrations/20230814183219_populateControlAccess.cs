@@ -134,7 +134,7 @@ namespace PRIO.Migrations
                 new object[] { "Relatórios", "Files", "7", "/relatorios", Guid.NewGuid(), false, false },
                 new object[] { "Gestão de Dados Operacionais", "Wrench", "8", "/dadosOperacionais", Guid.NewGuid(), true, false },
                 new object[] { "Consultar Dados Operacionais (PI)", "Wrench", "8.1", "/consultarPI", Guid.NewGuid(), false, true   },
-                new object[] { "Configuração dos Dados Operacionais (PI)", "Wrench", "8.2", "/configurarDadosOperacionais", Guid.NewGuid(), false, true   },
+                new object[] { "Injeção Diária", "Wrench", "8.2", "/injecaoDiaria", Guid.NewGuid(), false, true   },
 
             };
 
