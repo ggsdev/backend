@@ -250,7 +250,11 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<Production, ProductionDto>();
             CreateMap<WellEvent, EventWithReasonDTO>();
             CreateMap<EventReason, EventReasonDTO>();
-
+            CreateMap<EventReason, ReasonDetailedDto>()
+                .ForMember(dest => dest.Downtime, opt => opt.MapFrom(src =>
+                src.Interval))
+                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate.HasValue ? src.EndDate.Value.ToString("dd/MM/yyyy HH:mm") : null))
+                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate.ToString("dd/MM/yyyy HH:mm")));
         }
 
         private static decimal? TruncateTwoDecimals(decimal? value)
