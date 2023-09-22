@@ -66,7 +66,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             var wellsInactive = new List<Well>();
             var lastEventWrongList = new List<string>();
 
-
             foreach (var well in body.Wells)
             {
                 var foundWell = await _wellRepository.GetOnlyWellAsync(well.WellId);
@@ -736,8 +735,14 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 .OrderBy(x => x.StartDate)
                 .FirstOrDefault();
 
-            if (firstEventReason is not null && firstEventReason.Id == reasonId)
-                throw new ConflictException("Não é possível editar o primeiro sistema relacionado, considere atualizar a data de início do evento.");
+            if (firstEventReason is not null)
+            {
+                if (firstEventReason.Id == reasonId && body.StartDate is not null)
+                    throw new ConflictException("Não é possível editar a data de início do primeiro sistema relacionado, considere atualizar a data de início do evento.");
+
+                if (firstEventReason.EndDate is null && body.EndDate is not null)
+                    throw new ConflictException("Não é possível editar a data de fim do primeiro sistema relacionado, considere abrir esse poço.");
+            }
 
             var systemsRelated = new List<string>
             {
@@ -751,7 +756,6 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 throw new ConflictException("Erro: Poço precisa estar ativo para mudança de evento relacionado.");
 
             var updatedByUser = _mapper.Map<UserDTO>(loggedUser);
-
             var createdByUser = _mapper.Map<UserDTO>(wellReason.CreatedBy);
 
             if (body.SystemRelated is not null)
@@ -836,10 +840,12 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                     if (nextReason is not null)
                     {
                         nextReason.StartDate = parsedEndDate;
+
                         if (nextReason.EndDate is not null)
                         {
                             var intervalNext = FormatTimeInterval(nextReason.EndDate.Value, nextReason);
                             nextReason.Interval = intervalNext;
+
                         }
 
                         _wellEventRepository.UpdateReason(nextReason);
@@ -859,23 +865,13 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 wellReason.UpdatedBy = loggedUser;
 
                 _wellEventRepository.UpdateReason(wellReason);
-
             }
 
-            var dto = new ReasonDetailedDto
-            {
-                Id = wellReason.Id,
-                StartDate = wellReason.StartDate.ToString("dd/MM/yyyy HH:mm"),
-                SystemRelated = wellReason.SystemRelated,
-                Downtime = wellReason.Interval,
-                EndDate = wellReason.EndDate?.ToString("dd/MM/yyyy HH:mm"),
-                UpdatedBy = updatedByUser,
-                CreatedBy = createdByUser
-            };
+            var reasonDto = _mapper.Map<ReasonDetailedDto>(wellReason);
 
             await _wellEventRepository.Save();
 
-            return dto;
+            return reasonDto;
         }
         public async Task UpdateClosedEvent(Guid eventId, UpdateEventAndSystemRelated body, User loggedUser)
         {
