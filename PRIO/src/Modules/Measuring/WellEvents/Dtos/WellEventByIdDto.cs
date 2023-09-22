@@ -30,6 +30,14 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Dtos
         public string? Downtime { get; set; }
         public UserDTO? UpdatedBy { get; set; }
         public UserDTO CreatedBy { get; set; }
+        public bool IsJobGenerated { get; set; }
 
+    }
+
+    public class UpdateReasonDetailedDto
+    {
+        public ReasonDetailedDto? BeforeReason { get; set; }
+        public ReasonDetailedDto UpdatedReason { get; set; }
+        public ReasonDetailedDto? NextReason { get; set; }
     }
 }
