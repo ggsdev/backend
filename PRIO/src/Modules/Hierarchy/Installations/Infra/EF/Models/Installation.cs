@@ -30,5 +30,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models
         public bool IsProcessingUnit { get; set; }
         public List<Production>? Productions { get; set; }
         public List<NFSM>? NFSMs { get; set; }
+        public List<InstallationsAccess> usersWithPermissions { get; set; }
     }
 }

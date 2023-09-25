@@ -5,6 +5,8 @@ using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Interfaces;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.ViewModels;
+using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.SystemHistories.Dtos.UserDtos;
 using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
@@ -20,11 +22,13 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
         private IGroupPermissionRepository _groupPermissionRepository;
         private IGroupOperationRepository _groupOperationRepository;
         private IGlobalOperationsRepository _globalOperationsRepository;
+        private IInstallationRepository _installationRepository;
+        private IInstallationsAccessRepository _installationAccessRepository;
         private IMapper _mapper;
         private readonly SystemHistoryService _systemHistoryService;
         private readonly string _table = HistoryColumns.TableUsers;
 
-        public UserService(IMapper mapper, IUserRepository user, IUserPermissionRepository userPermissionRepository, IUserOperationRepository userOperationRepository, IGroupPermissionRepository groupPermissionRepository, IGroupOperationRepository groupOperationRepository, IGlobalOperationsRepository globalOperationsRepository, SystemHistoryService systemHistoryService)
+        public UserService(IMapper mapper, IUserRepository user, IUserPermissionRepository userPermissionRepository, IUserOperationRepository userOperationRepository, IGroupPermissionRepository groupPermissionRepository, IGroupOperationRepository groupOperationRepository, IGlobalOperationsRepository globalOperationsRepository, SystemHistoryService systemHistoryService, IInstallationRepository installationRepository, IInstallationsAccessRepository installationAccessRepository)
         {
             _mapper = mapper;
             _userRepository = user;
@@ -33,7 +37,9 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             _groupPermissionRepository = groupPermissionRepository;
             _groupOperationRepository = groupOperationRepository;
             _globalOperationsRepository = globalOperationsRepository;
+            _installationRepository = installationRepository;
             _systemHistoryService = systemHistoryService;
+            _installationRepository = installationRepository;
         }
 
         public async Task<List<UserDTO>> GetUsers()
@@ -52,12 +58,25 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
 
             //if (userInAd is false)
             //    throw new NotFoundException("Não foi possível validar o usuário no domínio, digite um usuário valido");
-
             var userInDatabase = await _userRepository
                 .GetUserByUsername(treatedUsername);
 
             if (userInDatabase != null)
                 throw new ConflictException("Usuário já cadastrado");
+
+            if (body.InstallationsId is null || body.InstallationsId.Count == 0)
+                throw new ConflictException("Usuário precisa ter instalações associadas.");
+
+            var instalationsToRelation = new List<Installation>();
+
+            foreach (var installationId in body.InstallationsId)
+            {
+                var verifyInstallation = await _installationRepository.GetByIdAsync(installationId);
+                if (verifyInstallation == null)
+                    throw new ConflictException("Instalação não existente.");
+
+                instalationsToRelation.Add(verifyInstallation);
+            }
 
             var userId = Guid.NewGuid();
             var user = new User
@@ -69,6 +88,18 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                 IsActive = body.IsActive,
                 Description = body.Description is not null ? body.Description : null,
             };
+
+            foreach (var item in instalationsToRelation)
+            {
+                var create = new InstallationsAccess
+                {
+                    Installation = item,
+                    User = user,
+                    Id = Guid.NewGuid()
+                };
+
+                await _installationAccessRepository.AddInstallationsAccess(create);
+            }
 
             await _userRepository
                 .CreateUser(user);
