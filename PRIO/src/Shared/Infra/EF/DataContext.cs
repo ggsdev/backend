@@ -150,6 +150,7 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<WellEvent> WellEvents { get; set; }
         public DbSet<WellLosses> WellLosses { get; set; }
         public DbSet<Backup> Backups { get; set; }
+        public DbSet<InstallationsAccess> UserInstallationsAccess { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -266,6 +267,7 @@ namespace PRIO.src.Shared.Infra.EF
             modelBuilder.ApplyConfiguration(new UserOperationMap());
             modelBuilder.ApplyConfiguration(new GroupOperationMap());
             modelBuilder.ApplyConfiguration(new GlobalOperationMap());
+            modelBuilder.ApplyConfiguration(new InstallationsPermissionMap());
             modelBuilder.ApplyConfiguration(new CommentMap());
             modelBuilder.ApplyConfiguration(new WellEventMap());
             modelBuilder.ApplyConfiguration(new EventReasonMap());

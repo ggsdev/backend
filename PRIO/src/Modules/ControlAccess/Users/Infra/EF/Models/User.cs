@@ -27,6 +27,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models
         public string? Type { get; set; } = "User";
         public bool? IsPermissionDefault { get; set; }
         public Guid? LastGroupId { get; set; }
+        public List<InstallationsAccess>? InstallationsAccess { get; set; }
         #region Relationships
         public List<UserPermission>? UserPermissions { get; set; }
         [JsonIgnore]
