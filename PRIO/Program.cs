@@ -174,6 +174,8 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
 
     services.AddScoped<IInstallationRepository, InstallationRepository>();
 
+    services.AddScoped<IInstallationsAccessRepository, InstallationsAccessRepository>();
+
     services.AddScoped<IFieldRepository, FieldRepository>();
 
     services.AddScoped<IZoneRepository, ZoneRepository>();
