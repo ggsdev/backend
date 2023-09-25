@@ -385,7 +385,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
                     var newEventReason = new EventReason
                     {
                         Id = Guid.NewGuid(),
-                        SystemRelated = "Completações Inativas",
+                        SystemRelated = "Inativo",
                         StartDate = completionBiggestInactiveDate is not null ? completionBiggestInactiveDate.InactivatedAt.Value : date,
                         WellEvent = wellEvent,
                         CreatedBy = user
@@ -459,7 +459,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
                                     eventReason.Interval = Interval;
 
                                     newEventReason.StartDate = completionBiggestInactiveDate is not null ? completionBiggestInactiveDate.InactivatedAt.Value : date;
-                                    newEventReason.SystemRelated = "Completações Inativas";
+                                    newEventReason.SystemRelated = "Inativo";
                                     await _eventWellRepository.AddReasonClosedEvent(newEventReason);
                                     break;
                                 }
@@ -483,7 +483,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
 
                                 newEventReason.EndDate = null;
                                 newEventReason.StartDate = completionBiggestInactiveDate is not null ? completionBiggestInactiveDate.InactivatedAt.Value : date;
-                                newEventReason.SystemRelated = "Completações Inativas";
+                                newEventReason.SystemRelated = "Inativo";
 
                                 await _eventWellRepository.AddReasonClosedEvent(newEventReason2);
                                 await _eventWellRepository.AddReasonClosedEvent(newEventReason);

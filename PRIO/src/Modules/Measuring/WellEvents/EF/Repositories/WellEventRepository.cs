@@ -62,6 +62,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Repositories
                     .ThenInclude(x => x.EventReasons)
                 .Include(er => er.WellEvent)
                     .ThenInclude(we => we.Well)
+                    .ThenInclude(w => w.Completions)
                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
