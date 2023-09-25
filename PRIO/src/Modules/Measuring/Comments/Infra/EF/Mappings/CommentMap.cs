@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<CommentInProduction> builder)
         {
-            builder.ToTable("CommentsInProduction");
+            builder.ToTable("Production.Comments");
 
             builder.Property(x => x.Text)
               .HasColumnType("TEXT");

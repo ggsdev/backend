@@ -10,7 +10,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
         public void Configure(EntityTypeBuilder<Bsw> builder)
         {
 
-            builder.ToTable("BSWS_039");
+            builder.ToTable("Measurement.BSWS_039");
 
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id)

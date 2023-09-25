@@ -9,7 +9,7 @@ namespace PRIO.src.Shared.Infra.EF.Mappings
         public void Configure(EntityTypeBuilder<Backup> builder)
         {
             builder.ToTable
-                    ("Backups");
+                    ("System.Backups");
 
             builder.HasIndex(x => x.date)
                 .IsUnique();

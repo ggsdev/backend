@@ -5,6 +5,7 @@ using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Mappings;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Mappings;
 using PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Mappings;
 using PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Mappings;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
@@ -44,6 +45,7 @@ using PRIO.src.Modules.Measuring.WellEvents.EF.Mappings;
 using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
 using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models;
+using PRIO.src.Shared.Auxiliaries.Infra.EF.Mapping;
 using PRIO.src.Shared.Auxiliaries.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF.Mappings;
 using PRIO.src.Shared.Infra.EF.Models;
@@ -262,6 +264,8 @@ namespace PRIO.src.Shared.Infra.EF
             modelBuilder.ApplyConfiguration(new UserPermissionMap());
             modelBuilder.ApplyConfiguration(new GroupPermissionMap());
             modelBuilder.ApplyConfiguration(new UserOperationMap());
+            modelBuilder.ApplyConfiguration(new GroupOperationMap());
+            modelBuilder.ApplyConfiguration(new GlobalOperationMap());
             modelBuilder.ApplyConfiguration(new CommentMap());
             modelBuilder.ApplyConfiguration(new WellEventMap());
             modelBuilder.ApplyConfiguration(new EventReasonMap());
@@ -304,6 +308,8 @@ namespace PRIO.src.Shared.Infra.EF
             #endregion
 
             modelBuilder.ApplyConfiguration(new BackupMap());
+            modelBuilder.ApplyConfiguration(new AuxiliaryMap());
+            modelBuilder.ApplyConfiguration(new ValidateBTPMap());
         }
     }
 }

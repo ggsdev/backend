@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<GasDiferencial> builder)
         {
-            builder.ToTable("GasesDiferencials");
+            builder.ToTable("Measurement.GasesDiferencials");
 
             builder.Property(x => x.TotalGas)
               .HasColumnType("DECIMAL")

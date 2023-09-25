@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<FieldFR> builder)
         {
-            builder.ToTable("FieldsFRs");
+            builder.ToTable("Production.FieldsFRs");
 
             builder.Property(x => x.FROil)
                .HasColumnType("decimal")

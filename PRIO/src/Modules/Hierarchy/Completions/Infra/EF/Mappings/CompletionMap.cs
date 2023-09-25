@@ -10,7 +10,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Mappings
         {
 
             builder.ToTable
-                    ("Completions");
+                    ("Hierachy.Completions");
 
             builder.Property(x => x.Name)
                .HasColumnType("VARCHAR")

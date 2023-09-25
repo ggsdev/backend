@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<NFSMHistory> builder)
         {
-            builder.ToTable("NFSMImportHistories");
+            builder.ToTable("Measurement.NFSMImportHistories");
 
             builder.Property(x => x.FileAcronym)
                 .HasColumnType("char")

@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<Oil> builder)
         {
-            builder.ToTable("Oils");
+            builder.ToTable("Measurement.Oils");
 
             builder.Property(x => x.TotalOil)
                .HasColumnType("DECIMAL")

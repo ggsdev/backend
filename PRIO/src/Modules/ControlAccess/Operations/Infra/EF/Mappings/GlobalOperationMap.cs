@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<GlobalOperation> builder)
         {
-            builder.ToTable("GlobalOperations");
+            builder.ToTable("AC.GlobalOperations");
 
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id)

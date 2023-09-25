@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<BTP> builder)
         {
-            builder.ToTable("BTPs");
+            builder.ToTable("WellTest.BTPs");
 
             builder.Property(x => x.Name)
               .HasColumnType("VARCHAR")

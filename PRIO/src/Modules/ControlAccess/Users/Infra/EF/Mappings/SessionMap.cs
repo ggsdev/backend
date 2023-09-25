@@ -11,7 +11,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Mappings
         {
 
             builder.ToTable
-                    ("Sessions");
+                    ("System.Sessions");
 
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id)

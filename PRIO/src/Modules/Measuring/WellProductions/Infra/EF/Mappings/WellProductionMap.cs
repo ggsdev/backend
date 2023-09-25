@@ -7,7 +7,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<Models.WellProduction> builder)
         {
-            builder.ToTable("WellProductions");
+            builder.ToTable("Production.WellProductions");
 
             builder.Property(x => x.ProductionGasAsPercentageOfField)
                 .HasColumnType("DECIMAL")
