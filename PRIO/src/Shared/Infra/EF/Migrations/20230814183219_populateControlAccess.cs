@@ -121,9 +121,9 @@ namespace PRIO.Migrations
                 new object[] { "Testes de Poços", "", "2.2", "/importarDadosTestePoco", Guid.NewGuid(), false, true },
                 new object[] { "Notificação de Falhas", "", "2.3", "/notificacaoFalhas", Guid.NewGuid(), false, true   },
 
-                new object[] { "Dados Operacionais", "Wrench", "3", "/dadosOperacionais", Guid.NewGuid(), true, false },
-                new object[] { "Configuração de Dados", "", "3.1", "/configurarDados", Guid.NewGuid(), false, true   },
-                new object[] { "Gestão de Dados Operacionais", "", "3.2", "/gestaoDadosOperacionais", Guid.NewGuid(), false, true   },
+                new object[] { "Gestão de Dados Operacionais", "Wrench", "3", "/gestaoDadosOperacionais", Guid.NewGuid(), true, false },
+                new object[] { "Configuração de Parâmetros", "", "3.1", "/configurarParametros", Guid.NewGuid(), false, true   },
+                new object[] { "Dados Operacionais", "", "3.2", "/dadosOperacionais", Guid.NewGuid(), false, true   },
 
                 new object[] { "Eventos de Poço", "ClockClockwise", "4", "/eventosDePoco", Guid.NewGuid(), true, false   },
                 new object[] { "Abertura de Poço", "", "4.1", "/pocosFechados", Guid.NewGuid(), false, true},
