@@ -11,7 +11,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
         public void Configure(EntityTypeBuilder<Volume> builder)
         {
 
-            builder.ToTable("Volumes_039");
+            builder.ToTable("Measurement.Volumes_039");
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id)
                 .ValueGeneratedOnAdd();

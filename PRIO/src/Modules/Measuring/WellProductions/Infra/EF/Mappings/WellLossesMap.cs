@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<WellLosses> builder)
         {
-            builder.ToTable("WellLosses");
+            builder.ToTable("Production.WellLosses");
 
             builder.Property(x => x.EfficienceLoss)
                .HasColumnType("DECIMAL")

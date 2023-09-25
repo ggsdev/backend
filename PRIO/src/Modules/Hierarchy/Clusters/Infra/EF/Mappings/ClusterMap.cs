@@ -9,7 +9,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Mappings
         public void Configure(EntityTypeBuilder<Cluster> builder)
         {
             builder.ToTable
-                    ("Clusters");
+                    ("Hierachy.Clusters");
 
             builder.Property(x => x.Description)
                 .HasColumnType("TEXT");

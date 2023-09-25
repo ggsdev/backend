@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<UserOperation> builder)
         {
-            builder.ToTable("UserOperations");
+            builder.ToTable("AC.UserOperations");
 
             builder.Property(x => x.OperationName)
                 .HasColumnType("varchar")

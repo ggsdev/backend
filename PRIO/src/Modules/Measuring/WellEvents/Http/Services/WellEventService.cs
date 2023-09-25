@@ -3,6 +3,7 @@ using dotenv.net;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
+using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
@@ -64,17 +65,32 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
 
             var wellsList = new List<Well>();
             var wellsInactive = new List<Well>();
+            var completionsInactive = new List<Completion>();
             var lastEventWrongList = new List<string>();
 
             foreach (var well in body.Wells)
             {
-                var foundWell = await _wellRepository.GetOnlyWellAsync(well.WellId);
-                if (foundWell.IsActive is false)
+                var foundWell = await _wellRepository.GetByIdWithFieldAndCompletions(well.WellId);
+                if (!foundWell.IsActive)
                     wellsInactive.Add(foundWell);
+                else
+                {
+                    var inactiveCompletions = foundWell.Completions.Where(completion => completion.IsActive).ToList();
+                    if (inactiveCompletions.Count == 0)
+                    {
+                        completionsInactive.AddRange(inactiveCompletions);
+                    }
+
+                }
             }
 
             if (wellsInactive.Count() != 0)
                 throw new ConflictException("Erro: Poços precisam estar ativos para criação de evento de fechamento.");
+
+
+            if (wellsInactive.Count() != 0)
+                throw new ConflictException("Erro: Poços precisam estar ativos para criação de evento de fechamento.");
+
 
             foreach (var well in body.Wells)
             {
@@ -275,8 +291,14 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                 .GetWithFieldAsync(body.WellId)
                 ?? throw new NotFoundException(ErrorMessages.NotFound<Well>());
 
+            var countCompletions = well.Completions.Where(c => c.IsActive).ToList().Count();
+
             if (well.IsActive is false)
                 throw new ConflictException("Erro: Poço precisa estar ativo para criação de evento de abertura.");
+
+            if (countCompletions == 0)
+                throw new ConflictException("Erro: Poço precisa ter completações ativas para criação de evento de abertura.");
+
 
             if (parsedStartDate < convertAppDate)
                 throw new ConflictException("Data do evento está menor que data do inicio da aplicação");

@@ -9,7 +9,7 @@ namespace PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Mappings
         public void Configure(EntityTypeBuilder<MeasuringPoint> builder)
         {
             builder.ToTable
-                    ("MeasuringPoints");
+                    ("Hierarchy.MeasuringPoints");
 
             builder.Property(x => x.Description)
                 .HasColumnType("TEXT");

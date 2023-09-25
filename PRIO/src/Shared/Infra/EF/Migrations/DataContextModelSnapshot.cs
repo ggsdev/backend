@@ -49,7 +49,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Groups", (string)null);
+                    b.ToTable("AC.Groups", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.GroupOperation", b =>
@@ -76,7 +76,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("GroupPermissionId");
 
-                    b.ToTable("GroupOperations");
+                    b.ToTable("AC.GroupOperations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.GroupPermission", b =>
@@ -140,7 +140,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("MenuId");
 
-                    b.ToTable("GroupPermissions", (string)null);
+                    b.ToTable("AC.GroupPermissions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Models.Menu", b =>
@@ -186,7 +186,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("Menus", (string)null);
+                    b.ToTable("AC.Menus", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Models.GlobalOperation", b =>
@@ -202,20 +202,21 @@ namespace PRIO.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<string>("Method")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(120)
+                        .HasColumnType("VARCHAR");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.ToTable("GlobalOperations");
+                    b.ToTable("AC.GlobalOperations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.Session", b =>
@@ -246,7 +247,7 @@ namespace PRIO.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Sessions", (string)null);
+                    b.ToTable("System.Sessions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", b =>
@@ -310,7 +311,7 @@ namespace PRIO.Migrations
                     b.HasIndex("Username")
                         .IsUnique();
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("AC.Users", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.UserOperation", b =>
@@ -339,7 +340,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserPermissionId");
 
-                    b.ToTable("UserOperations", (string)null);
+                    b.ToTable("AC.UserOperations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.UserPermission", b =>
@@ -394,7 +395,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserPermissions", (string)null);
+                    b.ToTable("AC.UserPermissions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTP", b =>
@@ -509,7 +510,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BTPs", (string)null);
+                    b.ToTable("WellTest.BTPs", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPBase64", b =>
@@ -554,7 +555,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("BTPBases64", (string)null);
+                    b.ToTable("WellTest.Bases64", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.ValidateBTP", b =>
@@ -595,7 +596,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Validates");
+                    b.ToTable("WellTest.Validates", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.WellTests", b =>
@@ -743,7 +744,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("WellId");
 
-                    b.ToTable("WellTests", (string)null);
+                    b.ToTable("WellTest.WellTests", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSM", b =>
@@ -828,7 +829,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("MeasuringPointId");
 
-                    b.ToTable("NFSMs", (string)null);
+                    b.ToTable("Measurement.NFSMs", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSMHistory", b =>
@@ -874,7 +875,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("ImportedById");
 
-                    b.ToTable("NFSMImportHistories", (string)null);
+                    b.ToTable("Measurement.NFSMImportHistories", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSMsProductions", b =>
@@ -929,7 +930,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("ProductionId");
 
-                    b.ToTable("NFSMsProductions", (string)null);
+                    b.ToTable("Measurement.NFSMsProductions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models.Cluster", b =>
@@ -968,7 +969,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Clusters", (string)null);
+                    b.ToTable("Hierachy.Clusters", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models.Completion", b =>
@@ -1029,7 +1030,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("WellId");
 
-                    b.ToTable("Completions", (string)null);
+                    b.ToTable("Hierachy.Completions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models.Field", b =>
@@ -1089,7 +1090,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Fields", (string)null);
+                    b.ToTable("Hierachy.Fields", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models.FieldFR", b =>
@@ -1152,7 +1153,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("FieldId");
 
-                    b.ToTable("FieldsFRs", (string)null);
+                    b.ToTable("Production.FieldsFRs", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", b =>
@@ -1218,7 +1219,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Installations", (string)null);
+                    b.ToTable("Hierachy.Installations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.InstallationBTP", b =>
@@ -1298,7 +1299,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("ZoneId");
 
-                    b.ToTable("Reservoirs", (string)null);
+                    b.ToTable("Hierachy.Reservoirs", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.Well", b =>
@@ -1417,7 +1418,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Wells", (string)null);
+                    b.ToTable("Hierachy.Wells", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models.Zone", b =>
@@ -1461,7 +1462,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Zones", (string)null);
+                    b.ToTable("Hierachy.Zones", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Comments.Infra.EF.Models.CommentInProduction", b =>
@@ -1502,7 +1503,7 @@ namespace PRIO.Migrations
                     b.HasIndex("ProductionId")
                         .IsUnique();
 
-                    b.ToTable("CommentsInProduction", (string)null);
+                    b.ToTable("Production.Comments", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Bsw", b =>
@@ -1544,7 +1545,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("MeasurementId");
 
-                    b.ToTable("BSWS_039", (string)null);
+                    b.ToTable("Measurement.BSWS_039", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Calibration", b =>
@@ -1594,7 +1595,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("MeasurementId");
 
-                    b.ToTable("Calibrations_039", (string)null);
+                    b.ToTable("Measurement.Calibrations_039", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.FileType", b =>
@@ -1633,7 +1634,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FileTypes", (string)null);
+                    b.ToTable("Measurement.FileTypes", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Measurement", b =>
@@ -3006,7 +3007,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Measurements", (string)null);
+                    b.ToTable("Measurement.Measurements", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.MeasuringEquipment", b =>
@@ -3097,7 +3098,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("MeasuringEquipments", (string)null);
+                    b.ToTable("Hierarchy.MeasuringEquipments", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Volume", b =>
@@ -3139,7 +3140,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("MeasurementId");
 
-                    b.ToTable("Volumes_039", (string)null);
+                    b.ToTable("Measurement.Volumes_039", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.AssistanceGas", b =>
@@ -3184,7 +3185,7 @@ namespace PRIO.Migrations
                     b.HasIndex("MeasuringPointId")
                         .IsUnique();
 
-                    b.ToTable("AssistanceGases", (string)null);
+                    b.ToTable("ConfigCalc.AssistanceGases", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.ExportGas", b =>
@@ -3229,7 +3230,7 @@ namespace PRIO.Migrations
                     b.HasIndex("MeasuringPointId")
                         .IsUnique();
 
-                    b.ToTable("ExportGases", (string)null);
+                    b.ToTable("ConfigCalc.ExportGases", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", b =>
@@ -3261,7 +3262,7 @@ namespace PRIO.Migrations
                     b.HasIndex("InstallationId")
                         .IsUnique();
 
-                    b.ToTable("GasVolumeCalculations", (string)null);
+                    b.ToTable("ConfigCalc.GasVolumeCalculations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.HPFlare", b =>
@@ -3306,7 +3307,7 @@ namespace PRIO.Migrations
                     b.HasIndex("MeasuringPointId")
                         .IsUnique();
 
-                    b.ToTable("HpFlares", (string)null);
+                    b.ToTable("ConfigCalc.HpFlares", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.HighPressureGas", b =>
@@ -3351,7 +3352,7 @@ namespace PRIO.Migrations
                     b.HasIndex("MeasuringPointId")
                         .IsUnique();
 
-                    b.ToTable("HighPressureGases", (string)null);
+                    b.ToTable("ConfigCalc.HighPressureGases", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.ImportGas", b =>
@@ -3396,7 +3397,7 @@ namespace PRIO.Migrations
                     b.HasIndex("MeasuringPointId")
                         .IsUnique();
 
-                    b.ToTable("ImportGases", (string)null);
+                    b.ToTable("ConfigCalc.ImportGases", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.LPFlare", b =>
@@ -3441,7 +3442,7 @@ namespace PRIO.Migrations
                     b.HasIndex("MeasuringPointId")
                         .IsUnique();
 
-                    b.ToTable("LPFlares", (string)null);
+                    b.ToTable("ConfigCalc.LPFlares", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.LowPressureGas", b =>
@@ -3486,7 +3487,7 @@ namespace PRIO.Migrations
                     b.HasIndex("MeasuringPointId")
                         .IsUnique();
 
-                    b.ToTable("LowPressureGases", (string)null);
+                    b.ToTable("ConfigCalc.LowPressureGases", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.PilotGas", b =>
@@ -3531,7 +3532,7 @@ namespace PRIO.Migrations
                     b.HasIndex("MeasuringPointId")
                         .IsUnique();
 
-                    b.ToTable("PilotGases", (string)null);
+                    b.ToTable("ConfigCalc.PilotGases", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.PurgeGas", b =>
@@ -3576,7 +3577,7 @@ namespace PRIO.Migrations
                     b.HasIndex("MeasuringPointId")
                         .IsUnique();
 
-                    b.ToTable("PurgeGases", (string)null);
+                    b.ToTable("ConfigCalc.PurgeGases", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models.MeasurementHistory", b =>
@@ -3637,7 +3638,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("ImportedById");
 
-                    b.ToTable("MeasurementsHistories", (string)null);
+                    b.ToTable("Measurement.MeasurementsHistories", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", b =>
@@ -3681,7 +3682,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("InstallationId");
 
-                    b.ToTable("MeasuringPoints", (string)null);
+                    b.ToTable("Hierarchy.MeasuringPoints", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.DOR", b =>
@@ -3726,7 +3727,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("OilVolumeCalculationId");
 
-                    b.ToTable("DORs", (string)null);
+                    b.ToTable("ConfigCalc.DORs", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.DrainVolume", b =>
@@ -3771,7 +3772,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("OilVolumeCalculationId");
 
-                    b.ToTable("DrainVolumes", (string)null);
+                    b.ToTable("ConfigCalc.DrainVolumes", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", b =>
@@ -3803,7 +3804,7 @@ namespace PRIO.Migrations
                     b.HasIndex("InstallationId")
                         .IsUnique();
 
-                    b.ToTable("OilVoumeCalculations", (string)null);
+                    b.ToTable("ConfigCalc.OilVoumeCalculations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.Section", b =>
@@ -3848,7 +3849,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("OilVolumeCalculationId");
 
-                    b.ToTable("Sections", (string)null);
+                    b.ToTable("ConfigCalc.Sections", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.TOGRecoveredOil", b =>
@@ -3893,7 +3894,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("OilVolumeCalculationId");
 
-                    b.ToTable("TOGRecoveredOils", (string)null);
+                    b.ToTable("ConfigCalc.TOGRecoveredOils", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.CompletionProduction", b =>
@@ -3947,7 +3948,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("WellAllocationId");
 
-                    b.ToTable("CompletionProductions", (string)null);
+                    b.ToTable("Production.CompletionProductions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.FieldProduction", b =>
@@ -3991,7 +3992,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FieldsProductions", (string)null);
+                    b.ToTable("Production.FieldsProductions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Gas", b =>
@@ -4059,7 +4060,7 @@ namespace PRIO.Migrations
                         .IsUnique()
                         .HasFilter("[GasLinearId] IS NOT NULL");
 
-                    b.ToTable("Gases", (string)null);
+                    b.ToTable("Measurement.Gases", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.GasDiferencial", b =>
@@ -4108,7 +4109,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GasesDiferencials", (string)null);
+                    b.ToTable("Measurement.GasesDiferencials", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.GasLinear", b =>
@@ -4157,7 +4158,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GasesLinears", (string)null);
+                    b.ToTable("Measurement.GasesLinears", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Oil", b =>
@@ -4198,7 +4199,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Oils", (string)null);
+                    b.ToTable("Measurement.Oils", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", b =>
@@ -4289,7 +4290,7 @@ namespace PRIO.Migrations
                         .IsUnique()
                         .HasFilter("[WaterId] IS NOT NULL");
 
-                    b.ToTable("Productions", (string)null);
+                    b.ToTable("Measurement.Productions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.ReservoirProduction", b =>
@@ -4338,7 +4339,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("ZoneProductionId");
 
-                    b.ToTable("ReservoirProductions", (string)null);
+                    b.ToTable("Production.ReservoirProductions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Water", b =>
@@ -4371,7 +4372,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Waters", (string)null);
+                    b.ToTable("Production.Waters", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.ZoneProduction", b =>
@@ -4415,7 +4416,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ZoneProductions", (string)null);
+                    b.ToTable("Production.ZoneProductions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.EF.Models.EventReason", b =>
@@ -4477,7 +4478,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("WellEventId");
 
-                    b.ToTable("EventReasons", (string)null);
+                    b.ToTable("Event.EventReasons", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.EF.Models.WellEvent", b =>
@@ -4560,7 +4561,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("WellId");
 
-                    b.ToTable("WellEvents", (string)null);
+                    b.ToTable("Event.WellEvents", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellLosses", b =>
@@ -4623,7 +4624,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("WellAllocationId");
 
-                    b.ToTable("WellLosses", (string)null);
+                    b.ToTable("Production.WellLosses", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellProduction", b =>
@@ -4740,7 +4741,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("WellTestId");
 
-                    b.ToTable("WellProductions", (string)null);
+                    b.ToTable("Production.WellProductions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Shared.Auxiliaries.Infra.EF.Models.Auxiliary", b =>
@@ -4766,7 +4767,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Auxiliaries");
+                    b.ToTable("System.Auxiliary", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Shared.Infra.EF.Models.Backup", b =>
@@ -4787,7 +4788,7 @@ namespace PRIO.Migrations
                     b.HasIndex("date")
                         .IsUnique();
 
-                    b.ToTable("Backups", (string)null);
+                    b.ToTable("System.Backups", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Shared.SystemHistories.Infra.EF.Models.SystemHistory", b =>

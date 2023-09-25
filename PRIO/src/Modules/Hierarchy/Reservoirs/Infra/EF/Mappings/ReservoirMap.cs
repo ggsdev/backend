@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<Reservoir> builder)
         {
-            builder.ToTable("Reservoirs");
+            builder.ToTable("Hierachy.Reservoirs");
 
             builder.Property(x => x.Name)
               .HasColumnType("VARCHAR")

@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<UserPermission> builder)
         {
-            builder.ToTable("UserPermissions");
+            builder.ToTable("AC.UserPermissions");
 
 
             builder.Property(x => x.MenuName)

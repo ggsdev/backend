@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<GasVolumeCalculation> builder)
         {
-            builder.ToTable("GasVolumeCalculations");
+            builder.ToTable("ConfigCalc.GasVolumeCalculations");
 
             builder.HasOne(x => x.Installation)
                 .WithOne(d => d.GasVolumeCalculation)

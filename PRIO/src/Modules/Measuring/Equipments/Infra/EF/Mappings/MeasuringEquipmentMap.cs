@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<MeasuringEquipment> builder)
         {
-            builder.ToTable("MeasuringEquipments");
+            builder.ToTable("Hierarchy.MeasuringEquipments");
 
             builder.Property(x => x.TagEquipment)
                 .HasColumnType("varchar")

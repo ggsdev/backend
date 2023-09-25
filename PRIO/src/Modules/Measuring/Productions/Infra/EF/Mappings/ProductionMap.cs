@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<Production> builder)
         {
-            builder.ToTable("Productions");
+            builder.ToTable("Measurement.Productions");
 
             builder.HasOne(x => x.Oil)
                 .WithOne(d => d.Production)

@@ -10,7 +10,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Mappings
         {
 
             builder.ToTable
-                    ("GroupPermissions");
+                    ("AC.GroupPermissions");
 
             builder.Property(x => x.GroupName)
                 .HasColumnType("VARCHAR")

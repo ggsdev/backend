@@ -9,7 +9,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.EF.Mappings
         public void Configure(EntityTypeBuilder<WellEvent> builder)
         {
             builder.ToTable
-                    ("WellEvents");
+                    ("Event.WellEvents");
 
             builder.Property(x => x.Description)
                 .HasColumnType("TEXT");

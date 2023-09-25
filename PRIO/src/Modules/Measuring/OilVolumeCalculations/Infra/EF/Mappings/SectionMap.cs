@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<Section> builder)
         {
-            builder.ToTable("Sections");
+            builder.ToTable("ConfigCalc.Sections");
 
             builder.Property(x => x.StaticLocalMeasuringPoint)
                .HasColumnType("VARCHAR")

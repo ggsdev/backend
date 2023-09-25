@@ -11,7 +11,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
         public void Configure(EntityTypeBuilder<Calibration> builder)
         {
 
-            builder.ToTable("Calibrations_039");
+            builder.ToTable("Measurement.Calibrations_039");
 
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id)

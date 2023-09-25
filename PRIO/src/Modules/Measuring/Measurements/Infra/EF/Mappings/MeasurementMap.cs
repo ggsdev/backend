@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<Measurement> builder)
         {
-            builder.ToTable("Measurements");
+            builder.ToTable("Measurement.Measurements");
 
             builder.Property(x => x.VolumeAfterManualBsw_001)
              .HasColumnType("decimal")

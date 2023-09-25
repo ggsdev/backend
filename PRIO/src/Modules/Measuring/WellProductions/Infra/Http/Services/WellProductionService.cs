@@ -66,43 +66,43 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
             var wellsInvalids = new List<string>();
             var closedProducingWells = new List<Well>();
             var producingWells = new List<Well>();
-            foreach (var installation in installations)
-            {
-                foreach (var field in installation.Fields)
-                {
-                    foreach (var well in field.Wells)
-                    {
-                        var wellContainBtpValid = false;
+            //foreach (var installation in installations)
+            //{
+            //    foreach (var field in installation.Fields)
+            //    {
+            //        foreach (var well in field.Wells)
+            //        {
+            //            var wellContainBtpValid = false;
 
-                        var allBtpsOfProducingWellsValid = well.WellTests.Where(x => (x.FinalApplicationDate == null && x.ApplicationDate != null && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date) && well.CategoryOperator is not null && well.CategoryOperator.ToUpper() == "PRODUTOR"
-                        || well.CategoryOperator is not null && well.CategoryOperator.ToUpper() == "PRODUTOR" && (x.FinalApplicationDate != null && x.ApplicationDate != null && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
-                        && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date));
+            //            var allBtpsOfProducingWellsValid = well.WellTests.Where(x => (x.FinalApplicationDate == null && x.ApplicationDate != null && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date) && well.CategoryOperator is not null && well.CategoryOperator.ToUpper() == "PRODUTOR"
+            //            || well.CategoryOperator is not null && well.CategoryOperator.ToUpper() == "PRODUTOR" && (x.FinalApplicationDate != null && x.ApplicationDate != null && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
+            //            && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date));
 
-                        if (allBtpsOfProducingWellsValid is not null && allBtpsOfProducingWellsValid.Any())
-                        {
-                            foreach (var btp in allBtpsOfProducingWellsValid)
-                            {
-                                if (btp.IsValid)
-                                {
-                                    wellContainBtpValid = true;
-                                    break;
-                                }
-                            }
-                            if (!allBtpsOfProducingWellsValid.Any() && well.CategoryOperator is not null && well.CategoryOperator.ToUpper().Contains("INJETOR"))
-                            {
-                                wellContainBtpValid = true;
-                                break;
-                            }
-                        }
+            //            if (allBtpsOfProducingWellsValid is not null && allBtpsOfProducingWellsValid.Any())
+            //            {
+            //                foreach (var btp in allBtpsOfProducingWellsValid)
+            //                {
+            //                    if (btp.IsValid)
+            //                    {
+            //                        wellContainBtpValid = true;
+            //                        break;
+            //                    }
+            //                }
+            //                if (!allBtpsOfProducingWellsValid.Any() && well.CategoryOperator is not null && well.CategoryOperator.ToUpper().Contains("INJETOR"))
+            //                {
+            //                    wellContainBtpValid = true;
+            //                    break;
+            //                }
+            //            }
 
-                        if (wellContainBtpValid is false)
-                        {
-                            wellsInvalids.Add(well.Name);
-                            continue;
-                        }
-                    }
-                }
-            }
+            //            if (wellContainBtpValid is false)
+            //            {
+            //                wellsInvalids.Add(well.Name);
+            //                continue;
+            //            }
+            //        }
+            //    }
+            //}
             if (wellsInvalids.Count > 0)
                 throw new BadRequestException($"Todos os poços devem ter um teste de poço válido. Poços sem teste ou com teste inválido:", errors: wellsInvalids);
             #endregion
