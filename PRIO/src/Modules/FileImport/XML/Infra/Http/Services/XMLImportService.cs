@@ -481,6 +481,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                     },
                                                 };
 
+                                                //Console.WriteLine(measurement.COD_TAG_PONTO_MEDICAO_001);
+
                                                 var measurement001DTO = _mapper.Map<Measurement, Client001DTO>(measurement);
                                                 measurement001DTO.ImportId = importId;
                                                 measurement001DTO.Summary = new ClientInfo
@@ -1230,14 +1232,20 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     errorsInImport.Add($"Algum erro ocorreu na hora de achar a configuração de cálculo, certifique-se que os pontos de medição do xml estão associados corretamente na configuração de cálculo dos fluídos, arquivo de nome: {data.Files[i].FileName}");
 
                 if (response003.Measurements.Count > 0)
+                {
                     response._003File.Add(response003);
+                }
 
                 if (response002.Measurements.Count > 0)
+                {
                     response._002File.Add(response002);
 
-                if (response001.Measurements.Count > 0)
-                    response._001File.Add(response001);
+                }
 
+                if (response001.Measurements.Count > 0)
+                {
+                    response._001File.Add(response001);
+                }
             }
 
             decimal totalLinearBurnetGas = 0;
@@ -1255,886 +1263,1044 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             var bswTotal = 0m;
             var divideBsw = 1;
 
-            foreach (var file001 in response._001File)
+
+            if (response._001File.Any())
             {
                 var oilCalculationByUepCode = await _oilCalculationRepository
-                    .GetOilVolumeCalculationByInstallationUEP(file001.Measurements[0].COD_INSTALACAO_001);
+                    .GetOilVolumeCalculationByInstallationUEP(response._001File[0].Measurements[0].COD_INSTALACAO_001);
 
                 if (oilCalculationByUepCode is null)
                     throw new NotFoundException("Cálculo de gás não encontrado");
 
-                foreach (var measurement in file001.Measurements)
+                foreach (var file001 in response._001File)
                 {
-
-                    bswTotal += measurement.BswManual;
-                    divideBsw++;
-                    totalOilWithoutBsw += measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001;
-
-                }
-
-                var containDrain = false;
-
-                foreach (var drain in oilCalculationByUepCode.DrainVolumes)
-                {
-                    for (int i = 0; i < file001.Measurements.Count; ++i)
+                    foreach (var measurement in file001.Measurements)
                     {
-                        var measurementResponse = file001.Measurements[i];
 
-                        if (drain.IsApplicable && drain.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_001)
-                        {
-                            containDrain = true;
-                            totalOil += measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001;
-                            break;
-                        }
+                        bswTotal += measurement.BswManual;
+                        divideBsw++;
+                        totalOilWithoutBsw += measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001;
+
                     }
 
-                    if (containDrain is false && response._001File.Count > 0)
+                    foreach (var drain in oilCalculationByUepCode.DrainVolumes)
                     {
-                        var measurementWrong = new Client001DTO
+                        for (int i = 0; i < file001.Measurements.Count; ++i)
                         {
-                            DHA_INICIO_PERIODO_MEDICAO_001 = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
-                            COD_INSTALACAO_001 = file001.Measurements[0].COD_INSTALACAO_001,
-                            COD_TAG_PONTO_MEDICAO_001 = drain.MeasuringPoint.TagPointMeasuring,
-                            Summary = new ClientInfo
+                            var measurementResponse = file001.Measurements[i];
+
+                            if (drain.IsApplicable && drain.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_001)
                             {
-                                Status = false,
-                                Date = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
-                                LocationMeasuringPoint = drain.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = drain.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
+                                totalOil += measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001;
+                                break;
                             }
-                        };
-                        file001.Measurements.Add(measurementWrong);
-                    }
-                }
-
-                var containDOR = false;
-
-
-                foreach (var dor in oilCalculationByUepCode.DORs)
-                {
-                    for (int i = 0; i < file001.Measurements.Count; ++i)
-                    {
-
-                        var measurementResponse = file001.Measurements[i];
-
-                        if (dor.IsApplicable && dor.MeasuringPoint.TagPointMeasuring.ToUpper().Contains(measurementResponse.COD_TAG_PONTO_MEDICAO_001.ToUpper()))
-                        {
-                            containDOR = true;
-                            totalOil -= measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001 * (1 - measurementResponse.BswManual);
-                            break;
                         }
+
+                        //if (containDrain is false && response._001File.Count > 0)
+                        //{
+                        //    var measurementWrong = new Client001DTO
+                        //    {
+                        //        DHA_INICIO_PERIODO_MEDICAO_001 = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
+                        //        COD_INSTALACAO_001 = file001.Measurements[0].COD_INSTALACAO_001,
+                        //        COD_TAG_PONTO_MEDICAO_001 = drain.MeasuringPoint.TagPointMeasuring,
+                        //        Summary = new ClientInfo
+                        //        {
+                        //            Status = false,
+                        //            Date = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
+                        //            LocationMeasuringPoint = drain.StaticLocalMeasuringPoint,
+                        //            TagMeasuringPoint = drain.MeasuringPoint.TagPointMeasuring,
+                        //            Volume = 0
+                        //        }
+                        //    };
+                        //    file001.Measurements.Add(measurementWrong);
+                        //}
                     }
 
-                    if (containDOR is false && response._001File.Count > 0)
+                    foreach (var dor in oilCalculationByUepCode.DORs)
                     {
-                        var measurementWrong = new Client001DTO
+                        for (int i = 0; i < file001.Measurements.Count; ++i)
                         {
-                            DHA_INICIO_PERIODO_MEDICAO_001 = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
-                            COD_INSTALACAO_001 = file001.Measurements[0].COD_INSTALACAO_001,
-                            COD_TAG_PONTO_MEDICAO_001 = dor.MeasuringPoint.TagPointMeasuring,
-                            Summary = new ClientInfo
-                            {
-                                Status = false,
-                                Date = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
-                                LocationMeasuringPoint = dor.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = dor.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            }
-                        };
 
-                        file001.Measurements.Add(measurementWrong);
+                            var measurementResponse = file001.Measurements[i];
+
+                            if (dor.IsApplicable && dor.MeasuringPoint.TagPointMeasuring.ToUpper() == measurementResponse.COD_TAG_PONTO_MEDICAO_001.ToUpper())
+                            {
+                                totalOil -= measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001 * (1 - measurementResponse.BswManual);
+                                break;
+                            }
+                        }
+
+                        //if (containDOR is false && response._001File.Count > 0)
+                        //{
+                        //    var measurementWrong = new Client001DTO
+                        //    {
+                        //        DHA_INICIO_PERIODO_MEDICAO_001 = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
+                        //        COD_INSTALACAO_001 = file001.Measurements[0].COD_INSTALACAO_001,
+                        //        COD_TAG_PONTO_MEDICAO_001 = dor.MeasuringPoint.TagPointMeasuring,
+                        //        Summary = new ClientInfo
+                        //        {
+                        //            Status = false,
+                        //            Date = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
+                        //            LocationMeasuringPoint = dor.StaticLocalMeasuringPoint,
+                        //            TagMeasuringPoint = dor.MeasuringPoint.TagPointMeasuring,
+                        //            Volume = 0
+                        //        }
+                        //    };
+                        //    file001.Measurements.Add(measurementWrong);
+                        //}
+                    }
+
+                    foreach (var section in oilCalculationByUepCode.Sections)
+                    {
+                        for (int i = 0; i < file001.Measurements.Count; ++i)
+                        {
+                            var measurementResponse = file001.Measurements[i];
+
+                            if (section.IsApplicable && section.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_001)
+                            {
+                                totalOil += measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001 * (1 - measurementResponse.BswManual);
+                                break;
+                            }
+                        }
+
+                        //if (containSection is false && response._001File.Count > 0)
+                        //{
+                        //    var measurementWrong = new Client001DTO
+                        //    {
+                        //        DHA_INICIO_PERIODO_MEDICAO_001 = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
+                        //        COD_INSTALACAO_001 = file001.Measurements[0].COD_INSTALACAO_001,
+                        //        COD_TAG_PONTO_MEDICAO_001 = section.MeasuringPoint.TagPointMeasuring,
+                        //        Summary = new ClientInfo
+                        //        {
+                        //            Status = false,
+                        //            Date = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
+                        //            LocationMeasuringPoint = section.StaticLocalMeasuringPoint,
+                        //            TagMeasuringPoint = section.MeasuringPoint.TagPointMeasuring,
+                        //            Volume = 0
+                        //        }
+                        //    };
+
+                        //    file001.Measurements.Add(measurementWrong);
+                        //}
+                    }
+
+                    foreach (var togRecovered in oilCalculationByUepCode.TOGRecoveredOils)
+                    {
+                        for (int i = 0; i < file001.Measurements.Count; ++i)
+                        {
+                            var measurementResponse = file001.Measurements[i];
+
+                            if (togRecovered.IsApplicable && togRecovered.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_001)
+                            {
+                                totalOil += measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001;
+
+                                break;
+                            }
+                        }
+
+                        //if (containTOGRecoveredOil is false && response._001File.Count > 0)
+                        //{
+                        //    var measurementWrong = new Client001DTO
+                        //    {
+                        //        DHA_INICIO_PERIODO_MEDICAO_001 = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
+                        //        COD_INSTALACAO_001 = file001.Measurements[0].COD_INSTALACAO_001,
+                        //        COD_TAG_PONTO_MEDICAO_001 = togRecovered.MeasuringPoint.TagPointMeasuring,
+                        //        Summary = new ClientInfo
+                        //        {
+                        //            Status = false,
+                        //            Date = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
+                        //            LocationMeasuringPoint = togRecovered.StaticLocalMeasuringPoint,
+                        //            TagMeasuringPoint = togRecovered.MeasuringPoint.TagPointMeasuring,
+                        //            Volume = 0
+                        //        }
+                        //    };
+                        //    file001.Measurements.Add(measurementWrong);
+
+
+                        //}
                     }
                 }
-
-                var containSection = false;
 
                 foreach (var section in oilCalculationByUepCode.Sections)
                 {
-                    for (int i = 0; i < file001.Measurements.Count; ++i)
-                    {
-                        var measurementResponse = file001.Measurements[i];
+                    var containsSection = false;
 
-                        if (section.IsApplicable && section.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_001)
+                    foreach (var file in response._001File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_001 == section.MeasuringPoint.TagPointMeasuring && section.IsApplicable))
                         {
-                            totalOil += measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001 * (1 - measurementResponse.BswManual);
-                            containSection = true;
-                            break;
+                            containsSection = true;
                         }
                     }
 
-                    if (containSection is false && response._001File.Count > 0)
+                    if (containsSection is false && response._001File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == section.MeasuringPoint.TagPointMeasuring))
                     {
-                        var measurementWrong = new Client001DTO
+                        response.MeasurementsNotFound.Add(new ClientInfo
                         {
-                            DHA_INICIO_PERIODO_MEDICAO_001 = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
-                            COD_INSTALACAO_001 = file001.Measurements[0].COD_INSTALACAO_001,
-                            COD_TAG_PONTO_MEDICAO_001 = section.MeasuringPoint.TagPointMeasuring,
-                            Summary = new ClientInfo
-                            {
-                                Status = false,
-                                Date = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
-                                LocationMeasuringPoint = section.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = section.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            }
-                        };
-                        file001.Measurements.Add(measurementWrong);
+                            Status = false,
+                            Date = response._001File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
+                            LocationMeasuringPoint = section.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = section.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
                     }
                 }
 
-                var containTOGRecoveredOil = false;
+                foreach (var drain in oilCalculationByUepCode.DrainVolumes)
+                {
+                    var containsDrain = false;
+
+                    foreach (var file in response._001File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_001 == drain.MeasuringPoint.TagPointMeasuring && drain.IsApplicable))
+                        {
+                            containsDrain = true;
+                        }
+                    }
+
+                    if (containsDrain is false && response._001File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == drain.MeasuringPoint.TagPointMeasuring))
+                    {
+                        response.MeasurementsNotFound.Add(new ClientInfo
+                        {
+                            Status = false,
+                            Date = response._001File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
+                            LocationMeasuringPoint = drain.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = drain.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
+                    }
+                }
+
+                foreach (var dor in oilCalculationByUepCode.DORs)
+                {
+                    var containsDor = false;
+
+                    foreach (var file in response._001File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_001 == dor.MeasuringPoint.TagPointMeasuring && dor.IsApplicable))
+                        {
+                            containsDor = true;
+                        }
+                    }
+
+                    if (containsDor is false && response._001File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == dor.MeasuringPoint.TagPointMeasuring))
+                    {
+                        response.MeasurementsNotFound.Add(new ClientInfo
+                        {
+                            Status = false,
+                            Date = response._001File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
+                            LocationMeasuringPoint = dor.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = dor.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
+                    }
+                }
 
                 foreach (var togRecovered in oilCalculationByUepCode.TOGRecoveredOils)
                 {
-                    for (int i = 0; i < file001.Measurements.Count; ++i)
+                    var containsTog = false;
+
+                    foreach (var file in response._001File)
                     {
-                        var measurementResponse = file001.Measurements[i];
-
-                        if (togRecovered.IsApplicable && togRecovered.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_001)
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_001 == togRecovered.MeasuringPoint.TagPointMeasuring && togRecovered.IsApplicable))
                         {
-                            totalOil += measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001;
-
-                            containTOGRecoveredOil = true;
-                            break;
+                            containsTog = true;
                         }
                     }
 
-                    if (containTOGRecoveredOil is false && response._001File.Count > 0)
+                    if (containsTog is false && response._001File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == togRecovered.MeasuringPoint.TagPointMeasuring))
                     {
-                        var measurementWrong = new Client001DTO
+                        response.MeasurementsNotFound.Add(new ClientInfo
                         {
-                            DHA_INICIO_PERIODO_MEDICAO_001 = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
-                            COD_INSTALACAO_001 = file001.Measurements[0].COD_INSTALACAO_001,
-                            COD_TAG_PONTO_MEDICAO_001 = togRecovered.MeasuringPoint.TagPointMeasuring,
-                            Summary = new ClientInfo
-                            {
-                                Status = false,
-                                Date = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
-                                LocationMeasuringPoint = togRecovered.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = togRecovered.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            }
-                        };
-                        file001.Measurements.Add(measurementWrong);
+                            Status = false,
+                            Date = response._001File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
+                            LocationMeasuringPoint = togRecovered.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = togRecovered.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
                     }
                 }
+
             }
 
-            foreach (var file002 in response._002File)
+            if (response._002File.Any())
             {
-
                 var gasCalculationByUepCode = await _gasCalculationRepository
-                .GetGasVolumeCalculationByInstallationUEP(file002.Measurements[0].COD_INSTALACAO_002);
+              .GetGasVolumeCalculationByInstallationUEP(response._002File[0].Measurements[0].COD_INSTALACAO_002);
 
                 if (gasCalculationByUepCode is null)
                     throw new NotFoundException("Cálculo de gás não encontrado");
 
-                var containAssistanceGas = false;
-
-                foreach (var assistanceGas in gasCalculationByUepCode.AssistanceGases)
+                foreach (var file002 in response._002File)
                 {
-                    for (int i = 0; i < file002.Measurements.Count; ++i)
+                    foreach (var assistanceGas in gasCalculationByUepCode.AssistanceGases)
                     {
-                        var measurementResponse = file002.Measurements[i];
-
-                        if (assistanceGas.IsApplicable && assistanceGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
+                        for (int i = 0; i < file002.Measurements.Count; ++i)
                         {
-                            totalLinearBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
-                            gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
+                            var measurementResponse = file002.Measurements[i];
 
-                            containAssistanceGas = true;
-                            break;
+                            if (assistanceGas.IsApplicable && assistanceGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
+                            {
+                                totalLinearBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
+                                gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
+
+                                break;
+                            }
                         }
                     }
 
-                    if (containAssistanceGas is false && response._002File.Count > 0)
+                    foreach (var exportGas in gasCalculationByUepCode.ExportGases)
                     {
-                        var measurementWrong = new Client002DTO
+                        for (int i = 0; i < file002.Measurements.Count; ++i)
                         {
-                            DHA_INICIO_PERIODO_MEDICAO_002 = file002.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
-                            COD_INSTALACAO_002 = file002.Measurements[0].COD_INSTALACAO_002,
-                            COD_TAG_PONTO_MEDICAO_002 = assistanceGas.MeasuringPoint.TagPointMeasuring,
-                            Summary = new ClientInfo
+                            var measurementResponse = file002.Measurements[i];
+
+                            if (exportGas.IsApplicable && exportGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
                             {
-                                Status = false,
-                                Date = file002.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
-                                LocationMeasuringPoint = assistanceGas.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = assistanceGas.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
+                                totalLinearExportedGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
+                                gasResume.ExportedGas.MeasuringPoints.Add(measurementResponse.Summary);
+
+                                break;
                             }
-                        };
-                        file002.Measurements.Add(measurementWrong);
-                    }
-                }
-
-                var containExportGas = false;
-
-                foreach (var exportGas in gasCalculationByUepCode.ExportGases)
-                {
-                    for (int i = 0; i < file002.Measurements.Count; ++i)
-                    {
-                        var measurementResponse = file002.Measurements[i];
-
-                        if (exportGas.IsApplicable && exportGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
-                        {
-                            totalLinearExportedGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
-                            gasResume.ExportedGas.MeasuringPoints.Add(measurementResponse.Summary);
-
-                            containExportGas = true;
-                            break;
                         }
                     }
 
-                    if (containExportGas is false && response._002File.Count > 0)
+                    foreach (var highPressureGas in gasCalculationByUepCode.HighPressureGases)
                     {
-                        var measurementWrong = new Client002DTO
+                        for (int i = 0; i < file002.Measurements.Count; ++i)
                         {
-                            DHA_INICIO_PERIODO_MEDICAO_002 = file002.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
-                            COD_INSTALACAO_002 = file002.Measurements[0].COD_INSTALACAO_002,
-                            COD_TAG_PONTO_MEDICAO_002 = exportGas.MeasuringPoint.TagPointMeasuring,
-                            Summary = new ClientInfo
+                            var measurementResponse = file002.Measurements[i];
+
+                            if (highPressureGas.IsApplicable && highPressureGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
                             {
-                                Status = false,
-                                Date = file002.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
-                                LocationMeasuringPoint = exportGas.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = exportGas.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
+                                totalLinearFuelGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
+
+                                gasResume.FuelGas.MeasuringPoints.Add(measurementResponse.Summary);
+
+                                break;
                             }
-                        };
-                        file002.Measurements.Add(measurementWrong);
+                        }
+
                     }
-                }
 
-                var containHighPressureGas = false;
-
-                foreach (var highPressureGas in gasCalculationByUepCode.HighPressureGases)
-                {
-                    for (int i = 0; i < file002.Measurements.Count; ++i)
+                    foreach (var hpFlare in gasCalculationByUepCode.HPFlares)
                     {
-                        var measurementResponse = file002.Measurements[i];
-
-                        if (highPressureGas.IsApplicable && highPressureGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
+                        for (int i = 0; i < file002.Measurements.Count; ++i)
                         {
-                            totalLinearFuelGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
+                            var measurementResponse = file002.Measurements[i];
 
-                            containHighPressureGas = true;
+                            if (hpFlare.IsApplicable && hpFlare.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
+                            {
+                                totalLinearBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
 
-                            gasResume.FuelGas.MeasuringPoints.Add(measurementResponse.Summary);
+                                gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
 
-                            break;
+                                break;
+                            }
                         }
                     }
 
-                    if (containHighPressureGas is false && response._002File.Count > 0)
+                    foreach (var importGas in gasCalculationByUepCode.ImportGases)
                     {
-                        var measurementWrong = new Client002DTO
+                        for (int i = 0; i < file002.Measurements.Count; ++i)
                         {
-                            DHA_INICIO_PERIODO_MEDICAO_002 = file002.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
-                            COD_INSTALACAO_002 = file002.Measurements[0].COD_INSTALACAO_002,
-                            COD_TAG_PONTO_MEDICAO_002 = highPressureGas.MeasuringPoint.TagPointMeasuring,
-                            Summary = new ClientInfo
+                            var measurementResponse = file002.Measurements[i];
+
+                            if (importGas.IsApplicable && importGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
                             {
-                                Status = false,
-                                Date = file002.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
-                                LocationMeasuringPoint = highPressureGas.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = highPressureGas.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
+                                totalLinearImportedGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
+
+                                gasResume.ImportedGas.MeasuringPoints.Add(measurementResponse.Summary);
+
+                                break;
                             }
-                        };
-                        file002.Measurements.Add(measurementWrong);
+                        }
                     }
 
+                    foreach (var lowPressure in gasCalculationByUepCode.LowPressureGases)
+                    {
+                        for (int i = 0; i < file002.Measurements.Count; ++i)
+                        {
+                            var measurementResponse = file002.Measurements[i];
 
+                            if (lowPressure.IsApplicable && lowPressure.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
+                            {
+                                totalLinearFuelGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
+
+                                gasResume.FuelGas.MeasuringPoints.Add(measurementResponse.Summary);
+
+                                break;
+                            }
+                        }
+                    }
+
+                    foreach (var lpFlare in gasCalculationByUepCode.LPFlares)
+                    {
+                        for (int i = 0; i < file002.Measurements.Count; ++i)
+                        {
+                            var measurementResponse = file002.Measurements[i];
+
+                            if (lpFlare.IsApplicable && lpFlare.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
+                            {
+                                totalLinearBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
+                                gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
+
+                                break;
+                            }
+                        }
+                    }
+
+                    foreach (var pilotGas in gasCalculationByUepCode.PilotGases)
+                    {
+                        for (int i = 0; i < file002.Measurements.Count; ++i)
+                        {
+                            var measurementResponse = file002.Measurements[i];
+
+                            if (pilotGas.IsApplicable && pilotGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
+                            {
+                                totalLinearBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
+                                totalLinearFuelGas -= measurementResponse.MED_CORRIGIDO_MVMDO_002;
+
+                                gasResume.FuelGas.MeasuringPoints.Add(measurementResponse.Summary);
+                                gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
+
+                                break;
+                            }
+                        }
+                    }
+
+                    foreach (var purgeGas in gasCalculationByUepCode.PurgeGases)
+                    {
+                        for (int i = 0; i < file002.Measurements.Count; ++i)
+                        {
+                            var measurementResponse = file002.Measurements[i];
+
+                            if (purgeGas.IsApplicable && purgeGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
+                            {
+                                totalLinearBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
+                                totalLinearFuelGas -= measurementResponse.MED_CORRIGIDO_MVMDO_002;
+
+                                gasResume.FuelGas.MeasuringPoints.Add(measurementResponse.Summary);
+                                gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
+
+                                break;
+                            }
+                        }
+
+                    }
                 }
 
-                var containHPFlare = false;
+                foreach (var assistance in gasCalculationByUepCode.AssistanceGases)
+                {
+                    var containsAssistance = false;
+
+                    foreach (var file in response._002File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_002 == assistance.MeasuringPoint.TagPointMeasuring && assistance.IsApplicable))
+                        {
+                            containsAssistance = true;
+                        }
+                    }
+
+                    if (containsAssistance is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == assistance.MeasuringPoint.TagPointMeasuring))
+                    {
+                        response.MeasurementsNotFound.Add(new ClientInfo
+                        {
+                            Status = false,
+                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
+                            LocationMeasuringPoint = assistance.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = assistance.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
+                    }
+                }
 
                 foreach (var hpFlare in gasCalculationByUepCode.HPFlares)
                 {
-                    for (int i = 0; i < file002.Measurements.Count; ++i)
+                    var containsHpFlare = false;
+
+                    foreach (var file in response._002File)
                     {
-                        var measurementResponse = file002.Measurements[i];
-
-                        if (hpFlare.IsApplicable && hpFlare.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_002 == hpFlare.MeasuringPoint.TagPointMeasuring && hpFlare.IsApplicable))
                         {
-                            totalLinearBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
-
-                            gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
-
-                            containHPFlare = true;
-                            break;
+                            containsHpFlare = true;
                         }
                     }
 
-                    if (containHPFlare is false && response._002File.Count > 0)
+                    if (containsHpFlare is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == hpFlare.MeasuringPoint.TagPointMeasuring))
                     {
-                        var measurementWrong = new Client002DTO
+                        response.MeasurementsNotFound.Add(new ClientInfo
                         {
-                            DHA_INICIO_PERIODO_MEDICAO_002 = file002.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
-                            COD_INSTALACAO_002 = file002.Measurements[0].COD_INSTALACAO_002,
-                            COD_TAG_PONTO_MEDICAO_002 = hpFlare.MeasuringPoint.TagPointMeasuring,
-                            Summary = new ClientInfo
-                            {
-                                Status = false,
-                                Date = file002.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
-                                LocationMeasuringPoint = hpFlare.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = hpFlare.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            }
-                        };
-                        file002.Measurements.Add(measurementWrong);
+                            Status = false,
+                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
+                            LocationMeasuringPoint = hpFlare.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = hpFlare.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
                     }
                 }
-
-                var containImportGas = false;
-
-                foreach (var importGas in gasCalculationByUepCode.ImportGases)
-                {
-                    for (int i = 0; i < file002.Measurements.Count; ++i)
-                    {
-                        var measurementResponse = file002.Measurements[i];
-
-                        if (importGas.IsApplicable && importGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
-                        {
-                            totalLinearImportedGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
-
-                            gasResume.ImportedGas.MeasuringPoints.Add(measurementResponse.Summary);
-
-                            containImportGas = true;
-                            break;
-                        }
-                    }
-
-                    if (containImportGas is false && response._002File.Count > 0)
-                    {
-                        var measurementWrong = new Client002DTO
-                        {
-                            DHA_INICIO_PERIODO_MEDICAO_002 = file002.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
-                            COD_INSTALACAO_002 = file002.Measurements[0].COD_INSTALACAO_002,
-                            COD_TAG_PONTO_MEDICAO_002 = importGas.MeasuringPoint.TagPointMeasuring,
-                            Summary = new ClientInfo
-                            {
-                                Status = false,
-                                Date = file002.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
-                                LocationMeasuringPoint = importGas.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = importGas.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            }
-                        };
-                        file002.Measurements.Add(measurementWrong);
-                    }
-                }
-
-                var containLowPressureGas = false;
-
-                foreach (var lowPressure in gasCalculationByUepCode.LowPressureGases)
-                {
-                    for (int i = 0; i < file002.Measurements.Count; ++i)
-                    {
-                        var measurementResponse = file002.Measurements[i];
-
-                        if (lowPressure.IsApplicable && lowPressure.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
-                        {
-                            totalLinearFuelGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
-
-                            gasResume.FuelGas.MeasuringPoints.Add(measurementResponse.Summary);
-
-                            containLowPressureGas = true;
-                            break;
-                        }
-                    }
-
-                    if (containLowPressureGas is false && response._002File.Count > 0)
-                    {
-                        var measurementWrong = new Client002DTO
-                        {
-                            DHA_INICIO_PERIODO_MEDICAO_002 = file002.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
-                            COD_INSTALACAO_002 = file002.Measurements[0].COD_INSTALACAO_002,
-                            COD_TAG_PONTO_MEDICAO_002 = lowPressure.MeasuringPoint.TagPointMeasuring,
-                            Summary = new ClientInfo
-                            {
-                                Status = false,
-                                Date = file002.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
-                                LocationMeasuringPoint = lowPressure.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = lowPressure.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            }
-                        };
-                        file002.Measurements.Add(measurementWrong);
-                    }
-                }
-                var containLPFlare = false;
 
                 foreach (var lpFlare in gasCalculationByUepCode.LPFlares)
                 {
-                    for (int i = 0; i < file002.Measurements.Count; ++i)
+                    var containsLpFlare = false;
+
+                    foreach (var file in response._002File)
                     {
-                        var measurementResponse = file002.Measurements[i];
-
-                        if (lpFlare.IsApplicable && lpFlare.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_002 == lpFlare.MeasuringPoint.TagPointMeasuring && lpFlare.IsApplicable))
                         {
-                            totalLinearBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
-                            gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
-
-                            containLPFlare = true;
-                            break;
+                            containsLpFlare = true;
                         }
                     }
 
-                    if (containLPFlare is false && response._002File.Count > 0)
+                    if (containsLpFlare is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == lpFlare.MeasuringPoint.TagPointMeasuring))
                     {
-                        var measurementWrong = new Client002DTO
+                        response.MeasurementsNotFound.Add(new ClientInfo
                         {
-                            DHA_INICIO_PERIODO_MEDICAO_002 = file002.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
-                            COD_INSTALACAO_002 = file002.Measurements[0].COD_INSTALACAO_002,
-                            COD_TAG_PONTO_MEDICAO_002 = lpFlare.MeasuringPoint.TagPointMeasuring,
-                            Summary = new ClientInfo
-                            {
-                                Status = false,
-                                Date = file002.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
-                                LocationMeasuringPoint = lpFlare.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = lpFlare.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            }
-                        };
-                        file002.Measurements.Add(measurementWrong);
+                            Status = false,
+                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
+                            LocationMeasuringPoint = lpFlare.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = lpFlare.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
                     }
                 }
 
-                var containPilotGas = false;
-
-                foreach (var pilotGas in gasCalculationByUepCode.PilotGases)
+                foreach (var exportGas in gasCalculationByUepCode.ExportGases)
                 {
-                    for (int i = 0; i < file002.Measurements.Count; ++i)
+                    var containsExportGas = false;
+
+                    foreach (var file in response._002File)
                     {
-                        var measurementResponse = file002.Measurements[i];
-
-                        if (pilotGas.IsApplicable && pilotGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_002 == exportGas.MeasuringPoint.TagPointMeasuring && exportGas.IsApplicable))
                         {
-                            totalLinearBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
-                            totalLinearFuelGas -= measurementResponse.MED_CORRIGIDO_MVMDO_002;
-
-                            gasResume.FuelGas.MeasuringPoints.Add(measurementResponse.Summary);
-                            gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
-
-                            containPilotGas = true;
-                            break;
+                            containsExportGas = true;
                         }
                     }
 
-                    if (containPilotGas is false && response._002File.Count > 0)
+                    if (containsExportGas is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == exportGas.MeasuringPoint.TagPointMeasuring))
                     {
-                        var measurementWrong = new Client002DTO
+                        response.MeasurementsNotFound.Add(new ClientInfo
                         {
-                            DHA_INICIO_PERIODO_MEDICAO_002 = file002.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
-                            COD_INSTALACAO_002 = file002.Measurements[0].COD_INSTALACAO_002,
-                            COD_TAG_PONTO_MEDICAO_002 = pilotGas.MeasuringPoint.TagPointMeasuring,
-                            Summary = new ClientInfo
-                            {
-                                Status = false,
-                                Date = file002.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
-                                LocationMeasuringPoint = pilotGas.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = pilotGas.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            }
-                        };
-                        file002.Measurements.Add(measurementWrong);
+                            Status = false,
+                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
+                            LocationMeasuringPoint = exportGas.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = exportGas.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
                     }
                 }
-                var containPurgeGas = false;
+
+                foreach (var importGas in gasCalculationByUepCode.ImportGases)
+                {
+                    var containsImportGas = false;
+
+                    foreach (var file in response._002File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_002 == importGas.MeasuringPoint.TagPointMeasuring && importGas.IsApplicable))
+                        {
+                            containsImportGas = true;
+                        }
+                    }
+
+                    if (containsImportGas is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == importGas.MeasuringPoint.TagPointMeasuring))
+                    {
+                        response.MeasurementsNotFound.Add(new ClientInfo
+                        {
+                            Status = false,
+                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
+                            LocationMeasuringPoint = importGas.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = importGas.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
+                    }
+                }
 
                 foreach (var purgeGas in gasCalculationByUepCode.PurgeGases)
                 {
-                    for (int i = 0; i < file002.Measurements.Count; ++i)
+                    var containsPurge = false;
+
+                    foreach (var file in response._002File)
                     {
-                        var measurementResponse = file002.Measurements[i];
-
-                        if (purgeGas.IsApplicable && purgeGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002)
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_002 == purgeGas.MeasuringPoint.TagPointMeasuring && purgeGas.IsApplicable))
                         {
-                            totalLinearBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_002;
-                            totalLinearFuelGas -= measurementResponse.MED_CORRIGIDO_MVMDO_002;
-
-                            gasResume.FuelGas.MeasuringPoints.Add(measurementResponse.Summary);
-                            gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
-
-                            containPurgeGas = true;
-                            break;
+                            containsPurge = true;
                         }
                     }
 
-                    if (containPurgeGas is false && response._002File.Count > 0)
+                    if (containsPurge is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == purgeGas.MeasuringPoint.TagPointMeasuring))
                     {
-                        var measurementWrong = new Client002DTO
+                        response.MeasurementsNotFound.Add(new ClientInfo
                         {
-                            DHA_INICIO_PERIODO_MEDICAO_002 = file002.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
-                            COD_INSTALACAO_002 = file002.Measurements[0].COD_INSTALACAO_002,
-                            COD_TAG_PONTO_MEDICAO_002 = purgeGas.MeasuringPoint.TagPointMeasuring,
-                            Summary = new ClientInfo
-                            {
-                                Status = false,
-                                Date = file002.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
-                                LocationMeasuringPoint = purgeGas.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = purgeGas.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            }
-                        };
-                        file002.Measurements.Add(measurementWrong);
+                            Status = false,
+                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
+                            LocationMeasuringPoint = purgeGas.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = purgeGas.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
                     }
                 }
+
+                foreach (var pilotGas in gasCalculationByUepCode.PilotGases)
+                {
+                    var containsPilot = false;
+
+                    foreach (var file in response._002File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_002 == pilotGas.MeasuringPoint.TagPointMeasuring && pilotGas.IsApplicable))
+                        {
+                            containsPilot = true;
+                        }
+                    }
+
+                    if (containsPilot is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == pilotGas.MeasuringPoint.TagPointMeasuring))
+                    {
+                        response.MeasurementsNotFound.Add(new ClientInfo
+                        {
+                            Status = false,
+                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
+                            LocationMeasuringPoint = pilotGas.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = pilotGas.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
+                    }
+                }
+
+                foreach (var highPressure in gasCalculationByUepCode.HighPressureGases)
+                {
+                    var containsHigh = false;
+
+                    foreach (var file in response._002File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_002 == highPressure.MeasuringPoint.TagPointMeasuring && highPressure.IsApplicable))
+                        {
+                            containsHigh = true;
+                        }
+                    }
+
+                    if (containsHigh is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == highPressure.MeasuringPoint.TagPointMeasuring))
+                    {
+                        response.MeasurementsNotFound.Add(new ClientInfo
+                        {
+                            Status = false,
+                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
+                            LocationMeasuringPoint = highPressure.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = highPressure.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
+                    }
+                }
+
+                foreach (var lowPressure in gasCalculationByUepCode.LowPressureGases)
+                {
+                    var containsLow = false;
+
+                    foreach (var file in response._002File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_002 == lowPressure.MeasuringPoint.TagPointMeasuring && lowPressure.IsApplicable))
+                        {
+                            containsLow = true;
+                        }
+                    }
+
+                    if (containsLow is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == lowPressure.MeasuringPoint.TagPointMeasuring))
+                    {
+                        response.MeasurementsNotFound.Add(new ClientInfo
+                        {
+                            Status = false,
+                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
+                            LocationMeasuringPoint = lowPressure.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = lowPressure.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
+                    }
+                }
+
             }
 
-            foreach (var file003 in response._003File)
+            if (response._003File.Any())
             {
                 var gasCalculationByUepCode = await _gasCalculationRepository
-                    .GetGasVolumeCalculationByInstallationUEP(file003.Measurements[0].COD_INSTALACAO_003);
+                                  .GetGasVolumeCalculationByInstallationUEP(response._003File[0].Measurements[0].COD_INSTALACAO_003);
                 if (gasCalculationByUepCode is null)
                     throw new NotFoundException("Cálculo de gás não encontrado");
 
-                var containAssistanceGas = false;
-
-                foreach (var assistanceGas in gasCalculationByUepCode.AssistanceGases)
+                foreach (var file003 in response._003File)
                 {
-                    for (int i = 0; i < file003.Measurements.Count; ++i)
+
+                    foreach (var assistanceGas in gasCalculationByUepCode.AssistanceGases)
                     {
-                        var measurementResponse = file003.Measurements[i];
-
-                        if (assistanceGas.IsApplicable && assistanceGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
+                        for (int i = 0; i < file003.Measurements.Count; ++i)
                         {
-                            totalDiferencialBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
-                            gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
+                            var measurementResponse = file003.Measurements[i];
 
-                            containAssistanceGas = true;
-                            break;
+                            if (assistanceGas.IsApplicable && assistanceGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
+                            {
+                                totalDiferencialBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
+                                gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
+
+                                break;
+                            }
                         }
                     }
 
-                    if (containAssistanceGas is false && response._003File.Count > 0)
+                    foreach (var exportGas in gasCalculationByUepCode.ExportGases)
                     {
-                        var measurementWrong = new Client003DTO
+                        for (int i = 0; i < file003.Measurements.Count; ++i)
                         {
-                            DHA_INICIO_PERIODO_MEDICAO_003 = file003.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
-                            COD_INSTALACAO_003 = file003.Measurements[0].COD_INSTALACAO_003,
-                            COD_TAG_PONTO_MEDICAO_003 = assistanceGas.MeasuringPoint.TagPointMeasuring,
-                            Summary = new ClientInfo
+                            var measurementResponse = file003.Measurements[i];
+
+                            if (exportGas.IsApplicable && exportGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
                             {
-                                Status = false,
-                                Date = file003.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
-                                LocationMeasuringPoint = assistanceGas.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = assistanceGas.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
+                                totalDiferencialExportedGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
+                                gasResume.ExportedGas.MeasuringPoints.Add(measurementResponse.Summary);
+
+                                break;
                             }
-                        };
-                        file003.Measurements.Add(measurementWrong);
-                    }
-                }
-
-                var containExportGas = false;
-
-                foreach (var exportGas in gasCalculationByUepCode.ExportGases)
-                {
-                    for (int i = 0; i < file003.Measurements.Count; ++i)
-                    {
-                        var measurementResponse = file003.Measurements[i];
-
-                        if (exportGas.IsApplicable && exportGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
-                        {
-                            totalDiferencialExportedGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
-                            gasResume.ExportedGas.MeasuringPoints.Add(measurementResponse.Summary);
-
-                            containExportGas = true;
-                            break;
                         }
                     }
 
-                    if (containExportGas is false && response._003File.Count > 0)
+                    foreach (var highPressureGas in gasCalculationByUepCode.HighPressureGases)
                     {
-                        var measurementWrong = new Client003DTO
+                        for (int i = 0; i < file003.Measurements.Count; ++i)
                         {
-                            DHA_INICIO_PERIODO_MEDICAO_003 = file003.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
-                            COD_INSTALACAO_003 = file003.Measurements[0].COD_INSTALACAO_003,
-                            COD_TAG_PONTO_MEDICAO_003 = exportGas.MeasuringPoint.TagPointMeasuring,
-                            Summary = new ClientInfo
+                            var measurementResponse = file003.Measurements[i];
+
+                            if (highPressureGas.IsApplicable && highPressureGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
                             {
-                                Status = false,
-                                Date = file003.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
-                                LocationMeasuringPoint = exportGas.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = exportGas.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
+                                totalDiferencialFuelGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
+                                gasResume.FuelGas.MeasuringPoints.Add(measurementResponse.Summary);
+
+                                break;
                             }
-                        };
-                        file003.Measurements.Add(measurementWrong);
-                    }
-                }
-
-                var containHighPressureGas = false;
-
-                foreach (var highPressureGas in gasCalculationByUepCode.HighPressureGases)
-                {
-                    for (int i = 0; i < file003.Measurements.Count; ++i)
-                    {
-                        var measurementResponse = file003.Measurements[i];
-
-                        if (highPressureGas.IsApplicable && highPressureGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
-                        {
-                            totalDiferencialFuelGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
-                            gasResume.FuelGas.MeasuringPoints.Add(measurementResponse.Summary);
-
-                            containHighPressureGas = true;
-                            break;
                         }
                     }
 
-                    if (containHighPressureGas is false && response._003File.Count > 0)
+                    foreach (var hpFlare in gasCalculationByUepCode.HPFlares)
                     {
-                        var measurementWrong = new Client003DTO
+                        for (int i = 0; i < file003.Measurements.Count; ++i)
                         {
-                            DHA_INICIO_PERIODO_MEDICAO_003 = file003.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
-                            COD_INSTALACAO_003 = file003.Measurements[0].COD_INSTALACAO_003,
-                            COD_TAG_PONTO_MEDICAO_003 = highPressureGas.MeasuringPoint.TagPointMeasuring,
-                            Summary = new ClientInfo
+                            var measurementResponse = file003.Measurements[i];
+
+                            if (hpFlare.IsApplicable && hpFlare.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
                             {
-                                Status = false,
-                                Date = file003.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
-                                LocationMeasuringPoint = highPressureGas.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = highPressureGas.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
+                                totalDiferencialBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
+                                gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
+
+                                break;
                             }
-                        };
-                        file003.Measurements.Add(measurementWrong);
+                        }
+                    }
+
+                    foreach (var importGas in gasCalculationByUepCode.ImportGases)
+                    {
+                        for (int i = 0; i < file003.Measurements.Count; ++i)
+                        {
+                            var measurementResponse = file003.Measurements[i];
+
+                            if (importGas.IsApplicable && importGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
+                            {
+                                totalDiferencialImportedGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
+                                gasResume.ImportedGas.MeasuringPoints.Add(measurementResponse.Summary);
+
+                                break;
+                            }
+                        }
+                    }
+
+                    foreach (var lowPressure in gasCalculationByUepCode.LowPressureGases)
+                    {
+                        for (int i = 0; i < file003.Measurements.Count; ++i)
+                        {
+                            var measurementResponse = file003.Measurements[i];
+
+                            if (lowPressure.IsApplicable && lowPressure.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
+                            {
+                                totalDiferencialFuelGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
+                                gasResume.FuelGas.MeasuringPoints.Add(measurementResponse.Summary);
+
+                                break;
+                            }
+                        }
+                    }
+
+                    foreach (var lpFlare in gasCalculationByUepCode.LPFlares)
+                    {
+                        for (int i = 0; i < file003.Measurements.Count; ++i)
+                        {
+                            var measurementResponse = file003.Measurements[i];
+
+                            if (lpFlare.IsApplicable && lpFlare.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
+                            {
+                                totalDiferencialBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
+                                gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
+
+                                break;
+                            }
+                        }
+                    }
+
+                    foreach (var pilotGas in gasCalculationByUepCode.PilotGases)
+                    {
+                        for (int i = 0; i < file003.Measurements.Count; ++i)
+                        {
+                            var measurementResponse = file003.Measurements[i];
+
+                            if (pilotGas.IsApplicable && pilotGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
+                            {
+                                totalDiferencialBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
+                                totalDiferencialFuelGas -= measurementResponse.MED_CORRIGIDO_MVMDO_003;
+
+                                gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
+                                gasResume.FuelGas.MeasuringPoints.Add(measurementResponse.Summary);
+
+                                break;
+                            }
+                        }
+
+                    }
+
+                    foreach (var purgeGas in gasCalculationByUepCode.PurgeGases)
+                    {
+                        for (int i = 0; i < file003.Measurements.Count; ++i)
+                        {
+                            var measurementResponse = file003.Measurements[i];
+
+                            if (purgeGas.IsApplicable && purgeGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
+                            {
+                                totalDiferencialBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
+                                totalDiferencialFuelGas -= measurementResponse.MED_CORRIGIDO_MVMDO_003;
+                                gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
+                                gasResume.FuelGas.MeasuringPoints.Add(measurementResponse.Summary);
+                                break;
+                            }
+                        }
                     }
                 }
 
-                var containHPFlare = false;
+                foreach (var assistance in gasCalculationByUepCode.AssistanceGases)
+                {
+                    var containsAssistance = false;
+
+                    foreach (var file in response._003File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == assistance.MeasuringPoint.TagPointMeasuring && assistance.IsApplicable))
+                        {
+                            containsAssistance = true;
+                        }
+                    }
+
+                    if (containsAssistance is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == assistance.MeasuringPoint.TagPointMeasuring))
+                    {
+                        response.MeasurementsNotFound.Add(new ClientInfo
+                        {
+                            Status = false,
+                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
+                            LocationMeasuringPoint = assistance.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = assistance.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
+                    }
+                }
 
                 foreach (var hpFlare in gasCalculationByUepCode.HPFlares)
                 {
-                    for (int i = 0; i < file003.Measurements.Count; ++i)
+                    var containsHpFlare = false;
+
+                    foreach (var file in response._003File)
                     {
-                        var measurementResponse = file003.Measurements[i];
-
-                        if (hpFlare.IsApplicable && hpFlare.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == hpFlare.MeasuringPoint.TagPointMeasuring && hpFlare.IsApplicable))
                         {
-                            totalDiferencialBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
-                            gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
-
-                            containHPFlare = true;
-                            break;
+                            containsHpFlare = true;
                         }
                     }
 
-                    if (containHPFlare is false && response._003File.Count > 0)
+                    if (containsHpFlare is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == hpFlare.MeasuringPoint.TagPointMeasuring))
                     {
-                        var measurementWrong = new Client003DTO
+                        response.MeasurementsNotFound.Add(new ClientInfo
                         {
-                            DHA_INICIO_PERIODO_MEDICAO_003 = file003.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
-                            COD_INSTALACAO_003 = file003.Measurements[0].COD_INSTALACAO_003,
-                            COD_TAG_PONTO_MEDICAO_003 = hpFlare.MeasuringPoint.TagPointMeasuring,
-                            Summary = new ClientInfo
-                            {
-                                Status = false,
-                                Date = file003.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
-                                LocationMeasuringPoint = hpFlare.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = hpFlare.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            }
-                        };
-                        file003.Measurements.Add(measurementWrong);
+                            Status = false,
+                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
+                            LocationMeasuringPoint = hpFlare.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = hpFlare.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
                     }
                 }
-
-                var containImportGas = false;
-
-                foreach (var importGas in gasCalculationByUepCode.ImportGases)
-                {
-                    for (int i = 0; i < file003.Measurements.Count; ++i)
-                    {
-                        var measurementResponse = file003.Measurements[i];
-
-                        if (importGas.IsApplicable && importGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
-                        {
-                            totalDiferencialImportedGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
-                            gasResume.ImportedGas.MeasuringPoints.Add(measurementResponse.Summary);
-
-                            containImportGas = true;
-                            break;
-                        }
-                    }
-
-                    if (containImportGas is false && response._003File.Count > 0)
-                    {
-                        var measurementWrong = new Client003DTO
-                        {
-                            DHA_INICIO_PERIODO_MEDICAO_003 = file003.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
-                            COD_INSTALACAO_003 = file003.Measurements[0].COD_INSTALACAO_003,
-                            COD_TAG_PONTO_MEDICAO_003 = importGas.MeasuringPoint.TagPointMeasuring,
-                            Summary = new ClientInfo
-                            {
-                                Status = false,
-                                Date = file003.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
-                                LocationMeasuringPoint = importGas.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = importGas.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            }
-                        };
-                        file003.Measurements.Add(measurementWrong);
-                    }
-                }
-
-                var containLowPressureGas = false;
-
-                foreach (var lowPressure in gasCalculationByUepCode.LowPressureGases)
-                {
-                    for (int i = 0; i < file003.Measurements.Count; ++i)
-                    {
-                        var measurementResponse = file003.Measurements[i];
-
-                        if (lowPressure.IsApplicable && lowPressure.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
-                        {
-                            totalDiferencialFuelGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
-                            gasResume.FuelGas.MeasuringPoints.Add(measurementResponse.Summary);
-
-                            containLowPressureGas = true;
-                            break;
-                        }
-                    }
-
-                    if (containLowPressureGas is false && response._003File.Count > 0)
-                    {
-                        var measurementWrong = new Client003DTO
-                        {
-                            DHA_INICIO_PERIODO_MEDICAO_003 = file003.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
-                            COD_INSTALACAO_003 = file003.Measurements[0].COD_INSTALACAO_003,
-                            COD_TAG_PONTO_MEDICAO_003 = lowPressure.MeasuringPoint.TagPointMeasuring,
-                            Summary = new ClientInfo
-                            {
-                                Status = false,
-                                Date = file003.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
-                                LocationMeasuringPoint = lowPressure.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = lowPressure.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            }
-                        };
-                        file003.Measurements.Add(measurementWrong);
-                    }
-                }
-                var containLPFlare = false;
 
                 foreach (var lpFlare in gasCalculationByUepCode.LPFlares)
                 {
-                    for (int i = 0; i < file003.Measurements.Count; ++i)
+                    var containsLpFlare = false;
+
+                    foreach (var file in response._003File)
                     {
-                        var measurementResponse = file003.Measurements[i];
-
-                        if (lpFlare.IsApplicable && lpFlare.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == lpFlare.MeasuringPoint.TagPointMeasuring && lpFlare.IsApplicable))
                         {
-                            totalDiferencialBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
-                            gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
-
-                            containLPFlare = true;
-                            break;
+                            containsLpFlare = true;
                         }
                     }
 
-                    if (containLPFlare is false && response._003File.Count > 0)
+                    if (containsLpFlare is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == lpFlare.MeasuringPoint.TagPointMeasuring))
                     {
-                        var measurementWrong = new Client003DTO
+                        response.MeasurementsNotFound.Add(new ClientInfo
                         {
-                            DHA_INICIO_PERIODO_MEDICAO_003 = file003.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
-                            COD_INSTALACAO_003 = file003.Measurements[0].COD_INSTALACAO_003,
-                            COD_TAG_PONTO_MEDICAO_003 = lpFlare.MeasuringPoint.TagPointMeasuring,
-                            Summary = new ClientInfo
-                            {
-                                Status = false,
-                                Date = file003.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
-                                LocationMeasuringPoint = lpFlare.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = lpFlare.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            }
-                        };
-                        file003.Measurements.Add(measurementWrong);
+                            Status = false,
+                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
+                            LocationMeasuringPoint = lpFlare.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = lpFlare.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
                     }
                 }
 
-                var containPilotGas = false;
-
-                foreach (var pilotGas in gasCalculationByUepCode.PilotGases)
+                foreach (var exportGas in gasCalculationByUepCode.ExportGases)
                 {
-                    for (int i = 0; i < file003.Measurements.Count; ++i)
+                    var containsExportGas = false;
+
+                    foreach (var file in response._003File)
                     {
-                        var measurementResponse = file003.Measurements[i];
-
-                        if (pilotGas.IsApplicable && pilotGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == exportGas.MeasuringPoint.TagPointMeasuring && exportGas.IsApplicable))
                         {
-                            totalDiferencialBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
-                            totalDiferencialFuelGas -= measurementResponse.MED_CORRIGIDO_MVMDO_003;
-
-                            gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
-                            gasResume.FuelGas.MeasuringPoints.Add(measurementResponse.Summary);
-
-                            containPilotGas = true;
-                            break;
+                            containsExportGas = true;
                         }
                     }
 
-                    if (containPilotGas is false && response._003File.Count > 0)
+                    if (containsExportGas is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == exportGas.MeasuringPoint.TagPointMeasuring))
                     {
-                        var measurementWrong = new Client003DTO
+                        response.MeasurementsNotFound.Add(new ClientInfo
                         {
-                            DHA_INICIO_PERIODO_MEDICAO_003 = file003.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
-                            COD_INSTALACAO_003 = file003.Measurements[0].COD_INSTALACAO_003,
-                            COD_TAG_PONTO_MEDICAO_003 = pilotGas.MeasuringPoint.TagPointMeasuring,
-                            Summary = new ClientInfo
-                            {
-                                Status = false,
-                                Date = file003.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
-                                LocationMeasuringPoint = pilotGas.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = pilotGas.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            }
-                        };
-                        file003.Measurements.Add(measurementWrong);
+                            Status = false,
+                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
+                            LocationMeasuringPoint = exportGas.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = exportGas.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
                     }
                 }
-                var containPurgeGas = false;
+
+                foreach (var importGas in gasCalculationByUepCode.ImportGases)
+                {
+                    var containsImportGas = false;
+
+                    foreach (var file in response._003File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == importGas.MeasuringPoint.TagPointMeasuring && importGas.IsApplicable))
+                        {
+                            containsImportGas = true;
+                        }
+                    }
+
+                    if (containsImportGas is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == importGas.MeasuringPoint.TagPointMeasuring))
+                    {
+                        response.MeasurementsNotFound.Add(new ClientInfo
+                        {
+                            Status = false,
+                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
+                            LocationMeasuringPoint = importGas.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = importGas.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
+                    }
+                }
 
                 foreach (var purgeGas in gasCalculationByUepCode.PurgeGases)
                 {
-                    for (int i = 0; i < file003.Measurements.Count; ++i)
-                    {
-                        var measurementResponse = file003.Measurements[i];
+                    var containsPurge = false;
 
-                        if (purgeGas.IsApplicable && purgeGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003)
+                    foreach (var file in response._003File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == purgeGas.MeasuringPoint.TagPointMeasuring && purgeGas.IsApplicable))
                         {
-                            totalDiferencialBurnetGas += measurementResponse.MED_CORRIGIDO_MVMDO_003;
-                            totalDiferencialFuelGas -= measurementResponse.MED_CORRIGIDO_MVMDO_003;
-                            gasResume.BurnedGas.MeasuringPoints.Add(measurementResponse.Summary);
-                            gasResume.FuelGas.MeasuringPoints.Add(measurementResponse.Summary);
-                            containPurgeGas = true;
-                            break;
+                            containsPurge = true;
                         }
                     }
 
-                    if (containPurgeGas is false && response._003File.Count > 0)
+                    if (containsPurge is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == purgeGas.MeasuringPoint.TagPointMeasuring))
                     {
-                        var measurementWrong = new Client003DTO
+                        response.MeasurementsNotFound.Add(new ClientInfo
                         {
-                            DHA_INICIO_PERIODO_MEDICAO_003 = file003.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
-                            COD_INSTALACAO_003 = file003.Measurements[0].COD_INSTALACAO_003,
-                            COD_TAG_PONTO_MEDICAO_003 = purgeGas.MeasuringPoint.TagPointMeasuring,
-                            Summary = new ClientInfo
-                            {
-                                Status = false,
-                                Date = file003.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
-                                LocationMeasuringPoint = purgeGas.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = purgeGas.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            }
-                        };
-                        file003.Measurements.Add(measurementWrong);
+                            Status = false,
+                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
+                            LocationMeasuringPoint = purgeGas.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = purgeGas.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
                     }
                 }
 
+                foreach (var pilotGas in gasCalculationByUepCode.PilotGases)
+                {
+                    var containsPilot = false;
+
+                    foreach (var file in response._003File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == pilotGas.MeasuringPoint.TagPointMeasuring && pilotGas.IsApplicable))
+                        {
+                            containsPilot = true;
+                        }
+                    }
+
+                    if (containsPilot is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == pilotGas.MeasuringPoint.TagPointMeasuring))
+                    {
+                        response.MeasurementsNotFound.Add(new ClientInfo
+                        {
+                            Status = false,
+                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
+                            LocationMeasuringPoint = pilotGas.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = pilotGas.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
+                    }
+                }
+
+                foreach (var highPressure in gasCalculationByUepCode.HighPressureGases)
+                {
+                    var containsHigh = false;
+
+                    foreach (var file in response._003File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == highPressure.MeasuringPoint.TagPointMeasuring && highPressure.IsApplicable))
+                        {
+                            containsHigh = true;
+                        }
+                    }
+
+                    if (containsHigh is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == highPressure.MeasuringPoint.TagPointMeasuring))
+                    {
+                        response.MeasurementsNotFound.Add(new ClientInfo
+                        {
+                            Status = false,
+                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
+                            LocationMeasuringPoint = highPressure.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = highPressure.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
+                    }
+                }
+
+                foreach (var lowPressure in gasCalculationByUepCode.LowPressureGases)
+                {
+                    var containsLow = false;
+
+                    foreach (var file in response._003File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == lowPressure.MeasuringPoint.TagPointMeasuring && lowPressure.IsApplicable))
+                        {
+                            containsLow = true;
+                        }
+                    }
+
+                    if (containsLow is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == lowPressure.MeasuringPoint.TagPointMeasuring))
+                    {
+                        response.MeasurementsNotFound.Add(new ClientInfo
+                        {
+                            Status = false,
+                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
+                            LocationMeasuringPoint = lowPressure.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = lowPressure.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
+                    }
+                }
             }
 
             var totalDiferencialGas = totalDiferencialBurnetGas + totalDiferencialFuelGas + (totalDiferencialExportedGas - totalDiferencialImportedGas);
@@ -2205,6 +2371,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             if (response._001File.Count > 0)
             {
+
                 var oilResponse = new OilDto
                 {
                     TotalOilProductionM3 = totalOil,
@@ -2247,13 +2414,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             }
 
 
-
-
             if (productionOfTheDay is null)
                 response.StatusProduction = "aberto";
             else
                 response.StatusProduction = productionOfTheDay.StatusProduction;
-
 
             return response;
         }

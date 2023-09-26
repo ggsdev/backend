@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using PRIO.src.Modules.Measuring.Productions.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Productions.ViewModels;
 using PRIO.src.Shared.Errors;
@@ -13,10 +14,12 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Controllers
     public class ProductionController : ControllerBase
     {
         private readonly ProductionService _productionService;
+        private readonly IOutputCacheStore _cache;
 
-        public ProductionController(ProductionService service)
+        public ProductionController(ProductionService service, IOutputCacheStore cache)
         {
             _productionService = service;
+            _cache = cache;
         }
 
 
@@ -34,11 +37,11 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Controllers
         }
 
         [HttpGet]
+        [OutputCache(PolicyName = "ProductionPolicy")]
         public async Task<IActionResult> GetAll()
         {
             var productions = await _productionService.GetAllProductions();
             return Ok(productions);
-
         }
 
         [HttpGet("deleted")]
@@ -61,10 +64,13 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduction([FromRoute] Guid id)
+        [OutputCache(PolicyName = "ProductionPolicy")]
+        public async Task<IActionResult> DeleteProduction([FromRoute] Guid id, CancellationToken ct)
         {
             await _productionService
                 .DeleteProduction(id);
+
+            await _cache.EvictByTagAsync("ProductionPolicyTag", ct);
 
             return NoContent();
         }
