@@ -1548,10 +1548,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
                     if (containsSection is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == section.MeasuringPoint.TagPointMeasuring))
                     {
-                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        productionDto.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = production.MeasuredAt,
+                            Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = section.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = section.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -1573,10 +1573,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
                     if (containsDor is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == dor.MeasuringPoint.TagPointMeasuring))
                     {
-                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        productionDto.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = production.MeasuredAt,
+                            Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = dor.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = dor.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -1598,10 +1598,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
                     if (containsTog is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == tog.MeasuringPoint.TagPointMeasuring))
                     {
-                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        productionDto.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = production.MeasuredAt,
+                            Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = tog.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = tog.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -1623,10 +1623,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
                     if (containsDrain is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == drain.MeasuringPoint.TagPointMeasuring))
                     {
-                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        productionDto.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = production.MeasuredAt,
+                            Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = drain.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = drain.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -1651,10 +1651,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
                     if (containsAssistanceGases is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == assistance.MeasuringPoint.TagPointMeasuring))
                     {
-                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        productionDto.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = production.MeasuredAt,
+                            Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = assistance.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = assistance.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -1676,10 +1676,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
                     if (containsExportGases is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == export.MeasuringPoint.TagPointMeasuring))
                     {
-                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        productionDto.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = production.MeasuredAt,
+                            Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = export.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = export.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -1701,10 +1701,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
                     if (containsImportGases is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == import.MeasuringPoint.TagPointMeasuring))
                     {
-                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        productionDto.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = production.MeasuredAt,
+                            Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = import.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = import.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -1726,10 +1726,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
                     if (containsHPFlares is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == hpFlare.MeasuringPoint.TagPointMeasuring))
                     {
-                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        productionDto.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = production.MeasuredAt,
+                            Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = hpFlare.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = hpFlare.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -1751,10 +1751,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
                     if (containsLPFlares is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == lpFlare.MeasuringPoint.TagPointMeasuring))
                     {
-                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        productionDto.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = production.MeasuredAt,
+                            Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = lpFlare.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = lpFlare.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -1776,10 +1776,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
                     if (containsPurgeGases is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == purge.MeasuringPoint.TagPointMeasuring))
                     {
-                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        productionDto.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = production.MeasuredAt,
+                            Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = purge.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = purge.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -1801,10 +1801,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
                     if (containsPilotGases is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == pilot.MeasuringPoint.TagPointMeasuring))
                     {
-                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        productionDto.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = production.MeasuredAt,
+                            Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = pilot.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = pilot.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -1826,10 +1826,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
                     if (containsHighPressureGases is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == highPressure.MeasuringPoint.TagPointMeasuring))
                     {
-                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        productionDto.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = production.MeasuredAt,
+                            Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = highPressure.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = highPressure.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -1851,10 +1851,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
                     if (LowPressuresistanceGases is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == lowPressure.MeasuringPoint.TagPointMeasuring))
                     {
-                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        productionDto.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = production.MeasuredAt,
+                            Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = lowPressure.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = lowPressure.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
