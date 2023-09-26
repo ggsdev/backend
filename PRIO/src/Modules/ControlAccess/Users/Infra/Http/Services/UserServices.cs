@@ -141,6 +141,16 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                 throw new ConflictException("User don't have permission to do that.");
 
             var userDTO = BuildPermissions(user);
+
+            foreach (var installation in userDTO.InstallationsAccess!)
+            {
+                var installationDatabase = await _installationRepository.GetByIdAsync(installation.Id);
+                if (installationDatabase == null)
+                    throw new NotFoundException("Instalação não encontrada.");
+
+                userDTO.Name = installationDatabase.Name;
+            }
+
             return userDTO;
         }
         public async Task<UserWithPermissionsDTO?> GetUserByIdAsync(Guid id)
@@ -150,6 +160,16 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                 throw new NotFoundException("User not found");
 
             var userDTO = BuildPermissions(user);
+
+            foreach (var installation in userDTO.InstallationsAccess!)
+            {
+                var installationDatabase = await _installationRepository.GetByIdAsync(installation.Id);
+                if (installationDatabase == null)
+                    throw new NotFoundException("Instalação não encontrada.");
+
+                userDTO.Name = installationDatabase.Name;
+            }
+
             return userDTO;
         }
         public async Task<UserDTO?> UpdateUserByIdAsync(Guid id, UpdateUserViewModel body, User loggedUser)
@@ -693,6 +713,8 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             }
 
             userDTO.UserPermissions.RemoveAll(permission => permission.MenuOrder.Contains("."));
+
+
             return userDTO;
         }
 

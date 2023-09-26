@@ -54,7 +54,9 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
             var user = await _context.Users
                 .Include(x => x.Group)
                 .Include(x => x.UserPermissions)
-                .ThenInclude(x => x.UserOperation)
+                    .ThenInclude(x => x.UserOperation)
+                .Include(x => x.InstallationsAccess)
+                    .ThenInclude(x => x.Installation)
                 .FirstOrDefaultAsync(x => x.Id == id);
             return user!;
         }
