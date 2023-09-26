@@ -150,7 +150,14 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
         public FRViewModelNull FR { get; set; }
 
     }
-
+    public class SummaryProduction
+    {
+        public string? LocationMeasuringPoint { get; set; }
+        public string? TagMeasuringPoint { get; set; }
+        public string? Date { get; set; }
+        public decimal? Volume { get; set; }
+        public bool? Status { get; set; }
+    }
     public class ProductionDtoWithNullableDecimals
     {
         public Guid ProductionId { get; set; }
@@ -170,7 +177,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
         public CreateUpdateCommentDto Comment { get; set; }
 
         public AppropriationDto WellAppropriation { get; set; }
-        public List<ClientInfo> MeasurementsNotFound { get; set; } = new();
+        public List<SummaryProduction> MeasurementsNotFound { get; set; } = new();
 
     }
 
