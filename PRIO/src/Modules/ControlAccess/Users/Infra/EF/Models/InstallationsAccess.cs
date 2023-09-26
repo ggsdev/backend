@@ -5,7 +5,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models
     public class InstallationsAccess
     {
         public Guid Id { get; set; }
-        public Installation Installation { get; set; }
-        public User User { get; set; }
+        public Installation? Installation { get; set; }
+        public User? User { get; set; }
     }
 }

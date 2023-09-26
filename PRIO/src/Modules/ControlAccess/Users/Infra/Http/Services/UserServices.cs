@@ -40,6 +40,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             _installationRepository = installationRepository;
             _systemHistoryService = systemHistoryService;
             _installationRepository = installationRepository;
+            _installationAccessRepository = installationAccessRepository;
         }
 
         public async Task<List<UserDTO>> GetUsers()
@@ -88,6 +89,8 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                 IsActive = body.IsActive,
                 Description = body.Description is not null ? body.Description : null,
             };
+            await _userRepository
+                .CreateUser(user);
 
             foreach (var item in instalationsToRelation)
             {
@@ -101,8 +104,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                 await _installationAccessRepository.AddInstallationsAccess(create);
             }
 
-            await _userRepository
-                .CreateUser(user);
 
             //var currentData = _mapper.Map<User, UserHistoryDTO>(user);
 

@@ -14,6 +14,8 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
         }
         public async Task AddInstallationsAccess(InstallationsAccess userOperation)
         {
+
+            Console.WriteLine(userOperation);
             await _context.AddAsync(userOperation);
         }
     }
