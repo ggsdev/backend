@@ -150,7 +150,7 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<WellEvent> WellEvents { get; set; }
         public DbSet<WellLosses> WellLosses { get; set; }
         public DbSet<Backup> Backups { get; set; }
-        public DbSet<InstallationsAccess> UserInstallationsAccess { get; set; }
+        public DbSet<InstallationsAccess> InstallationsAccess { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
