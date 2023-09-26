@@ -254,6 +254,9 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public DateTime? Date { get; set; }
         public decimal? Volume { get; set; }
         public bool? Status { get; set; }
+        public string? Fluid { get; set; }
+        public string? FileName { get; set; }
+        public string? FileId { get; set; }
     }
 
     public interface IClientInfo
