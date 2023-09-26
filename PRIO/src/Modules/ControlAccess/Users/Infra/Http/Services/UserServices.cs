@@ -142,13 +142,13 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
 
             var userDTO = BuildPermissions(user);
 
-            foreach (var installation in userDTO.InstallationsAccess!)
+            foreach (var installationAccess in user.InstallationsAccess)
             {
-                var installationDatabase = await _installationRepository.GetByIdAsync(installation.Id);
+                var installationDatabase = await _installationRepository.GetByIdAsync(installationAccess.Installation.Id);
                 if (installationDatabase == null)
                     throw new NotFoundException("Instalação não encontrada.");
 
-                userDTO.Name = installationDatabase.Name;
+                userDTO.InstallationsAccess.Where(x => x.Id == installationAccess.Id).FirstOrDefault().Name = installationDatabase.Name;
             }
 
             return userDTO;
@@ -161,13 +161,13 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
 
             var userDTO = BuildPermissions(user);
 
-            foreach (var installation in userDTO.InstallationsAccess!)
+            foreach (var installationAccess in user.InstallationsAccess)
             {
-                var installationDatabase = await _installationRepository.GetByIdAsync(installation.Id);
+                var installationDatabase = await _installationRepository.GetByIdAsync(installationAccess.Installation.Id);
                 if (installationDatabase == null)
                     throw new NotFoundException("Instalação não encontrada.");
 
-                userDTO.Name = installationDatabase.Name;
+                userDTO.InstallationsAccess.Where(x => x.Id == installationAccess.Id).FirstOrDefault().Name = installationDatabase.Name;
             }
 
             return userDTO;
