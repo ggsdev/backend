@@ -514,7 +514,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         }
                     }
 
-
                     foreach (var drain in oilCalculus.DrainVolumes)
                     {
                         var measurementFound = measurement.MeasuringPoint.TagPointMeasuring == drain.MeasuringPoint.TagPointMeasuring;
@@ -534,7 +533,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             oilPoints.Add(measuringPoint);
                         }
                     }
-
 
                     foreach (var tog in oilCalculus.TOGRecoveredOils)
                     {
@@ -764,8 +762,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
             {
                 if (gasCalculationByUepCode is not null && file.FileType == XmlUtils.File002)
                 {
-                    var containAssistanceGas = false;
-
                     foreach (var assistanceGas in gasCalculationByUepCode.AssistanceGases)
                     {
                         var pointAlreadyInserted = file.Summary.Any(x => x.TagMeasuringPoint == assistanceGas.MeasuringPoint.TagPointMeasuring);
@@ -774,41 +770,40 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measurementResponse = production.Measurements[i];
 
-                            if (assistanceGas.IsApplicable && assistanceGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_002 is not null)
+                            if (measurementResponse.MeasurementHistory.Id == file.ImportId)
                             {
-                                var summary = new SummaryGeneric
+                                if (assistanceGas.IsApplicable && assistanceGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_002 is not null)
                                 {
-                                    DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                    LocationMeasuringPoint = assistanceGas.StaticLocalMeasuringPoint,
-                                    StatusMeasuringPoint = true,
-                                    TagMeasuringPoint = assistanceGas.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
+                                    var summary = new SummaryGeneric
+                                    {
+                                        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                                        LocationMeasuringPoint = assistanceGas.StaticLocalMeasuringPoint,
+                                        StatusMeasuringPoint = true,
+                                        TagMeasuringPoint = assistanceGas.MeasuringPoint.TagPointMeasuring,
+                                        Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
 
-                                };
+                                    };
 
-                                file.Summary.Add(summary);
+                                    file.Summary.Add(summary);
 
-                                containAssistanceGas = true;
+                                }
                             }
                         }
 
+                        //if (containAssistanceGas is false && assistanceGas.IsApplicable && pointAlreadyInserted is false)
+                        //{
+                        //    var measurementWrong = new SummaryGeneric
+                        //    {
+                        //        StatusMeasuringPoint = false,
+                        //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                        //        LocationMeasuringPoint = assistanceGas.StaticLocalMeasuringPoint,
+                        //        TagMeasuringPoint = assistanceGas.MeasuringPoint.TagPointMeasuring,
+                        //        Volume = 0
+                        //    };
 
-                        if (containAssistanceGas is false && assistanceGas.IsApplicable && pointAlreadyInserted is false)
-                        {
-                            var measurementWrong = new SummaryGeneric
-                            {
-                                StatusMeasuringPoint = false,
-                                DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                LocationMeasuringPoint = assistanceGas.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = assistanceGas.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            };
-
-                            file.Summary.Add(measurementWrong);
-                        }
+                        //    file.Summary.Add(measurementWrong);
+                        //}
                     }
-
-                    var containExportGas = false;
 
                     foreach (var export in gasCalculationByUepCode.ExportGases)
                     {
@@ -817,41 +812,38 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         for (int i = 0; i < production.Measurements.Count; ++i)
                         {
                             var measurementResponse = production.Measurements[i];
-
-                            if (export.IsApplicable && export.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_002 is not null)
+                            if (measurementResponse.MeasurementHistory.Id == file.ImportId)
                             {
-                                var summary = new SummaryGeneric
+                                if (export.IsApplicable && export.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_002 is not null)
                                 {
-                                    DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                    LocationMeasuringPoint = export.StaticLocalMeasuringPoint,
-                                    StatusMeasuringPoint = true,
-                                    TagMeasuringPoint = export.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
+                                    var summary = new SummaryGeneric
+                                    {
+                                        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                                        LocationMeasuringPoint = export.StaticLocalMeasuringPoint,
+                                        StatusMeasuringPoint = true,
+                                        TagMeasuringPoint = export.MeasuringPoint.TagPointMeasuring,
+                                        Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
 
-                                };
-                                file.Summary.Add(summary);
+                                    };
+                                    file.Summary.Add(summary);
 
-                                containExportGas = true;
+                                }
                             }
                         }
+                        //if (containExportGas is false && export.IsApplicable && pointAlreadyInserted is false)
+                        //{
+                        //    var measurementWrong = new SummaryGeneric
+                        //    {
+                        //        StatusMeasuringPoint = false,
+                        //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                        //        LocationMeasuringPoint = export.StaticLocalMeasuringPoint,
+                        //        TagMeasuringPoint = export.MeasuringPoint.TagPointMeasuring,
+                        //        Volume = 0
+                        //    };
 
-
-                        if (containExportGas is false && export.IsApplicable && pointAlreadyInserted is false)
-                        {
-                            var measurementWrong = new SummaryGeneric
-                            {
-                                StatusMeasuringPoint = false,
-                                DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                LocationMeasuringPoint = export.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = export.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            };
-
-                            file.Summary.Add(measurementWrong);
-                        }
+                        //    file.Summary.Add(measurementWrong);
+                        //}
                     }
-
-                    var containHighPressureGas = false;
 
                     foreach (var highPressure in gasCalculationByUepCode.HighPressureGases)
                     {
@@ -860,40 +852,39 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         for (int i = 0; i < production.Measurements.Count; ++i)
                         {
                             var measurementResponse = production.Measurements[i];
-
-                            if (highPressure.IsApplicable && highPressure.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_002 is not null)
+                            if (measurementResponse.MeasurementHistory.Id == file.ImportId)
                             {
-                                var summary = new SummaryGeneric
+                                if (highPressure.IsApplicable && highPressure.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_002 is not null)
                                 {
-                                    DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                    LocationMeasuringPoint = highPressure.StaticLocalMeasuringPoint,
-                                    StatusMeasuringPoint = true,
-                                    TagMeasuringPoint = highPressure.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
+                                    var summary = new SummaryGeneric
+                                    {
+                                        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                                        LocationMeasuringPoint = highPressure.StaticLocalMeasuringPoint,
+                                        StatusMeasuringPoint = true,
+                                        TagMeasuringPoint = highPressure.MeasuringPoint.TagPointMeasuring,
+                                        Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
 
-                                };
-                                file.Summary.Add(summary);
+                                    };
+                                    file.Summary.Add(summary);
 
-                                containHighPressureGas = true;
+                                }
                             }
                         }
 
-                        if (containHighPressureGas is false && highPressure.IsApplicable && pointAlreadyInserted is false)
-                        {
-                            var measurementWrong = new SummaryGeneric
-                            {
-                                StatusMeasuringPoint = false,
-                                DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                LocationMeasuringPoint = highPressure.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = highPressure.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            };
+                        //if (containHighPressureGas is false && highPressure.IsApplicable && pointAlreadyInserted is false)
+                        //{
+                        //    var measurementWrong = new SummaryGeneric
+                        //    {
+                        //        StatusMeasuringPoint = false,
+                        //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                        //        LocationMeasuringPoint = highPressure.StaticLocalMeasuringPoint,
+                        //        TagMeasuringPoint = highPressure.MeasuringPoint.TagPointMeasuring,
+                        //        Volume = 0
+                        //    };
 
-                            file.Summary.Add(measurementWrong);
-                        }
+                        //    file.Summary.Add(measurementWrong);
+                        //}
                     }
-
-                    var containHPFlare = false;
 
                     foreach (var hpFlare in gasCalculationByUepCode.HPFlares)
                     {
@@ -902,40 +893,38 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         for (int i = 0; i < production.Measurements.Count; ++i)
                         {
                             var measurementResponse = production.Measurements[i];
-
-                            if (hpFlare.IsApplicable && hpFlare.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_002 is not null)
+                            if (measurementResponse.MeasurementHistory.Id == file.ImportId)
                             {
-                                var summary = new SummaryGeneric
+                                if (hpFlare.IsApplicable && hpFlare.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_002 is not null)
                                 {
-                                    DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                    LocationMeasuringPoint = hpFlare.StaticLocalMeasuringPoint,
-                                    StatusMeasuringPoint = true,
-                                    TagMeasuringPoint = hpFlare.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
+                                    var summary = new SummaryGeneric
+                                    {
+                                        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                                        LocationMeasuringPoint = hpFlare.StaticLocalMeasuringPoint,
+                                        StatusMeasuringPoint = true,
+                                        TagMeasuringPoint = hpFlare.MeasuringPoint.TagPointMeasuring,
+                                        Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
 
-                                };
-                                file.Summary.Add(summary);
+                                    };
+                                    file.Summary.Add(summary);
 
-                                containHPFlare = true;
+                                }
                             }
                         }
+                        //if (containHPFlare is false && hpFlare.IsApplicable && pointAlreadyInserted is false)
+                        //{
+                        //    var measurementWrong = new SummaryGeneric
+                        //    {
+                        //        StatusMeasuringPoint = false,
+                        //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                        //        LocationMeasuringPoint = hpFlare.StaticLocalMeasuringPoint,
+                        //        TagMeasuringPoint = hpFlare.MeasuringPoint.TagPointMeasuring,
+                        //        Volume = 0
+                        //    };
 
-                        if (containHPFlare is false && hpFlare.IsApplicable && pointAlreadyInserted is false)
-                        {
-                            var measurementWrong = new SummaryGeneric
-                            {
-                                StatusMeasuringPoint = false,
-                                DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                LocationMeasuringPoint = hpFlare.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = hpFlare.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            };
-
-                            file.Summary.Add(measurementWrong);
-                        }
+                        //    file.Summary.Add(measurementWrong);
+                        //}
                     }
-
-                    var containImportGas = false;
 
                     foreach (var import in gasCalculationByUepCode.ImportGases)
                     {
@@ -944,39 +933,38 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         for (int i = 0; i < production.Measurements.Count; ++i)
                         {
                             var measurementResponse = production.Measurements[i];
-
-                            if (import.IsApplicable && import.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_002 is not null)
+                            if (measurementResponse.MeasurementHistory.Id == file.ImportId)
                             {
-                                var summary = new SummaryGeneric
+                                if (import.IsApplicable && import.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_002 is not null)
                                 {
-                                    DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                    LocationMeasuringPoint = import.StaticLocalMeasuringPoint,
-                                    StatusMeasuringPoint = true,
-                                    TagMeasuringPoint = import.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
+                                    var summary = new SummaryGeneric
+                                    {
+                                        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                                        LocationMeasuringPoint = import.StaticLocalMeasuringPoint,
+                                        StatusMeasuringPoint = true,
+                                        TagMeasuringPoint = import.MeasuringPoint.TagPointMeasuring,
+                                        Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
 
-                                };
-                                file.Summary.Add(summary);
-                                containImportGas = true;
+                                    };
+                                    file.Summary.Add(summary);
+                                }
                             }
                         }
 
-                        if (containImportGas is false && import.IsApplicable && pointAlreadyInserted is false)
-                        {
-                            var measurementWrong = new SummaryGeneric
-                            {
-                                StatusMeasuringPoint = false,
-                                DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                LocationMeasuringPoint = import.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = import.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            };
+                        //if (containImportGas is false && import.IsApplicable && pointAlreadyInserted is false)
+                        //{
+                        //    var measurementWrong = new SummaryGeneric
+                        //    {
+                        //        StatusMeasuringPoint = false,
+                        //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                        //        LocationMeasuringPoint = import.StaticLocalMeasuringPoint,
+                        //        TagMeasuringPoint = import.MeasuringPoint.TagPointMeasuring,
+                        //        Volume = 0
+                        //    };
 
-                            file.Summary.Add(measurementWrong);
-                        }
+                        //    file.Summary.Add(measurementWrong);
+                        //}
                     }
-
-                    var containLowPressureGas = false;
 
                     foreach (var lowPressure in gasCalculationByUepCode.LowPressureGases)
                     {
@@ -985,39 +973,38 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         for (int i = 0; i < production.Measurements.Count; ++i)
                         {
                             var measurementResponse = production.Measurements[i];
-
-                            if (lowPressure.IsApplicable && lowPressure.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_002 is not null)
+                            if (measurementResponse.MeasurementHistory.Id == file.ImportId)
                             {
-                                var summary = new SummaryGeneric
+                                if (lowPressure.IsApplicable && lowPressure.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_002 is not null)
                                 {
-                                    DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                    LocationMeasuringPoint = lowPressure.StaticLocalMeasuringPoint,
-                                    StatusMeasuringPoint = true,
-                                    TagMeasuringPoint = lowPressure.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
+                                    var summary = new SummaryGeneric
+                                    {
+                                        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                                        LocationMeasuringPoint = lowPressure.StaticLocalMeasuringPoint,
+                                        StatusMeasuringPoint = true,
+                                        TagMeasuringPoint = lowPressure.MeasuringPoint.TagPointMeasuring,
+                                        Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
 
-                                };
-                                file.Summary.Add(summary);
-                                containLowPressureGas = true;
+                                    };
+                                    file.Summary.Add(summary);
+                                }
                             }
                         }
 
-                        if (containLowPressureGas is false && lowPressure.IsApplicable && pointAlreadyInserted is false)
-                        {
-                            var measurementWrong = new SummaryGeneric
-                            {
-                                StatusMeasuringPoint = false,
-                                DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                LocationMeasuringPoint = lowPressure.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = lowPressure.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            };
+                        //if (containLowPressureGas is false && lowPressure.IsApplicable && pointAlreadyInserted is false)
+                        //{
+                        //    var measurementWrong = new SummaryGeneric
+                        //    {
+                        //        StatusMeasuringPoint = false,
+                        //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                        //        LocationMeasuringPoint = lowPressure.StaticLocalMeasuringPoint,
+                        //        TagMeasuringPoint = lowPressure.MeasuringPoint.TagPointMeasuring,
+                        //        Volume = 0
+                        //    };
 
-                            file.Summary.Add(measurementWrong);
-                        }
+                        //    file.Summary.Add(measurementWrong);
+                        //}
                     }
-
-                    var containLPFlare = false;
 
                     foreach (var lpFlare in gasCalculationByUepCode.LPFlares)
                     {
@@ -1026,39 +1013,38 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         for (int i = 0; i < production.Measurements.Count; ++i)
                         {
                             var measurementResponse = production.Measurements[i];
-
-                            if (lpFlare.IsApplicable && lpFlare.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_002 is not null)
+                            if (measurementResponse.MeasurementHistory.Id == file.ImportId)
                             {
-                                var summary = new SummaryGeneric
+                                if (lpFlare.IsApplicable && lpFlare.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_002 is not null)
                                 {
-                                    DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                    LocationMeasuringPoint = lpFlare.StaticLocalMeasuringPoint,
-                                    StatusMeasuringPoint = true,
-                                    TagMeasuringPoint = lpFlare.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
+                                    var summary = new SummaryGeneric
+                                    {
+                                        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                                        LocationMeasuringPoint = lpFlare.StaticLocalMeasuringPoint,
+                                        StatusMeasuringPoint = true,
+                                        TagMeasuringPoint = lpFlare.MeasuringPoint.TagPointMeasuring,
+                                        Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
 
-                                };
-                                file.Summary.Add(summary);
-                                containLPFlare = true;
+                                    };
+                                    file.Summary.Add(summary);
+                                }
                             }
                         }
 
-                        if (containLPFlare is false && lpFlare.IsApplicable && pointAlreadyInserted is false)
-                        {
-                            var measurementWrong = new SummaryGeneric
-                            {
-                                StatusMeasuringPoint = false,
-                                DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                LocationMeasuringPoint = lpFlare.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = lpFlare.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            };
+                        //if (containLPFlare is false && lpFlare.IsApplicable && pointAlreadyInserted is false)
+                        //{
+                        //    var measurementWrong = new SummaryGeneric
+                        //    {
+                        //        StatusMeasuringPoint = false,
+                        //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                        //        LocationMeasuringPoint = lpFlare.StaticLocalMeasuringPoint,
+                        //        TagMeasuringPoint = lpFlare.MeasuringPoint.TagPointMeasuring,
+                        //        Volume = 0
+                        //    };
 
-                            file.Summary.Add(measurementWrong);
-                        }
+                        //    file.Summary.Add(measurementWrong);
+                        //}
                     }
-
-                    var containPilotGas = false;
 
                     foreach (var pilot in gasCalculationByUepCode.PilotGases)
                     {
@@ -1067,40 +1053,26 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         for (int i = 0; i < production.Measurements.Count; ++i)
                         {
                             var measurementResponse = production.Measurements[i];
-
-                            if (pilot.IsApplicable && pilot.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_002 is not null)
+                            if (measurementResponse.MeasurementHistory.Id == file.ImportId)
                             {
-                                var summary = new SummaryGeneric
+                                if (pilot.IsApplicable && pilot.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_002 is not null)
                                 {
-                                    DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                    LocationMeasuringPoint = pilot.StaticLocalMeasuringPoint,
-                                    StatusMeasuringPoint = true,
-                                    TagMeasuringPoint = pilot.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
+                                    var summary = new SummaryGeneric
+                                    {
+                                        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                                        LocationMeasuringPoint = pilot.StaticLocalMeasuringPoint,
+                                        StatusMeasuringPoint = true,
+                                        TagMeasuringPoint = pilot.MeasuringPoint.TagPointMeasuring,
+                                        Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
 
-                                };
-                                file.Summary.Add(summary);
+                                    };
+                                    file.Summary.Add(summary);
 
-                                containPilotGas = true;
+                                }
                             }
                         }
 
-                        if (containPilotGas is false && pilot.IsApplicable && pointAlreadyInserted is false)
-                        {
-                            var measurementWrong = new SummaryGeneric
-                            {
-                                StatusMeasuringPoint = false,
-                                DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                LocationMeasuringPoint = pilot.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = pilot.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            };
-
-                            file.Summary.Add(measurementWrong);
-                        }
                     }
-
-                    var containPurgeGas = false;
 
                     foreach (var purge in gasCalculationByUepCode.PurgeGases)
                     {
@@ -1109,44 +1081,30 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         for (int i = 0; i < production.Measurements.Count; ++i)
                         {
                             var measurementResponse = production.Measurements[i];
-
-                            if (purge.IsApplicable && purge.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_002 is not null)
+                            if (measurementResponse.MeasurementHistory.Id == file.ImportId)
                             {
-                                var summary = new SummaryGeneric
+                                if (purge.IsApplicable && purge.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_002 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_002 is not null)
                                 {
-                                    DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                    LocationMeasuringPoint = purge.StaticLocalMeasuringPoint,
-                                    StatusMeasuringPoint = true,
-                                    TagMeasuringPoint = purge.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
+                                    var summary = new SummaryGeneric
+                                    {
+                                        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                                        LocationMeasuringPoint = purge.StaticLocalMeasuringPoint,
+                                        StatusMeasuringPoint = true,
+                                        TagMeasuringPoint = purge.MeasuringPoint.TagPointMeasuring,
+                                        Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
 
-                                };
-                                file.Summary.Add(summary);
+                                    };
+                                    file.Summary.Add(summary);
 
-                                containPurgeGas = true;
+                                }
                             }
                         }
 
-                        if (containPurgeGas is false && purge.IsApplicable && pointAlreadyInserted is false)
-                        {
-                            var measurementWrong = new SummaryGeneric
-                            {
-                                StatusMeasuringPoint = false,
-                                DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                LocationMeasuringPoint = purge.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = purge.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            };
-
-                            file.Summary.Add(measurementWrong);
-                        }
                     }
                 }
 
                 if (gasCalculationByUepCode is not null && file.FileType == XmlUtils.File003)
                 {
-                    var containAssistanceGas = false;
-
                     foreach (var assistanceGas in gasCalculationByUepCode.AssistanceGases)
                     {
                         var pointAlreadyInserted = file.Summary.Any(x => x.TagMeasuringPoint == assistanceGas.MeasuringPoint.TagPointMeasuring);
@@ -1155,40 +1113,26 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             var measurementResponse = production.Measurements[i];
 
-                            if (assistanceGas.IsApplicable && assistanceGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_003 is not null)
+                            if (measurementResponse.MeasurementHistory.Id == file.ImportId)
                             {
-                                var summary = new SummaryGeneric
+                                if (assistanceGas.IsApplicable && assistanceGas.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_003 is not null)
                                 {
-                                    DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                    LocationMeasuringPoint = assistanceGas.StaticLocalMeasuringPoint,
-                                    StatusMeasuringPoint = true,
-                                    TagMeasuringPoint = assistanceGas.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
+                                    var summary = new SummaryGeneric
+                                    {
+                                        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                                        LocationMeasuringPoint = assistanceGas.StaticLocalMeasuringPoint,
+                                        StatusMeasuringPoint = true,
+                                        TagMeasuringPoint = assistanceGas.MeasuringPoint.TagPointMeasuring,
+                                        Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
 
-                                };
-                                file.Summary.Add(summary);
+                                    };
 
-                                containAssistanceGas = true;
+                                    file.Summary.Add(summary);
+
+                                }
                             }
                         }
-
-
-                        if (containAssistanceGas is false && assistanceGas.IsApplicable && pointAlreadyInserted is false)
-                        {
-                            var measurementWrong = new SummaryGeneric
-                            {
-                                StatusMeasuringPoint = false,
-                                DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                LocationMeasuringPoint = assistanceGas.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = assistanceGas.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            };
-
-                            file.Summary.Add(measurementWrong);
-                        }
                     }
-
-                    var containExportGas = false;
 
                     foreach (var export in gasCalculationByUepCode.ExportGases)
                     {
@@ -1197,41 +1141,25 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         for (int i = 0; i < production.Measurements.Count; ++i)
                         {
                             var measurementResponse = production.Measurements[i];
-
-                            if (export.IsApplicable && export.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_003 is not null)
+                            if (measurementResponse.MeasurementHistory.Id == file.ImportId)
                             {
-                                var summary = new SummaryGeneric
+                                if (export.IsApplicable && export.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_003 is not null)
                                 {
-                                    DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                    LocationMeasuringPoint = export.StaticLocalMeasuringPoint,
-                                    StatusMeasuringPoint = true,
-                                    TagMeasuringPoint = export.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
+                                    var summary = new SummaryGeneric
+                                    {
+                                        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                                        LocationMeasuringPoint = export.StaticLocalMeasuringPoint,
+                                        StatusMeasuringPoint = true,
+                                        TagMeasuringPoint = export.MeasuringPoint.TagPointMeasuring,
+                                        Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
 
-                                };
-                                file.Summary.Add(summary);
+                                    };
+                                    file.Summary.Add(summary);
 
-                                containExportGas = true;
+                                }
                             }
                         }
-
-
-                        if (containExportGas is false && export.IsApplicable && pointAlreadyInserted is false)
-                        {
-                            var measurementWrong = new SummaryGeneric
-                            {
-                                StatusMeasuringPoint = false,
-                                DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                LocationMeasuringPoint = export.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = export.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            };
-
-                            file.Summary.Add(measurementWrong);
-                        }
                     }
-
-                    var containHighPressureGas = false;
 
                     foreach (var highPressure in gasCalculationByUepCode.HighPressureGases)
                     {
@@ -1240,40 +1168,26 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         for (int i = 0; i < production.Measurements.Count; ++i)
                         {
                             var measurementResponse = production.Measurements[i];
-
-                            if (highPressure.IsApplicable && highPressure.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_003 is not null)
+                            if (measurementResponse.MeasurementHistory.Id == file.ImportId)
                             {
-                                var summary = new SummaryGeneric
+                                if (highPressure.IsApplicable && highPressure.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_003 is not null)
                                 {
-                                    DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                    LocationMeasuringPoint = highPressure.StaticLocalMeasuringPoint,
-                                    StatusMeasuringPoint = true,
-                                    TagMeasuringPoint = highPressure.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
+                                    var summary = new SummaryGeneric
+                                    {
+                                        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                                        LocationMeasuringPoint = highPressure.StaticLocalMeasuringPoint,
+                                        StatusMeasuringPoint = true,
+                                        TagMeasuringPoint = highPressure.MeasuringPoint.TagPointMeasuring,
+                                        Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
 
-                                };
-                                file.Summary.Add(summary);
+                                    };
+                                    file.Summary.Add(summary);
 
-                                containHighPressureGas = true;
+                                }
                             }
                         }
 
-                        if (containHighPressureGas is false && highPressure.IsApplicable && pointAlreadyInserted is false)
-                        {
-                            var measurementWrong = new SummaryGeneric
-                            {
-                                StatusMeasuringPoint = false,
-                                DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                LocationMeasuringPoint = highPressure.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = highPressure.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            };
-
-                            file.Summary.Add(measurementWrong);
-                        }
                     }
-
-                    var containHPFlare = false;
 
                     foreach (var hpFlare in gasCalculationByUepCode.HPFlares)
                     {
@@ -1282,40 +1196,26 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         for (int i = 0; i < production.Measurements.Count; ++i)
                         {
                             var measurementResponse = production.Measurements[i];
-
-                            if (hpFlare.IsApplicable && hpFlare.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_003 is not null)
+                            if (measurementResponse.MeasurementHistory.Id == file.ImportId)
                             {
-                                var summary = new SummaryGeneric
+                                if (hpFlare.IsApplicable && hpFlare.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_003 is not null)
                                 {
-                                    DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                    LocationMeasuringPoint = hpFlare.StaticLocalMeasuringPoint,
-                                    StatusMeasuringPoint = true,
-                                    TagMeasuringPoint = hpFlare.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
+                                    var summary = new SummaryGeneric
+                                    {
+                                        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                                        LocationMeasuringPoint = hpFlare.StaticLocalMeasuringPoint,
+                                        StatusMeasuringPoint = true,
+                                        TagMeasuringPoint = hpFlare.MeasuringPoint.TagPointMeasuring,
+                                        Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
 
-                                };
-                                file.Summary.Add(summary);
+                                    };
+                                    file.Summary.Add(summary);
 
-                                containHPFlare = true;
+                                }
                             }
                         }
 
-                        if (containHPFlare is false && hpFlare.IsApplicable && pointAlreadyInserted is false)
-                        {
-                            var measurementWrong = new SummaryGeneric
-                            {
-                                StatusMeasuringPoint = false,
-                                DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                LocationMeasuringPoint = hpFlare.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = hpFlare.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            };
-
-                            file.Summary.Add(measurementWrong);
-                        }
                     }
-
-                    var containImportGas = false;
 
                     foreach (var import in gasCalculationByUepCode.ImportGases)
                     {
@@ -1324,39 +1224,25 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         for (int i = 0; i < production.Measurements.Count; ++i)
                         {
                             var measurementResponse = production.Measurements[i];
-
-                            if (import.IsApplicable && import.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_003 is not null)
+                            if (measurementResponse.MeasurementHistory.Id == file.ImportId)
                             {
-                                var summary = new SummaryGeneric
+                                if (import.IsApplicable && import.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_003 is not null)
                                 {
-                                    DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                    LocationMeasuringPoint = import.StaticLocalMeasuringPoint,
-                                    StatusMeasuringPoint = true,
-                                    TagMeasuringPoint = import.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
+                                    var summary = new SummaryGeneric
+                                    {
+                                        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                                        LocationMeasuringPoint = import.StaticLocalMeasuringPoint,
+                                        StatusMeasuringPoint = true,
+                                        TagMeasuringPoint = import.MeasuringPoint.TagPointMeasuring,
+                                        Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
 
-                                };
-                                file.Summary.Add(summary);
-                                containImportGas = true;
+                                    };
+                                    file.Summary.Add(summary);
+                                }
                             }
                         }
 
-                        if (containImportGas is false && import.IsApplicable && pointAlreadyInserted is false)
-                        {
-                            var measurementWrong = new SummaryGeneric
-                            {
-                                StatusMeasuringPoint = false,
-                                DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                LocationMeasuringPoint = import.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = import.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            };
-
-                            file.Summary.Add(measurementWrong);
-                        }
                     }
-
-                    var containLowPressureGas = false;
 
                     foreach (var lowPressure in gasCalculationByUepCode.LowPressureGases)
                     {
@@ -1365,39 +1251,24 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         for (int i = 0; i < production.Measurements.Count; ++i)
                         {
                             var measurementResponse = production.Measurements[i];
-
-                            if (lowPressure.IsApplicable && lowPressure.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_003 is not null)
+                            if (measurementResponse.MeasurementHistory.Id == file.ImportId)
                             {
-                                var summary = new SummaryGeneric
+                                if (lowPressure.IsApplicable && lowPressure.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_003 is not null)
                                 {
-                                    DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                    LocationMeasuringPoint = lowPressure.StaticLocalMeasuringPoint,
-                                    StatusMeasuringPoint = true,
-                                    TagMeasuringPoint = lowPressure.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
+                                    var summary = new SummaryGeneric
+                                    {
+                                        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                                        LocationMeasuringPoint = lowPressure.StaticLocalMeasuringPoint,
+                                        StatusMeasuringPoint = true,
+                                        TagMeasuringPoint = lowPressure.MeasuringPoint.TagPointMeasuring,
+                                        Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
 
-                                };
-                                file.Summary.Add(summary);
-                                containLowPressureGas = true;
+                                    };
+                                    file.Summary.Add(summary);
+                                }
                             }
                         }
-
-                        if (containLowPressureGas is false && lowPressure.IsApplicable && pointAlreadyInserted is false)
-                        {
-                            var measurementWrong = new SummaryGeneric
-                            {
-                                StatusMeasuringPoint = false,
-                                DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                LocationMeasuringPoint = lowPressure.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = lowPressure.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            };
-
-                            file.Summary.Add(measurementWrong);
-                        }
                     }
-
-                    var containLPFlare = false;
 
                     foreach (var lpFlare in gasCalculationByUepCode.LPFlares)
                     {
@@ -1406,39 +1277,25 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         for (int i = 0; i < production.Measurements.Count; ++i)
                         {
                             var measurementResponse = production.Measurements[i];
-
-                            if (lpFlare.IsApplicable && lpFlare.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_003 is not null)
+                            if (measurementResponse.MeasurementHistory.Id == file.ImportId)
                             {
-                                var summary = new SummaryGeneric
+                                if (lpFlare.IsApplicable && lpFlare.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_003 is not null)
                                 {
-                                    DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                    LocationMeasuringPoint = lpFlare.StaticLocalMeasuringPoint,
-                                    StatusMeasuringPoint = true,
-                                    TagMeasuringPoint = lpFlare.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
+                                    var summary = new SummaryGeneric
+                                    {
+                                        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                                        LocationMeasuringPoint = lpFlare.StaticLocalMeasuringPoint,
+                                        StatusMeasuringPoint = true,
+                                        TagMeasuringPoint = lpFlare.MeasuringPoint.TagPointMeasuring,
+                                        Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
 
-                                };
-                                file.Summary.Add(summary);
-                                containLPFlare = true;
+                                    };
+                                    file.Summary.Add(summary);
+                                }
                             }
                         }
 
-                        if (containLPFlare is false && lpFlare.IsApplicable && pointAlreadyInserted is false)
-                        {
-                            var measurementWrong = new SummaryGeneric
-                            {
-                                StatusMeasuringPoint = false,
-                                DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                LocationMeasuringPoint = lpFlare.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = lpFlare.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            };
-
-                            file.Summary.Add(measurementWrong);
-                        }
                     }
-
-                    var containPilotGas = false;
 
                     foreach (var pilot in gasCalculationByUepCode.PilotGases)
                     {
@@ -1447,40 +1304,26 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         for (int i = 0; i < production.Measurements.Count; ++i)
                         {
                             var measurementResponse = production.Measurements[i];
-
-                            if (pilot.IsApplicable && pilot.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_003 is not null)
+                            if (measurementResponse.MeasurementHistory.Id == file.ImportId)
                             {
-                                var summary = new SummaryGeneric
+                                if (pilot.IsApplicable && pilot.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_003 is not null)
                                 {
-                                    DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                    LocationMeasuringPoint = pilot.StaticLocalMeasuringPoint,
-                                    StatusMeasuringPoint = true,
-                                    TagMeasuringPoint = pilot.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
+                                    var summary = new SummaryGeneric
+                                    {
+                                        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                                        LocationMeasuringPoint = pilot.StaticLocalMeasuringPoint,
+                                        StatusMeasuringPoint = true,
+                                        TagMeasuringPoint = pilot.MeasuringPoint.TagPointMeasuring,
+                                        Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
 
-                                };
-                                file.Summary.Add(summary);
+                                    };
+                                    file.Summary.Add(summary);
 
-                                containPilotGas = true;
+                                }
                             }
                         }
 
-                        if (containPilotGas is false && pilot.IsApplicable && pointAlreadyInserted is false)
-                        {
-                            var measurementWrong = new SummaryGeneric
-                            {
-                                StatusMeasuringPoint = false,
-                                DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                LocationMeasuringPoint = pilot.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = pilot.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            };
-
-                            file.Summary.Add(measurementWrong);
-                        }
                     }
-
-                    var containPurgeGas = false;
 
                     foreach (var purge in gasCalculationByUepCode.PurgeGases)
                     {
@@ -1489,38 +1332,26 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         for (int i = 0; i < production.Measurements.Count; ++i)
                         {
                             var measurementResponse = production.Measurements[i];
-
-                            if (purge.IsApplicable && purge.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_003 is not null)
+                            if (measurementResponse.MeasurementHistory.Id == file.ImportId)
                             {
-                                var summary = new SummaryGeneric
+                                if (purge.IsApplicable && purge.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_003 && pointAlreadyInserted is false && measurementResponse.MED_CORRIGIDO_MVMDO_003 is not null)
                                 {
-                                    DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                    LocationMeasuringPoint = purge.StaticLocalMeasuringPoint,
-                                    StatusMeasuringPoint = true,
-                                    TagMeasuringPoint = purge.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
+                                    var summary = new SummaryGeneric
+                                    {
+                                        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                                        LocationMeasuringPoint = purge.StaticLocalMeasuringPoint,
+                                        StatusMeasuringPoint = true,
+                                        TagMeasuringPoint = purge.MeasuringPoint.TagPointMeasuring,
+                                        Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
 
-                                };
-                                file.Summary.Add(summary);
+                                    };
+                                    file.Summary.Add(summary);
 
-                                containPurgeGas = true;
+                                }
                             }
                         }
-
-                        if (containPurgeGas is false && purge.IsApplicable && pointAlreadyInserted is false)
-                        {
-                            var measurementWrong = new SummaryGeneric
-                            {
-                                StatusMeasuringPoint = false,
-                                DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                LocationMeasuringPoint = purge.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = purge.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            };
-
-                            file.Summary.Add(measurementWrong);
-                        }
                     }
+
                 }
 
                 if (oilCalculationByUepCode is not null && file.FileType == XmlUtils.File001)
@@ -1534,37 +1365,39 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         for (int i = 0; i < production.Measurements.Count; ++i)
                         {
                             var measurementResponse = production.Measurements[i];
-
-                            if (section.IsApplicable && section.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_001 && pointAlreadyInserted is false && measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001 is not null)
+                            if (measurementResponse.MeasurementHistory.Id == file.ImportId)
                             {
-                                var summary = new SummaryGeneric
+                                if (section.IsApplicable && section.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_001 && pointAlreadyInserted is false && measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001 is not null)
                                 {
-                                    DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                    LocationMeasuringPoint = section.StaticLocalMeasuringPoint,
-                                    StatusMeasuringPoint = true,
-                                    TagMeasuringPoint = section.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001.Value, 5),
+                                    var summary = new SummaryGeneric
+                                    {
+                                        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                                        LocationMeasuringPoint = section.StaticLocalMeasuringPoint,
+                                        StatusMeasuringPoint = true,
+                                        TagMeasuringPoint = section.MeasuringPoint.TagPointMeasuring,
+                                        Volume = Math.Round(measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001.Value, 5),
 
-                                };
-                                file.Summary.Add(summary);
+                                    };
+                                    file.Summary.Add(summary);
 
-                                containSection = true;
+                                    containSection = true;
+                                }
                             }
                         }
 
-                        if (containSection is false && section.IsApplicable && pointAlreadyInserted is false)
-                        {
-                            var measurementWrong = new SummaryGeneric
-                            {
-                                StatusMeasuringPoint = false,
-                                DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                LocationMeasuringPoint = section.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = section.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            };
+                        //if (containSection is false && section.IsApplicable && pointAlreadyInserted is false)
+                        //{
+                        //    var measurementWrong = new SummaryGeneric
+                        //    {
+                        //        StatusMeasuringPoint = false,
+                        //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                        //        LocationMeasuringPoint = section.StaticLocalMeasuringPoint,
+                        //        TagMeasuringPoint = section.MeasuringPoint.TagPointMeasuring,
+                        //        Volume = 0
+                        //    };
 
-                            file.Summary.Add(measurementWrong);
-                        }
+                        //    file.Summary.Add(measurementWrong);
+                        //}
                     }
 
                     var containDOR = false;
@@ -1576,37 +1409,39 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         for (int i = 0; i < production.Measurements.Count; ++i)
                         {
                             var measurementResponse = production.Measurements[i];
-
-                            if (dor.IsApplicable && dor.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_001 && pointAlreadyInserted is false && measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001 is not null)
+                            if (measurementResponse.MeasurementHistory.Id == file.ImportId)
                             {
-                                var summary = new SummaryGeneric
+                                if (dor.IsApplicable && dor.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_001 && pointAlreadyInserted is false && measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001 is not null)
                                 {
-                                    DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                    LocationMeasuringPoint = dor.StaticLocalMeasuringPoint,
-                                    StatusMeasuringPoint = true,
-                                    TagMeasuringPoint = dor.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001.Value, 5),
+                                    var summary = new SummaryGeneric
+                                    {
+                                        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                                        LocationMeasuringPoint = dor.StaticLocalMeasuringPoint,
+                                        StatusMeasuringPoint = true,
+                                        TagMeasuringPoint = dor.MeasuringPoint.TagPointMeasuring,
+                                        Volume = Math.Round(measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001.Value, 5),
 
-                                };
-                                file.Summary.Add(summary);
+                                    };
+                                    file.Summary.Add(summary);
 
-                                containDOR = true;
+                                    containDOR = true;
+                                }
                             }
                         }
 
-                        if (containDOR is false && dor.IsApplicable && pointAlreadyInserted is false)
-                        {
-                            var measurementWrong = new SummaryGeneric
-                            {
-                                StatusMeasuringPoint = false,
-                                DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                LocationMeasuringPoint = dor.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = dor.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            };
+                        //if (containDOR is false && dor.IsApplicable && pointAlreadyInserted is false)
+                        //{
+                        //    var measurementWrong = new SummaryGeneric
+                        //    {
+                        //        StatusMeasuringPoint = false,
+                        //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                        //        LocationMeasuringPoint = dor.StaticLocalMeasuringPoint,
+                        //        TagMeasuringPoint = dor.MeasuringPoint.TagPointMeasuring,
+                        //        Volume = 0
+                        //    };
 
-                            file.Summary.Add(measurementWrong);
-                        }
+                        //    file.Summary.Add(measurementWrong);
+                        //}
                     }
 
                     var containDrain = false;
@@ -1618,36 +1453,38 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         for (int i = 0; i < production.Measurements.Count; ++i)
                         {
                             var measurementResponse = production.Measurements[i];
-
-                            if (drain.IsApplicable && drain.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_001 && pointAlreadyInserted is false && measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001 is not null)
+                            if (measurementResponse.MeasurementHistory.Id == file.ImportId)
                             {
-                                var summary = new SummaryGeneric
+                                if (drain.IsApplicable && drain.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_001 && pointAlreadyInserted is false && measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001 is not null)
                                 {
-                                    DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                    LocationMeasuringPoint = drain.StaticLocalMeasuringPoint,
-                                    StatusMeasuringPoint = true,
-                                    TagMeasuringPoint = drain.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001.Value, 5),
+                                    var summary = new SummaryGeneric
+                                    {
+                                        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                                        LocationMeasuringPoint = drain.StaticLocalMeasuringPoint,
+                                        StatusMeasuringPoint = true,
+                                        TagMeasuringPoint = drain.MeasuringPoint.TagPointMeasuring,
+                                        Volume = Math.Round(measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001.Value, 5),
 
-                                };
-                                file.Summary.Add(summary);
-                                containDrain = true;
+                                    };
+                                    file.Summary.Add(summary);
+                                    containDrain = true;
+                                }
                             }
                         }
 
-                        if (containDrain is false && drain.IsApplicable && pointAlreadyInserted is false)
-                        {
-                            var measurementWrong = new SummaryGeneric
-                            {
-                                StatusMeasuringPoint = false,
-                                DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                LocationMeasuringPoint = drain.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = drain.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            };
+                        //if (containDrain is false && drain.IsApplicable && pointAlreadyInserted is false)
+                        //{
+                        //    var measurementWrong = new SummaryGeneric
+                        //    {
+                        //        StatusMeasuringPoint = false,
+                        //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                        //        LocationMeasuringPoint = drain.StaticLocalMeasuringPoint,
+                        //        TagMeasuringPoint = drain.MeasuringPoint.TagPointMeasuring,
+                        //        Volume = 0
+                        //    };
 
-                            file.Summary.Add(measurementWrong);
-                        }
+                        //    file.Summary.Add(measurementWrong);
+                        //}
                     }
 
                     var containTOGRecoveredOil = false;
@@ -1659,40 +1496,372 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         for (int i = 0; i < production.Measurements.Count; ++i)
                         {
                             var measurementResponse = production.Measurements[i];
-
-                            if (tog.IsApplicable && tog.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_001 && pointAlreadyInserted is false && measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001 is not null)
+                            if (measurementResponse.MeasurementHistory.Id == file.ImportId)
                             {
-                                var summary = new SummaryGeneric
+                                if (tog.IsApplicable && tog.MeasuringPoint.TagPointMeasuring == measurementResponse.COD_TAG_PONTO_MEDICAO_001 && pointAlreadyInserted is false && measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001 is not null)
                                 {
-                                    DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                    LocationMeasuringPoint = tog.StaticLocalMeasuringPoint,
-                                    StatusMeasuringPoint = true,
-                                    TagMeasuringPoint = tog.MeasuringPoint.TagPointMeasuring,
-                                    Volume = Math.Round(measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001.Value, 5),
+                                    var summary = new SummaryGeneric
+                                    {
+                                        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                                        LocationMeasuringPoint = tog.StaticLocalMeasuringPoint,
+                                        StatusMeasuringPoint = true,
+                                        TagMeasuringPoint = tog.MeasuringPoint.TagPointMeasuring,
+                                        Volume = Math.Round(measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001.Value, 5),
 
-                                };
-                                file.Summary.Add(summary);
-                                containTOGRecoveredOil = true;
+                                    };
+                                    file.Summary.Add(summary);
+                                    containTOGRecoveredOil = true;
+                                }
                             }
                         }
 
-                        if (containTOGRecoveredOil is false && tog.IsApplicable && pointAlreadyInserted is false)
-                        {
-                            var measurementWrong = new SummaryGeneric
-                            {
-                                StatusMeasuringPoint = false,
-                                DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                LocationMeasuringPoint = tog.StaticLocalMeasuringPoint,
-                                TagMeasuringPoint = tog.MeasuringPoint.TagPointMeasuring,
-                                Volume = 0
-                            };
+                        //if (containTOGRecoveredOil is false && tog.IsApplicable && pointAlreadyInserted is false)
+                        //{
+                        //    var measurementWrong = new SummaryGeneric
+                        //    {
+                        //        StatusMeasuringPoint = false,
+                        //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                        //        LocationMeasuringPoint = tog.StaticLocalMeasuringPoint,
+                        //        TagMeasuringPoint = tog.MeasuringPoint.TagPointMeasuring,
+                        //        Volume = 0
+                        //    };
 
-                            file.Summary.Add(measurementWrong);
-                        }
+                        //    file.Summary.Add(measurementWrong);
+                        //}
                     }
                 }
             }
 
+            if (oilCalculationByUepCode is not null)
+            {
+                foreach (var section in oilCalculationByUepCode.Sections)
+                {
+                    var containsSection = false;
+
+                    foreach (var file in productionDto.Files)
+                    {
+                        if (file.Summary.Any(x => x.TagMeasuringPoint == section.MeasuringPoint.TagPointMeasuring && section.IsApplicable))
+                        {
+                            containsSection = true;
+                        }
+                    }
+
+                    if (containsSection is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == section.MeasuringPoint.TagPointMeasuring))
+                    {
+                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        {
+                            Status = false,
+                            Date = production.MeasuredAt,
+                            LocationMeasuringPoint = section.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = section.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
+                    }
+                }
+
+                foreach (var dor in oilCalculationByUepCode.DORs)
+                {
+                    var containsDor = false;
+
+                    foreach (var file in productionDto.Files)
+                    {
+                        if (file.Summary.Any(x => x.TagMeasuringPoint == dor.MeasuringPoint.TagPointMeasuring && dor.IsApplicable))
+                        {
+                            containsDor = true;
+                        }
+                    }
+
+                    if (containsDor is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == dor.MeasuringPoint.TagPointMeasuring))
+                    {
+                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        {
+                            Status = false,
+                            Date = production.MeasuredAt,
+                            LocationMeasuringPoint = dor.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = dor.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
+                    }
+                }
+
+                foreach (var tog in oilCalculationByUepCode.TOGRecoveredOils)
+                {
+                    var containsTog = false;
+
+                    foreach (var file in productionDto.Files)
+                    {
+                        if (file.Summary.Any(x => x.TagMeasuringPoint == tog.MeasuringPoint.TagPointMeasuring && tog.IsApplicable))
+                        {
+                            containsTog = true;
+                        }
+                    }
+
+                    if (containsTog is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == tog.MeasuringPoint.TagPointMeasuring))
+                    {
+                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        {
+                            Status = false,
+                            Date = production.MeasuredAt,
+                            LocationMeasuringPoint = tog.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = tog.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
+                    }
+                }
+
+                foreach (var drain in oilCalculationByUepCode.DrainVolumes)
+                {
+                    var containsDrain = false;
+
+                    foreach (var file in productionDto.Files)
+                    {
+                        if (file.Summary.Any(x => x.TagMeasuringPoint == drain.MeasuringPoint.TagPointMeasuring && drain.IsApplicable))
+                        {
+                            containsDrain = true;
+                        }
+                    }
+
+                    if (containsDrain is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == drain.MeasuringPoint.TagPointMeasuring))
+                    {
+                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        {
+                            Status = false,
+                            Date = production.MeasuredAt,
+                            LocationMeasuringPoint = drain.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = drain.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
+                    }
+                }
+            }
+
+            if (gasCalculationByUepCode is not null)
+            {
+                foreach (var assistance in gasCalculationByUepCode.AssistanceGases)
+                {
+                    var containsAssistanceGases = false;
+
+                    foreach (var file in productionDto.Files)
+                    {
+                        if (file.Summary.Any(x => x.TagMeasuringPoint == assistance.MeasuringPoint.TagPointMeasuring && assistance.IsApplicable))
+                        {
+                            containsAssistanceGases = true;
+                        }
+                    }
+
+                    if (containsAssistanceGases is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == assistance.MeasuringPoint.TagPointMeasuring))
+                    {
+                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        {
+                            Status = false,
+                            Date = production.MeasuredAt,
+                            LocationMeasuringPoint = assistance.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = assistance.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
+                    }
+                }
+
+                foreach (var export in gasCalculationByUepCode.ExportGases)
+                {
+                    var containsExportGases = false;
+
+                    foreach (var file in productionDto.Files)
+                    {
+                        if (file.Summary.Any(x => x.TagMeasuringPoint == export.MeasuringPoint.TagPointMeasuring && export.IsApplicable))
+                        {
+                            containsExportGases = true;
+                        }
+                    }
+
+                    if (containsExportGases is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == export.MeasuringPoint.TagPointMeasuring))
+                    {
+                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        {
+                            Status = false,
+                            Date = production.MeasuredAt,
+                            LocationMeasuringPoint = export.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = export.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
+                    }
+                }
+
+                foreach (var import in gasCalculationByUepCode.ImportGases)
+                {
+                    var containsImportGases = false;
+
+                    foreach (var file in productionDto.Files)
+                    {
+                        if (file.Summary.Any(x => x.TagMeasuringPoint == import.MeasuringPoint.TagPointMeasuring && import.IsApplicable))
+                        {
+                            containsImportGases = true;
+                        }
+                    }
+
+                    if (containsImportGases is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == import.MeasuringPoint.TagPointMeasuring))
+                    {
+                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        {
+                            Status = false,
+                            Date = production.MeasuredAt,
+                            LocationMeasuringPoint = import.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = import.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
+                    }
+                }
+
+                foreach (var hpFlare in gasCalculationByUepCode.HPFlares)
+                {
+                    var containsHPFlares = false;
+
+                    foreach (var file in productionDto.Files)
+                    {
+                        if (file.Summary.Any(x => x.TagMeasuringPoint == hpFlare.MeasuringPoint.TagPointMeasuring && hpFlare.IsApplicable))
+                        {
+                            containsHPFlares = true;
+                        }
+                    }
+
+                    if (containsHPFlares is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == hpFlare.MeasuringPoint.TagPointMeasuring))
+                    {
+                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        {
+                            Status = false,
+                            Date = production.MeasuredAt,
+                            LocationMeasuringPoint = hpFlare.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = hpFlare.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
+                    }
+                }
+
+                foreach (var lpFlare in gasCalculationByUepCode.LPFlares)
+                {
+                    var containsLPFlares = false;
+
+                    foreach (var file in productionDto.Files)
+                    {
+                        if (file.Summary.Any(x => x.TagMeasuringPoint == lpFlare.MeasuringPoint.TagPointMeasuring && lpFlare.IsApplicable))
+                        {
+                            containsLPFlares = true;
+                        }
+                    }
+
+                    if (containsLPFlares is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == lpFlare.MeasuringPoint.TagPointMeasuring))
+                    {
+                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        {
+                            Status = false,
+                            Date = production.MeasuredAt,
+                            LocationMeasuringPoint = lpFlare.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = lpFlare.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
+                    }
+                }
+
+                foreach (var purge in gasCalculationByUepCode.PurgeGases)
+                {
+                    var containsPurgeGases = false;
+
+                    foreach (var file in productionDto.Files)
+                    {
+                        if (file.Summary.Any(x => x.TagMeasuringPoint == purge.MeasuringPoint.TagPointMeasuring && purge.IsApplicable))
+                        {
+                            containsPurgeGases = true;
+                        }
+                    }
+
+                    if (containsPurgeGases is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == purge.MeasuringPoint.TagPointMeasuring))
+                    {
+                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        {
+                            Status = false,
+                            Date = production.MeasuredAt,
+                            LocationMeasuringPoint = purge.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = purge.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
+                    }
+                }
+
+                foreach (var pilot in gasCalculationByUepCode.PilotGases)
+                {
+                    var containsPilotGases = false;
+
+                    foreach (var file in productionDto.Files)
+                    {
+                        if (file.Summary.Any(x => x.TagMeasuringPoint == pilot.MeasuringPoint.TagPointMeasuring && pilot.IsApplicable))
+                        {
+                            containsPilotGases = true;
+                        }
+                    }
+
+                    if (containsPilotGases is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == pilot.MeasuringPoint.TagPointMeasuring))
+                    {
+                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        {
+                            Status = false,
+                            Date = production.MeasuredAt,
+                            LocationMeasuringPoint = pilot.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = pilot.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
+                    }
+                }
+
+                foreach (var highPressure in gasCalculationByUepCode.HighPressureGases)
+                {
+                    var containsHighPressureGases = false;
+
+                    foreach (var file in productionDto.Files)
+                    {
+                        if (file.Summary.Any(x => x.TagMeasuringPoint == highPressure.MeasuringPoint.TagPointMeasuring && highPressure.IsApplicable))
+                        {
+                            containsHighPressureGases = true;
+                        }
+                    }
+
+                    if (containsHighPressureGases is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == highPressure.MeasuringPoint.TagPointMeasuring))
+                    {
+                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        {
+                            Status = false,
+                            Date = production.MeasuredAt,
+                            LocationMeasuringPoint = highPressure.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = highPressure.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
+                    }
+                }
+
+                foreach (var lowPressure in gasCalculationByUepCode.LowPressureGases)
+                {
+                    var LowPressuresistanceGases = false;
+
+                    foreach (var file in productionDto.Files)
+                    {
+                        if (file.Summary.Any(x => x.TagMeasuringPoint == lowPressure.MeasuringPoint.TagPointMeasuring && lowPressure.IsApplicable))
+                        {
+                            LowPressuresistanceGases = true;
+                        }
+                    }
+
+                    if (LowPressuresistanceGases is false && productionDto.Files.Any() && !productionDto.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == lowPressure.MeasuringPoint.TagPointMeasuring))
+                    {
+                        productionDto.MeasurementsNotFound.Add(new ClientInfo
+                        {
+                            Status = false,
+                            Date = production.MeasuredAt,
+                            LocationMeasuringPoint = lowPressure.StaticLocalMeasuringPoint,
+                            TagMeasuringPoint = lowPressure.MeasuringPoint.TagPointMeasuring,
+                            Volume = 0
+                        });
+                    }
+                }
+            }
 
             return productionDto;
         }

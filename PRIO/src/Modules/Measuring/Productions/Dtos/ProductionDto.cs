@@ -170,6 +170,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
         public CreateUpdateCommentDto Comment { get; set; }
 
         public AppropriationDto WellAppropriation { get; set; }
+        public List<ClientInfo> MeasurementsNotFound { get; set; } = new();
+
     }
 
     public class GasBurntDto

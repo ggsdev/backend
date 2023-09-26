@@ -2413,7 +2413,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 response.Gas.FR = frProduction;
             }
 
-
             if (productionOfTheDay is null)
                 response.StatusProduction = "aberto";
             else
