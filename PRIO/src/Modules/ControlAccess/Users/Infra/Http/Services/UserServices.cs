@@ -196,8 +196,40 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                 var username = await _userRepository.GetUserByUsername(body.Username);
                 if (username != null)
                     throw new ConflictException("Já existe um usuário com este nome de usuário");
-
             };
+
+            if (body.InstallationsId is not null)
+            {
+                var instalationsToRelation = new List<Installation>();
+
+                if (body.InstallationsId.Count == 0)
+                    throw new ConflictException("Usuário precisa estar associado com pelo menos uma instalação, considere deletar o usuário.");
+                else
+                {
+                    foreach (var installationId in body.InstallationsId)
+                    {
+                        var verifyInstallation = await _installationRepository.GetByIdAsync(installationId);
+                        if (verifyInstallation == null)
+                            throw new ConflictException("Instalação não existente.");
+
+                        instalationsToRelation.Add(verifyInstallation);
+                    }
+                    user.InstallationsAccess.Clear();
+
+                    foreach (var item in instalationsToRelation)
+                    {
+                        var create = new InstallationsAccess
+                        {
+                            Installation = item,
+                            User = user,
+                            Id = Guid.NewGuid()
+                        };
+
+                        await _installationAccessRepository.AddInstallationsAccess(create);
+                    }
+                }
+
+            }
 
             await _systemHistoryService.Update(_table, loggedUser, updatedProperties, user.Id, user, beforeChangesUser);
 
@@ -719,7 +751,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
 
             return userDTO;
         }
-
 
         //public async Task<List<UserDTO>> RetrieveAllUsersAndMap()
         //{
