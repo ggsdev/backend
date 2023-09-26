@@ -1435,13 +1435,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     if (containsSection is false && response._001File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == section.MeasuringPoint.TagPointMeasuring))
                     {
-                        response.MeasurementsNotFound.Add(new ClientInfo
+                        response.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = response._001File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
+                            Date = response._001File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = section.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = section.MeasuringPoint.TagPointMeasuring,
-                            Volume = 0
+                            Volume = 0,
+                            Fluid = "Oil"
                         });
                     }
                 }
@@ -1460,13 +1461,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     if (containsDrain is false && response._001File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == drain.MeasuringPoint.TagPointMeasuring))
                     {
-                        response.MeasurementsNotFound.Add(new ClientInfo
+                        response.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = response._001File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
+                            Date = response._001File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = drain.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = drain.MeasuringPoint.TagPointMeasuring,
-                            Volume = 0
+                            Volume = 0,
+                            Fluid = "Oil"
                         });
                     }
                 }
@@ -1485,13 +1487,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     if (containsDor is false && response._001File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == dor.MeasuringPoint.TagPointMeasuring))
                     {
-                        response.MeasurementsNotFound.Add(new ClientInfo
+                        response.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = response._001File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
+                            Date = response._001File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = dor.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = dor.MeasuringPoint.TagPointMeasuring,
-                            Volume = 0
+                            Volume = 0,
+                            Fluid = "Oil"
                         });
                     }
                 }
@@ -1510,13 +1513,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     if (containsTog is false && response._001File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == togRecovered.MeasuringPoint.TagPointMeasuring))
                     {
-                        response.MeasurementsNotFound.Add(new ClientInfo
+                        response.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = response._001File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
+                            Date = response._001File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = togRecovered.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = togRecovered.MeasuringPoint.TagPointMeasuring,
-                            Volume = 0
+                            Volume = 0,
+                            Fluid = "Oil"
                         });
                     }
                 }
@@ -1704,10 +1708,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     if (containsAssistance is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == assistance.MeasuringPoint.TagPointMeasuring))
                     {
-                        response.MeasurementsNotFound.Add(new ClientInfo
+                        response.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
+                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = assistance.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = assistance.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -1729,10 +1733,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     if (containsHpFlare is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == hpFlare.MeasuringPoint.TagPointMeasuring))
                     {
-                        response.MeasurementsNotFound.Add(new ClientInfo
+                        response.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
+                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = hpFlare.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = hpFlare.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -1754,10 +1758,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     if (containsLpFlare is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == lpFlare.MeasuringPoint.TagPointMeasuring))
                     {
-                        response.MeasurementsNotFound.Add(new ClientInfo
+                        response.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
+                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = lpFlare.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = lpFlare.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -1779,10 +1783,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     if (containsExportGas is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == exportGas.MeasuringPoint.TagPointMeasuring))
                     {
-                        response.MeasurementsNotFound.Add(new ClientInfo
+                        response.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
+                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = exportGas.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = exportGas.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -1804,10 +1808,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     if (containsImportGas is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == importGas.MeasuringPoint.TagPointMeasuring))
                     {
-                        response.MeasurementsNotFound.Add(new ClientInfo
+                        response.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
+                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = importGas.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = importGas.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -1829,10 +1833,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     if (containsPurge is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == purgeGas.MeasuringPoint.TagPointMeasuring))
                     {
-                        response.MeasurementsNotFound.Add(new ClientInfo
+                        response.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
+                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = purgeGas.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = purgeGas.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -1854,10 +1858,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     if (containsPilot is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == pilotGas.MeasuringPoint.TagPointMeasuring))
                     {
-                        response.MeasurementsNotFound.Add(new ClientInfo
+                        response.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
+                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = pilotGas.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = pilotGas.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -1879,10 +1883,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     if (containsHigh is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == highPressure.MeasuringPoint.TagPointMeasuring))
                     {
-                        response.MeasurementsNotFound.Add(new ClientInfo
+                        response.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
+                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = highPressure.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = highPressure.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -1904,10 +1908,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     if (containsLow is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == lowPressure.MeasuringPoint.TagPointMeasuring))
                     {
-                        response.MeasurementsNotFound.Add(new ClientInfo
+                        response.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002,
+                            Date = response._002File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_002.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = lowPressure.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = lowPressure.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -2091,10 +2095,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     if (containsAssistance is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == assistance.MeasuringPoint.TagPointMeasuring))
                     {
-                        response.MeasurementsNotFound.Add(new ClientInfo
+                        response.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
+                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = assistance.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = assistance.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -2116,10 +2120,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     if (containsHpFlare is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == hpFlare.MeasuringPoint.TagPointMeasuring))
                     {
-                        response.MeasurementsNotFound.Add(new ClientInfo
+                        response.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
+                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = hpFlare.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = hpFlare.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -2141,10 +2145,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     if (containsLpFlare is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == lpFlare.MeasuringPoint.TagPointMeasuring))
                     {
-                        response.MeasurementsNotFound.Add(new ClientInfo
+                        response.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
+                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = lpFlare.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = lpFlare.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -2166,10 +2170,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     if (containsExportGas is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == exportGas.MeasuringPoint.TagPointMeasuring))
                     {
-                        response.MeasurementsNotFound.Add(new ClientInfo
+                        response.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
+                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = exportGas.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = exportGas.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -2191,10 +2195,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     if (containsImportGas is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == importGas.MeasuringPoint.TagPointMeasuring))
                     {
-                        response.MeasurementsNotFound.Add(new ClientInfo
+                        response.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
+                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = importGas.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = importGas.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -2216,10 +2220,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     if (containsPurge is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == purgeGas.MeasuringPoint.TagPointMeasuring))
                     {
-                        response.MeasurementsNotFound.Add(new ClientInfo
+                        response.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
+                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = purgeGas.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = purgeGas.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -2241,10 +2245,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     if (containsPilot is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == pilotGas.MeasuringPoint.TagPointMeasuring))
                     {
-                        response.MeasurementsNotFound.Add(new ClientInfo
+                        response.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
+                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = pilotGas.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = pilotGas.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -2266,10 +2270,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     if (containsHigh is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == highPressure.MeasuringPoint.TagPointMeasuring))
                     {
-                        response.MeasurementsNotFound.Add(new ClientInfo
+                        response.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
+                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = highPressure.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = highPressure.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
@@ -2291,10 +2295,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     if (containsLow is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == lowPressure.MeasuringPoint.TagPointMeasuring))
                     {
-                        response.MeasurementsNotFound.Add(new ClientInfo
+                        response.MeasurementsNotFound.Add(new SummaryProduction
                         {
                             Status = false,
-                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003,
+                            Date = response._003File[0].Measurements[0].DHA_INICIO_PERIODO_MEDICAO_003.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = lowPressure.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = lowPressure.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
