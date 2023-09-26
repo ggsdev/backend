@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.Dtos;
 using PRIO.src.Modules.FileImport.XML.Dtos;
@@ -15,18 +16,24 @@ namespace PRIO.Controllers
     public partial class XMLImportController : ControllerBase
     {
         private readonly XMLImportService _service;
+        private readonly IOutputCacheStore _cache;
 
-        public XMLImportController(XMLImportService XMLImportService)
+
+        public XMLImportController(XMLImportService XMLImportService, IOutputCacheStore cache)
         {
             _service = XMLImportService;
+            _cache = cache;
         }
 
         [HttpPost]
+        [OutputCache(PolicyName = "ProductionPolicy")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ImportResponseDTO))]
-        public async Task<ActionResult> ImportFiles([FromBody] ResponseXmlDto data)
+        public async Task<ActionResult> ImportFiles([FromBody] ResponseXmlDto data, CancellationToken ct)
         {
             var user = HttpContext.Items["User"] as User;
             var result = await _service.Import(data, user);
+
+            await _cache.EvictByTagAsync("ProductionPolicyTag", ct);
 
             return Ok(result);
         }

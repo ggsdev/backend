@@ -318,6 +318,8 @@ namespace PRIO.src.Modules.FileImport.XML.Dtos
         public List<Response001DTO> _001File { get; set; } = new();
         public List<Response002DTO> _002File { get; set; } = new();
         public List<Response003DTO> _003File { get; set; } = new();
+
+        public List<ClientInfo> MeasurementsNotFound { get; set; } = new();
     }
 
     public class GasSummary

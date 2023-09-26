@@ -92,6 +92,8 @@ ConfigureServices(builder.Services, configuration);
 
 var app = builder.Build();
 
+app.UseOutputCache();
+
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -118,7 +120,6 @@ if (app.Environment.IsDevelopment())
 ConfigureMiddlewares(app);
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 app.Run();
 
@@ -135,6 +136,17 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
         //config.ModelBinderProviders.Insert(0, new GuidBinderProvider());
     });
 
+    services.AddOutputCache(options =>
+    {
+
+        options.AddBasePolicy(policy => policy
+        .Expire(TimeSpan.FromMinutes(10)));
+
+        options.AddPolicy("ProductionPolicy", policy => policy
+        .Expire(TimeSpan.FromHours(12))
+        .Tag("ProductionPolicyTag"));
+
+    });
 
     services.AddCors(options =>
     {
