@@ -1074,65 +1074,78 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                         }
                     }
 
+                    var firstEventReason = wellEvent.EventReasons
+                        .OrderBy(x => x.StartDate)
+                        .FirstOrDefault();
+
                     if (wellEvent.StartDate.Date == parsedStartDate.Date)
                     {
-                        if (lastEventReason is not null && lastEventReason is not null)
+                        if (firstEventReason is not null)
                         {
-                            lastEventReason.StartDate = parsedStartDate;
+                            firstEventReason.StartDate = parsedStartDate;
 
-                            if (lastEventReason.EndDate is not null)
+                            if (firstEventReason.EndDate is not null)
                             {
-                                var formatedInterval = FormatTimeInterval(lastEventReason.EndDate.Value, lastEventReason);
+                                var formatedInterval = FormatTimeInterval(firstEventReason.EndDate.Value, firstEventReason);
 
-                                lastEventReason.Interval = formatedInterval;
+                                firstEventReason.Interval = formatedInterval;
                             }
 
-                            _wellEventRepository.UpdateReason(lastEventReason);
+                            _wellEventRepository.UpdateReason(firstEventReason);
                         }
 
                     }
 
-                    if (wellEvent.StartDate.Date > parsedStartDate.Date)
+                    if (parsedStartDate.Date < wellEvent.StartDate.Date)
                     {
                         var eventReasonsCreated = new List<EventReason>();
 
                         for (DateTime date = wellEvent.StartDate; date >= parsedStartDate; date = date.AddDays(-1))
                         {
-                            var endOfDay = date.AddDays(1);
 
-                            if (date == wellEvent.StartDate)
+                            if (date.Date == parsedStartDate.Date)
                             {
-                                lastEventReason.EndDate = endOfDay.Date.AddMilliseconds(-1);
+                                var lastCreatedEventReason = new EventReason
+                                {
+                                    SystemRelated = firstEventReason.SystemRelated,
+                                    Id = Guid.NewGuid(),
+                                    WellEvent = wellEvent,
+                                    CreatedBy = loggedUser,
+                                    WellEventId = wellEvent.Id,
+                                    StartDate = parsedStartDate,
+                                    EndDate = date.Date.AddDays(1).AddMilliseconds(-10),
+                                    UpdatedBy = loggedUser
 
-                                var intervalFormated = FormatTimeInterval(lastEventReason.EndDate.Value, lastEventReason);
+                                };
 
-                                lastEventReason.Interval = intervalFormated;
+                                var interval = FormatTimeInterval(lastCreatedEventReason.EndDate.Value, lastCreatedEventReason);
 
-                                _wellEventRepository.UpdateReason(lastEventReason);
-                                continue;
+                                lastCreatedEventReason.Interval = interval;
+
+                                eventReasonsCreated.Add(lastCreatedEventReason);
                             }
-
-                            var eventReason = new EventReason
+                            else if (date.Date > parsedStartDate.Date)
                             {
-                                SystemRelated = lastEventReason.SystemRelated,
-                                Id = Guid.NewGuid(),
-                                WellEvent = wellEvent,
-                                CreatedBy = loggedUser,
-                                WellEventId = wellEvent.Id,
-                                StartDate = date.Date,
-                                EndDate = endOfDay.Date.AddMilliseconds(-1)
-                            };
 
-                            var interval = FormatTimeInterval(eventReason.EndDate.Value, eventReason);
+                                var eventReason = new EventReason
+                                {
+                                    SystemRelated = firstEventReason.SystemRelated,
+                                    Id = Guid.NewGuid(),
+                                    WellEvent = wellEvent,
+                                    CreatedBy = loggedUser,
+                                    WellEventId = wellEvent.Id,
+                                    StartDate = date.Date,
+                                    EndDate = date.Date.AddDays(1).AddMilliseconds(-10),
+                                    UpdatedBy = loggedUser,
+                                };
 
-                            eventReason.Interval = interval;
+                                var interval = FormatTimeInterval(eventReason.EndDate.Value, eventReason);
 
-                            eventReasonsCreated.Add(eventReason);
+                                eventReason.Interval = interval;
+
+                                eventReasonsCreated.Add(eventReason);
+                            }
                         }
-
-                        var activeEventReason = eventReasonsCreated.Last();
-                        activeEventReason.EndDate = null;
-                        activeEventReason.Interval = null;
 
                         await _wellEventRepository.AddRangeReasons(eventReasonsCreated);
                     }
@@ -1168,6 +1181,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
                     wellEvent.StartDate = parsedStartDate;
                     wellEvent.EventRelated.EndDate = parsedStartDate;
                     wellEvent.EventRelated.Interval = (parsedStartDate - wellEvent.EventRelated.StartDate).TotalHours;
+                    wellEvent.UpdatedBy = loggedUser;
 
                     if (wellEvent.EndDate is not null)
                     {
