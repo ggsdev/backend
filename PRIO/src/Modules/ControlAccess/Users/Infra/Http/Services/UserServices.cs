@@ -149,6 +149,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                     throw new NotFoundException("Instalação não encontrada.");
 
                 userDTO.InstallationsAccess.Where(x => x.Id == installationAccess.Id).FirstOrDefault().Name = installationDatabase.Name;
+                userDTO.InstallationsAccess.Where(x => x.Id == installationAccess.Id).FirstOrDefault().Id = installationDatabase.Id;
             }
 
             return userDTO;
@@ -168,6 +169,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                     throw new NotFoundException("Instalação não encontrada.");
 
                 userDTO.InstallationsAccess.Where(x => x.Id == installationAccess.Id).FirstOrDefault().Name = installationDatabase.Name;
+                userDTO.InstallationsAccess.Where(x => x.Id == installationAccess.Id).FirstOrDefault().Id = installationDatabase.Id;
             }
 
             return userDTO;
