@@ -1554,7 +1554,9 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = section.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = section.MeasuringPoint.TagPointMeasuring,
-                            Volume = 0
+                            Volume = 0,
+                            Fluid = "Oil"
+
                         });
                     }
                 }
@@ -1579,7 +1581,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = dor.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = dor.MeasuringPoint.TagPointMeasuring,
-                            Volume = 0
+                            Volume = 0,
+                            Fluid = "Oil"
                         });
                     }
                 }
@@ -1604,7 +1607,9 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = tog.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = tog.MeasuringPoint.TagPointMeasuring,
-                            Volume = 0
+                            Volume = 0,
+                            Fluid = "Oil"
+
                         });
                     }
                 }
@@ -1629,7 +1634,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
                             LocationMeasuringPoint = drain.StaticLocalMeasuringPoint,
                             TagMeasuringPoint = drain.MeasuringPoint.TagPointMeasuring,
-                            Volume = 0
+                            Volume = 0,
+                            Fluid = "Oil"
                         });
                     }
                 }

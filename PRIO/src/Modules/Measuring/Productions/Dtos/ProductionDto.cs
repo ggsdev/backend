@@ -157,6 +157,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
         public string? Date { get; set; }
         public decimal? Volume { get; set; }
         public bool? Status { get; set; }
+        public string Fluid { get; set; } = "Gas";
     }
     public class ProductionDtoWithNullableDecimals
     {
