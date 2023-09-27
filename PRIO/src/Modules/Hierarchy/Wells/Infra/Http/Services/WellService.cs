@@ -151,9 +151,9 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             return wellDTO;
         }
 
-        public async Task<List<WellDTO>> GetWells()
+        public async Task<List<WellDTO>> GetWells(User user)
         {
-            var wells = await _wellRepository.GetAsync();
+            var wells = await _wellRepository.GetAsync(user);
             var wellsDTO = _mapper.Map<List<Well>, List<WellDTO>>(wells);
             return wellsDTO;
         }

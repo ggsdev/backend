@@ -1,4 +1,5 @@
-﻿using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models;
+﻿using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Hierarchy.Completions.Interfaces
 {
@@ -9,7 +10,7 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Interfaces
         void Delete(Completion completion);
         void Restore(Completion completion);
         Task<Completion?> GetByIdAsync(Guid? id);
-        Task<List<Completion>> GetAsync();
+        Task<List<Completion>> GetAsync(User user);
         Task<Completion?> GetOnlyCompletion(Guid? id);
         Task<Completion?> GetWithWellReservoirZoneAsync(Guid? id);
         Task<Completion?> GetWithUser(Guid? id);
