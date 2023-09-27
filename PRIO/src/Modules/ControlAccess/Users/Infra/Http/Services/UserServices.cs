@@ -180,6 +180,9 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             if (user is null || user.IsActive is false)
                 throw new NotFoundException("User not found");
 
+            if (user.Type == "Master")
+                throw new ConflictException("Usuário Master do sistema não pode ser alterado.");
+
             var beforeChangesUser = _mapper.Map<UserHistoryDTO>(user);
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(user, body);
 
@@ -249,6 +252,9 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             var user = await _userRepository.GetUserById(id);
             if (user is null || user.IsActive is false)
                 throw new NotFoundException("User not found");
+
+            if (user.Type == "Master")
+                throw new ConflictException("Usuário Master do sistema não pode ser Deletado.");
 
             var userOperation = await _userRepository.GetUserById(userOperationId);
             if (userOperation is null)

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
@@ -44,7 +45,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
             }
 
         }
-
         public async Task<List<FieldFR?>> GetFRsByIdAsync(Guid? id)
         {
             return await _context.FieldsFRs
@@ -53,12 +53,10 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                .Where(x => x.Field.Installation.Id == id)
                .ToListAsync();
         }
-
         public async Task<Installation?> GetUepById(Guid? id)
         {
             return await _context.Installations.FirstOrDefaultAsync(x => x.Id == id && x.IsProcessingUnit);
         }
-
         public async Task<FieldFR?> GetFrByDateMeasuredAndFieldId(DateTime date, Guid fieldId)
         {
             return await _context.FieldsFRs
@@ -69,7 +67,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                             x.DailyProduction.MeasuredAt.Day == date.Day) && x.Field.Id == fieldId && x.IsActive && x.DailyProduction.IsActive)
                 .FirstOrDefaultAsync();
         }
-
         public void UpdateFr(FieldFR fieldFr)
         {
             _context.Update(fieldFr);
@@ -84,7 +81,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                 .ToListAsync();
             return Frs;
         }
-
         public async Task<List<FieldFR>> GetFRsByIdAsync(Guid id)
         {
             return await _context.FieldsFRs
@@ -98,31 +94,30 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
         {
             await _context.FieldsFRs.AddAsync(fr);
         }
-
         public async Task<Installation?> GetInstallationAndChildren(Guid? id)
         {
             return await _context.Installations
-                    .Include(i => i.Fields)
-                        .ThenInclude(f => f.Zones)
-                            .ThenInclude(z => z.Reservoirs)
-                    .Include(i => i.Fields)
-                        .ThenInclude(f => f.Wells)
-                                .ThenInclude(r => r.Completions)
-                    .Include(i => i.Fields)
-                        .ThenInclude(f => f.Wells)
-                        .ThenInclude(w => w.WellEvents)
-                        .ThenInclude(we => we.EventReasons)
-                    .Include(x => x.MeasuringPoints)
-                        .ThenInclude(x => x.MeasuringEquipments)
-                     .Include(x => x.MeasuringPoints)
-                        .ThenInclude(x => x.DOR)
-                     .Include(x => x.MeasuringPoints)
-                        .ThenInclude(x => x.Section)
-                     .Include(x => x.MeasuringPoints)
-                        .ThenInclude(x => x.TOGRecoveredOil)
-                     .Include(x => x.MeasuringPoints)
-                        .ThenInclude(x => x.DrainVolume)
-                .FirstOrDefaultAsync(c => c.Id == id);
+                        .Include(i => i.Fields)
+                            .ThenInclude(f => f.Zones)
+                                .ThenInclude(z => z.Reservoirs)
+                        .Include(i => i.Fields)
+                            .ThenInclude(f => f.Wells)
+                                    .ThenInclude(r => r.Completions)
+                        .Include(i => i.Fields)
+                            .ThenInclude(f => f.Wells)
+                            .ThenInclude(w => w.WellEvents)
+                            .ThenInclude(we => we.EventReasons)
+                        .Include(x => x.MeasuringPoints)
+                            .ThenInclude(x => x.MeasuringEquipments)
+                         .Include(x => x.MeasuringPoints)
+                            .ThenInclude(x => x.DOR)
+                         .Include(x => x.MeasuringPoints)
+                            .ThenInclude(x => x.Section)
+                         .Include(x => x.MeasuringPoints)
+                            .ThenInclude(x => x.TOGRecoveredOil)
+                         .Include(x => x.MeasuringPoints)
+                            .ThenInclude(x => x.DrainVolume)
+                    .FirstOrDefaultAsync(c => c.Id == id);
         }
         public async Task<Installation?> GetByIdWithCalculationsAsync(Guid? id)
         {
@@ -148,16 +143,15 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                         .ThenInclude(x => x.PurgeGases)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
-
         public async Task<Installation?> GetByIdAsync(Guid? id)
         {
-            var installation = await _context.Installations
-                .Include(x => x.Cluster)
-                .Where(x => x.Id == id)
-                .FirstOrDefaultAsync();
-            return installation;
-        }
 
+            return await _context.Installations
+            .Include(x => x.Cluster)
+            .Where(x => x.Id == id)
+            .FirstOrDefaultAsync();
+
+        }
         public async Task<Installation?> GetByNameAsync(string? name)
         {
             var installation = await _context.Installations
@@ -165,7 +159,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                 .FirstOrDefaultAsync();
             return installation;
         }
-
         public async Task<Installation?> GetByCod(string? cod)
         {
             return await _context.Installations
@@ -187,16 +180,29 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                 .Where(x => x.UepCod == cod)
               .ToListAsync();
         }
-
-        public async Task<List<Installation>> GetByIdWithFieldsCod(Guid id)
+        public async Task<List<Installation>> GetByIdWithFieldsCod(Guid id, User user)
         {
-            return await _context.Installations
-                .Include(x => x.Fields)
-                .ThenInclude(x => x.FRs)
-                .Where(x => x.Id == id)
-              .ToListAsync();
-        }
+            List<Guid> installationIds = user.InstallationsAccess
+                   .Select(installationAccess => installationAccess.Installation.Id)
+                   .ToList();
 
+            if (user.Type == "Master")
+            {
+                return await _context.Installations
+                    .Include(x => x.Fields)
+                    .ThenInclude(x => x.FRs)
+                    .Where(x => x.Id == id)
+                    .ToListAsync();
+            }
+            else
+            {
+                return await _context.Installations
+                    .Include(x => x.Fields)
+                    .ThenInclude(x => x.FRs)
+                    .Where(x => x.Id == id)
+                    .Where(x => installationIds.Contains(x.Id)).ToListAsync();
+            }
+        }
         public async Task<Installation?> GetByIdWithFieldsMeasuringPointsAsync(Guid? id)
         {
             return await _context.Installations
@@ -207,21 +213,32 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                 .Include(x => x.Cluster)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
-
         public async Task AddAsync(Installation installation)
         {
             await _context.Installations.AddAsync(installation);
         }
-
-        public async Task<List<Installation>> GetAsync()
+        public async Task<List<Installation>> GetAsync(User user)
         {
-            return await _context.Installations
-                .Include(x => x.Cluster)
-                .Include(x => x.User)
-                .Include(x => x.Fields)
-                    .ThenInclude(x => x.Wells)
-                        .ThenInclude(x => x.WellEvents)
-                .ToListAsync();
+            List<Guid> installationIds = user.InstallationsAccess
+                    .Select(installationAccess => installationAccess.Installation.Id)
+                    .ToList();
+
+            if (user.Type == "Master")
+            {
+                return await _context.Installations
+                   .Include(x => x.Cluster)
+                   .Include(x => x.User)
+                   .Include(x => x.Fields)
+                       .ThenInclude(x => x.Wells).ToListAsync();
+            }
+            else
+            {
+                return await _context.Installations
+                 .Include(x => x.Cluster)
+                 .Include(x => x.User)
+                 .Include(x => x.Fields)
+                     .ThenInclude(x => x.Wells).Where(x => installationIds.Contains(x.Id)).ToListAsync();
+            }
         }
         public async Task<List<Installation>> GetUEPsAsync()
         {
@@ -234,7 +251,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                 .Where(x => x.IsProcessingUnit == true)
                 .ToListAsync();
         }
-
         public async Task<List<Installation>> GetInstallationChildrenOfUEP(string uepCode)
         {
             return await _context.Installations
@@ -324,22 +340,18 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                     .Where(x => x.IsProcessingUnit == true)
                     .ToListAsync();
         }
-
         public void Update(Installation installation)
         {
             _context.Installations.Update(installation);
         }
-
         public void Delete(Installation installation)
         {
             _context.Installations.Update(installation);
         }
-
         public void Restore(Installation installation)
         {
             _context.Installations.Update(installation);
         }
-
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();

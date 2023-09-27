@@ -159,7 +159,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
 
             return installationDTO;
         }
-
         //public async Task<List<FRFieldDTO>> ApplyFR(CreateFRsFieldsViewModel body, User user)
         //{
         //    var installation = await _installationRepository.GetByIdAsync(body.InstallationId);
@@ -293,7 +292,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
 
         //    return frsDTO;
         //}
-
         public async Task<List<FRFieldDTO>> GetFRsField(Guid installationId)
         {
             var installation = await _installationRepository.GetByIdAsync(installationId);
@@ -311,11 +309,10 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
             return frsDTO;
 
         }
-
-        public async Task<List<InstallationDTO>> GetInstallations()
+        public async Task<List<InstallationDTO>> GetInstallations(User user)
         {
             var installations = await _installationRepository
-                .GetAsync();
+                .GetAsync(user);
 
             var installationsDTO = _mapper.Map<List<Installation>, List<InstallationDTO>>(installations);
             return installationsDTO;
@@ -336,7 +333,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
             var installationsDTO = _mapper.Map<List<Installation>, List<InstallationDTO>>(installations);
             return installationsDTO;
         }
-
         public async Task<InstallationWithFieldsEquipmentsDTO> GetInstallationById(Guid id)
         {
             var installation = await _installationRepository.GetByIdWithFieldsMeasuringPointsAsync(id);
@@ -348,7 +344,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
 
             return installationDTO;
         }
-
         public async Task<CreateUpdateInstallationDTO> UpdateInstallation(UpdateInstallationViewModel body, Guid id, User user)
         {
             var installation = await _installationRepository
@@ -424,7 +419,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
 
             return installationDTO;
         }
-
         public async Task DeleteInstallation(Guid id, User user, string StatusDate)
         {
             DateTime date;
@@ -821,7 +815,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
             await _installationRepository.SaveChangesAsync();
 
         }
-
         public async Task<CreateUpdateInstallationDTO> RestoreInstallation(Guid id, User user)
         {
             var installation = await _installationRepository.GetByIdAsync(id);
@@ -882,7 +875,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
 
             return $"{formattedHours}:{formattedMinutes}:{formattedSecond}";
         }
-
         public async Task<List<SystemHistory>> GetInstallationHistory(Guid id)
         {
             var installationHistories = await _systemHistoryService

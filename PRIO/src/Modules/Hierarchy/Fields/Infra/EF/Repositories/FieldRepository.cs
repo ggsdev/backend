@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Shared.Infra.EF;
@@ -102,14 +103,30 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
             await _context.Fields.AddAsync(field);
         }
 
-        public async Task<List<Field>> GetAsync()
+        public async Task<List<Field>> GetAsync(User user)
         {
-            return await _context.Fields
+            List<Guid> installationIds = user.InstallationsAccess
+                 .Select(installationAccess => installationAccess.Installation.Id)
+                 .ToList();
+
+            if (user.Type == "Master")
+            {
+                return await _context.Fields
                .Include(x => x.Installation)
                .ThenInclude(i => i!.Cluster)
                .Include(x => x.Wells)
                .Include(x => x.User)
                .ToListAsync();
+            }
+            else
+            {
+                return await _context.Fields
+               .Include(x => x.Installation)
+               .ThenInclude(i => i!.Cluster)
+               .Include(x => x.Wells)
+               .Include(x => x.User)
+               .Where(x => installationIds.Contains(x.Installation.Id)).ToListAsync();
+            }
         }
 
         public void Update(Field field)

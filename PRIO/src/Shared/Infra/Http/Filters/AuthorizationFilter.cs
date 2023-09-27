@@ -23,6 +23,8 @@ namespace PRIO.src.Shared.Infra.Http.Filters
             {
                 var user = await _context.Users
                     .Include(x => x.Group)
+                    .Include(x => x.InstallationsAccess)
+                    .ThenInclude(x => x.Installation)
                     .FirstOrDefaultAsync(x => x.Id == userId);
 
                 if (user is null)
