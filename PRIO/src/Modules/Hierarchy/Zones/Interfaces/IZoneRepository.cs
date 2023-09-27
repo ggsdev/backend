@@ -1,4 +1,5 @@
-﻿using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
+﻿using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Hierarchy.Zones.Interfaces
 {
@@ -9,7 +10,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Interfaces
         void Delete(Zone zone);
         void Restore(Zone zone);
         Task<Zone?> GetByIdAsync(Guid? id);
-        Task<List<Zone>> GetAsync();
+        Task<List<Zone>> GetAsync(User user);
         Task<Zone?> GetByCode(string code);
         Task<Zone?> GetZoneAndChildren(Guid? id);
         Task<Zone?> GetOnlyZone(Guid? id);

@@ -87,9 +87,9 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
             return zoneDTO;
         }
 
-        public async Task<List<ZoneDTO>> GetZones()
+        public async Task<List<ZoneDTO>> GetZones(User user)
         {
-            var zones = await _zoneRepository.GetAsync();
+            var zones = await _zoneRepository.GetAsync(user);
 
             var zonesDTO = _mapper.Map<List<Zone>, List<ZoneDTO>>(zones);
             return zonesDTO;
