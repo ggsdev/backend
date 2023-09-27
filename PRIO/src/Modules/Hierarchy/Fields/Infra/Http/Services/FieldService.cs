@@ -116,7 +116,6 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
             var fieldDTO = _mapper.Map<Field, FieldDTO>(field);
             return fieldDTO;
         }
-
         public async Task<CreateUpdateFieldDTO> UpdateField(Guid id, UpdateFieldViewModel body, User user)
         {
             var field = await _fieldRepository.GetByIdWithWellsAndZonesAsync(id);
@@ -181,7 +180,6 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
 
             return fieldDTO;
         }
-
         public async Task DeleteField(Guid id, User user, string StatusDate)
         {
             DateTime date;
@@ -510,7 +508,6 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
 
             await _fieldRepository.SaveChangesAsync();
         }
-
         public async Task<CreateUpdateFieldDTO> RestoreField(Guid id, User user)
         {
             var field = await _fieldRepository.GetByIdAsync(id);
@@ -545,7 +542,6 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
             var fieldDTO = _mapper.Map<Field, CreateUpdateFieldDTO>(field);
             return fieldDTO;
         }
-
         public async Task<List<SystemHistory>> GetFieldHistory(Guid id)
         {
             var fieldHistories = await _systemHistoryService

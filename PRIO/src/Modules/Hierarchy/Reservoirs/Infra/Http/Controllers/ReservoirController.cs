@@ -34,7 +34,13 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var reservoirsDTO = await _reservoirService.GetReservoirs();
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+
+            var reservoirsDTO = await _reservoirService.GetReservoirs(user);
             return Ok(reservoirsDTO);
         }
 

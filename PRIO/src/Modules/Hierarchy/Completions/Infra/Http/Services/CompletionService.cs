@@ -196,9 +196,9 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services
             return completionDTO;
         }
 
-        public async Task<List<CompletionWithWellAndReservoirDTO>> GetCompletions()
+        public async Task<List<CompletionWithWellAndReservoirDTO>> GetCompletions(User user)
         {
-            var completions = await _completionRepository.GetAsync();
+            var completions = await _completionRepository.GetAsync(user);
 
             var completionsDTO = _mapper.Map<List<Completion>, List<CompletionWithWellAndReservoirDTO>>(completions);
 

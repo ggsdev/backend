@@ -26,13 +26,18 @@ GlobalConfiguration.Configuration
 RecurringJob.AddOrUpdate(
           "myrecurringjob",
           () => UpdateDowntime.Execute(),
-        "0 0 * * *");
+            Cron.Minutely);
 //Cron.Minutely);
 
 RecurringJob.AddOrUpdate(
           "myrecurringjob2",
           () => UpdateWellTest.Execute(),
-          "0 0 * * *");
+          Cron.Minutely);
+
+RecurringJob.AddOrUpdate(
+          "myrecurringjob3",
+          () => CreateBackup.Execute(),
+          Cron.Minutely);
 
 using (var server = new BackgroundJobServer())
 {

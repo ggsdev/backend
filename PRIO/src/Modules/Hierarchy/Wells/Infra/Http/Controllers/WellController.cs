@@ -44,7 +44,12 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var wellsDTO = await _wellService.GetWells();
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+            var wellsDTO = await _wellService.GetWells(user);
             return Ok(wellsDTO);
         }
 

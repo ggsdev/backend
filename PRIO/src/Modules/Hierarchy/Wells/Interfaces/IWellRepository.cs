@@ -1,4 +1,5 @@
-﻿using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
+﻿using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Hierarchy.Wells.Interfaces
 {
@@ -11,7 +12,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Interfaces
         Task<Well?> GetByIdAsync(Guid? id);
         Task<Well?> GetByIdWithEventsAsync(Guid? id);
         Task<Well?> GetByNameAsync(string? name);
-        Task<List<Well>> GetAsync();
+        Task<List<Well>> GetAsync(User user);
         Task<Well?> GetByCode(string? cod);
         Task<Well?> GetWithFieldAsync(Guid? id);
         Task<Well?> GetOnlyWellAsync(Guid? id);

@@ -49,7 +49,13 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var completionsDTO = await _completionService.GetCompletions();
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+
+            var completionsDTO = await _completionService.GetCompletions(user);
             return Ok(completionsDTO);
         }
 
