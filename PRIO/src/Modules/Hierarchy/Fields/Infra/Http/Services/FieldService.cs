@@ -96,9 +96,9 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
             return fieldDTO;
         }
 
-        public async Task<List<FieldDTO>> GetFields()
+        public async Task<List<FieldDTO>> GetFields(User user)
         {
-            var fields = await _fieldRepository.GetAsync();
+            var fields = await _fieldRepository.GetAsync(user);
 
             var fieldsDTO = _mapper.Map<List<Field>, List<FieldDTO>>(fields);
             return fieldsDTO;

@@ -48,7 +48,12 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var installationsDTO = await _installationService.GetInstallations();
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+            var installationsDTO = await _installationService.GetInstallations(user);
             return Ok(installationsDTO);
         }
         [HttpGet("fr/{installationId}")]

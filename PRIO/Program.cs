@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Factories;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Interfaces;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services;
@@ -14,6 +15,7 @@ using PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Menus.Infra.Http.Services;
 using PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Interfaces;
 using PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Repositories;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Factories;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Interfaces;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
@@ -263,6 +265,14 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddScoped<BTPService>();
 
     services.AddScoped<XLSXService>();
+
+    #region Factories
+    services.AddScoped<GroupFactory>();
+    services.AddScoped<GroupPermissionFactory>();
+    services.AddScoped<GroupOperationFactory>();
+    services.AddScoped<UserPermissionFactory>();
+    services.AddScoped<UserOperationFactory>();
+    #endregion
 
     var jwtKey = envVars["SECRET_KEY"];
     var key = Encoding.ASCII.GetBytes(jwtKey);

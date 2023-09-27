@@ -2,6 +2,7 @@
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.WellEvents.Http.Services;
 using PRIO.src.Modules.Measuring.WellEvents.ViewModels;
+using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.Http.Filters;
 
 namespace PRIO.src.Modules.Measuring.WellEvents.Http.Controllers
@@ -85,7 +86,12 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Controllers
         [HttpGet("ueps")]
         public async Task<IActionResult> Get()
         {
-            var data = await _service.GetUepsForWellEvent();
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+            var data = await _service.GetUepsForWellEvent(user);
 
             return Ok(data);
         }
