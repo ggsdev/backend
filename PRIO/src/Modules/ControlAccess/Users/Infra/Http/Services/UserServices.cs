@@ -440,7 +440,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                         {
                             if (children.Operations is not null && children.Operations.Count != 0)
                             {
-
                                 var verifyRelationMenuChildrenInMaster = await _groupPermissionRepository.GetGroupPermissionByMenuIdAndGroupName(children.ChildrenId, "Master");
                                 var verifyRelationMenuChildrenInMasterDTO = _mapper.Map<GroupPermission, GroupPermissionsDTO>(verifyRelationMenuChildrenInMaster);
 
@@ -559,41 +558,18 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             foreach (var permission in gPermissions)
             {
                 var groupPermission = await _groupPermissionRepository.GetGroupPermissionById(permission.Id);
+                var groupPermissionDTO = _mapper.Map<GroupPermission, GroupPermissionsDTO>(groupPermission);
+                var createuserPermission = _userPermissionFactory.CreateUserPermission(groupPermissionDTO, user, groupPermission);
 
-                var userPermission = new UserPermission
-                {
-                    Id = Guid.NewGuid(),
-                    hasChildren = permission.hasChildren,
-                    hasParent = permission.hasParent,
-                    MenuIcon = permission.MenuIcon,
-                    MenuName = permission.MenuName,
-                    MenuOrder = permission.MenuOrder,
-                    MenuRoute = permission.MenuRoute,
-                    GroupId = permission.Group.Id,
-                    GroupName = permission.Group.Name,
-                    MenuId = permission.Menu.Id,
-                    User = user,
-                    GroupMenu = groupPermission,
-                    CreatedAt = DateTime.UtcNow.AddHours(-3),
-                };
-
-                await _userPermissionRepository.AddUserPermission(userPermission);
+                await _userPermissionRepository.AddUserPermission(createuserPermission);
 
                 foreach (var operation in permission.Operations)
                 {
                     var foundOperation = await _globalOperationsRepository.GetGlobalOperationByMetlhod(operation.OperationName);
+                    var foundOperationDTO = _mapper.Map<GroupOperation, UserGroupOperationDTO>(operation);
+                    var createGroupOperationsInUser = _userOperationFactory.CreateUserOperation(foundOperationDTO, createuserPermission, foundOperation, user.Group);
 
-
-                    var userOperation = new UserOperation
-                    {
-                        Id = Guid.NewGuid(),
-                        OperationName = operation.OperationName,
-                        UserPermission = userPermission,
-                        GlobalOperation = foundOperation,
-                        GroupName = user.Group.Name
-                    };
-
-                    await _userOperationRepository.AddUserOperation(userOperation);
+                    await _userOperationRepository.AddUserOperation(createGroupOperationsInUser);
                 }
             }
             user.IsPermissionDefault = true;
