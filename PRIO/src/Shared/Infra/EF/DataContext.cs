@@ -41,10 +41,12 @@ using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
-using PRIO.src.Modules.Measuring.WellEvents.EF.Mappings;
-using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
+using PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Mappings;
+using PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Mappings;
 using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models;
+using PRIO.src.Modules.PI.Infra.EF.Mappings;
+using PRIO.src.Modules.PI.Infra.EF.Models;
 using PRIO.src.Shared.Auxiliaries.Infra.EF.Mapping;
 using PRIO.src.Shared.Auxiliaries.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF.Mappings;
@@ -151,6 +153,10 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<WellLosses> WellLosses { get; set; }
         public DbSet<Backup> Backups { get; set; }
         public DbSet<InstallationsAccess> InstallationsAccess { get; set; }
+        public DbSet<Database> Databases { get; set; }
+        public DbSet<Instance> Instances { get; set; }
+        public DbSet<Elements> Elements { get; set; }
+        public DbSet<Attributes> Attributes { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -312,6 +318,10 @@ namespace PRIO.src.Shared.Infra.EF
             modelBuilder.ApplyConfiguration(new BackupMap());
             modelBuilder.ApplyConfiguration(new AuxiliaryMap());
             modelBuilder.ApplyConfiguration(new ValidateBTPMap());
+            modelBuilder.ApplyConfiguration(new DatabasesMap());
+            modelBuilder.ApplyConfiguration(new InstancesMap());
+            modelBuilder.ApplyConfiguration(new ElementsMap());
+            modelBuilder.ApplyConfiguration(new AttributesMap());
         }
     }
 }

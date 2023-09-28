@@ -1,4 +1,4 @@
-﻿using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
+﻿using PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Measuring.WellEvents.Interfaces
 {

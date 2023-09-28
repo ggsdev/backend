@@ -1,14 +1,15 @@
 ﻿using AutoMapper;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
-using PRIO.src.Modules.FileImport.XML.Dtos;
+using PRIO.src.Modules.FileImport.XML.Measuring.Dtos;
+using PRIO.src.Modules.Hierarchy.Fields.Interfaces;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Productions.Interfaces;
 using PRIO.src.Modules.Measuring.Productions.Utils;
-using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
+using PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.WellProductions.Dtos;
 using PRIO.src.Modules.Measuring.WellProductions.Infra.Dtos;
 using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models;

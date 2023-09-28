@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
-using PRIO.src.Modules.FileImport.XML.Dtos;
+using PRIO.src.Modules.FileImport.XML.Measuring.Dtos;
+using PRIO.src.Modules.FileImport.XML.Measuring.ViewModels;
 using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XML.NFSMS.ViewModels;
-using PRIO.src.Modules.FileImport.XML.ViewModels;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.Http.Filters;
 using PRIO.src.Shared.Utils;
