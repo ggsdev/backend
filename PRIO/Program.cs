@@ -72,7 +72,6 @@ using PRIO.src.Modules.Measuring.WellEvents.Interfaces;
 using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.WellProductions.Interfaces;
-using PRIO.src.Modules.MockPI.Infra.Http.Services;
 using PRIO.src.Shared.Auxiliaries.Infra.Http.Services;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
@@ -263,7 +262,6 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
 
     #endregion
 
-    services.AddScoped<MockPIService>();
 
     services.AddScoped<BTPService>();
 

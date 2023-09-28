@@ -62,6 +62,7 @@ namespace PRIO.src.Shared.Infra.EF
     }
     public class DataContext : DbContext
     {
+
         #region Session
         public DbSet<Session> Sessions { get; set; }
         #endregion
@@ -133,7 +134,6 @@ namespace PRIO.src.Shared.Infra.EF
         #endregion
 
         public DbSet<FieldFR> FieldsFRs { get; set; }
-
         public DbSet<SystemHistory> SystemHistories { get; set; }
         public DbSet<Auxiliary> Auxiliaries { get; set; }
         public DbSet<CommentInProduction> Comments { get; set; }

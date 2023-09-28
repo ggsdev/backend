@@ -9,7 +9,7 @@
     <SignAssembly>False</SignAssembly>
     <PackageIcon>prioImage.jpg</PackageIcon>
 
-    <Version>0.3.1</Version>
+    <Version>0.3.2</Version>
 
   </PropertyGroup>
 
@@ -26,18 +26,22 @@
     <Compile Remove="src\Modules\Measuring\MeasuringPoints\Infra\Http\NovaPasta\**" />
     <Compile Remove="src\Modules\Measuring\MeasuringPoints\NovaPasta\**" />
     <Compile Remove="src\Modules\Measuring\OilVolumeCalculation\**" />
+    <Compile Remove="src\Modules\MockPI\**" />
     <Content Remove="src\Modules\Measuring\GasVolumeCalculation\**" />
     <Content Remove="src\Modules\Measuring\MeasuringPoints\Infra\Http\NovaPasta\**" />
     <Content Remove="src\Modules\Measuring\MeasuringPoints\NovaPasta\**" />
     <Content Remove="src\Modules\Measuring\OilVolumeCalculation\**" />
+    <Content Remove="src\Modules\MockPI\**" />
     <EmbeddedResource Remove="src\Modules\Measuring\GasVolumeCalculation\**" />
     <EmbeddedResource Remove="src\Modules\Measuring\MeasuringPoints\Infra\Http\NovaPasta\**" />
     <EmbeddedResource Remove="src\Modules\Measuring\MeasuringPoints\NovaPasta\**" />
     <EmbeddedResource Remove="src\Modules\Measuring\OilVolumeCalculation\**" />
+    <EmbeddedResource Remove="src\Modules\MockPI\**" />
     <None Remove="src\Modules\Measuring\GasVolumeCalculation\**" />
     <None Remove="src\Modules\Measuring\MeasuringPoints\Infra\Http\NovaPasta\**" />
     <None Remove="src\Modules\Measuring\MeasuringPoints\NovaPasta\**" />
     <None Remove="src\Modules\Measuring\OilVolumeCalculation\**" />
+    <None Remove="src\Modules\MockPI\**" />
   </ItemGroup>
 
   <ItemGroup>

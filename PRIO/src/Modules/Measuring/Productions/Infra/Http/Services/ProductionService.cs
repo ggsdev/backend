@@ -130,7 +130,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             {
                                 DateMeasuring = measurementDateGasLinear,
                                 IndividualProduction = Math.Round(measurement.MED_CORRIGIDO_MVMDO_002.Value, 5),
-                                LocalPoint = assistanceGas.StaticLocalMeasuringPoint,
+                                LocalPoint = assistanceGas.MeasuringPoint.DinamicLocalMeasuringPoint,
                                 TagMeasuringPoint = assistanceGas.MeasuringPoint.TagPointMeasuring,
                             };
 
@@ -148,7 +148,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             {
                                 DateMeasuring = measurementDateGasLinear,
                                 IndividualProduction = Math.Round(measurement.MED_CORRIGIDO_MVMDO_002.Value, 5),
-                                LocalPoint = hpFlare.StaticLocalMeasuringPoint,
+                                LocalPoint = hpFlare.MeasuringPoint.DinamicLocalMeasuringPoint,
                                 TagMeasuringPoint = hpFlare.MeasuringPoint.TagPointMeasuring,
                             };
 
@@ -166,7 +166,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             {
                                 DateMeasuring = measurementDateGasLinear,
                                 IndividualProduction = Math.Round(measurement.MED_CORRIGIDO_MVMDO_002.Value, 5),
-                                LocalPoint = lpFlare.StaticLocalMeasuringPoint,
+                                LocalPoint = lpFlare.MeasuringPoint.DinamicLocalMeasuringPoint,
                                 TagMeasuringPoint = lpFlare.MeasuringPoint.TagPointMeasuring,
                             };
 
@@ -184,7 +184,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             {
                                 DateMeasuring = measurementDateGasLinear,
                                 IndividualProduction = Math.Round(measurement.MED_CORRIGIDO_MVMDO_002.Value, 5),
-                                LocalPoint = pilot.StaticLocalMeasuringPoint,
+                                LocalPoint = pilot.MeasuringPoint.DinamicLocalMeasuringPoint,
                                 TagMeasuringPoint = pilot.MeasuringPoint.TagPointMeasuring,
                             };
 
@@ -204,7 +204,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             {
                                 DateMeasuring = measurementDateGasLinear,
                                 IndividualProduction = Math.Round(measurement.MED_CORRIGIDO_MVMDO_002.Value, 5),
-                                LocalPoint = purge.StaticLocalMeasuringPoint,
+                                LocalPoint = purge.MeasuringPoint.DinamicLocalMeasuringPoint,
                                 TagMeasuringPoint = purge.MeasuringPoint.TagPointMeasuring,
                             };
 
@@ -224,7 +224,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             {
                                 DateMeasuring = measurementDateGasLinear,
                                 IndividualProduction = Math.Round(measurement.MED_CORRIGIDO_MVMDO_002.Value, 5),
-                                LocalPoint = lowPressure.StaticLocalMeasuringPoint,
+                                LocalPoint = lowPressure.MeasuringPoint.DinamicLocalMeasuringPoint,
                                 TagMeasuringPoint = lowPressure.MeasuringPoint.TagPointMeasuring,
                             };
 
@@ -243,7 +243,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             {
                                 DateMeasuring = measurementDateGasLinear,
                                 IndividualProduction = Math.Round(measurement.MED_CORRIGIDO_MVMDO_002.Value, 5),
-                                LocalPoint = highPressure.StaticLocalMeasuringPoint,
+                                LocalPoint = highPressure.MeasuringPoint.DinamicLocalMeasuringPoint,
                                 TagMeasuringPoint = highPressure.MeasuringPoint.TagPointMeasuring,
                             };
 
@@ -261,7 +261,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             {
                                 DateMeasuring = measurementDateGasLinear,
                                 IndividualProduction = Math.Round(measurement.MED_CORRIGIDO_MVMDO_002.Value, 5),
-                                LocalPoint = import.StaticLocalMeasuringPoint,
+                                LocalPoint = import.MeasuringPoint.DinamicLocalMeasuringPoint,
                                 TagMeasuringPoint = import.MeasuringPoint.TagPointMeasuring,
                             };
 
@@ -279,7 +279,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             {
                                 DateMeasuring = measurementDateGasLinear,
                                 IndividualProduction = Math.Round(measurement.MED_CORRIGIDO_MVMDO_002.Value, 5),
-                                LocalPoint = export.StaticLocalMeasuringPoint,
+                                LocalPoint = export.MeasuringPoint.DinamicLocalMeasuringPoint,
                                 TagMeasuringPoint = export.MeasuringPoint.TagPointMeasuring,
                             };
 
@@ -308,7 +308,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             {
                                 DateMeasuring = measurementDateGasDiferencial,
                                 IndividualProduction = Math.Round(measurement.MED_CORRIGIDO_MVMDO_003.Value, 5),
-                                LocalPoint = assistanceGas.StaticLocalMeasuringPoint,
+                                LocalPoint = assistanceGas.MeasuringPoint.DinamicLocalMeasuringPoint,
                                 TagMeasuringPoint = assistanceGas.MeasuringPoint.TagPointMeasuring,
                             };
                             burnetGasPoints.Add(measuringPoint);
@@ -325,7 +325,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             {
                                 DateMeasuring = measurementDateGasDiferencial,
                                 IndividualProduction = Math.Round(measurement.MED_CORRIGIDO_MVMDO_003.Value, 5),
-                                LocalPoint = hpFlare.StaticLocalMeasuringPoint,
+                                LocalPoint = hpFlare.MeasuringPoint.DinamicLocalMeasuringPoint,
                                 TagMeasuringPoint = hpFlare.MeasuringPoint.TagPointMeasuring,
                             };
                             burnetGasPoints.Add(measuringPoint);
@@ -342,7 +342,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             {
                                 DateMeasuring = measurementDateGasDiferencial,
                                 IndividualProduction = Math.Round(measurement.MED_CORRIGIDO_MVMDO_003.Value, 5),
-                                LocalPoint = lpFlare.StaticLocalMeasuringPoint,
+                                LocalPoint = lpFlare.MeasuringPoint.DinamicLocalMeasuringPoint,
                                 TagMeasuringPoint = lpFlare.MeasuringPoint.TagPointMeasuring,
                             };
 
@@ -360,7 +360,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             {
                                 DateMeasuring = measurementDateGasDiferencial,
                                 IndividualProduction = Math.Round(measurement.MED_CORRIGIDO_MVMDO_003.Value, 5),
-                                LocalPoint = pilot.StaticLocalMeasuringPoint,
+                                LocalPoint = pilot.MeasuringPoint.DinamicLocalMeasuringPoint,
                                 TagMeasuringPoint = pilot.MeasuringPoint.TagPointMeasuring,
                             };
                             burnetGasPoints.Add(measuringPoint);
@@ -378,7 +378,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             {
                                 DateMeasuring = measurementDateGasDiferencial,
                                 IndividualProduction = Math.Round(measurement.MED_CORRIGIDO_MVMDO_003.Value, 5),
-                                LocalPoint = purge.StaticLocalMeasuringPoint,
+                                LocalPoint = purge.MeasuringPoint.DinamicLocalMeasuringPoint,
                                 TagMeasuringPoint = purge.MeasuringPoint.TagPointMeasuring,
                             };
 
@@ -398,7 +398,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             {
                                 DateMeasuring = measurementDateGasDiferencial,
                                 IndividualProduction = Math.Round(measurement.MED_CORRIGIDO_MVMDO_003.Value, 5),
-                                LocalPoint = lowPressure.StaticLocalMeasuringPoint,
+                                LocalPoint = lowPressure.MeasuringPoint.DinamicLocalMeasuringPoint,
                                 TagMeasuringPoint = lowPressure.MeasuringPoint.TagPointMeasuring,
                             };
                             fuelGasPoints.Add(measuringPoint);
@@ -415,7 +415,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             {
                                 DateMeasuring = measurementDateGasDiferencial,
                                 IndividualProduction = Math.Round(measurement.MED_CORRIGIDO_MVMDO_003.Value, 5),
-                                LocalPoint = highPressure.StaticLocalMeasuringPoint,
+                                LocalPoint = highPressure.MeasuringPoint.DinamicLocalMeasuringPoint,
                                 TagMeasuringPoint = highPressure.MeasuringPoint.TagPointMeasuring,
                             };
 
@@ -433,7 +433,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             {
                                 DateMeasuring = measurementDateGasDiferencial,
                                 IndividualProduction = Math.Round(measurement.MED_CORRIGIDO_MVMDO_003.Value, 5),
-                                LocalPoint = import.StaticLocalMeasuringPoint,
+                                LocalPoint = import.MeasuringPoint.DinamicLocalMeasuringPoint,
                                 TagMeasuringPoint = import.MeasuringPoint.TagPointMeasuring,
                             };
 
@@ -451,7 +451,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             {
                                 DateMeasuring = measurementDateGasDiferencial,
                                 IndividualProduction = Math.Round(measurement.MED_CORRIGIDO_MVMDO_003.Value, 5),
-                                LocalPoint = export.StaticLocalMeasuringPoint,
+                                LocalPoint = export.MeasuringPoint.DinamicLocalMeasuringPoint,
                                 TagMeasuringPoint = export.MeasuringPoint.TagPointMeasuring,
                             };
 
@@ -484,7 +484,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 DateMeasuring = measurementDateOil,
                                 VolumeAfterBsw = Math.Round(measurement.VolumeAfterManualBsw_001.Value, 5)/*MED_VOLUME_BRTO_CRRGO_MVMDO_001 * (1 - measurement.BswManual_001)*/,
                                 VolumeBeforeBsw = measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001,
-                                LocalPoint = section.StaticLocalMeasuringPoint,
+                                LocalPoint = section.MeasuringPoint.DinamicLocalMeasuringPoint,
                                 TagMeasuringPoint = section.MeasuringPoint.TagPointMeasuring,
 
                                 Bsw = measurement.BswManual_001,
@@ -505,7 +505,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 DateMeasuring = measurementDateOil,
                                 VolumeAfterBsw = Math.Round(measurement.VolumeAfterManualBsw_001.Value, 5),
                                 VolumeBeforeBsw = measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001,
-                                LocalPoint = dor.StaticLocalMeasuringPoint,
+                                LocalPoint = dor.MeasuringPoint.DinamicLocalMeasuringPoint,
                                 TagMeasuringPoint = dor.MeasuringPoint.TagPointMeasuring,
                                 Bsw = measurement.BswManual_001,
                             };
@@ -525,7 +525,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 DateMeasuring = measurementDateOil,
                                 VolumeAfterBsw = Math.Round(measurement.VolumeAfterManualBsw_001.Value, 5),
                                 VolumeBeforeBsw = measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001,
-                                LocalPoint = drain.StaticLocalMeasuringPoint,
+                                LocalPoint = drain.MeasuringPoint.DinamicLocalMeasuringPoint,
                                 TagMeasuringPoint = drain.MeasuringPoint.TagPointMeasuring,
                                 Bsw = measurement.BswManual_001,
                             };
@@ -545,7 +545,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                 DateMeasuring = measurementDateOil,
                                 VolumeAfterBsw = Math.Round(measurement.VolumeAfterManualBsw_001.Value, 5),
                                 VolumeBeforeBsw = measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001,
-                                LocalPoint = tog.StaticLocalMeasuringPoint,
+                                LocalPoint = tog.MeasuringPoint.DinamicLocalMeasuringPoint,
                                 TagMeasuringPoint = tog.MeasuringPoint.TagPointMeasuring,
                                 Bsw = measurement.BswManual_001,
                             };
@@ -777,7 +777,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     var summary = new SummaryGeneric
                                     {
                                         DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                        LocationMeasuringPoint = assistanceGas.StaticLocalMeasuringPoint,
+                                        LocationMeasuringPoint = assistanceGas.MeasuringPoint.DinamicLocalMeasuringPoint,
                                         StatusMeasuringPoint = true,
                                         TagMeasuringPoint = assistanceGas.MeasuringPoint.TagPointMeasuring,
                                         Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
@@ -796,7 +796,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         //    {
                         //        StatusMeasuringPoint = false,
                         //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                        //        LocationMeasuringPoint = assistanceGas.StaticLocalMeasuringPoint,
+                        //        LocationMeasuringPoint = assistanceGas.MeasuringPoint.DinamicLocalMeasuringPoint,
                         //        TagMeasuringPoint = assistanceGas.MeasuringPoint.TagPointMeasuring,
                         //        Volume = 0
                         //    };
@@ -819,7 +819,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     var summary = new SummaryGeneric
                                     {
                                         DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                        LocationMeasuringPoint = export.StaticLocalMeasuringPoint,
+                                        LocationMeasuringPoint = export.MeasuringPoint.DinamicLocalMeasuringPoint,
                                         StatusMeasuringPoint = true,
                                         TagMeasuringPoint = export.MeasuringPoint.TagPointMeasuring,
                                         Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
@@ -836,7 +836,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         //    {
                         //        StatusMeasuringPoint = false,
                         //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                        //        LocationMeasuringPoint = export.StaticLocalMeasuringPoint,
+                        //        LocationMeasuringPoint = export.MeasuringPoint.DinamicLocalMeasuringPoint,
                         //        TagMeasuringPoint = export.MeasuringPoint.TagPointMeasuring,
                         //        Volume = 0
                         //    };
@@ -859,7 +859,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     var summary = new SummaryGeneric
                                     {
                                         DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                        LocationMeasuringPoint = highPressure.StaticLocalMeasuringPoint,
+                                        LocationMeasuringPoint = highPressure.MeasuringPoint.DinamicLocalMeasuringPoint,
                                         StatusMeasuringPoint = true,
                                         TagMeasuringPoint = highPressure.MeasuringPoint.TagPointMeasuring,
                                         Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
@@ -877,7 +877,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         //    {
                         //        StatusMeasuringPoint = false,
                         //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                        //        LocationMeasuringPoint = highPressure.StaticLocalMeasuringPoint,
+                        //        LocationMeasuringPoint = highPressure.MeasuringPoint.DinamicLocalMeasuringPoint,
                         //        TagMeasuringPoint = highPressure.MeasuringPoint.TagPointMeasuring,
                         //        Volume = 0
                         //    };
@@ -900,7 +900,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     var summary = new SummaryGeneric
                                     {
                                         DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                        LocationMeasuringPoint = hpFlare.StaticLocalMeasuringPoint,
+                                        LocationMeasuringPoint = hpFlare.MeasuringPoint.DinamicLocalMeasuringPoint,
                                         StatusMeasuringPoint = true,
                                         TagMeasuringPoint = hpFlare.MeasuringPoint.TagPointMeasuring,
                                         Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
@@ -917,7 +917,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         //    {
                         //        StatusMeasuringPoint = false,
                         //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                        //        LocationMeasuringPoint = hpFlare.StaticLocalMeasuringPoint,
+                        //        LocationMeasuringPoint = hpFlare.MeasuringPoint.DinamicLocalMeasuringPoint,
                         //        TagMeasuringPoint = hpFlare.MeasuringPoint.TagPointMeasuring,
                         //        Volume = 0
                         //    };
@@ -940,7 +940,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     var summary = new SummaryGeneric
                                     {
                                         DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                        LocationMeasuringPoint = import.StaticLocalMeasuringPoint,
+                                        LocationMeasuringPoint = import.MeasuringPoint.DinamicLocalMeasuringPoint,
                                         StatusMeasuringPoint = true,
                                         TagMeasuringPoint = import.MeasuringPoint.TagPointMeasuring,
                                         Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
@@ -957,7 +957,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         //    {
                         //        StatusMeasuringPoint = false,
                         //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                        //        LocationMeasuringPoint = import.StaticLocalMeasuringPoint,
+                        //        LocationMeasuringPoint = import.MeasuringPoint.DinamicLocalMeasuringPoint,
                         //        TagMeasuringPoint = import.MeasuringPoint.TagPointMeasuring,
                         //        Volume = 0
                         //    };
@@ -980,7 +980,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     var summary = new SummaryGeneric
                                     {
                                         DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                        LocationMeasuringPoint = lowPressure.StaticLocalMeasuringPoint,
+                                        LocationMeasuringPoint = lowPressure.MeasuringPoint.DinamicLocalMeasuringPoint,
                                         StatusMeasuringPoint = true,
                                         TagMeasuringPoint = lowPressure.MeasuringPoint.TagPointMeasuring,
                                         Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
@@ -997,7 +997,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         //    {
                         //        StatusMeasuringPoint = false,
                         //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                        //        LocationMeasuringPoint = lowPressure.StaticLocalMeasuringPoint,
+                        //        LocationMeasuringPoint = lowPressure.MeasuringPoint.DinamicLocalMeasuringPoint,
                         //        TagMeasuringPoint = lowPressure.MeasuringPoint.TagPointMeasuring,
                         //        Volume = 0
                         //    };
@@ -1020,7 +1020,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     var summary = new SummaryGeneric
                                     {
                                         DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                        LocationMeasuringPoint = lpFlare.StaticLocalMeasuringPoint,
+                                        LocationMeasuringPoint = lpFlare.MeasuringPoint.DinamicLocalMeasuringPoint,
                                         StatusMeasuringPoint = true,
                                         TagMeasuringPoint = lpFlare.MeasuringPoint.TagPointMeasuring,
                                         Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
@@ -1037,7 +1037,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         //    {
                         //        StatusMeasuringPoint = false,
                         //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                        //        LocationMeasuringPoint = lpFlare.StaticLocalMeasuringPoint,
+                        //        LocationMeasuringPoint = lpFlare.MeasuringPoint.DinamicLocalMeasuringPoint,
                         //        TagMeasuringPoint = lpFlare.MeasuringPoint.TagPointMeasuring,
                         //        Volume = 0
                         //    };
@@ -1060,7 +1060,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     var summary = new SummaryGeneric
                                     {
                                         DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                        LocationMeasuringPoint = pilot.StaticLocalMeasuringPoint,
+                                        LocationMeasuringPoint = pilot.MeasuringPoint.DinamicLocalMeasuringPoint,
                                         StatusMeasuringPoint = true,
                                         TagMeasuringPoint = pilot.MeasuringPoint.TagPointMeasuring,
                                         Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
@@ -1088,7 +1088,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     var summary = new SummaryGeneric
                                     {
                                         DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                        LocationMeasuringPoint = purge.StaticLocalMeasuringPoint,
+                                        LocationMeasuringPoint = purge.MeasuringPoint.DinamicLocalMeasuringPoint,
                                         StatusMeasuringPoint = true,
                                         TagMeasuringPoint = purge.MeasuringPoint.TagPointMeasuring,
                                         Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_002.Value, 5),
@@ -1120,7 +1120,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     var summary = new SummaryGeneric
                                     {
                                         DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                        LocationMeasuringPoint = assistanceGas.StaticLocalMeasuringPoint,
+                                        LocationMeasuringPoint = assistanceGas.MeasuringPoint.DinamicLocalMeasuringPoint,
                                         StatusMeasuringPoint = true,
                                         TagMeasuringPoint = assistanceGas.MeasuringPoint.TagPointMeasuring,
                                         Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
@@ -1148,7 +1148,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     var summary = new SummaryGeneric
                                     {
                                         DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                        LocationMeasuringPoint = export.StaticLocalMeasuringPoint,
+                                        LocationMeasuringPoint = export.MeasuringPoint.DinamicLocalMeasuringPoint,
                                         StatusMeasuringPoint = true,
                                         TagMeasuringPoint = export.MeasuringPoint.TagPointMeasuring,
                                         Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
@@ -1175,7 +1175,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     var summary = new SummaryGeneric
                                     {
                                         DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                        LocationMeasuringPoint = highPressure.StaticLocalMeasuringPoint,
+                                        LocationMeasuringPoint = highPressure.MeasuringPoint.DinamicLocalMeasuringPoint,
                                         StatusMeasuringPoint = true,
                                         TagMeasuringPoint = highPressure.MeasuringPoint.TagPointMeasuring,
                                         Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
@@ -1203,7 +1203,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     var summary = new SummaryGeneric
                                     {
                                         DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                        LocationMeasuringPoint = hpFlare.StaticLocalMeasuringPoint,
+                                        LocationMeasuringPoint = hpFlare.MeasuringPoint.DinamicLocalMeasuringPoint,
                                         StatusMeasuringPoint = true,
                                         TagMeasuringPoint = hpFlare.MeasuringPoint.TagPointMeasuring,
                                         Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
@@ -1231,7 +1231,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     var summary = new SummaryGeneric
                                     {
                                         DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                        LocationMeasuringPoint = import.StaticLocalMeasuringPoint,
+                                        LocationMeasuringPoint = import.MeasuringPoint.DinamicLocalMeasuringPoint,
                                         StatusMeasuringPoint = true,
                                         TagMeasuringPoint = import.MeasuringPoint.TagPointMeasuring,
                                         Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
@@ -1258,7 +1258,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     var summary = new SummaryGeneric
                                     {
                                         DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                        LocationMeasuringPoint = lowPressure.StaticLocalMeasuringPoint,
+                                        LocationMeasuringPoint = lowPressure.MeasuringPoint.DinamicLocalMeasuringPoint,
                                         StatusMeasuringPoint = true,
                                         TagMeasuringPoint = lowPressure.MeasuringPoint.TagPointMeasuring,
                                         Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
@@ -1284,7 +1284,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     var summary = new SummaryGeneric
                                     {
                                         DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                        LocationMeasuringPoint = lpFlare.StaticLocalMeasuringPoint,
+                                        LocationMeasuringPoint = lpFlare.MeasuringPoint.DinamicLocalMeasuringPoint,
                                         StatusMeasuringPoint = true,
                                         TagMeasuringPoint = lpFlare.MeasuringPoint.TagPointMeasuring,
                                         Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
@@ -1311,7 +1311,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     var summary = new SummaryGeneric
                                     {
                                         DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                        LocationMeasuringPoint = pilot.StaticLocalMeasuringPoint,
+                                        LocationMeasuringPoint = pilot.MeasuringPoint.DinamicLocalMeasuringPoint,
                                         StatusMeasuringPoint = true,
                                         TagMeasuringPoint = pilot.MeasuringPoint.TagPointMeasuring,
                                         Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
@@ -1339,7 +1339,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     var summary = new SummaryGeneric
                                     {
                                         DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                        LocationMeasuringPoint = purge.StaticLocalMeasuringPoint,
+                                        LocationMeasuringPoint = purge.MeasuringPoint.DinamicLocalMeasuringPoint,
                                         StatusMeasuringPoint = true,
                                         TagMeasuringPoint = purge.MeasuringPoint.TagPointMeasuring,
                                         Volume = Math.Round(measurementResponse.MED_CORRIGIDO_MVMDO_003.Value, 5),
@@ -1372,7 +1372,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     var summary = new SummaryGeneric
                                     {
                                         DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                        LocationMeasuringPoint = section.StaticLocalMeasuringPoint,
+                                        LocationMeasuringPoint = section.MeasuringPoint.DinamicLocalMeasuringPoint,
                                         StatusMeasuringPoint = true,
                                         TagMeasuringPoint = section.MeasuringPoint.TagPointMeasuring,
                                         Volume = Math.Round(measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001.Value, 5),
@@ -1391,7 +1391,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         //    {
                         //        StatusMeasuringPoint = false,
                         //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                        //        LocationMeasuringPoint = section.StaticLocalMeasuringPoint,
+                        //        LocationMeasuringPoint = section.MeasuringPoint.DinamicLocalMeasuringPoint,
                         //        TagMeasuringPoint = section.MeasuringPoint.TagPointMeasuring,
                         //        Volume = 0
                         //    };
@@ -1416,7 +1416,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     var summary = new SummaryGeneric
                                     {
                                         DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                        LocationMeasuringPoint = dor.StaticLocalMeasuringPoint,
+                                        LocationMeasuringPoint = dor.MeasuringPoint.DinamicLocalMeasuringPoint,
                                         StatusMeasuringPoint = true,
                                         TagMeasuringPoint = dor.MeasuringPoint.TagPointMeasuring,
                                         Volume = Math.Round(measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001.Value, 5),
@@ -1435,7 +1435,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         //    {
                         //        StatusMeasuringPoint = false,
                         //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                        //        LocationMeasuringPoint = dor.StaticLocalMeasuringPoint,
+                        //        LocationMeasuringPoint = dor.MeasuringPoint.DinamicLocalMeasuringPoint,
                         //        TagMeasuringPoint = dor.MeasuringPoint.TagPointMeasuring,
                         //        Volume = 0
                         //    };
@@ -1460,7 +1460,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     var summary = new SummaryGeneric
                                     {
                                         DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                        LocationMeasuringPoint = drain.StaticLocalMeasuringPoint,
+                                        LocationMeasuringPoint = drain.MeasuringPoint.DinamicLocalMeasuringPoint,
                                         StatusMeasuringPoint = true,
                                         TagMeasuringPoint = drain.MeasuringPoint.TagPointMeasuring,
                                         Volume = Math.Round(measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001.Value, 5),
@@ -1478,7 +1478,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         //    {
                         //        StatusMeasuringPoint = false,
                         //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                        //        LocationMeasuringPoint = drain.StaticLocalMeasuringPoint,
+                        //        LocationMeasuringPoint = drain.MeasuringPoint.DinamicLocalMeasuringPoint,
                         //        TagMeasuringPoint = drain.MeasuringPoint.TagPointMeasuring,
                         //        Volume = 0
                         //    };
@@ -1503,7 +1503,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     var summary = new SummaryGeneric
                                     {
                                         DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                                        LocationMeasuringPoint = tog.StaticLocalMeasuringPoint,
+                                        LocationMeasuringPoint = tog.MeasuringPoint.DinamicLocalMeasuringPoint,
                                         StatusMeasuringPoint = true,
                                         TagMeasuringPoint = tog.MeasuringPoint.TagPointMeasuring,
                                         Volume = Math.Round(measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001.Value, 5),
@@ -1521,7 +1521,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         //    {
                         //        StatusMeasuringPoint = false,
                         //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                        //        LocationMeasuringPoint = tog.StaticLocalMeasuringPoint,
+                        //        LocationMeasuringPoint = tog.MeasuringPoint.DinamicLocalMeasuringPoint,
                         //        TagMeasuringPoint = tog.MeasuringPoint.TagPointMeasuring,
                         //        Volume = 0
                         //    };
@@ -1552,7 +1552,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             Status = false,
                             Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                            LocationMeasuringPoint = section.StaticLocalMeasuringPoint,
+                            LocationMeasuringPoint = section.MeasuringPoint.DinamicLocalMeasuringPoint,
                             TagMeasuringPoint = section.MeasuringPoint.TagPointMeasuring,
                             Volume = 0,
                             Fluid = "Oil"
@@ -1579,7 +1579,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             Status = false,
                             Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                            LocationMeasuringPoint = dor.StaticLocalMeasuringPoint,
+                            LocationMeasuringPoint = dor.MeasuringPoint.DinamicLocalMeasuringPoint,
                             TagMeasuringPoint = dor.MeasuringPoint.TagPointMeasuring,
                             Volume = 0,
                             Fluid = "Oil"
@@ -1605,7 +1605,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             Status = false,
                             Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                            LocationMeasuringPoint = tog.StaticLocalMeasuringPoint,
+                            LocationMeasuringPoint = tog.MeasuringPoint.DinamicLocalMeasuringPoint,
                             TagMeasuringPoint = tog.MeasuringPoint.TagPointMeasuring,
                             Volume = 0,
                             Fluid = "Oil"
@@ -1632,7 +1632,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             Status = false,
                             Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                            LocationMeasuringPoint = drain.StaticLocalMeasuringPoint,
+                            LocationMeasuringPoint = drain.MeasuringPoint.DinamicLocalMeasuringPoint,
                             TagMeasuringPoint = drain.MeasuringPoint.TagPointMeasuring,
                             Volume = 0,
                             Fluid = "Oil"
@@ -1661,7 +1661,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             Status = false,
                             Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                            LocationMeasuringPoint = assistance.StaticLocalMeasuringPoint,
+                            LocationMeasuringPoint = assistance.MeasuringPoint.DinamicLocalMeasuringPoint,
                             TagMeasuringPoint = assistance.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
                         });
@@ -1686,7 +1686,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             Status = false,
                             Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                            LocationMeasuringPoint = export.StaticLocalMeasuringPoint,
+                            LocationMeasuringPoint = export.MeasuringPoint.DinamicLocalMeasuringPoint,
                             TagMeasuringPoint = export.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
                         });
@@ -1711,7 +1711,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             Status = false,
                             Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                            LocationMeasuringPoint = import.StaticLocalMeasuringPoint,
+                            LocationMeasuringPoint = import.MeasuringPoint.DinamicLocalMeasuringPoint,
                             TagMeasuringPoint = import.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
                         });
@@ -1736,7 +1736,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             Status = false,
                             Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                            LocationMeasuringPoint = hpFlare.StaticLocalMeasuringPoint,
+                            LocationMeasuringPoint = hpFlare.MeasuringPoint.DinamicLocalMeasuringPoint,
                             TagMeasuringPoint = hpFlare.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
                         });
@@ -1761,7 +1761,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             Status = false,
                             Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                            LocationMeasuringPoint = lpFlare.StaticLocalMeasuringPoint,
+                            LocationMeasuringPoint = lpFlare.MeasuringPoint.DinamicLocalMeasuringPoint,
                             TagMeasuringPoint = lpFlare.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
                         });
@@ -1786,7 +1786,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             Status = false,
                             Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                            LocationMeasuringPoint = purge.StaticLocalMeasuringPoint,
+                            LocationMeasuringPoint = purge.MeasuringPoint.DinamicLocalMeasuringPoint,
                             TagMeasuringPoint = purge.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
                         });
@@ -1811,7 +1811,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             Status = false,
                             Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                            LocationMeasuringPoint = pilot.StaticLocalMeasuringPoint,
+                            LocationMeasuringPoint = pilot.MeasuringPoint.DinamicLocalMeasuringPoint,
                             TagMeasuringPoint = pilot.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
                         });
@@ -1836,7 +1836,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             Status = false,
                             Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                            LocationMeasuringPoint = highPressure.StaticLocalMeasuringPoint,
+                            LocationMeasuringPoint = highPressure.MeasuringPoint.DinamicLocalMeasuringPoint,
                             TagMeasuringPoint = highPressure.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
                         });
@@ -1861,7 +1861,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         {
                             Status = false,
                             Date = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                            LocationMeasuringPoint = lowPressure.StaticLocalMeasuringPoint,
+                            LocationMeasuringPoint = lowPressure.MeasuringPoint.DinamicLocalMeasuringPoint,
                             TagMeasuringPoint = lowPressure.MeasuringPoint.TagPointMeasuring,
                             Volume = 0
                         });
