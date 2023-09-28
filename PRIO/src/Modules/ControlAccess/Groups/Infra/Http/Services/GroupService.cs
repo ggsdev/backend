@@ -24,6 +24,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
         private readonly SystemHistoryService _systemHistoryService;
         private readonly IMapper _mapper;
 
+
         public GroupService(IGroupRepository groupRepository, IMapper mapper, IGroupPermissionRepository groupPermissionRepository, IUserRepository userRespository, IUserPermissionRepository userPermissionRepository, IUserOperationRepository userOperationRepository, IGroupOperationRepository groupOperationRepository, SystemHistoryService systemHistoryService)
         {
             _groupRepository = groupRepository;
@@ -273,35 +274,13 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
 
                 for (int i = 0; i < groupPermissions.Count; ++i)
                 {
-                    var userPermission = new UserPermission
-                    {
-                        Id = Guid.NewGuid(),
-                        CreatedAt = DateTime.UtcNow.AddHours(-3),
-                        GroupId = group.Id,
-                        GroupName = group.Name,
-                        GroupMenu = groupPermissions[i],
-                        MenuIcon = groupPermissions[i].MenuIcon,
-                        MenuId = groupPermissions[i].Menu?.Id,
-                        MenuName = groupPermissions[i].Menu?.Name,
-                        MenuOrder = groupPermissions[i].Menu?.Order,
-                        MenuRoute = groupPermissions[i].Menu?.Route,
-                        hasChildren = groupPermissions[i].hasChildren,
-                        hasParent = groupPermissions[i].hasParent,
-                        User = user,
-                    };
-                    await _userPermissionRepository.AddUserPermission(userPermission);
+                    var groupPermissionsDTO = _mapper.Map<GroupPermission, GroupPermissionsDTO>(groupPermissions[i]);
+                    var userPermission = await _userPermissionRepository.CreateAndAddUserPermission(group, groupPermissions[i], user, groupPermissionsDTO);
 
                     foreach (var operation in groupPermissions[i].Operations)
                     {
-                        var userOperation = new UserOperation
-                        {
-                            Id = Guid.NewGuid(),
-                            OperationName = operation?.OperationName,
-                            GlobalOperation = operation?.GlobalOperation,
-                            UserPermission = userPermission,
-                        };
-
-                        await _userOperationRepository.AddUserOperation(userOperation);
+                        var groupOperationsDTO = _mapper.Map<GroupOperation, UserGroupOperationDTO>(operation);
+                        var userOperation = _userOperationRepository.CreateAndAddUserOperation(operation, userPermission, group, groupOperationsDTO);
                     }
                 }
             }
@@ -329,9 +308,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
             }
 
             var userPermissions = await _userPermissionRepository.GetUserPermissionsByGroupId(id);
-
             var groupPermissions = await _groupPermissionRepository.GetGroupPermissionsByGroupId(id);
-
             var changedDate = DateTime.UtcNow.AddHours(-3);
             for (int i = 0; i < groupPermissions.Count; ++i)
             {
@@ -372,35 +349,13 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
 
                     _groupPermissionRepository.UpdateGroupPermission(groupPermissions[i]);
 
-                    var userPermission = new UserPermission
-                    {
-                        Id = Guid.NewGuid(),
-                        CreatedAt = DateTime.UtcNow.AddHours(-3),
-                        GroupId = group.Id,
-                        GroupName = group.Name,
-                        GroupMenu = groupPermissions[i],
-                        MenuIcon = groupPermissions[i].MenuIcon,
-                        MenuId = groupPermissions[i].Menu?.Id,
-                        MenuName = groupPermissions[i].Menu?.Name,
-                        MenuOrder = groupPermissions[i].Menu?.Order,
-                        MenuRoute = groupPermissions[i].Menu?.Route,
-                        hasChildren = groupPermissions[i].hasChildren,
-                        hasParent = groupPermissions[i].hasParent,
-                        User = user,
-                    };
-                    await _userPermissionRepository.AddUserPermission(userPermission);
+                    var groupPermissionsDTO = _mapper.Map<GroupPermission, GroupPermissionsDTO>(groupPermissions[i]);
+                    var userPermission = await _userPermissionRepository.CreateAndAddUserPermission(group, groupPermissions[i], user, groupPermissionsDTO);
 
                     foreach (var operation in groupPermissions[i].Operations)
                     {
-                        var userOperation = new UserOperation
-                        {
-                            Id = Guid.NewGuid(),
-                            OperationName = operation?.OperationName,
-                            GlobalOperation = operation?.GlobalOperation,
-                            UserPermission = userPermission,
-                        };
-
-                        await _userOperationRepository.AddUserOperation(userOperation);
+                        var groupOperationsDTO = _mapper.Map<GroupOperation, UserGroupOperationDTO>(operation);
+                        var userOperation = _userOperationRepository.CreateAndAddUserOperation(operation, userPermission, group, groupOperationsDTO);
                     }
                 }
             }

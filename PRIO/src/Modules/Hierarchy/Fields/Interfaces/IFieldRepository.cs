@@ -1,4 +1,5 @@
-﻿using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
+﻿using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Hierarchy.Installations.Interfaces
 {
@@ -14,7 +15,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Interfaces
         Task<Field?> GetFieldAndChildren(Guid? id);
         Task<Field?> GetByCod(string? cod);
         Task<Field?> GetByIdWithWellsAndZonesAsync(Guid? id);
-        Task<List<Field>> GetAsync();
+        Task<List<Field>> GetAsync(User user);
         Task<Field?> GetOnlyField(Guid? id);
         Task SaveChangesAsync();
         Task<List<Field>> GetFieldsByInstallationId(Guid id);

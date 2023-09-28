@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.ControlAccess.Groups.Dtos;
+using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Factories;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Interfaces;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Groups.ViewModels;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Factories;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
@@ -12,10 +14,20 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
     public class GroupRepository : IGroupRepository
     {
         private readonly DataContext _context;
+        private readonly GroupFactory _groupFactory;
+        private readonly GroupPermissionFactory _groupPermissionFactory;
+        private readonly GroupOperationFactory _groupOperationFactory;
+        private readonly UserPermissionFactory _userPermissionFactory;
+        private readonly UserOperationFactory _userOperationFactory;
 
-        public GroupRepository(DataContext context)
+        public GroupRepository(DataContext context, GroupFactory groupFactory, UserPermissionFactory userPermissionFactory, UserOperationFactory userOperationFactory, GroupPermissionFactory groupPermissionFactory, GroupOperationFactory groupOperationFactory)
         {
             _context = context;
+            _groupFactory = groupFactory;
+            _userPermissionFactory = userPermissionFactory;
+            _userOperationFactory = userOperationFactory;
+            _groupPermissionFactory = groupPermissionFactory;
+            _groupOperationFactory = groupOperationFactory;
         }
         public async Task<Group?> GetGroupByIdAsync(Guid id)
         {
@@ -47,20 +59,11 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
         {
             await MenuErrors.ValidateMenu(_context, body);
 
-            var groupId = Guid.NewGuid();
-            var group = new Group
-            {
-                Id = groupId,
-                Name = body.Name,
-                CreatedAt = DateTime.UtcNow.AddHours(-3),
-                Description = body.Description is null ? null : body.Description,
-            };
-            await _context.Groups.AddAsync(group);
+            var group = _groupFactory.CreateGroup(body.Name, body.Description);
 
+            await _context.Groups.AddAsync(group);
             foreach (var menuParent in body.Menus)
             {
-                var groupPermissionParentId = Guid.NewGuid();
-
                 var foundMenuParent = await _context.Menus
                     .Where(x => x.Id == menuParent.MenuId)
                     .FirstOrDefaultAsync();
@@ -70,20 +73,8 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
                     .Where(x => x.Order.Contains(addDotInOrder))
                     .ToListAsync();
 
-                var createGroupPermissionParent = new GroupPermission
-                {
-                    Id = groupPermissionParentId,
-                    MenuIcon = foundMenuParent.Icon,
-                    MenuName = foundMenuParent.Name,
-                    MenuOrder = foundMenuParent.Order,
-                    MenuRoute = foundMenuParent.Route,
-                    CreatedAt = DateTime.UtcNow.AddHours(-3),
-                    Menu = foundMenuParent,
-                    GroupName = body.Name,
-                    hasChildren = foundMenusChildrensInParent.Count == 0 ? false : true,
-                    hasParent = foundMenuParent.Parent is null ? false : true,
-                    Group = group,
-                };
+                var createGroupPermissionParent = _groupPermissionFactory.CreateGroupPermission(foundMenuParent.Icon, foundMenuParent.Name, foundMenuParent.Order, foundMenuParent.Route, foundMenuParent, body.Name, foundMenusChildrensInParent, group);
+
                 await _context.GroupPermissions.AddAsync(createGroupPermissionParent);
 
                 if (menuParent.Childrens is not null)
@@ -92,41 +83,16 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
                     {
                         foreach (var menuChildren in menuParent.Childrens)
                         {
-                            var groupPermissionChildrenId = Guid.NewGuid();
-
                             var foundMenuChildren = await _context.Menus.Where(x => x.Id == menuChildren.ChildrenId).FirstOrDefaultAsync();
-
                             var addDotInOrderChildren = foundMenuChildren.Order + ".";
                             var foundMenusChildrensInChildren = await _context.Menus.Where(x => x.Order.Contains(addDotInOrderChildren)).ToListAsync();
-
-                            var createGroupPermissionChildren = new GroupPermission
-                            {
-                                Id = groupPermissionChildrenId,
-                                MenuIcon = foundMenuChildren.Icon,
-                                MenuName = foundMenuChildren.Name,
-                                MenuOrder = foundMenuChildren.Order,
-                                MenuRoute = foundMenuChildren.Route,
-                                CreatedAt = DateTime.UtcNow.AddHours(-3),
-                                Menu = foundMenuChildren,
-                                GroupName = body.Name,
-                                hasChildren = foundMenusChildrensInChildren.Count == 0 ? false : true,
-                                hasParent = foundMenuChildren.Parent is null ? false : true,
-                                Group = group,
-                            };
+                            var createGroupPermissionChildren = _groupPermissionFactory.CreateGroupPermission(foundMenuChildren.Icon, foundMenuChildren.Name, foundMenuChildren.Order, foundMenuChildren.Route, foundMenuChildren, body.Name, foundMenusChildrensInChildren, group);
                             await _context.GroupPermissions.AddAsync(createGroupPermissionChildren);
-
                             foreach (var operationsChildren in menuChildren.Operations)
                             {
                                 var groupOperationChildrenId = Guid.NewGuid();
                                 var foundOperation = await _context.GlobalOperations.Where(x => x.Id == operationsChildren.OperationId).FirstOrDefaultAsync();
-                                var createGroupOperationChildren = new GroupOperation
-                                {
-                                    Id = groupOperationChildrenId,
-                                    GlobalOperation = foundOperation,
-                                    GroupPermission = createGroupPermissionChildren,
-                                    GroupName = body.Name,
-                                    OperationName = foundOperation.Method
-                                };
+                                var createGroupOperationChildren = _groupOperationFactory.CreateGroupOperation(foundOperation, createGroupPermissionChildren, body.Name, foundOperation.Method);
                                 await _context.GroupOperations.AddAsync(createGroupOperationChildren);
                             }
                         }
@@ -138,19 +104,11 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
                     {
                         var groupOperationParentId = Guid.NewGuid();
                         var foundOperation = await _context.GlobalOperations.Where(x => x.Id == operationsParent.OperationId).FirstOrDefaultAsync();
-                        var createGroupOperationParent = new GroupOperation
-                        {
-                            Id = groupOperationParentId,
-                            GlobalOperation = foundOperation,
-                            GroupPermission = createGroupPermissionParent,
-                            GroupName = body.Name,
-                            OperationName = foundOperation.Method
-                        };
+                        var createGroupOperationParent = _groupOperationFactory.CreateGroupOperation(foundOperation, createGroupPermissionParent, body.Name, foundOperation.Method);
                         await _context.GroupOperations.AddAsync(createGroupOperationParent);
                     }
                 }
             }
-
 
             return group;
         }
@@ -171,20 +129,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
                     .Where(x => x.Order.Contains(addDotInOrder))
                     .ToListAsync();
 
-                var createGroupPermissionParent = new GroupPermission
-                {
-                    Id = groupPermissionParentId,
-                    MenuIcon = foundMenuParent.Icon,
-                    MenuName = foundMenuParent.Name,
-                    MenuOrder = foundMenuParent.Order,
-                    MenuRoute = foundMenuParent.Route,
-                    CreatedAt = DateTime.UtcNow.AddHours(-3),
-                    Menu = foundMenuParent,
-                    GroupName = group.Name,
-                    hasChildren = foundMenusChildrensInParent.Count == 0 ? false : true,
-                    hasParent = foundMenuParent.Parent is null ? false : true,
-                    Group = group,
-                };
+                var createGroupPermissionParent = _groupPermissionFactory.CreateGroupPermission(foundMenuParent.Icon, foundMenuParent.Name, foundMenuParent.Order, foundMenuParent.Route, foundMenuParent, group.Name, foundMenusChildrensInParent, group);
                 await _context.GroupPermissions.AddAsync(createGroupPermissionParent);
 
                 if (menuParent.Childrens is not null)
@@ -199,35 +144,14 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
 
                             var addDotInOrderChildren = foundMenuChildren.Order + ".";
                             var foundMenusChildrensInChildren = await _context.Menus.Where(x => x.Order.Contains(addDotInOrderChildren)).ToListAsync();
-
-                            var createGroupPermissionChildren = new GroupPermission
-                            {
-                                Id = groupPermissionChildrenId,
-                                MenuIcon = foundMenuChildren.Icon,
-                                MenuName = foundMenuChildren.Name,
-                                MenuOrder = foundMenuChildren.Order,
-                                MenuRoute = foundMenuChildren.Route,
-                                CreatedAt = DateTime.UtcNow.AddHours(-3),
-                                Menu = foundMenuChildren,
-                                GroupName = group.Name,
-                                hasChildren = foundMenusChildrensInChildren.Count == 0 ? false : true,
-                                hasParent = foundMenuChildren.Parent is null ? false : true,
-                                Group = group,
-                            };
+                            var createGroupPermissionChildren = _groupPermissionFactory.CreateGroupPermission(foundMenuChildren.Icon, foundMenuChildren.Name, foundMenuChildren.Order, foundMenuChildren.Route, foundMenuChildren, group.Name, foundMenusChildrensInChildren, group);
                             await _context.GroupPermissions.AddAsync(createGroupPermissionChildren);
 
                             foreach (var operationsChildren in menuChildren.Operations)
                             {
                                 var groupOperationChildrenId = Guid.NewGuid();
                                 var foundOperation = await _context.GlobalOperations.Where(x => x.Id == operationsChildren.OperationId).FirstOrDefaultAsync();
-                                var createGroupOperationChildren = new GroupOperation
-                                {
-                                    Id = groupOperationChildrenId,
-                                    GlobalOperation = foundOperation,
-                                    GroupPermission = createGroupPermissionChildren,
-                                    GroupName = group.Name,
-                                    OperationName = foundOperation.Method
-                                };
+                                var createGroupOperationChildren = _groupOperationFactory.CreateGroupOperation(foundOperation, createGroupPermissionChildren, group.Name, foundOperation.Method);
                                 await _context.GroupOperations.AddAsync(createGroupOperationChildren);
                             }
                         }
@@ -239,14 +163,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
                     {
                         var groupOperationParentId = Guid.NewGuid();
                         var foundOperation = await _context.GlobalOperations.Where(x => x.Id == operationsParent.OperationId).FirstOrDefaultAsync();
-                        var createGroupOperationParent = new GroupOperation
-                        {
-                            Id = groupOperationParentId,
-                            GlobalOperation = foundOperation,
-                            GroupPermission = createGroupPermissionParent,
-                            GroupName = group.Name,
-                            OperationName = foundOperation.Method
-                        };
+                        var createGroupOperationParent = _groupOperationFactory.CreateGroupOperation(foundOperation, createGroupPermissionParent, group.Name, foundOperation.Method);
                         await _context.GroupOperations.AddAsync(createGroupOperationParent);
                     }
                 }
@@ -265,23 +182,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
                     .Where(x => x.Id == permission.Id)
                     .FirstOrDefaultAsync();
 
-                var userPermission = new UserPermission
-                {
-                    Id = Guid.NewGuid(),
-                    hasChildren = permission.hasChildren,
-                    hasParent = permission.hasParent,
-                    MenuIcon = permission.MenuIcon,
-                    MenuName = permission.MenuName,
-                    MenuOrder = permission.MenuOrder,
-                    MenuRoute = permission.MenuRoute,
-                    GroupId = permission.Group.Id,
-                    GroupName = permission.Group.Name,
-                    MenuId = Guid.Parse(permission.Menu.Id),
-                    User = userHasGroup,
-                    GroupMenu = groupPermission,
-                    CreatedAt = DateTime.UtcNow.AddHours(-3),
-                };
-
+                var userPermission = _userPermissionFactory.CreateUserPermission(permission, userHasGroup, groupPermission);
                 await _context.UserPermissions.AddAsync(userPermission);
 
                 foreach (var operation in permission.Operations)
@@ -290,15 +191,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
                         .Where(x => x.Method == operation.OperationName)
                         .FirstOrDefaultAsync();
 
-                    var userOperation = new UserOperation
-                    {
-                        Id = Guid.NewGuid(),
-                        OperationName = operation.OperationName,
-                        UserPermission = userPermission,
-                        GlobalOperation = foundOperation,
-                        GroupName = group.Name
-                    };
-
+                    var userOperation = _userOperationFactory.CreateUserOperation(operation, userPermission, foundOperation, group);
                     await _context.UserOperations.AddAsync(userOperation);
                 }
             }

@@ -81,9 +81,9 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.Http.Services
             return reservoirDTO;
         }
 
-        public async Task<List<ReservoirDTO>> GetReservoirs()
+        public async Task<List<ReservoirDTO>> GetReservoirs(User user)
         {
-            var reservoirs = await _reservoirRepository.GetAsync();
+            var reservoirs = await _reservoirRepository.GetAsync(user);
 
             var reservoirsDTO = _mapper.Map<List<Reservoir>, List<ReservoirDTO>>(reservoirs);
             return reservoirsDTO;

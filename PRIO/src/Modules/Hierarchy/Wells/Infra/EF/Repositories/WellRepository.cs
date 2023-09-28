@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Shared.Infra.EF;
@@ -104,9 +105,15 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
             await _context.Wells.AddAsync(well);
         }
 
-        public async Task<List<Well>> GetAsync()
+        public async Task<List<Well>> GetAsync(User user)
         {
-            return await _context.Wells
+            List<Guid> installationIds = user.InstallationsAccess
+                 .Select(installationAccess => installationAccess.Installation.Id)
+                 .ToList();
+
+            if (user.Type == "Master")
+            {
+                return await _context.Wells
                     .Include(x => x.User)
                     .Include(x => x.Completions)
                     .ThenInclude(x => x.Reservoir)
@@ -115,6 +122,19 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
                     .ThenInclude(f => f.Installation)
                     .ThenInclude(i => i.Cluster)
                     .ToListAsync();
+            }
+            else
+            {
+                return await _context.Wells
+                    .Include(x => x.User)
+                    .Include(x => x.Completions)
+                    .ThenInclude(x => x.Reservoir)
+                    .ThenInclude(x => x.Zone)
+                    .Include(x => x.Field)
+                    .ThenInclude(f => f.Installation)
+                    .ThenInclude(i => i.Cluster)
+                    .Where(x => installationIds.Contains(x.Field.Installation.Id)).ToListAsync();
+            }
         }
 
         public void Update(Well well)

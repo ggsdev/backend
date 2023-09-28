@@ -187,13 +187,13 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Http.Services
             await _wellEventRepository.Save();
         }
 
-        public async Task<ClosingEventDto> GetUepsForWellEvent()
+        public async Task<ClosingEventDto> GetUepsForWellEvent(User user)
         {
             var ueps = await _installationRepository
                 .GetUEPsAsync();
 
             var installations = await _installationRepository
-                .GetAsync();
+                .GetAsync(user);
 
             var uepsList = new List<UepDto>();
 

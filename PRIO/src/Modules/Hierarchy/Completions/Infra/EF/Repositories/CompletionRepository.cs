@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Completions.Interfaces;
 using PRIO.src.Shared.Infra.EF;
@@ -59,17 +60,36 @@ namespace PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Repositories
             await _context.Completions.AddAsync(completion);
         }
 
-        public async Task<List<Completion>> GetAsync()
+        public async Task<List<Completion>> GetAsync(User user)
         {
-            return await _context.Completions
-                .Include(x => x.User)
-               .Include(x => x.Well)
-                .Include(x => x.Reservoir)
-                .ThenInclude(r => r.Zone)
-                .ThenInclude(z => z.Field)
-                .ThenInclude(z => z.Installation)
-                .ThenInclude(z => z.Cluster)
-               .ToListAsync();
+            List<Guid> installationIds = user.InstallationsAccess
+                .Select(installationAccess => installationAccess.Installation.Id)
+                .ToList();
+
+            if (user.Type == "Master")
+            {
+                return await _context.Completions
+                               .Include(x => x.User)
+                               .Include(x => x.Well)
+                               .Include(x => x.Reservoir)
+                               .ThenInclude(r => r.Zone)
+                               .ThenInclude(z => z.Field)
+                               .ThenInclude(z => z.Installation)
+                               .ThenInclude(z => z.Cluster)
+                               .ToListAsync();
+            }
+            else
+            {
+                return await _context.Completions
+                               .Include(x => x.User)
+                               .Include(x => x.Well)
+                               .Include(x => x.Reservoir)
+                               .ThenInclude(r => r.Zone)
+                               .ThenInclude(z => z.Field)
+                               .ThenInclude(z => z.Installation)
+                               .ThenInclude(z => z.Cluster)
+                               .Where(x => installationIds.Contains(x.Reservoir.Zone.Field.Installation.Id)).ToListAsync();
+            }
         }
 
         public void Update(Completion completion)
