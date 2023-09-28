@@ -1,9 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models;
-using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Factories;
-using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Interfaces;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Users.Interfaces;
 using PRIO.src.Shared.Infra.EF;
 
 namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
@@ -17,12 +15,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
         {
             _context = context;
             _userOperationFactory = userOperationFactory;
-        }
-        public async Task<UserOperation> CreateAndAddUserOperation(GroupOperation operation, UserPermission userPermission, Group group, UserGroupOperationDTO userGroupOperationDTO)
-        {
-            var userOperation = _userOperationFactory.CreateUserOperation(userGroupOperationDTO, userPermission, operation.GlobalOperation, group);
-            await AddUserOperation(userOperation);
-            return userOperation;
         }
 
         public async Task AddUserOperation(UserOperation userOperation)

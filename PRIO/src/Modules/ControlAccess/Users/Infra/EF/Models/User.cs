@@ -12,7 +12,7 @@ using PRIO.src.Modules.Measuring.Comments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
-using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
+using PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF.Models;
 using System.Text.Json.Serialization;
 

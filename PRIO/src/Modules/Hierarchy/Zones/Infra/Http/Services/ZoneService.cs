@@ -4,7 +4,7 @@ using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Completions.Interfaces;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
-using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
+using PRIO.src.Modules.Hierarchy.Fields.Interfaces;
 using PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Reservoirs.Interfaces;
 using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
@@ -13,7 +13,7 @@ using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Zones.Interfaces;
 using PRIO.src.Modules.Hierarchy.Zones.ViewModels;
 using PRIO.src.Modules.Measuring.Productions.Interfaces;
-using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
+using PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.WellEvents.Interfaces;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
@@ -87,9 +87,9 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Services
             return zoneDTO;
         }
 
-        public async Task<List<ZoneDTO>> GetZones()
+        public async Task<List<ZoneDTO>> GetZones(User user)
         {
-            var zones = await _zoneRepository.GetAsync();
+            var zones = await _zoneRepository.GetAsync(user);
 
             var zonesDTO = _mapper.Map<List<Zone>, List<ZoneDTO>>(zones);
             return zonesDTO;

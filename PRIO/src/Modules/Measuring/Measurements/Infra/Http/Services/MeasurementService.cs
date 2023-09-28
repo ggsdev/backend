@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
-using PRIO.src.Modules.FileImport.XML.Dtos;
+using PRIO.src.Modules.FileImport.XML.Measuring.Dtos;
 using PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Measurements.Interfaces;
 using PRIO.src.Shared.Utils;

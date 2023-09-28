@@ -2,10 +2,10 @@
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
-using PRIO.src.Modules.FileImport.XML.Dtos;
-using PRIO.src.Modules.FileImport.XML.FileContent;
-using PRIO.src.Modules.FileImport.XML.FileContent._039;
-using PRIO.src.Modules.FileImport.XML.Infra.Utils;
+using PRIO.src.Modules.FileImport.XML.Measuring.Dtos;
+using PRIO.src.Modules.FileImport.XML.Measuring.FileContent;
+using PRIO.src.Modules.FileImport.XML.Measuring.FileContent._039;
+using PRIO.src.Modules.FileImport.XML.Measuring.Infra.Utils;
 using PRIO.src.Modules.FileImport.XML.NFSMS.Dtos;
 using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XML.NFSMS.Interfaces;

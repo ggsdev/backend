@@ -2,7 +2,7 @@
 using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Properties;
-using PRIO.src.Modules.FileImport.XML.Dtos;
+using PRIO.src.Modules.FileImport.XML.Measuring.Dtos;
 
 namespace PRIO.src.Shared.Utils
 {

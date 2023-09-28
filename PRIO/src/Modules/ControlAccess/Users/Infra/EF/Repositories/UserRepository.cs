@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Interfaces;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Factories;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Users.Interfaces;
 using PRIO.src.Modules.ControlAccess.Users.ViewModels;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
@@ -10,12 +11,20 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly DataContext _context;
+        private readonly UserFactory _userFactory;
 
-        public UserRepository(DataContext context)
+        public UserRepository(DataContext context, UserFactory userFactory)
         {
             _context = context;
+            _userFactory = userFactory;
         }
-        public async Task CreateUser(User user)
+        public async Task<User> CreateAndAddUser(CreateUserViewModel body, string treatedUsername)
+        {
+            var user = _userFactory.CreateUser(body, treatedUsername);
+            await AddUser(user);
+            return user;
+        }
+        public async Task AddUser(User user)
         {
             await _context.AddAsync(user);
         }

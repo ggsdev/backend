@@ -22,21 +22,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="src\Modules\FileImport\XLSX\Infra\**" />
     <Compile Remove="src\Modules\Measuring\GasVolumeCalculation\**" />
     <Compile Remove="src\Modules\Measuring\MeasuringPoints\Infra\Http\NovaPasta\**" />
     <Compile Remove="src\Modules\Measuring\MeasuringPoints\NovaPasta\**" />
     <Compile Remove="src\Modules\Measuring\OilVolumeCalculation\**" />
     <Compile Remove="src\Modules\MockPI\**" />
+    <Content Remove="src\Modules\FileImport\XLSX\Infra\**" />
     <Content Remove="src\Modules\Measuring\GasVolumeCalculation\**" />
     <Content Remove="src\Modules\Measuring\MeasuringPoints\Infra\Http\NovaPasta\**" />
     <Content Remove="src\Modules\Measuring\MeasuringPoints\NovaPasta\**" />
     <Content Remove="src\Modules\Measuring\OilVolumeCalculation\**" />
-    <Content Remove="src\Modules\MockPI\**" />
+    <EmbeddedResource Remove="src\Modules\FileImport\XLSX\Infra\**" />
     <EmbeddedResource Remove="src\Modules\Measuring\GasVolumeCalculation\**" />
     <EmbeddedResource Remove="src\Modules\Measuring\MeasuringPoints\Infra\Http\NovaPasta\**" />
     <EmbeddedResource Remove="src\Modules\Measuring\MeasuringPoints\NovaPasta\**" />
     <EmbeddedResource Remove="src\Modules\Measuring\OilVolumeCalculation\**" />
-    <EmbeddedResource Remove="src\Modules\MockPI\**" />
+    <None Remove="src\Modules\FileImport\XLSX\Infra\**" />
     <None Remove="src\Modules\Measuring\GasVolumeCalculation\**" />
     <None Remove="src\Modules\Measuring\MeasuringPoints\Infra\Http\NovaPasta\**" />
     <None Remove="src\Modules\Measuring\MeasuringPoints\NovaPasta\**" />
@@ -93,10 +95,6 @@
     <Folder Include="src\Modules\FileImport\XLSX\BTPS\Infra\Http\Controllers\" />
     <Folder Include="src\Modules\FileImport\XLSX\BTPS\Infra\Http\Services\" />
     <Folder Include="src\Modules\FileImport\XLSX\BTPS\Interfaces\" />
-    <Folder Include="src\Modules\FileImport\XLSX\Infra\EF\Entities\" />
-    <Folder Include="src\Modules\FileImport\XLSX\Infra\EF\Mappings\" />
-    <Folder Include="src\Modules\FileImport\XML\Infra\EF\Models\" />
-    <Folder Include="src\Modules\FileImport\XML\Infra\EF\Mappings\" />
     <Folder Include="src\Modules\Measuring\Measurements\Dtos\" />
     <Folder Include="src\Modules\Measuring\Measurements\Infra\Http\Controllers\" />
     <Folder Include="src\Modules\Measuring\Measurements\ViewModels\" />

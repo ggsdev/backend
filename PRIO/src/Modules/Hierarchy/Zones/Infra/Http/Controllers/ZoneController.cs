@@ -34,7 +34,12 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.Http.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var zonesDTO = await _zoneService.GetZones();
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+            var zonesDTO = await _zoneService.GetZones(user);
             return Ok(zonesDTO);
         }
 

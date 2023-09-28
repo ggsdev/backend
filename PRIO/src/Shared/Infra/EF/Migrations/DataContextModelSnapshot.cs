@@ -4440,7 +4440,7 @@ namespace PRIO.Migrations
                     b.ToTable("Production.ZoneProductions", (string)null);
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.EF.Models.EventReason", b =>
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models.EventReason", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -4502,7 +4502,7 @@ namespace PRIO.Migrations
                     b.ToTable("Event.EventReasons", (string)null);
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.EF.Models.WellEvent", b =>
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models.WellEvent", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -4763,6 +4763,161 @@ namespace PRIO.Migrations
                     b.HasIndex("WellTestId");
 
                     b.ToTable("Production.WellProductions", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Attributes", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ElementsInstaceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PIId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SelfRoute")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ValueRoute")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WebId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ElementsInstaceId");
+
+                    b.ToTable("PI.Attributes", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Database", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ElementsRoute")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PIId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SelfRoute")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WebId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PI.Databases", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Elements", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AttributesRoute")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("InstanceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PIId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SelfRoute")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WebId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InstanceId");
+
+                    b.ToTable("PI.Elements", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Instance", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("DatabaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ElementsRoute")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PIId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SelfRoute")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WebId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DatabaseId");
+
+                    b.ToTable("PI.Instances", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Shared.Auxiliaries.Infra.EF.Models.Auxiliary", b =>
@@ -5734,7 +5889,7 @@ namespace PRIO.Migrations
                     b.Navigation("ZoneProduction");
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.EF.Models.EventReason", b =>
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models.EventReason", b =>
                 {
                     b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "CreatedBy")
                         .WithMany("CreatedEventReasons")
@@ -5747,7 +5902,7 @@ namespace PRIO.Migrations
                         .HasForeignKey("UpdatedById")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("PRIO.src.Modules.Measuring.WellEvents.EF.Models.WellEvent", "WellEvent")
+                    b.HasOne("PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models.WellEvent", "WellEvent")
                         .WithMany("EventReasons")
                         .HasForeignKey("WellEventId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -5760,7 +5915,7 @@ namespace PRIO.Migrations
                     b.Navigation("WellEvent");
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.EF.Models.WellEvent", b =>
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models.WellEvent", b =>
                 {
                     b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "CreatedBy")
                         .WithMany("CreatedWellEvents")
@@ -5768,7 +5923,7 @@ namespace PRIO.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("PRIO.src.Modules.Measuring.WellEvents.EF.Models.WellEvent", "EventRelated")
+                    b.HasOne("PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models.WellEvent", "EventRelated")
                         .WithMany()
                         .HasForeignKey("EventRelatedId");
 
@@ -5794,7 +5949,7 @@ namespace PRIO.Migrations
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellLosses", b =>
                 {
-                    b.HasOne("PRIO.src.Modules.Measuring.WellEvents.EF.Models.WellEvent", "Event")
+                    b.HasOne("PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models.WellEvent", "Event")
                         .WithMany("WellLosses")
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -5836,6 +5991,39 @@ namespace PRIO.Migrations
                     b.Navigation("Production");
 
                     b.Navigation("WellTest");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Attributes", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.PI.Infra.EF.Models.Elements", "ElementsInstace")
+                        .WithMany("AttributesInstance")
+                        .HasForeignKey("ElementsInstaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ElementsInstace");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Elements", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.PI.Infra.EF.Models.Instance", "Instance")
+                        .WithMany("ElementsInstace")
+                        .HasForeignKey("InstanceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Instance");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Instance", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.PI.Infra.EF.Models.Database", "Database")
+                        .WithMany("Instances")
+                        .HasForeignKey("DatabaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Database");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.Group", b =>
@@ -6149,7 +6337,7 @@ namespace PRIO.Migrations
                     b.Navigation("ReservoirProductions");
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.EF.Models.WellEvent", b =>
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models.WellEvent", b =>
                 {
                     b.Navigation("EventReasons");
 
@@ -6161,6 +6349,21 @@ namespace PRIO.Migrations
                     b.Navigation("CompletionProductions");
 
                     b.Navigation("WellLosses");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Database", b =>
+                {
+                    b.Navigation("Instances");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Elements", b =>
+                {
+                    b.Navigation("AttributesInstance");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Instance", b =>
+                {
+                    b.Navigation("ElementsInstace");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,5 +1,5 @@
 ﻿using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
-using PRIO.src.Modules.FileImport.XML.Dtos;
+using PRIO.src.Modules.FileImport.XML.Measuring.Dtos;
 using System.Net;
 using System.Net.Mail;
 

@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
-using PRIO.src.Modules.FileImport.XML.Dtos;
-using PRIO.src.Modules.FileImport.XML.Infra.Utils;
+using PRIO.src.Modules.FileImport.XML.Measuring.Dtos;
+using PRIO.src.Modules.FileImport.XML.Measuring.Infra.Utils;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Fields.Interfaces;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Modules.Measuring.Comments.Dtos;

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Zones.Interfaces;
 using PRIO.src.Shared.Infra.EF;
@@ -75,8 +76,34 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Repositories
             await _context.Zones.AddAsync(zone);
         }
 
-        public async Task<List<Zone>> GetAsync()
+        public async Task<List<Zone>> GetAsync(User user)
         {
+            List<Guid> installationIds = user.InstallationsAccess
+              .Select(installationAccess => installationAccess.Installation.Id)
+              .ToList();
+
+            if (user.Type == "Master")
+            {
+
+                return await _context.Zones
+                   .Include(x => x.User)
+                   .Include(x => x.Field)
+                   .ThenInclude(f => f.Installation)
+                   .ThenInclude(i => i.Cluster)
+                   .ToListAsync();
+            }
+            else
+            {
+
+                return await _context.Zones
+                   .Include(x => x.User)
+                   .Include(x => x.Field)
+                   .ThenInclude(f => f.Installation)
+                   .ThenInclude(i => i.Cluster)
+                    .Where(x => installationIds.Contains(x.Field.Installation.Id))
+                   .ToListAsync();
+            }
+
             return await _context.Zones
                .Include(x => x.User)
                .Include(x => x.Field)
