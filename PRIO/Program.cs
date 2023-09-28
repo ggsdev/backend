@@ -274,6 +274,7 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddScoped<UserPermissionFactory>();
     services.AddScoped<UserOperationFactory>();
     services.AddScoped<UserFactory>();
+    services.AddScoped<InstallationAccessFactory>();
     #endregion
 
     var jwtKey = envVars["SECRET_KEY"];

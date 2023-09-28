@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
+using PRIO.src.Modules.ControlAccess.Groups.Dtos;
+using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Groups.Interfaces;
 using PRIO.src.Modules.ControlAccess.Operations.Interfaces;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Factories;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.Interfaces;
 using PRIO.src.Modules.ControlAccess.Users.ViewModels;
@@ -24,11 +27,15 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
         private IGlobalOperationsRepository _globalOperationsRepository;
         private IInstallationRepository _installationRepository;
         private IInstallationsAccessRepository _installationAccessRepository;
+        private UserFactory _userFactory;
+        private UserPermissionFactory _userPermissionFactory;
+        private UserOperationFactory _userOperationFactory;
+        private InstallationAccessFactory _installationAccessFactory;
         private IMapper _mapper;
         private readonly SystemHistoryService _systemHistoryService;
         private readonly string _table = HistoryColumns.TableUsers;
 
-        public UserService(IMapper mapper, IUserRepository user, IUserPermissionRepository userPermissionRepository, IUserOperationRepository userOperationRepository, IGroupPermissionRepository groupPermissionRepository, IGroupOperationRepository groupOperationRepository, IGlobalOperationsRepository globalOperationsRepository, SystemHistoryService systemHistoryService, IInstallationRepository installationRepository, IInstallationsAccessRepository installationAccessRepository)
+        public UserService(IMapper mapper, IUserRepository user, IUserPermissionRepository userPermissionRepository, IUserOperationRepository userOperationRepository, IGroupPermissionRepository groupPermissionRepository, IGroupOperationRepository groupOperationRepository, IGlobalOperationsRepository globalOperationsRepository, SystemHistoryService systemHistoryService, IInstallationRepository installationRepository, IInstallationsAccessRepository installationAccessRepository, UserFactory userFactory, InstallationAccessFactory installationAccessFactory, UserOperationFactory userOperationFactory)
         {
             _mapper = mapper;
             _userRepository = user;
@@ -41,6 +48,9 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             _systemHistoryService = systemHistoryService;
             _installationRepository = installationRepository;
             _installationAccessRepository = installationAccessRepository;
+            _userFactory = userFactory;
+            _installationAccessFactory = installationAccessFactory;
+            _userOperationFactory = userOperationFactory;
         }
 
         public async Task<List<UserDTO>> GetUsers()
@@ -78,18 +88,12 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
 
                 instalationsToRelation.Add(verifyInstallation);
             }
-            var user = await _userRepository
-                .CreateAndAddUser(body, treatedUsername);
+            var user = _userFactory.CreateUser(body, treatedUsername);
+            await _userRepository.AddUser(user);
 
-            foreach (var item in instalationsToRelation)
+            foreach (var installation in instalationsToRelation)
             {
-                var create = new InstallationsAccess
-                {
-                    Installation = item,
-                    User = user,
-                    Id = Guid.NewGuid()
-                };
-
+                var create = _installationAccessFactory.CreateInstallationAccess(installation, user);
                 await _installationAccessRepository.AddInstallationsAccess(create);
             }
 
@@ -208,15 +212,10 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                     }
                     user.InstallationsAccess.Clear();
 
-                    foreach (var item in instalationsToRelation)
+                    foreach (var installation in instalationsToRelation)
                     {
-                        var create = new InstallationsAccess
-                        {
-                            Installation = item,
-                            User = user,
-                            Id = Guid.NewGuid()
-                        };
 
+                        var create = _installationAccessFactory.CreateInstallationAccess(installation, user);
                         await _installationAccessRepository.AddInstallationsAccess(create);
                     }
                 }
@@ -324,22 +323,9 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                 // EXISTE A PERMISSAO NO GRUPO
                 if (verifyRelationMenuParent is not null)
                 {
-                    var createMenuParent = new UserPermission
-                    {
-                        GroupId = userWithPermissions.Group.Id,
-                        GroupName = userWithPermissions.Group.Name,
-                        hasParent = verifyRelationMenuParent.hasParent,
-                        hasChildren = verifyRelationMenuParent.hasChildren,
-                        Id = Guid.NewGuid(),
-                        MenuIcon = verifyRelationMenuParent.MenuIcon,
-                        MenuName = verifyRelationMenuParent.MenuName,
-                        MenuOrder = verifyRelationMenuParent.MenuOrder,
-                        MenuRoute = verifyRelationMenuParent.MenuRoute,
-                        CreatedAt = DateTime.UtcNow.AddHours(-3),
-                        MenuId = verifyRelationMenuParent.Menu.Id,
-                        User = userWithPermissions,
-                        GroupMenu = verifyRelationMenuParent,
-                    };
+                    var verifyRelationMenuParentDTO = _mapper.Map<GroupPermission, GroupPermissionsDTO>(verifyRelationMenuParent);
+
+                    var createMenuParent = _userPermissionFactory.CreateUserPermission(verifyRelationMenuParentDTO, userWithPermissions, verifyRelationMenuParent);
                     await _userPermissionRepository.AddUserPermission(createMenuParent);
                     // EXISTE A PERMISSAO NO GRUPO E TEM LISTA DE FILHO
                     if (menu.Childrens is not null && menu.Childrens.Count != 0)
@@ -356,22 +342,8 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                                 // EXISTE PERMISSAO DO FILHO NO GRUPO E TEM LISTA DE OPERAÇÕES
                                 if (children.Operations is not null && children.Operations.Count != 0)
                                 {
-                                    var createMenuChildren = new UserPermission
-                                    {
-                                        GroupId = userWithPermissions.Group.Id,
-                                        GroupName = userWithPermissions.Group.Name,
-                                        hasParent = true,
-                                        hasChildren = false,
-                                        Id = Guid.NewGuid(),
-                                        MenuIcon = verifyRelationMenuChildren.MenuIcon,
-                                        MenuName = verifyRelationMenuChildren.MenuName,
-                                        MenuOrder = verifyRelationMenuChildren.MenuOrder,
-                                        MenuRoute = verifyRelationMenuChildren.MenuRoute,
-                                        CreatedAt = DateTime.UtcNow.AddHours(-3),
-                                        MenuId = verifyRelationMenuChildren.Menu.Id,
-                                        User = userWithPermissions,
-                                        GroupMenu = verifyRelationMenuChildren,
-                                    };
+                                    var verifyRelationMenuChildrenDTO = _mapper.Map<GroupPermission, GroupPermissionsDTO>(verifyRelationMenuChildren);
+                                    var createMenuChildren = _userPermissionFactory.CreateUserPermission(verifyRelationMenuChildrenDTO, userWithPermissions, verifyRelationMenuChildren);
                                     await _userPermissionRepository.AddUserPermission(createMenuChildren);
 
                                     foreach (var operation in children.Operations)
@@ -382,28 +354,17 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                                         //EXISTE PERMISSAO DA OPERACAO
                                         if (verifyRelationMenuChildrenWithOperations is not null)
                                         {
-                                            var createGroupOperationsInUser = new UserOperation
-                                            {
-                                                OperationName = verifyRelationMenuChildrenWithOperations.OperationName,
-                                                UserPermission = createMenuChildren,
-                                                GlobalOperation = verifyRelationMenuChildrenWithOperations.GlobalOperation,
-                                                GroupName = verifyRelationMenuChildrenWithOperations.GroupName,
-                                                Id = Guid.NewGuid(),
-                                            };
+                                            var groupOperationDTO = _mapper.Map<GroupOperation, UserGroupOperationDTO>(verifyRelationMenuChildrenWithOperations);
+                                            var createGroupOperationsInUser = _userOperationFactory.CreateUserOperation(groupOperationDTO, createMenuChildren, verifyRelationMenuChildrenWithOperations.GlobalOperation, userWithPermissions.Group);
                                             await _userOperationRepository.AddUserOperation(createGroupOperationsInUser);
                                         }
                                         else // NAO EXISTE PERMISSAO DA OPERACAO
                                         {
                                             var verifyRelationMenuChildrenWithOperationsInMaster = await _groupOperationRepository.GetGroupOperationsByOperationIdAndGroupName(operation.OperationId, "Master");
 
-                                            var createGroupOperationsInUser = new UserOperation
-                                            {
-                                                OperationName = verifyRelationMenuChildrenWithOperationsInMaster.OperationName,
-                                                UserPermission = createMenuChildren,
-                                                GlobalOperation = verifyRelationMenuChildrenWithOperationsInMaster.GlobalOperation,
-                                                GroupName = verifyRelationMenuChildrenWithOperationsInMaster.GroupName,
-                                                Id = Guid.NewGuid(),
-                                            };
+                                            var groupOperationDTO = _mapper.Map<GroupOperation, UserGroupOperationDTO>(verifyRelationMenuChildrenWithOperationsInMaster);
+                                            var createGroupOperationsInUser = _userOperationFactory.CreateUserOperation(groupOperationDTO, createMenuChildren, verifyRelationMenuChildrenWithOperationsInMaster.GlobalOperation, userWithPermissions.Group);
+                                            createGroupOperationsInUser.GroupName = "Master";
                                             await _userOperationRepository.AddUserOperation(createGroupOperationsInUser);
                                         }
                                     }
@@ -416,37 +377,18 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                                     //PROCURANDO PERMISSAO PELO MASTER
                                     var verifyRelationMenuChildrenInMaster = await _groupPermissionRepository.GetGroupPermissionByMenuIdAndGroupName(children.ChildrenId, "Master");
 
-                                    var createMenuChildren = new UserPermission
-                                    {
-                                        GroupId = verifyRelationMenuChildrenInMaster.Group.Id,
-                                        GroupName = verifyRelationMenuChildrenInMaster.Group.Name,
-                                        hasParent = true,
-                                        hasChildren = false,
-                                        Id = Guid.NewGuid(),
-                                        MenuIcon = verifyRelationMenuChildrenInMaster.MenuIcon,
-                                        MenuName = verifyRelationMenuChildrenInMaster.MenuName,
-                                        MenuOrder = verifyRelationMenuChildrenInMaster.MenuOrder,
-                                        MenuRoute = verifyRelationMenuChildrenInMaster.MenuRoute,
-                                        CreatedAt = DateTime.UtcNow.AddHours(-3),
-                                        MenuId = verifyRelationMenuChildrenInMaster.Menu.Id,
-                                        User = userWithPermissions,
-                                        GroupMenu = verifyRelationMenuChildrenInMaster,
-                                    };
-                                    await _userPermissionRepository.AddUserPermission(createMenuChildren);
+
+                                    var verifyRelationMenuChildrenInMasterDTO = _mapper.Map<GroupPermission, GroupPermissionsDTO>(verifyRelationMenuChildrenInMaster);
+                                    var createMenuChildren = _userPermissionFactory.CreateUserPermission(verifyRelationMenuChildrenInMasterDTO, userWithPermissions, verifyRelationMenuChildrenInMaster);
 
                                     foreach (var operation in children.Operations)
                                     {
                                         //PROCURANDO PERMISSAO DA OPERACAO PELO MASTER
                                         var verifyRelationMenuChildrenWithOperationsInMaster = await _groupOperationRepository.GetGroupOperationsByOperationIdAndGroupName(operation.OperationId, "Master");
 
-                                        var createGroupOperationsInUser = new UserOperation
-                                        {
-                                            OperationName = verifyRelationMenuChildrenWithOperationsInMaster.OperationName,
-                                            UserPermission = createMenuChildren,
-                                            GlobalOperation = verifyRelationMenuChildrenWithOperationsInMaster.GlobalOperation,
-                                            GroupName = verifyRelationMenuChildrenWithOperationsInMaster.GroupName,
-                                            Id = Guid.NewGuid(),
-                                        };
+                                        var verifyRelationMenuChildrenWithOperationsInMasterDTO = _mapper.Map<GroupOperation, UserGroupOperationDTO>(verifyRelationMenuChildrenWithOperationsInMaster);
+                                        var createGroupOperationsInUser = _userOperationFactory.CreateUserOperation(verifyRelationMenuChildrenWithOperationsInMasterDTO, createMenuChildren, verifyRelationMenuChildrenWithOperationsInMaster.GlobalOperation, userWithPermissions.Group);
+                                        createGroupOperationsInUser.GroupName = "Master";
                                         await _userOperationRepository.AddUserOperation(createGroupOperationsInUser);
                                     }
 
@@ -466,28 +408,17 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                                 //EXISTE PERMISSAO DA OPERACAO
                                 if (verifyRelationMenuParentWithOperations is not null)
                                 {
-                                    var createGroupOperationsInUser = new UserOperation
-                                    {
-                                        OperationName = verifyRelationMenuParentWithOperations.OperationName,
-                                        UserPermission = createMenuParent,
-                                        GlobalOperation = verifyRelationMenuParentWithOperations.GlobalOperation,
-                                        GroupName = verifyRelationMenuParentWithOperations.GroupName,
-                                        Id = Guid.NewGuid(),
-                                    };
+                                    var verifyRelationMenuChildrenWithOperationsDTO = _mapper.Map<GroupOperation, UserGroupOperationDTO>(verifyRelationMenuParentWithOperations);
+
+                                    var createGroupOperationsInUser = _userOperationFactory.CreateUserOperation(verifyRelationMenuChildrenWithOperationsDTO, createMenuParent, verifyRelationMenuParentWithOperations.GlobalOperation, userWithPermissions.Group);
                                     await _userOperationRepository.AddUserOperation(createGroupOperationsInUser);
                                 }
                                 else // NAO EXISTE PERMISSAO DA OPERACAO
                                 {
                                     var verifyRelationMenuChildrenWithOperationsInMaster = await _groupOperationRepository.GetGroupOperationsByOperationIdAndGroupName(operation.OperationId, "Master");
-
-                                    var createGroupOperationsInUser = new UserOperation
-                                    {
-                                        OperationName = verifyRelationMenuChildrenWithOperationsInMaster.OperationName,
-                                        UserPermission = createMenuParent,
-                                        GlobalOperation = verifyRelationMenuChildrenWithOperationsInMaster.GlobalOperation,
-                                        GroupName = verifyRelationMenuChildrenWithOperationsInMaster.GroupName,
-                                        Id = Guid.NewGuid(),
-                                    };
+                                    var verifyRelationMenuChildrenWithOperationsInMasterDTO = _mapper.Map<GroupOperation, UserGroupOperationDTO>(verifyRelationMenuChildrenWithOperationsInMaster);
+                                    var createGroupOperationsInUser = _userOperationFactory.CreateUserOperation(verifyRelationMenuChildrenWithOperationsInMasterDTO, createMenuParent, verifyRelationMenuParentWithOperations.GlobalOperation, userWithPermissions.Group);
+                                    createGroupOperationsInUser.GroupName = "Master";
                                     await _userOperationRepository.AddUserOperation(createGroupOperationsInUser);
                                 }
                             }
@@ -497,23 +428,10 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                 else // NÃO EXISTE A PERMISSAO NO GRUPO
                 {
                     var verifyRelationMenuParentInMaster = await _groupPermissionRepository.GetGroupPermissionByMenuIdAndGroupName(menu.MenuId, "Master");
+                    var verifyRelationMenuParentInMasterDTO = _mapper.Map<GroupPermission, GroupPermissionsDTO>(verifyRelationMenuParentInMaster);
 
-                    var createMenuParent = new UserPermission
-                    {
-                        GroupId = verifyRelationMenuParentInMaster.Group.Id,
-                        GroupName = verifyRelationMenuParentInMaster.Group.Name,
-                        hasParent = false,
-                        hasChildren = true,
-                        Id = Guid.NewGuid(),
-                        MenuIcon = verifyRelationMenuParentInMaster.MenuIcon,
-                        MenuName = verifyRelationMenuParentInMaster.MenuName,
-                        MenuOrder = verifyRelationMenuParentInMaster.MenuOrder,
-                        MenuRoute = verifyRelationMenuParentInMaster.MenuRoute,
-                        CreatedAt = DateTime.UtcNow.AddHours(-3),
-                        MenuId = verifyRelationMenuParentInMaster.Menu.Id,
-                        User = userWithPermissions,
-                        GroupMenu = verifyRelationMenuParentInMaster,
-                    };
+                    var createMenuParent = _userPermissionFactory.CreateUserPermission(verifyRelationMenuParentInMasterDTO, userWithPermissions, verifyRelationMenuParentInMaster);
+
                     await _userPermissionRepository.AddUserPermission(createMenuParent);
 
                     if (menu.Childrens is not null && menu.Childrens.Count != 0)
@@ -524,38 +442,18 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                             {
 
                                 var verifyRelationMenuChildrenInMaster = await _groupPermissionRepository.GetGroupPermissionByMenuIdAndGroupName(children.ChildrenId, "Master");
+                                var verifyRelationMenuChildrenInMasterDTO = _mapper.Map<GroupPermission, GroupPermissionsDTO>(verifyRelationMenuChildrenInMaster);
 
-                                var createMenuChildren = new UserPermission
-                                {
-                                    GroupId = verifyRelationMenuChildrenInMaster.Group.Id,
-                                    GroupName = verifyRelationMenuChildrenInMaster.Group.Name,
-                                    hasParent = true,
-                                    hasChildren = false,
-                                    Id = Guid.NewGuid(),
-                                    MenuIcon = verifyRelationMenuChildrenInMaster.MenuIcon,
-                                    MenuName = verifyRelationMenuChildrenInMaster.MenuName,
-                                    MenuOrder = verifyRelationMenuChildrenInMaster.MenuOrder,
-                                    MenuRoute = verifyRelationMenuChildrenInMaster.MenuRoute,
-                                    CreatedAt = DateTime.UtcNow.AddHours(-3),
-                                    MenuId = verifyRelationMenuChildrenInMaster.Menu.Id,
-                                    User = userWithPermissions,
-                                    GroupMenu = verifyRelationMenuChildrenInMaster,
-                                };
+                                var createMenuChildren = _userPermissionFactory.CreateUserPermission(verifyRelationMenuChildrenInMasterDTO, userWithPermissions, verifyRelationMenuChildrenInMaster);
                                 await _userPermissionRepository.AddUserPermission(createMenuChildren);
 
                                 foreach (var operation in children.Operations)
                                 {
                                     //PROCURANDO PERMISSAO DA OPERACAO PELO MASTER
                                     var verifyRelationMenuParentWithOperationsInMaster = await _groupOperationRepository.GetGroupOperationsByOperationIdAndGroupName(operation.OperationId, "Master");
-
-                                    var createGroupOperationsInUser = new UserOperation
-                                    {
-                                        OperationName = verifyRelationMenuParentWithOperationsInMaster.OperationName,
-                                        UserPermission = createMenuChildren,
-                                        GlobalOperation = verifyRelationMenuParentWithOperationsInMaster.GlobalOperation,
-                                        GroupName = verifyRelationMenuParentWithOperationsInMaster.GroupName,
-                                        Id = Guid.NewGuid(),
-                                    };
+                                    var verifyRelationMenuParentWithOperationsInMasterDTO = _mapper.Map<GroupOperation, UserGroupOperationDTO>(verifyRelationMenuParentWithOperationsInMaster);
+                                    var createGroupOperationsInUser = _userOperationFactory.CreateUserOperation(verifyRelationMenuParentWithOperationsInMasterDTO, createMenuParent, verifyRelationMenuParentWithOperationsInMaster.GlobalOperation, userWithPermissions.Group);
+                                    createGroupOperationsInUser.GroupName = "Master";
                                     await _userOperationRepository.AddUserOperation(createGroupOperationsInUser);
                                 }
                             }
