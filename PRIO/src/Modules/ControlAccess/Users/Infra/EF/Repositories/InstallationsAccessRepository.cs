@@ -1,5 +1,5 @@
-﻿using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Interfaces;
-using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+﻿using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Users.Interfaces;
 using PRIO.src.Shared.Infra.EF;
 
 namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories

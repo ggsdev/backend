@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Interfaces;
-using PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Interfaces;
+using PRIO.src.Modules.ControlAccess.Groups.Interfaces;
+using PRIO.src.Modules.ControlAccess.Operations.Interfaces;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
-using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Interfaces;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Users.Interfaces;
 using PRIO.src.Modules.ControlAccess.Users.ViewModels;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
@@ -78,19 +78,8 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
 
                 instalationsToRelation.Add(verifyInstallation);
             }
-
-            var userId = Guid.NewGuid();
-            var user = new User
-            {
-                Id = userId,
-                Name = body.Name,
-                Username = treatedUsername,
-                Email = body.Email is not null ? body.Email : null,
-                IsActive = body.IsActive,
-                Description = body.Description is not null ? body.Description : null,
-            };
-            await _userRepository
-                .CreateUser(user);
+            var user = await _userRepository
+                .CreateAndAddUser(body, treatedUsername);
 
             foreach (var item in instalationsToRelation)
             {
@@ -123,7 +112,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
 
             //await _systemHistoryRepository.AddAsync(history);
 
-            await _systemHistoryService.Create<User, UserHistoryDTO>(_table, loggedUser, userId, user);
+            await _systemHistoryService.Create<User, UserHistoryDTO>(_table, loggedUser, user.Id, user);
 
 
             var userDTO = _mapper.Map<User, UserDTO>(user);

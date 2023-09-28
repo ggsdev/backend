@@ -1,4 +1,4 @@
-﻿using PRIO.src.Modules.FileImport.XML.Infra.Http.Dtos;
+﻿using PRIO.src.Modules.FileImport.XML.Measuring.Infra.Http.Dtos;
 
 namespace PRIO.src.Shared.Errors
 {

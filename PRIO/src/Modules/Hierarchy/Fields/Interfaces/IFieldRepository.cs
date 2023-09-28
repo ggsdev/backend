@@ -1,7 +1,7 @@
 ﻿using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 
-namespace PRIO.src.Modules.Hierarchy.Installations.Interfaces
+namespace PRIO.src.Modules.Hierarchy.Fields.Interfaces
 {
     public interface IFieldRepository
     {

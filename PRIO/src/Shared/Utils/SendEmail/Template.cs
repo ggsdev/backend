@@ -1,4 +1,4 @@
-﻿using PRIO.src.Modules.FileImport.XML.Dtos;
+﻿using PRIO.src.Modules.FileImport.XML.Measuring.Dtos;
 using System.Text;
 
 namespace PRIO.src.Shared.Utils.SendEmail

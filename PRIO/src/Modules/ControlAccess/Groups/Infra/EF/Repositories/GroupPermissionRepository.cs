@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Interfaces;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Groups.Interfaces;
 using PRIO.src.Shared.Infra.EF;
 
 namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
@@ -31,6 +31,10 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
             _context.RemoveRange(groupPermissions);
             await _context.SaveChangesAsync();
         }
+        public async Task AddAsync(GroupPermission groupPermission)
+        {
+            await _context.AddAsync(groupPermission);
+        }
         public void UpdateGroupPermissions(List<GroupPermission> groupPermissions)
         {
             _context.GroupPermissions.UpdateRange(groupPermissions);
@@ -48,7 +52,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
         }
         public async Task<GroupPermission> GetGroupPermissionById(Guid? id)
         {
-            return await _context.GroupPermissions
+            return await _context.GroupPermissions.Include(x => x.Group)
                     .Where(x => x.Id == id)
                     .FirstOrDefaultAsync();
         }

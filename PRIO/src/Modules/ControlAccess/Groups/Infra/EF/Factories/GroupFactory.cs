@@ -15,8 +15,5 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Factories
                 Description = description
             };
         }
-
-
-
     }
 }

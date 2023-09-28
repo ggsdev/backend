@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Clusters.Interfaces;
 using PRIO.src.Shared.Infra.EF;
 
 public class ClusterRepository : IClusterRepository

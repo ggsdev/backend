@@ -1,4 +1,4 @@
-﻿using PRIO.src.Modules.FileImport.XML.Dtos;
+﻿using PRIO.src.Modules.FileImport.XML.Measuring.Dtos;
 
 namespace PRIO.src.Modules.Measuring.WellProductions.Dtos
 {
