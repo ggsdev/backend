@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Newtonsoft.Json;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Users.Interfaces;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Clusters.Interfaces;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models;
@@ -51,10 +52,12 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
         private readonly IGasVolumeCalculationRepository _gasVolumeCalculationRepository;
         private readonly IWellEventRepository _eventWellRepository;
         private readonly IProductionRepository _productionRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IInstallationsAccessRepository _installationsAccessRepository;
         private readonly SystemHistoryService _systemHistoryService;
         private readonly string _tableName = HistoryColumns.TableInstallations;
 
-        public InstallationService(IMapper mapper, IInstallationRepository installationRepository, IClusterRepository clusterRepository, SystemHistoryService systemHistoryService, IFieldRepository fieldRepository, IZoneRepository zoneRepository, IWellRepository wellRepository, IReservoirRepository reservoirRepository, ICompletionRepository completionRepository, IMeasuringPointRepository measuringPointRepository, IEquipmentRepository equipmentRepository, IOilVolumeCalculationRepository oilVolumeCalculationRepository, IGasVolumeCalculationRepository gasVolumeCalculationRepository, IWellEventRepository wellEventRepository, IProductionRepository productionRepository)
+        public InstallationService(IMapper mapper, IInstallationRepository installationRepository, IClusterRepository clusterRepository, SystemHistoryService systemHistoryService, IFieldRepository fieldRepository, IZoneRepository zoneRepository, IWellRepository wellRepository, IReservoirRepository reservoirRepository, ICompletionRepository completionRepository, IMeasuringPointRepository measuringPointRepository, IEquipmentRepository equipmentRepository, IOilVolumeCalculationRepository oilVolumeCalculationRepository, IGasVolumeCalculationRepository gasVolumeCalculationRepository, IWellEventRepository wellEventRepository, IProductionRepository productionRepository, IUserRepository userRepository, IInstallationsAccessRepository installationsAccessRepository)
         {
             _mapper = mapper;
             _clusterRepository = clusterRepository;
@@ -71,6 +74,8 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
             _gasVolumeCalculationRepository = gasVolumeCalculationRepository;
             _eventWellRepository = wellEventRepository;
             _productionRepository = productionRepository;
+            _userRepository = userRepository;
+            _installationsAccessRepository = installationsAccessRepository;
         }
 
         public async Task<CreateUpdateInstallationDTO> CreateInstallation(CreateInstallationViewModel body, User user)
@@ -149,6 +154,18 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services
             {
                 await _oilVolumeCalculationRepository.AddOilVolumeCalculationAsync(installation);
                 await _gasVolumeCalculationRepository.AddGasVolumeCalculationAsync(installation);
+            }
+
+            var usersMaster = await _userRepository.GetAdminUsers();
+            foreach (var userMaster in usersMaster)
+            {
+                var InstallataionAccess = new InstallationsAccess
+                {
+                    Id = Guid.NewGuid(),
+                    Installation = installation,
+                    User = userMaster
+                };
+                await _installationsAccessRepository.AddInstallationsAccess(InstallataionAccess);
             }
 
             await _systemHistoryService
