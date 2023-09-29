@@ -95,10 +95,18 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                 if (data.Files[i].FileName.Count(c => c == '_') >= 2)
                 {
-                    var datePortion = data.Files[i].FileName.Split('_')[2][..14];
-                    if (!IsValidAndUniqueDate(datePortion, data.Files))
+                    try
                     {
-                        allDatesAreEqual = false;
+                        var datePortion = data.Files[i].FileName.Split('_')[2][..14];
+
+                        if (!IsValidAndUniqueDate(datePortion, data.Files))
+                        {
+                            allDatesAreEqual = false;
+                        }
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    {
+                        throw new BadRequestException($"Formato data inválida no arquivo: {data.Files[i].FileName}, formato ANP aceitável: 'yyyyMMddHHmmss'");
                     }
                 }
             }
@@ -2983,24 +2991,23 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             if (DateTime.TryParseExact(datePortion, "yyyyMMddHHmmss", null, DateTimeStyles.None, out parsedDate))
             {
                 var dateToCompare = parsedDate.Date;
-
                 return files
                     .Select(file =>
                     {
-                        DateTime otherDate;
-                        if (DateTime.TryParseExact(file.FileName.Split('_')[2][..14], "yyyyMMddHHmmss", null, DateTimeStyles.None, out otherDate))
+                        if (DateTime.TryParseExact(file.FileName.Split('_')[2][..14], "yyyyMMddHHmmss", null, DateTimeStyles.None, out DateTime otherDate))
                         {
+
                             return otherDate.Date;
                         }
                         else
                         {
-                            throw new BadRequestException($"Não é possível analisar a data no arquivo: {file.FileName}, formato ANP aceitável: 'yyyyMMddHHmmss'");
+                            throw new BadRequestException($"Formato data inválida no arquivo: {file.FileName}, formato ANP aceitável: 'yyyyMMddHHmmss'");
                         }
                     })
                     .All(date => date == dateToCompare);
             }
 
-            throw new BadRequestException($"Não é possível analisar a data: {datePortion}, formato ANP aceitável: 'yyyyMMddHHmmss'");
+            throw new BadRequestException($"Formato data inválida no arquivo: {datePortion}, formato ANP aceitável: 'yyyyMMddHHmmss'");
         }
     }
 }
