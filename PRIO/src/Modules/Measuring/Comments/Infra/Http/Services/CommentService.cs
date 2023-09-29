@@ -27,10 +27,10 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
             _btpRepository = bTPRepository;
         }
 
-        public async Task<CreateUpdateCommentDto> CreateComment(CreateCommentViewModel body, User loggedUser)
+        public async Task<CreateUpdateCommentDto> CreateComment(CreateCommentViewModel body, User loggedUser, Guid productionId)
         {
             var production = await _productionRepository
-                .GetById(body.ProductionId);
+                .GetById(productionId);
 
             if (production is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Production>());

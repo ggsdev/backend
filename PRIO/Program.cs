@@ -73,6 +73,7 @@ using PRIO.src.Modules.Measuring.WellEvents.Interfaces;
 using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.WellProductions.Interfaces;
+using PRIO.src.Shared;
 using PRIO.src.Shared.Auxiliaries.Infra.Http.Services;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
@@ -95,7 +96,6 @@ ConfigureServices(builder.Services, configuration);
 
 var app = builder.Build();
 
-app.UseOutputCache();
 
 using (var scope = app.Services.CreateScope())
 {
@@ -119,11 +119,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
 ConfigureMiddlewares(app);
+
 app.UseAuthentication();
+
 app.UseAuthorization();
+
+app.UseOutputCache();
+
 app.MapControllers();
+
 app.Run();
 
 static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
@@ -139,17 +144,7 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
         //config.ModelBinderProviders.Insert(0, new GuidBinderProvider());
     });
 
-    services.AddOutputCache(options =>
-    {
 
-        options.AddBasePolicy(policy => policy
-        .Expire(TimeSpan.FromMinutes(10)));
-
-        options.AddPolicy("ProductionPolicy", policy => policy
-        .Expire(TimeSpan.FromHours(12))
-        .Tag("ProductionPolicyTag"));
-
-    });
 
     services.AddCors(options =>
     {
@@ -263,7 +258,6 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
 
     #endregion
 
-
     services.AddScoped<BTPService>();
 
     services.AddScoped<XLSXService>();
@@ -331,12 +325,21 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
         }
     });
     });
+
+    services.AddOutputCache(x =>
+        x.AddBasePolicy(x => x.Expire(TimeSpan.FromDays(5))));
+
+    services.AddOutputCache(x =>
+        x.AddPolicy(nameof(AuthProductionCachePolicy), AuthProductionCachePolicy.Instance));
+
+    services.AddOutputCache(x =>
+        x.AddPolicy(nameof(AuthProductionIdCachePolicy), AuthProductionIdCachePolicy.Instance));
 }
 static void ConfigureMiddlewares(IApplicationBuilder app)
 {
+    app.UseCors("CorsPolicy");
     app.UseMiddleware<UnauthorizedCaptureMiddleware>();
     app.UseMiddleware<ErrorHandlingMiddleware>();
-    app.UseCors("CorsPolicy");
     app.UseRouting();
 }
 

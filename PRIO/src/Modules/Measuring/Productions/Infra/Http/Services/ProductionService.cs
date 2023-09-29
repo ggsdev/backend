@@ -44,12 +44,13 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
             _wellRepository = wellRepository;
         }
 
-        public async Task<ProductionDtoWithNullableDecimals> GetByDate(DateTime date)
+        public async Task<ProductionDtoWithNullableDecimals> GetById(Guid id)
         {
-            var production = await _repository.GetExistingByDate(date);
+            var production = await _repository
+                .GetById(id);
 
             if (production is null)
-                throw new NotFoundException($"Produção na data: {date.ToString("dd/MM/yyyy")} não encontrada");
+                throw new NotFoundException($"Produção não encontrada.");
 
             var dailyProduction = new DailyProduction
             {
@@ -1820,7 +1821,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 .GetAllProductions();
 
             var productionsDto = new List<GetAllProductionsDto>();
-
             foreach (var production in productions)
             {
                 var files = await _fileHistoryRepository

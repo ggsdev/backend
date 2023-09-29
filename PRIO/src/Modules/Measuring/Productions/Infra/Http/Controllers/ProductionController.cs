@@ -2,9 +2,8 @@
 using Microsoft.AspNetCore.OutputCaching;
 using PRIO.src.Modules.Measuring.Productions.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Productions.ViewModels;
-using PRIO.src.Shared.Errors;
+using PRIO.src.Shared;
 using PRIO.src.Shared.Infra.Http.Filters;
-using System.Globalization;
 
 namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Controllers
 {
@@ -22,25 +21,21 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Controllers
             _cache = cache;
         }
 
-
-        [HttpGet("total-daily")]
-        public async Task<IActionResult> GetByDate([FromQuery] string date)
+        [OutputCache(PolicyName = nameof(AuthProductionIdCachePolicy))]
+        [HttpGet("{id}/total-daily")]
+        public async Task<IActionResult> GetById(Guid id)
         {
-            if (!DateTime.TryParseExact(date, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDate))
-            {
-                throw new BadRequestException("Invalid date format. The date should be in the format 'dd/MM/yyyy'.");
-            }
-
-            var production = await _productionService.GetByDate(parsedDate);
-
+            var production = await _productionService.GetById(id);
+            Console.WriteLine("total-daily");
             return Ok(production);
         }
 
+        [OutputCache(PolicyName = nameof(AuthProductionCachePolicy))]
         [HttpGet]
-        [OutputCache(PolicyName = "ProductionPolicy")]
         public async Task<IActionResult> GetAll()
         {
             var productions = await _productionService.GetAllProductions();
+            Console.WriteLine("getAll");
             return Ok(productions);
         }
 
@@ -54,6 +49,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Controllers
 
         }
 
+        [OutputCache(PolicyName = nameof(AuthProductionIdCachePolicy))]
         [HttpGet("{id}/files")]
         public async Task<IActionResult> DownloadFiles([FromRoute] Guid id)
         {
@@ -63,23 +59,24 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Controllers
             return Ok(files);
         }
 
+        [OutputCache(PolicyName = nameof(AuthProductionIdCachePolicy))]
         [HttpDelete("{id}")]
-        [OutputCache(PolicyName = "ProductionPolicy")]
         public async Task<IActionResult> DeleteProduction([FromRoute] Guid id, CancellationToken ct)
         {
             await _productionService
                 .DeleteProduction(id);
-
-            await _cache.EvictByTagAsync("ProductionPolicyTag", ct);
+            await _cache.EvictByTagAsync(id.ToString(), ct);
 
             return NoContent();
         }
 
-        [HttpPatch("{productionId}/gasDetailed")]
-        public async Task<IActionResult> UpdateDetailedGas([FromRoute] Guid productionId, UpdateDetailedGasViewModel body)
+        [OutputCache(PolicyName = nameof(AuthProductionIdCachePolicy))]
+        [HttpPatch("{id}/gasDetailed")]
+        public async Task<IActionResult> UpdateDetailedGas([FromRoute] Guid id, UpdateDetailedGasViewModel body, CancellationToken ct)
         {
-            var data = await _productionService.UpdateDetailedGas(productionId, body);
+            var data = await _productionService.UpdateDetailedGas(id, body);
 
+            await _cache.EvictByTagAsync(id.ToString(), ct);
             return Ok(data);
         }
     }

@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services;
+using PRIO.src.Shared;
 using PRIO.src.Shared.Infra.Http.Filters;
 
 namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Controllers
@@ -10,16 +12,24 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Controllers
     public class WellProductionController : ControllerBase
     {
         private readonly WellProductionService _service;
+        private readonly IOutputCacheStore _cache;
 
-        public WellProductionController(WellProductionService service)
+        public WellProductionController(WellProductionService service, IOutputCacheStore cache)
         {
             _service = service;
+            _cache = cache;
         }
 
-        [HttpPost("{productionId}")]
-        public async Task<IActionResult> Post([FromRoute] Guid productionId)
+        [OutputCache(PolicyName = nameof(AuthProductionIdCachePolicy))]
+        [HttpPost("{id}")]
+        public async Task<IActionResult> Post([FromRoute] Guid id, CancellationToken ct)
         {
-            var data = await _service.CreateAppropriation(productionId);
+            var data = await _service.CreateAppropriation(id);
+
+
+            await _cache.EvictByTagAsync(id.ToString(), ct);
+
+
 
             return Ok(data);
         }
