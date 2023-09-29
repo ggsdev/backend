@@ -35,7 +35,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
         private readonly SystemHistoryService _systemHistoryService;
         private readonly string _table = HistoryColumns.TableUsers;
 
-        public UserService(IMapper mapper, IUserRepository user, IUserPermissionRepository userPermissionRepository, IUserOperationRepository userOperationRepository, IGroupPermissionRepository groupPermissionRepository, IGroupOperationRepository groupOperationRepository, IGlobalOperationsRepository globalOperationsRepository, SystemHistoryService systemHistoryService, IInstallationRepository installationRepository, IInstallationsAccessRepository installationAccessRepository, UserFactory userFactory, InstallationAccessFactory installationAccessFactory, UserOperationFactory userOperationFactory)
+        public UserService(IMapper mapper, IUserRepository user, IUserPermissionRepository userPermissionRepository, IUserOperationRepository userOperationRepository, IGroupPermissionRepository groupPermissionRepository, IGroupOperationRepository groupOperationRepository, IGlobalOperationsRepository globalOperationsRepository, SystemHistoryService systemHistoryService, IInstallationRepository installationRepository, IInstallationsAccessRepository installationAccessRepository, UserFactory userFactory, InstallationAccessFactory installationAccessFactory, UserOperationFactory userOperationFactory, UserPermissionFactory userPermissionFactory)
         {
             _mapper = mapper;
             _userRepository = user;
@@ -51,6 +51,8 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             _userFactory = userFactory;
             _installationAccessFactory = installationAccessFactory;
             _userOperationFactory = userOperationFactory;
+            _userPermissionFactory = userPermissionFactory;
+
         }
 
         public async Task<List<UserDTO>> GetUsers()

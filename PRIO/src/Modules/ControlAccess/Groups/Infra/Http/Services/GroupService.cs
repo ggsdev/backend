@@ -289,6 +289,9 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
             if (group is null)
                 throw new NotFoundException("Group not found");
 
+            if (group.Name == "Master")
+                throw new ConflictException("Grupo Master não pode ser editado.");
+
             var beforeChanges = _mapper.Map<Group, GroupHistoryDTO>(group);
             var updatedProperties = UpdateFields.CompareUpdateReturnOnlyUpdated(group, body);
 
