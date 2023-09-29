@@ -495,8 +495,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                     },
                                                 };
 
-                                                //Console.WriteLine(measurement.COD_TAG_PONTO_MEDICAO_001);
-
                                                 var measurement001DTO = _mapper.Map<Measurement, Client001DTO>(measurement);
                                                 measurement001DTO.ImportId = importId;
                                                 measurement001DTO.Summary = new ClientInfo
@@ -1242,10 +1240,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     }
                 }
 
-                if (response.DateProduction is null && data.Files[i].FileType == "002" || data.Files[i].FileType == "003")
+                if (response.DateProduction is null && data.Files[i].FileType == "002" || data.Files[i].FileType == "003" && (response003.Measurements.Count == 0 && response002.Measurements.Count == 0))
                     errorsInImport.Add($"Arquivo {data.Files[i].FileName}, nenhum ponto de medição configurado no cálculo de gás.");
 
-                if (response.DateProduction is null && data.Files[i].FileType == "001")
+                if (response.DateProduction is null && data.Files[i].FileType == "001" && response001.Measurements.Count == 0)
                     errorsInImport.Add($"Arquivo {data.Files[i].FileName}, nenhum ponto de medição configurado no cálculo de óleo.");
 
                 if (errorsInImport.Count > 0)

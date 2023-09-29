@@ -1,6 +1,6 @@
 ﻿using dotenv.net;
 using Microsoft.EntityFrameworkCore;
-using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
+using PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF;
 using System.Data;
 
@@ -22,7 +22,6 @@ namespace PRIOScheduler
                 using var dbContext = new DataContext(dbContextOptions);
 
                 var dateToday = DateTime.UtcNow.AddHours(-3).Date;
-                Console.WriteLine(DateTime.UtcNow.AddHours(-3));
 
                 var wellEvents = await dbContext.WellEvents
                     .Include(x => x.EventReasons)

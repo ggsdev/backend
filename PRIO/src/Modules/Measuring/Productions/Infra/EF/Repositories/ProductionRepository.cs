@@ -138,25 +138,24 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
         public async Task<Production?> GetById(Guid? id)
         {
             return await _context.Productions
+                .Include(x => x.WellProductions)
                 .Include(x => x.Installation)
-                    .ThenInclude(x => x.Fields)
-                    .ThenInclude(f => f.Wells)
-                    .ThenInclude(d => d.WellTests)
-                    .Include(x => x.WellProductions)
-                        .ThenInclude(d => d.FieldProduction)
                 .Include(x => x.Comment)
+                    .ThenInclude(x => x.CommentedBy)
                 .Include(x => x.GasLinear)
                 .Include(x => x.GasDiferencial)
                 .Include(x => x.Gas)
                 .Include(x => x.Water)
                 .Include(x => x.Oil)
-                .Include(x => x.NFSMs)
                 .Include(x => x.FieldsFR)
                     .ThenInclude(x => x.Field)
-                .Include(x => x.WellProductions)
                 .Include(x => x.Measurements)
                     .ThenInclude(m => m.MeasurementHistory)
-                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive);
+                        .ThenInclude(x => x.ImportedBy)
+                .Include(x => x.Measurements)
+                    .ThenInclude(d => d.MeasuringPoint)
+                .Where(x => x.Id == id && x.IsActive)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<List<Production>> GetAllProductions()
