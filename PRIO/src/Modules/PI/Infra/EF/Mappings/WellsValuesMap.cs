@@ -4,12 +4,11 @@ using PRIO.src.Modules.PI.Infra.EF.Models;
 
 namespace PRIO.src.Modules.PI.Infra.EF.Mappings
 {
-    public class ElementsMap : IEntityTypeConfiguration<Element>
+    public class WellsValuesMap : IEntityTypeConfiguration<WellsValues>
     {
-        public void Configure(EntityTypeBuilder<Element> builder)
+        public void Configure(EntityTypeBuilder<WellsValues> builder)
         {
-            builder.ToTable("PI.Elements");
-
+            builder.ToTable("PI.WellsValues");
         }
     }
 }

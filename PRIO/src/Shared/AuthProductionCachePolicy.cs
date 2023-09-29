@@ -83,10 +83,9 @@ namespace PRIO.src.Shared
             context.AllowLocking = true;
             context.CacheVaryByRules.QueryKeys = "*";
 
-            Console.WriteLine(idRoute.ToString()!);
-
             #region Add tags here
             context.Tags.Add(idRoute.ToString()!);
+            context.Tags.Add("ProductionTag");
             #endregion
 
             return ValueTask.CompletedTask;

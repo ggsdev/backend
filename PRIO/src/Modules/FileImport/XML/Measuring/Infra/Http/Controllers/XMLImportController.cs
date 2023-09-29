@@ -5,7 +5,6 @@ using PRIO.src.Modules.FileImport.XLSX.Hierarchy.Dtos;
 using PRIO.src.Modules.FileImport.XML.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XML.Measuring.Dtos;
 using PRIO.src.Modules.FileImport.XML.Measuring.ViewModels;
-using PRIO.src.Shared;
 using PRIO.src.Shared.Infra.Http.Filters;
 using PRIO.src.Shared.Utils;
 
@@ -26,7 +25,7 @@ namespace PRIO.src.Modules.FileImport.XML.Measuring.Infra.Http.Controllers
             _cache = cache;
         }
 
-        [OutputCache(PolicyName = nameof(AuthProductionCachePolicy))]
+        //[OutputCache(PolicyName = nameof(AuthProductionCachePolicy))]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ImportResponseDTO))]
         public async Task<ActionResult> ImportFiles([FromBody] ResponseXmlDto data, CancellationToken ct)
@@ -34,7 +33,7 @@ namespace PRIO.src.Modules.FileImport.XML.Measuring.Infra.Http.Controllers
             var user = HttpContext.Items["User"] as User;
             var result = await _service.Import(data, user);
 
-            await _cache.EvictByTagAsync("ProductionTag", ct);
+            //await _cache.EvictByTagAsync("ProductionTag", ct);
 
             return Ok(result);
         }

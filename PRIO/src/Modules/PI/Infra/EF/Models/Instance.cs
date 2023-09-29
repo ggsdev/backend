@@ -10,7 +10,7 @@
         public string SelfRoute { get; set; }
         public string ElementsRoute { get; set; }
         public Database Database { get; set; }
-        public List<Elements> ElementsInstace { get; set; }
+        public List<Element> ElementsInstance { get; set; }
 
 
     }
