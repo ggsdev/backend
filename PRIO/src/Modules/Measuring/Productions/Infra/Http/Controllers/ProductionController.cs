@@ -26,7 +26,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Controllers
         public async Task<IActionResult> GetById(Guid id)
         {
             var production = await _productionService.GetById(id);
-            Console.WriteLine("total-daily");
             return Ok(production);
         }
 
@@ -35,7 +34,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Controllers
         public async Task<IActionResult> GetAll()
         {
             var productions = await _productionService.GetAllProductions();
-            Console.WriteLine("getAll");
             return Ok(productions);
         }
 
