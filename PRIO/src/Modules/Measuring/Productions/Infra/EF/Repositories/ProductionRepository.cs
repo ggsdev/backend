@@ -76,7 +76,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                 .Include(x => x.Gas)
                 .Where(x => x.MeasuredAt.Year == date.Year &&
                             x.MeasuredAt.Month == date.Month &&
-                            x.MeasuredAt.Day == date.Day)
+                            x.MeasuredAt.Day == date.Day && x.IsActive)
                 .FirstOrDefaultAsync();
         }
         public async Task<bool> AnyByDate(DateTime date)
