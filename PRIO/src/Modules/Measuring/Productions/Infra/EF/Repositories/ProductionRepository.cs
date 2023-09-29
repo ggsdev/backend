@@ -104,8 +104,12 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
         public async Task<Production?> GetExistingByDate(DateTime date)
         {
             return await _context.Productions
-                .Include(x => x.WellProductions)
                 .Include(x => x.Installation)
+                .ThenInclude(x => x.Fields)
+                    .ThenInclude(f => f.Wells)
+                    .ThenInclude(d => d.WellTests)
+                    .Include(x => x.WellProductions)
+                        .ThenInclude(d => d.FieldProduction)
                 .Include(x => x.Comment)
                     .ThenInclude(x => x.CommentedBy)
                 .Include(x => x.GasLinear)
@@ -113,6 +117,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                 .Include(x => x.Gas)
                 .Include(x => x.Water)
                 .Include(x => x.Oil)
+                .Include(x => x.NFSMs)
                 .Include(x => x.FieldsFR)
                     .ThenInclude(x => x.Field)
                 .Include(x => x.Measurements)
@@ -138,8 +143,12 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
         public async Task<Production?> GetById(Guid? id)
         {
             return await _context.Productions
-                .Include(x => x.WellProductions)
                 .Include(x => x.Installation)
+                .ThenInclude(x => x.Fields)
+                    .ThenInclude(f => f.Wells)
+                    .ThenInclude(d => d.WellTests)
+                    .Include(x => x.WellProductions)
+                        .ThenInclude(d => d.FieldProduction)
                 .Include(x => x.Comment)
                     .ThenInclude(x => x.CommentedBy)
                 .Include(x => x.GasLinear)
@@ -147,6 +156,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                 .Include(x => x.Gas)
                 .Include(x => x.Water)
                 .Include(x => x.Oil)
+                .Include(x => x.NFSMs)
                 .Include(x => x.FieldsFR)
                     .ThenInclude(x => x.Field)
                 .Include(x => x.Measurements)
