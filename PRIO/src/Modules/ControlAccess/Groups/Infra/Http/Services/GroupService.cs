@@ -205,6 +205,9 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
             if (userHasGroup == null)
                 throw new NotFoundException("User is not found.");
 
+            if (userHasGroup.Type == "Master")
+                throw new NotFoundException("Usuário Master não pode sofrer alteração no grupo.");
+
             if (userHasGroup.Group == null)
                 throw new ConflictException("User no have a group");
 
@@ -333,7 +336,8 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services
         public async Task<GroupDTO> EditPermissionGroup(Guid id, InsertGroupPermission body)
         {
             var group = await _groupRepository.GetGroupByIdAsync(id) ?? throw new NotFoundException("Group not found");
-
+            if (group.Name == "Master")
+                throw new ConflictException("Grupo Master não pode ser alterado.");
             //REMOVE USER PERMISSIONS
             var users = group.User;
             foreach (var user in users)

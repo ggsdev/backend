@@ -305,6 +305,10 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
             var userWithPermissions = await _userRepository.GetUserById(id);
             if (userWithPermissions is null)
                 throw new NotFoundException("User not found");
+
+            if (userWithPermissions.Type == "Usuário Master não pode sofrer alterações nas permissões.")
+                throw new NotFoundException("User not found");
+
             if (userWithPermissions.Group is null)
                 throw new NotFoundException("User no have found");
 
