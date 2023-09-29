@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.OutputCaching;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Comments.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Comments.ViewModels;
-using PRIO.src.Shared;
 using PRIO.src.Shared.Infra.Http.Filters;
 
 namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Controllers
@@ -22,7 +21,7 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Controllers
             _cache = cache;
         }
 
-        [OutputCache(PolicyName = nameof(AuthProductionIdCachePolicy))]
+        //[OutputCache(PolicyName = nameof(AuthProductionIdCachePolicy))]
         [HttpPost("{id}")]
         public async Task<IActionResult> Post([FromBody] CreateCommentViewModel body, [FromRoute] Guid id, CancellationToken ct)
         {
@@ -31,12 +30,12 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Controllers
 
             var result = await _service.CreateComment(body, user, id);
 
-            await _cache.EvictByTagAsync(id.ToString(), ct);
+            //await _cache.EvictByTagAsync(id.ToString(), ct);
 
             return Created($"comments-production/{result.Id}", result);
         }
 
-        [OutputCache(PolicyName = nameof(AuthProductionIdCachePolicy))]
+        //[OutputCache(PolicyName = nameof(AuthProductionIdCachePolicy))]
         [HttpPatch("{id}")]
         public async Task<IActionResult> Patch([FromBody] UpdateCommentViewModel body, [FromRoute] Guid id, CancellationToken ct)
         {
@@ -45,7 +44,7 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Controllers
 
             var result = await _service.UpdateComment(body, id, user);
 
-            await _cache.EvictByTagAsync(id.ToString(), ct);
+            //await _cache.EvictByTagAsync(id.ToString(), ct);
 
             return Ok(result);
         }

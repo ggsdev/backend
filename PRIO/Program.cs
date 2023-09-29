@@ -125,7 +125,7 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.UseOutputCache();
+//app.UseOutputCache();
 
 app.MapControllers();
 

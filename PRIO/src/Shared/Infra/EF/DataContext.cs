@@ -155,8 +155,8 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<InstallationsAccess> InstallationsAccess { get; set; }
         public DbSet<Database> Databases { get; set; }
         public DbSet<Instance> Instances { get; set; }
-        public DbSet<Elements> Elements { get; set; }
-        public DbSet<Attributes> Attributes { get; set; }
+        public DbSet<Element> Elements { get; set; }
+        public DbSet<Modules.PI.Infra.EF.Models.Attribute> Attributes { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {

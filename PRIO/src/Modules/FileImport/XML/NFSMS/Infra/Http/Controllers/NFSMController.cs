@@ -5,7 +5,6 @@ using PRIO.src.Modules.FileImport.XML.Measuring.Dtos;
 using PRIO.src.Modules.FileImport.XML.Measuring.ViewModels;
 using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XML.NFSMS.ViewModels;
-using PRIO.src.Shared;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.Http.Filters;
 using PRIO.src.Shared.Utils;
@@ -67,13 +66,13 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Controllers
 
         }
 
-        [OutputCache(PolicyName = nameof(AuthProductionCachePolicy))]
+        //[OutputCache(PolicyName = nameof(AuthProductionCachePolicy))]
         [HttpPatch("nfsms/{id}")]
         public async Task<IActionResult> Apply([FromRoute] Guid id, CancellationToken ct)
         {
             var result = await _service.ApplyNfsm(id);
 
-            await _cache.EvictByTagAsync("ProductionTag", ct);
+            //await _cache.EvictByTagAsync("ProductionTag", ct);
 
             return Ok(result);
         }

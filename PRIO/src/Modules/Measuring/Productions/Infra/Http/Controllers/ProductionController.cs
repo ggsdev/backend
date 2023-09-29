@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.OutputCaching;
 using PRIO.src.Modules.Measuring.Productions.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Productions.ViewModels;
-using PRIO.src.Shared;
 using PRIO.src.Shared.Infra.Http.Filters;
 
 namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Controllers
@@ -21,7 +20,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Controllers
             _cache = cache;
         }
 
-        [OutputCache(PolicyName = nameof(AuthProductionIdCachePolicy))]
+        //[OutputCache(PolicyName = nameof(AuthProductionIdCachePolicy))]
         [HttpGet("{id}/total-daily")]
         public async Task<IActionResult> GetById(Guid id)
         {
@@ -29,7 +28,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Controllers
             return Ok(production);
         }
 
-        [OutputCache(PolicyName = nameof(AuthProductionCachePolicy))]
+        //[OutputCache(PolicyName = nameof(AuthProductionCachePolicy))]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -47,7 +46,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Controllers
 
         }
 
-        [OutputCache(PolicyName = nameof(AuthProductionIdCachePolicy))]
+        //[OutputCache(PolicyName = nameof(AuthProductionIdCachePolicy))]
         [HttpGet("{id}/files")]
         public async Task<IActionResult> DownloadFiles([FromRoute] Guid id)
         {
@@ -57,24 +56,24 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Controllers
             return Ok(files);
         }
 
-        [OutputCache(PolicyName = nameof(AuthProductionIdCachePolicy))]
+        //[OutputCache(PolicyName = nameof(AuthProductionIdCachePolicy))]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduction([FromRoute] Guid id, CancellationToken ct)
         {
             await _productionService
                 .DeleteProduction(id);
-            await _cache.EvictByTagAsync(id.ToString(), ct);
+            //await _cache.EvictByTagAsync("ProductionTag", ct);
 
             return NoContent();
         }
 
-        [OutputCache(PolicyName = nameof(AuthProductionIdCachePolicy))]
+        //[OutputCache(PolicyName = nameof(AuthProductionIdCachePolicy))]
         [HttpPatch("{id}/gasDetailed")]
         public async Task<IActionResult> UpdateDetailedGas([FromRoute] Guid id, UpdateDetailedGasViewModel body, CancellationToken ct)
         {
             var data = await _productionService.UpdateDetailedGas(id, body);
 
-            await _cache.EvictByTagAsync(id.ToString(), ct);
+            //await _cache.EvictByTagAsync(id.ToString(), ct);
             return Ok(data);
         }
     }
