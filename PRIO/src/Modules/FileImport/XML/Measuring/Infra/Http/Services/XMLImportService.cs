@@ -1281,7 +1281,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             }
 
-
             decimal totalLinearBurnetGas = 0;
             decimal totalLinearFuelGas = 0;
             decimal totalLinearExportedGas = 0;
@@ -2965,27 +2964,27 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
         private bool IsValidAndUniqueDate(string datePortion, List<FileContent> files)
         {
             DateTime parsedDate;
-            if (DateTime.TryParse(datePortion, out parsedDate))
+            if (DateTime.TryParseExact(datePortion, "yyyyMMddHHmmss", null, DateTimeStyles.None, out parsedDate))
             {
                 var dateToCompare = parsedDate.Date;
-                Console.WriteLine(parsedDate);
+
                 return files
                     .Select(file =>
                     {
                         DateTime otherDate;
-                        if (DateTime.TryParse(file.FileName.Split('_')[2], out otherDate))
+                        if (DateTime.TryParseExact(file.FileName.Split('_')[2], "yyyyMMddHHmmss", null, DateTimeStyles.None, out otherDate))
                         {
                             return otherDate.Date;
                         }
                         else
                         {
-                            throw new BadRequestException($"Não é possível analisar a data no arquivo: {file.FileName}");
+                            throw new BadRequestException($"Não é possível analisar a data no arquivo: {file.FileName}, formato ANP aceitável: 'yyyyMMddHHmmss'");
                         }
                     })
                     .All(date => date == dateToCompare);
             }
 
-            throw new BadRequestException($"Não é possível analisar a data no arquivo: {datePortion}");
+            throw new BadRequestException($"Não é possível analisar a data: {datePortion}, formato ANP aceitável: 'yyyyMMddHHmmss'");
         }
     }
 }
