@@ -69,6 +69,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
         public async Task<ResponseXmlDto> Validate(RequestXmlViewModel data, User user)
         {
             #region client side validations
+
+            bool allDatesAreEqual = true;
+
             for (int i = 0; i < data.Files.Count; ++i)
             {
                 var isValidExtension = data.Files[i].FileName.ToLower().EndsWith(".xml");
@@ -92,12 +95,16 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                 if (data.Files[i].FileName.Count(c => c == '_') >= 2)
                 {
-                    var datePortion = data.Files[i].FileName.Split('_')[2];
-
+                    var datePortion = data.Files[i].FileName.Split('_')[2][..14];
                     if (!IsValidAndUniqueDate(datePortion, data.Files))
-                        throw new BadRequestException("Todas as datas no nome dos arquivos devem ser iguais.");
+                    {
+                        allDatesAreEqual = false;
+                    }
                 }
             }
+
+            if (!allDatesAreEqual)
+                throw new BadRequestException("Todas as datas no nome dos arquivos devem ser iguais.");
 
             #endregion
 
@@ -2981,7 +2988,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     .Select(file =>
                     {
                         DateTime otherDate;
-                        if (DateTime.TryParseExact(file.FileName.Split('_')[2], "yyyyMMddHHmmss", null, DateTimeStyles.None, out otherDate))
+                        if (DateTime.TryParseExact(file.FileName.Split('_')[2][..14], "yyyyMMddHHmmss", null, DateTimeStyles.None, out otherDate))
                         {
                             return otherDate.Date;
                         }
