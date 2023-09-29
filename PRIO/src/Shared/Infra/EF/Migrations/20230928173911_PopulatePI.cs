@@ -1579,7 +1579,7 @@ namespace PRIO.Migrations
                                       attributeDescription,
                                       attributeSelfRoute,
                                       attributeElementsRoute,
-                                      PDG1Id
+                                      PDG2Id
                                       });
                                 }
 
@@ -1724,7 +1724,7 @@ namespace PRIO.Migrations
                                       attributeDescription,
                                       attributeSelfRoute,
                                       attributeElementsRoute,
-                                      PDG1Id
+                                      VConeId
                                       });
                                 }
 
@@ -1868,7 +1868,7 @@ namespace PRIO.Migrations
                                       attributeDescription,
                                       attributeSelfRoute,
                                       attributeElementsRoute,
-                                      PDG1Id
+                                      SSPCVId
                                       });
                                 }
                             }
@@ -1878,6 +1878,7 @@ namespace PRIO.Migrations
 
                 }
             }
+        }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
