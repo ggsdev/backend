@@ -12,8 +12,8 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230928173312_addPiTables")]
-    partial class addPiTables
+    [Migration("20230929172337_createTablePi")]
+    partial class createTablePi
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -4778,7 +4778,7 @@ namespace PRIO.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("ElementsInstaceId")
+                    b.Property<Guid>("ElementId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
@@ -4801,9 +4801,13 @@ namespace PRIO.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("WellName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ElementsInstaceId");
+                    b.HasIndex("ElementId");
 
                     b.ToTable("PI.Attributes", (string)null);
                 });
@@ -5998,13 +6002,13 @@ namespace PRIO.Migrations
 
             modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Attributes", b =>
                 {
-                    b.HasOne("PRIO.src.Modules.PI.Infra.EF.Models.Elements", "ElementsInstace")
+                    b.HasOne("PRIO.src.Modules.PI.Infra.EF.Models.Elements", "Element")
                         .WithMany("AttributesInstance")
-                        .HasForeignKey("ElementsInstaceId")
+                        .HasForeignKey("ElementId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ElementsInstace");
+                    b.Navigation("Element");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Elements", b =>

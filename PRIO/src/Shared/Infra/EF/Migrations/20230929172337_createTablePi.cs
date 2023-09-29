@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PRIO.Migrations
 {
     /// <inheritdoc />
-    public partial class addPiTables : Migration
+    public partial class createTablePi : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -87,23 +87,24 @@ namespace PRIO.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SelfRoute = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ValueRoute = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ElementsInstaceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    WellName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ElementId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PI.Attributes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PI.Attributes_PI.Elements_ElementsInstaceId",
-                        column: x => x.ElementsInstaceId,
+                        name: "FK_PI.Attributes_PI.Elements_ElementId",
+                        column: x => x.ElementId,
                         principalTable: "PI.Elements",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_PI.Attributes_ElementsInstaceId",
+                name: "IX_PI.Attributes_ElementId",
                 table: "PI.Attributes",
-                column: "ElementsInstaceId");
+                column: "ElementId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PI.Elements_InstanceId",

@@ -9,6 +9,7 @@
         public string Description { get; set; }
         public string SelfRoute { get; set; }
         public string ValueRoute { get; set; }
+        public string WellName { get; set; }
         public Elements Element { get; set; }
     }
 }

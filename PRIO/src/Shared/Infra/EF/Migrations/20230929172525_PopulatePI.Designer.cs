@@ -12,8 +12,8 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230928195224_changeNameColumnElementInAttributes")]
-    partial class changeNameColumnElementInAttributes
+    [Migration("20230929172525_PopulatePI")]
+    partial class PopulatePI
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -4798,6 +4798,10 @@ namespace PRIO.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("WebId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WellName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
