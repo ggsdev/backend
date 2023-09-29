@@ -1357,7 +1357,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
                 if (oilCalculationByUepCode is not null && file.FileType == XmlUtils.File001)
                 {
-                    var containSection = false;
 
                     foreach (var section in oilCalculationByUepCode.Sections)
                     {
@@ -1381,27 +1380,12 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     };
                                     file.Summary.Add(summary);
 
-                                    containSection = true;
                                 }
                             }
                         }
 
-                        //if (containSection is false && section.IsApplicable && pointAlreadyInserted is false)
-                        //{
-                        //    var measurementWrong = new SummaryGeneric
-                        //    {
-                        //        StatusMeasuringPoint = false,
-                        //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                        //        LocationMeasuringPoint = section.MeasuringPoint.DinamicLocalMeasuringPoint,
-                        //        TagMeasuringPoint = section.MeasuringPoint.TagPointMeasuring,
-                        //        Volume = 0
-                        //    };
-
-                        //    file.Summary.Add(measurementWrong);
-                        //}
                     }
 
-                    var containDOR = false;
 
                     foreach (var dor in oilCalculationByUepCode.DORs)
                     {
@@ -1425,27 +1409,13 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                     };
                                     file.Summary.Add(summary);
 
-                                    containDOR = true;
                                 }
                             }
                         }
 
-                        //if (containDOR is false && dor.IsApplicable && pointAlreadyInserted is false)
-                        //{
-                        //    var measurementWrong = new SummaryGeneric
-                        //    {
-                        //        StatusMeasuringPoint = false,
-                        //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                        //        LocationMeasuringPoint = dor.MeasuringPoint.DinamicLocalMeasuringPoint,
-                        //        TagMeasuringPoint = dor.MeasuringPoint.TagPointMeasuring,
-                        //        Volume = 0
-                        //    };
 
-                        //    file.Summary.Add(measurementWrong);
-                        //}
                     }
 
-                    var containDrain = false;
 
                     foreach (var drain in oilCalculationByUepCode.DrainVolumes)
                     {
@@ -1467,28 +1437,13 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                                         Volume = Math.Round(measurementResponse.MED_VOLUME_BRTO_CRRGO_MVMDO_001.Value, 5),
 
                                     };
+
                                     file.Summary.Add(summary);
-                                    containDrain = true;
                                 }
                             }
                         }
-
-                        //if (containDrain is false && drain.IsApplicable && pointAlreadyInserted is false)
-                        //{
-                        //    var measurementWrong = new SummaryGeneric
-                        //    {
-                        //        StatusMeasuringPoint = false,
-                        //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                        //        LocationMeasuringPoint = drain.MeasuringPoint.DinamicLocalMeasuringPoint,
-                        //        TagMeasuringPoint = drain.MeasuringPoint.TagPointMeasuring,
-                        //        Volume = 0
-                        //    };
-
-                        //    file.Summary.Add(measurementWrong);
-                        //}
                     }
 
-                    var containTOGRecoveredOil = false;
 
                     foreach (var tog in oilCalculationByUepCode.TOGRecoveredOils)
                     {
@@ -1511,24 +1466,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
                                     };
                                     file.Summary.Add(summary);
-                                    containTOGRecoveredOil = true;
                                 }
                             }
                         }
 
-                        //if (containTOGRecoveredOil is false && tog.IsApplicable && pointAlreadyInserted is false)
-                        //{
-                        //    var measurementWrong = new SummaryGeneric
-                        //    {
-                        //        StatusMeasuringPoint = false,
-                        //        DateMeasuring = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                        //        LocationMeasuringPoint = tog.MeasuringPoint.DinamicLocalMeasuringPoint,
-                        //        TagMeasuringPoint = tog.MeasuringPoint.TagPointMeasuring,
-                        //        Volume = 0
-                        //    };
-
-                        //    file.Summary.Add(measurementWrong);
-                        //}
                     }
                 }
             }

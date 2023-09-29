@@ -507,6 +507,322 @@ namespace PRIO.Migrations
                               elementElementsRoute,
                               forteId
                               });
+
+                            if (elementId == PDGPressureId)
+                            {
+
+                                var attributesData = new List<object[]>
+                                {
+                                     new object[] {
+                                            Guid.NewGuid(),
+                                                                                "F1AbEcaZI8jdsuU6iCfbmKdB6iQPa1Hcuwn7hGxlABQVozG4Q3i9V2xh_pEmiOhMCXNr9zAUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcUERHIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMjNSLURBSUxZLUFWRw",
+                                            "P50_PT-1210023R-DAILY-AVG",
+                                            "db552fde-7f18-49a4-a23a-13025cdafdcc",
+                                            "",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1AbEcaZI8jdsuU6iCfbmKdB6iQPa1Hcuwn7hGxlABQVozG4Q3i9V2xh_pEmiOhMCXNr9zAUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcUERHIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMjNSLURBSUxZLUFWRw",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQPa1Hcuwn7hGxlABQVozG4Q3i9V2xh_pEmiOhMCXNr9zAUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcUERHIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMjNSLURBSUxZLUFWRw/value"
+                                        },
+                                      new object[] {
+                                            Guid.NewGuid(),
+                                                                                "F1AbEcaZI8jdsuU6iCfbmKdB6iQPa1Hcuwn7hGxlABQVozG4Q534h7zvKx0aUOFyxIupj3QUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcUERHIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMjNOLURBSUxZLUFWRw",
+                                            "P50_PT-1210023N-DAILY-AVG",
+                                            "ef217ee7-ca3b-46c7-9438-5cb122ea63dd",
+                                            "",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1AbEcaZI8jdsuU6iCfbmKdB6iQPa1Hcuwn7hGxlABQVozG4Q534h7zvKx0aUOFyxIupj3QUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcUERHIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMjNOLURBSUxZLUFWRw",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQPa1Hcuwn7hGxlABQVozG4Q534h7zvKx0aUOFyxIupj3QUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcUERHIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMjNOLURBSUxZLUFWRw/value"
+                                        },
+
+                                       new object[] {
+                                            Guid.NewGuid(),
+                                                                                "F1AbEcaZI8jdsuU6iCfbmKdB6iQPa1Hcuwn7hGxlABQVozG4QxAFo8Ne94UqJp0VZMJE6FwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcUERHIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMjNCLURBSUxZLUFWRw",
+                                            "P50_PT-1210023B-DAILY-AVG",
+                                            "f06801c4-bdd7-4ae1-89a7-455930913a17",
+                                            "",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1AbEcaZI8jdsuU6iCfbmKdB6iQPa1Hcuwn7hGxlABQVozG4QxAFo8Ne94UqJp0VZMJE6FwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcUERHIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMjNCLURBSUxZLUFWRw",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQPa1Hcuwn7hGxlABQVozG4QxAFo8Ne94UqJp0VZMJE6FwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcUERHIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMjNCLURBSUxZLUFWRw/value"
+                                        },
+
+                                        new object[] {
+                                            Guid.NewGuid(),
+                                                                                "F1AbEcaZI8jdsuU6iCfbmKdB6iQPa1Hcuwn7hGxlABQVozG4Qo9aPze0LLku8v2-GbQdKJwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcUERHIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMjNBLURBSUxZLUFWRw",
+                                            "P50_PT-1210023A-DAILY-AVG",
+                                            "cd8fd6a3-0bed-4b2e-bcbf-6f866d074a27",
+                                            "",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1AbEcaZI8jdsuU6iCfbmKdB6iQPa1Hcuwn7hGxlABQVozG4Qo9aPze0LLku8v2-GbQdKJwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcUERHIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMjNBLURBSUxZLUFWRw",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQPa1Hcuwn7hGxlABQVozG4Qo9aPze0LLku8v2-GbQdKJwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcUERHIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMjNBLURBSUxZLUFWRw/value"
+                                        },
+
+                                        new object[] {
+                                            Guid.NewGuid(),
+                                                                                "F1AbEcaZI8jdsuU6iCfbmKdB6iQPa1Hcuwn7hGxlABQVozG4QXdQhiWoSEUeedQbR8Ub06QUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcUERHIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMjNTLURBSUxZLUFWRw",
+                                            "P50_PT-1210023S-DAILY-AVG",
+                                            "8921d45d-126a-4711-9e75-06d1f146f4e9",
+                                            "",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1AbEcaZI8jdsuU6iCfbmKdB6iQPa1Hcuwn7hGxlABQVozG4Qo9aPze0LLku8v2-GbQdKJwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcUERHIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMjNBLURBSUxZLUFWRw",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQPa1Hcuwn7hGxlABQVozG4Qo9aPze0LLku8v2-GbQdKJwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcUERHIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMjNBLURBSUxZLUFWRw/value"
+                                        },
+
+                                         new object[] {
+                                            Guid.NewGuid(),
+                                                                                "F1AbEcaZI8jdsuU6iCfbmKdB6iQPa1Hcuwn7hGxlABQVozG4QHdAiNZXjPk2FvLwpExHDmQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcUERHIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMjNELURBSUxZLUFWRw",
+                                            "P50_PT-1210023D-DAILY-AVG",
+                                            "3522d01d-e395-4d3e-85bc-bc291311c399",
+                                            "",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1AbEcaZI8jdsuU6iCfbmKdB6iQPa1Hcuwn7hGxlABQVozG4QHdAiNZXjPk2FvLwpExHDmQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcUERHIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMjNELURBSUxZLUFWRw",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQPa1Hcuwn7hGxlABQVozG4QHdAiNZXjPk2FvLwpExHDmQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcUERHIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMjNELURBSUxZLUFWRw/value"
+                                        },
+                                };
+
+                                foreach (var attribute in attributesData)
+                                {
+                                    var attributeId = (Guid)attribute[0];
+                                    var attributeWebId = attribute[1];
+                                    var attributePIId = attribute[2];
+                                    var attributeName = attribute[3];
+                                    var attributeDescription = attribute[4];
+                                    var attributeSelfRoute = attribute[5];
+                                    var attributeElementsRoute = attribute[6];
+
+                                    migrationBuilder.InsertData(
+                                      table: "PI.Attributes",
+                                      columns: new[] { "Id", "WebId", "PIId", "Name", "Description", "SelfRoute", "ValueRoute", "ElementsInstaceId" },
+                                      values: new object[] {
+                                      attributeId,
+                                      attributeWebId,
+                                      attributePIId,
+                                      attributeName,
+                                      attributeDescription,
+                                      attributeSelfRoute,
+                                      attributeElementsRoute,
+                                      PDGPressureId
+                                      });
+                                }
+                            }
+
+                            else if (elementId == TPTPressureId)
+                            {
+                                var attributesData = new List<object[]>
+                                {
+                                     new object[] {
+                                            Guid.NewGuid(),
+                                                                                "F1AbEcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4Qgx3m_tWMTEqz5mw5k7RMEgUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMTJMLURBSUxZLUFWRw",
+                                            "P50_PT-1210012L-DAILY-AVG",
+                                            "fee61d83-8cd5-4a4c-b3e6-6c3993b44c12",
+                                            "",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1AbEcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4Qgx3m_tWMTEqz5mw5k7RMEgUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMTJMLURBSUxZLUFWRw",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4Qgx3m_tWMTEqz5mw5k7RMEgUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMTJMLURBSUxZLUFWRw/value"
+                                        },
+                                      new object[] {
+                                            Guid.NewGuid(),
+                                                                                "F1AbEcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4QRrRZO8SAUUmbf7lu7Qu6egUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMTJNLURBSUxZLUFWRw",
+                                            "P50_PT-1210012M-DAILY-AVG",
+                                            "3b59b446-80c4-4951-9b7f-b96eed0bba7a",
+                                            "",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1AbEcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4QRrRZO8SAUUmbf7lu7Qu6egUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMTJNLURBSUxZLUFWRw",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4QRrRZO8SAUUmbf7lu7Qu6egUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMTJNLURBSUxZLUFWRw/value"
+                                        },
+
+                                       new object[] {
+                                            Guid.NewGuid(),
+                                                                                "F1AbEcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4QxWF_FvdzVUGtabhVhYDbuAUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMTJSLURBSUxZLUFWRw",
+                                            "P50_PT-1210012R-DAILY-AVG",
+                                            "167f61c5-73f7-4155-ad69-b8558580dbb8",
+                                            "",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1AbEcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4QxWF_FvdzVUGtabhVhYDbuAUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMTJSLURBSUxZLUFWRw",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4QxWF_FvdzVUGtabhVhYDbuAUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMTJSLURBSUxZLUFWRw/value"
+                                        },
+
+                                        new object[] {
+                                            Guid.NewGuid(),
+                                                                                "F1AbEcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4Qy81acRK_xUeC6hBMDbK_cgUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMTJOLURBSUxZLUFWRw",
+                                            "P50_PT-1210012N-DAILY-AVG",
+                                            "715acdcb-bf12-47c5-82ea-104c0db2bf72",
+                                            "",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1AbEcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4Qy81acRK_xUeC6hBMDbK_cgUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMTJOLURBSUxZLUFWRw",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4Qy81acRK_xUeC6hBMDbK_cgUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMTJOLURBSUxZLUFWRw/value"
+                                        },
+
+                                        new object[] {
+                                            Guid.NewGuid(),
+                                                                                "F1AbEcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4Q2_f1aZvqdUuWJHD_LEALUwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMTJCLURBSUxZLUFWRw",
+                                            "P50_PT-1210012B-DAILY-AVG",
+                                            "69f5f7db-ea9b-4b75-9624-70ff2c400b53",
+                                            "",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1AbEcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4Q2_f1aZvqdUuWJHD_LEALUwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMTJCLURBSUxZLUFWRw",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4Q2_f1aZvqdUuWJHD_LEALUwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMTJCLURBSUxZLUFWRw/value"
+                                        },
+
+                                         new object[] {
+                                            Guid.NewGuid(),
+                                                                                "F1AbEcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4Q6y79ZNOyI0CmfUxVEUjTJAUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMTJBLURBSUxZLUFWRw",
+                                            "P50_PT-1210012A-DAILY-AVG",
+                                            "64fd2eeb-b2d3-4023-a67d-4c551148d324",
+                                            "",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1AbEcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4Q6y79ZNOyI0CmfUxVEUjTJAUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMTJBLURBSUxZLUFWRw",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4Q6y79ZNOyI0CmfUxVEUjTJAUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMTJBLURBSUxZLUFWRw/value"
+                                        },
+
+                                         new object[] {
+                                            Guid.NewGuid(),
+                                                                                "F1AbEcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4QRLSqSCX77kmvl2ZV50ffBwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMTJTLURBSUxZLUFWRw",
+                                            "P50_PT-1210012S-DAILY-AVG",
+                                            "48aab444-fb25-49ee-af97-6655e747df07",
+                                            "",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1AbEcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4QRLSqSCX77kmvl2ZV50ffBwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMTJTLURBSUxZLUFWRw",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4QRLSqSCX77kmvl2ZV50ffBwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMTJTLURBSUxZLUFWRw/value"
+                                        },
+
+                                          new object[] {
+                                            Guid.NewGuid(),
+                                                                                "F1AbEcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4Qr6VCSza2s0q0PbWkodv9eQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMTJELURBSUxZLUFWRw",
+                                            "P50_PT-1210012D-DAILY-AVG",
+                                            "4b42a5af-b636-4ab3-b43d-b5a4a1dbfd79",
+                                            "",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1AbEcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4Qr6VCSza2s0q0PbWkodv9eQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMTJELURBSUxZLUFWRw",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4Qr6VCSza2s0q0PbWkodv9eQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDF8UDUwX1BULTEyMTAwMTJELURBSUxZLUFWRw/value"
+                                        },
+                                };
+
+                                foreach (var attribute in attributesData)
+                                {
+                                    var attributeId = (Guid)attribute[0];
+                                    var attributeWebId = attribute[1];
+                                    var attributePIId = attribute[2];
+                                    var attributeName = attribute[3];
+                                    var attributeDescription = attribute[4];
+                                    var attributeSelfRoute = attribute[5];
+                                    var attributeElementsRoute = attribute[6];
+
+                                    migrationBuilder.InsertData(
+                                      table: "PI.Attributes",
+                                      columns: new[] { "Id", "WebId", "PIId", "Name", "Description", "SelfRoute", "ValueRoute", "ElementsInstaceId" },
+                                      values: new object[] {
+                                      attributeId,
+                                      attributeWebId,
+                                      attributePIId,
+                                      attributeName,
+                                      attributeDescription,
+                                      attributeSelfRoute,
+                                      attributeElementsRoute,
+                                      TPTPressureId
+                                      });
+                                }
+
+                            }
+
+                            else if (elementId == GASLiftId)
+                            {
+                                var attributesData = new List<object[]>
+                                {
+                                     new object[] {
+                                            Guid.NewGuid(),
+                                                                                "F1AbEcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4Q-PSR00Vp6UmpKBaZtT24ngUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVHxQNTBfRlQtMTIzMTAxMEwtREFJTFktQVZH",
+                                            "P50_FT-1231010L-DAILY-AVG",
+                                            "d391f4f8-6945-49e9-a928-1699b53db89e",
+                                            "",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1AbEcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4Q-PSR00Vp6UmpKBaZtT24ngUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVHxQNTBfRlQtMTIzMTAxMEwtREFJTFktQVZH",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4Q-PSR00Vp6UmpKBaZtT24ngUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVHxQNTBfRlQtMTIzMTAxMEwtREFJTFktQVZH/value"
+                                        },
+
+                                      new object[] {
+                                            Guid.NewGuid(),
+                                                                                "F1AbEcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4QsUgruwSdv0iSvy-GiN-t9gUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVHxQNTBfRlQtMTIzMTAxME0tREFJTFktQVZH",
+                                            "P50_FT-1231010M-DAILY-AVG",
+                                            "bb2b48b1-9d04-48bf-92bf-2f8688dfadf6",
+                                            "",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1AbEcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4QsUgruwSdv0iSvy-GiN-t9gUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVHxQNTBfRlQtMTIzMTAxME0tREFJTFktQVZH",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4QsUgruwSdv0iSvy-GiN-t9gUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVHxQNTBfRlQtMTIzMTAxME0tREFJTFktQVZH/value"
+                                        },
+
+                                       new object[] {
+                                            Guid.NewGuid(),
+                                                                                "F1AbEcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4QjD6bZ3mzNkOLoUsp1qtL9AUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVHxQNTBfRlQtMTIzMTAxMFItREFJTFktQVZH",
+                                            "P50_FT-1231010R-DAILY-AVG",
+                                            "679b3e8c-b379-4336-8ba1-4b29d6ab4bf4",
+                                            "",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1AbEcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4QjD6bZ3mzNkOLoUsp1qtL9AUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVHxQNTBfRlQtMTIzMTAxMFItREFJTFktQVZH",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4QjD6bZ3mzNkOLoUsp1qtL9AUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVHxQNTBfRlQtMTIzMTAxMFItREFJTFktQVZH/value"
+                                        },
+
+                                        new object[] {
+                                            Guid.NewGuid(),
+                                                                                "F1AbEcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4Q1gJE0KMdj0ytHsdeXHz0PAUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVHxQNTBfRlQtMTIzMTAxME4tREFJTFktQVZH",
+                                            "P50_FT-1231010N-DAILY-AVG",
+                                            "d04402d6-1da3-4c8f-ad1e-c75e5c7cf43c",
+                                            "",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1AbEcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4Q1gJE0KMdj0ytHsdeXHz0PAUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVHxQNTBfRlQtMTIzMTAxME4tREFJTFktQVZH",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4Q1gJE0KMdj0ytHsdeXHz0PAUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVHxQNTBfRlQtMTIzMTAxME4tREFJTFktQVZH/value"
+                                        },
+
+                                        new object[] {
+                                            Guid.NewGuid(),
+                                                                                "F1AbEcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4QIS2NiuaWP0aPSl6EU3IdqwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVHxQNTBfRlQtMTIzMTAxMEItREFJTFktQVZH",
+                                            "P50_FT-1231010B-DAILY-AVG",
+                                            "8a8d2d21-96e6-463f-8f4a-5e8453721dab",
+                                            "",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1AbEcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4QIS2NiuaWP0aPSl6EU3IdqwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVHxQNTBfRlQtMTIzMTAxMEItREFJTFktQVZH",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4QIS2NiuaWP0aPSl6EU3IdqwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVHxQNTBfRlQtMTIzMTAxMEItREFJTFktQVZH/value"
+                                        },
+
+                                         new object[] {
+                                            Guid.NewGuid(),
+                                                                                "F1AbEcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4Q58mAIZ0pr0GRVhDUxlnXXwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVHxQNTBfRlQtMTIzMTAxMEEtREFJTFktQVZH",
+                                            "P50_FT-1231010A-DAILY-AVG",
+                                            "2180c9e7-299d-41af-9156-10d4c659d75f",
+                                            "",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1AbEcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4Q58mAIZ0pr0GRVhDUxlnXXwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVHxQNTBfRlQtMTIzMTAxMEEtREFJTFktQVZH",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4Q58mAIZ0pr0GRVhDUxlnXXwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVHxQNTBfRlQtMTIzMTAxMEEtREFJTFktQVZH/value"
+                                        },
+
+
+
+                                         new object[] {
+                                            Guid.NewGuid(),
+                                                                                "F1AbEcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4Qo0uY3v7BY0Wvvsb5ubbZdgUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVHxQNTBfRlQtMTIzMTAxMFMtREFJTFktQVZH",
+                                            "P50_FT-1231010S-DAILY-AVG",
+                                            "de984ba3-c1fe-4563-afbe-c6f9b9b6d976",
+                                            "",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1AbEcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4Qo0uY3v7BY0Wvvsb5ubbZdgUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVHxQNTBfRlQtMTIzMTAxMFMtREFJTFktQVZH",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4Qo0uY3v7BY0Wvvsb5ubbZdgUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVHxQNTBfRlQtMTIzMTAxMFMtREFJTFktQVZH/value"
+                                        },
+
+                                          new object[] {
+                                            Guid.NewGuid(),
+                                                                                "F1AbEcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4Qj3bZtUoW2EWjzrrqeMAkwwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVHxQNTBfRlQtMTIzMTAxMEQtREFJTFktQVZH",
+                                            "P50_FT-1231010D-DAILY-AVG",
+                                            "b5d9768f-164a-45d8-a3ce-baea78c024c3",
+                                            "",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1AbEcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4Qj3bZtUoW2EWjzrrqeMAkwwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVHxQNTBfRlQtMTIzMTAxMEQtREFJTFktQVZH",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4Qj3bZtUoW2EWjzrrqeMAkwwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVHxQNTBfRlQtMTIzMTAxMEQtREFJTFktQVZH/value"
+                                        },
+                                };
+
+                                foreach (var attribute in attributesData)
+                                {
+                                    var attributeId = (Guid)attribute[0];
+                                    var attributeWebId = attribute[1];
+                                    var attributePIId = attribute[2];
+                                    var attributeName = attribute[3];
+                                    var attributeDescription = attribute[4];
+                                    var attributeSelfRoute = attribute[5];
+                                    var attributeElementsRoute = attribute[6];
+
+                                    migrationBuilder.InsertData(
+                                      table: "PI.Attributes",
+                                      columns: new[] { "Id", "WebId", "PIId", "Name", "Description", "SelfRoute", "ValueRoute", "ElementsInstaceId" },
+                                      values: new object[] {
+                                      attributeId,
+                                      attributeWebId,
+                                      attributePIId,
+                                      attributeName,
+                                      attributeDescription,
+                                      attributeSelfRoute,
+                                      attributeElementsRoute,
+                                      GASLiftId
+                                      });
+                                }
+
+                            }
                         }
                     }
                 }
@@ -538,6 +854,7 @@ namespace PRIO.Migrations
                     var instanceDescription = instances[4];
                     var instanceSelfRoute = instances[5];
                     var instanceElementsRoute = instances[6];
+
 
                     migrationBuilder.InsertData(
                       table: "PI.Instances",

@@ -89,6 +89,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                 if (!isValidFileName)
                     throw new BadRequestException($"Deve pertencer a uma das categorias: 001, 002 e 003. Importação falhou, arquivo com nome: {data.Files[i].FileName}");
+
+                if (data.Files[i].FileName.Count(c => c == '_') >= 2)
+                {
+                    var datePortion = data.Files[i].FileName.Split('_')[2];
+
+                    if (!IsValidAndUniqueDate(datePortion, data.Files))
+                        throw new BadRequestException("Todas as datas no nome dos arquivos devem ser iguais.");
+                }
             }
 
             #endregion
@@ -100,6 +108,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             var response = new ResponseXmlDto();
 
             var gasResume = new GasSummary();
+
+            var listOfMeasurementDates = new List<DateTime>();
 
             for (int i = 0; i < data.Files.Count; ++i)
             {
@@ -225,6 +235,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                     if (DateTime.TryParseExact(producao.DHA_INICIO_PERIODO_MEDICAO_001, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateBeginningMeasurement))
                                     {
+
+                                        listOfMeasurementDates.Add(dateBeginningMeasurement.Date);
+
                                         var checkDateExists = await _repository.GetMeasurementByDate(dateBeginningMeasurement, XmlUtils.File001);
 
                                         if (checkDateExists is not null && checkDateExists.IsActive)
@@ -539,6 +552,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                     if (DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_002, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateBeginningMeasurement))
                                     {
+                                        listOfMeasurementDates.Add(dateBeginningMeasurement.Date);
+
                                         var checkDateExists = await _repository.GetMeasurementByDate(dateBeginningMeasurement, XmlUtils.File002);
 
                                         if (checkDateExists is not null && checkDateExists.IsActive)
@@ -914,6 +929,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                     if (DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_003, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateBeginningMeasurement))
                                     {
+                                        listOfMeasurementDates.Add(dateBeginningMeasurement.Date);
+
                                         var checkDateExists = await _repository.GetMeasurementByDate(dateBeginningMeasurement, XmlUtils.File003);
 
                                         if (checkDateExists is not null && checkDateExists.IsActive)
@@ -1223,6 +1240,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     }
                 }
 
+
                 if (errorsInImport.Count > 0)
                     throw new BadRequestException($"Algum(s) erro(s) ocorreram durante a validação do arquivo de nome: {data.Files[i].FileName}", errors: errorsInImport);
 
@@ -1248,6 +1266,21 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     response._001File.Add(response001);
                 }
             }
+
+
+            if (listOfMeasurementDates.Count > 0)
+            {
+                var referenceDate = listOfMeasurementDates[0];
+
+                var hasDifferentDates = listOfMeasurementDates.Any(dateMeasured => dateMeasured != referenceDate);
+
+                if (hasDifferentDates)
+                {
+                    throw new BadRequestException("Datas entre medições diferente.");
+                }
+
+            }
+
 
             decimal totalLinearBurnetGas = 0;
             decimal totalLinearFuelGas = 0;
@@ -2929,5 +2962,30 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             return new ImportResponseDTO { Status = "Success", Message = $"Arquivo importado com sucesso, {measurementsAdded.Count} medições importadas", ProductionId = dailyProduction.Id };
         }
 
+        private bool IsValidAndUniqueDate(string datePortion, List<FileContent> files)
+        {
+            DateTime parsedDate;
+            if (DateTime.TryParse(datePortion, out parsedDate))
+            {
+                var dateToCompare = parsedDate.Date;
+                Console.WriteLine(parsedDate);
+                return files
+                    .Select(file =>
+                    {
+                        DateTime otherDate;
+                        if (DateTime.TryParse(file.FileName.Split('_')[2], out otherDate))
+                        {
+                            return otherDate.Date;
+                        }
+                        else
+                        {
+                            throw new BadRequestException($"Não é possível analisar a data no arquivo: {file.FileName}");
+                        }
+                    })
+                    .All(date => date == dateToCompare);
+            }
+
+            throw new BadRequestException($"Não é possível analisar a data no arquivo: {datePortion}");
+        }
     }
 }
