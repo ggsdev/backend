@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Fields.Interfaces;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;

@@ -11,6 +11,7 @@ using PRIO.src.Modules.Hierarchy.Fields.Dtos;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Controllers;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services;
+using PRIO.src.Modules.Hierarchy.Fields.Interfaces;
 using PRIO.src.Modules.Hierarchy.Fields.ViewModels;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories;
