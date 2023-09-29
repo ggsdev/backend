@@ -124,6 +124,7 @@ namespace PRIO.Migrations
                 new object[] { "Gestão de Dados Operacionais", "Wrench", "3", "/gestaoDadosOperacionais", Guid.NewGuid(), true, false },
                 new object[] { "Configuração de Parâmetros", "", "3.1", "/configurarParametros", Guid.NewGuid(), false, true   },
                 new object[] { "Dados Operacionais", "", "3.2", "/dadosOperacionais", Guid.NewGuid(), false, true   },
+                new object[] { "Histórico de Dados do PI", "", "3.3", "/historicoDadosPI", Guid.NewGuid(), false, true   },
 
                 new object[] { "Eventos de Poço", "ClockClockwise", "4", "/eventosDePoco", Guid.NewGuid(), true, false   },
                 new object[] { "Abertura de Poço", "", "4.1", "/pocosFechados", Guid.NewGuid(), false, true},
