@@ -81,7 +81,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         foreach (var a in filtredEvents)
                             totalInterval += CalcInterval(a, production);
 
-                        if (totalInterval < 24)
+                        if (totalInterval < 24 && well.CategoryOperator.ToUpper() == "PRODUTOR")
                         {
 
                             var isThereWellTests = FilterBtp(well.WellTests, production);
@@ -337,8 +337,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                             ProductionGasInWellSCF = Math.Round(wellAppropriation.ProductionGasInWellM3 * ProductionUtils.m3ToSCFConversionMultipler, 5),
                             ProductionOilInWellBBL = Math.Round(wellAppropriation.ProductionOilInWellM3 * ProductionUtils.m3ToBBLConversionMultiplier, 5),
                             ProductionWaterInWellBBL = Math.Round(wellAppropriation.ProductionWaterInWellM3 * ProductionUtils.m3ToBBLConversionMultiplier, 5),
-                            Downtime = formattedTime,
-
+                            Downtime = totalInterval == 24 ? "24:00:00" : formattedTime,
                         };
 
                         foreach (var ev in listEvents)
@@ -606,6 +605,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                         DateTime dateTime = DateTime.Today.AddHours(hours).AddMinutes(minutes).AddSeconds(seconds);
                         string formattedTime = dateTime.ToString("HH:mm:ss");
 
+
                         var wellAppropriation = new WellProduction
                         {
                             Id = Guid.NewGuid(),
@@ -625,7 +625,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                             ProductionGasAsPercentageOfField = wellPotencialGasAsPercentageOfField,
                             ProductionOilAsPercentageOfField = wellPotencialOilAsPercentageOfField,
                             ProductionWaterAsPercentageOfField = wellPotencialWaterAsPercentageOfField,
-                            Downtime = formattedTime,
+                            Downtime = totalInterval == 24 ? "24:00:00" : formattedTime,
 
                         };
 
@@ -1848,8 +1848,8 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
         }
         private IEnumerable<WellTests> FilterBtp(List<WellTests> wellTests, Production production)
         {
-            return wellTests.Where(x => (x.FinalApplicationDate == null && x.ApplicationDate != null && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date) && x.Well.CategoryOperator is not null && x.Well.CategoryOperator.ToUpper() == "PRODUTOR"
-                        || x.Well.CategoryOperator is not null && x.Well.CategoryOperator.ToUpper() == "PRODUTOR" && (x.FinalApplicationDate != null && x.ApplicationDate != null && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
+            return wellTests.Where(x => (x.FinalApplicationDate == null && x.ApplicationDate != null && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date) && x.Well.CategoryOperator is not null
+                        || x.Well.CategoryOperator is not null && (x.FinalApplicationDate != null && x.ApplicationDate != null && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
                         && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date)).Where(X => X.Well.Completions.Count() != 0);
         }
     }
