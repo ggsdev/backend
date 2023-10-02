@@ -83,6 +83,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                         if (totalInterval < 24)
                         {
+
                             var isThereWellTests = FilterBtp(well.WellTests, production);
                             if (isThereWellTests is not null && isThereWellTests.Count() == 0)
                             {
