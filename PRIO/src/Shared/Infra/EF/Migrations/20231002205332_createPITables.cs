@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PRIO.Migrations
 {
     /// <inheritdoc />
-    public partial class PIModifications : Migration
+    public partial class createPITables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -63,6 +63,8 @@ namespace PRIO.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SelfRoute = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AttributesRoute = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CategoryParameter = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Parameter = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     InstanceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -88,6 +90,9 @@ namespace PRIO.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SelfRoute = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ValueRoute = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsOperating = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ElementId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
