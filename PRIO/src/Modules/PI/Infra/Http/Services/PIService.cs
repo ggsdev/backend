@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+
 using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Modules.PI.Dtos;
@@ -8,103 +9,120 @@ using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 using System.Text.Json;
 
+using PRIO.src.Modules.Hierarchy.Installations.Dtos;
+using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
+using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
+
+
+
 namespace PRIO.src.Modules.PI.Infra.Http.Services
 {
     public class PIService
     {
-        DataContext _context;
         private readonly IPIRepository _repository;
         private readonly IMapper _mapper;
         private readonly IWellRepository _wellRepository;
 
-        public PIService(DataContext context, IPIRepository repository, IMapper mapper, IWellRepository wellRepository)
+        public PIService(IPIRepository repository, IInstallationRepository installationRepository, IMapper mapper, IWellRepository wellRepository)
         {
-            _context = context;
             _repository = repository;
+            _installationRepository = installationRepository;
             _mapper = mapper;
             _wellRepository = wellRepository;
         }
 
-        public async Task TestPI()
+        public async Task<List<UepAttributesWellsDto>> GetDataByUep()
         {
-            var attributes = await _context.Attributes
-                .ToListAsync();
+            var ueps = await _installationRepository
+                .GetUEPsAsync();
 
-            var valuesList = new List<Value>();
-            var wellValuesList = new List<WellsValues>();
-            var errorsList = new List<string>();
+            var result = new List<UepAttributesWellsDto>();
 
-            using HttpClient client = new();
-            try
+            foreach (var uep in ueps)
             {
-                foreach (var atr in attributes)
+                var installations = await _installationRepository
+                    .GetInstallationChildrenOfUEP(uep.UepCod);
+
+                var installationsDto = new List<InstallationWithAttributesDTO>();
+
+                foreach (var installation in installations)
                 {
-                    var valueRoute = atr.ValueRoute;
-                    HttpResponseMessage response = await client.GetAsync(valueRoute);
+                    var attributesList = new List<AttributeDTO>();
 
-                    if (response.IsSuccessStatusCode)
+                    foreach (var field in installation.Fields)
                     {
-                        string jsonContent = await response.Content.ReadAsStringAsync();
-
-                        var well = await _context.Wells
-                            .FirstOrDefaultAsync(x => x.Name.ToUpper().Trim() == atr.Name.ToUpper().Trim());
-
-                        Value? valueObject = JsonSerializer.Deserialize<Value>(jsonContent, new JsonSerializerOptions
+                        foreach (var well in field.Wells)
                         {
-                            PropertyNameCaseInsensitive = true
-                        });
+                            var attributesOfWell = await _repository.GetTagsByWellName(well.Name, well.WellOperatorName);
 
-                        if (valueObject is not null && well is not null)
-                        {
-                            var value = new Value
+                            foreach (var attribute in attributesOfWell)
                             {
-                                Id = Guid.NewGuid(),
-                                Amount = valueObject.Amount,
-                                Attribute = valueObject.Attribute,
-                                Date = valueObject.Date,
 
-                            };
-
-                            valuesList.Add(value);
-
-                            var wellValue = new WellsValues
-                            {
-                                Id = Guid.NewGuid(),
-                                Value = value,
-                                Well = well,
-
-                            };
-
-                            wellValuesList.Add(wellValue);
-
-                            Print($"Value: {valueObject.Amount}");
-                            Print($"Date: {valueObject.Date}");
+                                attributesList.Add(new AttributeDTO
+                                {
+                                    Id = attribute.Id,
+                                    CategoryOperator = well.CategoryOperator,
+                                    CreatedAt = attribute.CreatedAt.ToString("dd/MM/yyyy HH:mm"),
+                                    Field = field.Name,
+                                    Status = attribute.IsActive,
+                                    Operational = attribute.IsOperating,
+                                    Parameter = attribute.Element.Name,
+                                    Tag = attribute.Name,
+                                    WellName = well.Name,
+                                    GroupParameter = attribute.Element.CategoryParameter,
+                                });
+                            }
                         }
-
                     }
 
-                    else
-                    {
-                        errorsList.Add($"Tag: {atr.Name}, Failed to retrieve data. Status code: {response.StatusCode}");
-                        Print($"Failed to retrieve data. Status code: {response.StatusCode}, Message: {response.Content}");
-                    }
+                    var installationDto = _mapper.Map<InstallationWithAttributesDTO>(installation);
+                    installationDto.Attributes = attributesList;
+
+                    installationsDto.Add(installationDto);
                 }
 
-                if (errorsList.Any())
-                    throw new BadRequestException("Alguns erros na requisição", errors: errorsList);
-
-
-                await _context.AddRangeAsync(wellValuesList);
-                await _context.AddRangeAsync(valuesList);
-
-                await _context.SaveChangesAsync();
-            }
-            catch (HttpRequestException e)
-            {
-                Print($"HTTP request error: {e.Message}");
+                result.Add(new UepAttributesWellsDto
+                {
+                    Installations = installationsDto,
+                    UepId = uep.Id,
+                    UepName = uep.Name
+                });
             }
 
+
+            return result;
         }
+
+        public async Task<List<AttributeDTO>> GetTagsByWellName(string wellName, string wellOperatorName)
+        {
+            var attributesOfWell = await _repository.GetTagsByWellName(wellName, wellOperatorName);
+            var attributesList = new List<AttributeDTO>();
+
+            foreach (var attr in attributesOfWell)
+            {
+
+                var well = await _wellRepository
+                    .GetByNameOrOperator(wellName, wellOperatorName);
+
+                attributesList.Add(new AttributeDTO
+                {
+                    WellName = well.Name,
+                    CategoryOperator = well.CategoryOperator,
+                    Field = well.Field.Name,
+                    GroupParameter = attr.Element.CategoryParameter,
+                    Parameter = attr.Element.Parameter,
+                    Operational = attr.IsOperating,
+                    Status = attr.IsActive,
+                    Id = attr.Id,
+                    CreatedAt = attr.CreatedAt.ToString("dd/MM/yyyy"),
+                    Tag = attr.Name
+                });
+
+            }
+
+            return attributesList;
+        }
+
 
         public async Task<List<HistoryValueDTO>> GetHistoryByDate(string date)
         {
@@ -138,6 +156,22 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
             }
             return listValues;
         }
+      
+        //public async Task<AttributeDTO> CreateTag(CreateTagViewModel body)
+        //{
+        //    var createdTag = new Attribute
+        //    {
+        //        Id = Guid.NewGuid(),
+
+
+
+
+        //    };
+
+
+
+        //}
+
 
         private static void Print<T>(T text)
         {

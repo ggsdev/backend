@@ -13,6 +13,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Interfaces
         Task<Well?> GetByNameOrOperatorName(string name);
         Task<Well?> GetByIdWithEventsAsync(Guid? id);
         Task<Well?> GetByNameAsync(string? name);
+        Task<Well?> GetByNameOrOperator(string name, string operatorName);
         Task<List<Well>> GetAsync(User user);
         Task<Well?> GetByCode(string? cod);
         Task<Well?> GetWithFieldAsync(Guid? id);

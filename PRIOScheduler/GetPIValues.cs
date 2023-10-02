@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.PI.Infra.EF.Models;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 
 namespace PRIOScheduler
@@ -18,7 +20,9 @@ namespace PRIOScheduler
             var dbContextOptions = new DbContextOptionsBuilder<DataContext>()
                .UseSqlServer(_connectionString)
                .Options;
+
             using var dbContext = new DataContext(dbContextOptions);
+
             var dateToday = DateTime.UtcNow.AddHours(-3).Date;
 
             var attributes = await dbContext.Attributes
@@ -28,75 +32,110 @@ namespace PRIOScheduler
             var wellValuesList = new List<WellsValues>();
             var errorsList = new List<string>();
 
-            using HttpClient client = new();
+            Console.WriteLine("Começou a executar");
+
             try
             {
-                foreach (var atr in attributes)
+                var handler = new HttpClientHandler
                 {
-                    var valueRoute = atr.ValueRoute;
-                    HttpResponseMessage response = await client.GetAsync(valueRoute);
+                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+                };
 
-                    if (response.IsSuccessStatusCode)
+                using HttpClient client = new(handler);
+                var username = "svc-pi-frade";
+                var password = "S6_5q2C?=%ff";
+
+                var credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}"));
+
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
+
+                try
+                {
+
+                    foreach (var atr in attributes)
                     {
-                        string jsonContent = await response.Content.ReadAsStringAsync();
+                        var valueRoute = atr.ValueRoute;
+                        HttpResponseMessage response = await client.GetAsync(valueRoute);
 
-                        var well = await dbContext.Wells
-                            .FirstOrDefaultAsync(x => x.Name.ToUpper().Trim() == atr.WellName.ToUpper().Trim() || x.WellOperatorName.ToUpper().Trim() == atr.WellName.ToUpper().Trim());
-
-                        Value? valueObject = JsonSerializer.Deserialize<Value>(jsonContent, new JsonSerializerOptions
+                        if (response.IsSuccessStatusCode)
                         {
-                            PropertyNameCaseInsensitive = true
-                        });
+                            string jsonContent = await response.Content.ReadAsStringAsync();
 
-                        if (valueObject is not null && well is not null)
-                        {
-                            var value = new Value
+                            var well = await dbContext.Wells
+                                .FirstOrDefaultAsync(x => x.Name.ToUpper().Trim() == atr.WellName.ToUpper().Trim() || x.WellOperatorName.ToUpper().Trim() == atr.WellName.ToUpper().Trim());
+
+                            ValueJson? valueObject = JsonSerializer.Deserialize<ValueJson>(jsonContent, new JsonSerializerOptions
                             {
-                                Id = Guid.NewGuid(),
-                                Amount = valueObject.Amount,
-                                Attribute = valueObject.Attribute,
-                                Date = valueObject.Date,
+                                PropertyNameCaseInsensitive = true
+                            });
 
-                            };
+                            Print("value object is not null" + valueObject is not null);
+                            Print("value object value" + valueObject?.Value);
+                            Print("value object timestamp" + valueObject?.Timestamp);
+                            Print("well is not null" + well is not null);
+                            Print("well name" + well?.Name);
 
-                            valuesList.Add(value);
-
-                            var wellValue = new WellsValues
+                            if (valueObject is not null && well is not null)
                             {
-                                Id = Guid.NewGuid(),
-                                Value = value,
-                                Well = well,
+                                var value = new Value
+                                {
+                                    Id = Guid.NewGuid(),
+                                    Amount = valueObject.Value,
+                                    Attribute = atr,
+                                    Date = valueObject.Timestamp,
 
-                            };
+                                };
 
-                            wellValuesList.Add(wellValue);
+                                valuesList.Add(value);
 
-                            Print($"Value: {valueObject.Amount}");
-                            Print($"Date: {valueObject.Date}");
+                                var wellValue = new WellsValues
+                                {
+                                    Id = Guid.NewGuid(),
+                                    Value = value,
+                                    Well = well,
+
+                                };
+
+                                wellValuesList.Add(wellValue);
+
+                                Print($"Value: {value.Amount}");
+                                Print($"Date: {value.Date}");
+                            }
+
                         }
 
+                        else
+                        {
+                            errorsList.Add($"Tag: {atr.Name}, Failed to retrieve data, Status: {response.StatusCode}, Message: {response.Content}");
+                            Print($"Failed to retrieve data. Status code: {response.StatusCode}, Message: {response.Content}");
+                        }
                     }
 
-                    else
-                    {
-                        errorsList.Add($"Tag: {atr.Name}, Failed to retrieve data. Status code: {response.StatusCode}");
-                        Print($"Failed to retrieve data. Status code: {response.StatusCode}, Message: {response.Content}");
-                    }
+                    if (errorsList.Any())
+                        throw new BadRequestException("Alguns erros na requisição", errors: errorsList);
+
+                    await dbContext.AddRangeAsync(wellValuesList);
+                    await dbContext.AddRangeAsync(valuesList);
+
+                    Console.WriteLine("wellValuesList count: " + wellValuesList.Count);
+                    Console.WriteLine("valuesList count: " + valuesList.Count);
+
+                    await dbContext.SaveChangesAsync();
                 }
-
-                if (errorsList.Any())
-                    throw new BadRequestException("Alguns erros na requisição", errors: errorsList);
-
-
-                await dbContext.AddRangeAsync(wellValuesList);
-                await dbContext.AddRangeAsync(valuesList);
-
-                await dbContext.SaveChangesAsync();
+                catch (Exception e)
+                {
+                    Print($"HTTP request error: {e.Message}");
+                }
             }
-            catch (HttpRequestException e)
+            catch (Exception e)
             {
-                Print($"HTTP request error: {e.Message}");
+
+                Print($"Outro error: {e.Message}");
+
             }
+
+            Console.WriteLine("Terminou de executar");
+
 
         }
 

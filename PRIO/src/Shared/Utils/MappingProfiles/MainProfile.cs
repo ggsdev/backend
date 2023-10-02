@@ -161,6 +161,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<Installation, InstallationWithoutClusterDTO>();
             CreateMap<InstallationWithoutClusterDTO, Installation>();
             CreateMap<Installation, InstallationWithFieldsEquipmentsDTO>();
+            CreateMap<Installation, InstallationWithAttributesDTO>();
 
             CreateMap<Field, FieldDTO>();
             CreateMap<Field, FieldWithoutWellDTO>();
