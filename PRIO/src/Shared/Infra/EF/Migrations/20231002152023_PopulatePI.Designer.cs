@@ -12,7 +12,7 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230929172525_PopulatePI")]
+    [Migration("20231002152023_PopulatePI")]
     partial class PopulatePI
     {
         /// <inheritdoc />
@@ -4768,7 +4768,7 @@ namespace PRIO.Migrations
                     b.ToTable("Production.WellProductions", (string)null);
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Attributes", b =>
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Attribute", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -4799,7 +4799,7 @@ namespace PRIO.Migrations
 
                     b.Property<string>("WebId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("WellName")
                         .IsRequired()
@@ -4808,6 +4808,9 @@ namespace PRIO.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ElementId");
+
+                    b.HasIndex("WebId")
+                        .IsUnique();
 
                     b.ToTable("PI.Attributes", (string)null);
                 });
@@ -4840,14 +4843,17 @@ namespace PRIO.Migrations
 
                     b.Property<string>("WebId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("WebId")
+                        .IsUnique();
 
                     b.ToTable("PI.Databases", (string)null);
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Elements", b =>
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Element", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -4878,11 +4884,14 @@ namespace PRIO.Migrations
 
                     b.Property<string>("WebId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("InstanceId");
+
+                    b.HasIndex("WebId")
+                        .IsUnique();
 
                     b.ToTable("PI.Elements", (string)null);
                 });
@@ -4918,13 +4927,74 @@ namespace PRIO.Migrations
 
                     b.Property<string>("WebId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("DatabaseId");
 
+                    b.HasIndex("WebId")
+                        .IsUnique();
+
                     b.ToTable("PI.Instances", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Value", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<Guid>("AttributeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttributeId");
+
+                    b.ToTable("PI.Values", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.WellsValues", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ValueId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("WellId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ValueId");
+
+                    b.HasIndex("WellId");
+
+                    b.ToTable("PI.WellsValues", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Shared.Auxiliaries.Infra.EF.Models.Auxiliary", b =>
@@ -6000,9 +6070,9 @@ namespace PRIO.Migrations
                     b.Navigation("WellTest");
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Attributes", b =>
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Attribute", b =>
                 {
-                    b.HasOne("PRIO.src.Modules.PI.Infra.EF.Models.Elements", "Element")
+                    b.HasOne("PRIO.src.Modules.PI.Infra.EF.Models.Element", "Element")
                         .WithMany("AttributesInstance")
                         .HasForeignKey("ElementId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -6011,10 +6081,10 @@ namespace PRIO.Migrations
                     b.Navigation("Element");
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Elements", b =>
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Element", b =>
                 {
                     b.HasOne("PRIO.src.Modules.PI.Infra.EF.Models.Instance", "Instance")
-                        .WithMany("ElementsInstace")
+                        .WithMany("ElementsInstance")
                         .HasForeignKey("InstanceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -6031,6 +6101,36 @@ namespace PRIO.Migrations
                         .IsRequired();
 
                     b.Navigation("Database");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Value", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.PI.Infra.EF.Models.Attribute", "Attribute")
+                        .WithMany("Values")
+                        .HasForeignKey("AttributeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Attribute");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.WellsValues", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.PI.Infra.EF.Models.Value", "Value")
+                        .WithMany("WellsValues")
+                        .HasForeignKey("ValueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.Well", "Well")
+                        .WithMany("WellsValues")
+                        .HasForeignKey("WellId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Value");
+
+                    b.Navigation("Well");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.Group", b =>
@@ -6188,6 +6288,8 @@ namespace PRIO.Migrations
                     b.Navigation("WellEvents");
 
                     b.Navigation("WellTests");
+
+                    b.Navigation("WellsValues");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models.Zone", b =>
@@ -6358,19 +6460,29 @@ namespace PRIO.Migrations
                     b.Navigation("WellLosses");
                 });
 
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Attribute", b =>
+                {
+                    b.Navigation("Values");
+                });
+
             modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Database", b =>
                 {
                     b.Navigation("Instances");
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Elements", b =>
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Element", b =>
                 {
                     b.Navigation("AttributesInstance");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Instance", b =>
                 {
-                    b.Navigation("ElementsInstace");
+                    b.Navigation("ElementsInstance");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Value", b =>
+                {
+                    b.Navigation("WellsValues");
                 });
 #pragma warning restore 612, 618
         }
