@@ -67,43 +67,32 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
             var wellsInvalids = new List<string>();
             var closedProducingWells = new List<Well>();
             var producingWells = new List<Well>();
-            //foreach (var installation in installations)
-            //{
-            //    foreach (var field in installation.Fields)
-            //    {
-            //        foreach (var well in field.Wells)
-            //        {
-            //            var wellContainBtpValid = false;
 
-            //            var allBtpsOfProducingWellsValid = well.WellTests.Where(x => (x.FinalApplicationDate == null && x.ApplicationDate != null && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date) && well.CategoryOperator is not null && well.CategoryOperator.ToUpper() == "PRODUTOR"
-            //            || well.CategoryOperator is not null && well.CategoryOperator.ToUpper() == "PRODUTOR" && (x.FinalApplicationDate != null && x.ApplicationDate != null && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
-            //            && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date));
+            foreach (var installation in installations)
+            {
+                foreach (var field in installation.Fields)
+                {
+                    foreach (var well in field.Wells)
+                    {
+                        double totalInterval = 0;
+                        var filtredEvents = well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
+                            || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
-            //            if (allBtpsOfProducingWellsValid is not null && allBtpsOfProducingWellsValid.Any())
-            //            {
-            //                foreach (var btp in allBtpsOfProducingWellsValid)
-            //                {
-            //                    if (btp.IsValid)
-            //                    {
-            //                        wellContainBtpValid = true;
-            //                        break;
-            //                    }
-            //                }
-            //                if (!allBtpsOfProducingWellsValid.Any() && well.CategoryOperator is not null && well.CategoryOperator.ToUpper().Contains("INJETOR"))
-            //                {
-            //                    wellContainBtpValid = true;
-            //                    break;
-            //                }
-            //            }
+                        foreach (var a in filtredEvents)
+                            totalInterval += CalcInterval(a, production);
 
-            //            if (wellContainBtpValid is false)
-            //            {
-            //                wellsInvalids.Add(well.Name);
-            //                continue;
-            //            }
-            //        }
-            //    }
-            //}
+                        if (totalInterval < 24)
+                        {
+                            var isThereWellTests = FilterBtp(well.WellTests, production);
+                            if (isThereWellTests is not null && isThereWellTests.Count() == 0)
+                            {
+                                wellsInvalids.Add($"Poço {well.Name} com {24 - totalInterval}h de produção não tem teste de poço cadastrado para a data {production.MeasuredAt.Date:dd/MM/yyyy}");
+                            }
+                        }
+                    }
+                }
+            }
+
             if (wellsInvalids.Count > 0)
                 throw new BadRequestException($"Todos os poços devem ter um teste de poço válido. Poços sem teste ou com teste inválido:", errors: wellsInvalids);
             #endregion
@@ -898,22 +887,21 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                 {
                     foreach (var well in field.Wells)
                     {
-                        var wellContainBtpValid = false;
+                        double totalInterval = 0;
+                        var filtredEvents = well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
+                            || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
-                        var allBtpsValid = well.WellTests.Where(x => (x.FinalApplicationDate == null && x.ApplicationDate != null && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date)
-                        || (x.FinalApplicationDate != null && x.ApplicationDate != null && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
-                        && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date));
+                        foreach (var a in filtredEvents)
+                            totalInterval += CalcInterval(a, production);
 
-                        if (well.WellTests is not null)
-                            foreach (var btp in allBtpsValid)
-                                if (btp.IsValid)
-                                {
-                                    wellContainBtpValid = true;
-                                    break;
-                                }
-
-                        if (wellContainBtpValid is false)
-                            wellsInvalids.Add(well.Name);
+                        if (totalInterval < 24)
+                        {
+                            var isThereWellTests = FilterBtp(well.WellTests, production);
+                            if (isThereWellTests is not null && isThereWellTests.Count() == 0)
+                            {
+                                wellsInvalids.Add($"Poço {well.Name} com {24 - totalInterval}h de produção não tem teste de poço cadastrado para a data {production.MeasuredAt.Date:dd/MM/yyyy}");
+                            }
+                        }
                     }
                 }
             }
@@ -1303,22 +1291,21 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                 {
                     foreach (var well in field.Wells)
                     {
-                        var wellContainBtpValid = false;
+                        double totalInterval = 0;
+                        var filtredEvents = well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
+                            || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
-                        var allBtpsValid = well.WellTests.Where(x => (x.FinalApplicationDate == null && x.ApplicationDate != null && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date)
-                        || (x.FinalApplicationDate != null && x.ApplicationDate != null && DateTime.Parse(x.FinalApplicationDate) >= production.MeasuredAt.Date
-                        && DateTime.Parse(x.ApplicationDate) <= production.MeasuredAt.Date));
+                        foreach (var a in filtredEvents)
+                            totalInterval += CalcInterval(a, production);
 
-                        if (well.WellTests is not null)
-                            foreach (var btp in allBtpsValid)
-                                if (btp.IsValid)
-                                {
-                                    wellContainBtpValid = true;
-                                    break;
-                                }
-
-                        if (wellContainBtpValid is false)
-                            wellsInvalids.Add(well.Name);
+                        if (totalInterval < 24)
+                        {
+                            var isThereWellTests = FilterBtp(well.WellTests, production);
+                            if (isThereWellTests is not null && isThereWellTests.Count() == 0)
+                            {
+                                wellsInvalids.Add($"Poço {well.Name} com {24 - totalInterval}h de produção não tem teste de poço cadastrado para a data {production.MeasuredAt.Date:dd/MM/yyyy}");
+                            }
+                        }
                     }
                 }
             }
