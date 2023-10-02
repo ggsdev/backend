@@ -8,6 +8,9 @@ namespace PRIO.src.Modules.PI.Infra.EF.Mappings
         public void Configure(EntityTypeBuilder<Models.Attribute> builder)
         {
             builder.ToTable("PI.Attributes");
+
+            builder.HasIndex(x => x.WebId)
+                .IsUnique();
         }
     }
 }

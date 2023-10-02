@@ -85,7 +85,6 @@ namespace PRIO.src.Shared
 
             #region Add tags here
             context.Tags.Add(idRoute.ToString()!);
-            context.Tags.Add("ProductionTag");
             #endregion
 
             return ValueTask.CompletedTask;

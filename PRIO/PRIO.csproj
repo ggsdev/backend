@@ -98,11 +98,7 @@
     <Folder Include="src\Modules\Measuring\Measurements\Dtos\" />
     <Folder Include="src\Modules\Measuring\Measurements\Infra\Http\Controllers\" />
     <Folder Include="src\Modules\Measuring\Measurements\ViewModels\" />
-    <Folder Include="src\Modules\PI\Infra\EF\Repositories\" />
     <Folder Include="src\Modules\PI\Dtos\" />
-    <Folder Include="src\Modules\PI\Infra\Http\Controllers\" />
-    <Folder Include="src\Modules\PI\Infra\Http\Services\" />
-    <Folder Include="src\Modules\PI\Interfaces\" />
     <Folder Include="src\Modules\PI\ViewModels\" />
   </ItemGroup>
 

@@ -10,6 +10,8 @@ namespace PRIO.src.Modules.PI.Infra.EF.Mappings
         {
             builder.ToTable("PI.Instances");
 
+            builder.HasIndex(x => x.WebId)
+                .IsUnique();
         }
     }
 }
