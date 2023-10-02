@@ -16,6 +16,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Interfaces
         Task<Installation?> GetByIdAsync(Guid? id);
         Task<List<FieldFR?>> GetFRsByUEPAsync(string? uep);
         Task<List<FieldFR?>> GetFRsByIdAsync(Guid? id);
+        Task<List<Installation>> GetInstallationsByUepWithTagsPi(string uepCode);
         Task<List<FieldFR>> GetFRsByIdAsync(Guid id);
         Task<Installation?> GetByNameAsync(string? name);
         Task<Installation?> GetByIdWithCalculationsAsync(Guid? id);
