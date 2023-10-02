@@ -60,11 +60,10 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
         public async Task<List<Installation>> GetInstallationsByUepWithTagsPi(string uepCode)
         {
             return await _context.Installations
-                .Where(x => x.UepCod == uepCode)
                     .Include(x => x.Fields)
                         .ThenInclude(x => x.Wells)
+                .Where(x => x.UepCod == uepCode)
                 .ToListAsync();
-
         }
 
         public async Task<FieldFR?> GetFrByDateMeasuredAndFieldId(DateTime date, Guid fieldId)

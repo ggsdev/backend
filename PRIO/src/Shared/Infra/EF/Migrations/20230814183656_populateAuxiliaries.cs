@@ -160,6 +160,10 @@ namespace PRIO.Migrations
                 new object[] { Guid.NewGuid(), "/eventosPoco", "Fechado", "Status ANP", "Fechado por perda",  DateTime.UtcNow.AddHours(-3) },
                 new object[] { Guid.NewGuid(), "/eventosPoco", "Fechado", "Status ANP", "Fechado por estratégia",  DateTime.UtcNow.AddHours(-3) },
 
+
+                //new object[] { Guid.NewGuid(), "/eventosPoco", "Fechado", "Status ANP", "Fechado por estratégia",  DateTime.UtcNow.AddHours(-3) },
+                //new object[] { Guid.NewGuid(), "/eventosPoco", "Fechado", "Status ANP", "Fechado por estratégia",  DateTime.UtcNow.AddHours(-3) },
+
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Fields", "UF", "ACRE",  DateTime.UtcNow.AddHours(-3) },
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Fields", "UF", "ALAGOAS",  DateTime.UtcNow.AddHours(-3) },
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Fields", "UF", "AMAPÁ",  DateTime.UtcNow.AddHours(-3) },
