@@ -271,6 +271,9 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                     .ThenInclude(x => x.Wells)
                         .ThenInclude(x => x.WellEvents)
                             .ThenInclude(we => we.EventReasons)
+                .Include(x => x.Fields)
+                    .ThenInclude(x => x.Wells)
+                        .ThenInclude(w => w.Completions)
                 .Where(x => x.UepCod == uepCode)
                 .ToListAsync();
         }
