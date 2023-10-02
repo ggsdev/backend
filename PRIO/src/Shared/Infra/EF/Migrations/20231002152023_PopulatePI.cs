@@ -411,12 +411,12 @@ namespace PRIO.Migrations
                                         },
                                         new object[] {
                                             osx3_105268Id,
-                                            "F1AbEcaZI8jdsuU6iCfbmKdB6iQSna1qIAA7hGxjwBQVoy5FQA3H0t18cakujsYVsNVmu4gUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gQlJBVk9cV0hQfE9TWDNfUElULTEwNTMtNjgtREFJTFktQVZH",
-                                            "b7f47103-1c5f-4b6a-a3b1-856c3559aee2",
-                                            "OSX3_PIT-1053-68-DAILY-AVG",
-                                            "Average Pressão/Well 4",
-                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1AbEcaZI8jdsuU6iCfbmKdB6iQSna1qIAA7hGxjwBQVoy5FQA3H0t18cakujsYVsNVmu4gUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gQlJBVk9cV0hQfE9TWDNfUElULTEwNTMtNjgtREFJTFktQVZH",
-                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQSna1qIAA7hGxjwBQVoy5FQA3H0t18cakujsYVsNVmu4gUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gQlJBVk9cV0hQfE9TWDNfUElULTEwNTMtNjgtREFJTFktQVZH/value",
+                                            "F1AbEcaZI8jdsuU6iCfbmKdB6iQSna1qIAA7hGxjwBQVoy5FQRpLDWQKpDEyfy4jtPSy-zwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gQlJBVk9cV0hQfE9TWDNfUElULTEwNTItNjgtREFJTFktQVZH",
+                                            "59c39246-a902-4c0c-9fcb-88ed3d2cbecf",
+                                            "OSX3_PIT-1052-68-DAILY-AVG",
+                                            "Average Pressão ANM Well 6",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1AbEcaZI8jdsuU6iCfbmKdB6iQSna1qIAA7hGxjwBQVoy5FQRpLDWQKpDEyfy4jtPSy-zwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gQlJBVk9cV0hQfE9TWDNfUElULTEwNTItNjgtREFJTFktQVZH",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQSna1qIAA7hGxjwBQVoy5FQRpLDWQKpDEyfy4jtPSy-zwUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gQlJBVk9cV0hQfE9TWDNfUElULTEwNTItNjgtREFJTFktQVZH/value",
                                             "7-TBMT-6HP-RJS"
                                         },
 

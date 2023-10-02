@@ -3,6 +3,7 @@ using dotenv.net;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Users.Interfaces;
 using PRIO.src.Modules.FileImport.XLSX.Hierarchy.Dtos;
 using PRIO.src.Modules.FileImport.XLSX.Hierarchy.Utils;
 using PRIO.src.Modules.FileImport.XLSX.Hierarchy.ViewModels;
@@ -33,13 +34,15 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
         private readonly DataContext _context;
         private readonly SystemHistoryService _systemHistoryService;
         private readonly IWellEventRepository _wellEventRepository;
+        private readonly IUserRepository _userRepository;
 
-        public XLSXService(IMapper mapper, DataContext context, SystemHistoryService systemHistoryService, IWellEventRepository wellEventRepository)
+        public XLSXService(IMapper mapper, DataContext context, SystemHistoryService systemHistoryService, IWellEventRepository wellEventRepository, IUserRepository userRepository)
         {
             _mapper = mapper;
             _context = context;
             _systemHistoryService = systemHistoryService;
             _wellEventRepository = wellEventRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<ImportResponseDTO> ImportFiles(RequestXslxViewModel data, User user)
@@ -209,6 +212,18 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                 await _context.GasVolumeCalculations.AddAsync(gasCalculation);
 
                             }
+
+                            var usersMaster = await _userRepository.GetAdminUsers();
+                            foreach (var userMaster in usersMaster)
+                            {
+                                var InstallataionAccess = new InstallationsAccess
+                                {
+                                    Id = Guid.NewGuid(),
+                                    Installation = installation as Installation,
+                                    User = userMaster
+                                };
+                                await _context.InstallationsAccess.AddAsync(InstallataionAccess);
+                            }
                         }
                         else if (clusterInDatabase is null && entityDictionary.GetValueOrDefault(cellCluster.ToLower()) is not null)
                         {
@@ -242,6 +257,18 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                 };
                                 await _context.GasVolumeCalculations.AddAsync(gasCalculation);
 
+                            }
+
+                            var usersMaster = await _userRepository.GetAdminUsers();
+                            foreach (var userMaster in usersMaster)
+                            {
+                                var InstallataionAccess = new InstallationsAccess
+                                {
+                                    Id = Guid.NewGuid(),
+                                    Installation = installation as Installation,
+                                    User = userMaster
+                                };
+                                await _context.InstallationsAccess.AddAsync(InstallataionAccess);
                             }
                         }
                         if (installation is not null)
