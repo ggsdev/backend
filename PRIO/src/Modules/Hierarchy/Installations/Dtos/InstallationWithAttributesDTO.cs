@@ -14,6 +14,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Dtos
         public string? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public bool? IsActive { get; set; }
-        public List<AttributeDTO> Attributes { get; set; }
+        public List<AttributeReturnDTO> Attributes { get; set; }
     }
 }
