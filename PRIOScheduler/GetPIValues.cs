@@ -1,24 +1,28 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using dotenv.net;
+using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.PI.Infra.EF.Models;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 using System.Text.Json;
 
-namespace PRIO.src.Modules.PI.Infra.Http.Services
+namespace PRIOScheduler
 {
-    public class PIService
+    public class GetPIValues
     {
-        DataContext _context;
+        private static readonly IDictionary<string, string> _envVars = DotEnv.Read();
 
-        public PIService(DataContext context)
-        {
-            _context = context;
-        }
+        private static readonly string _connectionString = $"Server={_envVars["SERVER"]},{_envVars["PORT"]}\\{_envVars["SERVER_INSTANCE"]};Database={_envVars["DATABASE"]};User ID={_envVars["USER_ID"]};Password={_envVars["PASSWORD"]};Encrypt={_envVars["ENCRYPT"]}";
 
-        public async Task TestPI()
+        public static async Task ExecuteAsync()
         {
-            var attributes = await _context.Attributes
-                .ToListAsync();
+            var dbContextOptions = new DbContextOptionsBuilder<DataContext>()
+               .UseSqlServer(_connectionString)
+               .Options;
+            using var dbContext = new DataContext(dbContextOptions);
+            var dateToday = DateTime.UtcNow.AddHours(-3).Date;
+
+            var attributes = await dbContext.Attributes
+               .ToListAsync();
 
             var valuesList = new List<Value>();
             var wellValuesList = new List<WellsValues>();
@@ -36,8 +40,8 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                     {
                         string jsonContent = await response.Content.ReadAsStringAsync();
 
-                        var well = await _context.Wells
-                            .FirstOrDefaultAsync(x => x.Name.ToUpper().Trim() == atr.Name.ToUpper().Trim());
+                        var well = await dbContext.Wells
+                            .FirstOrDefaultAsync(x => x.Name.ToUpper().Trim() == atr.WellName.ToUpper().Trim() || x.WellOperatorName.ToUpper().Trim() == atr.WellName.ToUpper().Trim());
 
                         Value? valueObject = JsonSerializer.Deserialize<Value>(jsonContent, new JsonSerializerOptions
                         {
@@ -84,10 +88,10 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                     throw new BadRequestException("Alguns erros na requisição", errors: errorsList);
 
 
-                await _context.AddRangeAsync(wellValuesList);
-                await _context.AddRangeAsync(valuesList);
+                await dbContext.AddRangeAsync(wellValuesList);
+                await dbContext.AddRangeAsync(valuesList);
 
-                await _context.SaveChangesAsync();
+                await dbContext.SaveChangesAsync();
             }
             catch (HttpRequestException e)
             {
@@ -96,6 +100,10 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
 
         }
 
+        public static void Execute()
+        {
+            ExecuteAsync().Wait();
+        }
         private static void Print<T>(T text)
         {
             Console.WriteLine(text);

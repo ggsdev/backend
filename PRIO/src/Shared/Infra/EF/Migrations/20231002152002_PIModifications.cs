@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PRIO.Migrations
 {
     /// <inheritdoc />
-    public partial class createTablePi : Migration
+    public partial class PIModifications : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,7 +16,7 @@ namespace PRIO.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    WebId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    WebId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     PIId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -33,7 +33,7 @@ namespace PRIO.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    WebId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    WebId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     PIId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -57,7 +57,7 @@ namespace PRIO.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    WebId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    WebId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     PIId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -81,13 +81,13 @@ namespace PRIO.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    WebId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    WebId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    WellName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PIId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SelfRoute = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ValueRoute = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    WellName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ElementId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -101,10 +101,72 @@ namespace PRIO.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "PI.Values",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Amount = table.Column<double>(type: "float", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AttributeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PI.Values", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PI.Values_PI.Attributes_AttributeId",
+                        column: x => x.AttributeId,
+                        principalTable: "PI.Attributes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PI.WellsValues",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    WellId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ValueId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PI.WellsValues", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PI.WellsValues_Hierachy.Wells_WellId",
+                        column: x => x.WellId,
+                        principalTable: "Hierachy.Wells",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PI.WellsValues_PI.Values_ValueId",
+                        column: x => x.ValueId,
+                        principalTable: "PI.Values",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_PI.Attributes_ElementId",
                 table: "PI.Attributes",
                 column: "ElementId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PI.Attributes_WebId",
+                table: "PI.Attributes",
+                column: "WebId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PI.Databases_WebId",
+                table: "PI.Databases",
+                column: "WebId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_PI.Elements_InstanceId",
@@ -112,14 +174,47 @@ namespace PRIO.Migrations
                 column: "InstanceId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PI.Elements_WebId",
+                table: "PI.Elements",
+                column: "WebId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PI.Instances_DatabaseId",
                 table: "PI.Instances",
                 column: "DatabaseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PI.Instances_WebId",
+                table: "PI.Instances",
+                column: "WebId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PI.Values_AttributeId",
+                table: "PI.Values",
+                column: "AttributeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PI.WellsValues_ValueId",
+                table: "PI.WellsValues",
+                column: "ValueId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PI.WellsValues_WellId",
+                table: "PI.WellsValues",
+                column: "WellId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "PI.WellsValues");
+
+            migrationBuilder.DropTable(
+                name: "PI.Values");
+
             migrationBuilder.DropTable(
                 name: "PI.Attributes");
 

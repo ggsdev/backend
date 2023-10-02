@@ -157,6 +157,8 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<Instance> Instances { get; set; }
         public DbSet<Element> Elements { get; set; }
         public DbSet<Modules.PI.Infra.EF.Models.Attribute> Attributes { get; set; }
+        public DbSet<WellsValues> WellValues { get; set; }
+        public DbSet<Value> Values { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -322,6 +324,8 @@ namespace PRIO.src.Shared.Infra.EF
             modelBuilder.ApplyConfiguration(new InstancesMap());
             modelBuilder.ApplyConfiguration(new ElementsMap());
             modelBuilder.ApplyConfiguration(new AttributesMap());
+            modelBuilder.ApplyConfiguration(new WellsValuesMap());
+            modelBuilder.ApplyConfiguration(new ValueMap());
         }
     }
 }
