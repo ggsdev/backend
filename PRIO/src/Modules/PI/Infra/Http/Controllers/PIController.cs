@@ -4,7 +4,7 @@ using PRIO.src.Modules.PI.Infra.Http.Services;
 namespace PRIO.src.Modules.PI.Infra.Http.Controllers
 {
     [ApiController]
-    [Route("Pitest")]
+    [Route("PI")]
     public class PIController : ControllerBase
     {
         private readonly PIService _service;
@@ -13,10 +13,11 @@ namespace PRIO.src.Modules.PI.Infra.Http.Controllers
             _service = service;
         }
 
-        [HttpGet]
-        public async Task TestPI()
+        [HttpGet("ueps")]
+        public async Task<IActionResult> GetDataByUep()
         {
-            await _service.TestPI();
+            var data = await _service.GetDataByUep();
+            return Ok(data);
         }
     }
 }

@@ -43,7 +43,7 @@ RecurringJob.AddOrUpdate(
 RecurringJob.AddOrUpdate(
           "myrecurringjob4",
           () => GetPIValues.Execute(),
-          Cron.Minutely);
+          Cron.Minutely());
 
 using (var server = new BackgroundJobServer())
 {
