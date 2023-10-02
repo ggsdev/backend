@@ -1,17 +1,10 @@
 ﻿using AutoMapper;
-
-using Microsoft.EntityFrameworkCore;
-using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
-using PRIO.src.Modules.PI.Dtos;
-using PRIO.src.Modules.PI.Infra.EF.Models;
-using PRIO.src.Modules.PI.Interfaces;
-using PRIO.src.Shared.Errors;
-using PRIO.src.Shared.Infra.EF;
-using System.Text.Json;
-
 using PRIO.src.Modules.Hierarchy.Installations.Dtos;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
+using PRIO.src.Modules.PI.Dtos;
+using PRIO.src.Modules.PI.Interfaces;
+using PRIO.src.Shared.Errors;
 
 
 
@@ -22,6 +15,7 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
         private readonly IPIRepository _repository;
         private readonly IMapper _mapper;
         private readonly IWellRepository _wellRepository;
+        private readonly IInstallationRepository _installationRepository;
 
         public PIService(IPIRepository repository, IInstallationRepository installationRepository, IMapper mapper, IWellRepository wellRepository)
         {
@@ -47,7 +41,7 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
 
                 foreach (var installation in installations)
                 {
-                    var attributesList = new List<AttributeDTO>();
+                    var attributesList = new List<AttributeReturnDTO>();
 
                     foreach (var field in installation.Fields)
                     {
@@ -58,7 +52,7 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                             foreach (var attribute in attributesOfWell)
                             {
 
-                                attributesList.Add(new AttributeDTO
+                                attributesList.Add(new AttributeReturnDTO
                                 {
                                     Id = attribute.Id,
                                     CategoryOperator = well.CategoryOperator,
@@ -93,10 +87,10 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
             return result;
         }
 
-        public async Task<List<AttributeDTO>> GetTagsByWellName(string wellName, string wellOperatorName)
+        public async Task<List<AttributeReturnDTO>> GetTagsByWellName(string wellName, string wellOperatorName)
         {
             var attributesOfWell = await _repository.GetTagsByWellName(wellName, wellOperatorName);
-            var attributesList = new List<AttributeDTO>();
+            var attributesList = new List<AttributeReturnDTO>();
 
             foreach (var attr in attributesOfWell)
             {
@@ -104,7 +98,7 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                 var well = await _wellRepository
                     .GetByNameOrOperator(wellName, wellOperatorName);
 
-                attributesList.Add(new AttributeDTO
+                attributesList.Add(new AttributeReturnDTO
                 {
                     WellName = well.Name,
                     CategoryOperator = well.CategoryOperator,
@@ -138,7 +132,7 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                 throw new NotFoundException("Downtime não foi fechado para esse dia.");
 
             var GetValuesByDate = await _repository.GetValuesByDate(dateToday.Date);
-            List<HistoryValueDTO> listValues = new List<HistoryValueDTO>();
+            List<HistoryValueDTO> listValues = new();
 
             foreach (var value in GetValuesByDate)
             {
@@ -156,7 +150,7 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
             }
             return listValues;
         }
-      
+
         //public async Task<AttributeDTO> CreateTag(CreateTagViewModel body)
         //{
         //    var createdTag = new Attribute

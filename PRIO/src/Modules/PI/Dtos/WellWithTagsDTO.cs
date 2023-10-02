@@ -2,7 +2,7 @@
 
 namespace PRIO.src.Modules.PI.Dtos
 {
-    public class AttributeDTO
+    public class AttributeReturnDTO
     {
         public Guid Id { get; set; }
         public bool Status { get; set; }
