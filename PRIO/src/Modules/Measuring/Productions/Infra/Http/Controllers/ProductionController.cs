@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.OutputCaching;
 using PRIO.src.Modules.Measuring.Productions.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Productions.ViewModels;
+using PRIO.src.Shared;
 using PRIO.src.Shared.Infra.Http.Filters;
 
 namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Controllers
@@ -46,7 +47,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Controllers
 
         }
 
-        //[OutputCache(PolicyName = nameof(AuthProductionIdCachePolicy))]
+        [OutputCache(PolicyName = nameof(AuthProductionIdCachePolicy))]
         [HttpGet("{id}/files")]
         public async Task<IActionResult> DownloadFiles([FromRoute] Guid id)
         {

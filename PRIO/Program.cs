@@ -73,6 +73,9 @@ using PRIO.src.Modules.Measuring.WellEvents.Interfaces;
 using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.WellProductions.Interfaces;
+using PRIO.src.Modules.PI.Infra.EF.Repositories;
+using PRIO.src.Modules.PI.Infra.Http.Services;
+using PRIO.src.Modules.PI.Interfaces;
 using PRIO.src.Shared;
 using PRIO.src.Shared.Auxiliaries.Infra.Http.Services;
 using PRIO.src.Shared.Errors;
@@ -207,6 +210,7 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddScoped<IMeasurementHistoryRepository, MeasurementHistoryRepository>();
     services.AddScoped<IBTPRepository, BTPRepository>();
     services.AddScoped<INFSMRepository, NFSMRepository>();
+    services.AddScoped<IPIRepository, PIRepository>();
 
     #endregion
 
@@ -255,6 +259,7 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddScoped<FieldFRService>();
     services.AddScoped<NFSMService>();
     services.AddScoped<WellProductionService>();
+    services.AddScoped<PIService>();
 
     #endregion
 

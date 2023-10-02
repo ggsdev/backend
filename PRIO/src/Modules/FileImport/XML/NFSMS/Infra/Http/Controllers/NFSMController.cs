@@ -67,7 +67,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Controllers
         }
 
         //[OutputCache(PolicyName = nameof(AuthProductionCachePolicy))]
-        [HttpPatch("nfsms/{id}")]
+        [HttpPatch("nfsms/{id}/apply")]
         public async Task<IActionResult> Apply([FromRoute] Guid id, CancellationToken ct)
         {
             var result = await _service.ApplyNfsm(id);
