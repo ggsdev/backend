@@ -19,5 +19,13 @@ namespace PRIO.src.Modules.PI.Infra.Http.Controllers
             var data = await _service.GetDataByUep();
             return Ok(data);
         }
+
+        [HttpGet("history")]
+        public async Task<IActionResult> TestPI([FromQuery] string date)
+        {
+            var PIValuesDTO = await _service.GetHistoryByDate(date);
+
+            return Ok(PIValuesDTO);
+        }
     }
 }

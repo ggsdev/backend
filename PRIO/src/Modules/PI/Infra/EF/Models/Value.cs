@@ -6,6 +6,9 @@ namespace PRIO.src.Modules.PI.Infra.EF.Models
     {
         public double Amount { get; set; }
         public DateTime Date { get; set; }
+        public Guid Id { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public string? Description { get; set; }
         public Attribute Attribute { get; set; }
         public List<WellsValues>? WellsValues { get; set; }
     }

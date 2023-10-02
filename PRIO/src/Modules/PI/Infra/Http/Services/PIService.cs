@@ -1,18 +1,27 @@
 ﻿using AutoMapper;
+
+using Microsoft.EntityFrameworkCore;
+using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
+using PRIO.src.Modules.PI.Dtos;
+using PRIO.src.Modules.PI.Infra.EF.Models;
+using PRIO.src.Modules.PI.Interfaces;
+using PRIO.src.Shared.Errors;
+using PRIO.src.Shared.Infra.EF;
+using System.Text.Json;
+
 using PRIO.src.Modules.Hierarchy.Installations.Dtos;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
-using PRIO.src.Modules.PI.Dtos;
-using PRIO.src.Modules.PI.Interfaces;
+
+
 
 namespace PRIO.src.Modules.PI.Infra.Http.Services
 {
     public class PIService
     {
-        IPIRepository _repository;
-        IMapper _mapper;
-        IInstallationRepository _installationRepository;
-        IWellRepository _wellRepository;
+        private readonly IPIRepository _repository;
+        private readonly IMapper _mapper;
+        private readonly IWellRepository _wellRepository;
 
         public PIService(IPIRepository repository, IInstallationRepository installationRepository, IMapper mapper, IWellRepository wellRepository)
         {
@@ -114,6 +123,40 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
             return attributesList;
         }
 
+
+        public async Task<List<HistoryValueDTO>> GetHistoryByDate(string date)
+        {
+            if (date == null)
+                throw new ConflictException("Data não informada.");
+
+            var checkDate = DateTime.TryParse(date, out DateTime day);
+            if (checkDate is false)
+                throw new ConflictException("Data não é válida.");
+
+            var dateToday = DateTime.UtcNow.AddHours(-3).Date;
+            if (dateToday <= day)
+                throw new NotFoundException("Downtime não foi fechado para esse dia.");
+
+            var GetValuesByDate = await _repository.GetValuesByDate(dateToday.Date);
+            List<HistoryValueDTO> listValues = new List<HistoryValueDTO>();
+
+            foreach (var value in GetValuesByDate)
+            {
+                var well = await _wellRepository.GetByNameOrOperatorName(value.Attribute.WellName);
+                var data = new HistoryValueDTO
+                {
+                    TAG = value.Attribute.Name,
+                    Date = value.Date,
+                    Value = value.Amount,
+                    Well = value.Attribute.WellName,
+                    Field = well.Field.Name,
+                    Installation = well.Field.Installation.Name
+                };
+                listValues.Add(data);
+            }
+            return listValues;
+        }
+      
         //public async Task<AttributeDTO> CreateTag(CreateTagViewModel body)
         //{
         //    var createdTag = new Attribute
@@ -129,9 +172,12 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
 
         //}
 
+
         private static void Print<T>(T text)
         {
             Console.WriteLine(text);
         }
+
+
     }
 }
