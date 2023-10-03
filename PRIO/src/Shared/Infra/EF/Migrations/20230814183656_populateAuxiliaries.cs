@@ -161,8 +161,18 @@ namespace PRIO.Migrations
                 new object[] { Guid.NewGuid(), "/eventosPoco", "Fechado", "Status ANP", "Fechado por estratégia",  DateTime.UtcNow.AddHours(-3) },
 
 
-                //new object[] { Guid.NewGuid(), "/eventosPoco", "Fechado", "Status ANP", "Fechado por estratégia",  DateTime.UtcNow.AddHours(-3) },
-                //new object[] { Guid.NewGuid(), "/eventosPoco", "Fechado", "Status ANP", "Fechado por estratégia",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/parametrosPI", "Pressão", "Paramêtros", "Pressão PDG 1",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/parametrosPI", "Pressão", "Paramêtros", "Pressão PDG 2",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/parametrosPI", "Pressão", "Paramêtros", "Pressão Intake ESP",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/parametrosPI", "Pressão", "Paramêtros", "Pressão WH",  DateTime.UtcNow.AddHours(-3) },
+
+                new object[] { Guid.NewGuid(), "/parametrosPI", "Vazão", "Paramêtros", "Vazão de Gas Lift",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/parametrosPI", "Vazão", "Paramêtros", "Vazão de injeção de água",  DateTime.UtcNow.AddHours(-3) },
+
+                new object[] { Guid.NewGuid(), "/parametrosPI", "Vazão", "Paramêtros", "Vazão da GFL1",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/parametrosPI", "Vazão", "Paramêtros", "Vazão da GFL4",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/parametrosPI", "Vazão", "Paramêtros", "Vazão da GFL6",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/parametrosPI", "Vazão", "Paramêtros", "Vazão da WFL1",  DateTime.UtcNow.AddHours(-3) },
 
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Fields", "UF", "ACRE",  DateTime.UtcNow.AddHours(-3) },
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Fields", "UF", "ALAGOAS",  DateTime.UtcNow.AddHours(-3) },
