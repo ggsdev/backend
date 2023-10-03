@@ -131,7 +131,8 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
             if (dateToday <= day)
                 throw new NotFoundException("Downtime não foi fechado para esse dia.");
 
-            var GetValuesByDate = await _repository.GetValuesByDate(dateToday.Date);
+            var GetValuesByDate = await _repository.GetValuesByDate(day.Date);
+
             List<HistoryValueDTO> listValues = new();
 
             foreach (var value in GetValuesByDate)

@@ -20,9 +20,9 @@ namespace PRIO.src.Modules.PI.Infra.EF.Repositories
 
         public async Task<List<Value>> GetValuesByDate(DateTime date)
         {
-            return _context.Values.Include(v => v.Attribute).ThenInclude(a => a.Element).Where(x => x.Date.Date == date).ToList();
+            return await _context.Values.Include(v => v.Attribute).ThenInclude(a => a.Element).Where(x => x.Date.Date == date).ToListAsync();
         }
-        
+
         public async Task<List<Models.Attribute>> GetTagsByWellName(string wellName, string wellOperatorName)
         {
             return await _context.Attributes
