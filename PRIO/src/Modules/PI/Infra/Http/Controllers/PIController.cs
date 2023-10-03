@@ -21,11 +21,19 @@ namespace PRIO.src.Modules.PI.Infra.Http.Controllers
         }
 
         [HttpGet("history")]
-        public async Task<IActionResult> TestPI([FromQuery] string date)
+        public async Task<IActionResult> GetHistory([FromQuery] string date)
         {
             var PIValuesDTO = await _service.GetHistoryByDate(date);
 
             return Ok(PIValuesDTO);
+        }
+
+        [HttpGet("attributes/{wellId}")]
+        public async Task<IActionResult> GetAttributesByWell([FromRoute] Guid wellId)
+        {
+            var PIAttributesWellDTO = await _service.GetAttributesByWell(wellId);
+
+            return Ok(PIAttributesWellDTO);
         }
     }
 }
