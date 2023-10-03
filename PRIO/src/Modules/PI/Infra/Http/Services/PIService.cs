@@ -181,71 +181,86 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
             var elementInDatabase = await _repository
                 .GetElementByParameter(body.Parameter)
                 ?? throw new ConflictException($"Parâmetro: '{body.Parameter}' não encontrado.");
-
-            var handler = new HttpClientHandler
+            try
             {
-                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
-            };
 
-            using HttpClient client = new(handler);
-            var username = "svc-pi-frade";
-            var password = "S6_5q2C?=%ff";
+                var handler = new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+                };
 
-            var credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}"));
+                using HttpClient client = new(handler);
+                var username = "svc-pi-frade";
+                var password = "S6_5q2C?=%ff";
 
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
+                var credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}"));
 
-            var atributesRoute = elementInDatabase.AttributesRoute;
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
 
-            var response = await client
-                .GetAsync(atributesRoute);
+                var atributesRoute = elementInDatabase.AttributesRoute;
 
-            if (response.IsSuccessStatusCode is false)
-                throw new BadRequestException("Conexão com PI falhou.");
+                var response = await client
+                    .GetAsync(atributesRoute);
 
-            var jsonContent = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode is false)
+                    throw new BadRequestException("Conexão com PI falhou.");
 
-            var elementObject = JsonSerializer.Deserialize<ItemsElementJson>(jsonContent, new JsonSerializerOptions
+                var jsonContent = await response.Content.ReadAsStringAsync();
+
+                var elementObject = JsonSerializer.Deserialize<ItemsElementJson>(jsonContent, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }) ?? throw new BadRequestException("Não foi possível deserializar o json");
+
+                var attribute = elementObject.Items
+                    .FirstOrDefault(x => x.Name.ToUpper().Trim().Contains(body.TagName.ToUpper().Trim()))
+                    ?? throw new NotFoundException($"Tag: {body.TagName} não encontrada no PI.");
+
+                var createdTag = new EF.Models.Attribute
+                {
+                    Id = Guid.NewGuid(),
+                    IsActive = body.StatusTag,
+                    IsOperating = body.Operational,
+                    Name = body.TagName,
+                    WellName = well.Name,
+                    Element = elementInDatabase,
+                    Description = body.Description,
+                    CreatedAt = DateTime.UtcNow.AddHours(-3),
+                    WebId = attribute.WebId,
+                    PIId = attribute.Id,
+                    SelfRoute = attribute.Links.Self,
+                    ValueRoute = attribute.Links.Value,
+                };
+
+                await _repository.AddTag(createdTag);
+
+                var attributeDto = new AttributeReturnDTO
+                {
+                    WellName = well.Name,
+                    CategoryOperator = well.CategoryOperator,
+                    Field = well.Field.Name,
+                    GroupParameter = createdTag.Element.CategoryParameter,
+                    Parameter = createdTag.Element.Parameter,
+                    Operational = createdTag.IsOperating,
+                    Status = createdTag.IsActive,
+                    Id = createdTag.Id,
+                    CreatedAt = createdTag.CreatedAt.ToString("dd/MM/yyyy"),
+                    Tag = createdTag.Name,
+
+                };
+
+                await _repository.SaveChanges();
+
+                return attributeDto;
+            }
+            catch (HttpRequestException)
             {
-                PropertyNameCaseInsensitive = true
-            }) ?? throw new BadRequestException("Não foi possível deserializar o json");
-
-            var attribute = elementObject.Items
-                .FirstOrDefault(x => x.Name.ToUpper().Trim().Contains(body.TagName.ToUpper().Trim()))
-                ?? throw new NotFoundException($"Tag: {body.TagName} não encontrada no PI.");
-
-            var createdTag = new EF.Models.Attribute
+                throw new BadRequestException("Erro ao se conectar ao PI");
+            }
+            catch (Exception ex)
             {
-                Id = Guid.NewGuid(),
-                IsActive = body.StatusTag,
-                IsOperating = body.Operational,
-                Name = body.TagName,
-                WellName = well.Name,
-                Element = elementInDatabase,
-                Description = body.Description,
-                CreatedAt = DateTime.UtcNow.AddHours(-3),
-                WebId = attribute.WebId,
-                PIId = attribute.Id,
-                SelfRoute = attribute.Links.Self,
-                ValueRoute = attribute.Links.Value,
-            };
-
-            var attributeDto = new AttributeReturnDTO
-            {
-                WellName = well.Name,
-                CategoryOperator = well.CategoryOperator,
-                Field = well.Field.Name,
-                GroupParameter = createdTag.Element.CategoryParameter,
-                Parameter = createdTag.Element.Parameter,
-                Operational = createdTag.IsOperating,
-                Status = createdTag.IsActive,
-                Id = createdTag.Id,
-                CreatedAt = createdTag.CreatedAt.ToString("dd/MM/yyyy"),
-                Tag = createdTag.Name,
-
-            };
-
-            return attributeDto;
+                throw new BadRequestException($"Aconteceu algo de errado: {ex.Message}");
+            }
         }
 
 
