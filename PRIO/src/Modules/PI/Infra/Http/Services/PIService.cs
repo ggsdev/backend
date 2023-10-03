@@ -120,7 +120,6 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
             return attributesList;
         }
 
-
         public async Task<List<HistoryValueDTO>> GetHistoryByDate(string date)
         {
             if (date == null)
@@ -153,6 +152,18 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                 listValues.Add(data);
             }
             return listValues;
+        }
+
+
+        public async Task<List<AttributeDTO>> GetAttributesByWell(Guid wellId)
+        {
+            var well = await _wellRepository.GetByIdAsync(wellId) ?? throw new NotFoundException("Poço não encontrado.");
+
+            var Tags = await _repository.GetTagsByWellName(well.Name, well.WellOperatorName);
+
+            var TagsDTO = _mapper.Map<List<EF.Models.Attribute>, List<AttributeDTO>>(Tags);
+
+            return TagsDTO;
         }
 
         public async Task<AttributeReturnDTO> CreateTag(CreateTagViewModel body)
