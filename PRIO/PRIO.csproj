@@ -98,8 +98,6 @@
     <Folder Include="src\Modules\Measuring\Measurements\Dtos\" />
     <Folder Include="src\Modules\Measuring\Measurements\Infra\Http\Controllers\" />
     <Folder Include="src\Modules\Measuring\Measurements\ViewModels\" />
-    <Folder Include="src\Modules\PI\Dtos\" />
-    <Folder Include="src\Modules\PI\ViewModels\" />
   </ItemGroup>
 
   <ItemGroup>
