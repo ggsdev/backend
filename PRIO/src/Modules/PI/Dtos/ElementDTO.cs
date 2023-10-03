@@ -1,4 +1,6 @@
-﻿namespace PRIO.src.Modules.PI.Dtos
+﻿using System.Text.Json.Serialization;
+
+namespace PRIO.src.Modules.PI.Dtos
 {
     public class ElementDTO
     {
@@ -58,5 +60,14 @@
     public class ItemsElementJson
     {
         public List<ElementJsonDTO> Items { get; set; }
+
+        [JsonIgnore]
+        public LinksFirstLastJson LinksFirstLastJson { get; set; }
+    }
+
+    public class LinksFirstLastJson
+    {
+        public string First { get; set; }
+        public string Last { get; set; }
     }
 }

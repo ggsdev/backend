@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PRIO.src.Modules.PI.Infra.Http.Services;
+using PRIO.src.Modules.PI.ViewModels;
 using PRIO.src.Shared.Errors;
 
 namespace PRIO.src.Modules.PI.Infra.Http.Controllers
@@ -21,6 +22,14 @@ namespace PRIO.src.Modules.PI.Infra.Http.Controllers
             return Ok(data);
         }
 
+        [HttpPost("tags")]
+        public async Task<IActionResult> CreateTag(CreateTagViewModel tagViewModel)
+        {
+            var data = await _service.CreateTag(tagViewModel);
+
+            return Created($"{data.Id}", data);
+        }
+
         [HttpGet("history")]
         public async Task<IActionResult> GetHistory([FromQuery] string date)
         {
@@ -37,7 +46,7 @@ namespace PRIO.src.Modules.PI.Infra.Http.Controllers
 
             return Ok(PIAttributesWellDTO);
         }
-        
+
         [HttpGet("wells")]
         public async Task<IActionResult> GetByWellNameOperator(string wellName, string wellNameOperator)
         {
