@@ -36,6 +36,18 @@ namespace PRIO.src.Modules.PI.Infra.EF.Repositories
             await _context.Attributes
                 .AddAsync(atr);
         }
+        public async Task<bool> AnyTag(string tagName)
+        {
+            return await _context.Attributes
+                .AnyAsync(x => x.Name.ToUpper().Trim().Contains(tagName.ToUpper().Trim()));
+        }
+
+        public async Task<Element?> GetElementByParameter(string parameter)
+        {
+            return await _context.Elements
+                .FirstOrDefaultAsync(x => x.Parameter.ToUpper().Trim().Contains(parameter.ToUpper().Trim()));
+
+        }
 
         public async Task SaveChangesAsync()
         {

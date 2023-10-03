@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using PRIO.src.Modules.Hierarchy.Installations.Dtos;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
+using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Modules.PI.Dtos;
 using PRIO.src.Modules.PI.Interfaces;
+using PRIO.src.Modules.PI.ViewModels;
 using PRIO.src.Shared.Errors;
 
 
@@ -89,12 +91,13 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
 
         public async Task<List<AttributeReturnDTO>> GetTagsByWellName(string wellName, string wellOperatorName)
         {
-            var attributesOfWell = await _repository.GetTagsByWellName(wellName, wellOperatorName);
+            var attributesOfWell = await _repository
+                .GetTagsByWellName(wellName, wellOperatorName);
+
             var attributesList = new List<AttributeReturnDTO>();
 
             foreach (var attr in attributesOfWell)
             {
-
                 var well = await _wellRepository
                     .GetByNameOrOperator(wellName, wellOperatorName);
 
@@ -151,6 +154,7 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
             return listValues;
         }
 
+
         public async Task<List<AttributeDTO>> GetAttributesByWell(Guid wellId)
         {
             var well = await _wellRepository.GetByIdAsync(wellId) ?? throw new NotFoundException("Poço não encontrado.");
@@ -162,20 +166,53 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
             return TagsDTO;
         }
 
-        //public async Task<AttributeDTO> CreateTag(CreateTagViewModel body)
-        //{
-        //    var createdTag = new Attribute
-        //    {
-        //        Id = Guid.NewGuid(),
+        public async Task<AttributeReturnDTO> CreateTag(CreateTagViewModel body)
+        {
+            var well = await _wellRepository.GetByIdAsync(body.WellId)
+                ?? throw new NotFoundException(ErrorMessages.NotFound<Well>());
+
+            var tagExists = await _repository
+                .AnyTag(body.TagName);
+
+            if (tagExists)
+                throw new ConflictException($"Já existe uma tag com o nome: '{body.TagName}'.");
+
+            var elementInDatabase = await _repository
+                .GetElementByParameter(body.Parameter)
+                ?? throw new ConflictException($"Parâmetro: '{body.Parameter}' não encontrado.");
+
+            var createdTag = new EF.Models.Attribute
+            {
+                Id = Guid.NewGuid(),
+                IsActive = body.StatusTag,
+                IsOperating = body.Operational,
+                Name = body.TagName,
+                WellName = well.Name,
+                Element = elementInDatabase,
+                Description = body.Description,
 
 
+                CreatedAt = DateTime.UtcNow.AddHours(-3),
 
+            };
 
-        //    };
+            var attributeDto = new AttributeReturnDTO
+            {
+                WellName = well.Name,
+                CategoryOperator = well.CategoryOperator,
+                Field = well.Field.Name,
+                GroupParameter = createdTag.Element.CategoryParameter,
+                Parameter = createdTag.Element.Parameter,
+                Operational = createdTag.IsOperating,
+                Status = createdTag.IsActive,
+                Id = createdTag.Id,
+                CreatedAt = createdTag.CreatedAt.ToString("dd/MM/yyyy"),
+                Tag = createdTag.Name
+            };
 
+            return attributeDto;
 
-
-        //}
+        }
 
 
         private static void Print<T>(T text)

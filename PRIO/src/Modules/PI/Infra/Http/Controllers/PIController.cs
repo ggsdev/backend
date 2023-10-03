@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PRIO.src.Modules.PI.Infra.Http.Services;
+using PRIO.src.Shared.Errors;
 
 namespace PRIO.src.Modules.PI.Infra.Http.Controllers
 {
@@ -28,12 +29,25 @@ namespace PRIO.src.Modules.PI.Infra.Http.Controllers
             return Ok(PIValuesDTO);
         }
 
+
         [HttpGet("attributes/{wellId}")]
         public async Task<IActionResult> GetAttributesByWell([FromRoute] Guid wellId)
         {
             var PIAttributesWellDTO = await _service.GetAttributesByWell(wellId);
 
             return Ok(PIAttributesWellDTO);
+        }
+        
+        [HttpGet("wells")]
+        public async Task<IActionResult> GetByWellNameOperator(string wellName, string wellNameOperator)
+        {
+            if (wellName is null || wellNameOperator is null)
+                throw new BadRequestException("Parâmetros de consulta devem ser utilizados: 'wellName' e 'wellNameOperator'.");
+
+            var PIValuesDTO = await _service.GetTagsByWellName(wellName, wellNameOperator);
+
+            return Ok(PIValuesDTO);
+
         }
     }
 }

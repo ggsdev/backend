@@ -69,12 +69,6 @@ namespace PRIOScheduler
                                 PropertyNameCaseInsensitive = true
                             });
 
-                            Print("value object is not null" + valueObject is not null);
-                            Print("value object value" + valueObject?.Value);
-                            Print("value object timestamp" + valueObject?.Timestamp);
-                            Print("well is not null" + well is not null);
-                            Print("well name" + well?.Name);
-
                             if (valueObject is not null && well is not null)
                             {
                                 var value = new Value
@@ -82,7 +76,7 @@ namespace PRIOScheduler
                                     Id = Guid.NewGuid(),
                                     Amount = valueObject.Value,
                                     Attribute = atr,
-                                    Date = valueObject.Timestamp,
+                                    Date = valueObject.Timestamp.AddHours(-3),
 
                                 };
 

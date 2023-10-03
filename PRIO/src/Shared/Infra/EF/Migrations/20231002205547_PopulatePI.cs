@@ -12,7 +12,7 @@ namespace PRIO.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             var envVars = DotEnv.Read();
-            var today = DateTime.Now;
+            var today = DateTime.UtcNow.AddHours(-3);
 
             string instanceKey = envVars["INSTANCE"];
 
@@ -98,7 +98,7 @@ namespace PRIO.Migrations
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQA39nlIAA7hGxjwBQVoy5FQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gQlJBVk9cSU5UQUtFIFBSRVNTVVJFIEVTUCBTRU5TT1I",
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQA39nlIAA7hGxjwBQVoy5FQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gQlJBVk9cSU5UQUtFIFBSRVNTVVJFIEVTUCBTRU5TT1I/attributes",
                                 "Pressão",
-                                "INTAKE"
+                                "Pressão Intake ESP"
                             },
                             new object[] {
                                 pressurePDGId,
@@ -109,7 +109,7 @@ namespace PRIO.Migrations
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQSna1qIAA7hGxjwBQVoy5FQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gQlJBVk9cV0hQ",
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQuartfoAA7hGxjwBQVoy5FQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gQlJBVk9cUFJFU1NVUkUgUERHIDE/attributes",
                                 "Pressão",
-                                "PDG1"
+                                "Pressão PDG 1"
                             },
                             new object[] {
                                 WHPId,
@@ -120,7 +120,7 @@ namespace PRIO.Migrations
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQOuWSPIvq7RGxjQBQVoy5FQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXFBPTFZPLUE",
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQSna1qIAA7hGxjwBQVoy5FQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gQlJBVk9cV0hQ/attributes",
                                 "Pressão",
-                                "WH"
+                                "Pressão WH"
                             },
                         };
 
@@ -553,7 +553,7 @@ namespace PRIO.Migrations
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQ4610ZoQA7hGxjwBQVoy5FQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXFBPTFZPLUFcSU5UQUtFIFBSRVNTVVJFIEVTUCBTRU5TT1I",
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQ4610ZoQA7hGxjwBQVoy5FQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXFBPTFZPLUFcSU5UQUtFIFBSRVNTVVJFIEVTUCBTRU5TT1I/attributes",
                                 "Pressão",
-                                "INTAKE"
+                                "Pressão Intake ESP"
 
                             },
                             //new object[] {
@@ -574,7 +574,7 @@ namespace PRIO.Migrations
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQio9kboQA7hGxjwBQVoy5FQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXFBPTFZPLUFcV0hQ",
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQio9kboQA7hGxjwBQVoy5FQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXFBPTFZPLUFcV0hQ/attributes",
                                 "Pressão",
-                                "WH"
+                                "Pressão WH"
                             },
                         };
 
@@ -1149,7 +1149,7 @@ namespace PRIO.Migrations
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQPa1Hcuwn7hGxlABQVozG4QUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcUERHIFBSRVNTw4NPIDE",
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQPa1Hcuwn7hGxlABQVozG4QUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcUERHIFBSRVNTw4NPIDE/attributes",
                                 "Pressão",
-                                "PDG1"
+                                "Pressão PDG 1"
                             },
                             new object[] {
                                 TPTPressureId,
@@ -1160,18 +1160,18 @@ namespace PRIO.Migrations
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4QUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDE",
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQRIIVoe8n7hGxlABQVozG4QUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVFBUIFBSRVNTw4NPIDE/attributes",
                                 "Pressão",
-                                "WH"
+                                "Pressão WH"
                             },
                             new object[] {
                                 GASLiftId,
                                 "F1EmcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4QUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVA",
                                 "689796c7-27ff-11ee-b194-0050568cc6e1",
-                                "Vazão de gás lift",
+                                "Vazão de gas lift",
                                 "",
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4QUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVA",
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4QUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVA/attributes",
                                 "Vazão",
-                                "Vazão de Gás Lift"
+                                "Vazão de Gas Lift , Alocação de Gas Lift"
                             },
                         };
 
@@ -1719,7 +1719,7 @@ namespace PRIO.Migrations
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQGW8SAokl7hGxlwBQVoz1DQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRlJBREVcUFJFU1NBTyBERSBGVU5ETyBERSBQT8OHTyAx",
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQGW8SAokl7hGxlwBQVoz1DQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRlJBREVcUFJFU1NBTyBERSBGVU5ETyBERSBQT8OHTyAx/attributes",
                                 "Pressão",
-                                "PDG1"
+                                "Pressão PDG 1"
                             },
                             new object[] {
                                 PDG2Id,
@@ -1730,7 +1730,7 @@ namespace PRIO.Migrations
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQttwhDokl7hGxlwBQVoz1DQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRlJBREVcUFJFU1NBTyBERSBGVU5ETyBERSBQT8OHTyAy",
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQttwhDokl7hGxlwBQVoz1DQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRlJBREVcUFJFU1NBTyBERSBGVU5ETyBERSBQT8OHTyAy/attributes",
                                 "Pressão",
-                                "PDG2"
+                                "Pressão PDG 2"
                             },
                             new object[] {
                                 SSPCVId,
@@ -1741,7 +1741,7 @@ namespace PRIO.Migrations
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQHi5gGIkl7hGxlwBQVoz1DQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRlJBREVcUFJFU1NBTyBNT05UQU5URSBTU1BDVg",
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQHi5gGIkl7hGxlwBQVoz1DQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRlJBREVcUFJFU1NBTyBNT05UQU5URSBTU1BDVg/attributes",
                                 "Pressão",
-                                "WH"
+                                "Pressão WH"
 
                             },
                             new object[] {
@@ -1753,7 +1753,7 @@ namespace PRIO.Migrations
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQQBB2RIkl7hGxlwBQVoz1DQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRlJBREVcVkFaQU8gVkNPTkU",
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQQBB2RIkl7hGxlwBQVoz1DQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRlJBREVcVkFaQU8gVkNPTkU/attributes",
                                 "Vazão",
-                                "Vazão de Gás Lift"
+                                "Vazão de Gas Lift"
 
                             },
                         };
