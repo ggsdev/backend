@@ -1,14 +1,10 @@
 ﻿using AutoMapper;
 using PRIO.src.Modules.Hierarchy.Installations.Dtos;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
-using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Modules.PI.Dtos;
 using PRIO.src.Modules.PI.Interfaces;
-using PRIO.src.Modules.PI.ViewModels;
 using PRIO.src.Shared.Errors;
-
-
 
 namespace PRIO.src.Modules.PI.Infra.Http.Services
 {
@@ -166,60 +162,98 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
             return TagsDTO;
         }
 
-        public async Task<AttributeReturnDTO> CreateTag(CreateTagViewModel body)
-        {
-            var well = await _wellRepository.GetByIdAsync(body.WellId)
-                ?? throw new NotFoundException(ErrorMessages.NotFound<Well>());
+        //public async Task<AttributeReturnDTO> CreateTag(CreateTagViewModel body)
+        //{
+        //    var well = await _wellRepository.GetByIdAsync(body.WellId)
+        //        ?? throw new NotFoundException(ErrorMessages.NotFound<Well>());
 
-            var tagExists = await _repository
-                .AnyTag(body.TagName);
+        //    var tagExists = await _repository
+        //        .AnyTag(body.TagName);
 
-            if (tagExists)
-                throw new ConflictException($"Já existe uma tag com o nome: '{body.TagName}'.");
+        //    if (tagExists)
+        //        throw new ConflictException($"Já existe uma tag com o nome: '{body.TagName}'.");
 
-            var elementInDatabase = await _repository
-                .GetElementByParameter(body.Parameter)
-                ?? throw new ConflictException($"Parâmetro: '{body.Parameter}' não encontrado.");
+        //    var elementInDatabase = await _repository
+        //        .GetElementByParameter(body.Parameter)
+        //        ?? throw new ConflictException($"Parâmetro: '{body.Parameter}' não encontrado.");
 
-            var createdTag = new EF.Models.Attribute
-            {
-                Id = Guid.NewGuid(),
-                IsActive = body.StatusTag,
-                IsOperating = body.Operational,
-                Name = body.TagName,
-                WellName = well.Name,
-                Element = elementInDatabase,
-                Description = body.Description,
+        //    var errorsList = new List<string>();
+
+        //    var handler = new HttpClientHandler
+        //    {
+        //        ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+        //    };
+
+        //    using HttpClient client = new(handler);
+        //    var username = "svc-pi-frade";
+        //    var password = "S6_5q2C?=%ff";
+
+        //    var credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}"));
+
+        //    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
+
+        //    var elementRout = elementInDatabase.SelfRoute;
+
+        //    HttpResponseMessage response = await client.GetAsync(elementRout);
+
+        //    if (response.IsSuccessStatusCode)
+        //    {
+        //        string jsonContent = await response.Content.ReadAsStringAsync();
 
 
-                CreatedAt = DateTime.UtcNow.AddHours(-3),
+        //        ValueJson? valueObject = JsonSerializer.Deserialize<ValueJson>(jsonContent, new JsonSerializerOptions
+        //        {
+        //            PropertyNameCaseInsensitive = true
+        //        });
 
-            };
+        //        if (valueObject is not null && well is not null)
+        //        {
+        //            var createdTag = new EF.Models.Attribute
+        //            {
+        //                Id = Guid.NewGuid(),
+        //                IsActive = body.StatusTag,
+        //                IsOperating = body.Operational,
+        //                Name = body.TagName,
+        //                WellName = well.Name,
+        //                Element = elementInDatabase,
+        //                Description = body.Description,
 
-            var attributeDto = new AttributeReturnDTO
-            {
-                WellName = well.Name,
-                CategoryOperator = well.CategoryOperator,
-                Field = well.Field.Name,
-                GroupParameter = createdTag.Element.CategoryParameter,
-                Parameter = createdTag.Element.Parameter,
-                Operational = createdTag.IsOperating,
-                Status = createdTag.IsActive,
-                Id = createdTag.Id,
-                CreatedAt = createdTag.CreatedAt.ToString("dd/MM/yyyy"),
-                Tag = createdTag.Name
-            };
 
-            return attributeDto;
+        //                CreatedAt = DateTime.UtcNow.AddHours(-3),
 
-        }
+        //            };
+
+        //            var attributeDto = new AttributeReturnDTO
+        //            {
+        //                WellName = well.Name,
+        //                CategoryOperator = well.CategoryOperator,
+        //                Field = well.Field.Name,
+        //                GroupParameter = createdTag.Element.CategoryParameter,
+        //                Parameter = createdTag.Element.Parameter,
+        //                Operational = createdTag.IsOperating,
+        //                Status = createdTag.IsActive,
+        //                Id = createdTag.Id,
+        //                CreatedAt = createdTag.CreatedAt.ToString("dd/MM/yyyy"),
+        //                Tag = createdTag.Name
+        //            };
+
+        //            return attributeDto;
+        //        }
+        //        else
+        //            throw new BadRequestException($"Não foi possível criar uma tag.");
+        //    }
+
+
+
+        //    if (errorsList.Any())
+        //        throw new BadRequestException("Alguns erros na requisição", errors: errorsList);
+
+        //}
 
 
         private static void Print<T>(T text)
         {
             Console.WriteLine(text);
         }
-
-
     }
 }
