@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<BTPBase64> builder)
         {
-            builder.ToTable("BTPBases64");
+            builder.ToTable("WellTest.Bases64");
 
 
             builder.Property(x => x.FileContent)

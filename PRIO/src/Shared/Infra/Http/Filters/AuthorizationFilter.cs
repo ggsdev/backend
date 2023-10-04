@@ -23,6 +23,8 @@ namespace PRIO.src.Shared.Infra.Http.Filters
             {
                 var user = await _context.Users
                     .Include(x => x.Group)
+                    .Include(x => x.InstallationsAccess)
+                    .ThenInclude(x => x.Installation)
                     .FirstOrDefaultAsync(x => x.Id == userId);
 
                 if (user is null)
@@ -36,34 +38,6 @@ namespace PRIO.src.Shared.Infra.Http.Filters
 
 
                 }
-
-                //foreach (var permission in user.UserPermissions)
-                //{
-                //    //Console.WriteLine("request" + requestMethod);
-
-                //    foreach (var ope in permission.UserOperation)
-                //    {
-                //        //Console.WriteLine("operation" + ope.OperationName);
-
-                //    }
-
-                //    var hasPermission = permission.UserOperation
-                //        .Any(x => x.OperationName == requestMethod);
-
-                //    //Console.WriteLine(hasPermission);
-
-                //    //if (hasPermission is false)
-                //    //{
-                //    //    context.Result = new UnauthorizedObjectResult(new ErrorResponseDTO
-                //    //    {
-                //    //        Message = "Usuário não tem permissão para essa operação"
-                //    //    });
-
-                //    //    return;
-                //    //}
-
-                //}
-
 
                 context.HttpContext.Items["User"] = user;
 

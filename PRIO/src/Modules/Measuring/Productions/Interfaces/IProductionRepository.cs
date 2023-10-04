@@ -1,4 +1,5 @@
 ﻿using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Measuring.Productions.Interfaces
 {
@@ -6,6 +7,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Interfaces
     {
         Task AddProduction(Production production);
         Task<Production?> GetExistingByDate(DateTime date);
+        Task<Production?> GetCleanByDate(DateTime date);
+        Task<Production?> GetExistingByDateWithProductionAllocation(DateTime date);
         Task<bool> AnyByDate(DateTime date);
         Task<Production?> GetProductionGasByDate(DateTime date);
         void Update(Production production);
@@ -18,6 +21,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Interfaces
         Task AddWaterProduction(Water water);
         void UpdateFieldProduction(FieldProduction fieldProduction);
         Task<FieldProduction?> GetFieldProductionByFieldAndProductionId(Guid fieldId, Guid productionId);
+        Task<WellProduction?> GetWellProductionByWellAndProductionId(Guid wellId, Guid productionId);
+        Task<WellLosses?> GetWellLossByEventAndWellProductionId(Guid eventId, Guid wellProductionId);
         Task<List<FieldProduction>> GetAllFieldProductionByProduction(Guid productionId);
     }
 }

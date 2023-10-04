@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<Reservoir> builder)
         {
-            builder.ToTable("Reservoirs");
+            builder.ToTable("Hierachy.Reservoirs");
 
             builder.Property(x => x.Name)
               .HasColumnType("VARCHAR")
@@ -25,6 +25,8 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Mappings
             builder.Property(x => x.DeletedAt);
 
             builder.Property(x => x.IsActive);
+
+            builder.Property(x => x.InactivatedAt);
 
             builder.HasOne(c => c.User).
                 WithMany(u => u.Reservoirs)

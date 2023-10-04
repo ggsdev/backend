@@ -8,27 +8,27 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<GasLinear> builder)
         {
-            builder.ToTable("GasesLinears");
+            builder.ToTable("Measurement.GasesLinears");
 
             builder.Property(x => x.TotalGas)
               .HasColumnType("DECIMAL")
-              .HasPrecision(14, 5);
+              .HasPrecision(20, 5);
 
             builder.Property(x => x.ExportedGas)
                 .HasColumnType("DECIMAL")
-                .HasPrecision(14, 5);
+                .HasPrecision(20, 5);
 
             builder.Property(x => x.ImportedGas)
                 .HasColumnType("DECIMAL")
-                .HasPrecision(14, 5);
+                .HasPrecision(20, 5);
 
             builder.Property(x => x.BurntGas)
                .HasColumnType("DECIMAL")
-               .HasPrecision(14, 5);
+               .HasPrecision(20, 5);
 
             builder.Property(x => x.FuelGas)
                .HasColumnType("DECIMAL")
-               .HasPrecision(14, 5);
+               .HasPrecision(20, 5);
         }
     }
 }

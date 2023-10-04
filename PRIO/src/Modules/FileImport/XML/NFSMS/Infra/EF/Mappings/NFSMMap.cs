@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<NFSM> builder)
         {
-            builder.ToTable("NFSMs");
+            builder.ToTable("Measurement.NFSMs");
 
             builder.Property(x => x.CodeFailure)
                 .HasColumnType("varchar")
@@ -58,15 +58,23 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<NFSMsProductions> builder)
         {
-            builder.ToTable("NFSMsProductions");
+            builder.ToTable("Measurement.NFSMsProductions");
 
             builder.Property(x => x.VolumeAfter)
                 .HasColumnType("decimal")
-                .HasPrecision(14, 5);
+                .HasPrecision(20, 5);
 
             builder.Property(x => x.VolumeBefore)
                 .HasColumnType("decimal")
-                .HasPrecision(14, 5);
+                .HasPrecision(20, 5);
+
+            builder.Property(x => x.Bsw)
+                .HasColumnType("decimal")
+                .HasPrecision(10, 5);
+
+            builder.Property(x => x.BswMax)
+                .HasColumnType("decimal")
+                .HasPrecision(10, 5);
 
             builder.HasOne(x => x.Production)
                  .WithMany(x => x.NFSMs)

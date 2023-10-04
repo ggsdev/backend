@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<Installation> builder)
         {
-            builder.ToTable("Installations");
+            builder.ToTable("Hierachy.Installations");
 
             builder.Property(x => x.Name)
                 .HasColumnType("VARCHAR")
@@ -44,6 +44,8 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Mappings
             builder.Property(x => x.DeletedAt);
 
             builder.Property(x => x.IsActive);
+
+            builder.Property(x => x.InactivatedAt);
 
             builder.HasOne(x => x.User)
                .WithMany(u => u.Installations)

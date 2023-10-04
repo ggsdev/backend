@@ -8,27 +8,27 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<FieldFR> builder)
         {
-            builder.ToTable("FieldsFRs");
+            builder.ToTable("Production.FieldsFRs");
 
             builder.Property(x => x.FROil)
                .HasColumnType("decimal")
-               .HasPrecision(4, 2);
+               .HasPrecision(10, 5);
 
             builder.Property(x => x.FRGas)
                .HasColumnType("decimal")
-               .HasPrecision(4, 2);
+               .HasPrecision(10, 5);
 
             builder.Property(x => x.TotalProductionInField)
                .HasColumnType("decimal")
-               .HasPrecision(10, 5);
+               .HasPrecision(20, 5);
 
             builder.Property(x => x.GasProductionInField)
                .HasColumnType("decimal")
-               .HasPrecision(10, 5);
+               .HasPrecision(20, 5);
 
             builder.Property(x => x.OilProductionInField)
                .HasColumnType("decimal")
-               .HasPrecision(10, 5);
+               .HasPrecision(20, 5);
 
             builder.Property(x => x.ProductionInFieldAsPercentage)
                .HasColumnType("decimal")

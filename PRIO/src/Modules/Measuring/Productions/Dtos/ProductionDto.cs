@@ -1,4 +1,4 @@
-﻿using PRIO.src.Modules.FileImport.XML.Dtos;
+﻿using PRIO.src.Modules.FileImport.XML.Measuring.Dtos;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.ViewModels;
 using PRIO.src.Modules.Measuring.Comments.Dtos;
@@ -21,7 +21,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
 
     public class DailyProduction
     {
-        public decimal TotalGasBBL { get; set; }
+        public decimal TotalGasSCF { get; set; }
         public decimal TotalGasM3 { get; set; }
 
         public decimal TotalOilBBL { get; set; }
@@ -36,6 +36,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
     {
         public Guid Id { get; set; }
         public bool IsCalculated { get; set; }
+        public bool CanDetailGasBurned { get; set; }
         public bool IsActive { get; set; }
         public string Status { get; set; }
         public string UepName { get; set; }
@@ -73,7 +74,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
 
     public class GasTotalDto
     {
-        public decimal TotalGasBBL { get; set; }
+        public decimal TotalGasSCF { get; set; }
         public decimal TotalGasM3 { get; set; }
     }
 
@@ -149,13 +150,23 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
         public FRViewModelNull FR { get; set; }
 
     }
-
+    public class SummaryProduction
+    {
+        public string? LocationMeasuringPoint { get; set; }
+        public string? TagMeasuringPoint { get; set; }
+        public string? Date { get; set; }
+        public decimal? Volume { get; set; }
+        public bool? Status { get; set; }
+        public string Fluid { get; set; } = "Gas";
+    }
     public class ProductionDtoWithNullableDecimals
     {
         public Guid ProductionId { get; set; }
+        public string DateProduction { get; set; }
         public string InstallationName { get; set; }
         public string UepName { get; set; }
         public bool IsCalculated { get; set; }
+        public bool CanDetailGasBurned { get; set; }
 
         public DailyProduction DailyProduction { get; set; }
 
@@ -168,6 +179,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Dtos
         public CreateUpdateCommentDto Comment { get; set; }
 
         public AppropriationDto WellAppropriation { get; set; }
+        public List<SummaryProduction> MeasurementsNotFound { get; set; } = new();
+
     }
 
     public class GasBurntDto

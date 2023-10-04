@@ -2,7 +2,8 @@
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
-using PRIO.src.Modules.Measuring.WellEvents.EF.Models;
+using PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models;
+using PRIO.src.Modules.PI.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models
@@ -30,8 +31,11 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models
         public string? CoordY { get; set; }
         public User? User { get; set; }
         public Field? Field { get; set; }
+        public DateTime? InactivatedAt { get; set; }
         public List<Completion>? Completions { get; set; }
         public List<WellTests>? WellTests { get; set; }
         public List<WellEvent> WellEvents { get; set; } = new();
+        public List<WellsValues>? WellsValues { get; set; }
+        public ManualWellConfiguration? ManualWellConfiguration { get; set; }
     }
 }

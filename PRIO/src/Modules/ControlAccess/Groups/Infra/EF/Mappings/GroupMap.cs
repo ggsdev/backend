@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<Group> builder)
         {
-            builder.ToTable("Groups");
+            builder.ToTable("AC.Groups");
 
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id)

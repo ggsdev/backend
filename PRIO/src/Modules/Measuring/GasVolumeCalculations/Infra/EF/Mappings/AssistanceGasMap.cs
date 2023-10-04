@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<AssistanceGas> builder)
         {
-            builder.ToTable("AssistanceGases");
+            builder.ToTable("ConfigCalc.AssistanceGases");
 
             builder.Property(x => x.StaticLocalMeasuringPoint)
                .HasColumnType("VARCHAR")

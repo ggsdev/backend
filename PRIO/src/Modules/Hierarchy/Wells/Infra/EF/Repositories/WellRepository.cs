@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Shared.Infra.EF;
@@ -19,10 +20,24 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
                     .FirstOrDefaultAsync(x => x.CodWellAnp == cod);
         }
 
+        public async Task<Well?> GetByNameOrOperatorName(string name)
+        {
+            return await _context.Wells.Include(w => w.Field).ThenInclude(f => f.Installation)
+                    .FirstOrDefaultAsync(x => x.Name == name || x.WellOperatorName == name);
+        }
+        public async Task<Well?> GetByNameOrOperator(string wellName, string wellOperatorName)
+        {
+            return await _context.Wells
+                .Include(x => x.Field)
+                .FirstOrDefaultAsync(x => x.Name.ToUpper().Trim().Contains(wellName.ToUpper().Trim()) || x.Name.ToUpper().Trim().Contains(wellOperatorName.ToUpper().Trim()));
+
+        }
+
         public async Task<List<Well>> GetWellsWithEvents(Guid fieldId, string eventType)
         {
             return await _context.Wells
                 .Include(x => x.WellEvents)
+                .ThenInclude(d => d.EventReasons)
                 .Include(x => x.Field)
                 .Where(x => x.Field.Id == fieldId)
                 .ToListAsync();
@@ -32,6 +47,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
         {
             return await _context.Wells
                 .Include(x => x.User)
+                .Include(x => x.ManualWellConfiguration)
                 .Include(x => x.Completions)
                 .ThenInclude(x => x.Reservoir)
                 .ThenInclude(x => x.Zone)
@@ -40,13 +56,20 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
                 .ThenInclude(i => i.Cluster)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
+        public async Task<Well?> GetByIdWithEventsAsync(Guid? id)
+        {
+            return await _context.Wells
+                .Include(x => x.WellEvents)
+                .ThenInclude(x => x.EventReasons)
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
         public async Task<Well?> GetByNameAsync(string? name)
         {
             return await _context.Wells
                 .Include(x => x.User)
                 .Include(x => x.Completions)
                 .Include(x => x.Field)
-                .FirstOrDefaultAsync(x => x.Name == name);
+                .FirstOrDefaultAsync(x => x.Name.Trim() == name.Trim());
         }
 
         public async Task<Well?> GetWellAndChildren(Guid? id)
@@ -62,6 +85,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
                .Include(x => x.User)
                 .Include(x => x.Field)
                 .Include(x => x.WellEvents)
+                    .ThenInclude(x => x.EventReasons)
                 .Include(x => x.Completions)
                 .ThenInclude(x => x.Reservoir)
                 .FirstOrDefaultAsync(x => x.Id == id);
@@ -71,6 +95,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
         {
             return await _context.Wells
                 .Include(x => x.WellEvents)
+                .ThenInclude(x => x.EventReasons)
                 .Include(x => x.Field)
                 .Include(x => x.Completions)
                 .FirstOrDefaultAsync(x => x.Id == id);
@@ -94,9 +119,15 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
             await _context.Wells.AddAsync(well);
         }
 
-        public async Task<List<Well>> GetAsync()
+        public async Task<List<Well>> GetAsync(User user)
         {
-            return await _context.Wells
+            List<Guid> installationIds = user.InstallationsAccess
+                 .Select(installationAccess => installationAccess.Installation.Id)
+                 .ToList();
+
+            if (user.Type == "Master")
+            {
+                return await _context.Wells
                     .Include(x => x.User)
                     .Include(x => x.Completions)
                     .ThenInclude(x => x.Reservoir)
@@ -105,6 +136,19 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
                     .ThenInclude(f => f.Installation)
                     .ThenInclude(i => i.Cluster)
                     .ToListAsync();
+            }
+            else
+            {
+                return await _context.Wells
+                    .Include(x => x.User)
+                    .Include(x => x.Completions)
+                    .ThenInclude(x => x.Reservoir)
+                    .ThenInclude(x => x.Zone)
+                    .Include(x => x.Field)
+                    .ThenInclude(f => f.Installation)
+                    .ThenInclude(i => i.Cluster)
+                    .Where(x => installationIds.Contains(x.Field.Installation.Id)).ToListAsync();
+            }
         }
 
         public void Update(Well well)

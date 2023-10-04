@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
-using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
+using PRIO.src.Modules.Hierarchy.Fields.Interfaces;
 using PRIO.src.Shared.Infra.EF;
 
 namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
@@ -20,13 +21,23 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
         }
         public async Task<Field?> GetByIdAsync(Guid? id)
         {
-            return await _context.Fields
-                .Include(x => x.User)
-               .Include(x => x.Wells)
-                .ThenInclude(x => x.WellEvents)
-               .Include(x => x.Installation)
-               .ThenInclude(i => i!.Cluster)
-               .FirstOrDefaultAsync(x => x.Id == id);
+            var field = await _context.Fields
+                    .Include(x => x.User)
+                    .Include(x => x.Wells)
+                        .ThenInclude(x => x.WellEvents)
+                    .Include(x => x.Installation)
+                        .ThenInclude(i => i!.Cluster)
+                    .Where(x => x.Id == id)
+                    .FirstOrDefaultAsync();
+
+            if (field != null && field.Wells is not null)
+            {
+                field.Wells = field.Wells
+                    .OrderBy(w => w.Name)
+                    .ToList();
+            }
+
+            return field;
         }
 
         public async Task<List<Field>> GetFieldsByUepCode(string code)
@@ -65,7 +76,10 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                             .ThenInclude(z => z.Reservoirs)
                                 .ThenInclude(r => r.Completions)
                         .Include(f => f.Wells)
-                            .ThenInclude(r => r.Completions)
+                             .ThenInclude(w => w.WellEvents)
+                                .ThenInclude(r => r.EventReasons)
+                        .Include(f => f.Wells)
+                             .ThenInclude(w => w.Completions)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
@@ -89,14 +103,30 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
             await _context.Fields.AddAsync(field);
         }
 
-        public async Task<List<Field>> GetAsync()
+        public async Task<List<Field>> GetAsync(User user)
         {
-            return await _context.Fields
+            List<Guid> installationIds = user.InstallationsAccess
+                 .Select(installationAccess => installationAccess.Installation.Id)
+                 .ToList();
+
+            if (user.Type == "Master")
+            {
+                return await _context.Fields
                .Include(x => x.Installation)
                .ThenInclude(i => i!.Cluster)
                .Include(x => x.Wells)
                .Include(x => x.User)
                .ToListAsync();
+            }
+            else
+            {
+                return await _context.Fields
+               .Include(x => x.Installation)
+               .ThenInclude(i => i!.Cluster)
+               .Include(x => x.Wells)
+               .Include(x => x.User)
+               .Where(x => installationIds.Contains(x.Installation.Id)).ToListAsync();
+            }
         }
 
         public void Update(Field field)

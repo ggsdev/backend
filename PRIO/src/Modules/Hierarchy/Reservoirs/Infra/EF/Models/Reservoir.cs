@@ -8,6 +8,7 @@ namespace PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Models
     public class Reservoir : BaseModel
     {
         public string? Name { get; set; }
+        public DateTime? InactivatedAt { get; set; }
         public User? User { get; set; }
         public Zone? Zone { get; set; }
         public List<Completion>? Completions { get; set; }

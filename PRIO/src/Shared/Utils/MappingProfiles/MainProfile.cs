@@ -7,11 +7,11 @@ using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Dtos;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models;
-using PRIO.src.Modules.FileImport.XML.Dtos;
-using PRIO.src.Modules.FileImport.XML.FileContent._001;
-using PRIO.src.Modules.FileImport.XML.FileContent._002;
-using PRIO.src.Modules.FileImport.XML.FileContent._003;
-using PRIO.src.Modules.FileImport.XML.FileContent._039;
+using PRIO.src.Modules.FileImport.XML.Measuring.Dtos;
+using PRIO.src.Modules.FileImport.XML.Measuring.FileContent._001;
+using PRIO.src.Modules.FileImport.XML.Measuring.FileContent._002;
+using PRIO.src.Modules.FileImport.XML.Measuring.FileContent._003;
+using PRIO.src.Modules.FileImport.XML.Measuring.FileContent._039;
 using PRIO.src.Modules.FileImport.XML.NFSMS.Dtos;
 using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Clusters.Dtos;
@@ -41,6 +41,10 @@ using PRIO.src.Modules.Measuring.OilVolumeCalculations.Dtos;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Productions.Dtos;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
+using PRIO.src.Modules.Measuring.WellEvents.Dtos;
+using PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models;
+using PRIO.src.Modules.PI.Dtos;
+using PRIO.src.Modules.PI.Infra.EF.Models;
 using PRIO.src.Shared.SystemHistories.Dtos;
 using PRIO.src.Shared.SystemHistories.Dtos.HierarchyDtos;
 using PRIO.src.Shared.SystemHistories.Dtos.UserDtos;
@@ -125,6 +129,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<Menu, MenuParentDTO>();
             CreateMap<Menu, MenuChildrenDTO>();
             CreateMap<User, ProfileDTO>();
+            CreateMap<User, UserWithPermissionsDTO>();
             CreateMap<UserPermission, UserPermissionParentDTO>();
             CreateMap<UserPermission, UserPermissionChildrenDTO>();
             CreateMap<UserOperation, UserOperationsDTO>();
@@ -141,7 +146,9 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<GroupOperation, GroupOperationDTO>();
             CreateMap<User, UserGroupDTO>();
             CreateMap<Group, GroupWithMenusDTO>();
+            CreateMap<Group, GroupHistoryDTO>();
             CreateMap<Reservoir, ReservoirWithZoneDTO>();
+            CreateMap<InstallationsAccess, InstallationAccessDTO>();
             #endregion
 
             #region Hierachy
@@ -156,6 +163,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<Installation, InstallationWithoutClusterDTO>();
             CreateMap<InstallationWithoutClusterDTO, Installation>();
             CreateMap<Installation, InstallationWithFieldsEquipmentsDTO>();
+            CreateMap<Installation, InstallationWithAttributesDTO>();
 
             CreateMap<Field, FieldDTO>();
             CreateMap<Field, FieldWithoutWellDTO>();
@@ -180,22 +188,14 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<Well, WellHistoryDTO>();
             CreateMap<Well, CreateUpdateWellDTO>()
                 .ForMember(dest => dest.WaterDepth, opt => opt.MapFrom(src => TruncateTwoDecimals(src.WaterDepth)));
-            //.ForMember(dest => dest.TopOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.TopOfPerforated)))
-            //.ForMember(dest => dest.BaseOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.BaseOfPerforated)));
 
             CreateMap<Well, WellWithoutFieldDTO>()
                 .ForMember(dest => dest.WaterDepth, opt => opt.MapFrom(src => TruncateTwoDecimals(src.WaterDepth)));
-            //.ForMember(dest => dest.TopOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.TopOfPerforated)))
-            //.ForMember(dest => dest.BaseOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.BaseOfPerforated)));
 
             CreateMap<Well, WellWithoutCompletionDTO>()
                 .ForMember(dest => dest.WaterDepth, opt => opt.MapFrom(src => TruncateTwoDecimals(src.WaterDepth)));
-            //.ForMember(dest => dest.TopOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.TopOfPerforated)))
-            //.ForMember(dest => dest.BaseOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.BaseOfPerforated)));
 
             CreateMap<Well, WellWithFieldAndCompletionsDTO>().ForMember(dest => dest.WaterDepth, opt => opt.MapFrom(src => TruncateTwoDecimals(src.WaterDepth)));
-            //.ForMember(dest => dest.TopOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.TopOfPerforated)))
-            //.ForMember(dest => dest.BaseOfPerforated, opt => opt.MapFrom(src => TruncateTwoDecimals(src.BaseOfPerforated)));
 
             CreateMap<Completion, CompletionDTO>();
             CreateMap<Completion, CompletionHistoryDTO>();
@@ -241,12 +241,27 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
 
             CreateMap<BTP, BTPDTO>();
             CreateMap<BTP, BTPCreateDTO>();
+            CreateMap<BTP, BTPBase64DTO>();
+            CreateMap<BTPBase64, BTPBase64RelationWellTestDTO>();
             CreateMap<BTPBase64, BTPBase64DTO>();
-            CreateMap<WellTests, BTPDataDTO>();
+            CreateMap<WellTests, BTPDataDTO>();//TEM QUE CONSERTAR AQ
+            //.ForPath(dest => dest.BTPBase64.Name, opt => opt.MapFrom(src => src.Filename));
+
+
             CreateMap<FieldFR, FRFieldDTO>();
 
             CreateMap<CommentInProduction, CreateUpdateCommentDto>();
             CreateMap<Production, ProductionDto>();
+            CreateMap<WellEvent, EventWithReasonDTO>();
+            CreateMap<EventReason, EventReasonDTO>();
+            CreateMap<EventReason, ReasonDetailedDto>()
+                .ForMember(dest => dest.Downtime, opt => opt.MapFrom(src =>
+                src.Interval))
+                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate.HasValue ? src.EndDate.Value.ToString("dd/MM/yyyy HH:mm") : null))
+                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate.ToString("dd/MM/yyyy HH:mm")));
+
+            CreateMap<Modules.PI.Infra.EF.Models.Attribute, AttributeDTO>();
+            CreateMap<Element, ElementDTO>();
         }
 
         private static decimal? TruncateTwoDecimals(decimal? value)

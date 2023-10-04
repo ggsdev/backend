@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using PRIO.src.Modules.FileImport.XLSX.Dtos;
+using PRIO.src.Modules.FileImport.XLSX.Hierarchy.Dtos;
 using PRIO.src.Shared.Errors;
 
 namespace PRIO.src.Shared.Infra.Http.Middlewares

@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<Well> builder)
         {
-            builder.ToTable("Wells");
+            builder.ToTable("Hierachy.Wells");
 
             builder.Property(x => x.Name)
               .HasColumnType("VARCHAR")
@@ -100,6 +100,8 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Mappings
 
             builder.Property(e => e.DeletedAt)
                 .HasColumnType("DATETIME");
+
+            builder.Property(x => x.InactivatedAt);
 
             builder.HasOne(x => x.User).
                 WithMany(u => u.Wells)

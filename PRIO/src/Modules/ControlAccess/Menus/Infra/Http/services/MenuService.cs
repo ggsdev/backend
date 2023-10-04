@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using PRIO.src.Modules.ControlAccess.Menus.Dtos;
-using PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Interfaces;
 using PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Menus.Interfaces;
 
 namespace PRIO.src.Modules.ControlAccess.Menus.Infra.Http.Services
 {

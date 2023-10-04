@@ -18,6 +18,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models
         public string UepName { get; set; }
         public string? CodInstallationAnp { get; set; }
         public decimal? GasSafetyBurnVolume { get; set; }
+        public DateTime? InactivatedAt { get; set; }
         public User? User { get; set; }
         public List<InstallationBTP>? BTPs { get; set; }
         public Cluster? Cluster { get; set; }
@@ -29,5 +30,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models
         public bool IsProcessingUnit { get; set; }
         public List<Production>? Productions { get; set; }
         public List<NFSM>? NFSMs { get; set; }
+        public List<InstallationsAccess> usersWithPermissions { get; set; }
     }
 }

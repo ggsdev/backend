@@ -9,7 +9,7 @@
     <SignAssembly>False</SignAssembly>
     <PackageIcon>prioImage.jpg</PackageIcon>
 
-    <Version>0.2.0</Version>
+    <Version>0.3.1</Version>
 
   </PropertyGroup>
 
@@ -22,22 +22,28 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="src\Modules\FileImport\XLSX\Infra\**" />
     <Compile Remove="src\Modules\Measuring\GasVolumeCalculation\**" />
     <Compile Remove="src\Modules\Measuring\MeasuringPoints\Infra\Http\NovaPasta\**" />
     <Compile Remove="src\Modules\Measuring\MeasuringPoints\NovaPasta\**" />
     <Compile Remove="src\Modules\Measuring\OilVolumeCalculation\**" />
+    <Compile Remove="src\Modules\MockPI\**" />
+    <Content Remove="src\Modules\FileImport\XLSX\Infra\**" />
     <Content Remove="src\Modules\Measuring\GasVolumeCalculation\**" />
     <Content Remove="src\Modules\Measuring\MeasuringPoints\Infra\Http\NovaPasta\**" />
     <Content Remove="src\Modules\Measuring\MeasuringPoints\NovaPasta\**" />
     <Content Remove="src\Modules\Measuring\OilVolumeCalculation\**" />
+    <EmbeddedResource Remove="src\Modules\FileImport\XLSX\Infra\**" />
     <EmbeddedResource Remove="src\Modules\Measuring\GasVolumeCalculation\**" />
     <EmbeddedResource Remove="src\Modules\Measuring\MeasuringPoints\Infra\Http\NovaPasta\**" />
     <EmbeddedResource Remove="src\Modules\Measuring\MeasuringPoints\NovaPasta\**" />
     <EmbeddedResource Remove="src\Modules\Measuring\OilVolumeCalculation\**" />
+    <None Remove="src\Modules\FileImport\XLSX\Infra\**" />
     <None Remove="src\Modules\Measuring\GasVolumeCalculation\**" />
     <None Remove="src\Modules\Measuring\MeasuringPoints\Infra\Http\NovaPasta\**" />
     <None Remove="src\Modules\Measuring\MeasuringPoints\NovaPasta\**" />
     <None Remove="src\Modules\Measuring\OilVolumeCalculation\**" />
+    <None Remove="src\Modules\MockPI\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -51,6 +57,9 @@
     <PackageReference Include="BouncyCastle.NetCore" Version="1.9.0" />
     <PackageReference Include="dotenv.net" Version="3.1.2" />
     <PackageReference Include="EPPlus" Version="6.2.4" />
+    <PackageReference Include="Hangfire" Version="1.8.5" />
+    <PackageReference Include="Hangfire.Core" Version="1.8.5" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.8.5" />
     <PackageReference Include="itext7" Version="8.0.1" />
     <PackageReference Include="itext7.bouncy-castle-adapter" Version="8.0.1" />
     <PackageReference Include="itext7.bouncy-castle-fips-adapter" Version="8.0.1" />
@@ -58,6 +67,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.5" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -85,15 +95,9 @@
     <Folder Include="src\Modules\FileImport\XLSX\BTPS\Infra\Http\Controllers\" />
     <Folder Include="src\Modules\FileImport\XLSX\BTPS\Infra\Http\Services\" />
     <Folder Include="src\Modules\FileImport\XLSX\BTPS\Interfaces\" />
-    <Folder Include="src\Modules\FileImport\XLSX\Infra\EF\Entities\" />
-    <Folder Include="src\Modules\FileImport\XLSX\Infra\EF\Mappings\" />
-    <Folder Include="src\Modules\FileImport\XML\Infra\EF\Models\" />
-    <Folder Include="src\Modules\FileImport\XML\Infra\EF\Mappings\" />
     <Folder Include="src\Modules\Measuring\Measurements\Dtos\" />
     <Folder Include="src\Modules\Measuring\Measurements\Infra\Http\Controllers\" />
     <Folder Include="src\Modules\Measuring\Measurements\ViewModels\" />
-    <Folder Include="src\Modules\Measuring\ProductionHistories\" />
-    <Folder Include="src\Shared\Infra\EF\Mappings\" />
   </ItemGroup>
 
   <ItemGroup>

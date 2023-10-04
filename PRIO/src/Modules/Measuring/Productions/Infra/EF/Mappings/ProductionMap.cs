@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<Production> builder)
         {
-            builder.ToTable("Productions");
+            builder.ToTable("Measurement.Productions");
 
             builder.HasOne(x => x.Oil)
                 .WithOne(d => d.Production)
@@ -37,7 +37,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Mappings
 
             builder.Property(x => x.TotalProduction)
                 .HasColumnType("decimal")
-                .HasPrecision(14, 5);
+                .HasPrecision(20, 5);
 
             //builder.HasOne(x => x.Water)
             //  .WithOne(d => d.Production)

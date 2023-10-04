@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
-using PRIO.src.Modules.FileImport.XML.Dtos;
+using PRIO.src.Modules.FileImport.XML.Measuring.Dtos;
+using PRIO.src.Modules.FileImport.XML.Measuring.ViewModels;
 using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XML.NFSMS.ViewModels;
-using PRIO.src.Modules.FileImport.XML.ViewModels;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.Http.Filters;
 using PRIO.src.Shared.Utils;
@@ -15,10 +16,12 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Controllers
     public class NFSMController : ControllerBase
     {
         private readonly NFSMService _service;
+        private readonly IOutputCacheStore _cache;
 
-        public NFSMController(NFSMService service)
+        public NFSMController(NFSMService service, IOutputCacheStore cacheStore)
         {
             _service = service;
+            _cache = cacheStore;
         }
 
         [HttpPost("import-nfsm/validate")]
@@ -63,10 +66,15 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Controllers
 
         }
 
+        //[OutputCache(PolicyName = nameof(AuthProductionCachePolicy))]
         [HttpPatch("nfsms/{id}/apply")]
-        public async Task<IActionResult> Apply([FromRoute] Guid id)
+        public async Task<IActionResult> Apply([FromRoute] Guid id, CancellationToken ct)
         {
-            return Ok(await _service.ApplyNfsm(id));
+            var result = await _service.ApplyNfsm(id);
+
+            //await _cache.EvictByTagAsync("ProductionTag", ct);
+
+            return Ok(result);
         }
 
         [HttpGet("nfsms/{id}/download")]

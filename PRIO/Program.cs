@@ -6,17 +6,19 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Interfaces;
+using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Factories;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services;
-using PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Interfaces;
+using PRIO.src.Modules.ControlAccess.Groups.Interfaces;
 using PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Menus.Infra.Http.Services;
-using PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Interfaces;
+using PRIO.src.Modules.ControlAccess.Menus.Interfaces;
 using PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Repositories;
-using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Interfaces;
+using PRIO.src.Modules.ControlAccess.Operations.Interfaces;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Factories;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
+using PRIO.src.Modules.ControlAccess.Users.Interfaces;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
@@ -25,12 +27,13 @@ using PRIO.src.Modules.FileImport.XML.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Respositories;
 using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XML.NFSMS.Interfaces;
-using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services;
+using PRIO.src.Modules.Hierarchy.Clusters.Interfaces;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Repositories;
 using PRIO.src.Modules.Hierarchy.Completions.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Completions.Interfaces;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services;
+using PRIO.src.Modules.Hierarchy.Fields.Interfaces;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Services;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
@@ -64,12 +67,16 @@ using PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.Productions.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Productions.Interfaces;
-using PRIO.src.Modules.Measuring.WellEvents.EF.Repositories;
-using PRIO.src.Modules.Measuring.WellEvents.Http.Services;
+using PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Repositories;
+using PRIO.src.Modules.Measuring.WellEvents.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.WellEvents.Interfaces;
 using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.WellProductions.Interfaces;
+using PRIO.src.Modules.PI.Infra.EF.Repositories;
+using PRIO.src.Modules.PI.Infra.Http.Services;
+using PRIO.src.Modules.PI.Interfaces;
+using PRIO.src.Shared;
 using PRIO.src.Shared.Auxiliaries.Infra.Http.Services;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
@@ -84,6 +91,8 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 DotEnv.Load();
+var envVars = DotEnv.Read();
+
 
 IConfiguration configuration = builder.Configuration;
 ConfigureServices(builder.Services, configuration);
@@ -105,6 +114,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -114,14 +124,19 @@ if (app.Environment.IsDevelopment())
 ConfigureMiddlewares(app);
 
 app.UseAuthentication();
+
 app.UseAuthorization();
 
+//app.UseOutputCache();
+
 app.MapControllers();
+
 app.Run();
 
 static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
 {
     var envVars = DotEnv.Read();
+    var jwtKey = envVars["SECRET_KEY"];
 
     services.AddControllers(config =>
     {
@@ -149,105 +164,30 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     {
         cfg.AddProfile<MainProfile>();
     });
-
     IMapper mapper = mapperConfig.CreateMapper();
-
     services.AddSingleton(mapper);
-    services.AddScoped<ErrorMessages>();
-    services.AddEndpointsApiExplorer();
     services.AddDbContext<DataContext>(options =>
               options.UseSqlServer(configuration.GetConnectionString("dbConnection")));
-    services.AddScoped<AuthorizationFilter>();
 
+    services.AddScoped<ErrorMessages>();
+    services.AddEndpointsApiExplorer();
+    services.AddScoped<AuthorizationFilter>();
     services.AddScoped<TokenServices>();
 
-    #region Hierarchy Repositories
-    services.AddScoped<IFieldRepository, FieldRepository>();
-
-    services.AddScoped<ISystemHistoryRepository, SystemHistoryRepository>();
-
-    services.AddScoped<IClusterRepository, ClusterRepository>();
-
-    services.AddScoped<IInstallationRepository, InstallationRepository>();
-
-    services.AddScoped<IFieldRepository, FieldRepository>();
-
-    services.AddScoped<IZoneRepository, ZoneRepository>();
-
-    services.AddScoped<IReservoirRepository, ReservoirRepository>();
-
-    services.AddScoped<IWellRepository, WellRepository>();
-
-    services.AddScoped<IEquipmentRepository, EquipmentRepository>();
-
-    services.AddScoped<ICompletionRepository, CompletionRepository>();
-
-    services.AddScoped<IMeasurementRepository, MeasurementRepository>();
-    services.AddScoped<IProductionRepository, ProductionRepository>();
-
-    services.AddScoped<IOilVolumeCalculationRepository, OilVolumeCalculationRepository>();
-    services.AddScoped<IGasVolumeCalculationRepository, GasVolumeCalculationRepository>();
-
-    services.AddScoped<IMeasurementHistoryRepository, MeasurementHistoryRepository>();
-    services.AddScoped<IBTPRepository, BTPRepository>();
-    services.AddScoped<INFSMRepository, NFSMRepository>();
-
-    #endregion
-
-    #region Hierarchy Services
-    services.AddScoped<ClusterService>();
-    services.AddScoped<InstallationService>();
-    services.AddScoped<FieldService>();
-    services.AddScoped<ZoneService>();
-    services.AddScoped<ReservoirService>();
-    services.AddScoped<WellService>();
-    services.AddScoped<CompletionService>();
-    services.AddScoped<EquipmentService>();
-    services.AddScoped<MeasuringPointService>();
-    services.AddScoped<SystemHistoryService>();
-    services.AddScoped<AuxiliaryService>();
-    services.AddScoped<XMLImportService>();
-    services.AddScoped<MeasurementService>();
-    services.AddScoped<CommentService>();
-    services.AddScoped<WellEventService>();
-
-    services.AddScoped<IMenuRepository, MenuRepository>();
-    services.AddScoped<IMeasuringPointRepository, MeasuringPointRepository>();
-    services.AddScoped<IGroupRepository, GroupRepository>();
-    services.AddScoped<IGroupPermissionRepository, GroupPermissionRepository>();
-    services.AddScoped<IGroupOperationRepository, GroupOperationRepository>();
-    services.AddScoped<IUserRepository, UserRepository>();
-    services.AddScoped<IUserPermissionRepository, UserPermissionRepository>();
-    services.AddScoped<IUserOperationRepository, UserOperationRepository>();
-    services.AddScoped<IGlobalOperationsRepository, GlobalOperationsRepository>();
-    services.AddScoped<ICommentRepository, CommentRepository>();
-    services.AddScoped<IWellProductionRepository, WellProductionRepository>();
-    services.AddScoped<IWellEventRepository, WellEventRepository>();
-    #endregion
-
-    #region Control Access Services
-    services.AddScoped<MenuService>();
-    services.AddScoped<UserService>();
-
-    services.AddScoped<GroupService>();
-    #endregion
-
-    #region Measuring Services
-    services.AddScoped<OilVolumeCalculationService>();
-    services.AddScoped<GasVolumeCalculationService>();
-    services.AddScoped<ProductionService>();
-    services.AddScoped<FieldFRService>();
-    services.AddScoped<NFSMService>();
-    services.AddScoped<WellProductionService>();
-
-
-    #endregion
-
-    services.AddScoped<BTPService>();
-
-    services.AddScoped<XLSXService>();
-
-    var jwtKey = envVars["SECRET_KEY"];
+    RegisterRepositories(services);
+    RegisterServices(services);
+    RegisterFactories(services);
+    ConfigureJwtAuthentication(services, envVars, jwtKey);
+    ConfigureSwagger(services, jwtKey);
+    ConfigureOutputCache(services);
+    //services
+    //    .AddMicrosoftIdentityWebAppAuthentication(configuration, "AzureAd")
+    //    .EnableTokenAcquisitionToCallDownstreamApi(options => configuration.Bind("AzureAd", options))
+    //    .AddMicrosoftGraph(options => configuration.Bind("AzureAd", options))
+    //    .AddInMemoryTokenCaches();
+}
+static void ConfigureJwtAuthentication(IServiceCollection services, IDictionary<string, string> envVars, string jwtKey)
+{
     var key = Encoding.ASCII.GetBytes(jwtKey);
 
     services.AddAuthentication(x =>
@@ -267,13 +207,9 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
             ValidateAudience = false
         };
     });
-
-    //services
-    //    .AddMicrosoftIdentityWebAppAuthentication(configuration, "AzureAd")
-    //    .EnableTokenAcquisitionToCallDownstreamApi(options => configuration.Bind("AzureAd", options))
-    //    .AddMicrosoftGraph(options => configuration.Bind("AzureAd", options))
-    //    .AddInMemoryTokenCaches();
-
+}
+static void ConfigureSwagger(IServiceCollection services, string jwtKey)
+{
     services.AddSwaggerGen(c =>
     {
         c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -301,10 +237,97 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     });
     });
 }
+static void RegisterFactories(IServiceCollection services)
+{
+    services.AddScoped<GroupFactory>();
+    services.AddScoped<GroupPermissionFactory>();
+    services.AddScoped<GroupOperationFactory>();
+    services.AddScoped<UserPermissionFactory>();
+    services.AddScoped<UserOperationFactory>();
+    services.AddScoped<UserFactory>();
+    services.AddScoped<InstallationAccessFactory>();
+}
+static void RegisterRepositories(IServiceCollection services)
+{
+    services.AddScoped<IFieldRepository, FieldRepository>();
+    services.AddScoped<ISystemHistoryRepository, SystemHistoryRepository>();
+    services.AddScoped<IClusterRepository, ClusterRepository>();
+    services.AddScoped<IInstallationRepository, InstallationRepository>();
+    services.AddScoped<IInstallationsAccessRepository, InstallationsAccessRepository>();
+    services.AddScoped<IFieldRepository, FieldRepository>();
+    services.AddScoped<IZoneRepository, ZoneRepository>();
+    services.AddScoped<IReservoirRepository, ReservoirRepository>();
+    services.AddScoped<IWellRepository, WellRepository>();
+    services.AddScoped<IEquipmentRepository, EquipmentRepository>();
+    services.AddScoped<ICompletionRepository, CompletionRepository>();
+    services.AddScoped<IMeasurementRepository, MeasurementRepository>();
+    services.AddScoped<IProductionRepository, ProductionRepository>();
+    services.AddScoped<IOilVolumeCalculationRepository, OilVolumeCalculationRepository>();
+    services.AddScoped<IGasVolumeCalculationRepository, GasVolumeCalculationRepository>();
+    services.AddScoped<IMeasurementHistoryRepository, MeasurementHistoryRepository>();
+    services.AddScoped<IBTPRepository, BTPRepository>();
+    services.AddScoped<INFSMRepository, NFSMRepository>();
+    services.AddScoped<IPIRepository, PIRepository>();
+    services.AddScoped<IMenuRepository, MenuRepository>();
+    services.AddScoped<IMeasuringPointRepository, MeasuringPointRepository>();
+    services.AddScoped<IGroupRepository, GroupRepository>();
+    services.AddScoped<IGroupPermissionRepository, GroupPermissionRepository>();
+    services.AddScoped<IGroupOperationRepository, GroupOperationRepository>();
+    services.AddScoped<IUserRepository, UserRepository>();
+    services.AddScoped<IUserPermissionRepository, UserPermissionRepository>();
+    services.AddScoped<IUserOperationRepository, UserOperationRepository>();
+    services.AddScoped<IGlobalOperationsRepository, GlobalOperationsRepository>();
+    services.AddScoped<ICommentRepository, CommentRepository>();
+    services.AddScoped<IWellProductionRepository, WellProductionRepository>();
+    services.AddScoped<IWellEventRepository, WellEventRepository>();
+    services.AddScoped<IManualConfigRepository, ManualConfigRepository>();
+}
+static void RegisterServices(IServiceCollection services)
+{
+    services.AddScoped<ClusterService>();
+    services.AddScoped<InstallationService>();
+    services.AddScoped<FieldService>();
+    services.AddScoped<ZoneService>();
+    services.AddScoped<ReservoirService>();
+    services.AddScoped<WellService>();
+    services.AddScoped<CompletionService>();
+    services.AddScoped<EquipmentService>();
+    services.AddScoped<MeasuringPointService>();
+    services.AddScoped<SystemHistoryService>();
+    services.AddScoped<AuxiliaryService>();
+    services.AddScoped<XMLImportService>();
+    services.AddScoped<MeasurementService>();
+    services.AddScoped<CommentService>();
+    services.AddScoped<WellEventService>();
+    services.AddScoped<MenuService>();
+    services.AddScoped<UserService>();
+    services.AddScoped<GroupService>();
+    services.AddScoped<OilVolumeCalculationService>();
+    services.AddScoped<GasVolumeCalculationService>();
+    services.AddScoped<ProductionService>();
+    services.AddScoped<FieldFRService>();
+    services.AddScoped<NFSMService>();
+    services.AddScoped<WellProductionService>();
+    services.AddScoped<PIService>();
+    services.AddScoped<BTPService>();
+    services.AddScoped<XLSXService>();
+}
+static void ConfigureOutputCache(IServiceCollection services)
+{
+    services.AddOutputCache(x =>
+    x.AddBasePolicy(x => x.Expire(TimeSpan.FromDays(5))));
+
+    services.AddOutputCache(x =>
+        x.AddPolicy(nameof(AuthProductionCachePolicy), AuthProductionCachePolicy.Instance));
+
+    services.AddOutputCache(x =>
+        x.AddPolicy(nameof(AuthProductionIdCachePolicy), AuthProductionIdCachePolicy.Instance));
+}
 static void ConfigureMiddlewares(IApplicationBuilder app)
 {
+    app.UseCors("CorsPolicy");
     app.UseMiddleware<UnauthorizedCaptureMiddleware>();
     app.UseMiddleware<ErrorHandlingMiddleware>();
-    app.UseCors("CorsPolicy");
     app.UseRouting();
 }
+

@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<Menu> builder)
         {
-            builder.ToTable("Menus");
+            builder.ToTable("AC.Menus");
 
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id)

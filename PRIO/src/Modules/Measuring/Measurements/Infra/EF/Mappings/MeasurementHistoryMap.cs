@@ -9,7 +9,7 @@ namespace PRIO.src.Modules.Measuring.Measurements.Infra.EF.Mappings
 
         public void Configure(EntityTypeBuilder<MeasurementHistory> builder)
         {
-            builder.ToTable("MeasurementsHistories");
+            builder.ToTable("Measurement.MeasurementsHistories");
 
             builder.Property(x => x.ImportedAt)
                 .HasColumnType("date");

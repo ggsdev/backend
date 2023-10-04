@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
 using PRIO.src.Modules.Measuring.Comments.Dtos;
 using PRIO.src.Modules.Measuring.Comments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Comments.Interfaces;
@@ -16,32 +17,34 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
         private readonly ICommentRepository _commentRepository;
         private readonly IMapper _mapper;
         private readonly IProductionRepository _productionRepository;
+        private readonly IBTPRepository _btpRepository;
 
-        public CommentService(ICommentRepository commentRepository, IProductionRepository productionRepository, IMapper mapper)
+        public CommentService(ICommentRepository commentRepository, IProductionRepository productionRepository, IMapper mapper, IBTPRepository bTPRepository)
         {
             _commentRepository = commentRepository;
             _productionRepository = productionRepository;
             _mapper = mapper;
+            _btpRepository = bTPRepository;
         }
 
-        public async Task<CreateUpdateCommentDto> CreateComment(CreateCommentViewModel body, User loggedUser)
+        public async Task<CreateUpdateCommentDto> CreateComment(CreateCommentViewModel body, User loggedUser, Guid productionId)
         {
-            var prodution = await _productionRepository
-                .GetById(body.ProductionId);
+            var production = await _productionRepository
+                .GetById(productionId);
 
-            if (prodution is null)
+            if (production is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Production>());
 
-            if (prodution.Comment is not null)
+            if (production.Comment is not null)
                 throw new ConflictException("Produção já tem um comentário.");
 
-            if (prodution.Oil is null)
+            if (production.Oil is null)
                 throw new ConflictException("Produção de óleo precisa ser fechada.");
 
-            if (prodution.Gas is null)
+            if (production.Gas is null)
                 throw new ConflictException("Produção de gás precisa ser fechada.");
 
-            if (prodution.WellProductions is null || prodution.WellProductions.Count == 0)
+            if (production.WellProductions is null || production.WellProductions.Any() is false)
                 throw new ConflictException("Apropriação da produção precisa ser feita.");
 
             var comment = new CommentInProduction
@@ -49,15 +52,15 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
                 Id = Guid.NewGuid(),
                 CommentedBy = loggedUser,
                 Text = body.Text,
-                Production = prodution,
+                Production = production,
             };
 
             await _commentRepository.AddAsync(comment);
 
             var commentDto = _mapper.Map<CreateUpdateCommentDto>(comment);
 
-            prodution.StatusProduction = "fechado";
-            _productionRepository.Update(prodution);
+            production.StatusProduction = "fechado";
+            _productionRepository.Update(production);
 
             await _commentRepository.Save();
 

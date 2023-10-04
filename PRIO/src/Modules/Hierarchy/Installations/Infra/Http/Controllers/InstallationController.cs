@@ -48,7 +48,12 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var installationsDTO = await _installationService.GetInstallations();
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+            var installationsDTO = await _installationService.GetInstallations(user);
             return Ok(installationsDTO);
         }
         [HttpGet("fr/{installationId}")]
@@ -97,7 +102,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        public async Task<IActionResult> Delete([FromRoute] Guid id, [FromHeader] string StatusDate)
         {
             if (HttpContext.Items["User"] is not User user)
                 return Unauthorized(new ErrorResponseDTO
@@ -105,7 +110,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.Http.Controllers
                     Message = "User not identified, please login first"
                 });
 
-            await _installationService.DeleteInstallation(id, user);
+            await _installationService.DeleteInstallation(id, user, StatusDate);
 
             return NoContent();
         }

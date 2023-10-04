@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Fields.Interfaces;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Measuring.Productions.Dtos;
@@ -33,10 +34,15 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
             if (installation.IsProcessingUnit == false)
                 throw new ConflictException("Instalação não é uma unidade de processamento.");
 
-            //var installationsWithFields = await _installationRepository.GetByIdWithFieldsCod(body.InstallationId);
 
             if (body.Gas is not null)
             {
+                if (body.Production.Oil is not null && body.Production.FieldsFR is not null && body.Production.FieldsFR.Any() is false && body.Gas.FR.IsApplicable)
+                    throw new BadRequestException("Óleo não foi rateado, logo não é possível ratear o gás.", status: "GÁS");
+
+                if (body.Production.Oil is not null && body.Production.FieldsFR is not null && body.Production.FieldsFR.Any() && body.Gas.FR.IsApplicable is false)
+                    throw new BadRequestException("Óleo foi rateado, logo é necessário ratear o gás.", status: "GÁS");
+
                 foreach (var field in body.Gas.FR.Fields)
                 {
                     var fieldInDatabase = await _fieldRepository.GetByIdAsync(field.FieldId);
@@ -47,9 +53,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                     if (fieldInDatabase is not null && fieldInDatabase.IsActive is false)
                         throw new ConflictException(ErrorMessages.Inactive<Field>());
 
-                    //if (fieldInDatabase.Installation.Id != body.InstallationId)
-                    //    throw new BadRequestException("Poço não pertence a instalação.");
-
                 }
 
                 var sumGas = 0m;
@@ -59,14 +62,20 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                     if (body.Gas.FR is null)
                         throw new ConflictException("Fator de rateio do campo não encontrado.");
 
+                    var decimalPlaces = BitConverter.GetBytes(decimal.GetBits(field.FluidFr)[3])[2];
+
+                    if (decimalPlaces > 4)
+                        throw new BadRequestException("Fator de rateio do óleo pode ter no máximo duas casas decimais.");
+
                     if (body.Gas.FR.IsApplicable)
                         sumGas += field.FluidFr;
                 }
 
                 if (sumGas != 1 && body.Gas.FR.IsApplicable)
-                    throw new ConflictException("Gás: Soma dos fatores de rateio deve ser 1.");
+                    throw new ConflictException("Gás: Soma dos fatores de rateio deve ser 100%.");
 
-                if (/*body.BothGas &&*/ body.Gas.FR.IsApplicable)
+
+                if (body.Gas.FR.IsApplicable)
                 {
                     foreach (var field in body.Gas.FR.Fields)
                     {
@@ -116,6 +125,12 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
             if (body.Oil is not null)
             {
+                if (body.Production.Gas is not null && body.Production.FieldsFR is not null && body.Production.FieldsFR.Any() is false && body.Oil.FR.IsApplicable)
+                    throw new BadRequestException("Gás não foi rateado, logo não é possível ratear o óleo.", status: "ÓLEO");
+
+                if (body.Production.Gas is not null && body.Production.FieldsFR is not null && body.Production.FieldsFR.Any() && body.Oil.FR.IsApplicable is false)
+                    throw new BadRequestException("Gás foi rateado, logo é necessário ratear o óleo.", status: "ÓLEO");
+
                 foreach (var field in body.Oil.FR.Fields)
                 {
                     var fieldInDatabase = await _fieldRepository.GetByIdAsync(field.FieldId);
@@ -136,12 +151,17 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                     if (body.Oil.FR is null)
                         throw new ConflictException("Fator de rateio do campo não encontrado.");
 
+                    var decimalPlaces = BitConverter.GetBytes(decimal.GetBits(field.FluidFr)[3])[2];
+
+                    if (decimalPlaces > 4)
+                        throw new BadRequestException("Fator de rateio do óleo pode ter no máximo duas casas decimais.");
+
                     if (body.Oil.FR.IsApplicable)
                         sumOil += field.FluidFr;
                 }
 
                 if (sumOil != 1 && body.Oil.FR.IsApplicable)
-                    throw new ConflictException("Óleo: Soma dos fatores de rateio deve ser 1.");
+                    throw new ConflictException("Óleo: Soma dos fatores de rateio deve ser 100%.");
 
                 if (body.Oil.FR.IsApplicable)
                     foreach (var field in body.Oil.FR.Fields)

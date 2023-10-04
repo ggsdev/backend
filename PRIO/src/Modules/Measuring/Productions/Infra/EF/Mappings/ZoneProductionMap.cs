@@ -8,19 +8,19 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<ZoneProduction> builder)
         {
-            builder.ToTable("ZoneProductions");
+            builder.ToTable("Production.ZoneProductions");
 
             builder.Property(x => x.GasProductionInZone)
               .HasColumnType("DECIMAL")
-              .HasPrecision(14, 5);
+               .HasPrecision(38, 16);
 
             builder.Property(x => x.WaterProductionInZone)
                 .HasColumnType("DECIMAL")
-                .HasPrecision(14, 5);
+               .HasPrecision(38, 16);
 
             builder.Property(x => x.OilProductionInZone)
                 .HasColumnType("DECIMAL")
-                .HasPrecision(14, 5);
+               .HasPrecision(38, 16);
 
             builder.Property(x => x.ZoneId)
                 .HasColumnType("uniqueidentifier")

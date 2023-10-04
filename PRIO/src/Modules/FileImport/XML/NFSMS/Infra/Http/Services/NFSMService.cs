@@ -2,10 +2,10 @@
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
-using PRIO.src.Modules.FileImport.XML.Dtos;
-using PRIO.src.Modules.FileImport.XML.FileContent;
-using PRIO.src.Modules.FileImport.XML.FileContent._039;
-using PRIO.src.Modules.FileImport.XML.Infra.Utils;
+using PRIO.src.Modules.FileImport.XML.Measuring.Dtos;
+using PRIO.src.Modules.FileImport.XML.Measuring.FileContent;
+using PRIO.src.Modules.FileImport.XML.Measuring.FileContent._039;
+using PRIO.src.Modules.FileImport.XML.Measuring.Infra.Utils;
 using PRIO.src.Modules.FileImport.XML.NFSMS.Dtos;
 using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XML.NFSMS.Interfaces;
@@ -170,21 +170,27 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     if (installation is null)
                         errorsInImport.Add($"Arquivo {data.File.FileName}, {k + 1}ª notificação(DADOS_BASICOS): {ErrorMessages.NotFound<Installation>()}");
 
+                    if (installation is not null && installation.IsActive is false)
+                        errorsInImport.Add($"Arquivo {data.File.FileName}, {k + 1}ª notificação(DADOS_BASICOS), instalação: {installation.Name} está inativa.");
+
                     var measuringPoint = await _measuringPointRepository
                         .GetByTagMeasuringPointXML(dadosBasicos.COD_TAG_PONTO_MEDICAO_039, XmlUtils.File039);
 
                     if (measuringPoint is null)
                         errorsInImport.Add($"Arquivo {data.File.FileName}, {k + 1}ª notificação(DADOS_BASICOS), ponto de medição TAG: {dadosBasicos.COD_TAG_PONTO_MEDICAO_039}: {ErrorMessages.NotFound<MeasuringPoint>()}");
 
-                    if (installation is not null && installation.MeasuringPoints is not null)
+                    if (measuringPoint is not null && measuringPoint.IsActive is false)
+                        errorsInImport.Add($"Arquivo {data.File.FileName}, {k + 1}ª notificação(DADOS_BASICOS), ponto de medição TAG: {dadosBasicos.COD_TAG_PONTO_MEDICAO_039} está inativo.");
+
+                    if (installation is not null && installation.MeasuringPoints is not null && installation.IsActive && measuringPoint is not null)
                     {
                         bool contains = false;
 
                         foreach (var point in installation.MeasuringPoints)
-                            if (measuringPoint is not null && measuringPoint.TagPointMeasuring == point.TagPointMeasuring)
+                            if (measuringPoint.TagPointMeasuring == point.TagPointMeasuring && measuringPoint.IsActive)
                                 contains = true;
 
-                        if (contains is false)
+                        if (contains is false && measuringPoint.IsActive)
                             errorsInImport.Add($"Arquivo {data.File.FileName}, {k + 1}ª notificação(DADOS_BASICOS), TAG do ponto de medição não encontrado nessa instalação");
                     }
 
@@ -233,6 +239,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                             };
 
                             bswsFixed.Add(bswFixed);
+                            bswList.Add(bswMapped);
                             //measurement.LISTA_BSW.Add(bswMapped);
                         }
 
@@ -652,7 +659,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     {
                         Bsw = measurementFixed.Bsw,
                         Date = measurementFixed.MeasuredAt,
-                        MaxBsw = measurementFixed.BswMax
+                        MaxBsw = measurementFixed.BswMax,
                     });
 
                 }
@@ -717,6 +724,12 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
             if (nfsmInDatabase is null)
                 throw new NotFoundException(ErrorMessages.NotFound<NFSM>());
 
+            if (nfsmInDatabase.IsApplied)
+                throw new ConflictException("Notificação de falha já foi aplicada anteriormente.");
+
+            if (nfsmInDatabase.MeasuringPoint.IsActive is false)
+                throw new ConflictException($"Não foi possível aplicar a notificação de falha, ponto de medição: {nfsmInDatabase.MeasuringPoint.TagPointMeasuring} está inativo.");
+
             //if (nfsmInDatabase.DateOfOcurrence > nfsmInDatabase.Da)
             //    throw new ConflictException("Data da medição não pode ser maior do que a data que a falha foi corrigida, TAG: DHA_RETORNO.");
 
@@ -728,8 +741,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                 if (productionInDatabase is null)
                     throw new NotFoundException(ErrorMessages.NotFound<Production>());
 
-                //if (productionInDatabase.StatusProduction.ToLower() != ProductionUtils.closedStatus)
-                //    throw new ConflictException("Produção precisa ter sido fechada para ser corrigida.");
+                if (productionInDatabase.StatusProduction.ToLower() == ProductionUtils.openStatus)
+                    throw new ConflictException("Produção precisa ter sido fechada para ser corrigida.");
             }
 
             foreach (var measurementCorrected in nfsmInDatabase.Productions)
@@ -749,7 +762,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                 var totalLinear = 0m;
                 var totalOil = 0m;
                 var totalDiferencial = 0m;
-                var totalGasBurned = 0m;
+                var totalGasBurnedDiferencial = 0m;
+                var totalGasBurnedLinear = 0m;
 
                 var oilChanged = false;
                 var gasDiferencialChanged = false;
@@ -832,84 +846,110 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     {
                         foreach (var hpFlare in gasCalculation.HPFlares)
                         {
-                            if (hpFlare.MeasuringPoint is not null && (hpFlare.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 || hpFlare.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003))
+                            if (hpFlare.MeasuringPoint is not null && nfsmInDatabase.MeasuringPoint.TagPointMeasuring == hpFlare.MeasuringPoint.TagPointMeasuring)
                             {
-                                isGasBurned = true;
-                            }
+                                if ((hpFlare.MeasuringPoint is not null && (hpFlare.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 || hpFlare.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003)))
+                                {
+                                    isGasBurned = true;
+                                }
 
-                            if (hpFlare.MeasuringPoint is not null && hpFlare.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003 && measurement.MED_CORRIGIDO_MVMDO_003 is not null)
-                            {
-                                totalGasBurned += measurement.MED_CORRIGIDO_MVMDO_003.Value;
-                            }
+                                if (hpFlare.MeasuringPoint is not null && hpFlare.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003 && measurement.MED_CORRIGIDO_MVMDO_003 is not null)
+                                {
+                                    totalGasBurnedDiferencial += measurement.MED_CORRIGIDO_MVMDO_003.Value;
 
-                            if (hpFlare.MeasuringPoint is not null && hpFlare.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 && measurement.MED_CORRIGIDO_MVMDO_002 is not null)
-                            {
-                                totalGasBurned += measurement.MED_CORRIGIDO_MVMDO_002.Value;
+                                }
+
+                                if (hpFlare.MeasuringPoint is not null && hpFlare.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 && measurement.MED_CORRIGIDO_MVMDO_002 is not null)
+                                {
+                                    totalGasBurnedLinear += measurement.MED_CORRIGIDO_MVMDO_002.Value;
+
+                                }
                             }
 
                         }
 
                         foreach (var lpFlare in gasCalculation.LPFlares)
                         {
-                            if (lpFlare.MeasuringPoint is not null && (lpFlare.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 || lpFlare.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003))
-                                isGasBurned = true;
-
-                            if (lpFlare.MeasuringPoint is not null && lpFlare.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003 && measurement.MED_CORRIGIDO_MVMDO_003 is not null)
+                            if (lpFlare.MeasuringPoint is not null && nfsmInDatabase.MeasuringPoint.TagPointMeasuring == lpFlare.MeasuringPoint.TagPointMeasuring)
                             {
-                                totalGasBurned += measurement.MED_CORRIGIDO_MVMDO_003.Value;
-                            }
+                                if (lpFlare.MeasuringPoint is not null && (lpFlare.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 || lpFlare.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003))
+                                    isGasBurned = true;
 
-                            if (lpFlare.MeasuringPoint is not null && lpFlare.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 && measurement.MED_CORRIGIDO_MVMDO_002 is not null)
-                            {
-                                totalGasBurned += measurement.MED_CORRIGIDO_MVMDO_002.Value;
+                                if (lpFlare.MeasuringPoint is not null && lpFlare.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003 && measurement.MED_CORRIGIDO_MVMDO_003 is not null)
+                                {
+                                    totalGasBurnedDiferencial += measurement.MED_CORRIGIDO_MVMDO_003.Value;
+
+                                }
+
+                                if (lpFlare.MeasuringPoint is not null && lpFlare.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 && measurement.MED_CORRIGIDO_MVMDO_002 is not null)
+                                {
+
+                                    totalGasBurnedLinear += measurement.MED_CORRIGIDO_MVMDO_002.Value;
+                                }
                             }
                         }
 
                         foreach (var assistance in gasCalculation.AssistanceGases)
                         {
-                            if (assistance.MeasuringPoint is not null && (assistance.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 || assistance.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003))
-                                isGasBurned = true;
-
-                            if (assistance.MeasuringPoint is not null && assistance.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003 && measurement.MED_CORRIGIDO_MVMDO_003 is not null)
+                            if (assistance.MeasuringPoint is not null && nfsmInDatabase.MeasuringPoint.TagPointMeasuring == assistance.MeasuringPoint.TagPointMeasuring)
                             {
-                                totalGasBurned += measurement.MED_CORRIGIDO_MVMDO_003.Value;
-                            }
+                                if (assistance.MeasuringPoint is not null && (assistance.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 || assistance.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003))
+                                    isGasBurned = true;
 
-                            if (assistance.MeasuringPoint is not null && assistance.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 && measurement.MED_CORRIGIDO_MVMDO_002 is not null)
-                            {
-                                totalGasBurned += measurement.MED_CORRIGIDO_MVMDO_002.Value;
+                                if (assistance.MeasuringPoint is not null && assistance.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003 && measurement.MED_CORRIGIDO_MVMDO_003 is not null)
+                                {
+
+                                    totalGasBurnedDiferencial += measurement.MED_CORRIGIDO_MVMDO_003.Value;
+
+                                }
+
+                                if (assistance.MeasuringPoint is not null && assistance.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 && measurement.MED_CORRIGIDO_MVMDO_002 is not null)
+                                {
+
+                                    totalGasBurnedLinear += measurement.MED_CORRIGIDO_MVMDO_002.Value;
+                                }
                             }
                         }
 
                         foreach (var pilot in gasCalculation.PilotGases)
                         {
-                            if (pilot.MeasuringPoint is not null && (pilot.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 || pilot.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003))
-                                isGasBurned = true;
-
-                            if (pilot.MeasuringPoint is not null && pilot.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003 && measurement.MED_CORRIGIDO_MVMDO_003 is not null)
+                            if (pilot.MeasuringPoint is not null && nfsmInDatabase.MeasuringPoint.TagPointMeasuring == pilot.MeasuringPoint.TagPointMeasuring)
                             {
-                                totalGasBurned += measurement.MED_CORRIGIDO_MVMDO_003.Value;
-                            }
+                                if (pilot.MeasuringPoint is not null && (pilot.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 || pilot.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003))
+                                    isGasBurned = true;
 
-                            if (pilot.MeasuringPoint is not null && pilot.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 && measurement.MED_CORRIGIDO_MVMDO_002 is not null)
-                            {
-                                totalGasBurned += measurement.MED_CORRIGIDO_MVMDO_002.Value;
+                                if (pilot.MeasuringPoint is not null && pilot.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003 && measurement.MED_CORRIGIDO_MVMDO_003 is not null)
+                                {
+
+                                    totalGasBurnedDiferencial -= measurement.MED_CORRIGIDO_MVMDO_003.Value;
+                                }
+
+                                if (pilot.MeasuringPoint is not null && pilot.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 && measurement.MED_CORRIGIDO_MVMDO_002 is not null)
+                                {
+
+                                    totalGasBurnedLinear -= measurement.MED_CORRIGIDO_MVMDO_002.Value;
+                                }
                             }
                         }
 
                         foreach (var purge in gasCalculation.PurgeGases)
                         {
-                            if (purge.MeasuringPoint is not null && (purge.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 || purge.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003))
-                                isGasBurned = true;
-
-                            if (purge.MeasuringPoint is not null && purge.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003 && measurement.MED_CORRIGIDO_MVMDO_003 is not null)
+                            if (purge.MeasuringPoint is not null && nfsmInDatabase.MeasuringPoint.TagPointMeasuring == purge.MeasuringPoint.TagPointMeasuring)
                             {
-                                totalGasBurned += measurement.MED_CORRIGIDO_MVMDO_003.Value;
-                            }
+                                if (purge.MeasuringPoint is not null && (purge.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 || purge.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003))
+                                    isGasBurned = true;
 
-                            if (purge.MeasuringPoint is not null && purge.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 && measurement.MED_CORRIGIDO_MVMDO_002 is not null)
-                            {
-                                totalGasBurned += measurement.MED_CORRIGIDO_MVMDO_002.Value;
+                                if (purge.MeasuringPoint is not null && purge.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_003 && measurement.MED_CORRIGIDO_MVMDO_003 is not null)
+                                {
+
+                                    totalGasBurnedDiferencial += measurement.MED_CORRIGIDO_MVMDO_003.Value;
+                                }
+
+                                if (purge.MeasuringPoint is not null && purge.MeasuringPoint.TagPointMeasuring == measurement.COD_TAG_PONTO_MEDICAO_002 && measurement.MED_CORRIGIDO_MVMDO_002 is not null)
+                                {
+
+                                    totalGasBurnedLinear += measurement.MED_CORRIGIDO_MVMDO_002.Value;
+                                }
                             }
                         }
                     }
@@ -922,10 +962,17 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                 }
 
                 if (gasDiferencialChanged && productionInDatabase.GasDiferencial is not null)
+                {
                     productionInDatabase.GasDiferencial.TotalGas = totalDiferencial;
+                    productionInDatabase.GasDiferencial.BurntGas = totalGasBurnedDiferencial;
+                }
 
                 if (gasLinearChanged && productionInDatabase.GasLinear is not null)
+                {
+                    productionInDatabase.GasLinear.BurntGas = totalGasBurnedLinear;
                     productionInDatabase.GasLinear.TotalGas = totalLinear;
+                }
+                var totalGasBurned = totalGasBurnedLinear + totalGasBurnedDiferencial;
 
                 if (isGasBurned && productionInDatabase.Gas is not null && originalGasBurned != totalGasBurned)
                 {
@@ -944,9 +991,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                                      (productionInDatabase.GasDiferencial?.TotalGas ?? 0) +
                                      (productionInDatabase.GasLinear?.TotalGas ?? 0);
 
-                if (originalTotalOil != totalOil || originalTotalGasDiferencial != totalDiferencial || originalTotalGasLinear != totalLinear)
+                if (oilChanged || gasDiferencialChanged || gasLinearChanged)
                 {
-
                     if (productionInDatabase.FieldsFR is not null)
                         foreach (var fieldFr in productionInDatabase.FieldsFR)
                         {

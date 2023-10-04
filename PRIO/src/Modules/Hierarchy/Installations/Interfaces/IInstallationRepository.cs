@@ -1,4 +1,5 @@
-﻿using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
+﻿using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Hierarchy.Installations.Interfaces
@@ -15,6 +16,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Interfaces
         Task<Installation?> GetByIdAsync(Guid? id);
         Task<List<FieldFR?>> GetFRsByUEPAsync(string? uep);
         Task<List<FieldFR?>> GetFRsByIdAsync(Guid? id);
+        Task<List<Installation>> GetInstallationsByUepWithTagsPi(string uepCode);
         Task<List<FieldFR>> GetFRsByIdAsync(Guid id);
         Task<Installation?> GetByNameAsync(string? name);
         Task<Installation?> GetByIdWithCalculationsAsync(Guid? id);
@@ -23,10 +25,10 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Interfaces
         Task<List<Installation?>> GetByUEPWithFieldsCod(string? cod);
         Task<Installation?> GetInstallationMeasurementByUepAndAnpCodAsync(string codInstallation, string acronym);
         Task<Installation?> GetByIdWithFieldsMeasuringPointsAsync(Guid? id);
-        Task<List<Installation>> GetAsync();
+        Task<List<Installation>> GetAsync(User user);
         Task<List<Installation>> GetUEPsAsync();
         Task<List<Installation>> GetUEPsCreateAsync(string table);
-        Task<List<Installation>> GetByIdWithFieldsCod(Guid id);
+        Task<List<Installation>> GetByIdWithFieldsCod(Guid id, User user);
         Task<Installation?> GetInstallationAndChildren(Guid? id);
         Task<Installation?> GetUepById(Guid? id);
         Task<List<Installation>> GetInstallationChildrenOfUEP(string uepCode);

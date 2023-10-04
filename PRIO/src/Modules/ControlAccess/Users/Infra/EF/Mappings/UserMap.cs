@@ -10,7 +10,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Mappings
         {
 
             builder.ToTable
-                    ("Users");
+                    ("AC.Users");
 
             builder.Property(x => x.Name)
                 .HasColumnType("VARCHAR")

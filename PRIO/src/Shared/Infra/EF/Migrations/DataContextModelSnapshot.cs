@@ -49,7 +49,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Groups", (string)null);
+                    b.ToTable("AC.Groups", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.GroupOperation", b =>
@@ -76,7 +76,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("GroupPermissionId");
 
-                    b.ToTable("GroupOperations");
+                    b.ToTable("AC.GroupOperations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.GroupPermission", b =>
@@ -140,7 +140,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("MenuId");
 
-                    b.ToTable("GroupPermissions", (string)null);
+                    b.ToTable("AC.GroupPermissions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Models.Menu", b =>
@@ -186,7 +186,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("Menus", (string)null);
+                    b.ToTable("AC.Menus", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Models.GlobalOperation", b =>
@@ -202,20 +202,42 @@ namespace PRIO.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<string>("Method")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(120)
+                        .HasColumnType("VARCHAR");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.ToTable("GlobalOperations");
+                    b.ToTable("AC.GlobalOperations", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.InstallationsAccess", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("InstallationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InstallationId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AC.InstallationsAccess", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.Session", b =>
@@ -246,7 +268,7 @@ namespace PRIO.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Sessions", (string)null);
+                    b.ToTable("System.Sessions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", b =>
@@ -310,7 +332,7 @@ namespace PRIO.Migrations
                     b.HasIndex("Username")
                         .IsUnique();
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("AC.Users", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.UserOperation", b =>
@@ -339,7 +361,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserPermissionId");
 
-                    b.ToTable("UserOperations", (string)null);
+                    b.ToTable("AC.UserOperations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.UserPermission", b =>
@@ -394,7 +416,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserPermissions", (string)null);
+                    b.ToTable("AC.UserPermissions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTP", b =>
@@ -509,7 +531,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BTPs", (string)null);
+                    b.ToTable("WellTest.BTPs", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPBase64", b =>
@@ -554,7 +576,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("BTPBases64", (string)null);
+                    b.ToTable("WellTest.Bases64", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.ValidateBTP", b =>
@@ -595,7 +617,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Validates");
+                    b.ToTable("WellTest.Validates", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.WellTests", b =>
@@ -686,10 +708,12 @@ namespace PRIO.Migrations
                         .HasColumnType("decimal");
 
                     b.Property<decimal>("PotencialLiquid")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(15, 5)
+                        .HasColumnType("decimal");
 
                     b.Property<decimal>("PotencialLiquidPerHour")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(15, 5)
+                        .HasColumnType("decimal");
 
                     b.Property<decimal>("PotencialOil")
                         .HasPrecision(15, 5)
@@ -741,7 +765,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("WellId");
 
-                    b.ToTable("WellTests", (string)null);
+                    b.ToTable("WellTest.WellTests", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSM", b =>
@@ -826,7 +850,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("MeasuringPointId");
 
-                    b.ToTable("NFSMs", (string)null);
+                    b.ToTable("Measurement.NFSMs", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSMHistory", b =>
@@ -872,7 +896,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("ImportedById");
 
-                    b.ToTable("NFSMImportHistories", (string)null);
+                    b.ToTable("Measurement.NFSMImportHistories", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSMsProductions", b =>
@@ -882,10 +906,12 @@ namespace PRIO.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal?>("Bsw")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(10, 5)
+                        .HasColumnType("decimal");
 
                     b.Property<decimal?>("BswMax")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(10, 5)
+                        .HasColumnType("decimal");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -912,11 +938,11 @@ namespace PRIO.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<decimal?>("VolumeAfter")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("decimal");
 
                     b.Property<decimal?>("VolumeBefore")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("decimal");
 
                     b.HasKey("Id");
@@ -925,7 +951,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("ProductionId");
 
-                    b.ToTable("NFSMsProductions", (string)null);
+                    b.ToTable("Measurement.NFSMsProductions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models.Cluster", b =>
@@ -942,6 +968,9 @@ namespace PRIO.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("InactivatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -961,7 +990,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Clusters", (string)null);
+                    b.ToTable("Hierachy.Clusters", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models.Completion", b =>
@@ -986,6 +1015,9 @@ namespace PRIO.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("InactivatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -1019,7 +1051,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("WellId");
 
-                    b.ToTable("Completions", (string)null);
+                    b.ToTable("Hierachy.Completions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models.Field", b =>
@@ -1044,6 +1076,9 @@ namespace PRIO.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("InactivatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("InstallationId")
                         .HasColumnType("uniqueidentifier");
@@ -1076,7 +1111,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Fields", (string)null);
+                    b.ToTable("Hierachy.Fields", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models.FieldFR", b =>
@@ -1098,18 +1133,18 @@ namespace PRIO.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("FRGas")
-                        .HasPrecision(4, 2)
+                        .HasPrecision(10, 5)
                         .HasColumnType("decimal");
 
                     b.Property<decimal?>("FROil")
-                        .HasPrecision(4, 2)
+                        .HasPrecision(10, 5)
                         .HasColumnType("decimal");
 
                     b.Property<Guid>("FieldId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("GasProductionInField")
-                        .HasPrecision(10, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("decimal");
 
                     b.Property<bool>("IsActive")
@@ -1119,7 +1154,7 @@ namespace PRIO.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal>("OilProductionInField")
-                        .HasPrecision(10, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("decimal");
 
                     b.Property<decimal>("ProductionInFieldAsPercentage")
@@ -1127,7 +1162,7 @@ namespace PRIO.Migrations
                         .HasColumnType("decimal");
 
                     b.Property<decimal>("TotalProductionInField")
-                        .HasPrecision(10, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("decimal");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -1139,7 +1174,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("FieldId");
 
-                    b.ToTable("FieldsFRs", (string)null);
+                    b.ToTable("Production.FieldsFRs", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", b =>
@@ -1168,6 +1203,9 @@ namespace PRIO.Migrations
                     b.Property<decimal?>("GasSafetyBurnVolume")
                         .HasPrecision(10, 4)
                         .HasColumnType("decimal");
+
+                    b.Property<DateTime?>("InactivatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -1202,7 +1240,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Installations", (string)null);
+                    b.ToTable("Hierachy.Installations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.InstallationBTP", b =>
@@ -1256,6 +1294,9 @@ namespace PRIO.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("InactivatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -1279,7 +1320,135 @@ namespace PRIO.Migrations
 
                     b.HasIndex("ZoneId");
 
-                    b.ToTable("Reservoirs", (string)null);
+                    b.ToTable("Hierachy.Reservoirs", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.BuildUp", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsOperating")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("ManualWellConfigurationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("Value")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ManualWellConfigurationId");
+
+                    b.ToTable("ManualWellConfiguration.BuildUps", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.InjectivityIndex", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsOperating")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("ManualWellConfigurationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("Value")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ManualWellConfigurationId");
+
+                    b.ToTable("ManualWellConfiguration.InjectivityIndex", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.ManualWellConfiguration", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("WellId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WellId")
+                        .IsUnique();
+
+                    b.ToTable("ManualWellConfiguration.ManualWellConfigurations", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.ProductivityIndex", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsOperating")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("ManualWellConfigurationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("Value")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ManualWellConfigurationId");
+
+                    b.ToTable("ManualWellConfiguration.ProductivityIndex", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.Well", b =>
@@ -1338,6 +1507,9 @@ namespace PRIO.Migrations
                     b.Property<Guid>("FieldId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("InactivatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -1395,7 +1567,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Wells", (string)null);
+                    b.ToTable("Hierachy.Wells", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models.Zone", b =>
@@ -1421,6 +1593,9 @@ namespace PRIO.Migrations
                     b.Property<Guid>("FieldId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("InactivatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -1436,7 +1611,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Zones", (string)null);
+                    b.ToTable("Hierachy.Zones", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Comments.Infra.EF.Models.CommentInProduction", b =>
@@ -1477,7 +1652,7 @@ namespace PRIO.Migrations
                     b.HasIndex("ProductionId")
                         .IsUnique();
 
-                    b.ToTable("CommentsInProduction", (string)null);
+                    b.ToTable("Production.Comments", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Bsw", b =>
@@ -1519,7 +1694,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("MeasurementId");
 
-                    b.ToTable("BSWS_039", (string)null);
+                    b.ToTable("Measurement.BSWS_039", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Calibration", b =>
@@ -1569,7 +1744,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("MeasurementId");
 
-                    b.ToTable("Calibrations_039", (string)null);
+                    b.ToTable("Measurement.Calibrations_039", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.FileType", b =>
@@ -1608,7 +1783,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FileTypes", (string)null);
+                    b.ToTable("Measurement.FileTypes", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Measurement", b =>
@@ -2184,15 +2359,15 @@ namespace PRIO.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal?>("MED_BRUTO_MOVIMENTADO_002")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("decimal");
 
                     b.Property<decimal?>("MED_CORRIGIDO_MVMDO_002")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("decimal");
 
                     b.Property<decimal?>("MED_CORRIGIDO_MVMDO_003")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("decimal");
 
                     b.Property<decimal?>("MED_CUTOFF_KPA_1_003")
@@ -2962,7 +3137,8 @@ namespace PRIO.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal?>("VolumeAfterManualBsw_001")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(22, 5)
+                        .HasColumnType("decimal");
 
                     b.HasKey("Id");
 
@@ -2980,7 +3156,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Measurements", (string)null);
+                    b.ToTable("Measurement.Measurements", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.MeasuringEquipment", b =>
@@ -3071,7 +3247,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("MeasuringEquipments", (string)null);
+                    b.ToTable("Hierarchy.MeasuringEquipments", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Volume", b =>
@@ -3113,7 +3289,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("MeasurementId");
 
-                    b.ToTable("Volumes_039", (string)null);
+                    b.ToTable("Measurement.Volumes_039", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.AssistanceGas", b =>
@@ -3158,7 +3334,7 @@ namespace PRIO.Migrations
                     b.HasIndex("MeasuringPointId")
                         .IsUnique();
 
-                    b.ToTable("AssistanceGases", (string)null);
+                    b.ToTable("ConfigCalc.AssistanceGases", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.ExportGas", b =>
@@ -3203,7 +3379,7 @@ namespace PRIO.Migrations
                     b.HasIndex("MeasuringPointId")
                         .IsUnique();
 
-                    b.ToTable("ExportGases", (string)null);
+                    b.ToTable("ConfigCalc.ExportGases", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", b =>
@@ -3235,7 +3411,7 @@ namespace PRIO.Migrations
                     b.HasIndex("InstallationId")
                         .IsUnique();
 
-                    b.ToTable("GasVolumeCalculations", (string)null);
+                    b.ToTable("ConfigCalc.GasVolumeCalculations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.HPFlare", b =>
@@ -3280,7 +3456,7 @@ namespace PRIO.Migrations
                     b.HasIndex("MeasuringPointId")
                         .IsUnique();
 
-                    b.ToTable("HpFlares", (string)null);
+                    b.ToTable("ConfigCalc.HpFlares", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.HighPressureGas", b =>
@@ -3325,7 +3501,7 @@ namespace PRIO.Migrations
                     b.HasIndex("MeasuringPointId")
                         .IsUnique();
 
-                    b.ToTable("HighPressureGases", (string)null);
+                    b.ToTable("ConfigCalc.HighPressureGases", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.ImportGas", b =>
@@ -3370,7 +3546,7 @@ namespace PRIO.Migrations
                     b.HasIndex("MeasuringPointId")
                         .IsUnique();
 
-                    b.ToTable("ImportGases", (string)null);
+                    b.ToTable("ConfigCalc.ImportGases", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.LPFlare", b =>
@@ -3415,7 +3591,7 @@ namespace PRIO.Migrations
                     b.HasIndex("MeasuringPointId")
                         .IsUnique();
 
-                    b.ToTable("LPFlares", (string)null);
+                    b.ToTable("ConfigCalc.LPFlares", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.LowPressureGas", b =>
@@ -3460,7 +3636,7 @@ namespace PRIO.Migrations
                     b.HasIndex("MeasuringPointId")
                         .IsUnique();
 
-                    b.ToTable("LowPressureGases", (string)null);
+                    b.ToTable("ConfigCalc.LowPressureGases", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.PilotGas", b =>
@@ -3505,7 +3681,7 @@ namespace PRIO.Migrations
                     b.HasIndex("MeasuringPointId")
                         .IsUnique();
 
-                    b.ToTable("PilotGases", (string)null);
+                    b.ToTable("ConfigCalc.PilotGases", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.PurgeGas", b =>
@@ -3550,7 +3726,7 @@ namespace PRIO.Migrations
                     b.HasIndex("MeasuringPointId")
                         .IsUnique();
 
-                    b.ToTable("PurgeGases", (string)null);
+                    b.ToTable("ConfigCalc.PurgeGases", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models.MeasurementHistory", b =>
@@ -3558,6 +3734,15 @@ namespace PRIO.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FileAcronym")
                         .IsRequired()
@@ -3584,6 +3769,9 @@ namespace PRIO.Migrations
                     b.Property<Guid>("ImportedById")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("MeasuredAt")
                         .HasColumnType("datetime2");
 
@@ -3592,11 +3780,14 @@ namespace PRIO.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("varchar");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ImportedById");
 
-                    b.ToTable("MeasurementsHistories", (string)null);
+                    b.ToTable("Measurement.MeasurementsHistories", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", b =>
@@ -3640,7 +3831,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("InstallationId");
 
-                    b.ToTable("MeasuringPoints", (string)null);
+                    b.ToTable("Hierarchy.MeasuringPoints", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.DOR", b =>
@@ -3685,7 +3876,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("OilVolumeCalculationId");
 
-                    b.ToTable("DORs", (string)null);
+                    b.ToTable("ConfigCalc.DORs", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.DrainVolume", b =>
@@ -3730,7 +3921,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("OilVolumeCalculationId");
 
-                    b.ToTable("DrainVolumes", (string)null);
+                    b.ToTable("ConfigCalc.DrainVolumes", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", b =>
@@ -3762,7 +3953,7 @@ namespace PRIO.Migrations
                     b.HasIndex("InstallationId")
                         .IsUnique();
 
-                    b.ToTable("OilVoumeCalculations", (string)null);
+                    b.ToTable("ConfigCalc.OilVoumeCalculations", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.Section", b =>
@@ -3807,7 +3998,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("OilVolumeCalculationId");
 
-                    b.ToTable("Sections", (string)null);
+                    b.ToTable("ConfigCalc.Sections", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.TOGRecoveredOil", b =>
@@ -3852,7 +4043,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("OilVolumeCalculationId");
 
-                    b.ToTable("TOGRecoveredOils", (string)null);
+                    b.ToTable("ConfigCalc.TOGRecoveredOils", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.CompletionProduction", b =>
@@ -3874,14 +4065,14 @@ namespace PRIO.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("GasProductionInCompletion")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(38, 16)
                         .HasColumnType("DECIMAL");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<decimal>("OilProductionInCompletion")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(38, 16)
                         .HasColumnType("DECIMAL");
 
                     b.Property<Guid>("ProductionId")
@@ -3894,7 +4085,7 @@ namespace PRIO.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("WaterProductionInCompletion")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(38, 16)
                         .HasColumnType("DECIMAL");
 
                     b.Property<Guid?>("WellAllocationId")
@@ -3906,7 +4097,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("WellAllocationId");
 
-                    b.ToTable("CompletionProductions", (string)null);
+                    b.ToTable("Production.CompletionProductions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.FieldProduction", b =>
@@ -3928,14 +4119,14 @@ namespace PRIO.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("GasProductionInField")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(38, 16)
                         .HasColumnType("DECIMAL");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<decimal>("OilProductionInField")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(38, 16)
                         .HasColumnType("DECIMAL");
 
                     b.Property<Guid>("ProductionId")
@@ -3945,12 +4136,12 @@ namespace PRIO.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("WaterProductionInField")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(38, 16)
                         .HasColumnType("DECIMAL");
 
                     b.HasKey("Id");
 
-                    b.ToTable("FieldsProductions", (string)null);
+                    b.ToTable("Production.FieldsProductions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Gas", b =>
@@ -3969,11 +4160,11 @@ namespace PRIO.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("EmergencialBurn")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ForCommissioningBurn")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<Guid?>("GasDiferencialId")
@@ -3986,26 +4177,26 @@ namespace PRIO.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal>("LimitOperacionalBurn")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("OthersBurn")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ScheduledStopBurn")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("VentedGas")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("WellTestBurn")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("DECIMAL");
 
                     b.HasKey("Id");
@@ -4018,7 +4209,7 @@ namespace PRIO.Migrations
                         .IsUnique()
                         .HasFilter("[GasLinearId] IS NOT NULL");
 
-                    b.ToTable("Gases", (string)null);
+                    b.ToTable("Measurement.Gases", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.GasDiferencial", b =>
@@ -4028,7 +4219,7 @@ namespace PRIO.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("BurntGas")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<DateTime>("CreatedAt")
@@ -4041,15 +4232,15 @@ namespace PRIO.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("ExportedGas")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("FuelGas")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ImportedGas")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<bool>("IsActive")
@@ -4059,7 +4250,7 @@ namespace PRIO.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal>("TotalGas")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -4067,7 +4258,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GasesDiferencials", (string)null);
+                    b.ToTable("Measurement.GasesDiferencials", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.GasLinear", b =>
@@ -4077,7 +4268,7 @@ namespace PRIO.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("BurntGas")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<DateTime>("CreatedAt")
@@ -4090,15 +4281,15 @@ namespace PRIO.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("ExportedGas")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("FuelGas")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ImportedGas")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<bool>("IsActive")
@@ -4108,7 +4299,7 @@ namespace PRIO.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal>("TotalGas")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -4116,7 +4307,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GasesLinears", (string)null);
+                    b.ToTable("Measurement.GasesLinears", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Oil", b =>
@@ -4145,11 +4336,11 @@ namespace PRIO.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal>("TotalOil")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("TotalOilWithoutBsw")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("DECIMAL");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -4157,7 +4348,7 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Oils", (string)null);
+                    b.ToTable("Measurement.Oils", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", b =>
@@ -4213,7 +4404,7 @@ namespace PRIO.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("TotalProduction")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(20, 5)
                         .HasColumnType("decimal");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -4248,7 +4439,7 @@ namespace PRIO.Migrations
                         .IsUnique()
                         .HasFilter("[WaterId] IS NOT NULL");
 
-                    b.ToTable("Productions", (string)null);
+                    b.ToTable("Measurement.Productions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.ReservoirProduction", b =>
@@ -4267,14 +4458,14 @@ namespace PRIO.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("GasProductionInReservoir")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(38, 16)
                         .HasColumnType("DECIMAL");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<decimal>("OilProductionInReservoir")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(38, 16)
                         .HasColumnType("DECIMAL");
 
                     b.Property<Guid>("ProductionId")
@@ -4287,7 +4478,7 @@ namespace PRIO.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("WaterProductionInReservoir")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(38, 16)
                         .HasColumnType("DECIMAL");
 
                     b.Property<Guid?>("ZoneProductionId")
@@ -4297,7 +4488,7 @@ namespace PRIO.Migrations
 
                     b.HasIndex("ZoneProductionId");
 
-                    b.ToTable("ReservoirProductions", (string)null);
+                    b.ToTable("Production.ReservoirProductions", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Water", b =>
@@ -4322,14 +4513,15 @@ namespace PRIO.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal>("TotalWater")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Waters");
+                    b.ToTable("Production.Waters", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.ZoneProduction", b =>
@@ -4348,14 +4540,14 @@ namespace PRIO.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("GasProductionInZone")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(38, 16)
                         .HasColumnType("DECIMAL");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<decimal>("OilProductionInZone")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(38, 16)
                         .HasColumnType("DECIMAL");
 
                     b.Property<Guid>("ProductionId")
@@ -4365,7 +4557,7 @@ namespace PRIO.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("WaterProductionInZone")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(38, 16)
                         .HasColumnType("DECIMAL");
 
                     b.Property<Guid>("ZoneId")
@@ -4373,10 +4565,10 @@ namespace PRIO.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ZoneProductions", (string)null);
+                    b.ToTable("Production.ZoneProductions", (string)null);
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.EF.Models.EventReason", b =>
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models.EventReason", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -4389,6 +4581,9 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
@@ -4398,34 +4593,44 @@ namespace PRIO.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("Interval")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("Interval")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("VARCHAR");
+                    b.Property<bool>("IsJobGenerated")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("SystemRelated")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("VARCHAR");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("WellEventId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("UpdatedById");
+
                     b.HasIndex("WellEventId");
 
-                    b.ToTable("EventReasons", (string)null);
+                    b.ToTable("Event.EventReasons", (string)null);
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.EF.Models.WellEvent", b =>
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models.WellEvent", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -4433,6 +4638,9 @@ namespace PRIO.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
@@ -4467,6 +4675,11 @@ namespace PRIO.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
@@ -4478,24 +4691,26 @@ namespace PRIO.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("VARCHAR");
 
-                    b.Property<string>("SystemRelated")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar");
-
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("WellId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedById");
+
                     b.HasIndex("EventRelatedId");
+
+                    b.HasIndex("UpdatedById");
 
                     b.HasIndex("WellId");
 
-                    b.ToTable("WellEvents", (string)null);
+                    b.ToTable("Event.WellEvents", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellLosses", b =>
@@ -4514,10 +4729,12 @@ namespace PRIO.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Downtime")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("EfficienceLoss")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
 
                     b.Property<Guid>("EventId")
                         .HasColumnType("uniqueidentifier");
@@ -4528,11 +4745,21 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("MeasuredAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("ProductionLost")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<decimal>("ProductionLostGas")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<decimal>("ProductionLostOil")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<decimal>("ProductionLostWater")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProportionalDay")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -4546,10 +4773,10 @@ namespace PRIO.Migrations
 
                     b.HasIndex("WellAllocationId");
 
-                    b.ToTable("WellLosses");
+                    b.ToTable("Production.WellLosses", (string)null);
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellProductions", b =>
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellProduction", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -4570,7 +4797,7 @@ namespace PRIO.Migrations
                         .HasColumnType("nvarchar(15)");
 
                     b.Property<decimal>("EfficienceLoss")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(38, 16)
                         .HasColumnType("DECIMAL");
 
                     b.Property<Guid>("FieldProductionId")
@@ -4580,62 +4807,70 @@ namespace PRIO.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal>("ProductionGasAsPercentageOfField")
-                        .HasPrecision(7, 5)
+                        .HasPrecision(38, 25)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionGasAsPercentageOfInstallation")
-                        .HasPrecision(7, 5)
+                        .HasPrecision(38, 25)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionGasInWellM3")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(38, 16)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionGasInWellSCF")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(38, 16)
                         .HasColumnType("DECIMAL");
 
                     b.Property<Guid>("ProductionId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("ProductionLost")
-                        .HasPrecision(14, 5)
+                    b.Property<decimal>("ProductionLostGas")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<decimal>("ProductionLostOil")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<decimal>("ProductionLostWater")
+                        .HasPrecision(38, 16)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionOilAsPercentageOfField")
-                        .HasPrecision(7, 5)
+                        .HasPrecision(38, 25)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionOilAsPercentageOfInstallation")
-                        .HasPrecision(7, 5)
+                        .HasPrecision(38, 25)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionOilInWellBBL")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(38, 16)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionOilInWellM3")
-                        .HasPrecision(14, 5)
-                        .HasColumnType("DECIMAL");
+                        .HasPrecision(38, 16)
+                        .HasColumnType("decimal");
 
                     b.Property<decimal>("ProductionWaterAsPercentageOfField")
-                        .HasPrecision(7, 5)
+                        .HasPrecision(38, 25)
                         .HasColumnType("DECIMAL");
 
-                    b.Property<decimal>("ProductionWaterAsPercentageOfInstallation")
-                        .HasPrecision(7, 5)
+                    b.Property<decimal?>("ProductionWaterAsPercentageOfInstallation")
+                        .HasPrecision(38, 25)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionWaterInWellBBL")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(38, 16)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProductionWaterInWellM3")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(38, 16)
                         .HasColumnType("DECIMAL");
 
                     b.Property<decimal>("ProportionalDay")
-                        .HasPrecision(14, 5)
+                        .HasPrecision(38, 16)
                         .HasColumnType("DECIMAL");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -4655,1383 +4890,1797 @@ namespace PRIO.Migrations
 
                     b.HasIndex("WellTestId");
 
-
-                    b.ToTable("WellProductions", (string)null);
-
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellLosses", b =>
-                        {
-                            b.Property<Guid>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("uniqueidentifier");
-
-                            b.Property<DateTime>("CreatedAt")
-                                .HasColumnType("datetime2");
-
-                            b.Property<DateTime?>("DeletedAt")
-                                .HasColumnType("datetime2");
-
-                            b.Property<string>("Description")
-                                .HasColumnType("nvarchar(max)");
-
-                            b.Property<decimal>("Downtime")
-                                .HasColumnType("decimal(18,2)");
-
-                            b.Property<decimal>("EfficienceLoss")
-                                .HasColumnType("decimal(18,2)");
-
-                            b.Property<Guid>("EventId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b.Property<bool>("IsActive")
-                                .HasColumnType("bit");
-
-                            b.Property<DateTime>("MeasuredAt")
-                                .HasColumnType("datetime2");
-
-                            b.Property<decimal>("ProductionLost")
-                                .HasColumnType("decimal(18,2)");
-
-                            b.Property<decimal>("ProportionalDay")
-                                .HasColumnType("decimal(18,2)");
-
-                            b.Property<DateTime>("UpdatedAt")
-                                .HasColumnType("datetime2");
-
-                            b.Property<Guid>("WellAllocationId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b.HasKey("Id");
-
-                            b.HasIndex("EventId");
-
-                            b.HasIndex("WellAllocationId");
-
-                            b.ToTable("WellLosses");
-
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Shared.Auxiliaries.Infra.EF.Models.Auxiliary", b =>
-                        {
-                            b.Property<Guid?>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("uniqueidentifier");
-
-                            b.Property<string>("Option")
-                                .HasColumnType("nvarchar(max)");
-
-                            b.Property<string>("Route")
-                                .HasColumnType("nvarchar(max)");
-
-                            b.Property<string>("Select")
-                                .HasColumnType("nvarchar(max)");
-
-                            b.Property<string>("Table")
-                                .HasColumnType("nvarchar(max)");
-
-                            b.Property<DateTime?>("UpdatedAt")
-                                .HasColumnType("datetime2");
-
-                            b.HasKey("Id");
-
-                            b.ToTable("Auxiliaries");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Shared.SystemHistories.Infra.EF.Models.SystemHistory", b =>
-                        {
-                            b.Property<Guid?>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("uniqueidentifier");
-
-                            b.Property<DateTime?>("CreatedAt")
-                                .HasColumnType("datetime2");
-
-                            b.Property<Guid?>("CreatedBy")
-                                .HasColumnType("uniqueidentifier");
-
-                            b.Property<string>("CurrentData")
-                                .IsRequired()
-                                .HasColumnType("varchar(max)");
-
-                            b.Property<string>("FieldsChanged")
-                                .HasColumnType("varchar(max)");
-
-                            b.Property<string>("PreviousData")
-                                .HasColumnType("varchar(max)");
-
-                            b.Property<string>("Table")
-                                .IsRequired()
-                                .HasMaxLength(30)
-                                .HasColumnType("varchar");
-
-                            b.Property<Guid?>("TableItemId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b.Property<string>("TypeOperation")
-                                .IsRequired()
-                                .HasMaxLength(15)
-                                .HasColumnType("varchar");
-
-                            b.Property<Guid?>("UpdatedBy")
-                                .HasColumnType("uniqueidentifier");
-
-                            b.HasKey("Id");
-
-                            b.ToTable("SystemHistories", (string)null);
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.GroupOperation", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Models.GlobalOperation", "GlobalOperation")
-                                .WithMany("GroupOperations")
-                                .HasForeignKey("GlobalOperationId");
-
-                            b.HasOne("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.GroupPermission", "GroupPermission")
-                                .WithMany("Operations")
-                                .HasForeignKey("GroupPermissionId");
-
-                            b.Navigation("GlobalOperation");
-
-                            b.Navigation("GroupPermission");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.GroupPermission", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.Group", "Group")
-                                .WithMany("GroupPermissions")
-                                .HasForeignKey("GroupId");
-
-                            b.HasOne("PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Models.Menu", "Menu")
-                                .WithMany("GroupPermissions")
-                                .HasForeignKey("MenuId");
-
-                            b.Navigation("Group");
-
-                            b.Navigation("Menu");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Models.Menu", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Models.Menu", "Parent")
-                                .WithMany("Children")
-                                .HasForeignKey("ParentId");
-
-                            b.Navigation("Parent");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.Session", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
-                                .WithOne("Session")
-                                .HasForeignKey("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.Session", "UserId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.Navigation("User");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.Group", "Group")
-                                .WithMany("User")
-                                .HasForeignKey("GroupId");
-
-                            b.Navigation("Group");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.UserOperation", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Models.GlobalOperation", "GlobalOperation")
-                                .WithMany("UserOperations")
-                                .HasForeignKey("GlobalOperationId")
-                                .OnDelete(DeleteBehavior.NoAction);
-
-                            b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.UserPermission", "UserPermission")
-                                .WithMany("UserOperation")
-                                .HasForeignKey("UserPermissionId")
-                                .OnDelete(DeleteBehavior.Cascade);
-
-                            b.Navigation("GlobalOperation");
-
-                            b.Navigation("UserPermission");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.UserPermission", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.GroupPermission", "GroupMenu")
-                                .WithMany("Permissions")
-                                .HasForeignKey("GroupMenuId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
-                                .WithMany("UserPermissions")
-                                .HasForeignKey("UserId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("GroupMenu");
-
-                            b.Navigation("User");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPBase64", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
-                                .WithMany("BTPBases64")
-                                .HasForeignKey("UserId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.Navigation("User");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.WellTests", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPBase64", "BTPBase64")
-                                .WithOne("WellTest")
-                                .HasForeignKey("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.WellTests", "BTPBase64Id")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.Well", "Well")
-                                .WithMany("WellTests")
-                                .HasForeignKey("WellId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("BTPBase64");
-
-                            b.Navigation("Well");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSM", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSMHistory", "ImportHistory")
-                                .WithOne("NFSM")
-                                .HasForeignKey("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSM", "ImportId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
-                                .WithMany("NFSMs")
-                                .HasForeignKey("InstallationId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
-                                .WithMany("NFSMs")
-                                .HasForeignKey("MeasuringPointId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("ImportHistory");
-
-                            b.Navigation("Installation");
-
-                            b.Navigation("MeasuringPoint");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSMHistory", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "ImportedBy")
-                                .WithMany("NFSMImportedHistories")
-                                .HasForeignKey("ImportedById")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("ImportedBy");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSMsProductions", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSM", "NFSM")
-                                .WithMany("Productions")
-                                .HasForeignKey("NFSMId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "Production")
-                                .WithMany("NFSMs")
-                                .HasForeignKey("ProductionId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("NFSM");
-
-                            b.Navigation("Production");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models.Cluster", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
-                                .WithMany("Clusters")
-                                .HasForeignKey("UserId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("User");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models.Completion", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Models.Reservoir", "Reservoir")
-                                .WithMany("Completions")
-                                .HasForeignKey("ReservoirId")
-                                .OnDelete(DeleteBehavior.NoAction);
-
-                            b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
-                                .WithMany("Completions")
-                                .HasForeignKey("UserId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.Well", "Well")
-                                .WithMany("Completions")
-                                .HasForeignKey("WellId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("Reservoir");
-
-                            b.Navigation("User");
-
-                            b.Navigation("Well");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models.Field", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
-                                .WithMany("Fields")
-                                .HasForeignKey("InstallationId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
-                                .WithMany("Fields")
-                                .HasForeignKey("UserId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("Installation");
-
-                            b.Navigation("User");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models.FieldFR", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "DailyProduction")
-                                .WithMany("FieldsFR")
-                                .HasForeignKey("DailyProductionId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models.Field", "Field")
-                                .WithMany("FRs")
-                                .HasForeignKey("FieldId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.Navigation("DailyProduction");
-
-                            b.Navigation("Field");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models.Cluster", "Cluster")
-                                .WithMany("Installations")
-                                .HasForeignKey("ClusterId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
-                                .WithMany("Installations")
-                                .HasForeignKey("UserId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("Cluster");
-
-                            b.Navigation("User");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.InstallationBTP", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTP", "BTP")
-                                .WithMany("BTPs")
-                                .HasForeignKey("BTPId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
-                                .WithMany("BTPs")
-                                .HasForeignKey("InstallationId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("BTP");
-
-                            b.Navigation("Installation");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Models.Reservoir", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
-                                .WithMany("Reservoirs")
-                                .HasForeignKey("UserId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models.Zone", "Zone")
-                                .WithMany("Reservoirs")
-                                .HasForeignKey("ZoneId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("User");
-
-                            b.Navigation("Zone");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.Well", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models.Field", "Field")
-                                .WithMany("Wells")
-                                .HasForeignKey("FieldId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
-                                .WithMany("Wells")
-                                .HasForeignKey("UserId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("Field");
-
-                            b.Navigation("User");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models.Zone", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models.Field", "Field")
-                                .WithMany("Zones")
-                                .HasForeignKey("FieldId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
-                                .WithMany("Zones")
-                                .HasForeignKey("UserId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("Field");
-
-                            b.Navigation("User");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.Comments.Infra.EF.Models.CommentInProduction", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "CommentedBy")
-                                .WithMany("Comments")
-                                .HasForeignKey("CommentedById")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "Production")
-                                .WithOne("Comment")
-                                .HasForeignKey("PRIO.src.Modules.Measuring.Comments.Infra.EF.Models.CommentInProduction", "ProductionId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("CommentedBy");
-
-                            b.Navigation("Production");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Bsw", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Measurement", "Measurement")
-                                .WithMany("LISTA_BSW")
-                                .HasForeignKey("MeasurementId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.Navigation("Measurement");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Calibration", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Measurement", "Measurement")
-                                .WithMany("LISTA_CALIBRACAO")
-                                .HasForeignKey("MeasurementId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.Navigation("Measurement");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Measurement", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.FileType", "FileType")
-                                .WithMany("Measurements")
-                                .HasForeignKey("FileTypeId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
-                                .WithMany("Measurements")
-                                .HasForeignKey("InstallationId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models.MeasurementHistory", "MeasurementHistory")
-                                .WithMany("Measurements")
-                                .HasForeignKey("MeasurementHistoryId")
-                                .OnDelete(DeleteBehavior.Restrict)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
-                                .WithMany("Measurements")
-                                .HasForeignKey("MeasuringPointId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSM", "NFSM")
-                                .WithMany("Measurements")
-                                .HasForeignKey("NFSMId");
-
-                            b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "Production")
-                                .WithMany("Measurements")
-                                .HasForeignKey("ProductionId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
-                                .WithMany("Measurements")
-                                .HasForeignKey("UserId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("FileType");
-
-                            b.Navigation("Installation");
-
-                            b.Navigation("MeasurementHistory");
-
-                            b.Navigation("MeasuringPoint");
-
-                            b.Navigation("NFSM");
-
-                            b.Navigation("Production");
-
-                            b.Navigation("User");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.MeasuringEquipment", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
-                                .WithMany("MeasuringEquipments")
-                                .HasForeignKey("MeasuringPointId");
-
-                            b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
-                                .WithMany("MeasuringEquipments")
-                                .HasForeignKey("UserId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("MeasuringPoint");
-
-                            b.Navigation("User");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Volume", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Measurement", "Measurement")
-                                .WithMany("LISTA_VOLUME")
-                                .HasForeignKey("MeasurementId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.Navigation("Measurement");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.AssistanceGas", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", "GasVolumeCalculation")
-                                .WithMany("AssistanceGases")
-                                .HasForeignKey("GasVolumeCalculationId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
-                                .WithOne("AssistanceGas")
-                                .HasForeignKey("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.AssistanceGas", "MeasuringPointId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.Navigation("GasVolumeCalculation");
-
-                            b.Navigation("MeasuringPoint");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.ExportGas", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", "GasVolumeCalculation")
-                                .WithMany("ExportGases")
-                                .HasForeignKey("GasVolumeCalculationId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
-                                .WithOne("ExportGas")
-                                .HasForeignKey("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.ExportGas", "MeasuringPointId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.Navigation("GasVolumeCalculation");
-
-                            b.Navigation("MeasuringPoint");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
-                                .WithOne("GasVolumeCalculation")
-                                .HasForeignKey("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", "InstallationId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.Navigation("Installation");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.HPFlare", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", "GasVolumeCalculation")
-                                .WithMany("HPFlares")
-                                .HasForeignKey("GasVolumeCalculationId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
-                                .WithOne("HPFlare")
-                                .HasForeignKey("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.HPFlare", "MeasuringPointId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.Navigation("GasVolumeCalculation");
-
-                            b.Navigation("MeasuringPoint");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.HighPressureGas", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", "GasVolumeCalculation")
-                                .WithMany("HighPressureGases")
-                                .HasForeignKey("GasVolumeCalculationId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
-                                .WithOne("HighPressureGas")
-                                .HasForeignKey("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.HighPressureGas", "MeasuringPointId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.Navigation("GasVolumeCalculation");
-
-                            b.Navigation("MeasuringPoint");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.ImportGas", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", "GasVolumeCalculation")
-                                .WithMany("ImportGases")
-                                .HasForeignKey("GasVolumeCalculationId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
-                                .WithOne("ImportGas")
-                                .HasForeignKey("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.ImportGas", "MeasuringPointId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.Navigation("GasVolumeCalculation");
-
-                            b.Navigation("MeasuringPoint");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.LPFlare", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", "GasVolumeCalculation")
-                                .WithMany("LPFlares")
-                                .HasForeignKey("GasVolumeCalculationId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
-                                .WithOne("LPFlare")
-                                .HasForeignKey("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.LPFlare", "MeasuringPointId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.Navigation("GasVolumeCalculation");
-
-                            b.Navigation("MeasuringPoint");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.LowPressureGas", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", "GasVolumeCalculation")
-                                .WithMany("LowPressureGases")
-                                .HasForeignKey("GasVolumeCalculationId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
-                                .WithOne("LowPressureGas")
-                                .HasForeignKey("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.LowPressureGas", "MeasuringPointId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.Navigation("GasVolumeCalculation");
-
-                            b.Navigation("MeasuringPoint");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.PilotGas", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", "GasVolumeCalculation")
-                                .WithMany("PilotGases")
-                                .HasForeignKey("GasVolumeCalculationId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
-                                .WithOne("PilotGas")
-                                .HasForeignKey("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.PilotGas", "MeasuringPointId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.Navigation("GasVolumeCalculation");
-
-                            b.Navigation("MeasuringPoint");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.PurgeGas", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", "GasVolumeCalculation")
-                                .WithMany("PurgeGases")
-                                .HasForeignKey("GasVolumeCalculationId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
-                                .WithOne("PurgeGas")
-                                .HasForeignKey("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.PurgeGas", "MeasuringPointId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.Navigation("GasVolumeCalculation");
-
-                            b.Navigation("MeasuringPoint");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models.MeasurementHistory", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "ImportedBy")
-                                .WithMany("MeasurementsHistories")
-                                .HasForeignKey("ImportedById")
-                                .OnDelete(DeleteBehavior.Restrict)
-                                .IsRequired();
-
-                            b.Navigation("ImportedBy");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
-                                .WithMany("MeasuringPoints")
-                                .HasForeignKey("InstallationId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("Installation");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.DOR", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
-                                .WithOne("DOR")
-                                .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.DOR", "MeasuringPointId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", "OilVolumeCalculation")
-                                .WithMany("DORs")
-                                .HasForeignKey("OilVolumeCalculationId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.Navigation("MeasuringPoint");
-
-                            b.Navigation("OilVolumeCalculation");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.DrainVolume", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
-                                .WithOne("DrainVolume")
-                                .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.DrainVolume", "MeasuringPointId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", "OilVolumeCalculation")
-                                .WithMany("DrainVolumes")
-                                .HasForeignKey("OilVolumeCalculationId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.Navigation("MeasuringPoint");
-
-                            b.Navigation("OilVolumeCalculation");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
-                                .WithOne("OilVolumeCalculation")
-                                .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", "InstallationId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.Navigation("Installation");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.Section", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
-                                .WithOne("Section")
-                                .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.Section", "MeasuringPointId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", "OilVolumeCalculation")
-                                .WithMany("Sections")
-                                .HasForeignKey("OilVolumeCalculationId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.Navigation("MeasuringPoint");
-
-                            b.Navigation("OilVolumeCalculation");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.TOGRecoveredOil", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
-                                .WithOne("TOGRecoveredOil")
-                                .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.TOGRecoveredOil", "MeasuringPointId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", "OilVolumeCalculation")
-                                .WithMany("TOGRecoveredOils")
-                                .HasForeignKey("OilVolumeCalculationId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.Navigation("MeasuringPoint");
-
-                            b.Navigation("OilVolumeCalculation");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.CompletionProduction", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.ReservoirProduction", "ReservoirProduction")
-                                .WithMany("CompletionProductions")
-                                .HasForeignKey("ReservoirProductionId");
-
-                            b.HasOne("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellProductions", "WellAllocation")
-                                .WithMany("CompletionProductions")
-                                .HasForeignKey("WellAllocationId");
-
-                            b.Navigation("ReservoirProduction");
-
-                            b.Navigation("WellAllocation");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Gas", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.GasDiferencial", "GasDiferencial")
-                                .WithOne("Gas")
-                                .HasForeignKey("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Gas", "GasDiferencialId")
-                                .OnDelete(DeleteBehavior.NoAction);
-
-                            b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.GasLinear", "GasLinear")
-                                .WithOne("Gas")
-                                .HasForeignKey("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Gas", "GasLinearId")
-                                .OnDelete(DeleteBehavior.NoAction);
-
-                            b.Navigation("GasDiferencial");
-
-                            b.Navigation("GasLinear");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "CalculatedImportedBy")
-                                .WithMany("Productions")
-                                .HasForeignKey("CalculatedImportedById")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.GasDiferencial", "GasDiferencial")
-                                .WithOne("Production")
-                                .HasForeignKey("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "GasDiferencialId")
-                                .OnDelete(DeleteBehavior.NoAction);
-
-                            b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Gas", "Gas")
-                                .WithOne("Production")
-                                .HasForeignKey("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "GasId")
-                                .OnDelete(DeleteBehavior.NoAction);
-
-                            b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.GasLinear", "GasLinear")
-                                .WithOne("Production")
-                                .HasForeignKey("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "GasLinearId")
-                                .OnDelete(DeleteBehavior.NoAction);
-
-                            b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
-                                .WithMany("Productions")
-                                .HasForeignKey("InstallationId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Oil", "Oil")
-                                .WithOne("Production")
-                                .HasForeignKey("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "OilId")
-                                .OnDelete(DeleteBehavior.NoAction);
-
-                            b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Water", "Water")
-                                .WithOne("Production")
-                                .HasForeignKey("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "WaterId")
-                                .OnDelete(DeleteBehavior.NoAction);
-
-                            b.Navigation("CalculatedImportedBy");
-
-                            b.Navigation("Gas");
-
-                            b.Navigation("GasDiferencial");
-
-                            b.Navigation("GasLinear");
-
-                            b.Navigation("Installation");
-
-                            b.Navigation("Oil");
-
-                            b.Navigation("Water");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.ReservoirProduction", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.ZoneProduction", "ZoneProduction")
-                                .WithMany("ReservoirProductions")
-                                .HasForeignKey("ZoneProductionId");
-
-                            b.Navigation("ZoneProduction");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.EF.Models.EventReason", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.WellEvents.EF.Models.WellEvent", "WellEvent")
-                                .WithMany("EventReasons")
-                                .HasForeignKey("WellEventId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("WellEvent");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.EF.Models.WellEvent", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.WellEvents.EF.Models.WellEvent", "EventRelated")
-                                .WithMany()
-                                .HasForeignKey("EventRelatedId");
-
-                            b.HasOne("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.Well", "Well")
-                                .WithMany("WellEvents")
-                                .HasForeignKey("WellId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("EventRelated");
-
-                            b.Navigation("Well");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellLosses", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.WellEvents.EF.Models.WellEvent", "Event")
-                                .WithMany("WellLosses")
-                                .HasForeignKey("EventId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellProductions", "WellAllocation")
-                                .WithMany("WellLosses")
-                                .HasForeignKey("WellAllocationId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.Navigation("Event");
-
-                            b.Navigation("WellAllocation");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellProductions", b =>
-                        {
-                            b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.FieldProduction", "FieldProduction")
-                                .WithMany("WellProductions")
-                                .HasForeignKey("FieldProductionId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "Production")
-                                .WithMany("WellProductions")
-                                .HasForeignKey("ProductionId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.HasOne("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.WellTests", "WellTest")
-                                .WithMany("WellAllocations")
-                                .HasForeignKey("WellTestId")
-                                .OnDelete(DeleteBehavior.NoAction)
-                                .IsRequired();
-
-                            b.Navigation("FieldProduction");
-
-                            b.Navigation("Production");
-
-                            b.Navigation("WellTest");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.Group", b =>
-                        {
-                            b.Navigation("GroupPermissions");
-
-                            b.Navigation("User");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.GroupPermission", b =>
-                        {
-                            b.Navigation("Operations");
-
-                            b.Navigation("Permissions");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Models.Menu", b =>
-                        {
-                            b.Navigation("Children");
-
-                            b.Navigation("GroupPermissions");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Models.GlobalOperation", b =>
-                        {
-                            b.Navigation("GroupOperations");
-
-                            b.Navigation("UserOperations");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", b =>
-                        {
-                            b.Navigation("BTPBases64");
-
-                            b.Navigation("Clusters");
-
-                            b.Navigation("Comments");
-
-                            b.Navigation("Completions");
-
-                            b.Navigation("Fields");
-
-                            b.Navigation("Installations");
-
-                            b.Navigation("Measurements");
-
-                            b.Navigation("MeasurementsHistories");
-
-                            b.Navigation("MeasuringEquipments");
-
-                            b.Navigation("NFSMImportedHistories");
-
-                            b.Navigation("Productions");
-
-                            b.Navigation("Reservoirs");
-
-                            b.Navigation("Session");
-
-                            b.Navigation("UserPermissions");
-
-                            b.Navigation("Wells");
-
-                            b.Navigation("Zones");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.UserPermission", b =>
-                        {
-                            b.Navigation("UserOperation");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTP", b =>
-                        {
-                            b.Navigation("BTPs");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPBase64", b =>
-                        {
-                            b.Navigation("WellTest")
-                                .IsRequired();
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.WellTests", b =>
-                        {
-                            b.Navigation("WellAllocations");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSM", b =>
-                        {
-                            b.Navigation("Measurements");
-
-                            b.Navigation("Productions");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSMHistory", b =>
-                        {
-                            b.Navigation("NFSM")
-                                .IsRequired();
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models.Cluster", b =>
-                        {
-                            b.Navigation("Installations");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models.Field", b =>
-                        {
-                            b.Navigation("FRs");
-
-                            b.Navigation("Wells");
-
-                            b.Navigation("Zones");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", b =>
-                        {
-                            b.Navigation("BTPs");
-
-                            b.Navigation("Fields");
-
-                            b.Navigation("GasVolumeCalculation")
-                                .IsRequired();
-
-                            b.Navigation("Measurements");
-
-                            b.Navigation("MeasuringPoints");
-
-                            b.Navigation("NFSMs");
-
-                            b.Navigation("OilVolumeCalculation");
-
-                            b.Navigation("Productions");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Models.Reservoir", b =>
-                        {
-                            b.Navigation("Completions");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.Well", b =>
-                        {
-                            b.Navigation("Completions");
-
-                            b.Navigation("WellEvents");
-
-                            b.Navigation("WellTests");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models.Zone", b =>
-                        {
-                            b.Navigation("Reservoirs");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.FileType", b =>
-                        {
-                            b.Navigation("Measurements");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Measurement", b =>
-                        {
-                            b.Navigation("LISTA_BSW");
-
-                            b.Navigation("LISTA_CALIBRACAO");
-
-                            b.Navigation("LISTA_VOLUME");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", b =>
-                        {
-                            b.Navigation("AssistanceGases");
-
-                            b.Navigation("ExportGases");
-
-                            b.Navigation("HPFlares");
-
-                            b.Navigation("HighPressureGases");
-
-                            b.Navigation("ImportGases");
-
-                            b.Navigation("LPFlares");
-
-                            b.Navigation("LowPressureGases");
-
-                            b.Navigation("PilotGases");
-
-                            b.Navigation("PurgeGases");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models.MeasurementHistory", b =>
-                        {
-                            b.Navigation("Measurements");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", b =>
-                        {
-                            b.Navigation("AssistanceGas");
-
-                            b.Navigation("DOR");
-
-                            b.Navigation("DrainVolume");
-
-                            b.Navigation("ExportGas");
-
-                            b.Navigation("HPFlare");
-
-                            b.Navigation("HighPressureGas");
-
-                            b.Navigation("ImportGas");
-
-                            b.Navigation("LPFlare");
-
-                            b.Navigation("LowPressureGas");
-
-                            b.Navigation("Measurements");
-
-                            b.Navigation("MeasuringEquipments");
-
-                            b.Navigation("NFSMs");
-
-                            b.Navigation("PilotGas");
-
-                            b.Navigation("PurgeGas");
-
-                            b.Navigation("Section");
-
-                            b.Navigation("TOGRecoveredOil");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", b =>
-                        {
-                            b.Navigation("DORs");
-
-                            b.Navigation("DrainVolumes");
-
-                            b.Navigation("Sections");
-
-                            b.Navigation("TOGRecoveredOils");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.FieldProduction", b =>
-                        {
-                            b.Navigation("WellProductions");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Gas", b =>
-                        {
-                            b.Navigation("Production")
-                                .IsRequired();
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.GasDiferencial", b =>
-                        {
-                            b.Navigation("Gas")
-                                .IsRequired();
-
-                            b.Navigation("Production")
-                                .IsRequired();
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.GasLinear", b =>
-                        {
-                            b.Navigation("Gas")
-                                .IsRequired();
-
-                            b.Navigation("Production")
-                                .IsRequired();
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Oil", b =>
-                        {
-                            b.Navigation("Production")
-                                .IsRequired();
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", b =>
-                        {
-                            b.Navigation("Comment");
-
-                            b.Navigation("FieldsFR");
-
-                            b.Navigation("Measurements");
-
-                            b.Navigation("NFSMs");
-
-                            b.Navigation("WellProductions");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.ReservoirProduction", b =>
-                        {
-                            b.Navigation("CompletionProductions");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Water", b =>
-                        {
-                            b.Navigation("Production");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.ZoneProduction", b =>
-                        {
-                            b.Navigation("ReservoirProductions");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.EF.Models.WellEvent", b =>
-                        {
-                            b.Navigation("EventReasons");
-
-                            b.Navigation("WellLosses");
-                        });
-
-                    modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellProductions", b =>
-                        {
-                            b.Navigation("CompletionProductions");
-
-                            b.Navigation("WellLosses");
-                        });
-#pragma warning restore 612, 618
+                    b.ToTable("Production.WellProductions", (string)null);
                 });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Attribute", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ElementId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsOperating")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PIId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SelfRoute")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ValueRoute")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WebId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("WellName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ElementId");
+
+                    b.HasIndex("WebId")
+                        .IsUnique();
+
+                    b.ToTable("PI.Attributes", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Database", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ElementsRoute")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PIId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SelfRoute")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WebId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WebId")
+                        .IsUnique();
+
+                    b.ToTable("PI.Databases", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Element", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AttributesRoute")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CategoryParameter")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("InstanceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PIId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Parameter")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SelfRoute")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WebId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InstanceId");
+
+                    b.HasIndex("WebId")
+                        .IsUnique();
+
+                    b.ToTable("PI.Elements", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Instance", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("DatabaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ElementsRoute")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PIId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SelfRoute")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WebId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DatabaseId");
+
+                    b.HasIndex("WebId")
+                        .IsUnique();
+
+                    b.ToTable("PI.Instances", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Value", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<Guid>("AttributeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttributeId");
+
+                    b.ToTable("PI.Values", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.WellsValues", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ValueId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("WellId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ValueId");
+
+                    b.HasIndex("WellId");
+
+                    b.ToTable("PI.WellsValues", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Shared.Auxiliaries.Infra.EF.Models.Auxiliary", b =>
+                {
+                    b.Property<Guid?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Option")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Route")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Select")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Table")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("System.Auxiliary", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Shared.Infra.EF.Models.Backup", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Directory")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("date")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("date")
+                        .IsUnique();
+
+                    b.ToTable("System.Backups", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Shared.SystemHistories.Infra.EF.Models.SystemHistory", b =>
+                {
+                    b.Property<Guid?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CurrentData")
+                        .IsRequired()
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<string>("FieldsChanged")
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<string>("PreviousData")
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<string>("Table")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar");
+
+                    b.Property<Guid?>("TableItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TypeOperation")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("varchar");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SystemHistories", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.GroupOperation", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Models.GlobalOperation", "GlobalOperation")
+                        .WithMany("GroupOperations")
+                        .HasForeignKey("GlobalOperationId");
+
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.GroupPermission", "GroupPermission")
+                        .WithMany("Operations")
+                        .HasForeignKey("GroupPermissionId");
+
+                    b.Navigation("GlobalOperation");
+
+                    b.Navigation("GroupPermission");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.GroupPermission", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.Group", "Group")
+                        .WithMany("GroupPermissions")
+                        .HasForeignKey("GroupId");
+
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Models.Menu", "Menu")
+                        .WithMany("GroupPermissions")
+                        .HasForeignKey("MenuId");
+
+                    b.Navigation("Group");
+
+                    b.Navigation("Menu");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Models.Menu", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Models.Menu", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId");
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.InstallationsAccess", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
+                        .WithMany("usersWithPermissions")
+                        .HasForeignKey("InstallationId");
+
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
+                        .WithMany("InstallationsAccess")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Installation");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.Session", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
+                        .WithOne("Session")
+                        .HasForeignKey("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.Session", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.Group", "Group")
+                        .WithMany("User")
+                        .HasForeignKey("GroupId");
+
+                    b.Navigation("Group");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.UserOperation", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Models.GlobalOperation", "GlobalOperation")
+                        .WithMany("UserOperations")
+                        .HasForeignKey("GlobalOperationId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.UserPermission", "UserPermission")
+                        .WithMany("UserOperation")
+                        .HasForeignKey("UserPermissionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("GlobalOperation");
+
+                    b.Navigation("UserPermission");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.UserPermission", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.GroupPermission", "GroupMenu")
+                        .WithMany("Permissions")
+                        .HasForeignKey("GroupMenuId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
+                        .WithMany("UserPermissions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("GroupMenu");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPBase64", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
+                        .WithMany("BTPBases64")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.WellTests", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPBase64", "BTPBase64")
+                        .WithOne("WellTest")
+                        .HasForeignKey("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.WellTests", "BTPBase64Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.Well", "Well")
+                        .WithMany("WellTests")
+                        .HasForeignKey("WellId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("BTPBase64");
+
+                    b.Navigation("Well");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSM", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSMHistory", "ImportHistory")
+                        .WithOne("NFSM")
+                        .HasForeignKey("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSM", "ImportId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
+                        .WithMany("NFSMs")
+                        .HasForeignKey("InstallationId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
+                        .WithMany("NFSMs")
+                        .HasForeignKey("MeasuringPointId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("ImportHistory");
+
+                    b.Navigation("Installation");
+
+                    b.Navigation("MeasuringPoint");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSMHistory", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "ImportedBy")
+                        .WithMany("NFSMImportedHistories")
+                        .HasForeignKey("ImportedById")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("ImportedBy");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSMsProductions", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSM", "NFSM")
+                        .WithMany("Productions")
+                        .HasForeignKey("NFSMId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "Production")
+                        .WithMany("NFSMs")
+                        .HasForeignKey("ProductionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("NFSM");
+
+                    b.Navigation("Production");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models.Cluster", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
+                        .WithMany("Clusters")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Completions.Infra.EF.Models.Completion", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Models.Reservoir", "Reservoir")
+                        .WithMany("Completions")
+                        .HasForeignKey("ReservoirId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
+                        .WithMany("Completions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.Well", "Well")
+                        .WithMany("Completions")
+                        .HasForeignKey("WellId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Reservoir");
+
+                    b.Navigation("User");
+
+                    b.Navigation("Well");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models.Field", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
+                        .WithMany("Fields")
+                        .HasForeignKey("InstallationId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
+                        .WithMany("Fields")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Installation");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models.FieldFR", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "DailyProduction")
+                        .WithMany("FieldsFR")
+                        .HasForeignKey("DailyProductionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models.Field", "Field")
+                        .WithMany("FRs")
+                        .HasForeignKey("FieldId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DailyProduction");
+
+                    b.Navigation("Field");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models.Cluster", "Cluster")
+                        .WithMany("Installations")
+                        .HasForeignKey("ClusterId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
+                        .WithMany("Installations")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Cluster");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.InstallationBTP", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTP", "BTP")
+                        .WithMany("BTPs")
+                        .HasForeignKey("BTPId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
+                        .WithMany("BTPs")
+                        .HasForeignKey("InstallationId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("BTP");
+
+                    b.Navigation("Installation");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Models.Reservoir", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
+                        .WithMany("Reservoirs")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models.Zone", "Zone")
+                        .WithMany("Reservoirs")
+                        .HasForeignKey("ZoneId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
+
+                    b.Navigation("Zone");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.BuildUp", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.ManualWellConfiguration", "ManualWellConfiguration")
+                        .WithMany("BuildUp")
+                        .HasForeignKey("ManualWellConfigurationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ManualWellConfiguration");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.InjectivityIndex", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.ManualWellConfiguration", "ManualWellConfiguration")
+                        .WithMany("InjectivityIndex")
+                        .HasForeignKey("ManualWellConfigurationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ManualWellConfiguration");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.ManualWellConfiguration", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.Well", "Well")
+                        .WithOne("ManualWellConfiguration")
+                        .HasForeignKey("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.ManualWellConfiguration", "WellId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Well");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.ProductivityIndex", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.ManualWellConfiguration", "ManualWellConfiguration")
+                        .WithMany("ProductivityIndex")
+                        .HasForeignKey("ManualWellConfigurationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ManualWellConfiguration");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.Well", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models.Field", "Field")
+                        .WithMany("Wells")
+                        .HasForeignKey("FieldId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
+                        .WithMany("Wells")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Field");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models.Zone", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models.Field", "Field")
+                        .WithMany("Zones")
+                        .HasForeignKey("FieldId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
+                        .WithMany("Zones")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Field");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Comments.Infra.EF.Models.CommentInProduction", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "CommentedBy")
+                        .WithMany("Comments")
+                        .HasForeignKey("CommentedById")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "Production")
+                        .WithOne("Comment")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.Comments.Infra.EF.Models.CommentInProduction", "ProductionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("CommentedBy");
+
+                    b.Navigation("Production");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Bsw", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Measurement", "Measurement")
+                        .WithMany("LISTA_BSW")
+                        .HasForeignKey("MeasurementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Measurement");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Calibration", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Measurement", "Measurement")
+                        .WithMany("LISTA_CALIBRACAO")
+                        .HasForeignKey("MeasurementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Measurement");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Measurement", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.FileType", "FileType")
+                        .WithMany("Measurements")
+                        .HasForeignKey("FileTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
+                        .WithMany("Measurements")
+                        .HasForeignKey("InstallationId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models.MeasurementHistory", "MeasurementHistory")
+                        .WithMany("Measurements")
+                        .HasForeignKey("MeasurementHistoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
+                        .WithMany("Measurements")
+                        .HasForeignKey("MeasuringPointId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSM", "NFSM")
+                        .WithMany("Measurements")
+                        .HasForeignKey("NFSMId");
+
+                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "Production")
+                        .WithMany("Measurements")
+                        .HasForeignKey("ProductionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
+                        .WithMany("Measurements")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("FileType");
+
+                    b.Navigation("Installation");
+
+                    b.Navigation("MeasurementHistory");
+
+                    b.Navigation("MeasuringPoint");
+
+                    b.Navigation("NFSM");
+
+                    b.Navigation("Production");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.MeasuringEquipment", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
+                        .WithMany("MeasuringEquipments")
+                        .HasForeignKey("MeasuringPointId");
+
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "User")
+                        .WithMany("MeasuringEquipments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("MeasuringPoint");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Volume", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Measurement", "Measurement")
+                        .WithMany("LISTA_VOLUME")
+                        .HasForeignKey("MeasurementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Measurement");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.AssistanceGas", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", "GasVolumeCalculation")
+                        .WithMany("AssistanceGases")
+                        .HasForeignKey("GasVolumeCalculationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
+                        .WithOne("AssistanceGas")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.AssistanceGas", "MeasuringPointId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GasVolumeCalculation");
+
+                    b.Navigation("MeasuringPoint");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.ExportGas", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", "GasVolumeCalculation")
+                        .WithMany("ExportGases")
+                        .HasForeignKey("GasVolumeCalculationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
+                        .WithOne("ExportGas")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.ExportGas", "MeasuringPointId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GasVolumeCalculation");
+
+                    b.Navigation("MeasuringPoint");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
+                        .WithOne("GasVolumeCalculation")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", "InstallationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Installation");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.HPFlare", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", "GasVolumeCalculation")
+                        .WithMany("HPFlares")
+                        .HasForeignKey("GasVolumeCalculationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
+                        .WithOne("HPFlare")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.HPFlare", "MeasuringPointId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GasVolumeCalculation");
+
+                    b.Navigation("MeasuringPoint");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.HighPressureGas", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", "GasVolumeCalculation")
+                        .WithMany("HighPressureGases")
+                        .HasForeignKey("GasVolumeCalculationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
+                        .WithOne("HighPressureGas")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.HighPressureGas", "MeasuringPointId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GasVolumeCalculation");
+
+                    b.Navigation("MeasuringPoint");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.ImportGas", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", "GasVolumeCalculation")
+                        .WithMany("ImportGases")
+                        .HasForeignKey("GasVolumeCalculationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
+                        .WithOne("ImportGas")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.ImportGas", "MeasuringPointId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GasVolumeCalculation");
+
+                    b.Navigation("MeasuringPoint");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.LPFlare", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", "GasVolumeCalculation")
+                        .WithMany("LPFlares")
+                        .HasForeignKey("GasVolumeCalculationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
+                        .WithOne("LPFlare")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.LPFlare", "MeasuringPointId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GasVolumeCalculation");
+
+                    b.Navigation("MeasuringPoint");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.LowPressureGas", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", "GasVolumeCalculation")
+                        .WithMany("LowPressureGases")
+                        .HasForeignKey("GasVolumeCalculationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
+                        .WithOne("LowPressureGas")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.LowPressureGas", "MeasuringPointId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GasVolumeCalculation");
+
+                    b.Navigation("MeasuringPoint");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.PilotGas", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", "GasVolumeCalculation")
+                        .WithMany("PilotGases")
+                        .HasForeignKey("GasVolumeCalculationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
+                        .WithOne("PilotGas")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.PilotGas", "MeasuringPointId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GasVolumeCalculation");
+
+                    b.Navigation("MeasuringPoint");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.PurgeGas", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", "GasVolumeCalculation")
+                        .WithMany("PurgeGases")
+                        .HasForeignKey("GasVolumeCalculationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
+                        .WithOne("PurgeGas")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.PurgeGas", "MeasuringPointId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GasVolumeCalculation");
+
+                    b.Navigation("MeasuringPoint");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models.MeasurementHistory", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "ImportedBy")
+                        .WithMany("MeasurementsHistories")
+                        .HasForeignKey("ImportedById")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ImportedBy");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
+                        .WithMany("MeasuringPoints")
+                        .HasForeignKey("InstallationId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Installation");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.DOR", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
+                        .WithOne("DOR")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.DOR", "MeasuringPointId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", "OilVolumeCalculation")
+                        .WithMany("DORs")
+                        .HasForeignKey("OilVolumeCalculationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MeasuringPoint");
+
+                    b.Navigation("OilVolumeCalculation");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.DrainVolume", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
+                        .WithOne("DrainVolume")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.DrainVolume", "MeasuringPointId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", "OilVolumeCalculation")
+                        .WithMany("DrainVolumes")
+                        .HasForeignKey("OilVolumeCalculationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MeasuringPoint");
+
+                    b.Navigation("OilVolumeCalculation");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
+                        .WithOne("OilVolumeCalculation")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", "InstallationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Installation");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.Section", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
+                        .WithOne("Section")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.Section", "MeasuringPointId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", "OilVolumeCalculation")
+                        .WithMany("Sections")
+                        .HasForeignKey("OilVolumeCalculationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MeasuringPoint");
+
+                    b.Navigation("OilVolumeCalculation");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.TOGRecoveredOil", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", "MeasuringPoint")
+                        .WithOne("TOGRecoveredOil")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.TOGRecoveredOil", "MeasuringPointId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", "OilVolumeCalculation")
+                        .WithMany("TOGRecoveredOils")
+                        .HasForeignKey("OilVolumeCalculationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MeasuringPoint");
+
+                    b.Navigation("OilVolumeCalculation");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.CompletionProduction", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.ReservoirProduction", "ReservoirProduction")
+                        .WithMany("CompletionProductions")
+                        .HasForeignKey("ReservoirProductionId");
+
+                    b.HasOne("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellProduction", "WellAllocation")
+                        .WithMany("CompletionProductions")
+                        .HasForeignKey("WellAllocationId");
+
+                    b.Navigation("ReservoirProduction");
+
+                    b.Navigation("WellAllocation");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Gas", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.GasDiferencial", "GasDiferencial")
+                        .WithOne("Gas")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Gas", "GasDiferencialId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.GasLinear", "GasLinear")
+                        .WithOne("Gas")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Gas", "GasLinearId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("GasDiferencial");
+
+                    b.Navigation("GasLinear");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "CalculatedImportedBy")
+                        .WithMany("Productions")
+                        .HasForeignKey("CalculatedImportedById")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.GasDiferencial", "GasDiferencial")
+                        .WithOne("Production")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "GasDiferencialId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Gas", "Gas")
+                        .WithOne("Production")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "GasId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.GasLinear", "GasLinear")
+                        .WithOne("Production")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "GasLinearId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
+                        .WithMany("Productions")
+                        .HasForeignKey("InstallationId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Oil", "Oil")
+                        .WithOne("Production")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "OilId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Water", "Water")
+                        .WithOne("Production")
+                        .HasForeignKey("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "WaterId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("CalculatedImportedBy");
+
+                    b.Navigation("Gas");
+
+                    b.Navigation("GasDiferencial");
+
+                    b.Navigation("GasLinear");
+
+                    b.Navigation("Installation");
+
+                    b.Navigation("Oil");
+
+                    b.Navigation("Water");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.ReservoirProduction", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.ZoneProduction", "ZoneProduction")
+                        .WithMany("ReservoirProductions")
+                        .HasForeignKey("ZoneProductionId");
+
+                    b.Navigation("ZoneProduction");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models.EventReason", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "CreatedBy")
+                        .WithMany("CreatedEventReasons")
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "UpdatedBy")
+                        .WithMany("UpdatedEventReasons")
+                        .HasForeignKey("UpdatedById")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models.WellEvent", "WellEvent")
+                        .WithMany("EventReasons")
+                        .HasForeignKey("WellEventId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("UpdatedBy");
+
+                    b.Navigation("WellEvent");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models.WellEvent", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "CreatedBy")
+                        .WithMany("CreatedWellEvents")
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models.WellEvent", "EventRelated")
+                        .WithMany()
+                        .HasForeignKey("EventRelatedId");
+
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "UpdatedBy")
+                        .WithMany("UpdatedWellEvents")
+                        .HasForeignKey("UpdatedById")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.Well", "Well")
+                        .WithMany("WellEvents")
+                        .HasForeignKey("WellId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("EventRelated");
+
+                    b.Navigation("UpdatedBy");
+
+                    b.Navigation("Well");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellLosses", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models.WellEvent", "Event")
+                        .WithMany("WellLosses")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellProduction", "WellAllocation")
+                        .WithMany("WellLosses")
+                        .HasForeignKey("WellAllocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("WellAllocation");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellProduction", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.FieldProduction", "FieldProduction")
+                        .WithMany("WellProductions")
+                        .HasForeignKey("FieldProductionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", "Production")
+                        .WithMany("WellProductions")
+                        .HasForeignKey("ProductionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.WellTests", "WellTest")
+                        .WithMany("WellAllocations")
+                        .HasForeignKey("WellTestId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("FieldProduction");
+
+                    b.Navigation("Production");
+
+                    b.Navigation("WellTest");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Attribute", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.PI.Infra.EF.Models.Element", "Element")
+                        .WithMany("AttributesInstance")
+                        .HasForeignKey("ElementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Element");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Element", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.PI.Infra.EF.Models.Instance", "Instance")
+                        .WithMany("ElementsInstance")
+                        .HasForeignKey("InstanceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Instance");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Instance", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.PI.Infra.EF.Models.Database", "Database")
+                        .WithMany("Instances")
+                        .HasForeignKey("DatabaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Database");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Value", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.PI.Infra.EF.Models.Attribute", "Attribute")
+                        .WithMany("Values")
+                        .HasForeignKey("AttributeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Attribute");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.WellsValues", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.PI.Infra.EF.Models.Value", "Value")
+                        .WithMany("WellsValues")
+                        .HasForeignKey("ValueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.Well", "Well")
+                        .WithMany("WellsValues")
+                        .HasForeignKey("WellId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Value");
+
+                    b.Navigation("Well");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.Group", b =>
+                {
+                    b.Navigation("GroupPermissions");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.GroupPermission", b =>
+                {
+                    b.Navigation("Operations");
+
+                    b.Navigation("Permissions");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Models.Menu", b =>
+                {
+                    b.Navigation("Children");
+
+                    b.Navigation("GroupPermissions");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Models.GlobalOperation", b =>
+                {
+                    b.Navigation("GroupOperations");
+
+                    b.Navigation("UserOperations");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", b =>
+                {
+                    b.Navigation("BTPBases64");
+
+                    b.Navigation("Clusters");
+
+                    b.Navigation("Comments");
+
+                    b.Navigation("Completions");
+
+                    b.Navigation("CreatedEventReasons");
+
+                    b.Navigation("CreatedWellEvents");
+
+                    b.Navigation("Fields");
+
+                    b.Navigation("Installations");
+
+                    b.Navigation("InstallationsAccess");
+
+                    b.Navigation("Measurements");
+
+                    b.Navigation("MeasurementsHistories");
+
+                    b.Navigation("MeasuringEquipments");
+
+                    b.Navigation("NFSMImportedHistories");
+
+                    b.Navigation("Productions");
+
+                    b.Navigation("Reservoirs");
+
+                    b.Navigation("Session");
+
+                    b.Navigation("UpdatedEventReasons");
+
+                    b.Navigation("UpdatedWellEvents");
+
+                    b.Navigation("UserPermissions");
+
+                    b.Navigation("Wells");
+
+                    b.Navigation("Zones");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.UserPermission", b =>
+                {
+                    b.Navigation("UserOperation");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTP", b =>
+                {
+                    b.Navigation("BTPs");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPBase64", b =>
+                {
+                    b.Navigation("WellTest")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.WellTests", b =>
+                {
+                    b.Navigation("WellAllocations");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSM", b =>
+                {
+                    b.Navigation("Measurements");
+
+                    b.Navigation("Productions");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSMHistory", b =>
+                {
+                    b.Navigation("NFSM")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models.Cluster", b =>
+                {
+                    b.Navigation("Installations");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models.Field", b =>
+                {
+                    b.Navigation("FRs");
+
+                    b.Navigation("Wells");
+
+                    b.Navigation("Zones");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", b =>
+                {
+                    b.Navigation("BTPs");
+
+                    b.Navigation("Fields");
+
+                    b.Navigation("GasVolumeCalculation")
+                        .IsRequired();
+
+                    b.Navigation("Measurements");
+
+                    b.Navigation("MeasuringPoints");
+
+                    b.Navigation("NFSMs");
+
+                    b.Navigation("OilVolumeCalculation");
+
+                    b.Navigation("Productions");
+
+                    b.Navigation("usersWithPermissions");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Reservoirs.Infra.EF.Models.Reservoir", b =>
+                {
+                    b.Navigation("Completions");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.ManualWellConfiguration", b =>
+                {
+                    b.Navigation("BuildUp");
+
+                    b.Navigation("InjectivityIndex");
+
+                    b.Navigation("ProductivityIndex");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models.Well", b =>
+                {
+                    b.Navigation("Completions");
+
+                    b.Navigation("ManualWellConfiguration");
+
+                    b.Navigation("WellEvents");
+
+                    b.Navigation("WellTests");
+
+                    b.Navigation("WellsValues");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models.Zone", b =>
+                {
+                    b.Navigation("Reservoirs");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.FileType", b =>
+                {
+                    b.Navigation("Measurements");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Equipments.Infra.EF.Models.Measurement", b =>
+                {
+                    b.Navigation("LISTA_BSW");
+
+                    b.Navigation("LISTA_CALIBRACAO");
+
+                    b.Navigation("LISTA_VOLUME");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.GasVolumeCalculations.Infra.EF.Models.GasVolumeCalculation", b =>
+                {
+                    b.Navigation("AssistanceGases");
+
+                    b.Navigation("ExportGases");
+
+                    b.Navigation("HPFlares");
+
+                    b.Navigation("HighPressureGases");
+
+                    b.Navigation("ImportGases");
+
+                    b.Navigation("LPFlares");
+
+                    b.Navigation("LowPressureGases");
+
+                    b.Navigation("PilotGases");
+
+                    b.Navigation("PurgeGases");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Measurements.Infra.EF.Models.MeasurementHistory", b =>
+                {
+                    b.Navigation("Measurements");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.MeasuringPoints.Infra.EF.Models.MeasuringPoint", b =>
+                {
+                    b.Navigation("AssistanceGas");
+
+                    b.Navigation("DOR");
+
+                    b.Navigation("DrainVolume");
+
+                    b.Navigation("ExportGas");
+
+                    b.Navigation("HPFlare");
+
+                    b.Navigation("HighPressureGas");
+
+                    b.Navigation("ImportGas");
+
+                    b.Navigation("LPFlare");
+
+                    b.Navigation("LowPressureGas");
+
+                    b.Navigation("Measurements");
+
+                    b.Navigation("MeasuringEquipments");
+
+                    b.Navigation("NFSMs");
+
+                    b.Navigation("PilotGas");
+
+                    b.Navigation("PurgeGas");
+
+                    b.Navigation("Section");
+
+                    b.Navigation("TOGRecoveredOil");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Models.OilVolumeCalculation", b =>
+                {
+                    b.Navigation("DORs");
+
+                    b.Navigation("DrainVolumes");
+
+                    b.Navigation("Sections");
+
+                    b.Navigation("TOGRecoveredOils");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.FieldProduction", b =>
+                {
+                    b.Navigation("WellProductions");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Gas", b =>
+                {
+                    b.Navigation("Production")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.GasDiferencial", b =>
+                {
+                    b.Navigation("Gas")
+                        .IsRequired();
+
+                    b.Navigation("Production")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.GasLinear", b =>
+                {
+                    b.Navigation("Gas")
+                        .IsRequired();
+
+                    b.Navigation("Production")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Oil", b =>
+                {
+                    b.Navigation("Production")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Production", b =>
+                {
+                    b.Navigation("Comment");
+
+                    b.Navigation("FieldsFR");
+
+                    b.Navigation("Measurements");
+
+                    b.Navigation("NFSMs");
+
+                    b.Navigation("WellProductions");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.ReservoirProduction", b =>
+                {
+                    b.Navigation("CompletionProductions");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.Water", b =>
+                {
+                    b.Navigation("Production");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.ZoneProduction", b =>
+                {
+                    b.Navigation("ReservoirProductions");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models.WellEvent", b =>
+                {
+                    b.Navigation("EventReasons");
+
+                    b.Navigation("WellLosses");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellProduction", b =>
+                {
+                    b.Navigation("CompletionProductions");
+
+                    b.Navigation("WellLosses");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Attribute", b =>
+                {
+                    b.Navigation("Values");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Database", b =>
+                {
+                    b.Navigation("Instances");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Element", b =>
+                {
+                    b.Navigation("AttributesInstance");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Instance", b =>
+                {
+                    b.Navigation("ElementsInstance");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Value", b =>
+                {
+                    b.Navigation("WellsValues");
+                });
+#pragma warning restore 612, 618
         }
     }
 }

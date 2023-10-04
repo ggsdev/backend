@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Interfaces;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Factories;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Users.Interfaces;
 using PRIO.src.Shared.Infra.EF;
 
 namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
@@ -8,19 +9,20 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
     public class UserPermissionRepository : IUserPermissionRepository
     {
         private readonly DataContext _context;
+        private readonly UserPermissionFactory _userPermissionFactory;
 
-        public UserPermissionRepository(DataContext context)
+        public UserPermissionRepository(DataContext context, UserPermissionFactory userPermissionFactory)
         {
             _context = context;
+            _userPermissionFactory = userPermissionFactory;
         }
         public async Task AddUserPermission(UserPermission userPermission)
         {
             await _context.AddAsync(userPermission);
-            await _context.SaveChangesAsync();
         }
-
         public async Task<List<UserPermission>> GetUserPermissionsByUserId(Guid userId)
         {
+
             return await _context.UserPermissions
                 .Include(x => x.User)
                 .Where(x => x.User.Id == userId)
@@ -34,7 +36,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
                         .Where(x => x.User.Id == userId)
                         .FirstOrDefaultAsync();
         }
-
         public async Task<List<UserPermission>> GetUserPermissionsByGroupId()
         {
             return await _context.UserPermissions.ToListAsync();
@@ -43,7 +44,6 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
         {
             _context.UserPermissions.UpdateRange(userPermissions);
         }
-
         public async Task RemoveUserPermissions(List<UserPermission> userPermissions)
         {
             _context.RemoveRange(userPermissions);

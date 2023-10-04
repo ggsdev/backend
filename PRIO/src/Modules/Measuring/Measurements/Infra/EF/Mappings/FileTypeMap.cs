@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<FileType> builder)
         {
-            builder.ToTable("FileTypes");
+            builder.ToTable("Measurement.FileTypes");
 
             builder.HasKey(x => x.Id);
 

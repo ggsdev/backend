@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<Zone> builder)
         {
-            builder.ToTable("Zones");
+            builder.ToTable("Hierachy.Zones");
 
             builder.Property(x => x.CodZone)
                 .HasColumnType("VARCHAR")
@@ -23,6 +23,8 @@ namespace PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Mappings
             builder.Property(x => x.UpdatedAt);
 
             builder.Property(x => x.DeletedAt);
+
+            builder.Property(x => x.InactivatedAt);
 
             builder.Property(x => x.IsActive);
 

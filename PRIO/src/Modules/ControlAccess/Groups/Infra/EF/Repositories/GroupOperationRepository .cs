@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Interfaces;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Groups.Interfaces;
 using PRIO.src.Shared.Infra.EF;
 
 namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
@@ -14,12 +14,16 @@ namespace PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories
             _context = context;
         }
 
+        public async Task AddAsync(GroupOperation groupOperation)
+        {
+            await _context.AddAsync(groupOperation);
+
+        }
         public async Task RemoveGroupOperations(List<GroupOperation> groupOperations)
         {
             _context.RemoveRange(groupOperations);
             await _context.SaveChangesAsync();
         }
-
         public async Task<List<GroupOperation>> GetGroupOperationsByGroupId(Guid groupId)
         {
             return await _context.GroupOperations

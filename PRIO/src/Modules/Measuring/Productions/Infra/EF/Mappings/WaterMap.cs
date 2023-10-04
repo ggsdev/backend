@@ -8,11 +8,11 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<Water> builder)
         {
-            builder.ToTable("Waters");
+            builder.ToTable("Production.Waters");
 
             builder.Property(x => x.TotalWater)
                .HasColumnType("DECIMAL")
-               .HasPrecision(14, 5);
+               .HasPrecision(38, 16);
         }
     }
 }

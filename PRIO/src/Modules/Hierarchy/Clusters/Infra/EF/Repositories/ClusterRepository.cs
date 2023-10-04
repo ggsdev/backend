@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Interfaces;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Clusters.Interfaces;
 using PRIO.src.Shared.Infra.EF;
 
 public class ClusterRepository : IClusterRepository
@@ -39,6 +39,12 @@ public class ClusterRepository : IClusterRepository
                 .ThenInclude(i => i.Fields)
                     .ThenInclude(f => f.Wells)
                             .ThenInclude(r => r.Completions)
+
+            .Include(x => x.Installations)
+                .ThenInclude(i => i.Fields)
+                    .ThenInclude(f => f.Wells)
+                        .ThenInclude(w => w.WellEvents)
+                            .ThenInclude(we => we.EventReasons)
 
             .Include(x => x.Installations)
                 .ThenInclude(i => i.MeasuringPoints)

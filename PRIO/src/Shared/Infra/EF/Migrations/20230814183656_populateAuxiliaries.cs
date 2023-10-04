@@ -58,6 +58,9 @@ namespace PRIO.Migrations
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Wells", "TypeBaseCoordinate", "Definitiva",  DateTime.UtcNow.AddHours(-3) },
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Wells", "TypeBaseCoordinate", "Provisória",  DateTime.UtcNow.AddHours(-3) },
 
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Fields", "Location", "Terra",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Fields", "Location", "Mar",  DateTime.UtcNow.AddHours(-3) },
+
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "Tramo A",  DateTime.UtcNow.AddHours(-3) },
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "Tramo B",  DateTime.UtcNow.AddHours(-3) },
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringPoint", "LocalPoint", "Tramo C",  DateTime.UtcNow.AddHours(-3) },
@@ -109,11 +112,6 @@ namespace PRIO.Migrations
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "MeasuringEquipments", "TypePoint", "Transferência de custódia",  DateTime.UtcNow.AddHours(-3) },
                 new object[] { Guid.NewGuid(), "/importarDadosTestePoco", "Teste", "Tipo de Teste", "T = Separador de teste",  DateTime.UtcNow.AddHours(-3) },
                 new object[] { Guid.NewGuid(), "/importarDadosTestePoco", "Teste", "Tipo de Teste", "M = Medição Multifásica",  DateTime.UtcNow.AddHours(-3) },
-                new object[] { Guid.NewGuid(), "/importarDadosTestePoco", "Teste", "Tipo de Teste", "G = Teste Simplificado de Poço de Gás",  DateTime.UtcNow.AddHours(-3) },
-                new object[] { Guid.NewGuid(), "/importarDadosTestePoco", "Teste", "Tipo de Teste", "S = Teste Simplificado por Sonolog",  DateTime.UtcNow.AddHours(-3) },
-                new object[] { Guid.NewGuid(), "/importarDadosTestePoco", "Teste", "Tipo de Teste", "R = Reinterpretação de Teste",  DateTime.UtcNow.AddHours(-3) },
-                new object[] { Guid.NewGuid(), "/importarDadosTestePoco", "Teste", "Tipo de Teste", "A = Abertura de poço",  DateTime.UtcNow.AddHours(-3) },
-                new object[] { Guid.NewGuid(), "/importarDadosTestePoco", "Teste", "Tipo de Teste", "F= Fechamento de poço",  DateTime.UtcNow.AddHours(-3) },
 
                 new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Sistema Relacionado", "Topside",  DateTime.UtcNow.AddHours(-3) },
                 new object[] { Guid.NewGuid(), "/eventosPoco", "WellEvents", "Sistema Relacionado", "Submarino",  DateTime.UtcNow.AddHours(-3) },
@@ -161,6 +159,22 @@ namespace PRIO.Migrations
 
                 new object[] { Guid.NewGuid(), "/eventosPoco", "Fechado", "Status ANP", "Fechado por perda",  DateTime.UtcNow.AddHours(-3) },
                 new object[] { Guid.NewGuid(), "/eventosPoco", "Fechado", "Status ANP", "Fechado por estratégia",  DateTime.UtcNow.AddHours(-3) },
+
+                new object[] { Guid.NewGuid(), "/parametrosPI", "Categories", "PI", "Pressão",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/parametrosPI", "Categories", "PI", "Vazão",  DateTime.UtcNow.AddHours(-3) },
+
+                new object[] { Guid.NewGuid(), "/parametrosPI", "Pressão", "PI", "Pressão PDG 1",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/parametrosPI", "Pressão", "PI", "Pressão PDG 2",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/parametrosPI", "Pressão", "PI", "Pressão Intake ESP",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/parametrosPI", "Pressão", "PI", "Pressão WH",  DateTime.UtcNow.AddHours(-3) },
+
+                new object[] { Guid.NewGuid(), "/parametrosPI", "Vazão", "PI", "Vazão de Gas Lift",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/parametrosPI", "Vazão", "PI", "Vazão de injeção de água",  DateTime.UtcNow.AddHours(-3) },
+
+                new object[] { Guid.NewGuid(), "/parametrosPI", "Vazão", "PI", "Vazão da GFL1",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/parametrosPI", "Vazão", "PI", "Vazão da GFL4",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/parametrosPI", "Vazão", "PI", "Vazão da GFL6",  DateTime.UtcNow.AddHours(-3) },
+                new object[] { Guid.NewGuid(), "/parametrosPI", "Vazão", "PI", "Vazão da WFL1",  DateTime.UtcNow.AddHours(-3) },
 
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Fields", "UF", "ACRE",  DateTime.UtcNow.AddHours(-3) },
                 new object[] { Guid.NewGuid(), "/cadastrosBasicos", "Fields", "UF", "ALAGOAS",  DateTime.UtcNow.AddHours(-3) },

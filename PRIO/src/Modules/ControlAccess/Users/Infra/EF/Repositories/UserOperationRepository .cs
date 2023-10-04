@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Interfaces;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Factories;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Users.Interfaces;
 using PRIO.src.Shared.Infra.EF;
 
 namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
@@ -8,15 +9,17 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories
     public class UserOperationRepository : IUserOperationRepository
     {
         private readonly DataContext _context;
+        private readonly UserOperationFactory _userOperationFactory;
 
-        public UserOperationRepository(DataContext context)
+        public UserOperationRepository(DataContext context, UserOperationFactory userOperationFactory)
         {
             _context = context;
+            _userOperationFactory = userOperationFactory;
         }
+
         public async Task AddUserOperation(UserOperation userOperation)
         {
             await _context.AddAsync(userOperation);
-            await _context.SaveChangesAsync();
         }
 
         public async Task<List<UserOperation>> GetUserOperationsByUserId(Guid userId)

@@ -35,6 +35,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
         public async Task<IActionResult> Login(
         [FromBody] LoginViewModel body)
         {
+
             var envVars = DotEnv.Read();
 
             var secretKey = envVars["SECRET_KEY"];
@@ -154,6 +155,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Controllers
         [HttpPost("loginBack")]
         public async Task<IActionResult> LoginBack([FromBody] LoginAdViewModel body)
         {
+
             var user = await _context
                 .Users
                 .Include(u => u.Session)

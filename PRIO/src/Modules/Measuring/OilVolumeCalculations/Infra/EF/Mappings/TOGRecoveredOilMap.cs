@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<TOGRecoveredOil> builder)
         {
-            builder.ToTable("TOGRecoveredOils");
+            builder.ToTable("ConfigCalc.TOGRecoveredOils");
 
             builder.Property(x => x.StaticLocalMeasuringPoint)
                .HasColumnType("VARCHAR")

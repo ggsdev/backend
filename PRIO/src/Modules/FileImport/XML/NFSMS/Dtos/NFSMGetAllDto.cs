@@ -1,4 +1,4 @@
-﻿using PRIO.src.Modules.FileImport.XML.Dtos;
+﻿using PRIO.src.Modules.FileImport.XML.Measuring.Dtos;
 using PRIO.src.Modules.Hierarchy.Installations.Dtos;
 using PRIO.src.Modules.Measuring.MeasuringPoints.Dtos;
 

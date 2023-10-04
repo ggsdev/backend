@@ -8,8 +8,11 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<Measurement> builder)
         {
-            builder.ToTable("Measurements");
+            builder.ToTable("Measurement.Measurements");
 
+            builder.Property(x => x.VolumeAfterManualBsw_001)
+             .HasColumnType("decimal")
+             .HasPrecision(22, 5);
 
             #region 039
 
@@ -467,7 +470,7 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
 
             builder.Property(x => x.MED_CORRIGIDO_MVMDO_003)
           .HasColumnType("decimal")
-          .HasPrecision(14, 5)
+          .HasPrecision(20, 5)
           ;
 
             #endregion
@@ -966,12 +969,12 @@ namespace PRIO.src.Modules.Measuring.Equipments.Infra.EF.Mappings
 
             builder.Property(x => x.MED_BRUTO_MOVIMENTADO_002)
             .HasColumnType("decimal")
-            .HasPrecision(14, 5)
+            .HasPrecision(20, 5)
             ;
 
             builder.Property(x => x.MED_CORRIGIDO_MVMDO_002)
             .HasColumnType("decimal")
-            .HasPrecision(14, 5)
+            .HasPrecision(20, 5)
             ;
 
             #endregion

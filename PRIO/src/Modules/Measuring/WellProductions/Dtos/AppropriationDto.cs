@@ -1,4 +1,4 @@
-﻿using PRIO.src.Modules.FileImport.XML.Dtos;
+﻿using PRIO.src.Modules.FileImport.XML.Measuring.Dtos;
 
 namespace PRIO.src.Modules.Measuring.WellProductions.Dtos
 {
@@ -14,15 +14,25 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Dtos
         public string WellName { get; set; }
         public string Downtime { get; set; }
 
-        public decimal ProductionGasInWellM3 { get; set; }
-        public decimal ProductionWaterInWellM3 { get; set; }
         public decimal ProductionOilInWellM3 { get; set; }
-
-        public decimal ProductionGasInWellSCF { get; set; }
-        public decimal ProductionWaterInWellBBL { get; set; }
         public decimal ProductionOilInWellBBL { get; set; }
+
+        public decimal ProductionGasInWellM3 { get; set; }
+        public decimal ProductionGasInWellSCF { get; set; }
+
+        public decimal ProductionWaterInWellM3 { get; set; }
+        public decimal ProductionWaterInWellBBL { get; set; }
+
+        public decimal ProductionLostOilM3 { get; set; }
+        public decimal ProductionLostOilBBL { get; set; }
+
+        public decimal ProductionLostGasM3 { get; set; }
+        public decimal ProductionLostGasSCF { get; set; }
+
+        public decimal ProductionLostWaterM3 { get; set; }
+        public decimal ProductionLostWaterBBL { get; set; }
+
         public decimal EfficienceLoss { get; set; }
-        public decimal ProductionLost { get; set; }
         public decimal ProportionalDay { get; set; }
     }
 
@@ -37,6 +47,15 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Dtos
         public decimal GasProductionInFieldSCF { get; set; }
         public decimal WaterProductionInFieldBBL { get; set; }
         public decimal OilProductionInFieldBBL { get; set; }
+
+        public decimal GasLossInFieldM3 { get; set; }
+        public decimal WaterLossInFieldM3 { get; set; }
+        public decimal OilLossInFieldM3 { get; set; }
+
+        public decimal GasLossInFieldSCF { get; set; }
+        public decimal WaterLossInFieldBBL { get; set; }
+        public decimal OilLossInFieldBBL { get; set; }
+
         public List<WellProductionDto> WellAppropriations { get; set; }
     }
 

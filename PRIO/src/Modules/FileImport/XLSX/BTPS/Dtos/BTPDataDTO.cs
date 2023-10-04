@@ -5,7 +5,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Dtos
     public class BTPDataDTO
     {
         public string? Id { get; set; }
-        public string BTPId { get; set; }
+        public Guid BTPId { get; set; }
         public string Filename { get; set; }
         public string BTPSheet { get; set; }
         public string Type { get; set; }
@@ -33,6 +33,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Dtos
         public bool? IsActive { get; set; }
         public bool IsValid { get; set; }
         public WellWithoutFieldDTO? Well { get; set; }
-        public BTPBase64DTO? BTPBase64 { get; set; }
+        public BTPBase64RelationWellTestDTO? BTPBase64 { get; set; }
     }
 }

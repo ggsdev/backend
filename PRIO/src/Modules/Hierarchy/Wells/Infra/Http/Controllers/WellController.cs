@@ -32,6 +32,18 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Controllers
             return Created($"wells/{wellDTO.Id}", wellDTO);
         }
 
+        [HttpPost("config/{wellId}")]
+        public async Task<IActionResult> CreateConfig([FromBody] CreateConfigViewModels body, [FromRoute] Guid wellId)
+        {
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+            var wellDTO = await _wellService.CreateConfig(body, wellId, user);
+            return Created($"wells/config/{wellDTO.Id}", wellDTO);
+        }
+
         //[HttpGet("paginated")]
         //public async Task<IActionResult> Get(int pageNumber = 1, int pageSize = 3)
         //{
@@ -44,8 +56,25 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var wellsDTO = await _wellService.GetWells();
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+            var wellsDTO = await _wellService.GetWells(user);
             return Ok(wellsDTO);
+        }
+
+        [HttpGet("config/{wellId}")]
+        public async Task<IActionResult> GetConfig([FromRoute] Guid wellId)
+        {
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+            var wellsConfigDTO = await _wellService.GetWellsConfig(user, wellId);
+            return Ok(wellsConfigDTO);
         }
 
         [HttpGet("{id}")]
@@ -69,7 +98,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        public async Task<IActionResult> Delete([FromRoute] Guid id, [FromHeader] string StatusDate)
         {
             if (HttpContext.Items["User"] is not User user)
                 return Unauthorized(new ErrorResponseDTO
@@ -77,7 +106,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Controllers
                     Message = "User not identified, please login first"
                 });
 
-            await _wellService.DeleteWell(id, user);
+            await _wellService.DeleteWell(id, user, StatusDate);
             return NoContent();
         }
 

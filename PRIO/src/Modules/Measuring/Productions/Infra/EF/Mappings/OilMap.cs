@@ -8,15 +8,15 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<Oil> builder)
         {
-            builder.ToTable("Oils");
+            builder.ToTable("Measurement.Oils");
 
             builder.Property(x => x.TotalOil)
                .HasColumnType("DECIMAL")
-               .HasPrecision(14, 5);
+               .HasPrecision(20, 5);
 
             builder.Property(x => x.TotalOilWithoutBsw)
                .HasColumnType("DECIMAL")
-               .HasPrecision(14, 5);
+               .HasPrecision(20, 5);
 
             builder.Property(x => x.BswAverage)
                .HasColumnType("DECIMAL")
