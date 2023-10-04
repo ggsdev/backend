@@ -1316,7 +1316,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             var bswTotal = 0m;
             var divideBsw = 1;
 
-
             if (response._001File.Any())
             {
                 var oilCalculationByUepCode = await _oilCalculationRepository
@@ -1759,6 +1758,13 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                             containsAssistance = true;
                         }
                     }
+                    foreach (var file in response._003File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == assistance.MeasuringPoint.TagPointMeasuring && assistance.IsApplicable))
+                        {
+                            containsAssistance = true;
+                        }
+                    }
 
                     if (containsAssistance is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == assistance.MeasuringPoint.TagPointMeasuring))
                     {
@@ -1779,7 +1785,15 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     foreach (var file in response._002File)
                     {
-                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_002 == hpFlare.MeasuringPoint.TagPointMeasuring && hpFlare.IsApplicable))
+                        if (file.Measurements.Any(x => (x.COD_TAG_PONTO_MEDICAO_002 == hpFlare.MeasuringPoint.TagPointMeasuring) && hpFlare.IsApplicable))
+                        {
+                            containsHpFlare = true;
+                        }
+                    }
+
+                    foreach (var file in response._003File)
+                    {
+                        if (file.Measurements.Any(x => (x.COD_TAG_PONTO_MEDICAO_003 == hpFlare.MeasuringPoint.TagPointMeasuring) && hpFlare.IsApplicable))
                         {
                             containsHpFlare = true;
                         }
@@ -1805,6 +1819,13 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     foreach (var file in response._002File)
                     {
                         if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_002 == lpFlare.MeasuringPoint.TagPointMeasuring && lpFlare.IsApplicable))
+                        {
+                            containsLpFlare = true;
+                        }
+                    }
+                    foreach (var file in response._003File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == lpFlare.MeasuringPoint.TagPointMeasuring && lpFlare.IsApplicable))
                         {
                             containsLpFlare = true;
                         }
@@ -1835,6 +1856,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         }
                     }
 
+                    foreach (var file in response._003File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == exportGas.MeasuringPoint.TagPointMeasuring && exportGas.IsApplicable))
+                        {
+                            containsExportGas = true;
+                        }
+                    }
+
                     if (containsExportGas is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == exportGas.MeasuringPoint.TagPointMeasuring))
                     {
                         response.MeasurementsNotFound.Add(new SummaryProduction
@@ -1855,6 +1884,13 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     foreach (var file in response._002File)
                     {
                         if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_002 == importGas.MeasuringPoint.TagPointMeasuring && importGas.IsApplicable))
+                        {
+                            containsImportGas = true;
+                        }
+                    }
+                    foreach (var file in response._003File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == importGas.MeasuringPoint.TagPointMeasuring && importGas.IsApplicable))
                         {
                             containsImportGas = true;
                         }
@@ -1884,6 +1920,13 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                             containsPurge = true;
                         }
                     }
+                    foreach (var file in response._003File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == purgeGas.MeasuringPoint.TagPointMeasuring && purgeGas.IsApplicable))
+                        {
+                            containsPurge = true;
+                        }
+                    }
 
                     if (containsPurge is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == purgeGas.MeasuringPoint.TagPointMeasuring))
                     {
@@ -1905,6 +1948,13 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     foreach (var file in response._002File)
                     {
                         if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_002 == pilotGas.MeasuringPoint.TagPointMeasuring && pilotGas.IsApplicable))
+                        {
+                            containsPilot = true;
+                        }
+                    }
+                    foreach (var file in response._003File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == pilotGas.MeasuringPoint.TagPointMeasuring && pilotGas.IsApplicable))
                         {
                             containsPilot = true;
                         }
@@ -1935,6 +1985,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         }
                     }
 
+                    foreach (var file in response._003File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == highPressure.MeasuringPoint.TagPointMeasuring && highPressure.IsApplicable))
+                        {
+                            containsHigh = true;
+                        }
+                    }
+
                     if (containsHigh is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == highPressure.MeasuringPoint.TagPointMeasuring))
                     {
                         response.MeasurementsNotFound.Add(new SummaryProduction
@@ -1955,6 +2013,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     foreach (var file in response._002File)
                     {
                         if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_002 == lowPressure.MeasuringPoint.TagPointMeasuring && lowPressure.IsApplicable))
+                        {
+                            containsLow = true;
+                        }
+                    }
+
+                    foreach (var file in response._003File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == lowPressure.MeasuringPoint.TagPointMeasuring && lowPressure.IsApplicable))
                         {
                             containsLow = true;
                         }
@@ -2147,6 +2213,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         }
                     }
 
+                    foreach (var file in response._002File)
+                    {
+                        if (file.Measurements.Any(x => (x.COD_TAG_PONTO_MEDICAO_002 == assistance.MeasuringPoint.TagPointMeasuring) && assistance.IsApplicable))
+                        {
+                            containsAssistance = true;
+                        }
+                    }
+
                     if (containsAssistance is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == assistance.MeasuringPoint.TagPointMeasuring))
                     {
                         response.MeasurementsNotFound.Add(new SummaryProduction
@@ -2167,6 +2241,13 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     foreach (var file in response._003File)
                     {
                         if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == hpFlare.MeasuringPoint.TagPointMeasuring && hpFlare.IsApplicable))
+                        {
+                            containsHpFlare = true;
+                        }
+                    }
+                    foreach (var file in response._002File)
+                    {
+                        if (file.Measurements.Any(x => (x.COD_TAG_PONTO_MEDICAO_002 == hpFlare.MeasuringPoint.TagPointMeasuring) && hpFlare.IsApplicable))
                         {
                             containsHpFlare = true;
                         }
@@ -2197,6 +2278,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         }
                     }
 
+                    foreach (var file in response._002File)
+                    {
+                        if (file.Measurements.Any(x => (x.COD_TAG_PONTO_MEDICAO_002 == lpFlare.MeasuringPoint.TagPointMeasuring) && lpFlare.IsApplicable))
+                        {
+                            containsLpFlare = true;
+                        }
+                    }
+
                     if (containsLpFlare is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == lpFlare.MeasuringPoint.TagPointMeasuring))
                     {
                         response.MeasurementsNotFound.Add(new SummaryProduction
@@ -2217,6 +2306,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     foreach (var file in response._003File)
                     {
                         if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == exportGas.MeasuringPoint.TagPointMeasuring && exportGas.IsApplicable))
+                        {
+                            containsExportGas = true;
+                        }
+                    }
+
+                    foreach (var file in response._002File)
+                    {
+                        if (file.Measurements.Any(x => (x.COD_TAG_PONTO_MEDICAO_002 == exportGas.MeasuringPoint.TagPointMeasuring) && exportGas.IsApplicable))
                         {
                             containsExportGas = true;
                         }
@@ -2247,6 +2344,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         }
                     }
 
+                    foreach (var file in response._002File)
+                    {
+                        if (file.Measurements.Any(x => (x.COD_TAG_PONTO_MEDICAO_002 == importGas.MeasuringPoint.TagPointMeasuring) && importGas.IsApplicable))
+                        {
+                            containsImportGas = true;
+                        }
+                    }
+
                     if (containsImportGas is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == importGas.MeasuringPoint.TagPointMeasuring))
                     {
                         response.MeasurementsNotFound.Add(new SummaryProduction
@@ -2267,6 +2372,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     foreach (var file in response._003File)
                     {
                         if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == purgeGas.MeasuringPoint.TagPointMeasuring && purgeGas.IsApplicable))
+                        {
+                            containsPurge = true;
+                        }
+                    }
+
+                    foreach (var file in response._002File)
+                    {
+                        if (file.Measurements.Any(x => (x.COD_TAG_PONTO_MEDICAO_002 == purgeGas.MeasuringPoint.TagPointMeasuring) && purgeGas.IsApplicable))
                         {
                             containsPurge = true;
                         }
@@ -2297,6 +2410,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         }
                     }
 
+                    foreach (var file in response._002File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_002 == pilotGas.MeasuringPoint.TagPointMeasuring && pilotGas.IsApplicable))
+                        {
+                            containsPilot = true;
+                        }
+                    }
+
                     if (containsPilot is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == pilotGas.MeasuringPoint.TagPointMeasuring))
                     {
                         response.MeasurementsNotFound.Add(new SummaryProduction
@@ -2322,6 +2443,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         }
                     }
 
+                    foreach (var file in response._002File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_002 == highPressure.MeasuringPoint.TagPointMeasuring && highPressure.IsApplicable))
+                        {
+                            containsHigh = true;
+                        }
+                    }
+
                     if (containsHigh is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == highPressure.MeasuringPoint.TagPointMeasuring))
                     {
                         response.MeasurementsNotFound.Add(new SummaryProduction
@@ -2342,6 +2471,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     foreach (var file in response._003File)
                     {
                         if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == lowPressure.MeasuringPoint.TagPointMeasuring && lowPressure.IsApplicable))
+                        {
+                            containsLow = true;
+                        }
+                    }
+
+                    foreach (var file in response._002File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_002 == lowPressure.MeasuringPoint.TagPointMeasuring && lowPressure.IsApplicable))
                         {
                             containsLow = true;
                         }
