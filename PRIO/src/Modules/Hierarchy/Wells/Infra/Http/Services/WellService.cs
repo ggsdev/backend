@@ -209,25 +209,29 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             if (manualConfig is null)
                 throw new NotFoundException("Configuração Manual do poço não encontrada");
 
-            if (body.Index is null || body.BuildUpValue is null)
-                throw new ConflictException("Novos valores não informados.");
+            if (body.Index is null && body.BuildUpValue is null)
+                throw new ConflictException("Valor não informados.");
 
             var instance = variablesEnv["INSTANCE"];
 
-            foreach (var BuildUp in manualConfig.BuildUp)
+            if (body.BuildUpValue is not null)
             {
-                BuildUp.IsActive = false;
-                BuildUp.IsOperating = false;
-                _manualConfigRepository.UpdateBuildUp(BuildUp);
+                foreach (var BuildUp in manualConfig.BuildUp)
+                {
+                    BuildUp.IsActive = false;
+                    BuildUp.IsOperating = false;
+                    _manualConfigRepository.UpdateBuildUp(BuildUp);
+                }
             }
+            var buildUpActive = manualConfig.BuildUp.Where(x => x.IsActive).FirstOrDefault();
             var buildUp = new BuildUp
             {
                 Id = Guid.NewGuid(),
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-                IsActive = true,
-                IsOperating = instance == "FRADE",
-                Value = body.BuildUpValue.Value,
+                IsActive = body.BuildUpValue is not null ? true : buildUpActive is not null ? buildUpActive.IsActive : false,
+                IsOperating = body.BuildUpValue is not null ? instance == "FRADE" : buildUpActive is not null ? buildUpActive.IsOperating : false,
+                Value = body.BuildUpValue is not null ? body.BuildUpValue.Value : buildUpActive is not null ? buildUpActive.Value : 0,
                 ManualWellConfiguration = manualConfig
             };
             var buildUpDTO = new BuildUpDTO
@@ -244,58 +248,85 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             await _manualConfigRepository.AddBuildUpAsync(buildUp);
             if (well.CategoryOperator.ToUpper().Contains("PRODUTOR"))
             {
-                foreach (var IP in manualConfig.ProductivityIndex)
+                var productivityIndexActive = manualConfig.ProductivityIndex.Where(x => x.IsActive).FirstOrDefault();
+                if (body.Index is not null)
                 {
-                    IP.IsActive = false;
-                    IP.IsOperating = false;
-                    _manualConfigRepository.UpdateProductivity(IP);
+                    foreach (var IP in manualConfig.ProductivityIndex)
+                    {
+                        IP.IsActive = false;
+                        IP.IsOperating = false;
+                        _manualConfigRepository.UpdateProductivity(IP);
+                    }
+                    var productivityIndex = new ProductivityIndex
+                    {
+                        Id = Guid.NewGuid(),
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow,
+                        IsActive = body.Index is not null ? true : productivityIndexActive is not null ? true : false,
+                        IsOperating = body.Index is not null ? instance == "FRADE" : productivityIndexActive is not null ? true : false,
+                        Value = body.Index is not null ? body.Index.Value : productivityIndexActive is not null ? productivityIndexActive.Value : 0,
+                        ManualWellConfiguration = manualConfig
+                    };
+                    var productivityDTO = new ProductivityIndexDTO
+                    {
+                        IsActive = productivityIndex.IsActive,
+                        IsOperating = productivityIndex.IsOperating,
+                        Value = productivityIndex.Value
+                    };
+                    manualConfigDTO.ProductivityIndex = productivityDTO;
+                    await _manualConfigRepository.AddProductivityAsync(productivityIndex);
                 }
-
-                var productivityIndex = new ProductivityIndex
+                else
                 {
-                    Id = Guid.NewGuid(),
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
-                    IsActive = true,
-                    IsOperating = instance == "FRADE",
-                    Value = body.Index.Value,
-                    ManualWellConfiguration = manualConfig
-                };
-                var productivityDTO = new ProductivityIndexDTO
-                {
-                    IsActive = productivityIndex.IsActive,
-                    IsOperating = productivityIndex.IsOperating,
-                    Value = productivityIndex.Value
-                };
-                manualConfigDTO.ProductivityIndex = productivityDTO;
-                await _manualConfigRepository.AddProductivityAsync(productivityIndex);
+                    var productivityDTO = new ProductivityIndexDTO
+                    {
+                        IsActive = productivityIndexActive is not null ? productivityIndexActive.IsActive : false,
+                        IsOperating = productivityIndexActive is not null ? productivityIndexActive.IsOperating : false,
+                        Value = productivityIndexActive is not null ? productivityIndexActive.Value : 0
+                    };
+                    manualConfigDTO.ProductivityIndex = productivityDTO;
+                }
             }
             else if (well.CategoryOperator.ToUpper().Contains("INJETOR"))
             {
-                foreach (var II in manualConfig.InjectivityIndex)
+                var injectivityIndexActive = manualConfig.InjectivityIndex.Where(x => x.IsActive).FirstOrDefault();
+                if (body.Index is not null)
                 {
-                    II.IsActive = false;
-                    II.IsOperating = false;
-                    _manualConfigRepository.UpdateInjectivity(II);
+                    foreach (var II in manualConfig.InjectivityIndex)
+                    {
+                        II.IsActive = false;
+                        II.IsOperating = false;
+                        _manualConfigRepository.UpdateInjectivity(II);
+                    }
+                    var injectivityIndex = new InjectivityIndex
+                    {
+                        Id = Guid.NewGuid(),
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow,
+                        IsActive = body.Index is not null ? true : injectivityIndexActive is not null ? true : false,
+                        IsOperating = body.Index is not null ? instance == "FRADE" : injectivityIndexActive is not null ? true : false,
+                        Value = body.Index is not null ? body.Index.Value : injectivityIndexActive is not null ? injectivityIndexActive.Value : 0,
+                        ManualWellConfiguration = manualConfig
+                    };
+                    var injectivityDTO = new InjectivityIndexDTO
+                    {
+                        IsActive = injectivityIndex.IsActive,
+                        IsOperating = injectivityIndex.IsOperating,
+                        Value = injectivityIndex.Value
+                    };
+                    manualConfigDTO.InjectivityIndex = injectivityDTO;
+                    await _manualConfigRepository.AddInjectivityAsync(injectivityIndex);
                 }
-                var injectivityIndex = new InjectivityIndex
+                else
                 {
-                    Id = Guid.NewGuid(),
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
-                    IsActive = true,
-                    IsOperating = instance == "FRADE",
-                    Value = body.Index.Value,
-                    ManualWellConfiguration = manualConfig
-                };
-                var injectivityDTO = new InjectivityIndexDTO
-                {
-                    IsActive = injectivityIndex.IsActive,
-                    IsOperating = injectivityIndex.IsOperating,
-                    Value = injectivityIndex.Value
-                };
-                manualConfigDTO.InjectivityIndex = injectivityDTO;
-                await _manualConfigRepository.AddInjectivityAsync(injectivityIndex);
+                    var injectivityDTO = new InjectivityIndexDTO
+                    {
+                        IsActive = injectivityIndexActive is not null ? injectivityIndexActive.IsActive : false,
+                        IsOperating = injectivityIndexActive is not null ? injectivityIndexActive.IsOperating : false,
+                        Value = injectivityIndexActive is not null ? injectivityIndexActive.Value : 0
+                    };
+                    manualConfigDTO.InjectivityIndex = injectivityDTO;
+                }
             }
             var wellDTO = new WellWithManualConfigDTO
             {
