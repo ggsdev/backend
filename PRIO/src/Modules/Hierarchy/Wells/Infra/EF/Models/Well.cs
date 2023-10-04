@@ -36,5 +36,6 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models
         public List<WellTests>? WellTests { get; set; }
         public List<WellEvent> WellEvents { get; set; } = new();
         public List<WellsValues>? WellsValues { get; set; }
+        public ManualWellConfiguration? ManualWellConfiguration { get; set; }
     }
 }

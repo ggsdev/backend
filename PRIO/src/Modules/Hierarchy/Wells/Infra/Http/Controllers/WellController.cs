@@ -32,6 +32,18 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Controllers
             return Created($"wells/{wellDTO.Id}", wellDTO);
         }
 
+        [HttpPost("config/{wellId}")]
+        public async Task<IActionResult> CreateConfig([FromBody] CreateConfigViewModels body, [FromRoute] Guid wellId)
+        {
+            if (HttpContext.Items["User"] is not User user)
+                return Unauthorized(new ErrorResponseDTO
+                {
+                    Message = "User not identified, please login first"
+                });
+            var wellDTO = await _wellService.CreateConfig(body, wellId, user);
+            return Created($"wells/config/{wellDTO.Id}", wellDTO);
+        }
+
         //[HttpGet("paginated")]
         //public async Task<IActionResult> Get(int pageNumber = 1, int pageSize = 3)
         //{

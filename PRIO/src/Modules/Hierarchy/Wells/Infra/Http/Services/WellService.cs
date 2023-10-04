@@ -30,11 +30,12 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
         private readonly IWellEventRepository _eventWellRepository;
         private readonly ICompletionRepository _completionRepository;
         private readonly IProductionRepository _productionRepository;
+        private readonly IManualConfigRepository _manualConfigRepository;
         private readonly SystemHistoryService _systemHistoryService;
         private readonly string _tableName = HistoryColumns.TableWells;
         private readonly IDictionary<string, string> variablesEnv = DotEnv.Read();
 
-        public WellService(IMapper mapper, IFieldRepository fieldRepository, SystemHistoryService systemHistoryService, IWellRepository wellRepository, ICompletionRepository completionRepositor, IWellEventRepository wellEventRepository, IProductionRepository productionRepository)
+        public WellService(IMapper mapper, IFieldRepository fieldRepository, SystemHistoryService systemHistoryService, IWellRepository wellRepository, ICompletionRepository completionRepositor, IWellEventRepository wellEventRepository, IProductionRepository productionRepository, IManualConfigRepository manualConfigRepository)
         {
             _mapper = mapper;
             _fieldRepository = fieldRepository;
@@ -43,6 +44,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             _systemHistoryService = systemHistoryService;
             _eventWellRepository = wellEventRepository;
             _productionRepository = productionRepository;
+            _manualConfigRepository = manualConfigRepository;
             //_context = cpn;
         }
 
@@ -137,9 +139,51 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
                 CreatedBy = user,
             };
 
+            var manualConfig = new ManualWellConfiguration
+            {
+                Id = Guid.NewGuid(),
+                Well = well,
+            };
+            var injectivityIndex = new InjectivityIndex
+            {
+                Id = Guid.NewGuid(),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                IsActive = false,
+                IsOperating = false,
+                Value = 0,
+                ManualWellConfiguration = manualConfig
+            };
+            var productivityIndex = new ProductivityIndex
+            {
+                Id = Guid.NewGuid(),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                IsActive = false,
+                IsOperating = false,
+                Value = 0,
+                ManualWellConfiguration = manualConfig
+            };
+            var buildUp = new BuildUp
+            {
+                Id = Guid.NewGuid(),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                IsActive = false,
+                IsOperating = false,
+                Value = 0,
+                ManualWellConfiguration = manualConfig
+            };
+
             await _eventWellRepository.Add(wellEvent);
             await _eventWellRepository.Add(closingWellEvent);
             await _eventWellRepository.AddReasonClosedEvent(eventReason);
+
+            await _manualConfigRepository.AddConfigAsync(manualConfig);
+            await _manualConfigRepository.AddProductivityAsync(productivityIndex);
+            await _manualConfigRepository.AddInjectivityAsync(injectivityIndex);
+            await _manualConfigRepository.AddBuildUpAsync(buildUp);
+
             await _wellRepository.AddAsync(well);
 
             await _systemHistoryService
@@ -151,6 +195,117 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             return wellDTO;
         }
 
+        public async Task<WellWithManualConfigDTO> CreateConfig(CreateConfigViewModels body, Guid wellId, User user)
+        {
+            var well = await _wellRepository.GetByIdAsync(wellId) ?? throw new NotFoundException("Poço não encontrado");
+            if (well.ManualWellConfiguration is null)
+                throw new NotFoundException("Configuração Manual do poço não encontrada");
+
+            var manualConfig = await _manualConfigRepository.GetManualConfig(well.ManualWellConfiguration.Id);
+            if (manualConfig is null)
+                throw new NotFoundException("Configuração Manual do poço não encontrada");
+
+            if (body.IIValue is null || body.IPValue is null || body.BuildUpValue is null)
+                throw new ConflictException("Novos valores não informados.");
+
+            var instance = variablesEnv["INSTANCE"];
+
+            foreach (var IP in manualConfig.ProductivityIndex)
+            {
+                IP.IsActive = false;
+                IP.IsOperating = false;
+                _manualConfigRepository.UpdateProductivity(IP);
+            }
+            foreach (var II in manualConfig.InjectivityIndex)
+            {
+                II.IsActive = false;
+                II.IsOperating = false;
+                _manualConfigRepository.UpdateInjectivity(II);
+            }
+            foreach (var BuildUp in manualConfig.BuildUp)
+            {
+                BuildUp.IsActive = false;
+                BuildUp.IsOperating = false;
+                _manualConfigRepository.UpdateBuildUp(BuildUp);
+            }
+
+            var injectivityIndex = new InjectivityIndex
+            {
+                Id = Guid.NewGuid(),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                IsActive = true,
+                IsOperating = instance == "FRADE",
+                Value = body.IIValue.Value,
+                ManualWellConfiguration = manualConfig
+            };
+            var productivityIndex = new ProductivityIndex
+            {
+                Id = Guid.NewGuid(),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                IsActive = true,
+                IsOperating = instance == "FRADE",
+                Value = body.IPValue.Value,
+                ManualWellConfiguration = manualConfig
+            };
+            var buildUp = new BuildUp
+            {
+                Id = Guid.NewGuid(),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                IsActive = true,
+                IsOperating = instance == "FRADE",
+                Value = body.BuildUpValue.Value,
+                ManualWellConfiguration = manualConfig
+            };
+
+            var injectivityDTO = new InjectivityIndexDTO
+            {
+                IsActive = injectivityIndex.IsActive,
+                IsOperating = injectivityIndex.IsOperating,
+                Value = injectivityIndex.Value
+            };
+            var productivityDTO = new ProductivityIndexDTO
+            {
+                IsActive = productivityIndex.IsActive,
+                IsOperating = productivityIndex.IsOperating,
+                Value = productivityIndex.Value
+            };
+            var buildUpDTO = new BuildUpDTO
+            {
+                IsActive = buildUp.IsActive,
+                IsOperating = buildUp.IsOperating,
+                Value = buildUp.Value
+            };
+            var manualConfigDTO = new ManualConfigDTO
+            {
+                Id = manualConfig.Id,
+                BuildUp = buildUpDTO,
+                InjectivityIndex = injectivityDTO,
+                ProductivityIndex = productivityDTO
+            };
+
+            var wellDTO = new WellWithManualConfigDTO
+            {
+                Id = well.Id,
+                CodWell = well.CodWell,
+                CodWellAnp = well.CodWellAnp,
+                IsActive = well.IsActive,
+                Name = well.Name,
+                WellOperatorName = well.WellOperatorName,
+                ManualConfig = manualConfigDTO
+            };
+
+            await _manualConfigRepository.AddProductivityAsync(productivityIndex);
+            await _manualConfigRepository.AddInjectivityAsync(injectivityIndex);
+            await _manualConfigRepository.AddBuildUpAsync(buildUp);
+
+            await _manualConfigRepository.SaveAsync();
+
+            return wellDTO;
+
+        }
         public async Task<List<WellDTO>> GetWells(User user)
         {
             var wells = await _wellRepository.GetAsync(user);
