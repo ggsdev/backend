@@ -606,7 +606,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.Http.Services
                         Status = ev.EventStatus,
                         DateLastStatus = lastEventReason is not null ? lastEventReason.StartDate.ToString("dd/MM/yyyy HH:mm") : ev.StartDate.ToString("dd/MM/yyyy HH:mm"),
                         CategoryOperator = ev.Well.CategoryOperator,
-                        Name = ev.Well.Name
+                        Name = ev.Well.Name,
+                        WellStatus = ev.Well.IsActive
                     };
 
                     wellDtoList.Add(eventDTO);
@@ -652,7 +653,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.Http.Services
                         Status = ev.EventStatus,
                         DateLastStatus = lastEventReason is not null ? lastEventReason.StartDate.ToString("dd/MM/yyyy HH:mm") : ev.StartDate.ToString("dd/MM/yyyy HH:mm"),
                         CategoryOperator = ev.Well.CategoryOperator,
-                        Name = ev.Well.Name
+                        Name = ev.Well.Name,
+                        WellStatus = ev.Well.IsActive
                     };
 
                     wellDtoList.Add(eventDTO);
