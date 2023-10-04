@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20231003175525_CreateManualConfigLogic")]
+    partial class CreateManualConfigLogic
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1350,7 +1353,7 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<double>("Value")
+                    b.Property<double>("value")
                         .HasColumnType("float");
 
                     b.HasKey("Id");
@@ -1387,7 +1390,7 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<double>("Value")
+                    b.Property<double>("value")
                         .HasColumnType("float");
 
                     b.HasKey("Id");
@@ -1441,7 +1444,7 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<double>("Value")
+                    b.Property<double>("value")
                         .HasColumnType("float");
 
                     b.HasKey("Id");

@@ -65,11 +65,7 @@ namespace PRIO.src.Shared.Infra.EF
     public class DataContext : DbContext
     {
 
-        #region Session
         public DbSet<Session> Sessions { get; set; }
-        #endregion
-
-        #region Control Access
         public DbSet<User> Users { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<GroupOperation> GroupOperations { get; set; }
@@ -78,9 +74,6 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<UserPermission> UserPermissions { get; set; }
         public DbSet<Menu> Menus { get; set; }
         public DbSet<GlobalOperation> GlobalOperations { get; set; }
-        #endregion
-
-        #region Hierarchy
         public DbSet<Cluster> Clusters { get; set; }
         public DbSet<Installation> Installations { get; set; }
         public DbSet<Field> Fields { get; set; }
@@ -88,25 +81,19 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<Reservoir> Reservoirs { get; set; }
         public DbSet<Completion> Completions { get; set; }
         public DbSet<Well> Wells { get; set; }
-        #endregion
-
-        #region Measurement & Relations
         public DbSet<MeasurementHistory> MeasurementHistories { get; set; }
         public DbSet<MeasuringEquipment> MeasuringEquipments { get; set; }
-
         public DbSet<Production> Productions { get; set; }
         public DbSet<Oil> Oils { get; set; }
         public DbSet<GasLinear> GasesLinears { get; set; }
         public DbSet<Gas> Gases { get; set; }
         public DbSet<GasDiferencial> GasesDiferencials { get; set; }
-
         public DbSet<MeasuringPoint> MeasuringPoints { get; set; }
         public DbSet<OilVolumeCalculation> OilVolumeCalculations { get; set; }
         public DbSet<Section> Sections { get; set; }
         public DbSet<TOGRecoveredOil> TOGRecoveredOils { get; set; }
         public DbSet<DrainVolume> DrainVolumes { get; set; }
         public DbSet<DOR> DORs { get; set; }
-
         public DbSet<AssistanceGas> AssistanceGases { get; set; }
         public DbSet<ExportGas> ExportGases { get; set; }
         public DbSet<HighPressureGas> HighPressureGases { get; set; }
@@ -117,24 +104,16 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<PilotGas> PilotGases { get; set; }
         public DbSet<PurgeGas> PurgeGases { get; set; }
         public DbSet<GasVolumeCalculation> GasVolumeCalculations { get; set; }
-
         public DbSet<Measurement> Measurements { get; set; }
         public DbSet<FileType> FileTypes { get; set; }
         public DbSet<Volume> Volume { get; set; }
         public DbSet<Calibration> Calibrations { get; set; }
         public DbSet<Water> Waters { get; set; }
-
         public DbSet<Bsw> Bsws { get; set; }
-        #endregion
-
-        #region BTP
         public DbSet<BTP> BTPs { get; set; }
         public DbSet<WellTests> WellTests { get; set; }
         public DbSet<BTPBase64> BTPBases64 { get; set; }
         public DbSet<InstallationBTP> InstallationBTPs { get; set; }
-
-        #endregion
-
         public DbSet<FieldFR> FieldsFRs { get; set; }
         public DbSet<SystemHistory> SystemHistories { get; set; }
         public DbSet<Auxiliary> Auxiliaries { get; set; }
@@ -159,6 +138,10 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<Modules.PI.Infra.EF.Models.Attribute> Attributes { get; set; }
         public DbSet<WellsValues> WellValues { get; set; }
         public DbSet<Value> Values { get; set; }
+        public DbSet<ManualWellConfiguration> ManualWellConfiguration { get; set; }
+        public DbSet<ProductivityIndex> ProductivityIndex { get; set; }
+        public DbSet<InjectivityIndex> InjectivityIndex { get; set; }
+        public DbSet<BuildUp> BuildUp { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -187,13 +170,11 @@ namespace PRIO.src.Shared.Infra.EF
             UpdateTimestamps();
             return base.SaveChanges();
         }
-
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             UpdateTimestamps();
             return await base.SaveChangesAsync(cancellationToken);
         }
-
         private void UpdateTimestamps()
         {
             var modifiedEntriesBaseModel = ChangeTracker.Entries<BaseModel>()
@@ -228,59 +209,72 @@ namespace PRIO.src.Shared.Infra.EF
                 }
             }
         }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new SystemHistoryMap());
-
+            CreateHierarchyMap(modelBuilder);
+            CreateMeasurementMap(modelBuilder);
+            CreateAccessControlMap(modelBuilder);
+            CreateEventMap(modelBuilder);
+            CreateProductionMap(modelBuilder);
+            CreateConfigCalcMap(modelBuilder);
+            CreatePIMap(modelBuilder);
+            CreateSystemMap(modelBuilder);
+            CreateWellTestMap(modelBuilder);
+            CreateManualConfigurationWellMap(modelBuilder);
+        }
+        private static void CreateAccessControlMap(ModelBuilder modelBuilder)
+        {
             modelBuilder.ApplyConfiguration(new UserMap());
-            modelBuilder.ApplyConfiguration(new SessionMap());
-
+            modelBuilder.ApplyConfiguration(new UserPermissionMap());
+            modelBuilder.ApplyConfiguration(new UserOperationMap());
+            modelBuilder.ApplyConfiguration(new GroupMap());
+            modelBuilder.ApplyConfiguration(new GroupPermissionMap());
+            modelBuilder.ApplyConfiguration(new GroupOperationMap());
+            modelBuilder.ApplyConfiguration(new InstallationsPermissionMap());
+            modelBuilder.ApplyConfiguration(new GlobalOperationMap());
+            modelBuilder.ApplyConfiguration(new MenuMap());
+        }
+        private static void CreateHierarchyMap(ModelBuilder modelBuilder)
+        {
             modelBuilder.ApplyConfiguration(new ClusterMap());
-
             modelBuilder.ApplyConfiguration(new InstallationMap());
-
             modelBuilder.ApplyConfiguration(new FieldMap());
-
             modelBuilder.ApplyConfiguration(new ZoneMap());
-
             modelBuilder.ApplyConfiguration(new ReservoirMap());
-
             modelBuilder.ApplyConfiguration(new CompletionMap());
-
             modelBuilder.ApplyConfiguration(new WellMap());
-
+            modelBuilder.ApplyConfiguration(new MeasuringPointMap());
             modelBuilder.ApplyConfiguration(new MeasuringEquipmentMap());
+
+        }
+        private static void CreateMeasurementMap(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new FileTypeMap());
+            modelBuilder.ApplyConfiguration(new VolumeMap());
+            modelBuilder.ApplyConfiguration(new CalibrationMap());
+            modelBuilder.ApplyConfiguration(new BswMap());
+            modelBuilder.ApplyConfiguration(new MeasurementMap());
             modelBuilder.ApplyConfiguration(new MeasurementHistoryMap());
             modelBuilder.ApplyConfiguration(new ProductionMap());
             modelBuilder.ApplyConfiguration(new OilMap());
             modelBuilder.ApplyConfiguration(new GasLinearMap());
             modelBuilder.ApplyConfiguration(new GasDiferencialMap());
             modelBuilder.ApplyConfiguration(new GasMap());
-            modelBuilder.ApplyConfiguration(new MeasuringPointMap());
-            modelBuilder.ApplyConfiguration(new BTPMap());
-            modelBuilder.ApplyConfiguration(new WellTestMap());
-            modelBuilder.ApplyConfiguration(new BTPBase64Map());
             modelBuilder.ApplyConfiguration(new BTPMap());
             modelBuilder.ApplyConfiguration(new InstallationBTPMap());
             modelBuilder.ApplyConfiguration(new FieldFRsMap());
             modelBuilder.ApplyConfiguration(new NFSMMap());
             modelBuilder.ApplyConfiguration(new NFSMsProductionsMap());
             modelBuilder.ApplyConfiguration(new NFSMHistoryMap());
-
-            modelBuilder.ApplyConfiguration(new GroupMap());
-            modelBuilder.ApplyConfiguration(new MenuMap());
-            modelBuilder.ApplyConfiguration(new UserPermissionMap());
-            modelBuilder.ApplyConfiguration(new GroupPermissionMap());
-            modelBuilder.ApplyConfiguration(new UserOperationMap());
-            modelBuilder.ApplyConfiguration(new GroupOperationMap());
-            modelBuilder.ApplyConfiguration(new GlobalOperationMap());
-            modelBuilder.ApplyConfiguration(new InstallationsPermissionMap());
-            modelBuilder.ApplyConfiguration(new CommentMap());
+        }
+        private static void CreateEventMap(ModelBuilder modelBuilder)
+        {
             modelBuilder.ApplyConfiguration(new WellEventMap());
             modelBuilder.ApplyConfiguration(new EventReasonMap());
-
-            #region Production
+        }
+        private static void CreateProductionMap(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new CommentMap());
             modelBuilder.ApplyConfiguration(new FieldProductionMap());
             modelBuilder.ApplyConfiguration(new WellProductionMap());
             modelBuilder.ApplyConfiguration(new CompletionProductionMap());
@@ -288,15 +282,14 @@ namespace PRIO.src.Shared.Infra.EF
             modelBuilder.ApplyConfiguration(new ZoneProductionMap());
             modelBuilder.ApplyConfiguration(new WellLossesMap());
             modelBuilder.ApplyConfiguration(new WaterMap());
-            #endregion
-
-            #region Measurement & Relations
+        }
+        private static void CreateConfigCalcMap(ModelBuilder modelBuilder)
+        {
             modelBuilder.ApplyConfiguration(new SectionMap());
             modelBuilder.ApplyConfiguration(new TOGRecoveredOilMap());
             modelBuilder.ApplyConfiguration(new DORMap());
             modelBuilder.ApplyConfiguration(new DrainVolumeMap());
             modelBuilder.ApplyConfiguration(new OilVolumeCalculationMap());
-
             modelBuilder.ApplyConfiguration(new AssistanceGasMap());
             modelBuilder.ApplyConfiguration(new ExportGasMap());
             modelBuilder.ApplyConfiguration(new GasVolumeCalculationMap());
@@ -307,25 +300,36 @@ namespace PRIO.src.Shared.Infra.EF
             modelBuilder.ApplyConfiguration(new LPFlareMap());
             modelBuilder.ApplyConfiguration(new PilotGasMap());
             modelBuilder.ApplyConfiguration(new PurgeGasMap());
-
-
-            modelBuilder.ApplyConfiguration(new MeasurementMap());
-            modelBuilder.ApplyConfiguration(new FileTypeMap());
-            modelBuilder.ApplyConfiguration(new VolumeMap());
-            modelBuilder.ApplyConfiguration(new CalibrationMap());
-            modelBuilder.ApplyConfiguration(new BswMap());
-
-            #endregion
-
-            modelBuilder.ApplyConfiguration(new BackupMap());
-            modelBuilder.ApplyConfiguration(new AuxiliaryMap());
-            modelBuilder.ApplyConfiguration(new ValidateBTPMap());
+        }
+        private static void CreatePIMap(ModelBuilder modelBuilder)
+        {
             modelBuilder.ApplyConfiguration(new DatabasesMap());
             modelBuilder.ApplyConfiguration(new InstancesMap());
             modelBuilder.ApplyConfiguration(new ElementsMap());
             modelBuilder.ApplyConfiguration(new AttributesMap());
             modelBuilder.ApplyConfiguration(new WellsValuesMap());
             modelBuilder.ApplyConfiguration(new ValueMap());
+        }
+        private static void CreateSystemMap(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new AuxiliaryMap());
+            modelBuilder.ApplyConfiguration(new SystemHistoryMap());
+            modelBuilder.ApplyConfiguration(new SessionMap());
+            modelBuilder.ApplyConfiguration(new BackupMap());
+        }
+        private static void CreateWellTestMap(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new ValidateBTPMap());
+            modelBuilder.ApplyConfiguration(new WellTestMap());
+            modelBuilder.ApplyConfiguration(new BTPBase64Map());
+            modelBuilder.ApplyConfiguration(new BTPMap());
+        }
+        private static void CreateManualConfigurationWellMap(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new ManualWellConfigurationMap());
+            modelBuilder.ApplyConfiguration(new BuildUpMap());
+            modelBuilder.ApplyConfiguration(new ProductivityIndexMap());
+            modelBuilder.ApplyConfiguration(new InjectivityIndexMap());
         }
     }
 }

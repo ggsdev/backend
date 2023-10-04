@@ -24,7 +24,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
         {
             return await _context.Wells.Include(w => w.Field).ThenInclude(f => f.Installation)
                     .FirstOrDefaultAsync(x => x.Name == name || x.WellOperatorName == name);
-         }           
+        }
         public async Task<Well?> GetByNameOrOperator(string wellName, string wellOperatorName)
         {
             return await _context.Wells
@@ -47,6 +47,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
         {
             return await _context.Wells
                 .Include(x => x.User)
+                .Include(x => x.ManualWellConfiguration)
                 .Include(x => x.Completions)
                 .ThenInclude(x => x.Reservoir)
                 .ThenInclude(x => x.Zone)
