@@ -243,7 +243,9 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.Http.Services
                                     WellId = well.Id,
                                     Status = lastEvent.EventStatus,
                                     DateLastStatus = lastEvent.StartDate.ToString("dd/MM/yyyy HH:mm"),
-                                    Name = well.Name
+                                    Name = well.Name,
+                                    WellStatus = well.IsActive,
+                                    CategoryOperator = well.CategoryOperator,
                                 };
 
                                 wellDtoList.Add(wellDto);
@@ -572,6 +574,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.Http.Services
                         DateLastStatus = lastEventReason is not null ? lastEventReason.StartDate.ToString("dd/MM/yyyy HH:mm") : lastEvent.StartDate.ToString("dd/MM/yyyy HH:mm"),
                         CategoryOperator = well.CategoryOperator,
                         Name = well.Name,
+                        WellStatus = well.IsActive,
                     };
 
                     wellDtoList.Add(wellDto);
