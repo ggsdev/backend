@@ -6,6 +6,7 @@
         public string CodWell { get; set; }
         public string Name { get; set; }
         public string WellOperatorName { get; set; }
+        public string CategoryOperator { get; set; }
         public string CodWellAnp { get; set; }
         public bool IsActive { get; set; }
         public ManualConfigDTO ManualConfig { get; set; }

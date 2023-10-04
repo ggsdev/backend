@@ -596,26 +596,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                 Id = Guid.NewGuid(),
                                 Well = (Well)well,
                             };
-                            var injectivityIndex = new InjectivityIndex
-                            {
-                                Id = Guid.NewGuid(),
-                                CreatedAt = DateTime.UtcNow,
-                                UpdatedAt = DateTime.UtcNow,
-                                IsActive = false,
-                                IsOperating = false,
-                                Value = 0,
-                                ManualWellConfiguration = manualConfig
-                            };
-                            var productivityIndex = new ProductivityIndex
-                            {
-                                Id = Guid.NewGuid(),
-                                CreatedAt = DateTime.UtcNow,
-                                UpdatedAt = DateTime.UtcNow,
-                                IsActive = false,
-                                IsOperating = false,
-                                Value = 0,
-                                ManualWellConfiguration = manualConfig
-                            };
                             var buildUp = new BuildUp
                             {
                                 Id = Guid.NewGuid(),
@@ -626,10 +606,36 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                 Value = 0,
                                 ManualWellConfiguration = manualConfig
                             };
+                            if ((well as Well).CategoryOperator.ToUpper() == "PRODUTOR")
+                            {
+                                var productivityIndex = new ProductivityIndex
+                                {
+                                    Id = Guid.NewGuid(),
+                                    CreatedAt = DateTime.UtcNow,
+                                    UpdatedAt = DateTime.UtcNow,
+                                    IsActive = false,
+                                    IsOperating = false,
+                                    Value = 0,
+                                    ManualWellConfiguration = manualConfig
+                                };
+                                await _manualConfigRepository.AddProductivityAsync(productivityIndex);
+                            }
+                            else if ((well as Well).CategoryOperator.ToUpper().Contains("INJETOR"))
+                            {
+                                var injectivityIndex = new InjectivityIndex
+                                {
+                                    Id = Guid.NewGuid(),
+                                    CreatedAt = DateTime.UtcNow,
+                                    UpdatedAt = DateTime.UtcNow,
+                                    IsActive = false,
+                                    IsOperating = false,
+                                    Value = 0,
+                                    ManualWellConfiguration = manualConfig
+                                };
+                                await _manualConfigRepository.AddInjectivityAsync(injectivityIndex);
+                            }
 
                             await _manualConfigRepository.AddConfigAsync(manualConfig);
-                            await _manualConfigRepository.AddProductivityAsync(productivityIndex);
-                            await _manualConfigRepository.AddInjectivityAsync(injectivityIndex);
                             await _manualConfigRepository.AddBuildUpAsync(buildUp);
                         }
 
@@ -804,26 +810,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                 Id = Guid.NewGuid(),
                                 Well = (Well)well,
                             };
-                            var injectivityIndex = new InjectivityIndex
-                            {
-                                Id = Guid.NewGuid(),
-                                CreatedAt = DateTime.UtcNow,
-                                UpdatedAt = DateTime.UtcNow,
-                                IsActive = false,
-                                IsOperating = false,
-                                Value = 0,
-                                ManualWellConfiguration = manualConfig
-                            };
-                            var productivityIndex = new ProductivityIndex
-                            {
-                                Id = Guid.NewGuid(),
-                                CreatedAt = DateTime.UtcNow,
-                                UpdatedAt = DateTime.UtcNow,
-                                IsActive = false,
-                                IsOperating = false,
-                                Value = 0,
-                                ManualWellConfiguration = manualConfig
-                            };
                             var buildUp = new BuildUp
                             {
                                 Id = Guid.NewGuid(),
@@ -834,10 +820,36 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                 Value = 0,
                                 ManualWellConfiguration = manualConfig
                             };
+                            if ((well as Well).CategoryOperator.ToUpper() == "PRODUTOR")
+                            {
+                                var productivityIndex = new ProductivityIndex
+                                {
+                                    Id = Guid.NewGuid(),
+                                    CreatedAt = DateTime.UtcNow,
+                                    UpdatedAt = DateTime.UtcNow,
+                                    IsActive = false,
+                                    IsOperating = false,
+                                    Value = 0,
+                                    ManualWellConfiguration = manualConfig
+                                };
+                                await _manualConfigRepository.AddProductivityAsync(productivityIndex);
+                            }
+                            else if ((well as Well).CategoryOperator.ToUpper().Contains("INJETOR"))
+                            {
+                                var injectivityIndex = new InjectivityIndex
+                                {
+                                    Id = Guid.NewGuid(),
+                                    CreatedAt = DateTime.UtcNow,
+                                    UpdatedAt = DateTime.UtcNow,
+                                    IsActive = false,
+                                    IsOperating = false,
+                                    Value = 0,
+                                    ManualWellConfiguration = manualConfig
+                                };
+                                await _manualConfigRepository.AddInjectivityAsync(injectivityIndex);
+                            }
 
                             await _manualConfigRepository.AddConfigAsync(manualConfig);
-                            await _manualConfigRepository.AddProductivityAsync(productivityIndex);
-                            await _manualConfigRepository.AddInjectivityAsync(injectivityIndex);
                             await _manualConfigRepository.AddBuildUpAsync(buildUp);
 
                         }

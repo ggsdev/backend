@@ -2,8 +2,7 @@
 {
     public class CreateConfigViewModels
     {
-        public double? IPValue { get; set; }
-        public double? IIValue { get; set; }
+        public double? Index { get; set; }
         public double? BuildUpValue { get; set; }
     }
 }
