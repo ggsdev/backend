@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20231005184230_initialMigrationsBalance")]
+    partial class initialMigrationsBalance
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,10 +40,10 @@ namespace PRIO.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double?>("DischargedSurface")
+                    b.Property<double>("DischargedSurface")
                         .HasColumnType("float");
 
-                    b.Property<double?>("FIRS")
+                    b.Property<double>("FIRS")
                         .HasColumnType("float");
 
                     b.Property<Guid>("FieldProductionId")
@@ -55,25 +58,25 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("MeasurementAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<double?>("TOtalWaterInjectedRS")
+                    b.Property<double>("TOtalWaterInjectedRS")
                         .HasColumnType("float");
 
-                    b.Property<double?>("TotalWaterCaptured")
+                    b.Property<double>("TotalWaterCaptured")
                         .HasColumnType("float");
 
-                    b.Property<double?>("TotalWaterDisposal")
+                    b.Property<double>("TotalWaterDisposal")
                         .HasColumnType("float");
 
-                    b.Property<double?>("TotalWaterInjected")
+                    b.Property<double>("TotalWaterInjected")
                         .HasColumnType("float");
 
-                    b.Property<double?>("TotalWaterProduced")
+                    b.Property<double>("TotalWaterProduced")
                         .HasColumnType("float");
 
-                    b.Property<double?>("TotalWaterReceived")
+                    b.Property<double>("TotalWaterReceived")
                         .HasColumnType("float");
 
-                    b.Property<double?>("TotalWaterTransferred")
+                    b.Property<double>("TotalWaterTransferred")
                         .HasColumnType("float");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -107,7 +110,7 @@ namespace PRIO.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double?>("DischargedSurface")
+                    b.Property<double>("DischargedSurface")
                         .HasColumnType("float");
 
                     b.Property<bool>("IsActive")
@@ -116,25 +119,25 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("MeasurementAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<double?>("TOtalWaterInjectedRS")
+                    b.Property<double>("TOtalWaterInjectedRS")
                         .HasColumnType("float");
 
-                    b.Property<double?>("TotalWaterCaptured")
+                    b.Property<double>("TotalWaterCaptured")
                         .HasColumnType("float");
 
-                    b.Property<double?>("TotalWaterDisposal")
+                    b.Property<double>("TotalWaterDisposal")
                         .HasColumnType("float");
 
-                    b.Property<double?>("TotalWaterInjected")
+                    b.Property<double>("TotalWaterInjected")
                         .HasColumnType("float");
 
-                    b.Property<double?>("TotalWaterProduced")
+                    b.Property<double>("TotalWaterProduced")
                         .HasColumnType("float");
 
-                    b.Property<double?>("TotalWaterReceived")
+                    b.Property<double>("TotalWaterReceived")
                         .HasColumnType("float");
 
-                    b.Property<double?>("TotalWaterTransferred")
+                    b.Property<double>("TotalWaterTransferred")
                         .HasColumnType("float");
 
                     b.Property<Guid>("UEPBalanceId")
@@ -165,7 +168,7 @@ namespace PRIO.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double?>("DischargedSurface")
+                    b.Property<double>("DischargedSurface")
                         .HasColumnType("float");
 
                     b.Property<bool>("IsActive")
@@ -174,25 +177,25 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("MeasurementAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<double?>("TOtalWaterInjectedRS")
+                    b.Property<double>("TOtalWaterInjectedRS")
                         .HasColumnType("float");
 
-                    b.Property<double?>("TotalWaterCaptured")
+                    b.Property<double>("TotalWaterCaptured")
                         .HasColumnType("float");
 
-                    b.Property<double?>("TotalWaterDisposal")
+                    b.Property<double>("TotalWaterDisposal")
                         .HasColumnType("float");
 
-                    b.Property<double?>("TotalWaterInjected")
+                    b.Property<double>("TotalWaterInjected")
                         .HasColumnType("float");
 
-                    b.Property<double?>("TotalWaterProduced")
+                    b.Property<double>("TotalWaterProduced")
                         .HasColumnType("float");
 
-                    b.Property<double?>("TotalWaterReceived")
+                    b.Property<double>("TotalWaterReceived")
                         .HasColumnType("float");
 
-                    b.Property<double?>("TotalWaterTransferred")
+                    b.Property<double>("TotalWaterTransferred")
                         .HasColumnType("float");
 
                     b.Property<DateTime>("UpdatedAt")

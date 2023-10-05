@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using PRIO.src.Modules.Balance.Balance.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
 using PRIO.src.Modules.Measuring.Comments.Dtos;
@@ -55,7 +56,10 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
                 Production = production,
             };
 
+
             await _commentRepository.AddAsync(comment);
+
+            await CreateBalance(production);
 
             var commentDto = _mapper.Map<CreateUpdateCommentDto>(comment);
 
@@ -65,6 +69,38 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
             await _commentRepository.Save();
 
             return commentDto;
+        }
+        private async Task CreateBalance(Production production)
+        {
+
+            foreach (var field in production.Installation.Fields)
+            {
+
+            }
+
+            var productionDate = production.MeasuredAt;
+            var balanceUEP = new UEPsBalance
+            {
+                Id = Guid.NewGuid(),
+                MeasurementAt = productionDate,
+                IsActive = true,
+            };
+
+            var balanceInstallation = new InstallationsBalance
+            {
+                Id = Guid.NewGuid(),
+                MeasurementAt = productionDate,
+                IsActive = true,
+                UEPBalance = balanceUEP,
+            };
+
+            var balanceField = new FieldsBalance
+            {
+                Id = Guid.NewGuid(),
+                MeasurementAt = productionDate,
+                IsActive = true,
+
+            };
         }
 
         public async Task<CreateUpdateCommentDto> UpdateComment(UpdateCommentViewModel body, Guid id, User loggedUser)

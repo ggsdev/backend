@@ -1,6 +1,10 @@
 ﻿using dotenv.net;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using PRIO.src.Modules.Balance.Balance.Infra.EF.Mappings;
+using PRIO.src.Modules.Balance.Balance.Infra.EF.Models;
+using PRIO.src.Modules.Balance.Injection.Infra.EF.Mappings;
+using PRIO.src.Modules.Balance.Injection.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Mappings;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Mappings;
@@ -142,6 +146,11 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<ProductivityIndex> ProductivityIndex { get; set; }
         public DbSet<InjectivityIndex> InjectivityIndex { get; set; }
         public DbSet<BuildUp> BuildUp { get; set; }
+        public DbSet<InjectionWaterWell> InjectionWaterWell { get; set; }
+        public DbSet<InjectionWaterField> InjectionWaterField { get; set; }
+        public DbSet<FieldsBalance> FieldsBalance { get; set; }
+        public DbSet<InstallationsBalance> InstallationsBalance { get; set; }
+        public DbSet<UEPsBalance> UEPsBalance { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -221,6 +230,7 @@ namespace PRIO.src.Shared.Infra.EF
             CreateSystemMap(modelBuilder);
             CreateWellTestMap(modelBuilder);
             CreateManualConfigurationWellMap(modelBuilder);
+            CreateBalanceMap(modelBuilder);
         }
         private static void CreateAccessControlMap(ModelBuilder modelBuilder)
         {
@@ -330,6 +340,14 @@ namespace PRIO.src.Shared.Infra.EF
             modelBuilder.ApplyConfiguration(new BuildUpMap());
             modelBuilder.ApplyConfiguration(new ProductivityIndexMap());
             modelBuilder.ApplyConfiguration(new InjectivityIndexMap());
+        }
+        private static void CreateBalanceMap(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new InjectionWaterFieldMap());
+            modelBuilder.ApplyConfiguration(new InjectionWaterWellMap());
+            modelBuilder.ApplyConfiguration(new FieldsBalanceMap());
+            modelBuilder.ApplyConfiguration(new InstallationsBalanceMap());
+            modelBuilder.ApplyConfiguration(new UEPsBalanceMap());
         }
     }
 }

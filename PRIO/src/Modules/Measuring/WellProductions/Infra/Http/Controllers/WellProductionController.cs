@@ -25,10 +25,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Controllers
         {
             var data = await _service.CreateAppropriation(id);
 
-
             //await _cache.EvictByTagAsync(id.ToString(), ct);
-
-
 
             return Ok(data);
         }
