@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using PRIO.src.Modules.Balance.Balance.Infra.EF.Models;
+using PRIO.src.Modules.Balance.Balance.Interfaces;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
+using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Modules.Measuring.Comments.Dtos;
 using PRIO.src.Modules.Measuring.Comments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Comments.Interfaces;
@@ -18,14 +20,18 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
         private readonly ICommentRepository _commentRepository;
         private readonly IMapper _mapper;
         private readonly IProductionRepository _productionRepository;
+        private readonly IInstallationRepository _installationRepository;
+        private readonly IBalanceRepository _balanceRepository;
         private readonly IBTPRepository _btpRepository;
 
-        public CommentService(ICommentRepository commentRepository, IProductionRepository productionRepository, IMapper mapper, IBTPRepository bTPRepository)
+        public CommentService(ICommentRepository commentRepository, IProductionRepository productionRepository, IMapper mapper, IBTPRepository bTPRepository, IInstallationRepository installationRepository, IBalanceRepository balanceRepository)
         {
             _commentRepository = commentRepository;
             _productionRepository = productionRepository;
             _mapper = mapper;
             _btpRepository = bTPRepository;
+            _installationRepository = installationRepository;
+            _balanceRepository = balanceRepository;
         }
 
         public async Task<CreateUpdateCommentDto> CreateComment(CreateCommentViewModel body, User loggedUser, Guid productionId)
@@ -72,35 +78,41 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
         }
         private async Task CreateBalance(Production production)
         {
-
-            foreach (var field in production.Installation.Fields)
-            {
-
-            }
-
             var productionDate = production.MeasuredAt;
+            var installationsFromUEP = await _installationRepository.GetInstallationChildrenOfUEP(production.Installation.UepCod);
+
             var balanceUEP = new UEPsBalance
             {
                 Id = Guid.NewGuid(),
                 MeasurementAt = productionDate,
                 IsActive = true,
             };
-
-            var balanceInstallation = new InstallationsBalance
+            await _balanceRepository.AddUEPBalance(balanceUEP);
+            foreach (var installation in installationsFromUEP)
             {
-                Id = Guid.NewGuid(),
-                MeasurementAt = productionDate,
-                IsActive = true,
-                UEPBalance = balanceUEP,
-            };
-
-            var balanceField = new FieldsBalance
-            {
-                Id = Guid.NewGuid(),
-                MeasurementAt = productionDate,
-                IsActive = true,
-
-            };
+                var balanceInstallation = new InstallationsBalance
+                {
+                    Id = Guid.NewGuid(),
+                    MeasurementAt = productionDate,
+                    IsActive = true,
+                    UEPBalance = balanceUEP,
+                };
+                await _balanceRepository.AddInstallationBalance(balanceInstallation);
+                foreach (var field in installation.Fields)
+                {
+                    var fieldProduction = await _productionRepository.GetFieldProductionByFieldAndProductionId(field.Id, production.Id);
+                    var balanceField = new FieldsBalance
+                    {
+                        Id = Guid.NewGuid(),
+                        MeasurementAt = productionDate,
+                        IsActive = true,
+                        IsParameterized = false,
+                        installationBalance = balanceInstallation,
+                        TotalWaterProduced = fieldProduction is not null ? fieldProduction.WaterProductionInField : 0,
+                    };
+                    await _balanceRepository.AddFieldBalance(balanceField);
+                }
+            }
         }
 
         public async Task<CreateUpdateCommentDto> UpdateComment(UpdateCommentViewModel body, Guid id, User loggedUser)

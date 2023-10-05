@@ -5,14 +5,14 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.EF.Models
     public class InstallationsBalance : BaseModel
     {
         public DateTime MeasurementAt { get; set; }
-        public double? TotalWaterProduced { get; set; }
-        public double? TotalWaterInjected { get; set; }
-        public double? TOtalWaterInjectedRS { get; set; }
-        public double? TotalWaterDisposal { get; set; }
-        public double? TotalWaterReceived { get; set; }
-        public double? TotalWaterCaptured { get; set; }
-        public double? DischargedSurface { get; set; }
-        public double? TotalWaterTransferred { get; set; }
+        public decimal? TotalWaterProduced { get; set; }
+        public decimal? TotalWaterInjected { get; set; }
+        public decimal? TOtalWaterInjectedRS { get; set; }
+        public decimal? TotalWaterDisposal { get; set; }
+        public decimal? TotalWaterReceived { get; set; }
+        public decimal? TotalWaterCaptured { get; set; }
+        public decimal? DischargedSurface { get; set; }
+        public decimal? TotalWaterTransferred { get; set; }
         public List<FieldsBalance> BalanceFields { get; set; }
         public UEPsBalance UEPBalance { get; set; }
     }
