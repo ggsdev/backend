@@ -7,7 +7,6 @@ using PRIO.src.Modules.PI.Dtos;
 using PRIO.src.Modules.PI.Interfaces;
 using PRIO.src.Modules.PI.ViewModels;
 using PRIO.src.Shared.Errors;
-using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -263,47 +262,47 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
             }
         }
 
-        public async Task<List<UepAndFieldsOperationalDTO>> GetFieldsOperationData()
-        {
-            var ueps = await _installationRepository
-               .GetUEPsAsync();
+        //public async Task<List<UepAndFieldsOperationalDTO>> GetFieldsOperationData()
+        //{
+        //    var ueps = await _installationRepository
+        //       .GetUEPsAsync();
 
-            var result = new List<UepAndFieldsOperationalDTO>();
+        //    var result = new List<UepAndFieldsOperationalDTO>();
 
-            foreach (var uep in ueps)
-            {
-                var installations = await _installationRepository
-                    .GetInstallationChildrenOfUEP(uep.UepCod);
+        //    foreach (var uep in ueps)
+        //    {
+        //        var installations = await _installationRepository
+        //            .GetInstallationChildrenOfUEP(uep.UepCod);
 
-                var installationsDto = new List<InstallationWithFieldsOperationalDTO>();
+        //        var installationsDto = new List<InstallationWithFieldsOperationalDTO>();
 
-                foreach (var installation in installations)
-                {
-                    var fieldsList = new List<FieldWithOperationalData>();
+        //        foreach (var installation in installations)
+        //        {
+        //            var fieldsList = new List<FieldWithOperationalData>();
 
-                    foreach (var field in installation.Fields)
-                    {
-                        var fieldsDTO = new FieldWithOperationalData(field.Id, field.IsActive, field.Name, field.CreatedAt.ToString("dd/MMM/yyyy", new CultureInfo("pt-BR")));
+        //            foreach (var field in installation.Fields)
+        //            {
+        //                var fieldsDTO = new FieldWithOperationalData(field.Id, field.IsActive, field.Name, field.CreatedAt.ToString("dd/MMM/yyyy", new CultureInfo("pt-BR")));
 
-                        fieldsList.Add(fieldsDTO);
-                    }
+        //                fieldsList.Add(fieldsDTO);
+        //            }
 
-                    var installationDTO = new InstallationWithFieldsOperationalDTO(installation.Id, installation.Name, installation.UepCod, installation.UepName, installation.CodInstallationAnp, installation.GasSafetyBurnVolume, installation.Description, installation.CreatedAt.ToString("dd/MM/yyyy"), installation.UpdatedAt, installation.IsActive, fieldsList);
+        //            var installationDTO = new InstallationWithFieldsOperationalDTO(installation.Id, installation.Name, installation.UepCod, installation.UepName, installation.CodInstallationAnp, installation.GasSafetyBurnVolume, installation.Description, installation.CreatedAt.ToString("dd/MM/yyyy"), installation.UpdatedAt, installation.IsActive, fieldsList);
 
-                    installationsDto.Add(installationDTO);
-                }
+        //            installationsDto.Add(installationDTO);
+        //        }
 
-                result.Add(new UepAndFieldsOperationalDTO
-                (
-                    uep.Id,
-                    uep.Name,
-                    installationsDto
-                ));
-            }
+        //        result.Add(new UepAndFieldsOperationalDTO
+        //        (
+        //            uep.Id,
+        //            uep.Name,
+        //            installationsDto
+        //        ));
+        //    }
 
 
-            return result;
-        }
+        //    return result;
+        //}
 
         public async Task GetOperationalParametersByFieldId(Guid fieldId)
         {
