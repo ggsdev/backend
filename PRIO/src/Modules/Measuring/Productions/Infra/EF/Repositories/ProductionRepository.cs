@@ -23,17 +23,14 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
         {
             await _context.Productions.AddAsync(production);
         }
-
         public async Task AddWaterProduction(Water water)
         {
             await _context.Waters.AddAsync(water);
         }
-
         public void UpdateFieldProduction(FieldProduction fieldProduction)
         {
             _context.FieldsProductions.Update(fieldProduction);
         }
-
         public async Task<List<FieldProduction>> GetAllFieldProductionByProduction(Guid productionId)
         {
             return await _context.FieldsProductions
@@ -41,7 +38,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                 .Where(x => x.ProductionId == productionId)
                 .ToListAsync();
         }
-
         public async Task<FieldProduction?> GetFieldProductionByFieldAndProductionId(Guid fieldId, Guid productionId)
         {
             return await _context.FieldsProductions
@@ -51,7 +47,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                 .ThenInclude(x => x.WellLosses)
                 .FirstOrDefaultAsync(x => x.FieldId == fieldId && x.ProductionId == productionId);
         }
-
         public async Task<WellLosses?> GetWellLossByEventAndWellProductionId(Guid eventId, Guid wellProductionId)
         {
             return await _context.WellLosses
@@ -87,8 +82,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                             x.MeasuredAt.Day == date.Day)
                 .AnyAsync();
         }
-
-
         public async Task<Production?> GetExistingByDateWithProductionAllocation(DateTime date)
         {
             return await _context.Productions
@@ -130,7 +123,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                             x.MeasuredAt.Day == date.Day && x.IsActive)
                 .FirstOrDefaultAsync();
         }
-
         public async Task<Production?> GetCleanByDate(DateTime date)
         {
             return await _context.Productions
@@ -147,7 +139,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                 .ThenInclude(x => x.Fields)
                     .ThenInclude(f => f.Wells)
                     .ThenInclude(d => d.WellTests)
-                    .Include(x => x.WellProductions)
+                .Include(x => x.WellProductions)
                         .ThenInclude(d => d.FieldProduction)
                 .Include(x => x.Comment)
                     .ThenInclude(x => x.CommentedBy)

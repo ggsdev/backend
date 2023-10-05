@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PRIO.src.Modules.Balance.Balance.Infra.EF.Repositories;
+using PRIO.src.Modules.Balance.Balance.Interfaces;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Factories;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services;
@@ -281,6 +283,7 @@ static void RegisterRepositories(IServiceCollection services)
     services.AddScoped<IWellProductionRepository, WellProductionRepository>();
     services.AddScoped<IWellEventRepository, WellEventRepository>();
     services.AddScoped<IManualConfigRepository, ManualConfigRepository>();
+    services.AddScoped<IBalanceRepository, BalanceRepository>();
 }
 static void RegisterServices(IServiceCollection services)
 {
