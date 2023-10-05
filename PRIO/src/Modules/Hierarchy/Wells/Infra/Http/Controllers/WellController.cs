@@ -44,15 +44,6 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Controllers
             return Created($"wells/config/{wellDTO.Id}", wellDTO);
         }
 
-        //[HttpGet("paginated")]
-        //public async Task<IActionResult> Get(int pageNumber = 1, int pageSize = 3)
-        //{
-        //    var requestUrl = Request.GetEncodedUrl();
-        //    var paginatedWellsDTO = await _wellService.GetWellsPaginated(pageNumber, pageSize, requestUrl);
-
-        //    return Ok(paginatedWellsDTO);
-        //}
-
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -130,5 +121,14 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Controllers
 
             return Ok(wellHistories);
         }
+
+        //[HttpGet("paginated")]
+        //public async Task<IActionResult> Get(int pageNumber = 1, int pageSize = 3)
+        //{
+        //    var requestUrl = Request.GetEncodedUrl();
+        //    var paginatedWellsDTO = await _wellService.GetWellsPaginated(pageNumber, pageSize, requestUrl);
+
+        //    return Ok(paginatedWellsDTO);
+        //}
     }
 }

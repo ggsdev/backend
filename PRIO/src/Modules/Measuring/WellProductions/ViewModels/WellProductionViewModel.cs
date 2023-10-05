@@ -1,4 +1,4 @@
-﻿namespace PRIO.src.Modules.Measuring.WellProductions.Infra.ViewModels
+﻿namespace PRIO.src.Modules.Measuring.WellProductions.ViewModels
 {
     public class WellProductionViewModel
     {
