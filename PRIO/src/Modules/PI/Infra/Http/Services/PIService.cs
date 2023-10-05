@@ -7,8 +7,9 @@ using PRIO.src.Modules.PI.Dtos;
 using PRIO.src.Modules.PI.Interfaces;
 using PRIO.src.Modules.PI.ViewModels;
 using PRIO.src.Shared.Errors;
-
-
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 
 namespace PRIO.src.Modules.PI.Infra.Http.Services
 {
@@ -154,7 +155,6 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
             return listValues;
         }
 
-
         public async Task<List<AttributeDTO>> GetAttributesByWell(Guid wellId)
         {
             var well = await _wellRepository.GetByIdAsync(wellId) ?? throw new NotFoundException("Poço não encontrado.");
@@ -175,51 +175,143 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                 .AnyTag(body.TagName);
 
             if (tagExists)
-                throw new ConflictException($"Já existe uma tag com o nome: '{body.TagName}'.");
+                throw new ConflictException($"Já existe uma tag cadastrada com o nome: '{body.TagName}'.");
 
             var elementInDatabase = await _repository
                 .GetElementByParameter(body.Parameter)
                 ?? throw new ConflictException($"Parâmetro: '{body.Parameter}' não encontrado.");
-
-            var createdTag = new EF.Models.Attribute
+            try
             {
-                Id = Guid.NewGuid(),
-                IsActive = body.StatusTag,
-                IsOperating = body.Operational,
-                Name = body.TagName,
-                WellName = well.Name,
-                Element = elementInDatabase,
-                Description = body.Description,
 
+                var handler = new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+                };
 
-                CreatedAt = DateTime.UtcNow.AddHours(-3),
+                using HttpClient client = new(handler);
+                var username = "svc-pi-frade";
+                var password = "S6_5q2C?=%ff";
 
-            };
+                var credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}"));
 
-            var attributeDto = new AttributeReturnDTO
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
+
+                var atributesRoute = elementInDatabase.AttributesRoute;
+
+                var response = await client
+                    .GetAsync(atributesRoute);
+
+                if (response.IsSuccessStatusCode is false)
+                    throw new BadRequestException("Conexão com PI falhou.");
+
+                var jsonContent = await response.Content.ReadAsStringAsync();
+
+                var elementObject = JsonSerializer.Deserialize<ItemsElementJson>(jsonContent, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }) ?? throw new BadRequestException("Não foi possível deserializar o json");
+
+                var attribute = elementObject.Items
+                    .FirstOrDefault(x => x.Name.ToUpper().Trim().Contains(body.TagName.ToUpper().Trim()))
+                    ?? throw new NotFoundException($"Tag: {body.TagName} não encontrada no PI.");
+
+                var createdTag = new EF.Models.Attribute
+                {
+                    Id = Guid.NewGuid(),
+                    IsActive = body.StatusTag,
+                    IsOperating = body.Operational,
+                    Name = body.TagName,
+                    WellName = well.Name,
+                    Element = elementInDatabase,
+                    Description = body.Description,
+                    CreatedAt = DateTime.UtcNow.AddHours(-3),
+                    WebId = attribute.WebId,
+                    PIId = attribute.Id,
+                    SelfRoute = attribute.Links.Self,
+                    ValueRoute = attribute.Links.Value,
+                };
+
+                await _repository.AddTag(createdTag);
+
+                var attributeDto = new AttributeReturnDTO
+                {
+                    WellName = well.Name,
+                    CategoryOperator = well.CategoryOperator,
+                    Field = well.Field.Name,
+                    GroupParameter = createdTag.Element.CategoryParameter,
+                    Parameter = createdTag.Element.Parameter,
+                    Operational = createdTag.IsOperating,
+                    Status = createdTag.IsActive,
+                    Id = createdTag.Id,
+                    CreatedAt = createdTag.CreatedAt.ToString("dd/MM/yyyy"),
+                    Tag = createdTag.Name,
+
+                };
+
+                await _repository.SaveChanges();
+
+                return attributeDto;
+            }
+            catch (HttpRequestException)
             {
-                WellName = well.Name,
-                CategoryOperator = well.CategoryOperator,
-                Field = well.Field.Name,
-                GroupParameter = createdTag.Element.CategoryParameter,
-                Parameter = createdTag.Element.Parameter,
-                Operational = createdTag.IsOperating,
-                Status = createdTag.IsActive,
-                Id = createdTag.Id,
-                CreatedAt = createdTag.CreatedAt.ToString("dd/MM/yyyy"),
-                Tag = createdTag.Name
-            };
-
-            return attributeDto;
-
+                throw new BadRequestException("Erro ao se conectar ao PI");
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException($"Aconteceu algo de errado: {ex.Message}");
+            }
         }
 
+        //public async Task<List<UepAndFieldsOperationalDTO>> GetFieldsOperationData()
+        //{
+        //    var ueps = await _installationRepository
+        //       .GetUEPsAsync();
+
+        //    var result = new List<UepAndFieldsOperationalDTO>();
+
+        //    foreach (var uep in ueps)
+        //    {
+        //        var installations = await _installationRepository
+        //            .GetInstallationChildrenOfUEP(uep.UepCod);
+
+        //        var installationsDto = new List<InstallationWithFieldsOperationalDTO>();
+
+        //        foreach (var installation in installations)
+        //        {
+        //            var fieldsList = new List<FieldWithOperationalData>();
+
+        //            foreach (var field in installation.Fields)
+        //            {
+        //                var fieldsDTO = new FieldWithOperationalData(field.Id, field.IsActive, field.Name, field.CreatedAt.ToString("dd/MMM/yyyy", new CultureInfo("pt-BR")));
+
+        //                fieldsList.Add(fieldsDTO);
+        //            }
+
+        //            var installationDTO = new InstallationWithFieldsOperationalDTO(installation.Id, installation.Name, installation.UepCod, installation.UepName, installation.CodInstallationAnp, installation.GasSafetyBurnVolume, installation.Description, installation.CreatedAt.ToString("dd/MM/yyyy"), installation.UpdatedAt, installation.IsActive, fieldsList);
+
+        //            installationsDto.Add(installationDTO);
+        //        }
+
+        //        result.Add(new UepAndFieldsOperationalDTO
+        //        (
+        //            uep.Id,
+        //            uep.Name,
+        //            installationsDto
+        //        ));
+        //    }
+
+
+        //    return result;
+        //}
+
+        public async Task GetOperationalParametersByFieldId(Guid fieldId)
+        {
+
+        }
 
         private static void Print<T>(T text)
         {
             Console.WriteLine(text);
         }
-
-
     }
 }

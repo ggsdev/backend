@@ -141,7 +141,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
 
                 if (cellCluster is not null && cellCluster.ToUpper().Trim().Contains(getInstanceName.ToUpper().Trim()) is true)
                 {
-                    if (string.IsNullOrWhiteSpace(cellCluster) || string.IsNullOrWhiteSpace(cellInstallationCod) || string.IsNullOrWhiteSpace(cellInstallationCodUep) || string.IsNullOrWhiteSpace(cellInstallationNameUep) || string.IsNullOrWhiteSpace(cellCodeField) || string.IsNullOrWhiteSpace(columnZone) || string.IsNullOrWhiteSpace(columnReservoir) || string.IsNullOrWhiteSpace(cellWellCodeAnp))
+                    if (string.IsNullOrWhiteSpace(cellCluster) || string.IsNullOrWhiteSpace(cellInstallationCod) || string.IsNullOrWhiteSpace(cellInstallationCodUep) || string.IsNullOrWhiteSpace(cellInstallationNameUep) || string.IsNullOrWhiteSpace(cellCodeField) || string.IsNullOrWhiteSpace(columnZone) || string.IsNullOrWhiteSpace(columnReservoir) || string.IsNullOrWhiteSpace(cellWellCodeAnp) || string.IsNullOrWhiteSpace(cellWellCategoryOperator) || string.IsNullOrWhiteSpace(cellWellCategoryAnp) || string.IsNullOrWhiteSpace(cellWellOperatorName) || string.IsNullOrWhiteSpace(cellWellProfile))
                     {
                         errorCount++;
                         continue;

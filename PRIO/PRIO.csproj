@@ -85,6 +85,14 @@
 
   <ItemGroup>
     <Folder Include="src\Configs\" />
+    <Folder Include="src\Modules\Balance\Dtos\" />
+    <Folder Include="src\Modules\Balance\Infra\EF\Models\" />
+    <Folder Include="src\Modules\Balance\Infra\EF\Mappings\" />
+    <Folder Include="src\Modules\Balance\Infra\EF\Repositories\" />
+    <Folder Include="src\Modules\Balance\Infra\Http\Controllers\" />
+    <Folder Include="src\Modules\Balance\Infra\Http\Services\" />
+    <Folder Include="src\Modules\Balance\Interfaces\" />
+    <Folder Include="src\Modules\Balance\ViewModels\" />
     <Folder Include="src\Modules\ControlAccess\Menus\Infra\Http\Services\" />
     <Folder Include="src\Modules\ControlAccess\Menus\ViewModels\" />
     <Folder Include="src\Modules\ControlAccess\Operations\Dtos\" />
@@ -95,6 +103,14 @@
     <Folder Include="src\Modules\FileImport\XLSX\BTPS\Infra\Http\Controllers\" />
     <Folder Include="src\Modules\FileImport\XLSX\BTPS\Infra\Http\Services\" />
     <Folder Include="src\Modules\FileImport\XLSX\BTPS\Interfaces\" />
+    <Folder Include="src\Modules\Injection\Dtos\" />
+    <Folder Include="src\Modules\Injection\Infra\EF\Mappings\" />
+    <Folder Include="src\Modules\Injection\Infra\EF\Models\" />
+    <Folder Include="src\Modules\Injection\Infra\EF\Repositories\" />
+    <Folder Include="src\Modules\Injection\Infra\Http\Controllers\" />
+    <Folder Include="src\Modules\Injection\Infra\Http\Services\" />
+    <Folder Include="src\Modules\Injection\Interfaces\" />
+    <Folder Include="src\Modules\Injection\ViewModels\" />
     <Folder Include="src\Modules\Measuring\Measurements\Dtos\" />
     <Folder Include="src\Modules\Measuring\Measurements\Infra\Http\Controllers\" />
     <Folder Include="src\Modules\Measuring\Measurements\ViewModels\" />
