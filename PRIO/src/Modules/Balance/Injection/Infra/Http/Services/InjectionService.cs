@@ -1,5 +1,4 @@
-﻿using PRIO.src.Modules.Balance.Injection.Infra.EF.Models;
-using PRIO.src.Modules.Balance.Injection.Interfaces;
+﻿using PRIO.src.Modules.Balance.Injection.Interfaces;
 using PRIO.src.Modules.Balance.Injection.ViewModels;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.PI.Interfaces;
@@ -25,15 +24,6 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 var injectionInDatabase = await _repository.GetWaterInjectionById(injection.InjectionId)
                     ?? throw new NotFoundException("Dados do PI não encontrados");
 
-
-                var createdInjection = new InjectionWaterWell
-                {
-                    AssignedValue = injection.AssignedValue,
-                    CreatedBy = loggedUser,
-                    Id = Guid.NewGuid(),
-                    MeasurementAt = injectionInDatabase.MeasurementAt,
-
-                };
             }
 
         }
