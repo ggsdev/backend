@@ -9,6 +9,38 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.EF.Mappings
         public void Configure(EntityTypeBuilder<UEPsBalance> builder)
         {
             builder.ToTable("Balance.UEPsBalance");
+
+            builder.Property(x => x.TotalWaterCaptured)
+              .HasColumnType("DECIMAL")
+              .HasPrecision(38, 16);
+
+            builder.Property(x => x.TotalWaterProduced)
+               .HasColumnType("DECIMAL")
+               .HasPrecision(38, 16);
+
+            builder.Property(x => x.TotalWaterDisposal)
+               .HasColumnType("DECIMAL")
+               .HasPrecision(38, 16);
+
+            builder.Property(x => x.TotalWaterInjected)
+               .HasColumnType("DECIMAL")
+               .HasPrecision(38, 16);
+
+            builder.Property(x => x.TotalWaterInjectedRS)
+               .HasColumnType("DECIMAL")
+               .HasPrecision(38, 16);
+
+            builder.Property(x => x.TotalWaterReceived)
+              .HasColumnType("DECIMAL")
+              .HasPrecision(38, 16);
+
+            builder.Property(x => x.DischargedSurface)
+              .HasColumnType("DECIMAL")
+              .HasPrecision(38, 16);
+
+            builder.Property(x => x.TotalWaterTransferred)
+              .HasColumnType("DECIMAL")
+              .HasPrecision(38, 16);
         }
     }
 }

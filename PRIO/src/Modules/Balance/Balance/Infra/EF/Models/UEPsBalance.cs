@@ -7,7 +7,7 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.EF.Models
         public DateTime MeasurementAt { get; set; }
         public decimal? TotalWaterProduced { get; set; }
         public decimal? TotalWaterInjected { get; set; }
-        public decimal? TOtalWaterInjectedRS { get; set; }
+        public decimal? TotalWaterInjectedRS { get; set; }
         public decimal? TotalWaterDisposal { get; set; }
         public decimal? TotalWaterReceived { get; set; }
         public decimal? TotalWaterCaptured { get; set; }

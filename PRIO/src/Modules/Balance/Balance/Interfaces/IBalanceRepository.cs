@@ -7,6 +7,7 @@ namespace PRIO.src.Modules.Balance.Balance.Interfaces
         Task AddUEPBalance(UEPsBalance UEPBalance);
         Task AddInstallationBalance(InstallationsBalance UEPBalance);
         Task AddFieldBalance(FieldsBalance UEPBalance);
-
+        void UpdateFieldBalance(FieldsBalance fieldBalance);
+        Task<FieldsBalance?> GetBalanceField(Guid fieldId, DateTime measuredAt);
     }
 }

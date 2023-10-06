@@ -4,16 +4,18 @@ using PRIO.src.Modules.Balance.Injection.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Mappings
 {
-    public class InjectionWaterFieldMap : IEntityTypeConfiguration<InjectionWaterField>
+    public class InjectionWaterGasFieldMap : IEntityTypeConfiguration<InjectionWaterGasField>
     {
-        public void Configure(EntityTypeBuilder<InjectionWaterField> builder)
+        public void Configure(EntityTypeBuilder<InjectionWaterGasField> builder)
         {
-            builder.ToTable("Injection.InjectionWaterField");
+            builder.ToTable("Injection.InjectionWaterGasField");
 
 
             builder.HasOne(x => x.BalanceField)
                .WithOne(d => d.InjectionWaterField)
-               .HasForeignKey<InjectionWaterField>("BalanceFieldId").IsRequired();
+               .HasForeignKey<InjectionWaterGasField>("BalanceFieldId")
+               .IsRequired();
+
         }
     }
 }

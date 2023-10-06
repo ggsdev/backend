@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20231006205212_FixWaterGasInjection2")]
+    partial class FixWaterGasInjection2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,8 +41,7 @@ namespace PRIO.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("DischargedSurface")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<double?>("FIRS")
                         .HasColumnType("float");
@@ -116,8 +118,7 @@ namespace PRIO.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("DischargedSurface")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid>("InstallationId")
                         .HasColumnType("uniqueidentifier");
@@ -187,8 +188,7 @@ namespace PRIO.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("DischargedSurface")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
