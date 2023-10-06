@@ -23,5 +23,6 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Interfaces
         Task<Well?> GetWellAndChildren(Guid? id);
         Task SaveChangesAsync();
         Task<List<Well>> GetWellsWithEvents(Guid fieldId, string eventType);
+        Task<PI.Infra.EF.Models.Attribute?> GetTagFromWell(string name, string operatorName);
     }
 }

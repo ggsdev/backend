@@ -17,6 +17,10 @@ namespace PRIO.src.Modules.PI.Infra.EF.Repositories
             _context = context;
         }
 
+        public async Task<WellsValues?> GetWellValuesWithChildrens(DateTime date, Guid wellId)
+        {
+            return await _context.WellValues.Include(wv => wv.Value).Include(wv => wv.Well).Include(wv => wv.InjectionWaterWell).Where(wv => wv.Value.Date.Date == date && wv.Well.Id == wellId).FirstOrDefaultAsync();
+        }
         public async Task<List<Value>> GetValuesByDate(DateTime date)
         {
             return await _context.Values.Include(v => v.Attribute).ThenInclude(a => a.Element).Where(x => x.Date.Date == date).ToListAsync();
