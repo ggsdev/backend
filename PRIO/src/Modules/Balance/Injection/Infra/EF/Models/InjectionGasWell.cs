@@ -10,5 +10,6 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Models
         public DateTime MeasurementAt { get; set; }
         public WellsValues WellValues { get; set; }
         public InjectionWaterGasField? InjectionWaterGasField { get; set; }
+        public double AssignedValue { get; set; }
     }
 }

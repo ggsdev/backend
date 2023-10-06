@@ -8,6 +8,9 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PRIO.src.Modules.Balance.Balance.Infra.EF.Repositories;
 using PRIO.src.Modules.Balance.Balance.Interfaces;
+using PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories;
+using PRIO.src.Modules.Balance.Injection.Infra.Http.Services;
+using PRIO.src.Modules.Balance.Injection.Interfaces;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Factories;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services;
@@ -284,6 +287,7 @@ static void RegisterRepositories(IServiceCollection services)
     services.AddScoped<IWellEventRepository, WellEventRepository>();
     services.AddScoped<IManualConfigRepository, ManualConfigRepository>();
     services.AddScoped<IBalanceRepository, BalanceRepository>();
+    services.AddScoped<IInjectionRepository, InjectionRepository>();
 }
 static void RegisterServices(IServiceCollection services)
 {
@@ -314,6 +318,8 @@ static void RegisterServices(IServiceCollection services)
     services.AddScoped<PIService>();
     services.AddScoped<BTPService>();
     services.AddScoped<XLSXService>();
+    services.AddScoped<InjectionService>();
+
 }
 static void ConfigureOutputCache(IServiceCollection services)
 {

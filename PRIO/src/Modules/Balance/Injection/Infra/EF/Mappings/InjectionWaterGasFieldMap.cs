@@ -13,7 +13,9 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Mappings
 
             builder.HasOne(x => x.BalanceField)
                .WithOne(d => d.InjectionWaterField)
-               .HasForeignKey<InjectionWaterGasField>("BalanceFieldId").IsRequired();
+               .HasForeignKey<InjectionWaterGasField>("BalanceFieldId")
+               .IsRequired();
+
         }
     }
 }

@@ -18,15 +18,27 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<List<InjectionWaterGasField>> GetWaterInjectionsByInstallationId(Guid installationId)
+
+        public async Task<List<InjectionWaterGasField>> GetInjectionsByInstallationId(Guid installationId)
         {
-            return await _context.InjectionWaterField
+            return await _context.InjectionWaterGasField
+                    .Include(x => x.Field)
+                        .ThenInclude(x => x.Installation)
                     .Include(x => x.BalanceField)
-                        .ThenInclude(x => x.installationBalance)
+                        .ThenInclude(x => x.InstallationBalance)
                             .ThenInclude(x => x.Installation)
-                                .Where(x => x.BalanceField.installationBalance.Installation.Id == installationId)
+                                .Where(x => x.BalanceField.InstallationBalance.Installation.Id == installationId)
                 .ToListAsync();
         }
+        public async Task AddWellInjectionAsync(InjectionWaterWell injection)
+        {
+            await _context.InjectionWaterWell.AddAsync(injection);
+        }
+        public async Task AddGasWellInjectionAsync(InjectionGasWell injection)
+        {
+            await _context.InjectionGasWell.AddAsync(injection);
+        }
+
         public void UpdateWaterInjection(InjectionWaterWell injection)
         {
             _context.InjectionWaterWell

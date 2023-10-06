@@ -147,10 +147,11 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<InjectivityIndex> InjectivityIndex { get; set; }
         public DbSet<BuildUp> BuildUp { get; set; }
         public DbSet<InjectionWaterWell> InjectionWaterWell { get; set; }
-        public DbSet<InjectionWaterGasField> InjectionWaterField { get; set; }
+        public DbSet<InjectionWaterGasField> InjectionWaterGasField { get; set; }
         public DbSet<FieldsBalance> FieldsBalance { get; set; }
         public DbSet<InstallationsBalance> InstallationsBalance { get; set; }
         public DbSet<UEPsBalance> UEPsBalance { get; set; }
+        public DbSet<InjectionGasWell> InjectionGasWell { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -345,6 +346,7 @@ namespace PRIO.src.Shared.Infra.EF
         {
             modelBuilder.ApplyConfiguration(new InjectionWaterGasFieldMap());
             modelBuilder.ApplyConfiguration(new InjectionWaterWellMap());
+            modelBuilder.ApplyConfiguration(new InjectionGasWellMap());
             modelBuilder.ApplyConfiguration(new FieldsBalanceMap());
             modelBuilder.ApplyConfiguration(new InstallationsBalanceMap());
             modelBuilder.ApplyConfiguration(new UEPsBalanceMap());

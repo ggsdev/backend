@@ -17,9 +17,9 @@ namespace PRIO.src.Modules.PI.Infra.EF.Repositories
             _context = context;
         }
 
-        public async Task<WellsValues?> GetWellValuesWithChildrens(DateTime date, Guid wellId)
+        public async Task<WellsValues?> GetWellValuesWithChildrens(DateTime date, Guid wellId, Infra.EF.Models.Attribute atr)
         {
-            return await _context.WellValues.Include(wv => wv.Value).Include(wv => wv.Well).Include(wv => wv.InjectionWaterWell).Where(wv => wv.Value.Date.Date == date && wv.Well.Id == wellId).FirstOrDefaultAsync();
+            return await _context.WellValues.Include(wv => wv.Value).ThenInclude(v => v.Attribute).ThenInclude(a => a.Element).Include(wv => wv.Well).Include(wv => wv.InjectionWaterWell).Where(wv => wv.Value.Date.Date == date && wv.Well.Id == wellId && wv.Value.Attribute.Id == atr.Id).FirstOrDefaultAsync();
         }
         public async Task<List<Value>> GetValuesByDate(DateTime date)
         {
@@ -41,6 +41,15 @@ namespace PRIO.src.Modules.PI.Infra.EF.Repositories
                 .Include(x => x.Element)
                 .Where(x => x.WellName.ToUpper().Trim() == wellName.ToUpper().Trim() || x.WellName.ToUpper().Trim().Contains(wellOperatorName.ToUpper().Trim()))
                 .ToListAsync();
+        }
+
+        public async Task AddValue(Value value)
+        {
+            await _context.Values.AddAsync(value);
+        }
+        public async Task AddWellValue(WellsValues wellValues)
+        {
+            await _context.WellValues.AddAsync(wellValues);
         }
 
         public async Task AddTag(Models.Attribute atr)

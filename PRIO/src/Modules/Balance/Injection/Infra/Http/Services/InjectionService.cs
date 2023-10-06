@@ -10,9 +10,7 @@ using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Interfaces;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
-using PRIO.src.Modules.PI.Interfaces;
 using PRIO.src.Shared.Errors;
-using PRIO.src.Shared.SystemHistories.Infra.Http.Services;
 
 namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 {
@@ -23,13 +21,10 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
         private readonly IInstallationRepository _installationRepository;
         private readonly IBalanceRepository _balanceRepository;
         private readonly IMapper _mapper;
-        private readonly IPIRepository _PIrepository;
-        private readonly SystemHistoryService _systemHistoryService;
-        public InjectionService(IInjectionRepository repository, IPIRepository pIRepository, SystemHistoryService systemHistoryService, IFieldRepository fieldRepository, IBalanceRepository balanceRepository, IMapper mapper, IInstallationRepository installationRepository)
+
+        public InjectionService(IInjectionRepository repository, IFieldRepository fieldRepository, IBalanceRepository balanceRepository, IMapper mapper, IInstallationRepository installationRepository)
         {
             _repository = repository;
-            _PIrepository = pIRepository;
-            _systemHistoryService = systemHistoryService;
             _fieldRepository = fieldRepository;
             _balanceRepository = balanceRepository;
             _mapper = mapper;
@@ -41,7 +36,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             if (body.FIRS < 0 || body.FIRS > 1)
                 throw new BadRequestException("FIRS deve ser um valor entre 0 e 1");
 
-            _ = await _fieldRepository.GetByIdAsync(body.FieldId)
+            var field = await _fieldRepository.GetByIdAsync(body.FieldId)
                    ?? throw new NotFoundException(ErrorMessages.NotFound<Field>());
 
             var fieldBalance = await _balanceRepository
@@ -53,6 +48,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 Id = Guid.NewGuid(),
                 MeasurementAt = body.DateInjection,
                 BalanceField = fieldBalance,
+                Field = field,
             };
 
             var resultDto = new WaterInjectionUpdateDto();
@@ -76,19 +72,19 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                     });
                 }
 
-                fieldInjection.Amount += waterInjectionInDatabase.AssignedValue;
+                fieldInjection.AmountWater += waterInjectionInDatabase.AssignedValue;
                 waterInjectionInDatabase.InjectionWaterGasField = fieldInjection;
 
                 _repository.UpdateWaterInjection(waterInjectionInDatabase);
             }
 
             fieldBalance.IsParameterized = true;
-            fieldBalance.TOtalWaterInjectedRS = (decimal)(body.FIRS * fieldInjection.Amount);
-            fieldBalance.TotalWaterDisposal = (decimal)((1 - body.FIRS) * fieldInjection.Amount);
+            fieldBalance.TotalWaterInjectedRS = (decimal)(body.FIRS * fieldInjection.AmountWater);
+            fieldBalance.TotalWaterDisposal = (decimal)((1 - body.FIRS) * fieldInjection.AmountWater);
 
             _balanceRepository.UpdateFieldBalance(fieldBalance);
 
-            resultDto.Total = fieldInjection.Amount;
+            resultDto.Total = fieldInjection.AmountWater;
 
             await _repository.Save();
 
@@ -98,21 +94,29 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 
         public async Task<List<InjectionDto>> GetInjectionByInstallationId(Guid installationId)
         {
-            _ = await _installationRepository
+            var installation = await _installationRepository
                 .GetByIdAsync(installationId)
                 ?? throw new NotFoundException(ErrorMessages.NotFound<Installation>());
 
-            var waterWellInjections = await _repository
-                .GetWaterInjectionsByInstallationId(installationId);
+            var fieldInjections = await _repository
+                .GetInjectionsByInstallationId(installationId);
+
+            var uep = await _installationRepository.GetByUEPCod(installation.UepCod);
 
             var result = new List<InjectionDto>();
 
-            foreach (var waterWell in waterWellInjections)
+            foreach (var fieldInjection in fieldInjections)
             {
                 result.Add(new InjectionDto
                 {
-                    InjectionId = waterWell.Id,
-
+                    InjectionId = fieldInjection.Id,
+                    Field = fieldInjection.Field.Name,
+                    Installation = fieldInjection.Field.Installation.Name,
+                    GasLift = fieldInjection.AmountGasLift,
+                    InjectedWater = fieldInjection.AmountWater,
+                    InjectionDate = fieldInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
+                    Status = fieldInjection.BalanceField.IsParameterized,
+                    Uep = uep.Name,
                 });
 
             }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20231006204620_FixWaterGasInjection")]
+    partial class FixWaterGasInjection
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,16 +41,12 @@ namespace PRIO.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("DischargedSurface")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<double?>("FIRS")
                         .HasColumnType("float");
 
                     b.Property<Guid>("FieldProductionId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("InstallationBalanceId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsActive")
@@ -59,43 +58,39 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("MeasurementAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<decimal?>("TOtalWaterInjectedRS")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<decimal?>("TotalWaterCaptured")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("TotalWaterDisposal")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("TotalWaterInjected")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
-
-                    b.Property<decimal?>("TotalWaterInjectedRS")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("TotalWaterProduced")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("TotalWaterReceived")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("TotalWaterTransferred")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("installationBalanceId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("FieldProductionId")
                         .IsUnique();
 
-                    b.HasIndex("InstallationBalanceId");
+                    b.HasIndex("installationBalanceId");
 
                     b.ToTable("Balance.FieldsBalance", (string)null);
                 });
@@ -116,8 +111,7 @@ namespace PRIO.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("DischargedSurface")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid>("InstallationId")
                         .HasColumnType("uniqueidentifier");
@@ -128,33 +122,26 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("MeasurementAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<decimal?>("TOtalWaterInjectedRS")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<decimal?>("TotalWaterCaptured")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("TotalWaterDisposal")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("TotalWaterInjected")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
-
-                    b.Property<decimal?>("TotalWaterInjectedRS")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("TotalWaterProduced")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("TotalWaterReceived")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("TotalWaterTransferred")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid>("UEPBalanceId")
                         .HasColumnType("uniqueidentifier");
@@ -187,8 +174,7 @@ namespace PRIO.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("DischargedSurface")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -196,33 +182,26 @@ namespace PRIO.Migrations
                     b.Property<DateTime>("MeasurementAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<decimal?>("TOtalWaterInjectedRS")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<decimal?>("TotalWaterCaptured")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("TotalWaterDisposal")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("TotalWaterInjected")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
-
-                    b.Property<decimal?>("TotalWaterInjectedRS")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("TotalWaterProduced")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("TotalWaterReceived")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("TotalWaterTransferred")
-                        .HasPrecision(38, 16)
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -5554,13 +5533,13 @@ namespace PRIO.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PRIO.src.Modules.Balance.Balance.Infra.EF.Models.InstallationsBalance", "InstallationBalance")
+                    b.HasOne("PRIO.src.Modules.Balance.Balance.Infra.EF.Models.InstallationsBalance", "installationBalance")
                         .WithMany("BalanceFields")
-                        .HasForeignKey("InstallationBalanceId");
+                        .HasForeignKey("installationBalanceId");
 
                     b.Navigation("FieldProduction");
 
-                    b.Navigation("InstallationBalance");
+                    b.Navigation("installationBalance");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Balance.Balance.Infra.EF.Models.InstallationsBalance", b =>
