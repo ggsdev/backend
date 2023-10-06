@@ -10,5 +10,6 @@ namespace PRIO.src.Modules.PI.Interfaces
         Task<bool> AnyTag(string tagName);
         Task SaveChanges();
         Task<Element?> GetElementByParameter(string parameter);
+        Task<WellsValues?> GetWellValuesById(Guid id);
     }
 }

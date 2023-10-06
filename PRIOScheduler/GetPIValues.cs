@@ -48,6 +48,7 @@ namespace PRIOScheduler
                 var credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}"));
 
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
+                client.Timeout = Timeout.InfiniteTimeSpan;
 
                 try
                 {
@@ -64,38 +65,89 @@ namespace PRIOScheduler
                             var well = await dbContext.Wells
                                 .FirstOrDefaultAsync(x => x.Name.ToUpper().Trim() == atr.WellName.ToUpper().Trim() || x.WellOperatorName.ToUpper().Trim() == atr.WellName.ToUpper().Trim());
 
-                            ValueJson? valueObject = JsonSerializer.Deserialize<ValueJson>(jsonContent, new JsonSerializerOptions
+                            if (well is not null)
                             {
-                                PropertyNameCaseInsensitive = true
-                            });
 
-                            if (valueObject is not null && well is not null)
-                            {
-                                var value = new Value
+                                ValueJson? valueObject = null;
+                                try
                                 {
-                                    Id = Guid.NewGuid(),
-                                    Amount = valueObject.Value,
-                                    Attribute = atr,
-                                    Date = valueObject.Timestamp.AddHours(-3),
+                                    valueObject = JsonSerializer.Deserialize<ValueJson>(jsonContent, new JsonSerializerOptions
+                                    {
+                                        PropertyNameCaseInsensitive = true
+                                    });
 
-                                };
 
-                                valuesList.Add(value);
+                                    Print($"tag: {atr.Name}");
+                                    Print($"atributo webId: {atr.WebId}");
 
-                                var wellValue = new WellsValues
+                                    if (valueObject is not null)
+                                    {
+                                        Print($"Value: {valueObject.Value}");
+                                        Print($"Date: {valueObject.Timestamp}");
+
+                                        var value = new Value
+                                        {
+                                            Id = Guid.NewGuid(),
+                                            Amount = valueObject.Value,
+                                            Attribute = atr,
+                                            Date = valueObject.Timestamp.AddHours(-3),
+                                            IsCaptured = true
+                                        };
+
+                                        valuesList.Add(value);
+
+                                        var wellValue = new WellsValues
+                                        {
+                                            Id = Guid.NewGuid(),
+                                            Value = value,
+                                            Well = well,
+
+                                        };
+
+                                        wellValuesList.Add(wellValue);
+
+                                    }
+
+                                }
+                                catch (Exception ex)
                                 {
-                                    Id = Guid.NewGuid(),
-                                    Value = value,
-                                    Well = well,
 
-                                };
+                                    Console.WriteLine(ex);
 
-                                wellValuesList.Add(wellValue);
+                                    valueObject = new ValueJson
+                                    {
+                                        Value = null,
+                                        Timestamp = DateTime.UtcNow.Date.AddSeconds(-1),
+                                        Annotated = false,
+                                        Good = false,
+                                        Questionable = false,
+                                        Substituted = false,
+                                        UnitsAbbreviation = "",
+                                        IsCaptured = false
+                                    };
+                                    var value = new Value
+                                    {
+                                        Id = Guid.NewGuid(),
+                                        Amount = valueObject.Value,
+                                        Attribute = atr,
+                                        Date = valueObject.Timestamp,
+                                        IsCaptured = false,
 
-                                Print($"Value: {value.Amount}");
-                                Print($"Date: {value.Date}");
+                                    };
+
+                                    valuesList.Add(value);
+
+                                    var wellValue = new WellsValues
+                                    {
+                                        Id = Guid.NewGuid(),
+                                        Value = value,
+                                        Well = well,
+                                    };
+
+                                    wellValuesList.Add(wellValue);
+                                }
+
                             }
-
                         }
 
                         else
@@ -118,13 +170,13 @@ namespace PRIOScheduler
                 }
                 catch (Exception e)
                 {
-                    Print($"HTTP request error: {e.Message}");
+                    Print($"HTTP request error: {e}");
                 }
             }
             catch (Exception e)
             {
 
-                Print($"Outro error: {e.Message}");
+                Print($"Outro error: {e}");
 
             }
 
