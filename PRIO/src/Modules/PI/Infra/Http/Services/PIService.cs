@@ -307,6 +307,8 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
         public async Task GetOperationalParametersByFieldId(Guid fieldId)
         {
 
+
+
         }
 
         private static void Print<T>(T text)
