@@ -27,7 +27,6 @@ RecurringJob.AddOrUpdate(
           "myrecurringjob",
           () => UpdateDowntime.Execute(),
             "0 0 * * *");
-//"0 0 * * *);
 
 RecurringJob.AddOrUpdate(
           "myrecurringjob2",
@@ -43,7 +42,7 @@ RecurringJob.AddOrUpdate(
 RecurringJob.AddOrUpdate(
           "myrecurringjob4",
           () => GetPIValues.Execute(),
-          "0 0 * * *");
+        "0 0 * * *");
 
 using (var server = new BackgroundJobServer())
 {
