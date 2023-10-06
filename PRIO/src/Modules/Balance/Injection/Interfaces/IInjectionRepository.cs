@@ -6,6 +6,8 @@ namespace PRIO.src.Modules.Balance.Injection.Interfaces
     {
         Task<InjectionWaterWell?> GetWaterInjectionById(Guid id);
         void UpdateWaterInjection(InjectionWaterWell injection);
+        Task AddWellInjectionAsync(InjectionWaterWell injection);
+        Task AddGasWellInjectionAsync(InjectionGasWell injection);
         Task Save();
     }
 }

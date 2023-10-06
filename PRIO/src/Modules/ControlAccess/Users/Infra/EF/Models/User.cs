@@ -54,6 +54,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models
         public List<EventReason>? CreatedEventReasons { get; set; }
         public List<EventReason>? UpdatedEventReasons { get; set; }
 
+
         #endregion
     }
 }
