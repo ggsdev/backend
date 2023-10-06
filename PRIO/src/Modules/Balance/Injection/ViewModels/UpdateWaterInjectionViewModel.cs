@@ -7,7 +7,7 @@
 
     public class AssignedValuesViewModel
     {
-        public decimal AssignedValue { get; set; }
+        public double AssignedValue { get; set; }
         public Guid InjectionId { get; set; }
     }
 }
