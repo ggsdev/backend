@@ -159,7 +159,9 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.Http.Services
                     StatusANP = body.StatusAnp,
                     Well = well!,
                     EventRelatedCode = body.EventRelatedCode,
-                    CreatedBy = loggedUser
+                    CreatedBy = loggedUser,
+                    UpdatedBy = loggedUser
+
                 };
 
                 await _wellEventRepository.Add(closingEvent);
@@ -170,7 +172,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.Http.Services
                     SystemRelated = body.SystemRelated,
                     StartDate = parsedStartDate,
                     WellEvent = closingEvent,
-                    CreatedBy = loggedUser
+                    CreatedBy = loggedUser,
+                    UpdatedBy = loggedUser
                 };
 
                 await _wellEventRepository.AddReasonClosedEvent(eventReason);
@@ -371,6 +374,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.Http.Services
                     StatusANP = body.StatusAnp,
                     Well = well,
                     CreatedBy = loggedUser,
+                    UpdatedBy = loggedUser,
                 };
                 await _wellEventRepository.Add(openingEvent);
 
@@ -396,6 +400,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.Http.Services
                     StatusANP = body.StatusAnp,
                     Well = well,
                     CreatedBy = loggedUser,
+                    UpdatedBy = loggedUser,
 
                 };
 
@@ -462,6 +467,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.Http.Services
                                     IsActive = true,
                                     IsJobGenerated = false,
                                     CreatedBy = loggedUser,
+                                    UpdatedBy = loggedUser
                                 };
                                 if (j == 0)
                                 {
@@ -489,6 +495,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.Http.Services
                                         IsActive = true,
                                         IsJobGenerated = false,
                                         CreatedBy = loggedUser,
+                                        UpdatedBy = loggedUser
                                     };
                                     var Interval = FormatTimeInterval(parsedStartDate, newEventReason2);
                                     newEventReason2.Interval = Interval;
@@ -927,6 +934,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.Http.Services
                                 WellEvent = nextReason.WellEvent,
                                 StartDate = parsedEndDate,
                                 WellEventId = nextReason.WellEventId,
+                                UpdatedBy = loggedUser
                             };
                             if (nextReason.StartDate.TimeOfDay == TimeSpan.Zero)
                             {
@@ -1270,7 +1278,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.Http.Services
                                 StartDate = refStartDate,
                                 IsActive = true,
                                 IsJobGenerated = false,
-                                CreatedBy = loggedUser
+                                CreatedBy = loggedUser,
+                                UpdatedBy = loggedUser
                             };
                             if (j == 0)
                             {
@@ -1298,7 +1307,8 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.Http.Services
                                     EndDate = parsedDateSystem,
                                     IsActive = true,
                                     IsJobGenerated = false,
-                                    CreatedBy = loggedUser
+                                    CreatedBy = loggedUser,
+                                    UpdatedBy = loggedUser
 
                                 };
                                 var Interval = FormatTimeInterval(parsedDateSystem, newEventReason2);

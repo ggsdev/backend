@@ -2,11 +2,13 @@
 using PRIO.src.Modules.PI.Infra.Http.Services;
 using PRIO.src.Modules.PI.ViewModels;
 using PRIO.src.Shared.Errors;
+using PRIO.src.Shared.Infra.Http.Filters;
 
 namespace PRIO.src.Modules.PI.Infra.Http.Controllers
 {
     [ApiController]
     [Route("PI")]
+    [ServiceFilter(typeof(AuthorizationFilter))]
     public class PIController : ControllerBase
     {
         private readonly PIService _service;
