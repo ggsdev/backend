@@ -12,11 +12,22 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories
         {
             _context = context;
         }
+
+
         public async Task<InjectionWaterWell?> GetWaterInjectionById(Guid id)
         {
             return await _context.InjectionWaterWell
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
+        public async Task AddWellInjectionAsync(InjectionWaterWell injection)
+        {
+            await _context.InjectionWaterWell.AddAsync(injection);
+        }
+        public async Task AddGasWellInjectionAsync(InjectionGasWell injection)
+        {
+            await _context.InjectionGasWell.AddAsync(injection);
+        }
+
         public void UpdateWaterInjection(InjectionWaterWell injection)
         {
             _context.InjectionWaterWell

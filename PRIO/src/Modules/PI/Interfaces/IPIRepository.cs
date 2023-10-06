@@ -7,11 +7,13 @@ namespace PRIO.src.Modules.PI.Interfaces
         Task<List<Value>> GetValuesByDate(DateTime date);
         Task<List<Infra.EF.Models.Attribute>> GetTagsByWellName(string wellName, string wellOperatorName);
         Task AddTag(Infra.EF.Models.Attribute atr);
+        Task AddValue(Value value);
+        Task AddWellValue(WellsValues wellValues);
         Task<bool> AnyTag(string tagName);
-        Task SaveChanges();
         Task<Element?> GetElementByParameter(string parameter);
-        Task<WellsValues?> GetWellValuesWithChildrens(DateTime date, Guid wellId);
+        Task<WellsValues?> GetWellValuesWithChildrens(DateTime date, Guid wellId, Infra.EF.Models.Attribute atr);
         Task<WellsValues?> GetWellValuesById(Guid id);
+        Task SaveChanges();
 
     }
 }
