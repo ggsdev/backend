@@ -103,6 +103,7 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
                     MeasurementAt = productionDate,
                     IsActive = true,
                     UEPBalance = balanceUEP,
+                    Installation = installation
                 };
                 await _balanceRepository.AddInstallationBalance(balanceInstallation);
                 foreach (var field in installation.Fields)

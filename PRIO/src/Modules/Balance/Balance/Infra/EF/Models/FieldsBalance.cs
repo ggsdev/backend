@@ -17,7 +17,7 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.EF.Models
         public decimal? DischargedSurface { get; set; }
         public decimal? TotalWaterTransferred { get; set; }
         public bool IsParameterized { get; set; }
-        public InjectionWaterField? InjectionWaterField { get; set; }
+        public InjectionWaterGasField? InjectionWaterField { get; set; }
         public InstallationsBalance? installationBalance { get; set; }
         public FieldProduction FieldProduction { get; set; }
     }

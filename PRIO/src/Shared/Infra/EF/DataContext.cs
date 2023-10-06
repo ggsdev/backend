@@ -147,7 +147,7 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<InjectivityIndex> InjectivityIndex { get; set; }
         public DbSet<BuildUp> BuildUp { get; set; }
         public DbSet<InjectionWaterWell> InjectionWaterWell { get; set; }
-        public DbSet<InjectionWaterField> InjectionWaterField { get; set; }
+        public DbSet<InjectionWaterGasField> InjectionWaterField { get; set; }
         public DbSet<FieldsBalance> FieldsBalance { get; set; }
         public DbSet<InstallationsBalance> InstallationsBalance { get; set; }
         public DbSet<UEPsBalance> UEPsBalance { get; set; }
@@ -343,7 +343,7 @@ namespace PRIO.src.Shared.Infra.EF
         }
         private static void CreateBalanceMap(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new InjectionWaterFieldMap());
+            modelBuilder.ApplyConfiguration(new InjectionWaterGasFieldMap());
             modelBuilder.ApplyConfiguration(new InjectionWaterWellMap());
             modelBuilder.ApplyConfiguration(new FieldsBalanceMap());
             modelBuilder.ApplyConfiguration(new InstallationsBalanceMap());

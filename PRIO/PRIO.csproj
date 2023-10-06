@@ -99,12 +99,6 @@
     <Folder Include="src\Modules\FileImport\XLSX\BTPS\Infra\Http\Controllers\" />
     <Folder Include="src\Modules\FileImport\XLSX\BTPS\Infra\Http\Services\" />
     <Folder Include="src\Modules\FileImport\XLSX\BTPS\Interfaces\" />
-    <Folder Include="src\Modules\Balance\Injection\Dtos\" />
-    <Folder Include="src\Modules\Balance\Injection\Infra\EF\Repositories\" />
-    <Folder Include="src\Modules\Balance\Injection\Infra\Http\Controllers\" />
-    <Folder Include="src\Modules\Balance\Injection\Infra\Http\Services\" />
-    <Folder Include="src\Modules\Balance\Injection\Interfaces\" />
-    <Folder Include="src\Modules\Balance\Injection\ViewModels\" />
     <Folder Include="src\Modules\Measuring\Measurements\Dtos\" />
     <Folder Include="src\Modules\Measuring\Measurements\Infra\Http\Controllers\" />
     <Folder Include="src\Modules\Measuring\Measurements\ViewModels\" />
