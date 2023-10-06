@@ -86,9 +86,7 @@
   <ItemGroup>
     <Folder Include="src\Configs\" />
     <Folder Include="src\Modules\Balance\Balance\Dtos\" />
-    <Folder Include="src\Modules\Balance\Balance\Interfaces\" />
     <Folder Include="src\Modules\Balance\Balance\ViewModels\" />
-    <Folder Include="src\Modules\Balance\Balance\Infra\EF\Repositories\" />
     <Folder Include="src\Modules\Balance\Balance\Infra\Http\Controllers\" />
     <Folder Include="src\Modules\Balance\Balance\Infra\Http\Services\" />
     <Folder Include="src\Modules\ControlAccess\Menus\Infra\Http\Services\" />

@@ -1817,8 +1817,7 @@ namespace PRIO.Migrations
                                             today
                                         },
                                         new object[] {
-                                            MUP5086,
-                                            "F1AbEcaZI8jdsuU6iCfbmKdB6iQGW8SAokl7hGxlwBQVoz1DQ2Cvw20dcHUmASqskEvOrHQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRlJBREVcUFJFU1NBTyBERSBGVU5ETyBERSBQT8OHTyAxfEZSU1MtUEktTVVQNS0wODYtS0dGLURBSUxZLUFWRw",
+                                            MUP5086,              "F1AbEcaZI8jdsuU6iCfbmKdB6iQGW8SAokl7hGxlwBQVoz1DQ2Cvw20dcHUmASqskEvOrHQUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRlJBREVcUFJFU1NBTyBERSBGVU5ETyBERSBQT8OHTyAxfEZSU1MtUEktTVVQNS0wODYtS0dGLURBSUxZLUFWRw",
                                             "dbf02bd8-5c47-491d-804a-ab2412f3ab1d",
                                             "FRSS-PI-MUP5-086-KGF-DAILY-AVG",
                                             "",
@@ -2182,7 +2181,7 @@ namespace PRIO.Migrations
                                             "FRSS-PI-OUP1-096-KGF-DAILY-AVG",
                                             "",
                                             "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1AbEcaZI8jdsuU6iCfbmKdB6iQttwhDokl7hGxlwBQVoz1DQren8lfxdckCQr-kV6oB0MgUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRlJBREVcUFJFU1NBTyBERSBGVU5ETyBERSBQT8OHTyAyfEZSU1MtUEktT1VQMS0wOTYtS0dGLURBSUxZLUFWRw",
-                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQttwhDokl7hGxlwBQVoz1DQren8lfxdckCQr-kV6oB0MgUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRlJBREVcUFJFU1NBTyBERSBGVU5ETyBERSBQT8OHTyAyfEZSU1MtUEktT1VQMS0wOTYtS0dGLURBSUxZLUFWRw/valuee",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1AbEcaZI8jdsuU6iCfbmKdB6iQttwhDokl7hGxlwBQVoz1DQren8lfxdckCQr-kV6oB0MgUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRlJBREVcUFJFU1NBTyBERSBGVU5ETyBERSBQT8OHTyAyfEZSU1MtUEktT1VQMS0wOTYtS0dGLURBSUxZLUFWRw/value",
                                             "OUP1",
                                             true,
                                             true,
