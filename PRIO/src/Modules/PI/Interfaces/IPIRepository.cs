@@ -11,5 +11,7 @@ namespace PRIO.src.Modules.PI.Interfaces
         Task SaveChanges();
         Task<Element?> GetElementByParameter(string parameter);
         Task<WellsValues?> GetWellValuesWithChildrens(DateTime date, Guid wellId);
+        Task<WellsValues?> GetWellValuesById(Guid id);
+
     }
 }

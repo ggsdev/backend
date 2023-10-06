@@ -26,6 +26,15 @@ namespace PRIO.src.Modules.PI.Infra.EF.Repositories
             return await _context.Values.Include(v => v.Attribute).ThenInclude(a => a.Element).Where(x => x.Date.Date == date).ToListAsync();
         }
 
+        public async Task<WellsValues?> GetWellValuesById(Guid id)
+        {
+            return await _context.WellValues
+                .Include(v => v.Value)
+                .Include(a => a.Well)
+                .Where(x => x.Id == id)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<List<Models.Attribute>> GetTagsByWellName(string wellName, string wellOperatorName)
         {
             return await _context.Attributes
