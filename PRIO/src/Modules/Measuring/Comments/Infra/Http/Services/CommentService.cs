@@ -1,15 +1,18 @@
 ﻿using AutoMapper;
 using PRIO.src.Modules.Balance.Balance.Infra.EF.Models;
 using PRIO.src.Modules.Balance.Balance.Interfaces;
+using PRIO.src.Modules.Balance.Injection.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
+using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Modules.Measuring.Comments.Dtos;
 using PRIO.src.Modules.Measuring.Comments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Comments.Interfaces;
 using PRIO.src.Modules.Measuring.Comments.ViewModels;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Productions.Interfaces;
+using PRIO.src.Modules.PI.Interfaces;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Utils;
 
@@ -21,10 +24,12 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
         private readonly IMapper _mapper;
         private readonly IProductionRepository _productionRepository;
         private readonly IInstallationRepository _installationRepository;
+        private readonly IPIRepository _PIRepository;
+        private readonly IWellRepository _wellRepository;
         private readonly IBalanceRepository _balanceRepository;
         private readonly IBTPRepository _btpRepository;
 
-        public CommentService(ICommentRepository commentRepository, IProductionRepository productionRepository, IMapper mapper, IBTPRepository bTPRepository, IInstallationRepository installationRepository, IBalanceRepository balanceRepository)
+        public CommentService(ICommentRepository commentRepository, IProductionRepository productionRepository, IMapper mapper, IBTPRepository bTPRepository, IInstallationRepository installationRepository, IBalanceRepository balanceRepository, IWellRepository wellRepository, IPIRepository PIRepository)
         {
             _commentRepository = commentRepository;
             _productionRepository = productionRepository;
@@ -32,6 +37,8 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
             _btpRepository = bTPRepository;
             _installationRepository = installationRepository;
             _balanceRepository = balanceRepository;
+            _wellRepository = wellRepository;
+            _PIRepository = PIRepository;
         }
 
         public async Task<CreateUpdateCommentDto> CreateComment(CreateCommentViewModel body, User loggedUser, Guid productionId)
@@ -65,7 +72,7 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
 
             await _commentRepository.AddAsync(comment);
 
-            await CreateBalance(production);
+            await CreateBalance(production, loggedUser);
 
             var commentDto = _mapper.Map<CreateUpdateCommentDto>(comment);
 
@@ -76,7 +83,7 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
 
             return commentDto;
         }
-        private async Task CreateBalance(Production production)
+        private async Task CreateBalance(Production production, User user)
         {
             var productionDate = production.MeasuredAt;
             var installationsFromUEP = await _installationRepository.GetInstallationChildrenOfUEP(production.Installation.UepCod);
@@ -111,6 +118,33 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
                         TotalWaterProduced = fieldProduction is not null ? fieldProduction.WaterProductionInField : 0,
                     };
                     await _balanceRepository.AddFieldBalance(balanceField);
+
+                    foreach (var well in field.Wells)
+                    {
+                        var tag = await _wellRepository.GetTagFromWell(well.Name, well.WellOperatorName);
+                        if (tag is not null)
+                        {
+                            var wellValue = await _PIRepository.GetWellValuesWithChildrens(production.MeasuredAt, well.Id);
+                            if (wellValue is not null)
+                            {
+                                var injectionWaterWell = new InjectionWaterWell
+                                {
+                                    Id = Guid.NewGuid(),
+                                    WellValues = wellValue,
+                                    AssignedValue = wellValue.Value.Amount is not null ? wellValue.Value.Amount.Value : 0,
+                                    CreatedBy = user,
+                                    MeasurementAt = production.MeasuredAt,
+                                };
+                                await _balanceRepository.AddFieldBalance(balanceField);
+
+                            }
+                            else
+                            {
+
+                            }
+                        }
+
+                    }
                 }
             }
 
