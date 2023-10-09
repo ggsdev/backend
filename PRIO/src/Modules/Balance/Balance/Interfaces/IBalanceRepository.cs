@@ -1,4 +1,5 @@
 ﻿using PRIO.src.Modules.Balance.Balance.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Balance.Balance.Interfaces
 {
@@ -7,7 +8,10 @@ namespace PRIO.src.Modules.Balance.Balance.Interfaces
         Task AddUEPBalance(UEPsBalance UEPBalance);
         Task AddInstallationBalance(InstallationsBalance UEPBalance);
         Task AddFieldBalance(FieldsBalance UEPBalance);
-        void UpdateFieldBalance(FieldsBalance fieldBalance);
+        Task<List<FieldsBalance>> GetBalances(List<Guid> fieldIds);
         Task<FieldsBalance?> GetBalanceField(Guid fieldId, DateTime measuredAt);
+        Task<FieldsBalance?> GetBalanceById(Guid fieldBalanceId);
+        Task<Field?> GetDatasByBalanceId(Guid fieldId);
+        void UpdateFieldBalance(FieldsBalance fieldBalance);
     }
 }

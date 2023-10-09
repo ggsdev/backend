@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using PRIO.src.Modules.Balance.Balance.Dtos;
+using PRIO.src.Modules.Balance.Injection.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Groups.Dtos;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Menus.Dtos;
@@ -262,6 +264,16 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
 
             CreateMap<Modules.PI.Infra.EF.Models.Attribute, AttributeDTO>();
             CreateMap<Element, ElementDTO>();
+            CreateMap<Field, FieldWithInjectionsValuesDTO>();
+            CreateMap<Well, WellsWithInjectionsValuesDTO>();
+            CreateMap<WellsValues, WellValuesDTO>();
+            CreateMap<Value, ValueWithInjecctionDTO>()
+                .ForMember(dest => dest.TagName, opt => opt.MapFrom(src => src.Attribute.Name))
+                .ForMember(dest => dest.Parameter, opt => opt.MapFrom(src => src.Attribute.Element.Parameter));
+
+            CreateMap<InjectionWaterWell, InjectionWaterWellDTO>();
+            CreateMap<InjectionGasWell, InjectionGasWellDTO>();
+            CreateMap<Modules.PI.Infra.EF.Models.Attribute, AttributeWithInjectionDTO>();
         }
 
         private static decimal? TruncateTwoDecimals(decimal? value)

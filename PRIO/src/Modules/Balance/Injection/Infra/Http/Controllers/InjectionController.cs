@@ -59,5 +59,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Controllers
 
             return Ok(data);
         }
+
+
     }
 }
