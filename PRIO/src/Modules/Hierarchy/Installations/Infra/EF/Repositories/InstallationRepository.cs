@@ -103,6 +103,10 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
         {
             await _context.FieldsFRs.AddAsync(fr);
         }
+        public async Task<Installation?> GetInstallationByIdWithField(Guid installationId)
+        {
+            return await _context.Installations.Include(i => i.Fields).Where(i => i.Id == installationId).FirstOrDefaultAsync();
+        }
         public async Task<Installation?> GetInstallationAndChildren(Guid? id)
         {
             return await _context.Installations
