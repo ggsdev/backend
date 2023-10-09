@@ -105,6 +105,10 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories
         {
             await _context.InjectionWaterWell.AddAsync(injection);
         }
+        public async Task AddWellSensorAsync(WellSensor sensor)
+        {
+            await _context.WellSensor.AddAsync(sensor);
+        }
         public async Task AddGasWellInjectionAsync(InjectionGasWell injection)
         {
             await _context.InjectionGasWell.AddAsync(injection);

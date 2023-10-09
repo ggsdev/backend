@@ -167,6 +167,18 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
                                             };
                                             await _injectionRepository.AddGasWellInjectionAsync(injectionGasWell);
                                         }
+                                        else if (resultFluid == "Sensors")
+                                        {
+                                            var wellSensors = new WellSensor
+                                            {
+                                                Id = Guid.NewGuid(),
+                                                WellValues = wellValue,
+                                                AssignedValue = wellValue.Value.Amount is not null ? wellValue.Value.Amount.Value : 0,
+                                                CreatedBy = user,
+                                                MeasurementAt = production.MeasuredAt,
+                                            };
+                                            await _injectionRepository.AddWellSensorAsync(wellSensors);
+                                        }
                                     }
                                     else
                                     {
@@ -225,6 +237,18 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
                                             };
                                             await _injectionRepository.AddGasWellInjectionAsync(injectionGasWell);
                                         }
+                                        else if (resultFluid == "Sensors")
+                                        {
+                                            var wellSensors = new WellSensor
+                                            {
+                                                Id = Guid.NewGuid(),
+                                                WellValues = newWellValue,
+                                                AssignedValue = newWellValue.Value.Amount is not null ? newWellValue.Value.Amount.Value : 0,
+                                                CreatedBy = user,
+                                                MeasurementAt = production.MeasuredAt,
+                                            };
+                                            await _injectionRepository.AddWellSensorAsync(wellSensors);
+                                        }
                                     }
                                 }
                             }
@@ -236,11 +260,18 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
         private static string ConsultParameter(PI.Infra.EF.Models.Attribute atr)
         {
             var listGas = new List<string> { "Vazão da GFL1", "Vazão da GFL6", "Vazão da GFL4", "Vazão de Gas Lift" };
+            var listWater = new List<string> { "Vazão da WFL1", "Vazão de injeção de água" };
+            var listSensors = new List<string> { "Pressão WH", "Pressão PDG 1", "Pressão Intake ESP", "Pressão PDG 2" };
 
             if (listGas.Contains(atr.Element.Parameter))
                 return "Gas";
-            else
+            else if (listWater.Contains(atr.Element.Parameter))
                 return "Water";
+            else if (listSensors.Contains(atr.Element.Parameter))
+                return "Sensors";
+            else
+                return "";
+
         }
 
         public async Task<CreateUpdateCommentDto> UpdateComment(UpdateCommentViewModel body, Guid id, User loggedUser)
