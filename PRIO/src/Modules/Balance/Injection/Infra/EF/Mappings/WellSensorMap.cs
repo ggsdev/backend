@@ -8,11 +8,11 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Mappings
     {
         public void Configure(EntityTypeBuilder<WellSensor> builder)
         {
-            builder.ToTable("Injection.InjectionWaterWell");
+            builder.ToTable("Injection.WellSensors");
 
             builder.HasOne(x => x.WellValues)
                .WithOne(d => d.WellSensor)
-               .HasForeignKey<InjectionWaterWell>("WellValuesId").IsRequired();
+               .HasForeignKey<WellSensor>("WellValuesId").IsRequired();
         }
     }
 }

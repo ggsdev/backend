@@ -15,6 +15,7 @@ namespace PRIO.src.Modules.Balance.Injection.Interfaces
         //Task<InjectionWaterWell?> GetGasLiftByInstallationId(Guid installationId);
         void UpdateWaterInjection(InjectionWaterWell injection);
         Task AddWellInjectionAsync(InjectionWaterWell injection);
+        Task AddWellSensorAsync(WellSensor sensor);
         Task AddWaterGasInjection(InjectionWaterGasField injection);
         Task AddGasWellInjectionAsync(InjectionGasWell injection);
         Task Save();
