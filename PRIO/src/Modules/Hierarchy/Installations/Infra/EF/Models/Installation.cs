@@ -1,4 +1,5 @@
-﻿using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+﻿using PRIO.src.Modules.Balance.Balance.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Clusters.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
@@ -31,5 +32,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models
         public List<Production>? Productions { get; set; }
         public List<NFSM>? NFSMs { get; set; }
         public List<InstallationsAccess> usersWithPermissions { get; set; }
+        public List<UEPsBalance>? UepBalances { get; set; }
     }
 }

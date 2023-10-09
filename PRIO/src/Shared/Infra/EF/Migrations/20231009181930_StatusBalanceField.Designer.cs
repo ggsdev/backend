@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRIO.src.Shared.Infra.EF;
 
@@ -11,9 +12,11 @@ using PRIO.src.Shared.Infra.EF;
 namespace PRIO.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20231009181930_StatusBalanceField")]
+    partial class StatusBalanceField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -227,15 +230,10 @@ namespace PRIO.Migrations
                         .HasPrecision(38, 16)
                         .HasColumnType("DECIMAL");
 
-                    b.Property<Guid?>("UepId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UepId");
 
                     b.ToTable("Balance.UEPsBalance", (string)null);
                 });
@@ -5596,16 +5594,6 @@ namespace PRIO.Migrations
                     b.Navigation("UEPBalance");
                 });
 
-            modelBuilder.Entity("PRIO.src.Modules.Balance.Balance.Infra.EF.Models.UEPsBalance", b =>
-                {
-                    b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Uep")
-                        .WithMany("UepBalances")
-                        .HasForeignKey("UepId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.Navigation("Uep");
-                });
-
             modelBuilder.Entity("PRIO.src.Modules.Balance.Injection.Infra.EF.Models.InjectionGasWell", b =>
                 {
                     b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "CreatedBy")
@@ -6932,8 +6920,6 @@ namespace PRIO.Migrations
                     b.Navigation("OilVolumeCalculation");
 
                     b.Navigation("Productions");
-
-                    b.Navigation("UepBalances");
 
                     b.Navigation("usersWithPermissions");
                 });

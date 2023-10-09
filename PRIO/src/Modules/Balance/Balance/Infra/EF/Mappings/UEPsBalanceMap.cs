@@ -41,6 +41,10 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.EF.Mappings
             builder.Property(x => x.TotalWaterTransferred)
               .HasColumnType("DECIMAL")
               .HasPrecision(38, 16);
+
+            builder.HasOne(x => x.Uep)
+                .WithMany(x => x.UepBalances)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

@@ -14,6 +14,6 @@ namespace PRIO.src.Modules.Balance.Injection.ViewModels
     public class AssignedValuesViewModel
     {
         public double? AssignedValue { get; set; }
-        public Guid? InjectionId { get; set; }
+        public Guid? WellInjectionId { get; set; }
     }
 }

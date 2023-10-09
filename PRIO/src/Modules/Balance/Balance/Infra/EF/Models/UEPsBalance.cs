@@ -1,4 +1,5 @@
-﻿using PRIO.src.Shared.Infra.EF.Models;
+﻿using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
+using PRIO.src.Shared.Infra.EF.Models;
 
 namespace PRIO.src.Modules.Balance.Balance.Infra.EF.Models
 {
@@ -14,5 +15,6 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.EF.Models
         public decimal? DischargedSurface { get; set; }
         public decimal? TotalWaterTransferred { get; set; }
         public List<InstallationsBalance> InstallationsBalance { get; set; }
+        public Installation? Uep { get; set; }
     }
 }
