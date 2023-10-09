@@ -2,6 +2,7 @@
 using PRIO.src.Modules.Balance.Balance.Dtos;
 using PRIO.src.Modules.Balance.Balance.Infra.EF.Models;
 using PRIO.src.Modules.Balance.Balance.Interfaces;
+using PRIO.src.Modules.Balance.Balance.ViewModels;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Interfaces;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
@@ -50,6 +51,14 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
             FilterActiveManualConfigurations(FieldDTO.Wells);
 
             return FieldDTO;
+        }
+        public async Task UpdateOperationalParameters(Guid balanceId, UpdateListValuesViewModel values)
+        {
+            //var balance = await _balanceRepository.GetBalanceById(balanceId);
+            //if (balance == null) throw new NotFoundException("Balanço não encontrado.");
+
+            //var list = new List<InjectionWaterWellDTO>()
+            //foreach (var value in values) { }
         }
         private async Task InputFieldName(List<FieldsBalanceDTO> fieldsBalanceDTO)
         {
