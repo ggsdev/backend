@@ -12,7 +12,6 @@ namespace PRIO.src.Modules.PI.Infra.EF.Models
         public Guid AttributeId { get; set; }
         public List<WellsValues>? WellsValues { get; set; }
         public bool IsCaptured { get; set; }
-
     }
 
 

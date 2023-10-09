@@ -14,6 +14,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Interfaces
         void Delete(Installation installation);
         void Restore(Installation installation);
         Task<Installation?> GetByIdAsync(Guid? id);
+        Task<Installation?> GetInstallationByIdWithField(Guid installationId);
         Task<List<FieldFR?>> GetFRsByUEPAsync(string? uep);
         Task<List<FieldFR?>> GetFRsByIdAsync(Guid? id);
         Task<List<Installation>> GetInstallationsByUepWithTagsPi(string uepCode);

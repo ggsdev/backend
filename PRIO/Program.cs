@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PRIO.src.Modules.Balance.Balance.Infra.EF.Repositories;
+using PRIO.src.Modules.Balance.Balance.Infra.Http.Services;
 using PRIO.src.Modules.Balance.Balance.Interfaces;
 using PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories;
 using PRIO.src.Modules.Balance.Injection.Infra.Http.Services;
@@ -319,6 +320,7 @@ static void RegisterServices(IServiceCollection services)
     services.AddScoped<BTPService>();
     services.AddScoped<XLSXService>();
     services.AddScoped<InjectionService>();
+    services.AddScoped<BalanceService>();
 
 }
 static void ConfigureOutputCache(IServiceCollection services)
