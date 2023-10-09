@@ -123,7 +123,7 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
                             IsParameterized = false,
                             InstallationBalance = balanceInstallation,
                             TotalWaterProduced = fieldProduction is not null ? fieldProduction.WaterProductionInField : 0,
-                            FieldProduction = fieldProduction
+                            FieldProduction = fieldProduction,
                         };
                         await _balanceRepository.AddFieldBalance(balanceField);
 

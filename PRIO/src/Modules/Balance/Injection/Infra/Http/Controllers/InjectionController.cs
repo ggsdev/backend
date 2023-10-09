@@ -27,5 +27,13 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Controllers
 
             return Ok(data);
         }
+
+        [HttpGet("installation/{id}")]
+        public async Task<IActionResult> UpdateInjection([FromRoute] Guid installationId)
+        {
+            var data = await _service.GetInjectionByInstallationId(installationId);
+
+            return Ok(data);
+        }
     }
 }
