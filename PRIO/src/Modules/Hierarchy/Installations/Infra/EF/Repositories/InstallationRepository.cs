@@ -161,6 +161,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
 
             return await _context.Installations
             .Include(x => x.Cluster)
+            .Include(x => x.Fields)
             .Where(x => x.Id == id)
             .FirstOrDefaultAsync();
 

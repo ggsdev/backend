@@ -2,6 +2,7 @@
 using PRIO.src.Modules.Balance.Balance.Infra.EF.Models;
 using PRIO.src.Modules.Balance.Balance.Interfaces;
 using PRIO.src.Modules.Balance.Injection.Dtos;
+using PRIO.src.Modules.Balance.Injection.Dtos.PRIO.src.Modules.Balance.Injection.Dtos;
 using PRIO.src.Modules.Balance.Injection.Infra.EF.Models;
 using PRIO.src.Modules.Balance.Injection.Interfaces;
 using PRIO.src.Modules.Balance.Injection.ViewModels;
@@ -11,6 +12,7 @@ using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Interfaces;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
+using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Shared.Errors;
 
 namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
@@ -19,17 +21,19 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
     {
         private readonly IInjectionRepository _repository;
         private readonly IFieldRepository _fieldRepository;
+        private readonly IWellRepository _wellRepository;
         private readonly IInstallationRepository _installationRepository;
         private readonly IBalanceRepository _balanceRepository;
         private readonly IMapper _mapper;
 
-        public InjectionService(IInjectionRepository repository, IFieldRepository fieldRepository, IBalanceRepository balanceRepository, IMapper mapper, IInstallationRepository installationRepository)
+        public InjectionService(IInjectionRepository repository, IFieldRepository fieldRepository, IBalanceRepository balanceRepository, IMapper mapper, IInstallationRepository installationRepository, IWellRepository wellRepository)
         {
             _repository = repository;
             _fieldRepository = fieldRepository;
             _balanceRepository = balanceRepository;
             _mapper = mapper;
             _installationRepository = installationRepository;
+            _wellRepository = wellRepository;
         }
 
         public async Task<WaterInjectionUpdateDto> CreateDailyInjection(UpdateWaterInjectionViewModel body, DateTime dateInjection, User loggedUser)
@@ -67,10 +71,10 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 
             foreach (var injection in body.AssignedValues)
             {
-                var waterInjectionInDatabase = await _repository.GetWaterInjectionById(injection.InjectionId)
+                var waterInjectionInDatabase = await _repository.GetWaterInjectionById(injection.WellInjectionId)
                     ?? throw new NotFoundException("Dados de injeção de água não encontrados.");
 
-                if (injection.InjectionId is not null && injection.AssignedValue is not null)
+                if (injection.WellInjectionId is not null && injection.AssignedValue is not null)
                 {
                     waterInjectionInDatabase.AssignedValue = injection.AssignedValue.Value;
                     waterInjectionInDatabase.UpdatedBy = loggedUser;
@@ -78,7 +82,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                     resultDto.AssignedValues.Add(new WaterAssignatedValuesDto
                     {
                         AssignedValue = waterInjectionInDatabase.AssignedValue,
-                        InjectionId = injection.InjectionId.Value,
+                        InjectionId = injection.WellInjectionId.Value,
                         UpdatedBy = updatedBy
                     });
                 }
@@ -87,10 +91,10 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             }
 
             var waterInjectionWells = await _repository
-               .GetWaterWellInjectionsByDate(dateInjection);
+               .GetWaterWellInjectionsByDate(dateInjection, field.Id);
 
             var gasInjectionWells = await _repository
-                .GetGasWellInjectionsByDate(dateInjection);
+                .GetGasWellInjectionsByDate(dateInjection, field.Id);
 
             foreach (var waterInjection in waterInjectionWells)
             {
@@ -108,10 +112,11 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             fieldBalance.TotalWaterDisposal = (decimal)((1 - body.FIRS.Value) * fieldInjection.AmountWater);
             fieldBalance.TotalWaterInjected = (decimal)fieldInjection.AmountWater;
 
-
             await _repository.AddWaterGasInjection(fieldInjection);
 
             _balanceRepository.UpdateFieldBalance(fieldBalance);
+
+            DistributeToParentBalances(fieldBalance);
 
             resultDto.TotalWaterInjected = fieldInjection.AmountWater;
 
@@ -120,12 +125,11 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             return resultDto;
         }
 
-        private async Task DistributeToParentBalances(DateTime dateInjection, FieldsBalance fieldBalance)
+        private void DistributeToParentBalances(FieldsBalance fieldBalance)
         {
             fieldBalance.InstallationBalance.UEPBalance.DischargedSurface += fieldBalance.DischargedSurface;
             fieldBalance.InstallationBalance.UEPBalance.TotalWaterCaptured += fieldBalance.TotalWaterCaptured;
             fieldBalance.InstallationBalance.UEPBalance.TotalWaterDisposal += fieldBalance.TotalWaterDisposal;
-            fieldBalance.InstallationBalance.UEPBalance.TotalWaterProduced += fieldBalance.TotalWaterProduced;
             fieldBalance.InstallationBalance.UEPBalance.TotalWaterTransferred += fieldBalance.TotalWaterTransferred;
             fieldBalance.InstallationBalance.UEPBalance.TotalWaterInjected += fieldBalance.TotalWaterInjected;
             fieldBalance.InstallationBalance.UEPBalance.TotalWaterInjectedRS += fieldBalance.TotalWaterInjectedRS;
@@ -135,7 +139,6 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             fieldBalance.InstallationBalance.DischargedSurface += fieldBalance.DischargedSurface;
             fieldBalance.InstallationBalance.TotalWaterCaptured += fieldBalance.TotalWaterCaptured;
             fieldBalance.InstallationBalance.TotalWaterDisposal += fieldBalance.TotalWaterDisposal;
-            fieldBalance.InstallationBalance.TotalWaterProduced += fieldBalance.TotalWaterProduced;
             fieldBalance.InstallationBalance.TotalWaterTransferred += fieldBalance.TotalWaterTransferred;
             fieldBalance.InstallationBalance.TotalWaterInjected += fieldBalance.TotalWaterInjected;
             fieldBalance.InstallationBalance.TotalWaterInjectedRS += fieldBalance.TotalWaterInjectedRS;
@@ -178,13 +181,13 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 
         }
 
-        public async Task<DailyInjectionDto> GetInjectionByFieldInjectionId(Guid fieldInjectionId)
+        public async Task<FieldInjectionDto> GetInjectionByFieldInjectionId(Guid fieldInjectionId)
         {
             var fieldInjection = await _repository
                 .GetWaterGasFieldInjectionsById(fieldInjectionId)
                 ?? throw new NotFoundException("Injeção de campo não encontrada.");
 
-            var result = new DailyInjectionDto
+            var result = new FieldInjectionDto
             {
                 TotalGasLift = Math.Round(fieldInjection.AmountGasLift, 5),
                 DateInjection = fieldInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
@@ -196,15 +199,12 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 
             var gasLiftDto = new GasLiftInjectedDto
             {
-                FieldInjectionId = fieldInjection.Id,
                 Field = fieldInjection.Field.Name,
             };
 
             var waterInjectedDto = new WaterInjectedDto
             {
                 Field = fieldInjection.Field.Name,
-                FieldInjectionId = fieldInjection.Id,
-                FIRS = fieldInjection.FIRS,
             };
 
             foreach (var waterInjection in fieldInjection.WellsWaterInjections)
@@ -247,84 +247,95 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 parameterDto.Values.Add(gasValuesDto);
             }
 
-            result.WaterInjected = waterInjectedDto;
-            result.GasLift = gasLiftDto;
+            result.WaterInjectedFields = waterInjectedDto;
+            result.GasLiftFields = gasLiftDto;
 
 
             return result;
         }
 
-        public async Task<DailyInjectionDto> GetDailyInjection(DateTime dateInjection)
+        public async Task<DailyInjectionDto> GetDailyInjectionTags(DateTime dateInjection, Guid installationId)
         {
-            var fieldInjection = await _repository
-               .GetWaterGasFieldInjectionByDate(dateInjection)
-               ?? throw new NotFoundException("Injeção de campo não encontrada.");
+            var installation = await _installationRepository.GetByIdAsync(installationId)
+            ?? throw new NotFoundException(ErrorMessages.NotFound<Installation>());
+
+            var fieldInjected = await _repository.AnyByDate(dateInjection);
+
+            if (fieldInjected)
+                throw new ConflictException($"Injeção diária no dia: {dateInjection:dd/MMM/yyyy} já criada.");
 
             var result = new DailyInjectionDto
             {
-                TotalGasLift = Math.Round(fieldInjection.AmountGasLift, 5),
-                DateInjection = fieldInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
-                Installation = fieldInjection.Field.Installation.Name,
-                Uep = fieldInjection.Field.Installation.UepName,
-                Status = fieldInjection.Status,
-                TotalWaterInjected = Math.Round(fieldInjection.AmountWater, 5),
+                DateInjection = dateInjection.ToString("dd/MMM/yyyy"),
+                Status = false,
             };
 
-            var gasLiftDto = new GasLiftInjectedDto
+            foreach (var field in installation.Fields)
             {
-                FieldInjectionId = fieldInjection.Id,
-                Field = fieldInjection.Field.Name,
-            };
+                var waterWellInjections = await _repository
+              .GetWaterWellInjectionsByDate(dateInjection, field.Id);
 
-            var waterInjectedDto = new WaterInjectedDto
-            {
-                Field = fieldInjection.Field.Name,
-                FieldInjectionId = fieldInjection.Id,
-                FIRS = fieldInjection.FIRS,
-            };
+                var gasWellInjections = await _repository
+                   .GetGasWellInjectionsByDate(dateInjection, field.Id);
 
-            foreach (var waterInjection in fieldInjection.WellsWaterInjections)
-            {
-                waterInjectedDto.Values.Add(new WellWaterInjectedDto
+                var gasLiftDto = new GasLiftInjectedDto
                 {
-                    WellInjectionId = waterInjection.Id,
-                    DateRead = waterInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
-                    Tag = waterInjection.WellValues.Value.Attribute.Name,
-                    VolumeAssigned = Math.Round(waterInjection.AssignedValue, 5),
-                    VolumePI = waterInjection.WellValues.Value.Amount is not null ? Math.Round(waterInjection.WellValues.Value.Amount.Value, 5) : null,
-                    WellName = waterInjection.WellValues.Value.Attribute.WellName
-                });
-            }
-
-            foreach (var gasInjection in fieldInjection.WellsGasInjections)
-            {
-                var parameterDto = gasLiftDto.Parameters
-                    .FirstOrDefault(x => x.Parameter == gasInjection.WellValues.Value.Attribute.Element.Parameter);
-
-                if (parameterDto is null)
-                {
-                    parameterDto = new ElementGasDto
-                    {
-                        Parameter = gasInjection.WellValues.Value.Attribute.Element.Parameter,
-                    };
-                    gasLiftDto.Parameters.Add(parameterDto);
-                }
-
-                var gasValuesDto = new GasValuesDto
-                {
-                    WellInjectionId = gasInjection.Id,
-                    DateRead = gasInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
-                    Tag = gasInjection.WellValues.Value.Attribute.Name,
-                    Volume = Math.Round(gasInjection.AssignedValue, 5),
-                    WellName = gasInjection.WellValues.Value.Attribute.WellName,
+                    Field = field.Name,
                 };
 
-                parameterDto.Values.Add(gasValuesDto);
+                var waterInjectedDto = new WaterInjectedDto
+                {
+                    Field = field.Name
+                };
+
+                foreach (var waterInjection in waterWellInjections)
+                {
+                    waterInjectedDto.Values.Add(new WellWaterInjectedDto
+                    {
+                        WellInjectionId = waterInjection.Id,
+                        DateRead = waterInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
+                        Tag = waterInjection.WellValues.Value.Attribute.Name,
+                        VolumeAssigned = Math.Round(waterInjection.AssignedValue, 5),
+                        VolumePI = waterInjection.WellValues.Value.Amount is not null ? Math.Round(waterInjection.WellValues.Value.Amount.Value, 5) : null,
+                        WellName = waterInjection.WellValues.Value.Attribute.WellName
+                    });
+
+                    result.TotalWaterInjected += waterInjection.AssignedValue;
+                }
+
+                foreach (var gasInjection in gasWellInjections)
+                {
+                    var parameterDto = gasLiftDto.Parameters
+                        .FirstOrDefault(x => x.Parameter == gasInjection.WellValues.Value.Attribute.Element.Parameter);
+
+                    if (parameterDto is null)
+                    {
+                        parameterDto = new ElementGasDto
+                        {
+                            Parameter = gasInjection.WellValues.Value.Attribute.Element.Parameter,
+                        };
+                        gasLiftDto.Parameters.Add(parameterDto);
+                    }
+
+                    var gasValuesDto = new GasValuesDto
+                    {
+                        WellInjectionId = gasInjection.Id,
+                        DateRead = gasInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
+                        Tag = gasInjection.WellValues.Value.Attribute.Name,
+                        Volume = Math.Round(gasInjection.AssignedValue, 5),
+                        WellName = gasInjection.WellValues.Value.Attribute.WellName,
+                    };
+
+                    result.TotalGasLift += gasInjection.AssignedValue;
+                    parameterDto.Values.Add(gasValuesDto);
+                }
+
+                result.WaterInjectedFields.Add(waterInjectedDto);
+                result.GasLiftFields.Add(gasLiftDto);
             }
 
-            result.WaterInjected = waterInjectedDto;
-            result.GasLift = gasLiftDto;
-
+            result.TotalGasLift = Math.Round(result.TotalGasLift, 5);
+            result.TotalWaterInjected = Math.Round(result.TotalWaterInjected, 5);
 
             return result;
         }

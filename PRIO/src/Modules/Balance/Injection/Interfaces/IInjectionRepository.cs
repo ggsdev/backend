@@ -5,8 +5,8 @@ namespace PRIO.src.Modules.Balance.Injection.Interfaces
     public interface IInjectionRepository
     {
         Task<InjectionWaterWell?> GetWaterInjectionById(Guid? id);
-        Task<List<InjectionWaterWell>> GetWaterWellInjectionsByDate(DateTime date);
-        Task<List<InjectionGasWell>> GetGasWellInjectionsByDate(DateTime date);
+        Task<List<InjectionWaterWell>> GetWaterWellInjectionsByDate(DateTime date, Guid fieldId);
+        Task<List<InjectionGasWell>> GetGasWellInjectionsByDate(DateTime date, Guid fieldId);
         Task<InjectionWaterGasField?> GetWaterGasFieldInjectionsById(Guid id);
         Task<InjectionWaterGasField?> GetWaterGasFieldInjectionByDate(DateTime dateInjection);
         Task<InjectionGasWell?> GetGasInjectionById(Guid? id);

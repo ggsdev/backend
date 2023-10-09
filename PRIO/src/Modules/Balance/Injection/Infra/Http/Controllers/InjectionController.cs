@@ -42,12 +42,12 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetInjectionByDate(string dateInjection)
+        public async Task<IActionResult> GetInjectionByDate(string dateInjection, Guid installationId)
         {
             if (!DateTime.TryParseExact(dateInjection, "dd/MMM/yyyy", CultureInfo.GetCultureInfo("pt-BR"), DateTimeStyles.None, out var date))
                 throw new BadRequestException("O formato da data deve ser dd/MMM/yyyy");
 
-            var data = await _service.GetDailyInjection(date);
+            var data = await _service.GetDailyInjectionTags(date, installationId);
 
             return Ok(data);
         }

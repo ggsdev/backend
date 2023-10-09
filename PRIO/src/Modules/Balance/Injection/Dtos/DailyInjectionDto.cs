@@ -2,20 +2,17 @@
 {
     public class DailyInjectionDto
     {
-        public string Uep { get; set; }
-        public string Installation { get; set; }
         public bool Status { get; set; }
         public string DateInjection { get; set; }
         public double TotalGasLift { get; set; }
         public double TotalWaterInjected { get; set; }
 
-        public GasLiftInjectedDto GasLift { get; set; }
-        public WaterInjectedDto WaterInjected { get; set; }
+        public List<GasLiftInjectedDto> GasLiftFields { get; set; } = new();
+        public List<WaterInjectedDto> WaterInjectedFields { get; set; } = new();
     }
 
     public class GasLiftInjectedDto
     {
-        public Guid FieldInjectionId { get; set; }
         public string Field { get; set; }
         public List<ElementGasDto> Parameters { get; set; } = new();
     }
@@ -48,9 +45,7 @@
 
     public class WaterInjectedDto
     {
-        public Guid FieldInjectionId { get; set; }
         public string Field { get; set; }
-        public double FIRS { get; set; }
         public List<WellWaterInjectedDto> Values { get; set; } = new();
     }
 
