@@ -273,7 +273,12 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
 
             CreateMap<InjectionWaterWell, InjectionWaterWellDTO>();
             CreateMap<InjectionGasWell, InjectionGasWellDTO>();
+            CreateMap<ManualWellConfiguration, ManualConfigDTO>();
+            CreateMap<ManualWellConfiguration, ManualConfigWithListsDTO>();
             CreateMap<Modules.PI.Infra.EF.Models.Attribute, AttributeWithInjectionDTO>();
+            CreateMap<InjectivityIndex, InjectivityIndexDTO>();
+            CreateMap<ProductivityIndex, ProductivityIndexDTO>();
+            CreateMap<BuildUp, BuildUpDTO>();
         }
 
         private static decimal? TruncateTwoDecimals(decimal? value)

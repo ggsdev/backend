@@ -54,6 +54,15 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.EF.Repositories
                         .ThenInclude(wv => wv.Value)
                             .ThenInclude(v => v.Attribute)
                                 .ThenInclude(a => a.Element)
+                 .Include(f => f.Wells)
+                    .ThenInclude(w => w.ManualWellConfiguration)
+                        .ThenInclude(mw => mw.ProductivityIndex)
+                 .Include(f => f.Wells)
+                    .ThenInclude(w => w.ManualWellConfiguration)
+                        .ThenInclude(mw => mw.InjectivityIndex)
+                 .Include(f => f.Wells)
+                    .ThenInclude(w => w.ManualWellConfiguration)
+                        .ThenInclude(mw => mw.BuildUp)
                  .Where(f => f.Id == fieldId)
                  .FirstOrDefaultAsync();
 
