@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PRIO.src.Modules.Balance.Balance.Infra.Http.Services;
+using PRIO.src.Shared.Errors;
+using System.Globalization;
 
 namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Controllers
 {
@@ -22,6 +24,17 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Controllers
         public async Task<IActionResult> GetBalanceDatas([FromRoute] Guid balanceId)
         {
             var data = await _service.GetDatasByBalanceId(balanceId);
+            return Ok(data);
+        }
+
+        [HttpGet("balances")]
+        public async Task<IActionResult> GetBalancesByDate(string dateBalance, Guid uepId)
+        {
+            if (!DateTime.TryParseExact(dateBalance, "dd/MMM/yyyy", CultureInfo.GetCultureInfo("pt-BR"), DateTimeStyles.None, out var date))
+                throw new BadRequestException("O formato da data deve ser dd/MMM/yyyy");
+
+            var data = await _service.GetByDateAndUepId(date, uepId);
+
             return Ok(data);
         }
     }

@@ -90,12 +90,17 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
         {
             var productionDate = production.MeasuredAt;
             var installationsFromUEP = await _installationRepository.GetInstallationChildrenOfUEP(production.Installation.UepCod);
+            var uep = await _installationRepository.GetUepById(production.Installation.Id);
+
+            if (uep is null)
+                throw new NotFoundException("Uep não encontrada");
 
             var balanceUEP = new UEPsBalance
             {
                 Id = Guid.NewGuid(),
                 MeasurementAt = productionDate,
                 IsActive = true,
+                Uep = uep
             };
             await _balanceRepository.AddUEPBalance(balanceUEP);
 

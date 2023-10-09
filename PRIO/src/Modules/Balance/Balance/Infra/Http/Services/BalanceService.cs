@@ -59,5 +59,73 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
                 }
             }
         }
+
+        public async Task<BalanceByDateDto> GetByDateAndUepId(DateTime dateBalance, Guid uepId)
+        {
+            var uepBalance = await _balanceRepository
+                .GetUepBalance(uepId, dateBalance)
+                ?? throw new NotFoundException("Balanço da UEP não encontrado.");
+
+            var fieldBalances = new List<FieldBalanceDto>();
+
+            foreach (var installationBalance in uepBalance.InstallationsBalance)
+            {
+                foreach (var fieldBalance in installationBalance.BalanceFields)
+                {
+                    fieldBalances.Add(new FieldBalanceDto
+                    {
+                        FieldBalanceId = fieldBalance.Id,
+                        DischargedSurface = fieldBalance.DischargedSurface is not null ? Math.Round(fieldBalance.DischargedSurface.Value, 5) : null,
+                        DateBalance = fieldBalance.MeasurementAt.ToString("dd/MMM/yyyy"),
+                        TotalWaterCaptured = fieldBalance.TotalWaterCaptured is not null ? Math.Round(fieldBalance.TotalWaterCaptured.Value, 5) : null,
+                        TotalWaterDisposal = fieldBalance.TotalWaterDisposal is not null ? Math.Round(fieldBalance.TotalWaterDisposal.Value, 5) : null,
+                        TotalWaterInjected = fieldBalance.TotalWaterInjected is not null ? Math.Round(fieldBalance.TotalWaterInjected.Value, 5) : null,
+                        TotalWaterInjectedRS = fieldBalance.TotalWaterInjectedRS is not null ? Math.Round(fieldBalance.TotalWaterInjectedRS.Value, 5) : null,
+                        TotalWaterProduced = fieldBalance.TotalWaterProduced,
+                        TotalWaterReceived = fieldBalance.TotalWaterReceived is not null ? Math.Round(fieldBalance.TotalWaterReceived.Value, 5) : null,
+                        TotalWaterTransferred = fieldBalance.TotalWaterTransferred is not null ? Math.Round(fieldBalance.TotalWaterTransferred.Value, 5) : null
+                    });
+                }
+            }
+
+            var status = true;
+
+            foreach (var installationBalance in uepBalance.InstallationsBalance)
+            {
+                foreach (var fieldBalance in installationBalance.BalanceFields)
+                {
+                    if (!fieldBalance.Status)
+                    {
+                        status = false;
+                        break;
+                    }
+
+                }
+
+                if (!status)
+                {
+                    break;
+                }
+
+            }
+
+            var result = new BalanceByDateDto
+            {
+                DischargedSurface = uepBalance.DischargedSurface is not null ? Math.Round(uepBalance.DischargedSurface.Value, 5) : null,
+                DateBalance = uepBalance.MeasurementAt.ToString("dd/MMM/yyyy"),
+                TotalWaterCaptured = uepBalance.TotalWaterCaptured is not null ? Math.Round(uepBalance.TotalWaterCaptured.Value, 5) : null,
+                TotalWaterDisposal = uepBalance.TotalWaterDisposal is not null ? Math.Round(uepBalance.TotalWaterDisposal.Value, 5) : null,
+                TotalWaterInjected = uepBalance.TotalWaterInjected is not null ? Math.Round(uepBalance.TotalWaterInjected.Value, 5) : null,
+                TotalWaterInjectedRS = uepBalance.TotalWaterInjectedRS is not null ? Math.Round(uepBalance.TotalWaterInjectedRS.Value, 5) : null,
+                TotalWaterProduced = uepBalance.TotalWaterProduced is not null ? Math.Round(uepBalance.TotalWaterProduced.Value, 5) : null,
+                TotalWaterReceived = uepBalance.TotalWaterReceived is not null ? Math.Round(uepBalance.TotalWaterReceived.Value, 5) : null,
+                TotalWaterTransferred = uepBalance.TotalWaterTransferred is not null ? Math.Round(uepBalance.TotalWaterTransferred.Value, 5) : null,
+                UepBalanceId = uepBalance.Id,
+                StatusBalance = status,
+                FieldBalances = fieldBalances
+            };
+
+            return result;
+        }
     }
 }
