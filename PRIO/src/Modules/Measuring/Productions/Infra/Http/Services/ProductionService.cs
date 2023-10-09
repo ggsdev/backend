@@ -1851,13 +1851,13 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         DateProduction = production.MeasuredAt.ToString("dd/MM/yyyy"),
                         Gas = new GasTotalDto
                         {
-                            TotalGasSCF = Math.Round((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas * ProductionUtils.m3ToSCFConversionMultipler : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas * ProductionUtils.m3ToSCFConversionMultipler : 0), 2),
-                            TotalGasM3 = Math.Round((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas : 0), 2),
+                            TotalGasSCF = Math.Round((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas * ProductionUtils.m3ToSCFConversionMultipler : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas * ProductionUtils.m3ToSCFConversionMultipler : 0), 5),
+                            TotalGasM3 = Math.Round((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas : 0), 5),
                         },
                         Oil = new OilTotalDto
                         {
-                            TotalOilBBL = production.Oil is not null ? Math.Round(production.Oil.TotalOil * ProductionUtils.m3ToBBLConversionMultiplier, 2) : 0,
-                            TotalOilM3 = production.Oil is not null ? Math.Round(production.Oil.TotalOil, 2) : 0,
+                            TotalOilBBL = production.Oil is not null ? Math.Round(production.Oil.TotalOil * ProductionUtils.m3ToBBLConversionMultiplier, 5) : 0,
+                            TotalOilM3 = production.Oil is not null ? Math.Round(production.Oil.TotalOil, 5) : 0,
                         },
                         Status = production.StatusProduction,
                         UepName = production.Installation.UepName,
@@ -1865,8 +1865,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         IsActive = production.IsActive,
                         Water = new WaterTotalDto
                         {
-                            TotalWaterM3 = Math.Round(production.Water is not null ? production.Water.TotalWater : 0, 2),
-                            TotalWaterBBL = Math.Round(production.Water is not null ? production.Water.TotalWater * ProductionUtils.m3ToBBLConversionMultiplier : 0, 2)
+                            TotalWaterM3 = Math.Round(production.Water is not null ? production.Water.TotalWater : 0, 5),
+                            TotalWaterBBL = Math.Round(production.Water is not null ? production.Water.TotalWater * ProductionUtils.m3ToBBLConversionMultiplier : 0, 5)
                         },
                         CanDetailGasBurned = production.CanDetailGasBurned,
 
@@ -1914,13 +1914,13 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         DateProduction = production.MeasuredAt.ToString("dd/MM/yyyy"),
                         Gas = new GasTotalDto
                         {
-                            TotalGasSCF = Math.Round((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas * ProductionUtils.m3ToSCFConversionMultipler : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas * ProductionUtils.m3ToSCFConversionMultipler : 0), 2),
-                            TotalGasM3 = Math.Round((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas : 0), 2),
+                            TotalGasSCF = Math.Round((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas * ProductionUtils.m3ToSCFConversionMultipler : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas * ProductionUtils.m3ToSCFConversionMultipler : 0), 5),
+                            TotalGasM3 = Math.Round((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas : 0), 5),
                         },
                         Oil = new OilTotalDto
                         {
-                            TotalOilBBL = production.Oil is not null ? Math.Round(production.Oil.TotalOil * ProductionUtils.m3ToBBLConversionMultiplier, 2) : 0,
-                            TotalOilM3 = production.Oil is not null ? Math.Round(production.Oil.TotalOil, 2) : 0,
+                            TotalOilBBL = production.Oil is not null ? Math.Round(production.Oil.TotalOil * ProductionUtils.m3ToBBLConversionMultiplier, 5) : 0,
+                            TotalOilM3 = production.Oil is not null ? Math.Round(production.Oil.TotalOil, 5) : 0,
                         },
                         Status = production.StatusProduction,
                         UepName = production.Installation.UepName,
@@ -1928,8 +1928,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         IsActive = production.IsActive,
                         Water = new WaterTotalDto
                         {
-                            TotalWaterM3 = Math.Round(production.Water is not null ? production.Water.TotalWater : 0, 2),
-                            TotalWaterBBL = Math.Round(production.Water is not null ? production.Water.TotalWater * ProductionUtils.m3ToBBLConversionMultiplier : 0, 2)
+                            TotalWaterM3 = Math.Round(production.Water is not null ? production.Water.TotalWater : 0, 5),
+                            TotalWaterBBL = Math.Round(production.Water is not null ? production.Water.TotalWater * ProductionUtils.m3ToBBLConversionMultiplier : 0, 5)
                         }
                     };
 

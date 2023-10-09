@@ -107,6 +107,7 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
                     MeasurementAt = productionDate,
                     IsActive = true,
                     UEPBalance = balanceUEP,
+                    Installation = installation
                 };
                 await _balanceRepository.AddInstallationBalance(balanceInstallation);
 
@@ -120,9 +121,9 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
                             MeasurementAt = productionDate,
                             IsActive = true,
                             IsParameterized = false,
-                            installationBalance = balanceInstallation,
+                            InstallationBalance = balanceInstallation,
                             TotalWaterProduced = fieldProduction is not null ? fieldProduction.WaterProductionInField : 0,
-                            FieldProduction = fieldProduction
+                            FieldProduction = fieldProduction,
                         };
                         await _balanceRepository.AddFieldBalance(balanceField);
 

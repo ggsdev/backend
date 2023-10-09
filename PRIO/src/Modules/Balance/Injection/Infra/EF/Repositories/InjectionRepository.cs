@@ -12,12 +12,23 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories
         {
             _context = context;
         }
-
-
-        public async Task<InjectionWaterWell?> GetWaterInjectionById(Guid id)
+        public async Task<InjectionWaterWell?> GetWaterInjectionById(Guid? id)
         {
             return await _context.InjectionWaterWell
                 .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+
+        public async Task<List<InjectionWaterGasField>> GetInjectionsByInstallationId(Guid installationId)
+        {
+            return await _context.InjectionWaterGasField
+                    .Include(x => x.Field)
+                        .ThenInclude(x => x.Installation)
+                    .Include(x => x.BalanceField)
+                        .ThenInclude(x => x.InstallationBalance)
+                            .ThenInclude(x => x.Installation)
+                                .Where(x => x.BalanceField.InstallationBalance.Installation.Id == installationId)
+                .ToListAsync();
         }
         public async Task AddWellInjectionAsync(InjectionWaterWell injection)
         {
@@ -40,5 +51,9 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories
                 .SaveChangesAsync();
         }
 
+        public Task<InjectionGasWell?> GetGasInjectionById(Guid? id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
