@@ -2,7 +2,7 @@
 {
     public class InjectionDto
     {
-        public Guid InjectionId { get; set; }
+        public Guid FieldInjectionId { get; set; }
         public bool Status { get; set; }
         public string Uep { get; set; } = string.Empty;
         public string Installation { get; set; } = string.Empty;

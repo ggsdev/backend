@@ -2,7 +2,9 @@
 using PRIO.src.Modules.Balance.Injection.Infra.Http.Services;
 using PRIO.src.Modules.Balance.Injection.ViewModels;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.Http.Filters;
+using System.Globalization;
 
 namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Controllers
 {
@@ -18,20 +20,43 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Controllers
             _service = injectionService;
         }
 
-        [HttpPatch("water/{id}")]
-        public async Task<IActionResult> UpdateInjection(UpdateWaterInjectionViewModel body, [FromRoute] Guid id)
+        [HttpPost]
+        public async Task<IActionResult> CreateInjection(UpdateWaterInjectionViewModel body, [FromQuery] string dateInjection)
         {
+            if (!DateTime.TryParseExact(dateInjection, "dd/MMM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
+                throw new BadRequestException("Formato de data deve ser dd/MMM/yyyy");
+
             var user = HttpContext.Items["User"] as User;
 
-            var data = await _service.UpdateWaterInjection(body, user!);
+            var data = await _service.CreateDailyInjection(body, date, user!);
 
             return Ok(data);
         }
 
-        [HttpGet("installation/{installationId}")]
-        public async Task<IActionResult> UpdateInjection([FromRoute] Guid installationId)
+        [HttpGet("installation/{id}")]
+        public async Task<IActionResult> GetInjectionByInstallationId([FromRoute] Guid id)
         {
-            var data = await _service.GetInjectionByInstallationId(installationId);
+            var data = await _service.GetInjectionByInstallationId(id);
+
+            return Ok(data);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetInjectionByDate(string dateInjection)
+        {
+            if (!DateTime.TryParseExact(dateInjection, "dd/MMM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
+                throw new BadRequestException("Formato de data deve ser dd/MMM/yyyy");
+
+            var data = await _service.GetDailyInjection(date);
+
+            return Ok(data);
+        }
+
+        [HttpGet("{fieldInjectionId}")]
+        public async Task<IActionResult> GetInjectionByFieldInjectionId([FromRoute] Guid fieldInjectionId)
+        {
+            var data = await _service.GetInjectionByFieldInjectionId(fieldInjectionId);
+
             return Ok(data);
         }
 
