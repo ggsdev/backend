@@ -18,10 +18,18 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<List<InjectionWaterWell>> GetWaterWellInjectionsByDate(DateTime date)
+        public async Task<List<InjectionWaterWell>> GetWaterWellInjectionsByDate(DateTime date, Guid fieldId)
         {
             return await _context.InjectionWaterWell
-                .Where(x => x.MeasurementAt.Date == date.Date)
+                .Include(x => x.WellValues)
+                        .ThenInclude(x => x.Value)
+                            .ThenInclude(x => x.Attribute)
+                                .ThenInclude(x => x.Element)
+                                .Include(x => x.WellValues)
+                                    .ThenInclude(x => x.Well)
+                                        .ThenInclude(x => x.Field)
+                                            .ThenInclude(x => x.Installation)
+                .Where(x => x.MeasurementAt.Date == date.Date && x.WellValues.Well.Field.Id == fieldId)
                 .ToListAsync();
         }
         public async Task<InjectionWaterGasField?> GetWaterGasFieldInjectionsById(Guid id)
@@ -60,10 +68,18 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<List<InjectionGasWell>> GetGasWellInjectionsByDate(DateTime date)
+        public async Task<List<InjectionGasWell>> GetGasWellInjectionsByDate(DateTime date, Guid fieldId)
         {
             return await _context.InjectionGasWell
-                .Where(x => x.MeasurementAt.Date == date.Date)
+                    .Include(x => x.WellValues)
+                        .ThenInclude(x => x.Value)
+                            .ThenInclude(x => x.Attribute)
+                                .ThenInclude(x => x.Element)
+                                .Include(x => x.WellValues)
+                                    .ThenInclude(x => x.Well)
+                                        .ThenInclude(x => x.Field)
+                                            .ThenInclude(x => x.Installation)
+                .Where(x => x.MeasurementAt.Date == date.Date && x.WellValues.Well.Field.Id == fieldId)
                 .ToListAsync();
         }
 
