@@ -4,7 +4,7 @@ namespace PRIO.src.Modules.Balance.Injection.Dtos
 {
     public class WaterInjectionUpdateDto
     {
-        public double Total { get; set; }
+        public double TotalWaterInjected { get; set; }
         public List<WaterAssignatedValuesDto> AssignedValues { get; set; } = new();
     }
 

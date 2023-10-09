@@ -18,6 +18,61 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
+        public async Task<List<InjectionWaterWell>> GetWaterWellInjectionsByDate(DateTime date)
+        {
+            return await _context.InjectionWaterWell
+                .Where(x => x.MeasurementAt.Date == date.Date)
+                .ToListAsync();
+        }
+        public async Task<InjectionWaterGasField?> GetWaterGasFieldInjectionsById(Guid id)
+        {
+            return await _context.InjectionWaterGasField
+                .Include(x => x.WellsWaterInjections)
+                    .ThenInclude(x => x.WellValues)
+                        .ThenInclude(x => x.Value)
+                            .ThenInclude(x => x.Attribute)
+                .Include(x => x.WellsGasInjections)
+                    .ThenInclude(x => x.WellValues)
+                        .ThenInclude(x => x.Value)
+                            .ThenInclude(x => x.Attribute)
+                                .ThenInclude(x => x.Element)
+                .Include(x => x.Field)
+                    .ThenInclude(x => x.Installation)
+                .Where(x => x.Id == id)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<InjectionWaterGasField?> GetWaterGasFieldInjectionByDate(DateTime dateInjection)
+        {
+            return await _context.InjectionWaterGasField
+                .Include(x => x.WellsWaterInjections)
+                    .ThenInclude(x => x.WellValues)
+                        .ThenInclude(x => x.Value)
+                            .ThenInclude(x => x.Attribute)
+                .Include(x => x.WellsGasInjections)
+                    .ThenInclude(x => x.WellValues)
+                        .ThenInclude(x => x.Value)
+                            .ThenInclude(x => x.Attribute)
+                                .ThenInclude(x => x.Element)
+                .Include(x => x.Field)
+                    .ThenInclude(x => x.Installation)
+                .Where(x => x.MeasurementAt.Date == dateInjection.Date)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<List<InjectionGasWell>> GetGasWellInjectionsByDate(DateTime date)
+        {
+            return await _context.InjectionGasWell
+                .Where(x => x.MeasurementAt.Date == date.Date)
+                .ToListAsync();
+        }
+
+        public async Task<bool> AnyByDate(DateTime date)
+        {
+            return await _context.InjectionWaterGasField
+                .Where(x => x.MeasurementAt.Date == date.Date && x.Status == true)
+                .AnyAsync();
+        }
 
         public async Task<List<InjectionWaterGasField>> GetInjectionsByInstallationId(Guid installationId)
         {
@@ -38,6 +93,10 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories
         {
             await _context.InjectionGasWell.AddAsync(injection);
         }
+        public async Task AddWaterGasInjection(InjectionWaterGasField injection)
+        {
+            await _context.InjectionWaterGasField.AddAsync(injection);
+        }
 
         public void UpdateWaterInjection(InjectionWaterWell injection)
         {
@@ -51,9 +110,10 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories
                 .SaveChangesAsync();
         }
 
-        public Task<InjectionGasWell?> GetGasInjectionById(Guid? id)
+        public async Task<InjectionGasWell?> GetGasInjectionById(Guid? id)
         {
-            throw new NotImplementedException();
+            return await _context.InjectionGasWell
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }

@@ -13,5 +13,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Models
         public FieldsBalance BalanceField { get; set; }
         public List<InjectionGasWell> WellsGasInjections { get; set; }
         public Field Field { get; set; }
+        public bool Status { get; set; }
+        public double FIRS { get; set; }
     }
 }
