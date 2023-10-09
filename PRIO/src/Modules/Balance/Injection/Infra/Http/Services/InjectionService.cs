@@ -57,7 +57,10 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             foreach (var waterInjection in body.AssignedValues)
             {
                 var waterInjectionInDatabase = await _repository.GetWaterInjectionById(waterInjection.InjectionId)
-                    ?? throw new NotFoundException("Dados do PI não encontrados");
+                    ?? throw new NotFoundException("Dados de injeção de água não encontrados.");
+
+                var gasInjectionInDatabase = await _repository.GetGasInjectionById(waterInjection.InjectionId)
+                    ?? throw new NotFoundException("Dados de gas lift não encontrados.");
 
                 if (waterInjection.InjectionId is not null && waterInjection.AssignedValue is not null)
                 {

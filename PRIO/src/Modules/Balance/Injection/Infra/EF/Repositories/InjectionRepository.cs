@@ -51,5 +51,9 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories
                 .SaveChangesAsync();
         }
 
+        public Task<InjectionGasWell?> GetGasInjectionById(Guid? id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
