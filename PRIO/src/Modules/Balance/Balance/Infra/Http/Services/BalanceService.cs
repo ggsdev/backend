@@ -3,6 +3,7 @@ using PRIO.src.Modules.Balance.Balance.Dtos;
 using PRIO.src.Modules.Balance.Balance.Infra.EF.Models;
 using PRIO.src.Modules.Balance.Balance.Interfaces;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Fields.Interfaces;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
 using PRIO.src.Shared.Errors;
 
@@ -11,16 +12,18 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
     public class BalanceService
     {
         private readonly IInstallationRepository _installationRepository;
+        private readonly IFieldRepository _fieldRepository;
         private readonly IBalanceRepository _balanceRepository;
         private readonly IMapper _mapper;
-        public BalanceService(IInstallationRepository installationRepository, IBalanceRepository balanceRepository, IMapper mapper)
+        public BalanceService(IInstallationRepository installationRepository, IBalanceRepository balanceRepository, IMapper mapper, IFieldRepository fieldRepository)
         {
             _installationRepository = installationRepository;
+            _fieldRepository = fieldRepository;
             _balanceRepository = balanceRepository;
             _mapper = mapper;
         }
 
-        public async Task<List<FieldsBalance>> GetBalancesByInstallationId(Guid installationId)
+        public async Task<List<FieldsBalanceDTO>> GetBalancesByInstallationId(Guid installationId)
         {
             var intallations = await _installationRepository.GetInstallationByIdWithField(installationId);
             if (intallations == null)
@@ -28,8 +31,10 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
 
             List<Guid> fieldIds = intallations.Fields.Select(f => f.Id).ToList();
             var fieldsBalances = await _balanceRepository.GetBalances(fieldIds);
+            var fieldsBalanceDTO = _mapper.Map<List<FieldsBalance>, List<FieldsBalanceDTO>>(fieldsBalances);
+            await InputFieldName(fieldsBalanceDTO);
 
-            return fieldsBalances;
+            return fieldsBalanceDTO;
         }
         public async Task<FieldWithInjectionsValuesDTO> GetDatasByBalanceId(Guid balanceId)
         {
@@ -45,6 +50,15 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
             FilterActiveManualConfigurations(FieldDTO.Wells);
 
             return FieldDTO;
+        }
+        private async Task InputFieldName(List<FieldsBalanceDTO> fieldsBalanceDTO)
+        {
+            foreach (var fieldBalance in fieldsBalanceDTO)
+            {
+                var field = await _fieldRepository.GetOnlyField(fieldBalance.FieldId);
+
+                fieldBalance.FieldName = field.Name;
+            }
         }
         static void BuildDataBalance(Field balanceDatas, DateTime measuredAt)
         {
