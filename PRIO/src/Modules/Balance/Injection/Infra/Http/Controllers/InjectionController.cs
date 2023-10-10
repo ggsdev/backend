@@ -23,8 +23,8 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateInjection(UpdateWaterInjectionViewModel body, [FromQuery] string dateInjection)
         {
-            if (!DateTime.TryParseExact(dateInjection, "dd/MMM/yyyy", CultureInfo.GetCultureInfo("pt-BR"), DateTimeStyles.None, out var date))
-                throw new BadRequestException("O formato da data deve ser dd/MMM/yyyy");
+            if (!DateTime.TryParseExact(dateInjection, "dd-MM-yyyy", CultureInfo.GetCultureInfo("pt-BR"), DateTimeStyles.None, out var date))
+                throw new BadRequestException("O formato da data deve ser dd-MM-yyyy");
 
             var user = HttpContext.Items["User"] as User;
 
@@ -44,8 +44,8 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Controllers
         [HttpGet]
         public async Task<IActionResult> GetInjectionByDate(string dateInjection, Guid installationId)
         {
-            if (!DateTime.TryParseExact(dateInjection, "dd/MMM/yyyy", CultureInfo.GetCultureInfo("pt-BR"), DateTimeStyles.None, out var date))
-                throw new BadRequestException("O formato da data deve ser dd/MMM/yyyy");
+            if (!DateTime.TryParseExact(dateInjection, "dd-MM-yyyy", CultureInfo.GetCultureInfo("pt-BR"), DateTimeStyles.None, out var date))
+                throw new BadRequestException("O formato da data deve ser dd-MM-yyyy");
 
             var data = await _service.GetDailyInjectionTags(date, installationId);
 

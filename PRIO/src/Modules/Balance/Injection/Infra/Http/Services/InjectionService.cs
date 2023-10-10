@@ -63,7 +63,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 BalanceField = fieldBalance,
                 Field = field,
                 Status = true,
-                FIRS = body.FIRS!.Value
+                FIRS = body.FIRS!.Value,
             };
 
             var resultDto = new WaterInjectionUpdateDto();
@@ -114,19 +114,19 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 
             await _repository.AddWaterGasInjection(fieldInjection);
 
-            _balanceRepository.UpdateFieldBalance(fieldBalance);
-
             DistributeToParentBalances(fieldBalance);
+
 
             resultDto.TotalWaterInjected = fieldInjection.AmountWater;
 
-            await _repository.Save();
+            //await _repository.Save();
 
             return resultDto;
         }
 
         private void DistributeToParentBalances(FieldsBalance fieldBalance)
         {
+            Console.WriteLine(fieldBalance.TotalWaterInjected);
             fieldBalance.InstallationBalance.UEPBalance.DischargedSurface += fieldBalance.DischargedSurface;
             fieldBalance.InstallationBalance.UEPBalance.TotalWaterCaptured += fieldBalance.TotalWaterCaptured;
             fieldBalance.InstallationBalance.UEPBalance.TotalWaterDisposal += fieldBalance.TotalWaterDisposal;
@@ -136,16 +136,19 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             fieldBalance.InstallationBalance.UEPBalance.TotalWaterReceived += fieldBalance.TotalWaterReceived;
 
 
+
             fieldBalance.InstallationBalance.DischargedSurface += fieldBalance.DischargedSurface;
             fieldBalance.InstallationBalance.TotalWaterCaptured += fieldBalance.TotalWaterCaptured;
             fieldBalance.InstallationBalance.TotalWaterDisposal += fieldBalance.TotalWaterDisposal;
             fieldBalance.InstallationBalance.TotalWaterTransferred += fieldBalance.TotalWaterTransferred;
-            fieldBalance.InstallationBalance.TotalWaterInjected += fieldBalance.TotalWaterInjected;
+            fieldBalance.InstallationBalance.TotalWaterInjected = (decimal)fieldBalance.TotalWaterInjected;
             fieldBalance.InstallationBalance.TotalWaterInjectedRS += fieldBalance.TotalWaterInjectedRS;
             fieldBalance.InstallationBalance.TotalWaterReceived += fieldBalance.TotalWaterReceived;
+            Console.WriteLine(fieldBalance.InstallationBalance.Id);
+            Console.WriteLine(fieldBalance.InstallationBalance.TotalWaterInjected);
 
             _balanceRepository.UpdateInstallationBalance(fieldBalance.InstallationBalance);
-            _balanceRepository.UpdateUepBalance(fieldBalance.InstallationBalance.UEPBalance);
+            //fieldBalance.InstallationBalance.TotalWaterProduced += fieldBalance.TotalWaterProduced;
         }
 
         public async Task<List<InjectionDto>> GetInjectionByInstallationId(Guid installationId)
