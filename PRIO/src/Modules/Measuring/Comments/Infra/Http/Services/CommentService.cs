@@ -94,15 +94,13 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
 
             if (uep is null)
                 throw new NotFoundException("Uep não encontrada");
-
             var balanceUEP = new UEPsBalance
             {
                 Id = Guid.NewGuid(),
                 MeasurementAt = productionDate,
                 IsActive = true,
-                Uep = uep
+                Uep = uep,
             };
-            await _balanceRepository.AddUEPBalance(balanceUEP);
 
             foreach (var installation in installationsFromUEP)
             {
@@ -114,7 +112,6 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
                     UEPBalance = balanceUEP,
                     Installation = installation
                 };
-                await _balanceRepository.AddInstallationBalance(balanceInstallation);
 
                 if (installation.Fields is not null && installation.Fields.Count != 0)
                     foreach (var field in installation.Fields)
@@ -131,6 +128,8 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
                             FieldProduction = fieldProduction,
                         };
                         await _balanceRepository.AddFieldBalance(balanceField);
+
+                        balanceInstallation.TotalWaterProduced += balanceField.TotalWaterProduced;
 
                         foreach (var well in field.Wells)
                         {
@@ -255,7 +254,13 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
 
                         }
                     }
+
+                balanceUEP.TotalWaterProduced += balanceInstallation.TotalWaterProduced;
+
+                await _balanceRepository.AddInstallationBalance(balanceInstallation);
             }
+
+            await _balanceRepository.AddUEPBalance(balanceUEP);
         }
         private static string ConsultParameter(PI.Infra.EF.Models.Attribute atr)
         {

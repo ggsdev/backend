@@ -36,8 +36,8 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Controllers
         [HttpGet("balances")]
         public async Task<IActionResult> GetBalancesByDate(string dateBalance, Guid uepId)
         {
-            if (!DateTime.TryParseExact(dateBalance, "dd/MMM/yyyy", CultureInfo.GetCultureInfo("pt-BR"), DateTimeStyles.None, out var date))
-                throw new BadRequestException("O formato da data deve ser dd/MMM/yyyy");
+            if (!DateTime.TryParseExact(dateBalance, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
+                throw new BadRequestException("O formato da data deve ser dd-MM-yyyy");
 
             var data = await _service.GetByDateAndUepId(date, uepId);
 

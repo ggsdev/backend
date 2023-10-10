@@ -134,15 +134,15 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
                     fieldBalances.Add(new FieldBalanceDto
                     {
                         FieldBalanceId = fieldBalance.Id,
-                        DischargedSurface = fieldBalance.DischargedSurface is not null ? Math.Round(fieldBalance.DischargedSurface.Value, 5) : null,
+                        DischargedSurface = Math.Round(fieldBalance.DischargedSurface, 5),
                         DateBalance = fieldBalance.MeasurementAt.ToString("dd/MMM/yyyy"),
-                        TotalWaterCaptured = fieldBalance.TotalWaterCaptured is not null ? Math.Round(fieldBalance.TotalWaterCaptured.Value, 5) : null,
-                        TotalWaterDisposal = fieldBalance.TotalWaterDisposal is not null ? Math.Round(fieldBalance.TotalWaterDisposal.Value, 5) : null,
-                        TotalWaterInjected = fieldBalance.TotalWaterInjected is not null ? Math.Round(fieldBalance.TotalWaterInjected.Value, 5) : null,
-                        TotalWaterInjectedRS = fieldBalance.TotalWaterInjectedRS is not null ? Math.Round(fieldBalance.TotalWaterInjectedRS.Value, 5) : null,
+                        TotalWaterCaptured = Math.Round(fieldBalance.TotalWaterCaptured, 5),
+                        TotalWaterDisposal = Math.Round(fieldBalance.TotalWaterDisposal, 5),
+                        TotalWaterInjected = Math.Round(fieldBalance.TotalWaterInjected, 5),
+                        TotalWaterInjectedRS = Math.Round(fieldBalance.TotalWaterInjectedRS, 5),
                         TotalWaterProduced = fieldBalance.TotalWaterProduced,
-                        TotalWaterReceived = fieldBalance.TotalWaterReceived is not null ? Math.Round(fieldBalance.TotalWaterReceived.Value, 5) : null,
-                        TotalWaterTransferred = fieldBalance.TotalWaterTransferred is not null ? Math.Round(fieldBalance.TotalWaterTransferred.Value, 5) : null
+                        TotalWaterReceived = Math.Round(fieldBalance.TotalWaterReceived, 5),
+                        TotalWaterTransferred = Math.Round(fieldBalance.TotalWaterTransferred, 5)
                     });
                 }
             }
@@ -170,15 +170,15 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
 
             var result = new BalanceByDateDto
             {
-                DischargedSurface = uepBalance.DischargedSurface is not null ? Math.Round(uepBalance.DischargedSurface.Value, 5) : null,
+                DischargedSurface = Math.Round(uepBalance.DischargedSurface, 5),
                 DateBalance = uepBalance.MeasurementAt.ToString("dd/MMM/yyyy"),
-                TotalWaterCaptured = uepBalance.TotalWaterCaptured is not null ? Math.Round(uepBalance.TotalWaterCaptured.Value, 5) : null,
-                TotalWaterDisposal = uepBalance.TotalWaterDisposal is not null ? Math.Round(uepBalance.TotalWaterDisposal.Value, 5) : null,
-                TotalWaterInjected = uepBalance.TotalWaterInjected is not null ? Math.Round(uepBalance.TotalWaterInjected.Value, 5) : null,
-                TotalWaterInjectedRS = uepBalance.TotalWaterInjectedRS is not null ? Math.Round(uepBalance.TotalWaterInjectedRS.Value, 5) : null,
-                TotalWaterProduced = uepBalance.TotalWaterProduced is not null ? Math.Round(uepBalance.TotalWaterProduced.Value, 5) : null,
-                TotalWaterReceived = uepBalance.TotalWaterReceived is not null ? Math.Round(uepBalance.TotalWaterReceived.Value, 5) : null,
-                TotalWaterTransferred = uepBalance.TotalWaterTransferred is not null ? Math.Round(uepBalance.TotalWaterTransferred.Value, 5) : null,
+                TotalWaterCaptured = Math.Round(uepBalance.TotalWaterCaptured, 5),
+                TotalWaterDisposal = Math.Round(uepBalance.TotalWaterDisposal, 5),
+                TotalWaterInjected = Math.Round(uepBalance.TotalWaterInjected, 5),
+                TotalWaterInjectedRS = Math.Round(uepBalance.TotalWaterInjectedRS, 5),
+                TotalWaterProduced = Math.Round(uepBalance.TotalWaterProduced, 5),
+                TotalWaterReceived = Math.Round(uepBalance.TotalWaterReceived, 5),
+                TotalWaterTransferred = Math.Round(uepBalance.TotalWaterTransferred, 5),
                 UepBalanceId = uepBalance.Id,
                 StatusBalance = status,
                 FieldBalances = fieldBalances

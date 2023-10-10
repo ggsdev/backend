@@ -21,7 +21,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateInjection(UpdateWaterInjectionViewModel body, [FromQuery] string dateInjection)
+        public async Task<IActionResult> CreateInjection(CreateDailyInjectionViewModel body, string dateInjection)
         {
             if (!DateTime.TryParseExact(dateInjection, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
                 throw new BadRequestException("O formato da data deve ser dd-MM-yyyy");
@@ -34,7 +34,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Controllers
         }
 
         [HttpGet("installation/{id}")]
-        public async Task<IActionResult> GetInjectionByInstallationId([FromRoute] Guid id)
+        public async Task<IActionResult> GetInjectionByInstallationId(Guid id)
         {
             var data = await _service.GetInjectionByInstallationId(id);
 
@@ -53,13 +53,23 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Controllers
         }
 
         [HttpGet("{fieldInjectionId}")]
-        public async Task<IActionResult> GetInjectionByFieldInjectionId([FromRoute] Guid fieldInjectionId)
+        public async Task<IActionResult> GetInjectionByFieldInjectionId(Guid fieldInjectionId)
         {
             var data = await _service.GetInjectionByFieldInjectionId(fieldInjectionId);
 
             return Ok(data);
         }
 
+
+        [HttpPatch("{fieldInjectionId}")]
+        public async Task<IActionResult> UpdateInjection(UpdateInjectionViewModel body, Guid fieldInjectionId)
+        {
+            var user = HttpContext.Items["User"] as User;
+
+            var data = await _service.UpdateInjection(body, fieldInjectionId, user!);
+
+            return Ok(data);
+        }
 
     }
 }
