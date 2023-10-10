@@ -1436,19 +1436,6 @@ namespace PRIO.Migrations
                                         },
                                      new object[] {
                                             Guid.NewGuid(),
-                                            "F1DPXZtDP9A2dkCslnDK15S6ygSkAAAAUFJSSjA5U1JWVk0wMlxQNTBfUFQtMTIxMDA2MkgtREFJTFktQVZH",
-                                            "fee61d83-8cd5-4a4c-b3e6-6c3993b44c12",
-                                            "P50_PT-1210062H-DAILY-AVG",
-                                            "",
-                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1DPXZtDP9A2dkCslnDK15S6ygSkAAAAUFJSSjA5U1JWVk0wMlxQNTBfUFQtMTIxMDA2MkgtREFJTFktQVZH",
-                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1DPXZtDP9A2dkCslnDK15S6ygSkAAAAUFJSSjA5U1JWVk0wMlxQNTBfUFQtMTIxMDA2MkgtREFJTFktQVZH/value",
-                                            "ABL-52HP",
-                                            true,
-                                            true,
-                                            today
-                                        },
-                                     new object[] {
-                                            Guid.NewGuid(),
                                             "F1DPXZtDP9A2dkCslnDK15S6ygUUAAAAUFJSSjA5U1JWVk0wMlxQNTBfUFQtMTIxMDA2MlAtREFJTFktQVZH",
                                             "fee61d83-8cd5-4a4c-b3e6-6c3993b44c12",
                                             "P50_PT-1210062P-DAILY-AVG",
@@ -1874,20 +1861,6 @@ namespace PRIO.Migrations
                                             true,
                                             today
                                         },
-
-                                         new object[] {
-                                            Guid.NewGuid(),
-                                            "F1DPXZtDP9A2dkCslnDK15S6ygPUAAAAUFJSSjA5U1JWVk0wMlxQNTBfRlQtMTIxMDAwMUgtREFJTFktQVZH",
-                                            "",
-                                            "P50_FT-1210001H-DAILY-AVG",
-                                            "",
-                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1DPXZtDP9A2dkCslnDK15S6ygPUAAAAUFJSSjA5U1JWVk0wMlxQNTBfRlQtMTIxMDAwMUgtREFJTFktQVZH",
-                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1DPXZtDP9A2dkCslnDK15S6ygPUAAAAUFJSSjA5U1JWVk0wMlxQNTBfRlQtMTIxMDAwMUgtREFJTFktQVZH/value"
-                                            ,"ABL-52HP",
-                                            true,
-                                            true,
-                                            today
-                                        },
                                          new object[] {
                                             Guid.NewGuid(),
                                             "F1DPXZtDP9A2dkCslnDK15S6ygQUAAAAUFJSSjA5U1JWVk0wMlxQNTBfRlQtMTIxMDAwNi1EQUlMWS1BVkc",
@@ -1935,10 +1908,6 @@ namespace PRIO.Migrations
                                       attributeCreatedAt,
                                       });
                                 }
-
-
-
-
 
                             }
                         }
@@ -2050,7 +2019,7 @@ namespace PRIO.Migrations
                             },
                             new object[] {
                                 GFL1Id,
-                                "",
+                                "Ñão Fornecido1",
                                 "",
                                 "Vazao GFL1",
                                 "",
@@ -2062,7 +2031,7 @@ namespace PRIO.Migrations
                             },
                             new object[] {
                                 GFL4Id,
-                                "",
+                                "Ñão Fornecido2",
                                 "",
                                 "Vazao GFL4",
                                 "",
@@ -2074,7 +2043,7 @@ namespace PRIO.Migrations
                             },
                             new object[] {
                                 GFL6Id,
-                                "",
+                                "Ñão Fornecido3",
                                 "",
                                 "Vazao GFL6",
                                 "",
@@ -2086,7 +2055,7 @@ namespace PRIO.Migrations
                             },
                             new object[] {
                                 WFL1Id,
-                                "",
+                                "Ñão Fornecido4",
                                 "",
                                 "Vazao WFL1",
                                 "",
@@ -2437,19 +2406,19 @@ namespace PRIO.Migrations
                                             true,
                                             today
                                         },
-                                        new object[] {
-                                            ODP3096,
-                                            "F1DPmcDcljXfiUGwcfDZqjkw7wIFIAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSU1MtUEktT0RQMy0wOTYtS0dGLURBSUxZLUFWRw",
-                                            "ad60b0d-2d1a-43dc-acb3-bb4dfaeb265b",
-                                            "FRSS-PI-ODP3-096-KGF-DAILY-AVG",
-                                            "",
-                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1DPmcDcljXfiUGwcfDZqjkw7wIFIAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSU1MtUEktT0RQMy0wOTYtS0dGLURBSUxZLUFWRw",
-                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1DPmcDcljXfiUGwcfDZqjkw7wIFIAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSU1MtUEktT0RQMy0wOTYtS0dGLURBSUxZLUFWRw/value",
-                                            "ODP3",
-                                            true,
-                                            true,
-                                            today
-                                        },
+                                        //new object[] {
+                                        //    ODP3096,
+                                        //    "F1DPmcDcljXfiUGwcfDZqjkw7wIFIAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSU1MtUEktT0RQMy0wOTYtS0dGLURBSUxZLUFWRw",
+                                        //    "ad60b0d-2d1a-43dc-acb3-bb4dfaeb265b",
+                                        //    "FRSS-PI-ODP3-096-KGF-DAILY-AVG",
+                                        //    "",
+                                        //    "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1DPmcDcljXfiUGwcfDZqjkw7wIFIAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSU1MtUEktT0RQMy0wOTYtS0dGLURBSUxZLUFWRw",
+                                        //    "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1DPmcDcljXfiUGwcfDZqjkw7wIFIAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSU1MtUEktT0RQMy0wOTYtS0dGLURBSUxZLUFWRw/value",
+                                        //    "ODP3",
+                                        //    true,
+                                        //    true,
+                                        //    today
+                                        //},
                                         new object[] {
                                             MUP2096,
                                             "F1DPmcDcljXfiUGwcfDZqjkw7wIFIAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSU1MtUEktT0RQMy0wOTYtS0dGLURBSUxZLUFWRw",
@@ -3137,33 +3106,7 @@ namespace PRIO.Migrations
                                         "",
                                         "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1DPmcDcljXfiUGwcfDZqjkw7wxAUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAxLVBER1NWT0wuMjBD",
                                         "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1DPmcDcljXfiUGwcfDZqjkw7wxAUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAxLVBER1NWT0wuMjBD/value",
-                                        "MUP5",
-                                            true,
-                                            true,
-                                            today
-                                    },
-                                    new object[] {
-                                        Guid.NewGuid(),
-                                        "F1DPmcDcljXfiUGwcfDZqjkw7wxAUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAxLVBER1NWT0wuMjBD",
-                                        "",
-                                        "FRMS-074-FQI-1501-PDGSVOL.20C",
-                                        "",
-                                        "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1DPmcDcljXfiUGwcfDZqjkw7wxAUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAxLVBER1NWT0wuMjBD",
-                                        "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1DPmcDcljXfiUGwcfDZqjkw7wxAUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAxLVBER1NWT0wuMjBD/value",
-                                        "MUP2",
-                                            true,
-                                            true,
-                                            today
-                                    },
-                                    new object[] {
-                                        Guid.NewGuid(),
-                                        "F1DPmcDcljXfiUGwcfDZqjkw7wxAUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAxLVBER1NWT0wuMjBD",
-                                        "",
-                                        "FRMS-074-FQI-1501-PDGSVOL.20C",
-                                        "",
-                                        "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1DPmcDcljXfiUGwcfDZqjkw7wxAUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAxLVBER1NWT0wuMjBD",
-                                        "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1DPmcDcljXfiUGwcfDZqjkw7wxAUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAxLVBER1NWT0wuMjBD/value",
-                                        "MDP1",
+                                        "MUP5,MUP2,MDP1",
                                             true,
                                             true,
                                             today
@@ -3215,50 +3158,11 @@ namespace PRIO.Migrations
                                         "",
                                         "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1DPmcDcljXfiUGwcfDZqjkw7wyQUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAyLVBER1NWT0wuMjBD",
                                         "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1DPmcDcljXfiUGwcfDZqjkw7wyQUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAyLVBER1NWT0wuMjBD/value",
-                                        "ODP4",
+                                        "ODP4,OUP2,ODP5,N5P2",
                                             true,
                                             true,
                                             today
-                                    },
-                                    new object[] {
-                                        Guid.NewGuid(),
-                                        "F1DPmcDcljXfiUGwcfDZqjkw7wyQUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAyLVBER1NWT0wuMjBD",
-                                        "",
-                                        "FRMS-074-FQI-1502-PDGSVOL.20C",
-                                        "",
-                                        "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1DPmcDcljXfiUGwcfDZqjkw7wyQUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAyLVBER1NWT0wuMjBD",
-                                        "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1DPmcDcljXfiUGwcfDZqjkw7wyQUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAyLVBER1NWT0wuMjBD/value",
-                                        "OUP2",
-                                            true,
-                                            true,
-                                            today
-                                    },
-                                    new object[] {
-                                        Guid.NewGuid(),
-                                        "F1DPmcDcljXfiUGwcfDZqjkw7wyQUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAyLVBER1NWT0wuMjBD",
-                                        "",
-                                        "FRMS-074-FQI-1502-PDGSVOL.20C",
-                                        "",
-                                        "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1DPmcDcljXfiUGwcfDZqjkw7wyQUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAyLVBER1NWT0wuMjBD",
-                                        "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1DPmcDcljXfiUGwcfDZqjkw7wyQUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAyLVBER1NWT0wuMjBD/value",
-                                        "ODP5",
-                                            true,
-                                            true,
-                                            today
-                                    },
-                                    new object[] {
-                                        Guid.NewGuid(),
-                                        "F1DPmcDcljXfiUGwcfDZqjkw7wyQUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAyLVBER1NWT0wuMjBD",
-                                        "",
-                                        "FRMS-074-FQI-1502-PDGSVOL.20C",
-                                        "",
-                                        "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1DPmcDcljXfiUGwcfDZqjkw7wyQUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAyLVBER1NWT0wuMjBD",
-                                        "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1DPmcDcljXfiUGwcfDZqjkw7wyQUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAyLVBER1NWT0wuMjBD/value",
-                                        "N5P2",
-                                            true,
-                                            true,
-                                            today
-                                    },
+                                    }
                                 };
 
                                 foreach (var attribute in attributesData)
@@ -3307,50 +3211,11 @@ namespace PRIO.Migrations
                                         "",
                                         "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1DPmcDcljXfiUGwcfDZqjkw7wzgUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAzLVBER1NWT0wuMjBD",
                                         "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1DPmcDcljXfiUGwcfDZqjkw7wzgUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAzLVBER1NWT0wuMjBD/value",
-                                        "MDP2",
+                                        "MDP2,ODP3,N5P1,MUP4",
                                             true,
                                             true,
                                             today
-                                    },
-                                    new object[] {
-                                        Guid.NewGuid(),
-                                        "F1DPmcDcljXfiUGwcfDZqjkw7wzgUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAzLVBER1NWT0wuMjBD",
-                                        "",
-                                        "FRMS-074-FQI-1503-PDGSVOL.20C",
-                                        "",
-                                        "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1DPmcDcljXfiUGwcfDZqjkw7wzgUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAzLVBER1NWT0wuMjBD",
-                                        "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1DPmcDcljXfiUGwcfDZqjkw7wzgUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAzLVBER1NWT0wuMjBD/value",
-                                        "ODP3",
-                                            true,
-                                            true,
-                                            today
-                                    },
-                                    new object[] {
-                                        Guid.NewGuid(),
-                                        "F1DPmcDcljXfiUGwcfDZqjkw7wzgUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAzLVBER1NWT0wuMjBD",
-                                        "",
-                                        "FRMS-074-FQI-1503-PDGSVOL.20C",
-                                        "",
-                                        "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1DPmcDcljXfiUGwcfDZqjkw7wzgUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAzLVBER1NWT0wuMjBD",
-                                        "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1DPmcDcljXfiUGwcfDZqjkw7wzgUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAzLVBER1NWT0wuMjBD/value",
-                                        "N5P1",
-                                            true,
-                                            true,
-                                            today
-                                    },
-                                    new object[] {
-                                        Guid.NewGuid(),
-                                        "F1DPmcDcljXfiUGwcfDZqjkw7wzgUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAzLVBER1NWT0wuMjBD",
-                                        "",
-                                        "FRMS-074-FQI-1503-PDGSVOL.20C",
-                                        "",
-                                        "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1DPmcDcljXfiUGwcfDZqjkw7wzgUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAzLVBER1NWT0wuMjBD",
-                                        "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1DPmcDcljXfiUGwcfDZqjkw7wzgUAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSTVMtMDc0LUZRSS0xNTAzLVBER1NWT0wuMjBD/value",
-                                        "MUP4",
-                                            true,
-                                            true,
-                                            today
-                                    },
+                                    }
                                 };
 
                                 foreach (var attribute in attributesData)
@@ -3399,50 +3264,11 @@ namespace PRIO.Migrations
                                         "",
                                         "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1DPmcDcljXfiUGwcfDZqjkw7wxU8AAAQlpGUFNPUElDT0xMRUNUSVZFXEZSVFMtMDYyLUZJLTE1MDEtREFJTFktQVZH",
                                         "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1DPmcDcljXfiUGwcfDZqjkw7wxU8AAAQlpGUFNPUElDT0xMRUNUSVZFXEZSVFMtMDYyLUZJLTE1MDEtREFJTFktQVZH/value",
-                                        "ODI2",
+                                        "ODI2,ODI1A,OUI3,N5I1",
                                             true,
                                             true,
                                             today
-                                    },
-                                    new object[] {
-                                        Guid.NewGuid(),
-                                        "F1DPmcDcljXfiUGwcfDZqjkw7wxU8AAAQlpGUFNPUElDT0xMRUNUSVZFXEZSVFMtMDYyLUZJLTE1MDEtREFJTFktQVZH",
-                                        "",
-                                        "FRTS-062-FI-1501-DAILY-AVG",
-                                        "",
-                                        "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1DPmcDcljXfiUGwcfDZqjkw7wxU8AAAQlpGUFNPUElDT0xMRUNUSVZFXEZSVFMtMDYyLUZJLTE1MDEtREFJTFktQVZH",
-                                        "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1DPmcDcljXfiUGwcfDZqjkw7wxU8AAAQlpGUFNPUElDT0xMRUNUSVZFXEZSVFMtMDYyLUZJLTE1MDEtREFJTFktQVZH/value",
-                                        "ODI1A",
-                                            true,
-                                            true,
-                                            today
-                                    },
-                                    new object[] {
-                                        Guid.NewGuid(),
-                                        "F1DPmcDcljXfiUGwcfDZqjkw7wxU8AAAQlpGUFNPUElDT0xMRUNUSVZFXEZSVFMtMDYyLUZJLTE1MDEtREFJTFktQVZH",
-                                        "",
-                                        "FRTS-062-FI-1501-DAILY-AVG",
-                                        "",
-                                        "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1DPmcDcljXfiUGwcfDZqjkw7wxU8AAAQlpGUFNPUElDT0xMRUNUSVZFXEZSVFMtMDYyLUZJLTE1MDEtREFJTFktQVZH",
-                                        "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1DPmcDcljXfiUGwcfDZqjkw7wxU8AAAQlpGUFNPUElDT0xMRUNUSVZFXEZSVFMtMDYyLUZJLTE1MDEtREFJTFktQVZH/value",
-                                        "OUI3",
-                                            true,
-                                            true,
-                                            today
-                                    },
-                                    new object[] {
-                                        Guid.NewGuid(),
-                                        "F1DPmcDcljXfiUGwcfDZqjkw7wxU8AAAQlpGUFNPUElDT0xMRUNUSVZFXEZSVFMtMDYyLUZJLTE1MDEtREFJTFktQVZH",
-                                        "",
-                                        "FRTS-062-FI-1501-DAILY-AVG",
-                                        "",
-                                        "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1DPmcDcljXfiUGwcfDZqjkw7wxU8AAAQlpGUFNPUElDT0xMRUNUSVZFXEZSVFMtMDYyLUZJLTE1MDEtREFJTFktQVZH",
-                                        "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1DPmcDcljXfiUGwcfDZqjkw7wxU8AAAQlpGUFNPUElDT0xMRUNUSVZFXEZSVFMtMDYyLUZJLTE1MDEtREFJTFktQVZH/value",
-                                        "N5I1",
-                                            true,
-                                            true,
-                                            today
-                                    },
+                                    }
                                 };
 
                                 foreach (var attribute in attributesData)
@@ -3479,7 +3305,6 @@ namespace PRIO.Migrations
                                 }
                             }
                         }
-
                     }
 
                 }
