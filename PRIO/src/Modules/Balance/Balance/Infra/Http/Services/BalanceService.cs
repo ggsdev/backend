@@ -152,20 +152,14 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
             foreach (var installationBalance in uepBalance.InstallationsBalance)
             {
                 foreach (var fieldBalance in installationBalance.BalanceFields)
-                {
                     if (!fieldBalance.Status)
                     {
                         status = false;
                         break;
                     }
 
-                }
-
                 if (!status)
-                {
                     break;
-                }
-
             }
 
             var result = new BalanceByDateDto
