@@ -2,7 +2,7 @@
 
 namespace PRIO.src.Modules.Balance.Injection.ViewModels
 {
-    public class UpdateWaterInjectionViewModel
+    public class CreateDailyInjectionViewModel
     {
         [Required(ErrorMessage = "FieldId é obrigatório")]
         public Guid? FieldId { get; set; } = null!;

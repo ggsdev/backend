@@ -104,5 +104,7 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.EF.Repositories
                     .ThenInclude(x => x.UEPBalance)
                 .FirstOrDefaultAsync(x => x.FieldProduction.FieldId == fieldId && x.MeasurementAt.Date == measuredAt.Date);
         }
+
+
     }
 }

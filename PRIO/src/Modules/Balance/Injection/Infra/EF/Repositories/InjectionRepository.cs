@@ -46,6 +46,13 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories
                                 .ThenInclude(x => x.Element)
                 .Include(x => x.Field)
                     .ThenInclude(x => x.Installation)
+                .Include(x => x.BalanceField)
+                    .ThenInclude(x => x.InstallationBalance)
+                        .ThenInclude(x => x.BalanceFields)
+                .Include(x => x.BalanceField)
+                    .ThenInclude(x => x.InstallationBalance)
+                        .ThenInclude(x => x.UEPBalance)
+                            .ThenInclude(x => x.InstallationsBalance)
                 .Where(x => x.Id == id)
                 .FirstOrDefaultAsync();
         }
@@ -108,6 +115,11 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories
         public async Task AddWellSensorAsync(WellSensor sensor)
         {
             await _context.WellSensor.AddAsync(sensor);
+        }
+
+        public void UpdateWaterGasInjection(InjectionWaterGasField injection)
+        {
+            _context.InjectionWaterGasField.Update(injection);
         }
         public async Task AddGasWellInjectionAsync(InjectionGasWell injection)
         {
