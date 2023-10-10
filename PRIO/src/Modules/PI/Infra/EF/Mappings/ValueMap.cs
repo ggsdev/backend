@@ -10,9 +10,9 @@ namespace PRIO.src.Modules.PI.Infra.EF.Mappings
         {
             builder.ToTable("PI.Values");
 
-            builder
-            .HasIndex(e => new { e.Date, e.AttributeId })
-            .IsUnique();
+            //builder
+            //.HasIndex(e => new { e.Date, e.AttributeId})
+            //.IsUnique();
         }
     }
 }

@@ -97,6 +97,7 @@ namespace PRIO.src.Modules.Hierarchy.Clusters.Infra.Http.Services
         {
             var clusters = await _clusterRepository.GetAllClustersAsync();
             var clustersDTO = _mapper.Map<List<Cluster>, List<ClusterDTO>>(clusters);
+
             return clustersDTO;
         }
 
