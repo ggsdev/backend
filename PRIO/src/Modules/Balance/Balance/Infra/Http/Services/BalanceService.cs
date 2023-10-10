@@ -133,6 +133,7 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
                 {
                     fieldBalances.Add(new FieldBalanceDto
                     {
+                        FieldName = fieldBalance.Field.Name!,
                         FieldBalanceId = fieldBalance.Id,
                         DischargedSurface = Math.Round(fieldBalance.DischargedSurface, 5),
                         DateBalance = fieldBalance.MeasurementAt.ToString("dd/MMM/yyyy"),
@@ -140,7 +141,7 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
                         TotalWaterDisposal = Math.Round(fieldBalance.TotalWaterDisposal, 5),
                         TotalWaterInjected = Math.Round(fieldBalance.TotalWaterInjected, 5),
                         TotalWaterInjectedRS = Math.Round(fieldBalance.TotalWaterInjectedRS, 5),
-                        TotalWaterProduced = fieldBalance.TotalWaterProduced,
+                        TotalWaterProduced = Math.Round(fieldBalance.TotalWaterProduced, 5),
                         TotalWaterReceived = Math.Round(fieldBalance.TotalWaterReceived, 5),
                         TotalWaterTransferred = Math.Round(fieldBalance.TotalWaterTransferred, 5)
                     });
@@ -175,7 +176,8 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
                 TotalWaterTransferred = Math.Round(uepBalance.TotalWaterTransferred, 5),
                 UepBalanceId = uepBalance.Id,
                 StatusBalance = status,
-                FieldBalances = fieldBalances
+                FieldBalances = fieldBalances,
+                UepName = uepBalance.Uep.Name,
             };
 
             return result;

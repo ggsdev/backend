@@ -62,36 +62,80 @@ namespace PRIOScheduler
                         {
                             string jsonContent = await response.Content.ReadAsStringAsync();
 
-                            var well = await dbContext.Wells
-                                .FirstOrDefaultAsync(x => x.Name.ToUpper().Trim() == atr.WellName.ToUpper().Trim() || x.WellOperatorName.ToUpper().Trim() == atr.WellName.ToUpper().Trim());
+                            var wellNames = atr.WellName
+                                .Split(',');
 
-                            if (well is not null)
+                            foreach (var wellName in wellNames)
                             {
+                                var well = await dbContext.Wells
+                               .FirstOrDefaultAsync(x => x.Name.ToUpper().Trim() == wellName.ToUpper().Trim() || x.WellOperatorName.ToUpper().Trim() == wellName.ToUpper().Trim());
 
-                                ValueJson? valueObject = null;
-                                try
+                                if (well is not null)
                                 {
-                                    valueObject = JsonSerializer.Deserialize<ValueJson>(jsonContent, new JsonSerializerOptions
+                                    ValueJson? valueObject = null;
+                                    try
                                     {
-                                        PropertyNameCaseInsensitive = true
-                                    });
+                                        valueObject = JsonSerializer.Deserialize<ValueJson>(jsonContent, new JsonSerializerOptions
+                                        {
+                                            PropertyNameCaseInsensitive = true
+                                        });
 
+                                        Print($"tag: {atr.Name}");
+                                        Print($"atributo webId: {atr.WebId}");
 
-                                    Print($"tag: {atr.Name}");
-                                    Print($"atributo webId: {atr.WebId}");
+                                        if (valueObject is not null)
+                                        {
+                                            Print($"Value: {valueObject.Value}");
+                                            Print($"Date: {valueObject.Timestamp}");
 
-                                    if (valueObject is not null)
+                                            var value = new Value
+                                            {
+                                                Id = Guid.NewGuid(),
+                                                Amount = valueObject.Value,
+                                                Attribute = atr,
+                                                Date = valueObject.Timestamp.AddHours(-3),
+                                                IsCaptured = true
+                                            };
+
+                                            valuesList.Add(value);
+
+                                            var wellValue = new WellsValues
+                                            {
+                                                Id = Guid.NewGuid(),
+                                                Value = value,
+                                                Well = well,
+
+                                            };
+
+                                            wellValuesList.Add(wellValue);
+
+                                        }
+
+                                    }
+                                    catch (Exception ex)
                                     {
-                                        Print($"Value: {valueObject.Value}");
-                                        Print($"Date: {valueObject.Timestamp}");
 
+                                        Console.WriteLine(ex);
+
+                                        valueObject = new ValueJson
+                                        {
+                                            Value = null,
+                                            Timestamp = DateTime.UtcNow.Date.AddSeconds(-1),
+                                            Annotated = false,
+                                            Good = false,
+                                            Questionable = false,
+                                            Substituted = false,
+                                            UnitsAbbreviation = "",
+                                            IsCaptured = false
+                                        };
                                         var value = new Value
                                         {
                                             Id = Guid.NewGuid(),
                                             Amount = valueObject.Value,
                                             Attribute = atr,
-                                            Date = valueObject.Timestamp.AddHours(-3),
-                                            IsCaptured = true
+                                            Date = valueObject.Timestamp,
+                                            IsCaptured = false,
+
                                         };
 
                                         valuesList.Add(value);
@@ -101,50 +145,11 @@ namespace PRIOScheduler
                                             Id = Guid.NewGuid(),
                                             Value = value,
                                             Well = well,
-
                                         };
 
                                         wellValuesList.Add(wellValue);
-
                                     }
 
-                                }
-                                catch (Exception ex)
-                                {
-
-                                    Console.WriteLine(ex);
-
-                                    valueObject = new ValueJson
-                                    {
-                                        Value = null,
-                                        Timestamp = DateTime.UtcNow.Date.AddSeconds(-1),
-                                        Annotated = false,
-                                        Good = false,
-                                        Questionable = false,
-                                        Substituted = false,
-                                        UnitsAbbreviation = "",
-                                        IsCaptured = false
-                                    };
-                                    var value = new Value
-                                    {
-                                        Id = Guid.NewGuid(),
-                                        Amount = valueObject.Value,
-                                        Attribute = atr,
-                                        Date = valueObject.Timestamp,
-                                        IsCaptured = false,
-
-                                    };
-
-                                    valuesList.Add(value);
-
-                                    var wellValue = new WellsValues
-                                    {
-                                        Id = Guid.NewGuid(),
-                                        Value = value,
-                                        Well = well,
-                                    };
-
-                                    wellValuesList.Add(wellValue);
                                 }
 
                             }

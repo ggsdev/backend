@@ -48,6 +48,7 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.EF.Repositories
                 .Include(x => x.Uep)
                 .Include(x => x.InstallationsBalance)
                     .ThenInclude(x => x.BalanceFields)
+                        .ThenInclude(x => x.Field)
                  .Where(x => x.Uep.Id == uepId && x.MeasurementAt.Date == measuredAt.Date)
                  .FirstOrDefaultAsync();
         }
