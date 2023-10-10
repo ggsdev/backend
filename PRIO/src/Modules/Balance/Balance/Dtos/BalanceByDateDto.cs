@@ -3,6 +3,7 @@
     public class BalanceByDateDto
     {
         public Guid UepBalanceId { get; set; }
+        public string UepName { get; set; }
         public bool StatusBalance { get; set; }
         public string DateBalance { get; set; }
         public decimal? TotalWaterProduced { get; set; }
@@ -20,6 +21,7 @@
     public class FieldBalanceDto
     {
         public Guid FieldBalanceId { get; set; }
+        public string FieldName { get; set; }
         public string DateBalance { get; set; }
         public decimal? TotalWaterProduced { get; set; }
         public decimal? TotalWaterInjected { get; set; }

@@ -42,9 +42,14 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.EF.Mappings
               .HasColumnType("DECIMAL")
               .HasPrecision(38, 16);
 
+            builder.HasOne(x => x.Field)
+                .WithMany(x => x.FieldBalances)
+                .OnDelete(DeleteBehavior.NoAction);
+
             builder.HasOne(x => x.FieldProduction)
                .WithOne(d => d.FieldsBalance)
                .HasForeignKey<FieldsBalance>("FieldProductionId").IsRequired();
+
         }
     }
 }
