@@ -23,7 +23,8 @@ namespace PRIOScheduler
 
             using var dbContext = new DataContext(dbContextOptions);
 
-            var dateToday = DateTime.UtcNow.AddHours(-3).Date;
+            var dateToday = DateTime.UtcNow.Date.AddHours(3).AddSeconds(-1);
+            var formattedDate = dateToday.ToString("yyyy-MM-ddTHH:mm:ssZ");
 
             var attributes = await dbContext.Attributes
                .ToListAsync();
@@ -55,7 +56,10 @@ namespace PRIOScheduler
 
                     foreach (var atr in attributes)
                     {
-                        var valueRoute = atr.ValueRoute;
+                        Print($"tag: {atr.Name}");
+                        Print($"atributo webId: {atr.WebId}");
+
+                        var valueRoute = $"{atr.ValueRoute}?time={formattedDate}";
                         HttpResponseMessage response = await client.GetAsync(valueRoute);
 
                         if (response.IsSuccessStatusCode)
@@ -65,8 +69,12 @@ namespace PRIOScheduler
                             var wellNames = atr.WellName
                                 .Split(',');
 
+                            Console.WriteLine(wellNames.Length);
+
                             foreach (var wellName in wellNames)
                             {
+                                Console.WriteLine(wellName);
+
                                 var well = await dbContext.Wells
                                .FirstOrDefaultAsync(x => x.Name.ToUpper().Trim() == wellName.ToUpper().Trim() || x.WellOperatorName.ToUpper().Trim() == wellName.ToUpper().Trim());
 
@@ -80,10 +88,9 @@ namespace PRIOScheduler
                                             PropertyNameCaseInsensitive = true
                                         });
 
-                                        Print($"tag: {atr.Name}");
-                                        Print($"atributo webId: {atr.WebId}");
 
-                                        if (valueObject is not null)
+
+                                        if (valueObject is not null && valueObject.Timestamp == dateToday)
                                         {
                                             Print($"Value: {valueObject.Value}");
                                             Print($"Date: {valueObject.Timestamp}");
@@ -109,6 +116,41 @@ namespace PRIOScheduler
 
                                             wellValuesList.Add(wellValue);
 
+                                        }
+                                        else if (valueObject is not null && valueObject.Timestamp != dateToday)
+                                        {
+
+                                            valueObject = new ValueJson
+                                            {
+                                                Value = null,
+                                                Timestamp = DateTime.UtcNow.Date.AddSeconds(-1),
+                                                Annotated = false,
+                                                Good = false,
+                                                Questionable = false,
+                                                Substituted = false,
+                                                UnitsAbbreviation = "",
+                                                IsCaptured = false
+                                            };
+                                            var value = new Value
+                                            {
+                                                Id = Guid.NewGuid(),
+                                                Amount = valueObject.Value,
+                                                Attribute = atr,
+                                                Date = valueObject.Timestamp,
+                                                IsCaptured = false,
+
+                                            };
+
+                                            valuesList.Add(value);
+
+                                            var wellValue = new WellsValues
+                                            {
+                                                Id = Guid.NewGuid(),
+                                                Value = value,
+                                                Well = well,
+                                            };
+
+                                            wellValuesList.Add(wellValue);
                                         }
 
                                     }
