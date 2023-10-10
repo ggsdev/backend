@@ -10,5 +10,6 @@ namespace PRIO.src.Modules.PI.Infra.EF.Models
         public Value Value { get; set; }
         public InjectionWaterWell InjectionWaterWell { get; set; }
         public InjectionGasWell InjectionGasWell { get; set; }
+        public WellSensor WellSensor { get; set; }
     }
 }

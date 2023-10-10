@@ -29,6 +29,7 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.EF.Repositories
         public async Task<List<FieldsBalance>> GetBalances(List<Guid> fieldIds)
         {
             return await _context.FieldsBalance
+                 .Include(fb => fb.FieldProduction)
                  .Where(fb => fieldIds.Contains(fb.FieldProduction.FieldId))
                  .OrderByDescending(fb => fb.MeasurementAt)
                  .ToListAsync();
@@ -65,6 +66,15 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.EF.Repositories
                         .ThenInclude(wv => wv.Value)
                             .ThenInclude(v => v.Attribute)
                                 .ThenInclude(a => a.Element)
+                 .Include(f => f.Wells)
+                    .ThenInclude(w => w.ManualWellConfiguration)
+                        .ThenInclude(mw => mw.ProductivityIndex)
+                 .Include(f => f.Wells)
+                    .ThenInclude(w => w.ManualWellConfiguration)
+                        .ThenInclude(mw => mw.InjectivityIndex)
+                 .Include(f => f.Wells)
+                    .ThenInclude(w => w.ManualWellConfiguration)
+                        .ThenInclude(mw => mw.BuildUp)
                  .Where(f => f.Id == fieldId)
                  .FirstOrDefaultAsync();
 

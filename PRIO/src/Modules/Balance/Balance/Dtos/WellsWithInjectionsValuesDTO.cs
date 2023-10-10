@@ -6,6 +6,7 @@
         public string? Name { get; set; }
         public string? WellOperatorName { get; set; }
         public string? CategoryOperator { get; set; }
+        public ManualConfigWithListsDTO? ManualWellConfiguration { get; set; }
         public List<WellValuesDTO>? WellsValues { get; set; }
     }
 }
