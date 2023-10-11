@@ -4,6 +4,7 @@
     (
         Guid UepBalanceId,
         string Uep,
+        Guid UepId,
         bool Status,
         string DateBalance,
         decimal TotalWaterProduced,

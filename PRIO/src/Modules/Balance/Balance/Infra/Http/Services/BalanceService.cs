@@ -294,6 +294,7 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
                     (
                         uepBalance.Id,
                         uepBalance.Uep.Name,
+                        uepBalance.Uep.Id,
                         uepBalance.Status,
                         uepBalance.MeasurementAt.ToString("dd/MMM/yyyy"),
                         Math.Round(uepBalance.TotalWaterProduced, 5),
