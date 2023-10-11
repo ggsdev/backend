@@ -53,6 +53,17 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.EF.Repositories
                  .FirstOrDefaultAsync();
         }
 
+        public async Task<UEPsBalance?> GetUepBalanceById(Guid uepBalanceId)
+        {
+            return await _context.UEPsBalance
+                .Include(x => x.Uep)
+                .Include(x => x.InstallationsBalance)
+                    .ThenInclude(x => x.BalanceFields)
+                        .ThenInclude(x => x.Field)
+                 .Where(x => x.Id == uepBalanceId)
+                 .FirstOrDefaultAsync();
+        }
+
         public async Task<Field?> GetDatasByBalanceId(Guid fieldId)
         {
             var field = await _context.Fields
@@ -96,6 +107,14 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.EF.Repositories
         {
             _context.UEPsBalance.Update(balance);
         }
+        public void UpdateRangeFieldBalances(List<FieldsBalance> balances)
+        {
+            _context.FieldsBalance.UpdateRange(balances);
+        }
+        public async Task Save()
+        {
+            await _context.SaveChangesAsync();
+        }
 
         public async Task<FieldsBalance?> GetBalanceField(Guid fieldId, DateTime measuredAt)
         {
@@ -106,6 +125,14 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.EF.Repositories
                 .FirstOrDefaultAsync(x => x.FieldProduction.FieldId == fieldId && x.MeasurementAt.Date == measuredAt.Date);
         }
 
+        public async Task<List<UEPsBalance>> GetAllBalances()
+        {
+            return await _context.UEPsBalance
+                .AsNoTracking()
+                .OrderBy(x => x.MeasurementAt)
+                .Include(x => x.Uep)
+                .ToListAsync();
+        }
 
     }
 }

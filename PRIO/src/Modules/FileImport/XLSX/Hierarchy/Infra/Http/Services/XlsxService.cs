@@ -585,6 +585,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                         CreatedBy = user,
                                     };
 
+                                    wellConv.InactivatedAt = DateTime.Parse("01/01/2023");
 
                                     await _wellEventRepository.Add(wellEvent);
                                     await _wellEventRepository.Add(closingWellEvent);
@@ -607,6 +608,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                         Interval = 0d
 
                                     };
+                                    wellConv.InactivatedAt = DateTime.Parse("01/01/2023");
 
                                     var closingWellEvent = new WellEvent
                                     {
@@ -845,6 +847,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                         CreatedBy = user,
                                     };
 
+                                    wellConv.InactivatedAt = DateTime.Parse("01/01/2023");
 
                                     await _wellEventRepository.Add(wellEvent);
                                     await _wellEventRepository.Add(closingWellEvent);
@@ -938,6 +941,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.Infra.Http.Services
                                     };
                                     await _manualConfigRepository.AddInjectivityAsync(injectivityIndex);
                                 }
+
+                                wellConv.InactivatedAt = DateTime.Parse("01/01/2023");
 
                                 await _manualConfigRepository.AddConfigAsync(manualConfig);
                                 await _manualConfigRepository.AddBuildUpAsync(buildUp);
