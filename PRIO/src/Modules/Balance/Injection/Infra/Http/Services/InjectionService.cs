@@ -42,8 +42,6 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 
         public async Task<WaterInjectionUpdateDto> CreateDailyInjection(CreateDailyInjectionViewModel body, DateTime dateInjection, User loggedUser)
         {
-            //if is parametrized true
-
             if (body.FIRS < 0 || body.FIRS > 1)
                 throw new BadRequestException("FIRS deve ser um valor entre 0 e 1");
 
@@ -53,6 +51,9 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             var fieldBalance = await _balanceRepository
                 .GetBalanceField(body.FieldId!.Value, dateInjection.Date)
                 ?? throw new BadRequestException("Balanço de campo não criado ainda, é necessário fechar a produção do dia.");
+
+            if (fieldBalance.IsParameterized is false)
+                throw new ConflictException("Dados operacionais precisam ser confirmados.");
 
             var injectionInDatabase = await _repository
                 .AnyByDate(dateInjection);
@@ -303,7 +304,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                         Tag = waterInjection.WellValues.Value.Attribute.Name,
                         VolumeAssigned = Math.Round(waterInjection.AssignedValue, 5),
                         VolumePI = waterInjection.WellValues.Value.Amount is not null ? Math.Round(waterInjection.WellValues.Value.Amount.Value, 5) : null,
-                        WellName = waterInjection.WellValues.Value.Attribute.WellName
+                        WellName = waterInjection.WellValues.Well.Name
                     });
 
                     result.TotalWaterInjected += waterInjection.AssignedValue;
@@ -329,7 +330,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                         DateRead = gasInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
                         Tag = gasInjection.WellValues.Value.Attribute.Name,
                         Volume = Math.Round(gasInjection.AssignedValue, 5),
-                        WellName = gasInjection.WellValues.Value.Attribute.WellName,
+                        WellName = gasInjection.WellValues.Well.Name,
                     };
 
                     result.TotalGasLift += gasInjection.AssignedValue;
