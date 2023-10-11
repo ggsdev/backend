@@ -58,10 +58,10 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Controllers
             return Ok(data);
         }
 
-        [HttpGet("balances/{uepBalanceId}")]
-        public async Task<IActionResult> Get(Guid uepBalanceId)
+        [HttpGet("balances/{id}")]
+        public async Task<IActionResult> Get(Guid id)
         {
-            var data = await _service.GetByUepBalanceId(uepBalanceId);
+            var data = await _service.GetByUepBalanceId(id);
 
             return Ok(data);
         }
