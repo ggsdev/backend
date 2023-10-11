@@ -51,7 +51,6 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
                 .GetById(productionId);
             if (production is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Production>());
-
             if (production.Comment is not null)
                 throw new ConflictException("Produção já tem um comentário.");
 
@@ -112,7 +111,6 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
                     UEPBalance = balanceUEP,
                     Installation = installation
                 };
-
                 if (installation.Fields is not null && installation.Fields.Count != 0)
                     foreach (var field in installation.Fields)
                     {
@@ -139,6 +137,7 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
                             {
                                 foreach (var tag in tags)
                                 {
+
                                     var wellValue = await _PIRepository.GetWellValuesWithChildrens(production.MeasuredAt, well.Id, tag);
                                     if (wellValue is not null)
                                     {
@@ -277,7 +276,6 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
                 return "Sensors";
             else
                 return "";
-
         }
 
         public async Task<CreateUpdateCommentDto> UpdateComment(UpdateCommentViewModel body, Guid id, User loggedUser)

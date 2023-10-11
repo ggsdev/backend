@@ -274,6 +274,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
 
             CreateMap<InjectionWaterWell, InjectionWaterWellDTO>();
             CreateMap<InjectionGasWell, InjectionGasWellDTO>();
+            CreateMap<WellSensor, SensorsDTO>();
             CreateMap<ManualWellConfiguration, ManualConfigDTO>();
             CreateMap<ManualWellConfiguration, ManualConfigWithListsDTO>();
             CreateMap<Modules.PI.Infra.EF.Models.Attribute, AttributeWithInjectionDTO>();
