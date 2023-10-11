@@ -51,7 +51,6 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
                 .GetById(productionId);
             if (production is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Production>());
-
             if (production.Comment is not null)
                 throw new ConflictException("Produção já tem um comentário.");
 
@@ -112,7 +111,6 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
                     UEPBalance = balanceUEP,
                     Installation = installation
                 };
-
                 if (installation.Fields is not null && installation.Fields.Count != 0)
                     foreach (var field in installation.Fields)
                     {
@@ -143,6 +141,7 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
                                     if (wellValue is not null)
                                     {
                                         var resultFluid = ConsultParameter(wellValue.Value.Attribute);
+                                        Console.WriteLine(resultFluid);
                                         if (resultFluid == "Water")
                                         {
                                             var injectionWaterWell = new InjectionWaterWell
@@ -269,6 +268,7 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
             var listWater = new List<string> { "Vazão da WFL1", "Vazão de injeção de água" };
             var listSensors = new List<string> { "Pressão WH", "Pressão PDG 1", "Pressão Intake ESP", "Pressão PDG 2" };
 
+            Console.WriteLine(atr.Element.Parameter);
             if (listGas.Contains(atr.Element.Parameter))
                 return "Gas";
             else if (listWater.Contains(atr.Element.Parameter))
@@ -277,7 +277,6 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
                 return "Sensors";
             else
                 return "";
-
         }
 
         public async Task<CreateUpdateCommentDto> UpdateComment(UpdateCommentViewModel body, Guid id, User loggedUser)

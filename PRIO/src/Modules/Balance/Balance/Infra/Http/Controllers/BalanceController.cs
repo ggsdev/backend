@@ -20,12 +20,14 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Controllers
             var data = await _service.GetBalancesByInstallationId(installationId);
             return Ok(data);
         }
-        [HttpGet("balances/{balanceId}")]
+
+        [HttpGet("balances/{balanceId}/parameters")]
         public async Task<IActionResult> GetBalanceDatas([FromRoute] Guid balanceId)
         {
             var data = await _service.GetDatasByBalanceId(balanceId);
             return Ok(data);
         }
+
         //[HttpPatch("balances/{balanceId}")]
         //public async Task<IActionResult> UpdateBalanceDatas([FromRoute] Guid balanceId, [FromBody] UpdateListValuesViewModel values)
         //{
