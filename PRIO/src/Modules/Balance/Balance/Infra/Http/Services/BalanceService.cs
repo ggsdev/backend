@@ -52,6 +52,7 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
             BuildDataBalance(balanceDatas, balance.MeasurementAt);
             var FieldDTO = _mapper.Map<Field, FieldWithInjectionsValuesDTO>(balanceDatas);
             FilterActiveManualConfigurations(FieldDTO.Wells);
+            BuidAssigned(FieldDTO.Wells);
 
             return FieldDTO;
         }
@@ -122,6 +123,32 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
             }
         }
 
+        static void BuidAssigned(List<WellsWithInjectionsValuesDTO> wells)
+        {
+            foreach (var well in wells)
+            {
+                Console.WriteLine(well);
+                foreach (var wellValue in well.WellsValues)
+                {
+                    Console.WriteLine(wellValue);
+                    if (wellValue.InjectionGasWell is not null)
+                    {
+                        wellValue.Value.AssignedValue = wellValue.InjectionGasWell.AssignedValue;
+                        wellValue.Value.AssignedId = wellValue.InjectionGasWell.Id;
+                    }
+                    else if (wellValue.InjectionWaterWell is not null)
+                    {
+                        wellValue.Value.AssignedValue = wellValue.InjectionWaterWell.AssignedValue;
+                        wellValue.Value.AssignedId = wellValue.InjectionWaterWell.Id;
+                    }
+                    else if (wellValue.WellSensor is not null)
+                    {
+                        wellValue.Value.AssignedValue = wellValue.WellSensor.AssignedValue;
+                        wellValue.Value.AssignedId = wellValue.WellSensor.Id;
+                    }
+                }
+            }
+        }
         public async Task<BalanceByDateDto> GetByDateAndUepId(DateTime dateBalance, Guid uepId)
         {
             var uepBalance = await _balanceRepository
