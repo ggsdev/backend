@@ -179,15 +179,14 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
             return result;
         }
 
-        public async Task<BalanceByDateDto> InsertManualValuesBalance(ManualValuesBalanceViewModel body, Guid balanceId)
+        public async Task<BalanceByDateDto> InsertManualValuesBalance(ManualValuesBalanceViewModel body)
         {
             var uepBalance = await _balanceRepository
-                .GetUepBalanceById(balanceId)
+                .GetUepBalanceById(body.UepBalanceId)
                 ?? throw new NotFoundException("Balanço da uep não encontrado.");
 
             if (body.FieldsBalances.Any() is false)
                 throw new BadRequestException("'FieldsBalances' não pode estar vazio.");
-
 
             var fieldBalancesToUpdate = new List<FieldsBalance>();
             var fieldBalancesDto = new List<FieldBalanceDto>();
