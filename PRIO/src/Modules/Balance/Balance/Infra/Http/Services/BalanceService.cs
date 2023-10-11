@@ -2,6 +2,7 @@
 using PRIO.src.Modules.Balance.Balance.Dtos;
 using PRIO.src.Modules.Balance.Balance.Infra.EF.Models;
 using PRIO.src.Modules.Balance.Balance.Interfaces;
+using PRIO.src.Modules.Balance.Balance.ViewModels;
 using PRIO.src.Modules.Balance.Injection.Dtos;
 using PRIO.src.Modules.Balance.Injection.Infra.EF.Models;
 using PRIO.src.Modules.Balance.Injection.Interfaces;
@@ -26,6 +27,7 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
             _balanceRepository = balanceRepository;
             _injectionRepository = injectionRepository;
             _mapper = mapper;
+            _injectionRepository = injectionRepository;
         }
 
         public async Task<List<FieldsBalanceDTO>> GetBalancesByInstallationId(Guid installationId)
@@ -162,7 +164,14 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
         {
             var uepBalance = await _balanceRepository
                 .GetUepBalance(uepId, dateBalance)
-                ?? throw new NotFoundException("Balanço da UEP não encontrado.");
+                ?? throw new NotFoundException("Produção do dia não foi fechada ainda.");
+
+            _ = await _injectionRepository
+                .GetWaterGasFieldInjectionByDate(dateBalance)
+                ?? throw new BadRequestException("Injeção deve ser feita antes da criação do balanço.");
+
+            if (uepBalance.Status)
+                throw new ConflictException("Balanço do dia já foi criado.");
 
             var fieldBalances = new List<FieldBalanceDto>();
 
@@ -187,6 +196,85 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
                 }
             }
 
+
+            var result = new BalanceByDateDto
+            {
+                DischargedSurface = Math.Round(uepBalance.DischargedSurface, 5),
+                DateBalance = uepBalance.MeasurementAt.ToString("dd/MMM/yyyy"),
+                TotalWaterCaptured = Math.Round(uepBalance.TotalWaterCaptured, 5),
+                TotalWaterDisposal = Math.Round(uepBalance.TotalWaterDisposal, 5),
+                TotalWaterInjected = Math.Round(uepBalance.TotalWaterInjected, 5),
+                TotalWaterInjectedRS = Math.Round(uepBalance.TotalWaterInjectedRS, 5),
+                TotalWaterProduced = Math.Round(uepBalance.TotalWaterProduced, 5),
+                TotalWaterReceived = Math.Round(uepBalance.TotalWaterReceived, 5),
+                TotalWaterTransferred = Math.Round(uepBalance.TotalWaterTransferred, 5),
+                UepBalanceId = uepBalance.Id,
+                StatusBalance = uepBalance.Status,
+                FieldBalances = fieldBalances,
+                UepName = uepBalance.Uep.Name,
+            };
+
+            return result;
+        }
+
+        public async Task<BalanceByDateDto> InsertManualValuesBalance(ManualValuesBalanceViewModel body)
+        {
+            var uepBalance = await _balanceRepository
+                .GetUepBalanceById(body.UepBalanceId)
+                ?? throw new NotFoundException("Balanço da uep não encontrado.");
+
+            if (body.FieldsBalances.Any() is false)
+                throw new BadRequestException("'FieldsBalances' não pode estar vazio.");
+
+            var fieldBalancesToUpdate = new List<FieldsBalance>();
+            var fieldBalancesDto = new List<FieldBalanceDto>();
+
+            var resultBalance = 0m;
+
+            foreach (var installationBalance in uepBalance.InstallationsBalance)
+            {
+                foreach (var bodyBalanceField in body.FieldsBalances)
+                {
+                    var balanceToUpdate = installationBalance.BalanceFields
+                        .FirstOrDefault(x => x.Id == bodyBalanceField.FieldBalanceId)
+                        ?? throw new NotFoundException("Balanço de campo não encontrado");
+
+                    resultBalance += balanceToUpdate.TotalWaterProduced;
+                    resultBalance -= balanceToUpdate.TotalWaterInjectedRS;
+                    resultBalance -= balanceToUpdate.TotalWaterDisposal;
+                    resultBalance += balanceToUpdate.TotalWaterReceived;
+                    resultBalance += balanceToUpdate.TotalWaterCaptured;
+                    resultBalance -= balanceToUpdate.DischargedSurface;
+                    resultBalance -= balanceToUpdate.TotalWaterTransferred;
+
+                    balanceToUpdate.Status = true;
+                    balanceToUpdate.TotalWaterReceived = bodyBalanceField.TotalWaterReceived;
+                    balanceToUpdate.DischargedSurface = bodyBalanceField.DischargedSurface;
+                    balanceToUpdate.TotalWaterTransferred = bodyBalanceField.TotalWaterTransferred;
+                    balanceToUpdate.TotalWaterCaptured = bodyBalanceField.TotalWaterCaptured;
+
+                    fieldBalancesToUpdate.Add(balanceToUpdate);
+
+                    fieldBalancesDto.Add(new FieldBalanceDto
+                    {
+                        FieldName = balanceToUpdate.Field.Name!,
+                        FieldBalanceId = balanceToUpdate.Id,
+                        DischargedSurface = Math.Round(balanceToUpdate.DischargedSurface, 5),
+                        DateBalance = balanceToUpdate.MeasurementAt.ToString("dd/MMM/yyyy"),
+                        TotalWaterCaptured = Math.Round(balanceToUpdate.TotalWaterCaptured, 5),
+                        TotalWaterDisposal = Math.Round(balanceToUpdate.TotalWaterDisposal, 5),
+                        TotalWaterInjected = Math.Round(balanceToUpdate.TotalWaterInjected, 5),
+                        TotalWaterInjectedRS = Math.Round(balanceToUpdate.TotalWaterInjectedRS, 5),
+                        TotalWaterProduced = Math.Round(balanceToUpdate.TotalWaterProduced, 5),
+                        TotalWaterReceived = Math.Round(balanceToUpdate.TotalWaterReceived, 5),
+                        TotalWaterTransferred = Math.Round(balanceToUpdate.TotalWaterTransferred, 5)
+                    });
+                }
+            }
+
+            if (resultBalance != 0m)
+                throw new ConflictException($"Resultado do balanço deve ser zero. Valor final: {resultBalance}.");
+
             var status = true;
 
             foreach (var installationBalance in uepBalance.InstallationsBalance)
@@ -202,6 +290,12 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
                     break;
             }
 
+            uepBalance.Status = status;
+
+            _balanceRepository.UpdateUepBalance(uepBalance);
+
+            _balanceRepository.UpdateRangeFieldBalances(fieldBalancesToUpdate);
+
             var result = new BalanceByDateDto
             {
                 DischargedSurface = Math.Round(uepBalance.DischargedSurface, 5),
@@ -214,12 +308,150 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
                 TotalWaterReceived = Math.Round(uepBalance.TotalWaterReceived, 5),
                 TotalWaterTransferred = Math.Round(uepBalance.TotalWaterTransferred, 5),
                 UepBalanceId = uepBalance.Id,
-                StatusBalance = status,
-                FieldBalances = fieldBalances,
+                StatusBalance = uepBalance.Status,
+                FieldBalances = fieldBalancesDto,
+                UepName = uepBalance.Uep.Name,
+            };
+
+            await _balanceRepository.Save();
+
+            return result;
+
+        }
+
+        public async Task<List<BalanceDto>> GetAllBalances()
+        {
+            var uepBalances = await _balanceRepository
+                .GetAllBalances();
+
+            var balancesDto = new List<BalanceDto>();
+
+            foreach (var uepBalance in uepBalances)
+            {
+                balancesDto.Add(new BalanceDto
+                    (
+                        uepBalance.Id,
+                        uepBalance.Uep.Name,
+                        uepBalance.Uep.Id,
+                        uepBalance.Status,
+                        uepBalance.MeasurementAt.ToString("dd/MMM/yyyy"),
+                        Math.Round(uepBalance.TotalWaterProduced, 5),
+                        Math.Round(uepBalance.TotalWaterInjected, 5),
+                        Math.Round(uepBalance.TotalWaterInjectedRS, 5),
+                        Math.Round(uepBalance.TotalWaterDisposal, 5),
+                        Math.Round(uepBalance.TotalWaterReceived, 5),
+                        Math.Round(uepBalance.TotalWaterCaptured, 5),
+                        Math.Round(uepBalance.DischargedSurface, 5),
+                        Math.Round(uepBalance.TotalWaterTransferred, 5)
+                    ));
+            }
+
+
+            return balancesDto;
+        }
+
+        public async Task<BalanceByDateDto> GetByUepBalanceId(Guid uepBalanceId)
+        {
+            var uepBalance = await _balanceRepository
+                .GetUepBalanceById(uepBalanceId)
+            ?? throw new NotFoundException("Balanço da uep não encontrado");
+
+            var fieldBalancesDto = new List<FieldBalanceDto>();
+
+            foreach (var installationBalance in uepBalance.InstallationsBalance)
+            {
+                foreach (var fieldBalance in installationBalance.BalanceFields)
+                {
+                    fieldBalancesDto.Add(new FieldBalanceDto
+                    {
+                        FieldName = fieldBalance.Field.Name!,
+                        FieldBalanceId = fieldBalance.Id,
+                        DischargedSurface = Math.Round(fieldBalance.DischargedSurface, 5),
+                        DateBalance = fieldBalance.MeasurementAt.ToString("dd/MMM/yyyy"),
+                        TotalWaterCaptured = Math.Round(fieldBalance.TotalWaterCaptured, 5),
+                        TotalWaterDisposal = Math.Round(fieldBalance.TotalWaterDisposal, 5),
+                        TotalWaterInjected = Math.Round(fieldBalance.TotalWaterInjected, 5),
+                        TotalWaterInjectedRS = Math.Round(fieldBalance.TotalWaterInjectedRS, 5),
+                        TotalWaterProduced = Math.Round(fieldBalance.TotalWaterProduced, 5),
+                        TotalWaterReceived = Math.Round(fieldBalance.TotalWaterReceived, 5),
+                        TotalWaterTransferred = Math.Round(fieldBalance.TotalWaterTransferred, 5)
+                    });
+                }
+            }
+
+            var result = new BalanceByDateDto
+            {
+                DischargedSurface = Math.Round(uepBalance.DischargedSurface, 5),
+                DateBalance = uepBalance.MeasurementAt.ToString("dd/MMM/yyyy"),
+                TotalWaterCaptured = Math.Round(uepBalance.TotalWaterCaptured, 5),
+                TotalWaterDisposal = Math.Round(uepBalance.TotalWaterDisposal, 5),
+                TotalWaterInjected = Math.Round(uepBalance.TotalWaterInjected, 5),
+                TotalWaterInjectedRS = Math.Round(uepBalance.TotalWaterInjectedRS, 5),
+                TotalWaterProduced = Math.Round(uepBalance.TotalWaterProduced, 5),
+                TotalWaterReceived = Math.Round(uepBalance.TotalWaterReceived, 5),
+                TotalWaterTransferred = Math.Round(uepBalance.TotalWaterTransferred, 5),
+                UepBalanceId = uepBalance.Id,
+                StatusBalance = uepBalance.Status,
+                FieldBalances = fieldBalancesDto,
                 UepName = uepBalance.Uep.Name,
             };
 
             return result;
+        }
+
+        public async Task<List<FieldBalanceDto>> UpdateBalance(UpdateManualValuesViewModel body, Guid fieldBalanceId)
+        {
+            var fieldBalancesToUpdate = new List<FieldsBalance>();
+            var fieldBalancesDto = new List<FieldBalanceDto>();
+
+            var resultBalance = 0m;
+
+            foreach (var bodyBalanceField in body.FieldsBalances)
+            {
+                var balanceToUpdate = await _balanceRepository
+                    .GetBalanceById(fieldBalanceId)
+                ?? throw new NotFoundException("Balanço de campo não encontrado.");
+
+                resultBalance += balanceToUpdate.TotalWaterProduced;
+                resultBalance -= balanceToUpdate.TotalWaterInjectedRS;
+                resultBalance -= balanceToUpdate.TotalWaterDisposal;
+                resultBalance += balanceToUpdate.TotalWaterReceived;
+                resultBalance += balanceToUpdate.TotalWaterCaptured;
+                resultBalance -= balanceToUpdate.DischargedSurface;
+                resultBalance -= balanceToUpdate.TotalWaterTransferred;
+
+                balanceToUpdate.Status = true;
+                balanceToUpdate.TotalWaterReceived = bodyBalanceField.TotalWaterReceived is not null ? bodyBalanceField.TotalWaterReceived.Value : balanceToUpdate.TotalWaterReceived;
+                balanceToUpdate.DischargedSurface = bodyBalanceField.DischargedSurface is not null ? bodyBalanceField.DischargedSurface.Value : balanceToUpdate.DischargedSurface;
+                balanceToUpdate.TotalWaterTransferred = bodyBalanceField.TotalWaterTransferred is not null ? bodyBalanceField.TotalWaterTransferred.Value : balanceToUpdate.TotalWaterTransferred;
+                balanceToUpdate.TotalWaterCaptured = bodyBalanceField.TotalWaterCaptured is not null ? bodyBalanceField.TotalWaterCaptured.Value : balanceToUpdate.TotalWaterCaptured;
+
+                fieldBalancesToUpdate.Add(balanceToUpdate);
+
+                fieldBalancesDto.Add(new FieldBalanceDto
+                {
+                    FieldName = balanceToUpdate.Field.Name!,
+                    FieldBalanceId = balanceToUpdate.Id,
+                    DischargedSurface = Math.Round(balanceToUpdate.DischargedSurface, 5),
+                    DateBalance = balanceToUpdate.MeasurementAt.ToString("dd/MMM/yyyy"),
+                    TotalWaterCaptured = Math.Round(balanceToUpdate.TotalWaterCaptured, 5),
+                    TotalWaterDisposal = Math.Round(balanceToUpdate.TotalWaterDisposal, 5),
+                    TotalWaterInjected = Math.Round(balanceToUpdate.TotalWaterInjected, 5),
+                    TotalWaterInjectedRS = Math.Round(balanceToUpdate.TotalWaterInjectedRS, 5),
+                    TotalWaterProduced = Math.Round(balanceToUpdate.TotalWaterProduced, 5),
+                    TotalWaterReceived = Math.Round(balanceToUpdate.TotalWaterReceived, 5),
+                    TotalWaterTransferred = Math.Round(balanceToUpdate.TotalWaterTransferred, 5)
+                });
+            }
+
+            if (resultBalance != 0m)
+                throw new ConflictException($"Resultado do balanço deve ser zero. Valor final: {resultBalance}.");
+
+            _balanceRepository.UpdateRangeFieldBalances(fieldBalancesToUpdate);
+
+            await _balanceRepository.Save();
+
+            return fieldBalancesDto;
         }
     }
 }

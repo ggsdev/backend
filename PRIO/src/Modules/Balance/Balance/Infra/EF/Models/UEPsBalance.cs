@@ -14,6 +14,7 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.EF.Models
         public decimal TotalWaterCaptured { get; set; }
         public decimal DischargedSurface { get; set; }
         public decimal TotalWaterTransferred { get; set; }
+        public bool Status { get; set; }
         public List<InstallationsBalance> InstallationsBalance { get; set; }
         public Installation? Uep { get; set; }
     }
