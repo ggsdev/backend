@@ -53,7 +53,7 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.EF.Repositories
                  .FirstOrDefaultAsync();
         }
 
-        public async Task<UEPsBalance?> GetUepBalanceById(Guid uepBalanceId)
+        public async Task<UEPsBalance?> GetUepBalanceById(Guid? uepBalanceId)
         {
             return await _context.UEPsBalance
                 .Include(x => x.Uep)

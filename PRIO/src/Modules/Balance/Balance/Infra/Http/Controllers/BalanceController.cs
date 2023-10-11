@@ -39,7 +39,7 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Controllers
         //    return Ok(data);
         //}
 
-        [HttpGet("ueps{id}/balances")]
+        [HttpGet("ueps/{id}/balances")]
         public async Task<IActionResult> GetBalancesByDate(string dateBalance, Guid id)
         {
             if (!DateTime.TryParseExact(dateBalance, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
@@ -66,10 +66,10 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Controllers
             return Ok(data);
         }
 
-        [HttpPost("balances/{id}")]
-        public async Task<IActionResult> CreateBalance(ManualValuesBalanceViewModel body, Guid id)
+        [HttpPost("balances")]
+        public async Task<IActionResult> CreateBalance(ManualValuesBalanceViewModel body)
         {
-            var data = await _service.InsertManualValuesBalance(body, id);
+            var data = await _service.InsertManualValuesBalance(body);
 
             return Ok(data);
         }

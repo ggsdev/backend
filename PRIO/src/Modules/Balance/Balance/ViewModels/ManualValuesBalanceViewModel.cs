@@ -4,6 +4,8 @@ namespace PRIO.src.Modules.Balance.Balance.ViewModels
 {
     public class ManualValuesBalanceViewModel
     {
+        [Required(ErrorMessage = "UepBalanceId é obrigatório")]
+        public Guid? UepBalanceId { get; set; }
         [Required(ErrorMessage = "FieldsBalances é obrigatório")]
         public List<FieldManualBalanceViewModel> FieldsBalances { get; set; } = null!;
     }
