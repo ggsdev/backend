@@ -55,7 +55,7 @@ namespace PRIO.src.Shared.Infra.Http.Services
                     Token = token,
                     User = user,
                     UserHttpAgent = userHttpAgent,
-                    ExpiresIn = DateTime.UtcNow.AddHours(-3).AddDays(7),
+                    ExpiresIn = DateTime.UtcNow.AddHours(-8).AddDays(7),
                 };
 
                 await _context.Sessions.AddAsync(session);
@@ -67,7 +67,7 @@ namespace PRIO.src.Shared.Infra.Http.Services
             if (user.Session.ExpiresIn < DateTime.UtcNow.AddHours(-3) || user.Session.UserHttpAgent != userHttpAgent)
             {
                 user.Session.Token = token;
-                user.Session.ExpiresIn = DateTime.UtcNow.AddHours(-3).AddDays(7);
+                user.Session.ExpiresIn = DateTime.UtcNow.AddHours(-8).AddDays(7);
                 user.Session.UserHttpAgent = userHttpAgent;
 
                 _context.Sessions.Update(user.Session);
