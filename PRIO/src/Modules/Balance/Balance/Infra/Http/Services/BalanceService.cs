@@ -132,6 +132,9 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
                 .GetWaterGasFieldInjectionByDate(dateBalance)
                 ?? throw new BadRequestException("Injeção deve ser feita antes da criação do balanço.");
 
+            if (uepBalance.Status)
+                throw new ConflictException("Balanço do dia já foi criado.");
+
             var fieldBalances = new List<FieldBalanceDto>();
 
             foreach (var installationBalance in uepBalance.InstallationsBalance)
@@ -168,7 +171,7 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
                 TotalWaterReceived = Math.Round(uepBalance.TotalWaterReceived, 5),
                 TotalWaterTransferred = Math.Round(uepBalance.TotalWaterTransferred, 5),
                 UepBalanceId = uepBalance.Id,
-                StatusBalance = false,
+                StatusBalance = uepBalance.Status,
                 FieldBalances = fieldBalances,
                 UepName = uepBalance.Uep.Name,
             };
@@ -183,7 +186,7 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
                 ?? throw new NotFoundException("Balanço da uep não encontrado.");
 
             if (body.FieldsBalances.Any() is false)
-                throw new BadRequestException("FieldBalances não pode estar vazio.");
+                throw new BadRequestException("'FieldsBalances' não pode estar vazio.");
 
 
             var fieldBalancesToUpdate = new List<FieldsBalance>();
@@ -268,7 +271,7 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
                 TotalWaterReceived = Math.Round(uepBalance.TotalWaterReceived, 5),
                 TotalWaterTransferred = Math.Round(uepBalance.TotalWaterTransferred, 5),
                 UepBalanceId = uepBalance.Id,
-                StatusBalance = false,
+                StatusBalance = uepBalance.Status,
                 FieldBalances = fieldBalancesDto,
                 UepName = uepBalance.Uep.Name,
             };
@@ -350,7 +353,7 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
                 TotalWaterReceived = Math.Round(uepBalance.TotalWaterReceived, 5),
                 TotalWaterTransferred = Math.Round(uepBalance.TotalWaterTransferred, 5),
                 UepBalanceId = uepBalance.Id,
-                StatusBalance = false,
+                StatusBalance = uepBalance.Status,
                 FieldBalances = fieldBalancesDto,
                 UepName = uepBalance.Uep.Name,
             };
