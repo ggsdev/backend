@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using PRIO.src.Modules.Balance.Balance.Dtos;
 using PRIO.src.Modules.Balance.Balance.Infra.EF.Models;
+using PRIO.src.Modules.Balance.Injection.Dtos;
 using PRIO.src.Modules.Balance.Injection.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Groups.Dtos;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models;
@@ -281,6 +282,9 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<InjectivityIndex, InjectivityIndexDTO>();
             CreateMap<ProductivityIndex, ProductivityIndexDTO>();
             CreateMap<BuildUp, BuildUpDTO>();
+            CreateMap<WellSensor, WellSensorDTO>();
+            CreateMap<WellsValues, WellValueDTO>();
+            CreateMap<Value, ValueSensorDTO>();
             CreateMap<FieldsBalance, FieldsBalanceDTO>()
                 .ForMember(dest => dest.FieldId, opt => opt.MapFrom(src => src.FieldProduction.FieldId));
         }

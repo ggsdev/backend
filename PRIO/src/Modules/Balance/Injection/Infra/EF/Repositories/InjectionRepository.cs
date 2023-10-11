@@ -17,6 +17,15 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories
             return await _context.InjectionWaterWell
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
+        public async Task<WellSensor?> GetSensorById(Guid? id)
+        {
+            return await _context.WellSensor.Include(ws => ws.WellValues).ThenInclude(wv => wv.Value)
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
+        public void UpdateSensor(WellSensor wellSensor)
+        {
+            _context.WellSensor.Update(wellSensor);
+        }
 
         public async Task<List<InjectionWaterWell>> GetWaterWellInjectionsByDate(DateTime date, Guid fieldId)
         {
