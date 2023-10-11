@@ -196,8 +196,7 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
                 }
             }
 
-
-            var result = new BalanceByDateDto
+            return new BalanceByDateDto
             {
                 DischargedSurface = Math.Round(uepBalance.DischargedSurface, 5),
                 DateBalance = uepBalance.MeasurementAt.ToString("dd/MMM/yyyy"),
@@ -213,8 +212,6 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
                 FieldBalances = fieldBalances,
                 UepName = uepBalance.Uep.Name,
             };
-
-            return result;
         }
 
         public async Task<BalanceByDateDto> InsertManualValuesBalance(ManualValuesBalanceViewModel body)
@@ -296,7 +293,9 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
 
             _balanceRepository.UpdateRangeFieldBalances(fieldBalancesToUpdate);
 
-            var result = new BalanceByDateDto
+            await _balanceRepository.Save();
+
+            return new BalanceByDateDto
             {
                 DischargedSurface = Math.Round(uepBalance.DischargedSurface, 5),
                 DateBalance = uepBalance.MeasurementAt.ToString("dd/MMM/yyyy"),
@@ -312,11 +311,6 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
                 FieldBalances = fieldBalancesDto,
                 UepName = uepBalance.Uep.Name,
             };
-
-            await _balanceRepository.Save();
-
-            return result;
-
         }
 
         public async Task<List<BalanceDto>> GetAllBalances()
@@ -379,7 +373,7 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
                 }
             }
 
-            var result = new BalanceByDateDto
+            return new BalanceByDateDto
             {
                 DischargedSurface = Math.Round(uepBalance.DischargedSurface, 5),
                 DateBalance = uepBalance.MeasurementAt.ToString("dd/MMM/yyyy"),
@@ -395,8 +389,6 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
                 FieldBalances = fieldBalancesDto,
                 UepName = uepBalance.Uep.Name,
             };
-
-            return result;
         }
 
         public async Task<List<FieldBalanceDto>> UpdateBalance(UpdateManualValuesViewModel body, Guid fieldBalanceId)
