@@ -3,6 +3,8 @@ using PRIO.src.Modules.Balance.Balance.Dtos;
 using PRIO.src.Modules.Balance.Balance.Infra.EF.Models;
 using PRIO.src.Modules.Balance.Balance.Interfaces;
 using PRIO.src.Modules.Balance.Balance.ViewModels;
+using PRIO.src.Modules.Balance.Injection.Dtos;
+using PRIO.src.Modules.Balance.Injection.Infra.EF.Models;
 using PRIO.src.Modules.Balance.Injection.Interfaces;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Interfaces;
@@ -23,6 +25,7 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
             _installationRepository = installationRepository;
             _fieldRepository = fieldRepository;
             _balanceRepository = balanceRepository;
+            _injectionRepository = injectionRepository;
             _mapper = mapper;
             _injectionRepository = injectionRepository;
         }
@@ -56,11 +59,19 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
 
             return FieldDTO;
         }
-        public async Task UpdateOperationalParameters(Guid balanceId, UpdateListValuesViewModel values)
+        public async Task<WellSensorDTO> UpdateOperationalParameters(Guid balanceId, UpdateSensorDTO value)
         {
-            //var balance = await _balanceRepository.GetBalanceById(balanceId);
-            //if (balance == null) throw new NotFoundException("Balanço não encontrado.");
+            var sensor = await _injectionRepository.GetSensorById(balanceId);
+            if (sensor == null) throw new NotFoundException("Sensor não encontrado.");
 
+            sensor.AssignedValue = value.Value;
+            _injectionRepository.UpdateSensor(sensor);
+
+            var sensorDTO = _mapper.Map<WellSensor, WellSensorDTO>(sensor);
+
+            await _injectionRepository.Save();
+
+            return sensorDTO;
             //var list = new List<InjectionWaterWellDTO>()
             //foreach (var value in values) { }
         }

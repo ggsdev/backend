@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PRIO.src.Modules.Balance.Balance.Infra.Http.Services;
 using PRIO.src.Modules.Balance.Balance.ViewModels;
+using PRIO.src.Modules.Balance.Injection.Dtos;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.Http.Filters;
 using System.Globalization;
@@ -33,12 +34,12 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Controllers
             return Ok(data);
         }
 
-        //[HttpPatch("balances/{balanceId}")]
-        //public async Task<IActionResult> UpdateBalanceDatas([FromRoute] Guid balanceId, [FromBody] UpdateListValuesViewModel values)
-        //{
-        //    var data = await _service.UpdateOperationalParameters(balanceId, values);
-        //    return Ok(data);
-        //}
+        [HttpPatch("balances/parameters/{parameterId}")]
+        public async Task<IActionResult> UpdateBalanceDatas([FromRoute] Guid parameterId, [FromBody] UpdateSensorDTO value)
+        {
+            var data = await _service.UpdateOperationalParameters(parameterId, value);
+            return Ok(data);
+        }
 
         [HttpGet("ueps/{id}/balances")]
         public async Task<IActionResult> GetBalancesByDate(string dateBalance, Guid id)
