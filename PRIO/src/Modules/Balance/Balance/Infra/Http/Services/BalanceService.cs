@@ -43,10 +43,26 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
 
             return fieldsBalanceDTO;
         }
+
+        public async Task<FieldBalanceDto> ConfirmBalance(Guid id)
+        {
+            var balance = await _balanceRepository.GetBalanceById(id);
+            if (balance == null) throw new NotFoundException("Balanço não encontrado.");
+            if (balance.IsParameterized)
+                throw new ConflictException("Dados Operacionais já foram confirmados.");
+
+            balance.IsParameterized = true;
+            _balanceRepository.UpdateFieldBalance(balance);
+            await _balanceRepository.Save();
+
+            var FieldBalanceDTO = _mapper.Map<FieldsBalance, FieldBalanceWithParameterDTO>(balance);
+            return FieldBalanceDTO;
+        }
         public async Task<FieldWithInjectionsValuesDTO> GetDatasByBalanceId(Guid balanceId)
         {
             var balance = await _balanceRepository.GetBalanceById(balanceId);
             if (balance == null) throw new NotFoundException("Balanço não encontrado.");
+
 
             var balanceDatas = await _balanceRepository.GetDatasByBalanceId(balance.FieldProduction.FieldId);
             if (balanceDatas == null)

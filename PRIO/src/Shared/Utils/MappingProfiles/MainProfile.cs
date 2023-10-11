@@ -285,6 +285,8 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<WellSensor, WellSensorDTO>();
             CreateMap<WellsValues, WellValueDTO>();
             CreateMap<Value, ValueSensorDTO>();
+            CreateMap<FieldsBalance, FieldBalanceDto>();
+            CreateMap<FieldsBalance, FieldBalanceWithParameterDTO>();
             CreateMap<FieldsBalance, FieldsBalanceDTO>()
                 .ForMember(dest => dest.FieldId, opt => opt.MapFrom(src => src.FieldProduction.FieldId));
         }
