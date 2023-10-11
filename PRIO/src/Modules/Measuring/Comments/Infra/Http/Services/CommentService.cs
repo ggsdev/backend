@@ -137,11 +137,11 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
                             {
                                 foreach (var tag in tags)
                                 {
+
                                     var wellValue = await _PIRepository.GetWellValuesWithChildrens(production.MeasuredAt, well.Id, tag);
                                     if (wellValue is not null)
                                     {
                                         var resultFluid = ConsultParameter(wellValue.Value.Attribute);
-                                        Console.WriteLine(resultFluid);
                                         if (resultFluid == "Water")
                                         {
                                             var injectionWaterWell = new InjectionWaterWell
@@ -268,7 +268,6 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
             var listWater = new List<string> { "Vazão da WFL1", "Vazão de injeção de água" };
             var listSensors = new List<string> { "Pressão WH", "Pressão PDG 1", "Pressão Intake ESP", "Pressão PDG 2" };
 
-            Console.WriteLine(atr.Element.Parameter);
             if (listGas.Contains(atr.Element.Parameter))
                 return "Gas";
             else if (listWater.Contains(atr.Element.Parameter))
