@@ -67,6 +67,13 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Controllers
 
             return Ok(data);
         }
+        [HttpPost("balances/{id}")]
+        public async Task<IActionResult> Post(Guid id)
+        {
+            var data = await _service.ConfirmBalance(id);
+
+            return Ok(data);
+        }
 
         [HttpPost("balances")]
         public async Task<IActionResult> CreateBalance(ManualValuesBalanceViewModel body)

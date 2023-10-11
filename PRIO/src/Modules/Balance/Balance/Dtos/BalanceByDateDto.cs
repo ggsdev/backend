@@ -32,4 +32,9 @@
         public decimal? DischargedSurface { get; set; }
         public decimal? TotalWaterTransferred { get; set; }
     }
+
+    public class FieldBalanceWithParameterDTO : FieldBalanceDto
+    {
+        public bool IsParameterized { get; set; }
+    }
 }
