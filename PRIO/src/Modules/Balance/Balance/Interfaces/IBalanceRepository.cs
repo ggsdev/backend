@@ -12,9 +12,13 @@ namespace PRIO.src.Modules.Balance.Balance.Interfaces
         Task<FieldsBalance?> GetBalanceField(Guid fieldId, DateTime measuredAt);
         Task<UEPsBalance?> GetUepBalance(Guid uepId, DateTime measuredAt);
         Task<FieldsBalance?> GetBalanceById(Guid fieldBalanceId);
+        Task<UEPsBalance?> GetUepBalanceById(Guid? uepBalanceId);
         Task<Field?> GetDatasByBalanceId(Guid fieldId);
         void UpdateFieldBalance(FieldsBalance fieldBalance);
         void UpdateInstallationBalance(InstallationsBalance balance);
         void UpdateUepBalance(UEPsBalance balance);
+        void UpdateRangeFieldBalances(List<FieldsBalance> balance);
+        Task<List<UEPsBalance>> GetAllBalances();
+        Task Save();
     }
 }

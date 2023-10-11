@@ -278,7 +278,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                 .Include(x => x.Fields)
                     .ThenInclude(x => x.Wells)
                         .ThenInclude(w => w.Completions)
-                .Where(x => x.UepCod == uepCode)
+                .Where(x => x.UepCod == uepCode && x.IsActive)
                 .ToListAsync();
         }
         public async Task<List<Installation>> GetUEPsCreateAsync(string table)
