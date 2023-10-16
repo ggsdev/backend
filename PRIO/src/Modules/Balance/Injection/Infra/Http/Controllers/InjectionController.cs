@@ -71,5 +71,13 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Controllers
             return Ok(data);
         }
 
+        [HttpPatch("{fieldInjectionId}/status")]
+        public async Task<IActionResult> UpdateStatus(Guid fieldInjectionId)
+        {
+            await _service.UpdateInjectionStatus(fieldInjectionId);
+
+            return NoContent();
+        }
+
     }
 }

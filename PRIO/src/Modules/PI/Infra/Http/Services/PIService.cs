@@ -65,7 +65,7 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                                     Field = field.Name,
                                     Status = attribute.IsActive,
                                     Operational = attribute.IsOperating,
-                                    Parameter = attribute.Element.Name,
+                                    Parameter = attribute.Element.Parameter,
                                     Tag = attribute.Name,
                                     WellName = well.Name,
                                     GroupParameter = attribute.Element.CategoryParameter,
@@ -222,9 +222,9 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
             var elementInDatabase = await _repository
                 .GetElementByParameter(body.Parameter)
                 ?? throw new ConflictException($"Parâmetro: '{body.Parameter}' não encontrado.");
+
             try
             {
-
                 var handler = new HttpClientHandler
                 {
                     ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
@@ -257,6 +257,11 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                     .FirstOrDefault(x => x.Name.ToUpper().Trim().Contains(body.TagName.ToUpper().Trim()))
                     ?? throw new NotFoundException($"Tag: {body.TagName} não encontrada no PI.");
 
+                //if (body.Operational)
+                //{
+
+                //}
+
                 var createdTag = new EF.Models.Attribute
                 {
                     Id = Guid.NewGuid(),
@@ -288,7 +293,6 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                     Id = createdTag.Id,
                     CreatedAt = createdTag.CreatedAt.ToString("dd/MM/yyyy"),
                     Tag = createdTag.Name,
-
                 };
 
                 await _repository.SaveChanges();
@@ -383,39 +387,53 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
 
             try
             {
-                var handler = new HttpClientHandler
-                {
-                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
-                };
-
-                using HttpClient client = new(handler);
-                var username = "svc-pi-frade";
-                var password = "S6_5q2C?=%ff";
-
-                var credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}"));
-
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
-
-                var atributesRoute = elementInDatabase.AttributesRoute;
-
-                var response = await client
-                    .GetAsync(atributesRoute);
-
-                if (response.IsSuccessStatusCode is false)
-                    throw new BadRequestException("Conexão com PI falhou.");
-
-                var jsonContent = await response.Content.ReadAsStringAsync();
-
-                var elementObject = JsonSerializer.Deserialize<ItemsElementJson>(jsonContent, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                }) ?? throw new BadRequestException("Não foi possível deserializar o json");
-
                 if (body.TagName is not null)
                 {
+                    var handler = new HttpClientHandler
+                    {
+                        ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+                    };
+
+                    using HttpClient client = new(handler);
+
+                    var username = PIConfig._user;
+                    var password = PIConfig._password;
+
+                    var credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}"));
+
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
+
+                    var atributesRoute = elementInDatabase.AttributesRoute;
+
+                    var response = await client
+                        .GetAsync(atributesRoute);
+
+                    if (response.IsSuccessStatusCode is false)
+                        throw new BadRequestException("Conexão com PI falhou.");
+
+                    var jsonContent = await response.Content.ReadAsStringAsync();
+
+                    var elementObject = JsonSerializer.Deserialize<ItemsElementJson>(jsonContent, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    }) ?? throw new BadRequestException("Não foi possível deserializar o json");
+
                     _ = elementObject.Items
                    .FirstOrDefault(x => x.Name.ToUpper().Trim().Contains(body.TagName.ToUpper().Trim()))
                    ?? throw new NotFoundException($"Tag: {body.TagName} não encontrada no PI.");
+                }
+
+                if (body.Operational is not null)
+                {
+                    foreach (var wellName in tag.WellName.Split(','))
+                    {
+                        var wellInDatabase = await _wellRepository
+                       .GetByNameOrOperatorName(wellName);
+
+
+                    }
+
+
                 }
 
                 var updatedValues = UpdateFields.CompareUpdateReturnOnlyUpdated(tag, body);
@@ -430,10 +448,6 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
             catch (HttpRequestException)
             {
                 throw new BadRequestException("Erro ao se conectar ao PI.");
-            }
-            catch (Exception ex)
-            {
-                throw new BadRequestException($"Aconteceu algo de errado: {ex.Message}... {ex}");
             }
         }
 
