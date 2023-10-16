@@ -84,9 +84,9 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Controllers
         }
 
         [HttpPatch("balances/{id}")]
-        public async Task<IActionResult> UpdateFieldBalance(UpdateManualValuesViewModel body, Guid id)
+        public async Task<IActionResult> UpdateFieldBalance(UpdateManualValuesViewModel body)
         {
-            var data = await _service.UpdateBalance(body, id);
+            var data = await _service.UpdateBalance(body);
 
             return Ok(data);
         }
