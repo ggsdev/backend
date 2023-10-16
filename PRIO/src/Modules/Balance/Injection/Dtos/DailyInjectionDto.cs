@@ -14,6 +14,7 @@
     public class GasLiftInjectedDto
     {
         public string Field { get; set; }
+
         public List<ElementGasDto> Parameters { get; set; } = new();
     }
 
@@ -37,6 +38,7 @@
     public class WaterInjectedDto
     {
         public string Field { get; set; }
+        public double FIRS { get; set; }
         public List<WellWaterInjectedDto> Values { get; set; } = new();
     }
     //public class DailyInjectionDto

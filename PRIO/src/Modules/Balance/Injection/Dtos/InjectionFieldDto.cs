@@ -12,7 +12,6 @@
             public double TotalGasLift { get; set; }
             public double TotalWaterInjected { get; set; }
 
-            public double FIRS { get; set; }
             public GasLiftInjectedDto GasLiftFields { get; set; }
             public WaterInjectedDto WaterInjectedFields { get; set; }
 

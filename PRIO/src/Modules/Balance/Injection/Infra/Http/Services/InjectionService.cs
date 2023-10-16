@@ -52,8 +52,8 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 .GetBalanceField(body.FieldId!.Value, dateInjection.Date)
                 ?? throw new BadRequestException("Balanço de campo não criado ainda, é necessário fechar a produção do dia.");
 
-            if (fieldBalance.IsParameterized is false)
-                throw new ConflictException("Dados operacionais precisam ser confirmados.");
+            //if (fieldBalance.IsParameterized is false)
+            //    throw new ConflictException("Dados operacionais precisam ser confirmados.");
 
             var injectionInDatabase = await _repository
                 .AnyByDate(dateInjection);
@@ -198,17 +198,18 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 Uep = fieldInjection.Field.Installation.UepName,
                 Status = fieldInjection.Status,
                 TotalWaterInjected = Math.Round(fieldInjection.AmountWater, 5),
-                FIRS = fieldInjection.FIRS
             };
 
             var gasLiftDto = new GasLiftInjectedDto
             {
                 Field = fieldInjection.Field.Name!,
+
             };
 
             var waterInjectedDto = new WaterInjectedDto
             {
                 Field = fieldInjection.Field.Name!,
+                FIRS = fieldInjection.FIRS
             };
 
             //foreach (var waterInjection in fieldInjection.WellsWaterInjections)
@@ -273,6 +274,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                     VolumePI = gasInjection.WellValues.Value.Amount is not null ? Math.Round(gasInjection.WellValues.Value.Amount.Value, 5) : null,
                     WellName = gasInjection.WellValues.Value.Attribute.WellName,
                     VolumeAssigned = gasInjection.AssignedValue,
+
                 };
 
                 parameterDto.Values.Add(gasValuesDto);
