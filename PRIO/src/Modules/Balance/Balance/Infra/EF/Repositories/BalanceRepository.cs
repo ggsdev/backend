@@ -37,6 +37,8 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.EF.Repositories
         public async Task<FieldsBalance?> GetBalanceById(Guid fieldBalanceId)
         {
             return await _context.FieldsBalance
+                .Include(x => x.InstallationBalance)
+                    .ThenInclude(x => x.UEPBalance)
                 .Include(fb => fb.FieldProduction)
                 .Include(x => x.Field)
                  .Where(fb => fb.Id == fieldBalanceId)
