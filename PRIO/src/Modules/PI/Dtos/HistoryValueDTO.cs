@@ -8,5 +8,6 @@
         public double? Value { get; set; }
         public string TAG { get; set; }
         public DateTime Date { get; set; }
+        public bool IsCaptured { get; set; }
     }
 }

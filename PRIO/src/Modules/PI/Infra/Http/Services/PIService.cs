@@ -7,6 +7,7 @@ using PRIO.src.Modules.PI.Dtos;
 using PRIO.src.Modules.PI.Interfaces;
 using PRIO.src.Modules.PI.ViewModels;
 using PRIO.src.Shared.Errors;
+using PRIO.src.Shared.Utils;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -92,6 +93,35 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
             return result;
         }
 
+        public async Task<AttributeReturnDTO> GetTagById(Guid id)
+        {
+            var tag = await _repository
+                .GetById(id)
+                ?? throw new NotFoundException("Tag não encontrada ou inativa.");
+
+            var well = await _wellRepository
+                .GetByNameOrOperatorName(tag.WellName);
+
+            if (well is null || well.IsActive is false)
+                throw new BadRequestException("Poço não encontrado ou inativo.");
+
+            var tagDto = new AttributeReturnDTO
+            {
+                Id = tag.Id,
+                CategoryOperator = well.CategoryOperator!,
+                CreatedAt = tag.CreatedAt.ToString("dd/MMM/yyyy"),
+                Field = well.Field.Name,
+                GroupParameter = tag.Element.CategoryParameter,
+                Operational = tag.IsOperating,
+                Parameter = tag.Element.Parameter,
+                Status = tag.IsActive,
+                Tag = tag.Name,
+                WellId = well.Id,
+                WellName = well.Name!,
+            };
+
+            return tagDto;
+        }
         public async Task<List<AttributeReturnDTO>> GetTagsByWellName(string wellName, string wellOperatorName)
         {
             var attributesOfWell = await _repository
@@ -143,17 +173,26 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
 
             foreach (var value in GetValuesByDate)
             {
-                var well = await _wellRepository.GetByNameOrOperatorName(value.Attribute.WellName);
-                var data = new HistoryValueDTO
+                var wellNames = value.Attribute.WellName.Split(',');
+
+                foreach (var wellInDatabase in wellNames)
                 {
-                    TAG = value.Attribute.Name,
-                    Date = value.Date,
-                    Value = value.Amount,
-                    Well = value.Attribute.WellName,
-                    Field = well.Field.Name,
-                    Installation = well.Field.Installation.Name
-                };
-                listValues.Add(data);
+                    var well = await _wellRepository.GetByNameOrOperatorName(wellInDatabase);
+
+                    var data = new HistoryValueDTO
+                    {
+                        TAG = value.Attribute.Name,
+                        Date = value.Date,
+                        Value = value.Amount,
+                        Well = value.Attribute.WellName,
+                        Field = well.Field.Name,
+                        Installation = well.Field.Installation.Name,
+                        IsCaptured = value.IsCaptured,
+                    };
+                    listValues.Add(data);
+                }
+
+
             }
             return listValues;
         }
@@ -313,6 +352,89 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
 
 
 
+        }
+
+
+        public async Task UpdateById(Guid id, UpdateTagViewModel body)
+        {
+            var tag = await _repository
+                .GetById(id)
+                ?? throw new NotFoundException("Tag não encontrada ou inativa.");
+
+            if (body.TagName is not null)
+            {
+                var tagExists = await _repository
+                    .AnyTag(body.TagName, tag.Id);
+
+                if (tagExists)
+                    throw new ConflictException($"Já existe uma tag cadastrada com o nome: '{body.TagName}'.");
+            }
+
+            var elementInDatabase = tag.Element;
+
+            if (body.Parameter is not null)
+            {
+                var elementInBody = await _repository
+                .GetElementByParameter(body.Parameter)
+                ?? throw new ConflictException($"Parâmetro: '{body.Parameter}' não encontrado.");
+
+                elementInDatabase = elementInBody;
+            }
+
+            try
+            {
+                var handler = new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+                };
+
+                using HttpClient client = new(handler);
+                var username = "svc-pi-frade";
+                var password = "S6_5q2C?=%ff";
+
+                var credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}"));
+
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
+
+                var atributesRoute = elementInDatabase.AttributesRoute;
+
+                var response = await client
+                    .GetAsync(atributesRoute);
+
+                if (response.IsSuccessStatusCode is false)
+                    throw new BadRequestException("Conexão com PI falhou.");
+
+                var jsonContent = await response.Content.ReadAsStringAsync();
+
+                var elementObject = JsonSerializer.Deserialize<ItemsElementJson>(jsonContent, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }) ?? throw new BadRequestException("Não foi possível deserializar o json");
+
+                if (body.TagName is not null)
+                {
+                    _ = elementObject.Items
+                   .FirstOrDefault(x => x.Name.ToUpper().Trim().Contains(body.TagName.ToUpper().Trim()))
+                   ?? throw new NotFoundException($"Tag: {body.TagName} não encontrada no PI.");
+                }
+
+                var updatedValues = UpdateFields.CompareUpdateReturnOnlyUpdated(tag, body);
+
+                if (updatedValues.Any() is false)
+                    throw new BadRequestException("Nenhum campo foi atualizado.");
+
+                _repository.Update(tag);
+
+                await _repository.SaveChanges();
+            }
+            catch (HttpRequestException)
+            {
+                throw new BadRequestException("Erro ao se conectar ao PI.");
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException($"Aconteceu algo de errado: {ex.Message}... {ex}");
+            }
         }
 
         private static void Print<T>(T text)

@@ -23,7 +23,10 @@ namespace PRIO.src.Modules.PI.Infra.EF.Repositories
         }
         public async Task<List<Value>> GetValuesByDate(DateTime date)
         {
-            return await _context.Values.Include(v => v.Attribute).ThenInclude(a => a.Element).Where(x => x.Date.Date == date).ToListAsync();
+            return await _context.Values
+                .Include(v => v.Attribute)
+                .ThenInclude(a => a.Element)
+                .Where(x => x.Date.Date == date).ToListAsync();
         }
 
         public async Task<WellsValues?> GetWellValuesById(Guid id)
@@ -33,6 +36,13 @@ namespace PRIO.src.Modules.PI.Infra.EF.Repositories
                 .Include(a => a.Well)
                 .Where(x => x.Id == id)
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<Models.Attribute?> GetById(Guid id)
+        {
+            return await _context.Attributes
+                .Include(x => x.Element)
+                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive);
         }
 
         public async Task<List<Models.Attribute>> GetTagsByWellName(string wellName, string wellOperatorName)
@@ -57,10 +67,11 @@ namespace PRIO.src.Modules.PI.Infra.EF.Repositories
             await _context.Attributes
                 .AddAsync(atr);
         }
-        public async Task<bool> AnyTag(string tagName)
+        public async Task<bool> AnyTag(string tagName, Guid? id = null)
         {
             return await _context.Attributes
-                .AnyAsync(x => x.Name.ToUpper().Trim() == tagName.ToUpper().Trim());
+                .Where(x => x.Name.ToUpper().Trim() == tagName.ToUpper().Trim() && x.Id != id && x.IsActive)
+                .AnyAsync();
         }
         public async Task SaveChanges()
         {
@@ -77,6 +88,11 @@ namespace PRIO.src.Modules.PI.Infra.EF.Repositories
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
+        }
+
+        public void Update(Models.Attribute atr)
+        {
+            _context.Update(atr);
         }
     }
 }
