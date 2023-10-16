@@ -2,9 +2,7 @@
 using PRIO.src.Modules.Balance.Balance.Infra.Http.Services;
 using PRIO.src.Modules.Balance.Balance.ViewModels;
 using PRIO.src.Modules.Balance.Injection.Dtos;
-using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.Http.Filters;
-using System.Globalization;
 
 namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Controllers
 {
@@ -41,16 +39,16 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Controllers
             return Ok(data);
         }
 
-        [HttpGet("ueps/{id}/balances")]
-        public async Task<IActionResult> GetBalancesByDate(string dateBalance, Guid id)
-        {
-            if (!DateTime.TryParseExact(dateBalance, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
-                throw new BadRequestException("O formato da data deve ser dd-MM-yyyy");
+        //[HttpGet("ueps/{id}/balances")]
+        //public async Task<IActionResult> GetBalancesByDate(string dateBalance, Guid id)
+        //{
+        //    if (!DateTime.TryParseExact(dateBalance, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
+        //        throw new BadRequestException("O formato da data deve ser dd-MM-yyyy");
 
-            var data = await _service.GetByDateAndUepId(date, id);
+        //    var data = await _service.GetByDateAndUepId(date, id);
 
-            return Ok(data);
-        }
+        //    return Ok(data);
+        //}
 
         [HttpGet("balances")]
         public async Task<IActionResult> Get()
@@ -84,9 +82,9 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Controllers
         }
 
         [HttpPatch("balances/{id}")]
-        public async Task<IActionResult> UpdateFieldBalance(UpdateManualValuesViewModel body)
+        public async Task<IActionResult> UpdateFieldBalance(UpdateManualValuesViewModel body, Guid id)
         {
-            var data = await _service.UpdateBalance(body);
+            var data = await _service.UpdateBalance(body, id);
 
             return Ok(data);
         }
