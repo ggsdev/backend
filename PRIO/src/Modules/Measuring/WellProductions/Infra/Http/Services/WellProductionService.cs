@@ -87,7 +87,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                             var isThereWellTests = FilterBtp(well.WellTests, production);
                             if (isThereWellTests is not null && isThereWellTests.Count() == 0)
                             {
-                                wellsInvalids.Add($"Poço {well.Name} com {24 - totalInterval}h de produção não tem teste de poço cadastrado para a data {production.MeasuredAt.Date:dd/MM/yyyy}");
+                                wellsInvalids.Add($"Poço {well.Name} com aproximadamente {Math.Round(24 - totalInterval, 2)}h de produção não tem teste de poço cadastrado para a data {production.MeasuredAt.Date:dd/MM/yyyy}");
                             }
                         }
                     }

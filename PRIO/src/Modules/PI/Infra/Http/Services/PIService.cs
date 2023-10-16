@@ -58,6 +58,7 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                                 attributesList.Add(new AttributeReturnDTO
                                 {
                                     Id = attribute.Id,
+                                    WellId = well.Id,
                                     CategoryOperator = well.CategoryOperator,
                                     CreatedAt = attribute.CreatedAt.ToString("dd/MM/yyyy HH:mm"),
                                     Field = field.Name,
@@ -67,6 +68,7 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                                     Tag = attribute.Name,
                                     WellName = well.Name,
                                     GroupParameter = attribute.Element.CategoryParameter,
+
                                 });
                             }
                         }
@@ -105,6 +107,7 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                 attributesList.Add(new AttributeReturnDTO
                 {
                     WellName = well.Name,
+                    WellId = well.Id,
                     CategoryOperator = well.CategoryOperator,
                     Field = well.Field.Name,
                     GroupParameter = attr.Element.CategoryParameter,
@@ -236,6 +239,7 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                 var attributeDto = new AttributeReturnDTO
                 {
                     WellName = well.Name,
+                    WellId = well.Id,
                     CategoryOperator = well.CategoryOperator,
                     Field = well.Field.Name,
                     GroupParameter = createdTag.Element.CategoryParameter,
