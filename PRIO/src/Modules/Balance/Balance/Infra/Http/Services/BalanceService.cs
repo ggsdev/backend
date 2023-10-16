@@ -426,19 +426,23 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
                 if (balanceToUpdate.InstallationBalance!.UEPBalance.Id != id)
                     throw new BadRequestException("Campo não pertence a UEP.");
 
-                resultBalance += Math.Round(balanceToUpdate.TotalWaterProduced, 2);
-                resultBalance -= Math.Round(balanceToUpdate.TotalWaterInjectedRS, 2);
-                resultBalance -= Math.Round(balanceToUpdate.TotalWaterDisposal, 2);
-                resultBalance += Math.Round(balanceToUpdate.TotalWaterReceived, 2);
-                resultBalance += Math.Round(balanceToUpdate.TotalWaterCaptured, 2);
-                resultBalance -= Math.Round(balanceToUpdate.DischargedSurface, 2);
-                resultBalance -= Math.Round(balanceToUpdate.TotalWaterTransferred, 2);
-
                 balanceToUpdate.Status = true;
                 balanceToUpdate.TotalWaterReceived = bodyBalanceField.TotalWaterReceived is not null ? bodyBalanceField.TotalWaterReceived.Value : balanceToUpdate.TotalWaterReceived;
                 balanceToUpdate.DischargedSurface = bodyBalanceField.DischargedSurface is not null ? bodyBalanceField.DischargedSurface.Value : balanceToUpdate.DischargedSurface;
                 balanceToUpdate.TotalWaterTransferred = bodyBalanceField.TotalWaterTransferred is not null ? bodyBalanceField.TotalWaterTransferred.Value : balanceToUpdate.TotalWaterTransferred;
                 balanceToUpdate.TotalWaterCaptured = bodyBalanceField.TotalWaterCaptured is not null ? bodyBalanceField.TotalWaterCaptured.Value : balanceToUpdate.TotalWaterCaptured;
+
+                resultBalance += Math.Round(balanceToUpdate.TotalWaterProduced, 5);
+
+                resultBalance -= Math.Round(balanceToUpdate.TotalWaterInjectedRS, 5);
+
+                resultBalance -= Math.Round(balanceToUpdate.TotalWaterDisposal, 5);
+
+                resultBalance += Math.Round(balanceToUpdate.TotalWaterReceived, 5);
+                resultBalance += Math.Round(balanceToUpdate.TotalWaterCaptured, 5);
+                resultBalance -= Math.Round(balanceToUpdate.DischargedSurface, 5);
+                resultBalance -= Math.Round(balanceToUpdate.TotalWaterTransferred, 5);
+
 
                 fieldBalancesToUpdate.Add(balanceToUpdate);
 
@@ -458,7 +462,8 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
                 });
 
                 if (resultBalance != 0m)
-                    throw new ConflictException($"Resultado do balanço deve ser zero. Valor final: {Math.Round(resultBalance, 2)}.");
+                    throw new ConflictException($"Resultado do balanço deve ser zero. Valor final: {Math.Round(resultBalance, 5)}.");
+
             }
 
             _balanceRepository.UpdateRangeFieldBalances(fieldBalancesToUpdate);
