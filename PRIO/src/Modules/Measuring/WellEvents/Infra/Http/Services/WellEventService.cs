@@ -118,7 +118,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.Http.Services
                 }
 
                 if (lastEvent is not null && parsedStartDate < lastEvent.StartDate)
-                    throw new BadRequestException("Data de início do evento deve ser maior que a data de início do último evento associado.");
+                    throw new BadRequestException("Data de início do evento está menor que a data de início do último evento.");
 
                 wellsList.Add(wellInDatabase);
             }
@@ -319,7 +319,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.Http.Services
 
 
             if (parsedStartDate < lastEvent.StartDate)
-                throw new BadRequestException("Data de início do evento deve ser maior que a data de início do último evento associado.");
+                throw new BadRequestException("Data de início do evento está menor que a data de início do último evento.");
 
             var lastEventOfTypeOpening = await _wellEventRepository
                 .GetLastWellEvent("A");

@@ -22,8 +22,11 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
 
         public async Task<Well?> GetByNameOrOperatorName(string name)
         {
-            return await _context.Wells.Include(w => w.Field).ThenInclude(f => f.Installation)
-                    .FirstOrDefaultAsync(x => x.Name == name || x.WellOperatorName == name);
+            return await _context.Wells
+                .Where(x => x.Name!.ToUpper().Trim() == name.ToUpper().Trim() || x.WellOperatorName!.ToUpper().Trim() == name.ToUpper().Trim())
+                .Include(w => w.Field)
+                    .ThenInclude(f => f.Installation)
+                .FirstOrDefaultAsync();
         }
         public async Task<List<PI.Infra.EF.Models.Attribute>> GetTagsFromWell(string wellName, string wellOperatorName)
         {

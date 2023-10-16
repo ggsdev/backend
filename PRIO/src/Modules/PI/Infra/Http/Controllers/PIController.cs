@@ -60,5 +60,22 @@ namespace PRIO.src.Modules.PI.Infra.Http.Controllers
             return Ok(PIValuesDTO);
 
         }
+
+        [HttpGet("tags/{id}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var data = await _service.GetTagById(id);
+
+            return Ok(data);
+
+        }
+
+        [HttpPatch("tags/{id}")]
+        public async Task<IActionResult> Update(Guid id, UpdateTagViewModel body)
+        {
+            await _service.UpdateById(id, body);
+
+            return Ok();
+        }
     }
 }
