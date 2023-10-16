@@ -515,9 +515,9 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
             var well = await _wellRepository.GetByIdAsync(body.Validate.WellId) ?? throw new NotFoundException("Poço não encontrado.");
             var BTP = await _BTPRepository.GetByIdAsync(body.Validate.BTPId) ?? throw new NotFoundException("BTP não encontrado");
 
-            var foundDate = await _BTPRepository.GetByWellAndDateXls(body.Validate.WellId, body.Data.FinalDate);
-            if (foundDate is not null)
-                throw new ConflictException("Já existe um teste para este poço nesta data");
+            //var foundDate = await _BTPRepository.GetByWellAndDateXls(body.Validate.WellId, body.Data.FinalDate);
+            //if (foundDate is not null)
+            //    throw new ConflictException("Já existe um teste para este poço nesta data");
 
             var foundApllicationDate = await _BTPRepository.GetByWellAndApplicationDateXls(body.Validate.WellId, body.Data.ApplicationDate);
             if (foundApllicationDate is not null)

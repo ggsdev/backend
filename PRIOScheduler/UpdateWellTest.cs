@@ -20,7 +20,7 @@ namespace PRIOScheduler
 
                 using var dbContext = new DataContext(dbContextOptions);
 
-                var dateToday = DateTime.UtcNow.AddHours(-3).Date;
+                var dateToday = DateTime.UtcNow.Date;
                 var dateSplit = dateToday.ToString().Split(" ")[0];
 
                 var wellTests = await dbContext.WellTests
@@ -31,6 +31,7 @@ namespace PRIOScheduler
                 foreach (var wellTest in wellTests)
                 {
                     var oldWellTest = await dbContext.WellTests
+                        .Include(x => x.Well)
                         .Where(x => x.Well.Id == wellTest.Well.Id && x.IsValid == true && x.IsActive == true)
                         .FirstOrDefaultAsync();
 
