@@ -13,7 +13,7 @@ namespace PRIO.src.Modules.Balance.Balance.ViewModels
     public class UpdateManualBalanceViewModel
     {
         [Required(ErrorMessage = "FieldBalanceId é obrigatório")]
-        public Guid? FieldBalanceId { get; set; }
+        public Guid FieldBalanceId { get; set; }
         public decimal? TotalWaterCaptured { get; set; }
         public decimal? DischargedSurface { get; set; }
         public decimal? TotalWaterTransferred { get; set; }

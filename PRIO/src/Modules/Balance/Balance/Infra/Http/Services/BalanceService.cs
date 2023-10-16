@@ -407,7 +407,7 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
             };
         }
 
-        public async Task<List<FieldBalanceDto>> UpdateBalance(UpdateManualValuesViewModel body, Guid fieldBalanceId)
+        public async Task<List<FieldBalanceDto>> UpdateBalance(UpdateManualValuesViewModel body)
         {
             var fieldBalancesToUpdate = new List<FieldsBalance>();
             var fieldBalancesDto = new List<FieldBalanceDto>();
@@ -417,16 +417,16 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
             foreach (var bodyBalanceField in body.FieldsBalances)
             {
                 var balanceToUpdate = await _balanceRepository
-                    .GetBalanceById(fieldBalanceId)
+                    .GetBalanceById(bodyBalanceField.FieldBalanceId)
                 ?? throw new NotFoundException("Balanço de campo não encontrado.");
 
-                resultBalance += balanceToUpdate.TotalWaterProduced;
-                resultBalance -= balanceToUpdate.TotalWaterInjectedRS;
-                resultBalance -= balanceToUpdate.TotalWaterDisposal;
-                resultBalance += balanceToUpdate.TotalWaterReceived;
-                resultBalance += balanceToUpdate.TotalWaterCaptured;
-                resultBalance -= balanceToUpdate.DischargedSurface;
-                resultBalance -= balanceToUpdate.TotalWaterTransferred;
+                resultBalance += Math.Round(balanceToUpdate.TotalWaterProduced, 2);
+                resultBalance -= Math.Round(balanceToUpdate.TotalWaterInjectedRS, 2);
+                resultBalance -= Math.Round(balanceToUpdate.TotalWaterDisposal, 2);
+                resultBalance += Math.Round(balanceToUpdate.TotalWaterReceived, 2);
+                resultBalance += Math.Round(balanceToUpdate.TotalWaterCaptured, 2);
+                resultBalance -= Math.Round(balanceToUpdate.DischargedSurface, 2);
+                resultBalance -= Math.Round(balanceToUpdate.TotalWaterTransferred, 2);
 
                 balanceToUpdate.Status = true;
                 balanceToUpdate.TotalWaterReceived = bodyBalanceField.TotalWaterReceived is not null ? bodyBalanceField.TotalWaterReceived.Value : balanceToUpdate.TotalWaterReceived;
@@ -453,7 +453,7 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
             }
 
             if (resultBalance != 0m)
-                throw new ConflictException($"Resultado do balanço deve ser zero. Valor final: {resultBalance}.");
+                throw new ConflictException($"Resultado do balanço deve ser zero. Valor final: {Math.Round(resultBalance, 5)}.");
 
             _balanceRepository.UpdateRangeFieldBalances(fieldBalancesToUpdate);
 

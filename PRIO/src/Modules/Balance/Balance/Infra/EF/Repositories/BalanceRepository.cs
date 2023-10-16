@@ -38,6 +38,7 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.EF.Repositories
         {
             return await _context.FieldsBalance
                 .Include(fb => fb.FieldProduction)
+                .Include(x => x.Field)
                  .Where(fb => fb.Id == fieldBalanceId)
                  .FirstOrDefaultAsync();
         }
