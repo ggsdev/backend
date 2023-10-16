@@ -101,8 +101,10 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             var gasInjectionWells = await _repository
                 .GetGasWellInjectionsByDate(dateInjection, field.Id);
 
+
             foreach (var waterInjection in waterInjectionWells)
             {
+
                 waterInjection.InjectionWaterGasField = fieldInjection;
                 fieldInjection.AmountWater += waterInjection.AssignedValue;
             }
