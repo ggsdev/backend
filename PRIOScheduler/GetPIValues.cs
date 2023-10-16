@@ -222,6 +222,7 @@ namespace PRIOScheduler
 
                 try
                 {
+                    // WFL1
                     var listAtrByDate = await dbContext.WellValues
                         .Include(wv => wv.Value)
                             .ThenInclude(v => v.Attribute)
@@ -230,7 +231,8 @@ namespace PRIOScheduler
                         .Where(wv => wv.Value.Date == dateToday && wv.Value.Attribute.Element.Parameter == "Vazão da WFL1")
                         .ToListAsync();
 
-                    // WFL1
+                    var potencialWells = 0d;
+
                     foreach (var wv in listAtrByDate)
                     {
                         var PDGbyWell = await dbContext.Values
@@ -257,11 +259,42 @@ namespace PRIOScheduler
 
                         if (PDGbyWell is not null && PDGbyWell.Amount is not null && wv.Value is not null)
                         {
-                            wv.Value.Amount = (PDGbyWell.Amount - bValue) * iiValue;
+                            potencialWells += (PDGbyWell.Amount.Value - bValue) * iiValue;
                         }
-
-                        await dbContext.SaveChangesAsync();
                     }
+
+                    foreach (var wv in listAtrByDate)
+                    {
+                        var PDGbyWell = await dbContext.Values
+                            .Include(v => v.Attribute)
+                                .ThenInclude(a => a.Element)
+                            .Where(v => v.Date == dateToday && v.Attribute.WellName == wv.Well.WellOperatorName && v.Attribute.IsOperating == true)
+                            .FirstOrDefaultAsync();
+
+                        var iiByWell = await dbContext.InjectivityIndex
+                            .Include(ii => ii.ManualWellConfiguration)
+                                .ThenInclude(mwc => mwc.Well)
+                            .Where(ii => ii.ManualWellConfiguration.Well.WellOperatorName == wv.Well.WellOperatorName && ii.IsOperating == true)
+                            .FirstOrDefaultAsync();
+
+                        var iiValue = iiByWell is not null ? iiByWell.Value : 0;
+
+                        var buildUpByWell = await dbContext.BuildUp
+                            .Include(b => b.ManualWellConfiguration)
+                                .ThenInclude(mwc => mwc.Well)
+                            .Where(b => b.ManualWellConfiguration.Well.WellOperatorName == wv.Well.WellOperatorName && b.IsOperating == true)
+                            .FirstOrDefaultAsync();
+
+                        var bValue = buildUpByWell is not null ? buildUpByWell.Value : 0;
+
+                        if (PDGbyWell is not null && PDGbyWell.Amount is not null && wv.Value is not null)
+                        {
+                            var PIA = (PDGbyWell.Amount.Value - bValue) * iiValue;
+                            var GroupAmount = wv.Value.GroupAmount is not null ? wv.Value.GroupAmount.Value : 0;
+                            wv.Value.Amount = (PIA / potencialWells) * GroupAmount;
+                        }
+                    }
+                    await dbContext.SaveChangesAsync();
                 }
                 catch (Exception e)
                 {
@@ -270,20 +303,10 @@ namespace PRIOScheduler
             }
             catch (Exception e)
             {
-
                 Print($"Outro error: {e}");
-
             }
 
             Console.WriteLine("Terminou de executar");
-
-
-        }
-
-        private static async void CalcAmount(DateTime dateToday)
-        {
-
-
         }
 
         public static void Execute()
