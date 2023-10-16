@@ -34,7 +34,7 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.EF.Repositories
                  .OrderByDescending(fb => fb.MeasurementAt)
                  .ToListAsync();
         }
-        public async Task<FieldsBalance?> GetBalanceById(Guid fieldBalanceId)
+        public async Task<FieldsBalance?> GetBalanceById(Guid? fieldBalanceId)
         {
             return await _context.FieldsBalance
                 .Include(x => x.InstallationBalance)

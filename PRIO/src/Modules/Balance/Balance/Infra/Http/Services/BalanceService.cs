@@ -415,10 +415,10 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
             var uepBalance = await _balanceRepository.GetUepBalanceById(id)
                 ?? throw new NotFoundException("Balanço da UEP não encontrado.");
 
-            var resultBalance = 0m;
-
             foreach (var bodyBalanceField in body.FieldsBalances)
             {
+                var resultBalance = 0m;
+
                 var balanceToUpdate = await _balanceRepository
                     .GetBalanceById(bodyBalanceField.FieldBalanceId)
                 ?? throw new NotFoundException("Balanço de campo não encontrado.");
@@ -456,10 +456,10 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
                     TotalWaterReceived = Math.Round(balanceToUpdate.TotalWaterReceived, 5),
                     TotalWaterTransferred = Math.Round(balanceToUpdate.TotalWaterTransferred, 5)
                 });
-            }
 
-            if (resultBalance != 0m)
-                throw new ConflictException($"Resultado do balanço deve ser zero. Valor final: {Math.Round(resultBalance, 2)}.");
+                if (resultBalance != 0m)
+                    throw new ConflictException($"Resultado do balanço deve ser zero. Valor final: {Math.Round(resultBalance, 2)}.");
+            }
 
             _balanceRepository.UpdateRangeFieldBalances(fieldBalancesToUpdate);
 
