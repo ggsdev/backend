@@ -71,7 +71,11 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 FIRS = body.FIRS!.Value,
             };
 
-            var resultDto = new WaterInjectionUpdateDto();
+            var resultDto = new WaterInjectionUpdateDto
+            {
+                FieldInjectionId = fieldInjection.Id
+            };
+
             var updatedBy = _mapper.Map<UserDTO>(loggedUser);
 
             foreach (var injection in body.AssignedValues)
@@ -326,7 +330,8 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             var installation = await _installationRepository.GetByIdAsync(installationId)
             ?? throw new NotFoundException(ErrorMessages.NotFound<Installation>());
 
-            var fieldInjected = await _repository.AnyByDate(dateInjection);
+            var fieldInjected = await _repository
+                .AnyByDate(dateInjection);
 
             if (fieldInjected)
                 throw new ConflictException($"Injeção diária no dia: {dateInjection:dd/MMM/yyyy} já criada.");

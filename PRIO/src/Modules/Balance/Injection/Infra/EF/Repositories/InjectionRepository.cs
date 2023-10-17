@@ -102,7 +102,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories
         public async Task<bool> AnyByDate(DateTime date)
         {
             return await _context.InjectionWaterGasField
-                .Where(x => x.MeasurementAt.Date == date.Date && x.Status == true)
+                .Where(x => x.MeasurementAt.Date == date.Date)
                 .AnyAsync();
         }
 
