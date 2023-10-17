@@ -55,7 +55,6 @@ namespace PRIOScheduler
                     foreach (var atr in attributes)
                     {
                         Print($"tag: {atr.Name}");
-                        Print($"atributo webId: {atr.WebId}");
 
                         var valueRoute = $"{atr.ValueRoute}?time={formattedDate}";
                         HttpResponseMessage response = await client.GetAsync(valueRoute);
@@ -68,8 +67,6 @@ namespace PRIOScheduler
                                 .Split(',');
 
                             var wellNamesCount = wellNames.Count();
-
-                            Console.WriteLine(wellNames.Length);
 
                             foreach (var wellName in wellNames)
                             {
@@ -90,19 +87,15 @@ namespace PRIOScheduler
 
                                         if (valueObject is not null && valueObject.Timestamp == dateToday)
                                         {
-                                            Print($"Value: {valueObject.Value}");
-                                            Print($"Date: {valueObject.Timestamp}");
-
                                             var value = new Value
                                             {
                                                 Id = Guid.NewGuid(),
-                                                Amount = wellNamesCount > 1 ? null : valueObject.Value,
+                                                Amount = wellNamesCount > 1 ? 0 : valueObject.Value,
                                                 GroupAmount = wellNamesCount > 1 ? valueObject.Value : null,
                                                 Attribute = atr,
                                                 Date = valueObject.Timestamp.AddHours(-3),
                                                 IsCaptured = true
                                             };
-
                                             valuesList.Add(value);
 
                                             var wellValue = new WellsValues
@@ -112,7 +105,6 @@ namespace PRIOScheduler
                                                 Well = well,
 
                                             };
-
                                             wellValuesList.Add(wellValue);
 
                                         }
@@ -121,7 +113,7 @@ namespace PRIOScheduler
 
                                             valueObject = new ValueJson
                                             {
-                                                Value = null,
+                                                Value = 0,
                                                 Timestamp = DateTime.UtcNow.Date.AddSeconds(-1),
                                                 Annotated = false,
                                                 Good = false,
@@ -133,7 +125,8 @@ namespace PRIOScheduler
                                             var value = new Value
                                             {
                                                 Id = Guid.NewGuid(),
-                                                Amount = valueObject.Value,
+                                                Amount = wellNamesCount > 1 ? null : 0,
+                                                GroupAmount = wellNamesCount > 1 ? 0 : null,
                                                 Attribute = atr,
                                                 Date = valueObject.Timestamp,
                                                 IsCaptured = false,
@@ -172,7 +165,8 @@ namespace PRIOScheduler
                                         var value = new Value
                                         {
                                             Id = Guid.NewGuid(),
-                                            Amount = valueObject.Value,
+                                            Amount = wellNamesCount > 1 ? null : 0,
+                                            GroupAmount = wellNamesCount > 1 ? 0 : null,
                                             Attribute = atr,
                                             Date = valueObject.Timestamp,
                                             IsCaptured = false,
@@ -228,73 +222,100 @@ namespace PRIOScheduler
                             .ThenInclude(v => v.Attribute)
                             .ThenInclude(a => a.Element)
                         .Include(wv => wv.Well)
-                        .Where(wv => wv.Value.Date == dateToday && wv.Value.Attribute.Element.Parameter == "Vazão da WFL1")
+                        .Where(wv => wv.Value.Date == dateToday.AddHours(-3) && wv.Value.Attribute.Element.Parameter == "Vazão da WFL1")
                         .ToListAsync();
 
-                    var potencialWells = 0d;
-
-                    foreach (var wv in listAtrByDate)
+                    if (listAtrByDate is not null && listAtrByDate.Count > 0)
                     {
-                        var PDGbyWell = await dbContext.Values
-                            .Include(v => v.Attribute)
-                                .ThenInclude(a => a.Element)
-                            .Where(v => v.Date == dateToday && v.Attribute.WellName == wv.Well.WellOperatorName && v.Attribute.IsOperating == true)
-                            .FirstOrDefaultAsync();
+                        var potencialWells = 0d;
 
-                        var iiByWell = await dbContext.InjectivityIndex
-                            .Include(ii => ii.ManualWellConfiguration)
-                                .ThenInclude(mwc => mwc.Well)
-                            .Where(ii => ii.ManualWellConfiguration.Well.WellOperatorName == wv.Well.WellOperatorName && ii.IsOperating == true)
-                            .FirstOrDefaultAsync();
-
-                        var iiValue = iiByWell is not null ? iiByWell.Value : 0;
-
-                        var buildUpByWell = await dbContext.BuildUp
-                            .Include(b => b.ManualWellConfiguration)
-                                .ThenInclude(mwc => mwc.Well)
-                            .Where(b => b.ManualWellConfiguration.Well.WellOperatorName == wv.Well.WellOperatorName && b.IsOperating == true)
-                            .FirstOrDefaultAsync();
-
-                        var bValue = buildUpByWell is not null ? buildUpByWell.Value : 0;
-
-                        if (PDGbyWell is not null && PDGbyWell.Amount is not null && wv.Value is not null)
+                        foreach (var wv in listAtrByDate)
                         {
-                            potencialWells += (PDGbyWell.Amount.Value - bValue) * iiValue;
+                            var PDG1byWell = await dbContext.Values
+                                .Include(v => v.Attribute)
+                                    .ThenInclude(a => a.Element)
+                                .Where(v => v.Date == dateToday.AddHours(-3) &&
+                                            v.Attribute.WellName == wv.Well.WellOperatorName &&
+                                            v.Attribute.Element.Parameter == "Pressão PDG 1" &&
+                                            v.Attribute.IsOperating == true)
+                                .FirstOrDefaultAsync();
+                            var PDG2byWell = await dbContext.Values
+                                .Include(v => v.Attribute)
+                                    .ThenInclude(a => a.Element)
+                                .Where(v => v.Date == dateToday.AddHours(-3) &&
+                                            v.Attribute.WellName == wv.Well.WellOperatorName &&
+                                            v.Attribute.Element.Parameter == "Pressão PDG 2" &&
+                                            v.Attribute.IsOperating == true)
+                                .FirstOrDefaultAsync();
+                            var PDGValue = PDG1byWell is not null && PDG1byWell.Amount is not null ? PDG1byWell.Amount.Value : PDG2byWell is not null && PDG2byWell.Amount is not null ? PDG2byWell.Amount.Value : 0;
+
+                            var iiByWell = await dbContext.InjectivityIndex
+                                .Include(ii => ii.ManualWellConfiguration)
+                                    .ThenInclude(mwc => mwc.Well)
+                                .Where(ii => ii.ManualWellConfiguration.Well.WellOperatorName == wv.Well.WellOperatorName && ii.IsOperating == true)
+                                .FirstOrDefaultAsync();
+                            var iiValue = iiByWell is not null ? iiByWell.Value : 0;
+
+                            var buildUpByWell = await dbContext.BuildUp
+                                .Include(b => b.ManualWellConfiguration)
+                                    .ThenInclude(mwc => mwc.Well)
+                                .Where(b => b.ManualWellConfiguration.Well.WellOperatorName == wv.Well.WellOperatorName && b.IsOperating == true)
+                                .FirstOrDefaultAsync();
+                            var bValue = buildUpByWell is not null ? buildUpByWell.Value : 0;
+
+                            if (wv.Value is not null)
+                            {
+                                potencialWells += (PDGValue - bValue) * iiValue;
+                            }
                         }
-                    }
 
-                    foreach (var wv in listAtrByDate)
-                    {
-                        var PDGbyWell = await dbContext.Values
-                            .Include(v => v.Attribute)
-                                .ThenInclude(a => a.Element)
-                            .Where(v => v.Date == dateToday && v.Attribute.WellName == wv.Well.WellOperatorName && v.Attribute.IsOperating == true)
-                            .FirstOrDefaultAsync();
-
-                        var iiByWell = await dbContext.InjectivityIndex
-                            .Include(ii => ii.ManualWellConfiguration)
-                                .ThenInclude(mwc => mwc.Well)
-                            .Where(ii => ii.ManualWellConfiguration.Well.WellOperatorName == wv.Well.WellOperatorName && ii.IsOperating == true)
-                            .FirstOrDefaultAsync();
-
-                        var iiValue = iiByWell is not null ? iiByWell.Value : 0;
-
-                        var buildUpByWell = await dbContext.BuildUp
-                            .Include(b => b.ManualWellConfiguration)
-                                .ThenInclude(mwc => mwc.Well)
-                            .Where(b => b.ManualWellConfiguration.Well.WellOperatorName == wv.Well.WellOperatorName && b.IsOperating == true)
-                            .FirstOrDefaultAsync();
-
-                        var bValue = buildUpByWell is not null ? buildUpByWell.Value : 0;
-
-                        if (PDGbyWell is not null && PDGbyWell.Amount is not null && wv.Value is not null)
+                        foreach (var wv in listAtrByDate)
                         {
-                            var PIA = (PDGbyWell.Amount.Value - bValue) * iiValue;
-                            var GroupAmount = wv.Value.GroupAmount is not null ? wv.Value.GroupAmount.Value : 0;
-                            wv.Value.Amount = (PIA / potencialWells) * GroupAmount;
+                            var PDG1byWell = await dbContext.Values
+                               .Include(v => v.Attribute)
+                                   .ThenInclude(a => a.Element)
+                               .Where(v => v.Date == dateToday.AddHours(-3) &&
+                                           v.Attribute.WellName == wv.Well.WellOperatorName &&
+                                           v.Attribute.Element.Parameter == "Pressão PDG 1" &&
+                                           v.Attribute.IsOperating == true)
+                               .FirstOrDefaultAsync();
+                            var PDG2byWell = await dbContext.Values
+                                .Include(v => v.Attribute)
+                                    .ThenInclude(a => a.Element)
+                                .Where(v => v.Date == dateToday.AddHours(-3) &&
+                                            v.Attribute.WellName == wv.Well.WellOperatorName &&
+                                            v.Attribute.Element.Parameter == "Pressão PDG 2" &&
+                                            v.Attribute.IsOperating == true)
+                                .FirstOrDefaultAsync();
+
+                            var PDGValue = PDG1byWell is not null && PDG1byWell.Amount is not null ? PDG1byWell.Amount.Value : PDG2byWell is not null && PDG2byWell.Amount is not null ? PDG2byWell.Amount.Value : 0;
+
+                            var iiByWell = await dbContext.InjectivityIndex
+                                .Include(ii => ii.ManualWellConfiguration)
+                                    .ThenInclude(mwc => mwc.Well)
+                                .Where(ii => ii.ManualWellConfiguration.Well.WellOperatorName == wv.Well.WellOperatorName && ii.IsOperating == true)
+                                .FirstOrDefaultAsync();
+
+                            var iiValue = iiByWell is not null ? iiByWell.Value : 0;
+
+                            var buildUpByWell = await dbContext.BuildUp
+                                .Include(b => b.ManualWellConfiguration)
+                                    .ThenInclude(mwc => mwc.Well)
+                                .Where(b => b.ManualWellConfiguration.Well.WellOperatorName == wv.Well.WellOperatorName && b.IsOperating == true)
+                                .FirstOrDefaultAsync();
+
+                            var bValue = buildUpByWell is not null ? buildUpByWell.Value : 0;
+
+                            if (wv.Value is not null)
+                            {
+                                var PIA = (PDGValue - bValue) * iiValue;
+                                var GroupAmount = wv.Value.GroupAmount is not null ? wv.Value.GroupAmount.Value : 0;
+                                wv.Value.Amount = potencialWells == 0 ? 0 : (PIA / potencialWells) * GroupAmount;
+                            }
                         }
+
+                        await dbContext.SaveChangesAsync();
                     }
-                    await dbContext.SaveChangesAsync();
                 }
                 catch (Exception e)
                 {
