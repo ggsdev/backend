@@ -210,6 +210,15 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
 
         public async Task<AttributeReturnDTO> CreateTag(CreateTagViewModel body)
         {
+            if (body.CategoryParameter == PIConfig._pressure && PIConfig._pressureValues.Contains(body.Parameter))
+                throw new BadRequestException("Parâmetro de pressão inválido.");
+
+            if (body.CategoryParameter == PIConfig._flow && PIConfig._flowValues.Contains(body.Parameter))
+                throw new BadRequestException("Parâmetro de vazão inválido.");
+
+            if (body.StatusTag is false && body.Operational)
+                throw new BadRequestException("Tag não pode estar inativa e operacional.");
+
             var well = await _wellRepository.GetByIdAsync(body.WellId)
                 ?? throw new NotFoundException(ErrorMessages.NotFound<Well>());
 
@@ -223,6 +232,24 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                 .GetElementByParameter(body.Parameter)
                 ?? throw new ConflictException($"Parâmetro: '{body.Parameter}' não encontrado.");
 
+            if (body.Operational)
+            {
+                var attributesOfWell = await _repository
+                    .GetTagsByWellName(well.Name, well.WellOperatorName);
+
+                foreach (var attributeOfWell in attributesOfWell)
+                {
+                    if (attributeOfWell.IsOperating)
+                    {
+                        if (body.Parameter == PIConfig._pdg2 && attributeOfWell.Element.Parameter == PIConfig._pdg1)
+                            throw new ConflictException($"Somente um PDG pode estar operacional no poço, sensor PDG com tag: {attributeOfWell.Name} está operacional.");
+
+                        else if (body.Parameter == PIConfig._pdg1 && attributeOfWell.Element.Parameter == PIConfig._pdg2)
+                            throw new ConflictException($"Somente um PDG pode estar operacional no poço, sensor PDG com tag: {attributeOfWell.Name} está operacional.");
+                    }
+                }
+            }
+
             try
             {
                 var handler = new HttpClientHandler
@@ -231,8 +258,8 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                 };
 
                 using HttpClient client = new(handler);
-                var username = "svc-pi-frade";
-                var password = "S6_5q2C?=%ff";
+                var username = PIConfig._user;
+                var password = PIConfig._password;
 
                 var credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}"));
 
@@ -251,16 +278,11 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                 var elementObject = JsonSerializer.Deserialize<ItemsElementJson>(jsonContent, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
-                }) ?? throw new BadRequestException("Não foi possível deserializar o json");
+                }) ?? throw new BadRequestException("Formato do PI não corresponde ao esperado.");
 
                 var attribute = elementObject.Items
                     .FirstOrDefault(x => x.Name.ToUpper().Trim().Contains(body.TagName.ToUpper().Trim()))
                     ?? throw new NotFoundException($"Tag: {body.TagName} não encontrada no PI.");
-
-                //if (body.Operational)
-                //{
-
-                //}
 
                 var createdTag = new EF.Models.Attribute
                 {
@@ -299,12 +321,14 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
 
                 return attributeDto;
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException ex)
             {
+                Print(ex);
                 throw new BadRequestException("Erro ao se conectar ao PI");
             }
             catch (Exception ex)
             {
+                Print(ex);
                 throw new BadRequestException($"Aconteceu algo de errado: {ex.Message}");
             }
         }
@@ -361,9 +385,33 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
 
         public async Task UpdateById(Guid id, UpdateTagViewModel body)
         {
+            if (body.Operational is true && body.StatusTag is false)
+                throw new BadRequestException("Tag não pode ser operacional e estar inativa.");
+
+            if (body.CategoryParameter is not null && body.Parameter is not null)
+            {
+                if (body.CategoryParameter == PIConfig._pressure && PIConfig._pressureValues.Contains(body.Parameter))
+                    throw new BadRequestException("Parâmetro de pressão inválido.");
+
+                if (body.CategoryParameter == PIConfig._flow && PIConfig._flowValues.Contains(body.Parameter))
+                    throw new BadRequestException("Parâmetro de vazão inválido.");
+            }
+
             var tag = await _repository
                 .GetById(id)
                 ?? throw new NotFoundException("Tag não encontrada ou inativa.");
+
+            if (body.Operational is true && tag.IsActive is false)
+                throw new BadRequestException("Tag não pode ser operacional e estar inativa.");
+
+            //if (body.CategoryParameter is not null)
+            //{
+            //    if (body.CategoryParameter == PIConfig._pressure && PIConfig._pressureValues.Contains(tag.Element))
+            //        throw new BadRequestException("Parâmetro de pressão inválido.");
+
+            //    if (body.CategoryParameter == PIConfig._flow && PIConfig._flowValues.Contains(body.Parameter))
+            //        throw new BadRequestException("Parâmetro de vazão inválido.");
+            //}
 
             if (body.TagName is not null)
             {
@@ -383,6 +431,30 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                 ?? throw new ConflictException($"Parâmetro: '{body.Parameter}' não encontrado.");
 
                 elementInDatabase = elementInBody;
+            }
+
+            if (body.Operational is true)
+            {
+                var wellNames = tag.WellName
+                    .Split(',');
+
+                foreach (var wellName in wellNames)
+                {
+                    var attributesOfWell = await _repository
+                        .GetTagsByWellName(wellName, wellName);
+
+                    foreach (var attributeOfWell in attributesOfWell)
+                    {
+                        if (attributeOfWell.IsOperating)
+                        {
+                            if (body.Parameter == PIConfig._pdg2 && attributeOfWell.Element.Parameter == PIConfig._pdg1)
+                                throw new ConflictException($"Somente um PDG pode estar operacional no poço, sensor PDG com tag: {attributeOfWell.Name} está operacional.");
+
+                            else if (body.Parameter == PIConfig._pdg1 && attributeOfWell.Element.Parameter == PIConfig._pdg2)
+                                throw new ConflictException($"Somente um PDG pode estar operacional no poço, sensor PDG com tag: {attributeOfWell.Name} está operacional.");
+                        }
+                    }
+                }
             }
 
             try
@@ -423,18 +495,7 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                    ?? throw new NotFoundException($"Tag: {body.TagName} não encontrada no PI.");
                 }
 
-                if (body.Operational is not null)
-                {
-                    foreach (var wellName in tag.WellName.Split(','))
-                    {
-                        var wellInDatabase = await _wellRepository
-                       .GetByNameOrOperatorName(wellName);
 
-
-                    }
-
-
-                }
 
                 var updatedValues = UpdateFields.CompareUpdateReturnOnlyUpdated(tag, body);
 

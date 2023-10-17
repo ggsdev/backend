@@ -103,7 +103,6 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 
             foreach (var waterInjection in waterInjectionWells)
             {
-
                 waterInjection.InjectionWaterGasField = fieldInjection;
                 fieldInjection.AmountWater += waterInjection.AssignedValue;
             }
@@ -260,7 +259,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             foreach (var gasInjection in fieldInjection.WellsGasInjections)
             {
                 var parameterDto = gasLiftDto.Parameters
-                    .FirstOrDefault(x => x.Parameter == gasInjection.WellValues.Value.Attribute.Element.Parameter);
+                       .FirstOrDefault(x => x.Parameter == gasInjection.WellValues.Value.Attribute.Element.Parameter);
 
                 if (parameterDto is null)
                 {
@@ -269,7 +268,9 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                         Parameter = gasInjection.WellValues.Value.Attribute.Element.Parameter,
                     };
 
-                    gasLiftDto.Parameters.Add(parameterDto);
+                    if (parameterDto.Parameter == PIConfig._gfl1 || parameterDto.Parameter == PIConfig._gfl4 || parameterDto.Parameter == PIConfig._gfl6)
+                        gasLiftDto.Parameters.Add(parameterDto);
+
                 }
 
                 var wellNames = gasInjection.WellValues.Value.Attribute.WellName.Split(',');
@@ -291,6 +292,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                     }
                 }
             }
+
             var orderedWater = waterInjectedDto.Values
                     .OrderBy(x => x.WellName, new NaturalStringComparer())
                     .ToList();
@@ -389,8 +391,6 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 
                 foreach (var waterInjection in waterWellInjections)
                 {
-
-
                     waterInjectedDto.Values.Add(new WellWaterInjectedDto
                     {
                         WellInjectionId = waterInjection.Id,
@@ -416,9 +416,10 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                             Parameter = gasInjection.WellValues.Value.Attribute.Element.Parameter,
                         };
 
-                        gasLiftDto.Parameters.Add(parameterDto);
-                    }
+                        if (parameterDto.Parameter == PIConfig._gfl1 || parameterDto.Parameter == PIConfig._gfl4 || parameterDto.Parameter == PIConfig._gfl6)
+                            gasLiftDto.Parameters.Add(parameterDto);
 
+                    }
 
                     parameterDto.Values.Add(new GasValuesDto
                     {
@@ -426,10 +427,32 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                         DateRead = gasInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
                         Tag = gasInjection.WellValues.Value.Attribute.Name,
                         VolumePI = gasInjection.WellValues.Value.Amount is not null ? Math.Round(gasInjection.WellValues.Value.Amount.Value, 5) : null,
-                        WellName = gasInjection.WellValues.Value.Attribute.WellName,
+                        WellName = gasInjection.WellValues.Well.Name,
                         VolumeAssigned = gasInjection.AssignedValue,
                     });
+
                     result.TotalGasLift += gasInjection.AssignedValue;
+                }
+
+                var orderedWater = waterInjectedDto.Values
+                   .OrderBy(x => x.WellName, new NaturalStringComparer())
+                   .ToList();
+
+                waterInjectedDto.Values = orderedWater;
+
+                var orderedGas = gasLiftDto.Parameters
+                    .OrderBy(x => x.Parameter)
+                    .ToList();
+
+                gasLiftDto.Parameters = orderedGas;
+
+                foreach (var parameter in gasLiftDto.Parameters)
+                {
+                    var orderedValues = parameter.Values
+                        .OrderBy(x => x.WellName, new NaturalStringComparer())
+                        .ToList();
+
+                    parameter.Values = orderedValues;
                 }
 
                 result.WaterInjectedFields.Add(waterInjectedDto);
