@@ -235,6 +235,9 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                 .GetElementByParameter(body.Parameter)
                 ?? throw new ConflictException($"Parâmetro: '{body.Parameter}' não encontrado.");
 
+            Console.WriteLine("ELEMENTO: " + elementInDatabase.Parameter);
+            Console.WriteLine("ELEMENTO: " + elementInDatabase.AttributesRoute);
+
             if (body.Operational is true)
             {
                 var attributesOfWell = await _repository
@@ -283,8 +286,14 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                     PropertyNameCaseInsensitive = true
                 }) ?? throw new BadRequestException("Formato do PI não corresponde ao esperado.");
 
+                foreach (var item in elementObject.Items)
+                {
+                    Console.WriteLine("ITEM: " + item.Name);
+                    Console.WriteLine("TAGNAME: " + body.TagName);
+                }
+
                 var attribute = elementObject.Items
-                    .FirstOrDefault(x => x.Name.ToUpper().Trim().Contains(body.TagName.ToUpper().Trim()))
+                    .FirstOrDefault(x => x.Name.ToUpper().Trim() == body.TagName.ToUpper().Trim())
                     ?? throw new NotFoundException($"Tag: {body.TagName} não encontrada no PI.");
 
                 var createdTag = new EF.Models.Attribute

@@ -488,7 +488,11 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 .GetWaterGasFieldInjectionsById(fieldInjectionId)
                 ?? throw new NotFoundException("Injeção de campo não encontrada.");
 
-            var resultDto = new WaterInjectionUpdateDto();
+            var resultDto = new WaterInjectionUpdateDto
+            {
+                FieldInjectionId = fieldInjectionId,
+            };
+
             var updatedBy = _mapper.Map<UserDTO>(loggedUser);
 
             foreach (var bodyWellInjection in body.AssignedValues)
@@ -504,8 +508,6 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 
                     _repository.UpdateWaterInjection(waterInjectionInDatabase);
 
-                    fieldInjectionInDatabase.AmountWater += waterInjectionInDatabase.AssignedValue;
-
                     resultDto.AssignedValues.Add(new WaterAssignatedValuesDto
                     {
                         AssignedValue = waterInjectionInDatabase.AssignedValue,
@@ -514,6 +516,9 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                     });
                 }
             }
+
+            fieldInjectionInDatabase.AmountWater = fieldInjectionInDatabase.WellsWaterInjections
+                .Sum(x => x.AssignedValue);
 
             if (body.FIRS is not null)
             {
