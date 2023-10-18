@@ -289,6 +289,7 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                 foreach (var item in elementObject.Items)
                 {
                     Console.WriteLine("ITEM: " + item.Name);
+                    Console.WriteLine(item.Name == body.TagName);
                     Console.WriteLine("TAGNAME: " + body.TagName);
                 }
 

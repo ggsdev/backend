@@ -48,11 +48,19 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories
                     .ThenInclude(x => x.WellValues)
                         .ThenInclude(x => x.Value)
                             .ThenInclude(x => x.Attribute)
+                .Include(x => x.WellsWaterInjections)
+                    .ThenInclude(x => x.WellValues)
+                        .ThenInclude(x => x.Well)
+
+
                 .Include(x => x.WellsGasInjections)
                     .ThenInclude(x => x.WellValues)
                         .ThenInclude(x => x.Value)
                             .ThenInclude(x => x.Attribute)
                                 .ThenInclude(x => x.Element)
+                .Include(x => x.WellsGasInjections)
+                    .ThenInclude(x => x.WellValues)
+                        .ThenInclude(x => x.Well)
                 .Include(x => x.Field)
                     .ThenInclude(x => x.Installation)
                 .Include(x => x.BalanceField)
@@ -63,6 +71,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories
                         .ThenInclude(x => x.UEPBalance)
                             .ThenInclude(x => x.InstallationsBalance)
                 .Where(x => x.Id == id)
+
                 .FirstOrDefaultAsync();
         }
 
