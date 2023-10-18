@@ -639,7 +639,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             FieldId = fr.Field.Id,
                             FieldName = fr.Field.Name,
                             FluidFr = fr.FRGas,
-                            ProductionInField = fr.GasProductionInField
+                            ProductionInField = fr.GasProductionInField,
                         };
 
                         gasFrs.Fields.Add(createdFr);
