@@ -80,11 +80,32 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Repositories
         }
         public async Task<List<WellEvent>> GetAllWellEvent(Guid wellId)
         {
-            return await _context.WellEvents
-                .Include(x => x.EventReasons)
-                .Include(x => x.Well)
-                .Where(x => x.Well.Id == wellId)
-                .ToListAsync();
+            var list = await _context.WellEvents
+             .Include(x => x.EventReasons)
+             .Include(x => x.EventRelated)
+             .Include(x => x.Well)
+             .Where(x => x.Well.Id == wellId)
+             .OrderBy(x => x.EventRelated.Id)
+             .ToListAsync();
+
+            var newList = new List<WellEvent>();
+            for (var i = 0; i < list.Count; i++)
+            {
+                if (i == 0)
+                {
+                    newList.Add(list[i]);
+                }
+                else
+                {
+                    var previousEventRelatedId = newList[i - 1]?.Id;
+                    if (previousEventRelatedId is not null)
+                    {
+                        var newItem = list.FirstOrDefault(x => x.EventRelated?.Id == previousEventRelatedId);
+                        newList.Add(newItem);
+                    }
+                }
+            }
+            return newList;
         }
         public async Task<WellEvent?> GetLastWellEvent(string typeEvent)
         {
