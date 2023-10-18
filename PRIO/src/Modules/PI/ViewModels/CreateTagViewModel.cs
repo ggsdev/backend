@@ -8,7 +8,6 @@ namespace PRIO.src.Modules.PI.ViewModels
         public string TagName { get; set; } = null!;
         [Required(ErrorMessage = "WellId é obrigatório")]
         public Guid? WellId { get; set; }
-
         [Required(ErrorMessage = "CategoryParameter é obrigatório")]
         public string CategoryParameter { get; set; } = null!;
         [Required(ErrorMessage = "Parameter é obrigatório")]

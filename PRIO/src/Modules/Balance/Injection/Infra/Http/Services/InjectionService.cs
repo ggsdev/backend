@@ -53,8 +53,8 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 .GetBalanceField(body.FieldId!.Value, dateInjection.Date)
                 ?? throw new BadRequestException("Balanço de campo não criado ainda, é necessário fechar a produção do dia.");
 
-            if (fieldBalance.IsParameterized is false)
-                throw new ConflictException("Dados operacionais precisam ser confirmados.");
+            //if (fieldBalance.IsParameterized is false)
+            //    throw new ConflictException("Dados operacionais precisam ser confirmados.");
 
             var injectionInDatabase = await _repository
                 .AnyByDate(dateInjection);
@@ -244,19 +244,22 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             {
                 var wellNames = waterInjection.WellValues.Value.Attribute.WellName.Split(',');
 
-                foreach (var wellName in wellNames)
+                //foreach (var wellName in wellNames)
+                //{
+                //    var wellInDatabase = await _wellRepository
+                //        .GetByNameOrOperatorName(wellName)
+                //        ?? throw new NotFoundException("Poço não encontrado");
+
+                waterInjectedDto.Values.Add(new WellWaterInjectedDto
                 {
-                    if (waterInjectedDto.Values.Any(x => x.WellName == wellName) is false)
-                        waterInjectedDto.Values.Add(new WellWaterInjectedDto
-                        {
-                            WellInjectionId = waterInjection.Id,
-                            DateRead = waterInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
-                            Tag = waterInjection.WellValues.Value.Attribute.Name,
-                            VolumeAssigned = Math.Round(waterInjection.AssignedValue, 5),
-                            VolumePI = waterInjection.WellValues.Value.Amount is not null ? Math.Round(waterInjection.WellValues.Value.Amount.Value, 5) : null,
-                            WellName = wellName
-                        });
-                }
+                    WellInjectionId = waterInjection.Id,
+                    DateRead = waterInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
+                    Tag = waterInjection.WellValues.Value.Attribute.Name,
+                    VolumeAssigned = Math.Round(waterInjection.AssignedValue, 5),
+                    VolumePI = waterInjection.WellValues.Value.Amount is not null ? Math.Round(waterInjection.WellValues.Value.Amount.Value, 5) : null,
+                    WellName = waterInjection.WellValues.Well.Name!
+                });
+                //}
 
             }
 
@@ -277,24 +280,25 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 
                 }
 
-                var wellNames = gasInjection.WellValues.Value.Attribute.WellName.Split(',');
-                foreach (var wellName in wellNames)
-                {
-                    if (parameterDto.Values.Any(x => x.WellName == wellName) is false)
-                    {
-                        var gasValuesDto = new GasValuesDto
-                        {
-                            WellInjectionId = gasInjection.Id,
-                            DateRead = gasInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
-                            Tag = gasInjection.WellValues.Value.Attribute.Name,
-                            VolumePI = gasInjection.WellValues.Value.Amount is not null ? Math.Round(gasInjection.WellValues.Value.Amount.Value, 5) : null,
-                            WellName = wellName,
-                            VolumeAssigned = gasInjection.AssignedValue,
-                        };
+                //var wellNames = gasInjection.WellValues.Value.Attribute.WellName.Split(',');
+                //foreach (var wellName in wellNames)
+                //{
+                //var wellInDatabase = await _wellRepository
+                //    .GetByNameOrOperatorName(wellName)
+                //    ?? throw new NotFoundException("Poço não encontrado");
 
-                        parameterDto.Values.Add(gasValuesDto);
-                    }
-                }
+                var gasValuesDto = new GasValuesDto
+                {
+                    WellInjectionId = gasInjection.Id,
+                    DateRead = gasInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
+                    Tag = gasInjection.WellValues.Value.Attribute.Name,
+                    VolumePI = gasInjection.WellValues.Value.Amount is not null ? Math.Round(gasInjection.WellValues.Value.Amount.Value, 5) : null,
+                    WellName = gasInjection.WellValues.Well.Name!/*wellInDatabase.Name!*/,
+                    VolumeAssigned = gasInjection.AssignedValue,
+                };
+
+                parameterDto.Values.Add(gasValuesDto);
+                //}
             }
 
             var orderedWater = waterInjectedDto.Values
@@ -522,6 +526,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 
             if (body.FIRS is not null)
             {
+                Console.WriteLine(body.FIRS);
                 fieldInjectionInDatabase.BalanceField.FIRS = body.FIRS;
                 fieldInjectionInDatabase.FIRS = body.FIRS.Value;
             }
