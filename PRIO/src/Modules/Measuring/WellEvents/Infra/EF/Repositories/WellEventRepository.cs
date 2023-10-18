@@ -101,10 +101,12 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Repositories
                     if (previousEventRelatedId is not null)
                     {
                         var newItem = list.FirstOrDefault(x => x.EventRelated?.Id == previousEventRelatedId);
-                        newList.Add(newItem);
+                        if (newItem is not null)
+                            newList.Add(newItem);
                     }
                 }
             }
+            newList.Reverse();
             return newList;
         }
         public async Task<WellEvent?> GetLastWellEvent(string typeEvent)

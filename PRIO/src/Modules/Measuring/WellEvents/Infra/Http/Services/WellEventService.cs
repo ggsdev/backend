@@ -604,9 +604,13 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.Http.Services
             {
                 foreach (var ev in events)
                 {
-                    var lastEventReason = ev.EventReasons
-                        .OrderBy(x => x.StartDate)
-                        .LastOrDefault();
+                    EventReason? lastEventReason = null;
+                    if (ev.EventReasons is not null && ev.EventReasons.Count != 0)
+                    {
+                        lastEventReason = ev.EventReasons
+                           .OrderBy(x => x.StartDate)
+                           .LastOrDefault();
+                    }
 
                     var eventDTO = new WellWithEventDto
                     {
