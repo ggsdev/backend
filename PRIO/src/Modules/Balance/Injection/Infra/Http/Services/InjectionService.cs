@@ -205,7 +205,6 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             var gasLiftDto = new GasLiftInjectedDto
             {
                 Field = fieldInjection.Field.Name!,
-
             };
 
             var waterInjectedDto = new WaterInjectedDto
@@ -214,43 +213,22 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 FIRS = fieldInjection.FIRS
             };
 
-            //foreach (var waterInjection in fieldInjection.WellsWaterInjections)
-            //{
-            //    var parameterDto = waterInjectedDto.Parameters
-            //           .FirstOrDefault(x => x.Parameter == waterInjection.WellValues.Value.Attribute.Element.Parameter);
-
-            //    if (parameterDto is null)
-            //    {
-            //        parameterDto = new ElementWaterDto
-            //        {
-            //            Parameter = waterInjection.WellValues.Value.Attribute.Element.Parameter,
-            //        };
-
-            //        waterInjectedDto.Parameters.Add(parameterDto);
-            //    }
-
-            //    parameterDto.Values.Add(new WellValuesDto
-            //    {
-            //        WellInjectionId = waterInjection.Id,
-            //        DateRead = waterInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
-            //        Tag = waterInjection.WellValues.Value.Attribute.Name,
-            //        VolumeAssigned = Math.Round(waterInjection.AssignedValue, 5),
-            //        VolumePI = waterInjection.WellValues.Value.Amount is not null ? Math.Round(waterInjection.WellValues.Value.Amount.Value, 5) : null,
-            //        WellName = waterInjection.WellValues.Well.Name!
-            //    });
-            //}
-
             foreach (var waterInjection in fieldInjection.WellsWaterInjections)
             {
-                var wellNames = waterInjection.WellValues.Value.Attribute.WellName.Split(',');
+                var parameterDto = waterInjectedDto.Parameters
+                       .FirstOrDefault(x => x.Parameter == waterInjection.WellValues.Value.Attribute.Element.Parameter);
 
-                //foreach (var wellName in wellNames)
-                //{
-                //    var wellInDatabase = await _wellRepository
-                //        .GetByNameOrOperatorName(wellName)
-                //        ?? throw new NotFoundException("Poço não encontrado");
+                if (parameterDto is null)
+                {
+                    parameterDto = new ElementWaterDto
+                    {
+                        Parameter = waterInjection.WellValues.Value.Attribute.Element.Parameter,
+                    };
 
-                waterInjectedDto.Values.Add(new WellWaterInjectedDto
+                    waterInjectedDto.Parameters.Add(parameterDto);
+                }
+
+                parameterDto.Values.Add(new WellValuesDto
                 {
                     WellInjectionId = waterInjection.Id,
                     DateRead = waterInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
@@ -259,8 +237,6 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                     VolumePI = waterInjection.WellValues.Value.Amount is not null ? Math.Round(waterInjection.WellValues.Value.Amount.Value, 5) : null,
                     WellName = waterInjection.WellValues.Well.Name!
                 });
-                //}
-
             }
 
             foreach (var gasInjection in fieldInjection.WellsGasInjections)
@@ -280,13 +256,6 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 
                 }
 
-                //var wellNames = gasInjection.WellValues.Value.Attribute.WellName.Split(',');
-                //foreach (var wellName in wellNames)
-                //{
-                //var wellInDatabase = await _wellRepository
-                //    .GetByNameOrOperatorName(wellName)
-                //    ?? throw new NotFoundException("Poço não encontrado");
-
                 var gasValuesDto = new GasValuesDto
                 {
                     WellInjectionId = gasInjection.Id,
@@ -298,14 +267,20 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 };
 
                 parameterDto.Values.Add(gasValuesDto);
-                //}
             }
 
-            var orderedWater = waterInjectedDto.Values
-                    .OrderBy(x => x.WellName, new NaturalStringComparer())
+            var orderedWater = waterInjectedDto.Parameters
+                    .OrderBy(x => x.Parameter, new NaturalStringComparer())
                     .ToList();
 
-            waterInjectedDto.Values = orderedWater;
+            foreach (var parameter in orderedWater)
+            {
+                var orderedValues = parameter.Values
+                   .OrderBy(x => x.WellName, new NaturalStringComparer())
+                   .ToList();
+
+                parameter.Values = orderedValues;
+            }
 
             var orderedGas = gasLiftDto.Parameters
                 .OrderBy(x => x.Parameter)
@@ -320,6 +295,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 parameter.Values = orderedValues;
             }
 
+            waterInjectedDto.Parameters = orderedWater;
             gasLiftDto.Parameters = orderedGas;
 
             result.WaterInjectedFields = waterInjectedDto;
@@ -370,48 +346,34 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                     Field = field.Name!
                 };
 
-                //foreach (var waterInjection in waterWellInjections)
-                //{
-                //    var parameterDto = waterInjectedDto.Parameters
-                //        .FirstOrDefault(x => x.Parameter == waterInjection.WellValues.Value.Attribute.Element.Parameter);
-
-                //    if (parameterDto is null)
-                //    {
-                //        parameterDto = new ElementWaterDto
-                //        {
-                //            Parameter = waterInjection.WellValues.Value.Attribute.Element.Parameter,
-                //        };
-
-                //        waterInjectedDto.Parameters.Add(parameterDto);
-                //    }
-
-                //    parameterDto.Values.Add(new WellValuesDto
-                //    {
-                //        WellInjectionId = waterInjection.Id,
-                //        DateRead = waterInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
-                //        Tag = waterInjection.WellValues.Value.Attribute.Name,
-                //        VolumeAssigned = Math.Round(waterInjection.AssignedValue, 5),
-                //        VolumePI = waterInjection.WellValues.Value.Amount is not null ? Math.Round(waterInjection.WellValues.Value.Amount.Value, 5) : null,
-                //        WellName = waterInjection.WellValues.Well.Name!
-                //    });
-
-                //    result.TotalWaterInjected += waterInjection.AssignedValue;
-                //}
-
                 foreach (var waterInjection in waterWellInjections)
                 {
-                    waterInjectedDto.Values.Add(new WellWaterInjectedDto
+                    var parameterDto = waterInjectedDto.Parameters
+                        .FirstOrDefault(x => x.Parameter == waterInjection.WellValues.Value.Attribute.Element.Parameter);
+
+                    if (parameterDto is null)
+                    {
+                        parameterDto = new ElementWaterDto
+                        {
+                            Parameter = waterInjection.WellValues.Value.Attribute.Element.Parameter,
+                        };
+
+                        waterInjectedDto.Parameters.Add(parameterDto);
+                    }
+
+                    parameterDto.Values.Add(new WellValuesDto
                     {
                         WellInjectionId = waterInjection.Id,
                         DateRead = waterInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
                         Tag = waterInjection.WellValues.Value.Attribute.Name,
                         VolumeAssigned = Math.Round(waterInjection.AssignedValue, 5),
                         VolumePI = waterInjection.WellValues.Value.Amount is not null ? Math.Round(waterInjection.WellValues.Value.Amount.Value, 5) : null,
-                        WellName = waterInjection.WellValues.Well.Name
+                        WellName = waterInjection.WellValues.Well.Name!
                     });
 
                     result.TotalWaterInjected += waterInjection.AssignedValue;
                 }
+
 
                 foreach (var gasInjection in gasWellInjections)
                 {
@@ -443,19 +405,11 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                     result.TotalGasLift += gasInjection.AssignedValue;
                 }
 
-                var orderedWater = waterInjectedDto.Values
-                   .OrderBy(x => x.WellName, new NaturalStringComparer())
+                var orderedWater = waterInjectedDto.Parameters
+                   .OrderBy(x => x.Parameter, new NaturalStringComparer())
                    .ToList();
 
-                waterInjectedDto.Values = orderedWater;
-
-                var orderedGas = gasLiftDto.Parameters
-                    .OrderBy(x => x.Parameter)
-                    .ToList();
-
-                gasLiftDto.Parameters = orderedGas;
-
-                foreach (var parameter in gasLiftDto.Parameters)
+                foreach (var parameter in orderedWater)
                 {
                     var orderedValues = parameter.Values
                         .OrderBy(x => x.WellName, new NaturalStringComparer())
@@ -463,6 +417,23 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 
                     parameter.Values = orderedValues;
                 }
+
+                var orderedGas = gasLiftDto.Parameters
+                    .OrderBy(x => x.Parameter)
+                    .ToList();
+
+                foreach (var parameter in orderedGas)
+                {
+                    var orderedValues = parameter.Values
+                        .OrderBy(x => x.WellName, new NaturalStringComparer())
+                        .ToList();
+
+                    parameter.Values = orderedValues;
+                }
+
+                waterInjectedDto.Parameters = orderedWater;
+                gasLiftDto.Parameters = orderedGas;
+
 
                 result.WaterInjectedFields.Add(waterInjectedDto);
                 result.GasLiftFields.Add(gasLiftDto);
@@ -526,7 +497,6 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 
             if (body.FIRS is not null)
             {
-                Console.WriteLine(body.FIRS);
                 fieldInjectionInDatabase.BalanceField.FIRS = body.FIRS;
                 fieldInjectionInDatabase.FIRS = body.FIRS.Value;
             }
