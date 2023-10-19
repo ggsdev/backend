@@ -246,7 +246,7 @@ namespace PRIO.Migrations
                                         },
                                     };
 
-                                foreach (var attribute in pointsData)
+                                foreach (var attribute in attributesData)
                                 {
                                     var attributeId = (Guid)attribute[0];
                                     var attributeWebId = attribute[1];
@@ -2419,27 +2419,27 @@ namespace PRIO.Migrations
                                             false,
                                             today
                                         },
-                                        //new object[] {
-                                        //    ODP3096,
-                                        //    "F1DPmcDcljXfiUGwcfDZqjkw7wIFIAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSU1MtUEktT0RQMy0wOTYtS0dGLURBSUxZLUFWRw",
-                                        //    "ad60b0d-2d1a-43dc-acb3-bb4dfaeb265b",
-                                        //    "FRSS-PI-ODP3-096-KGF-DAILY-AVG",
-                                        //    "",
-                                        //    "https://prrjbsrvvm170.petrorio.local/piwebapi/points/F1DPmcDcljXfiUGwcfDZqjkw7wIFIAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSU1MtUEktT0RQMy0wOTYtS0dGLURBSUxZLUFWRw",
-                                        //    "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1DPmcDcljXfiUGwcfDZqjkw7wIFIAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSU1MtUEktT0RQMy0wOTYtS0dGLURBSUxZLUFWRw/value",
-                                        //    "ODP3",
-                                        //    true,
-                                        //    true,
-                                        //    today
-                                        //},
+                                            new object[] {
+                                            ODP3096,
+                                            "F1DPmcDcljXfiUGwcfDZqjkw7wIFIAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSU1MtUEktT0RQMy0wOTYtS0dGLURBSUxZLUFWRw",
+                                            "ad60b0d-2d1a-43dc-acb3-bb4dfaeb265b",
+                                            "FRSS-PI-ODP3-096-KGF-DAILY-AVG",
+                                            "",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/attributes/F1DPmcDcljXfiUGwcfDZqjkw7wIFIAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSU1MtUEktT0RQMy0wOTYtS0dGLURBSUxZLUFWRw",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1DPmcDcljXfiUGwcfDZqjkw7wIFIAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSU1MtUEktT0RQMy0wOTYtS0dGLURBSUxZLUFWRw/value",
+                                            "ODP3",
+                                            true,
+                                            true,
+                                            today
+                                        },
                                         new object[] {
                                             MUP2096,
-                                            "F1DPmcDcljXfiUGwcfDZqjkw7wIFIAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSU1MtUEktT0RQMy0wOTYtS0dGLURBSUxZLUFWRw",
+                                            "F1DPmcDcljXfiUGwcfDZqjkw7wElIAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSU1MtUEktTVVQMi0wOTYtS0dGLURBSUxZLUFWRw",
                                             "cb248adf-3cef-4efe-b7ea-3e2c2dc11e8a",
                                             "FRSS-PI-MUP2-096-KGF-DAILY-AVG",
                                             "",
-                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/points/F1DPmcDcljXfiUGwcfDZqjkw7wIFIAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSU1MtUEktT0RQMy0wOTYtS0dGLURBSUxZLUFWRw",
-                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1DPmcDcljXfiUGwcfDZqjkw7wIFIAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSU1MtUEktT0RQMy0wOTYtS0dGLURBSUxZLUFWRw/value"
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/points/F1DPmcDcljXfiUGwcfDZqjkw7wElIAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSU1MtUEktTVVQMi0wOTYtS0dGLURBSUxZLUFWRw",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1DPmcDcljXfiUGwcfDZqjkw7wElIAAAQlpGUFNPUElDT0xMRUNUSVZFXEZSU1MtUEktTVVQMi0wOTYtS0dGLURBSUxZLUFWRw/value"
                                             ,"MUP2",
                                             true,
                                             false,
