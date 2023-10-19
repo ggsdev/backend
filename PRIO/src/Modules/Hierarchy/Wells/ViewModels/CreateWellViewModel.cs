@@ -27,7 +27,6 @@ namespace PRIO.src.Modules.Hierarchy.Wells.ViewModels
         [Required(ErrorMessage = "CategoryOperator is required")]
         [StringLength(60, ErrorMessage = "CategoryOperator cannot exceed 60 characters.")]
         public string? CategoryOperator { get; set; }
-        public bool StatusOperator { get; set; }
         [Required(ErrorMessage = "Type is required")]
         [StringLength(60, ErrorMessage = "Type cannot exceed 60 characters.")]
         public string? Type { get; set; }

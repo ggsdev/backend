@@ -1286,8 +1286,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     response._001File.Add(response001);
                 }
             }
-
-
             if (listOfMeasurementDates.Count > 0)
             {
                 var referenceDate = listOfMeasurementDates[0];
@@ -1300,6 +1298,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 }
 
             }
+
+
 
             decimal totalLinearBurnetGas = 0;
             decimal totalLinearFuelGas = 0;
