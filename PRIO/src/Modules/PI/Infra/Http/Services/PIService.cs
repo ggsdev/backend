@@ -322,6 +322,7 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                     WebId = attributeObject.WebId,
                     SelfRoute = attributeObject.Links.Self,
                     ValueRoute = attributeObject.Links.Value,
+                    PIId = $"{attributeObject.Id}"
                 };
 
                 await _repository.AddTag(createdTag);
