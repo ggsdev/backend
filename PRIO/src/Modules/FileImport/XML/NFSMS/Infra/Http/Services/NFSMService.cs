@@ -732,7 +732,6 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
             //if (nfsmInDatabase.DateOfOcurrence > nfsmInDatabase.Da)
             //    throw new ConflictException("Data da medição não pode ser maior do que a data que a falha foi corrigida, TAG: DHA_RETORNO.");
-
             foreach (var measurementCorrected in nfsmInDatabase.Productions)
             {
                 var productionInDatabase = await _productionRepository
@@ -991,6 +990,10 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                                      (productionInDatabase.GasDiferencial?.TotalGas ?? 0) +
                                      (productionInDatabase.GasLinear?.TotalGas ?? 0);
 
+
+                Console.WriteLine(oilChanged);
+                Console.WriteLine(gasDiferencialChanged);
+                Console.WriteLine(gasLinearChanged);
                 if (oilChanged || gasDiferencialChanged || gasLinearChanged)
                 {
                     if (productionInDatabase.FieldsFR is not null)
@@ -1023,7 +1026,6 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     //});
 
                     await _wellProductionService.ReAppropriateWithNfsm(productionInDatabase.Id);
-
                     nfsmInDatabase.IsApplied = true;
 
                     _repository.Update(nfsmInDatabase);
@@ -1031,7 +1033,6 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     _productionRepository.Update(productionInDatabase);
 
                 }
-
             }
 
             if (nfsmInDatabase.IsApplied is false)
