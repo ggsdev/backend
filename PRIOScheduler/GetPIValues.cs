@@ -70,8 +70,6 @@ namespace PRIOScheduler
 
                             foreach (var wellName in wellNames)
                             {
-                                Console.WriteLine(wellName);
-
                                 var well = await dbContext.Wells
                                .FirstOrDefaultAsync(x => x.Name.ToUpper().Trim() == wellName.ToUpper().Trim() || x.WellOperatorName.ToUpper().Trim() == wellName.ToUpper().Trim());
 
@@ -184,9 +182,7 @@ namespace PRIOScheduler
 
                                         wellValuesList.Add(wellValue);
                                     }
-
                                 }
-
                             }
                         }
 
