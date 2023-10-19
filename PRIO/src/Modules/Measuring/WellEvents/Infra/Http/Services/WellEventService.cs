@@ -1006,6 +1006,9 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.Http.Services
             if (body.SystemRelated is not null && body.DateSystemRelated is null)
                 throw new BadRequestException("Data do sistema relacionado é obrigatória.");
 
+            var dateNow = DateTime.UtcNow.AddHours(-3);
+
+
             var wellEvent = await _wellEventRepository
                 .GetEventById(eventId);
 
@@ -1032,6 +1035,9 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.Http.Services
             {
                 if (DateTime.TryParseExact(body.DateSystemRelated, "dd/MM/yy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDateSystem) is true && DateTime.TryParseExact(body.EventDateAndHour, "dd/MM/yy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedStartDate) is true)
                 {
+                    if (parsedStartDate > dateNow)
+                        throw new ConflictException("Não é possível editar um evento no futuro.");
+
                     if (lastEventReason is not null && lastEventReason.StartDate == wellEvent.StartDate && lastEventReason.EndDate is null && parsedDateSystem < parsedStartDate && parsedDateSystem != lastEventReason.StartDate)
                         throw new BadRequestException("Não é possível alterar o primeiro sistema relacionado para uma data anterior a data do evento.");
                 }
@@ -1050,12 +1056,13 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.Http.Services
             if (body.SystemRelated is not null && systemsRelated.Contains(body.SystemRelated.ToLower()) is false)
                 throw new BadRequestException($"Sistemas relacionados permitidos são: {string.Join(", ", systemsRelated)}");
 
-            var dateNow = DateTime.UtcNow.AddHours(-3);
-
             if (body.EventDateAndHour is not null)
             {
                 if (DateTime.TryParseExact(body.EventDateAndHour, "dd/MM/yy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedStartDate) is true)
                 {
+                    if (parsedStartDate > dateNow)
+                        throw new ConflictException("Não é possível editar um evento no futuro.");
+
                     if (wellEvent.EndDate is not null && parsedStartDate > wellEvent.EndDate)
                         throw new BadRequestException("Data de início do evento não pode ser maior que data de fim.");
 
