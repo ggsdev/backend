@@ -888,19 +888,22 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                 {
                     foreach (var well in field.Wells)
                     {
-                        double totalInterval = 0;
-                        var filtredEvents = well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
-                            || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
-
-                        foreach (var a in filtredEvents)
-                            totalInterval += CalcInterval(a, production);
-
-                        if (totalInterval < 24)
+                        if (well.CategoryOperator is not null && well.CategoryOperator.ToUpper() == "PRODUTOR")
                         {
-                            var isThereWellTests = FilterBtp(well.WellTests, production);
-                            if (isThereWellTests is not null && isThereWellTests.Count() == 0)
+                            double totalInterval = 0;
+                            var filtredEvents = well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
+                                || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
+
+                            foreach (var a in filtredEvents)
+                                totalInterval += CalcInterval(a, production);
+
+                            if (totalInterval < 24)
                             {
-                                wellsInvalids.Add($"Poço {well.Name} com {24 - totalInterval}h de produção não tem teste de poço cadastrado para a data {production.MeasuredAt.Date:dd/MM/yyyy}");
+                                var isThereWellTests = FilterBtp(well.WellTests, production);
+                                if (isThereWellTests is not null && isThereWellTests.Count() == 0)
+                                {
+                                    wellsInvalids.Add($"Poço {well.Name} com {24 - totalInterval}h de produção não tem teste de poço cadastrado para a data {production.MeasuredAt.Date:dd/MM/yyyy}");
+                                }
                             }
                         }
                     }
