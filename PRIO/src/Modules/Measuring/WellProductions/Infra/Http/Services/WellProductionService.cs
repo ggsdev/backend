@@ -914,21 +914,25 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                 {
                     foreach (var well in field.Wells)
                     {
-                        if (well.CategoryOperator is not null && well.CategoryOperator.ToUpper() == "PRODUTOR")
+                        var check = well is not null && well.InactivatedAt is null || well is not null && well.InactivatedAt is not null && well.InactivatedAt > production.MeasuredAt;
+                        if (check)
                         {
-                            double totalInterval = 0;
-                            var filtredEvents = well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
-                                || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
-
-                            foreach (var a in filtredEvents)
-                                totalInterval += CalcInterval(a, production);
-
-                            if (totalInterval < 24)
+                            if (well.CategoryOperator is not null && well.CategoryOperator.ToUpper() == "PRODUTOR")
                             {
-                                var isThereWellTests = FilterBtp(well.WellTests, production);
-                                if (isThereWellTests is not null && isThereWellTests.Count() == 0)
+                                double totalInterval = 0;
+                                var filtredEvents = well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
+                                    || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
+
+                                foreach (var a in filtredEvents)
+                                    totalInterval += CalcInterval(a, production);
+
+                                if (totalInterval < 24)
                                 {
-                                    wellsInvalids.Add($"Poço {well.Name} com {24 - totalInterval}h de produção não tem teste de poço cadastrado para a data {production.MeasuredAt.Date:dd/MM/yyyy}");
+                                    var isThereWellTests = FilterBtp(well.WellTests, production);
+                                    if (isThereWellTests is not null && isThereWellTests.Count() == 0)
+                                    {
+                                        wellsInvalids.Add($"Poço {well.Name} com {24 - totalInterval}h de produção não tem teste de poço cadastrado para a data {production.MeasuredAt.Date:dd/MM/yyyy}");
+                                    }
                                 }
                             }
                         }
@@ -1321,19 +1325,23 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                 {
                     foreach (var well in field.Wells)
                     {
-                        double totalInterval = 0;
-                        var filtredEvents = well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
-                            || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
-
-                        foreach (var a in filtredEvents)
-                            totalInterval += CalcInterval(a, production);
-
-                        if (totalInterval < 24)
+                        var check = well is not null && well.InactivatedAt is null || well is not null && well.InactivatedAt is not null && well.InactivatedAt > production.MeasuredAt;
+                        if (check)
                         {
-                            var isThereWellTests = FilterBtp(well.WellTests, production);
-                            if (isThereWellTests is not null && isThereWellTests.Count() == 0)
+                            double totalInterval = 0;
+                            var filtredEvents = well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
+                                || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
+
+                            foreach (var a in filtredEvents)
+                                totalInterval += CalcInterval(a, production);
+
+                            if (totalInterval < 24)
                             {
-                                wellsInvalids.Add($"Poço {well.Name} com {24 - totalInterval}h de produção não tem teste de poço cadastrado para a data {production.MeasuredAt.Date:dd/MM/yyyy}");
+                                var isThereWellTests = FilterBtp(well.WellTests, production);
+                                if (isThereWellTests is not null && isThereWellTests.Count() == 0)
+                                {
+                                    wellsInvalids.Add($"Poço {well.Name} com {24 - totalInterval}h de produção não tem teste de poço cadastrado para a data {production.MeasuredAt.Date:dd/MM/yyyy}");
+                                }
                             }
                         }
                     }
@@ -1358,39 +1366,20 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                 foreach (var wellTest in filtredUEPsByApplyDateAndFinal)
                 {
-                    double totalInterval = 0;
-                    var filtredEvents = wellTest.Well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
-                    || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
-                    foreach (var a in filtredEvents)
+                    var check = wellTest.Well is not null && wellTest.Well.InactivatedAt is null || wellTest.Well is not null && wellTest.Well.InactivatedAt is not null && wellTest.Well.InactivatedAt > production.MeasuredAt;
+                    if (check)
                     {
-                        if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt)
-                        {
-                            totalInterval += ((a.EndDate.Value - production.MeasuredAt).TotalMinutes) / 60;
-                        }
-                        else if (a.StartDate < production.MeasuredAt && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt)
-                        {
-                            totalInterval += 24;
-                        }
-                        else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date == production.MeasuredAt.Date)
-                        {
-                            totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
-                        }
-                        else if (a.StartDate.Date == production.MeasuredAt.Date && a.EndDate is not null && a.EndDate.Value.Date > production.MeasuredAt.Date)
-                        {
-                            totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
-                        }
-                        else if (a.StartDate < production.MeasuredAt && a.EndDate is null)
-                        {
-                            totalInterval += 24;
-                        }
-                        else if (a.StartDate.Date == production.MeasuredAt && a.EndDate is null)
-                        {
-                            totalInterval += ((production.MeasuredAt.AddDays(1) - a.StartDate).TotalMinutes) / 60;
-                        }
+                        double totalInterval = 0;
+                        var filtredEvents = wellTest.Well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
+                        || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
+
+                        foreach (var a in filtredEvents)
+                            totalInterval += CalcInterval(a, production);
+
+                        totalPotencialGasUEP += wellTest.PotencialGas * (24 - (decimal)totalInterval) / 24;
+                        totalPotencialOilUEP += wellTest.PotencialOil * (24 - (decimal)totalInterval) / 24;
+                        totalPotencialWaterUEP += wellTest.PotencialWater * (24 - (decimal)totalInterval) / 24;
                     }
-                    totalPotencialGasUEP += wellTest.PotencialGas * (24 - (decimal)totalInterval) / 24;
-                    totalPotencialOilUEP += wellTest.PotencialOil * (24 - (decimal)totalInterval) / 24;
-                    totalPotencialWaterUEP += wellTest.PotencialWater * (24 - (decimal)totalInterval) / 24;
                 }
 
                 foreach (var fieldFR in production.FieldsFR)
@@ -1435,17 +1424,21 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                     foreach (var wellTest in filtredByApplyDateAndFinal)
                     {
-                        double totalInterval = 0;
+                        var check = wellTest.Well is not null && wellTest.Well.InactivatedAt is null || wellTest.Well is not null && wellTest.Well.InactivatedAt is not null && wellTest.Well.InactivatedAt > production.MeasuredAt;
+                        if (check)
+                        {
+                            double totalInterval = 0;
 
-                        var filtredEvents = wellTest.Well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
-                        || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
+                            var filtredEvents = wellTest.Well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
+                            || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
-                        foreach (var a in filtredEvents)
-                            totalInterval += CalcInterval(a, production);
+                            foreach (var a in filtredEvents)
+                                totalInterval += CalcInterval(a, production);
 
-                        totalPotencialGasField += wellTest.PotencialGas * (24 - (decimal)totalInterval) / 24;
-                        totalPotencialOilField += wellTest.PotencialOil * (24 - (decimal)totalInterval) / 24;
-                        totalPotencialWaterField += wellTest.PotencialWater * (24 - (decimal)totalInterval) / 24;
+                            totalPotencialGasField += wellTest.PotencialGas * (24 - (decimal)totalInterval) / 24;
+                            totalPotencialOilField += wellTest.PotencialOil * (24 - (decimal)totalInterval) / 24;
+                            totalPotencialWaterField += wellTest.PotencialWater * (24 - (decimal)totalInterval) / 24;
+                        }
                     }
 
                     foreach (var wellProduction in fieldProductionInDatabase.WellProductions)
@@ -1614,17 +1607,21 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                 decimal totalPotencialWaterUEP = 0;
                 foreach (var btp in filtredByApplyDateAndFinal)
                 {
-                    double totalInterval = 0;
+                    var check = btp.Well is not null && btp.Well.InactivatedAt is null || btp.Well is not null && btp.Well.InactivatedAt is not null && btp.Well.InactivatedAt > production.MeasuredAt;
+                    if (check)
+                    {
+                        double totalInterval = 0;
 
-                    var filtredEvents = btp.Well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
-                    || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
+                        var filtredEvents = btp.Well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
+                        || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
-                    foreach (var a in filtredEvents)
-                        totalInterval += CalcInterval(a, production);
+                        foreach (var a in filtredEvents)
+                            totalInterval += CalcInterval(a, production);
 
-                    totalPotencialGasUEP += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
-                    totalPotencialOilUEP += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
-                    totalPotencialWaterUEP += btp.PotencialWater * (24 - (decimal)totalInterval) / 24;
+                        totalPotencialGasUEP += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
+                        totalPotencialOilUEP += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
+                        totalPotencialWaterUEP += btp.PotencialWater * (24 - (decimal)totalInterval) / 24;
+                    }
                 }
 
                 foreach (var field in uepFields)
@@ -1656,16 +1653,20 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
 
                     foreach (var btp in filtredsBTPsField)
                     {
-                        double totalInterval = 0;
-                        var filtredEvents = btp.Well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
-                        || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
+                        var check = btp.Well is not null && btp.Well.InactivatedAt is null || btp.Well is not null && btp.Well.InactivatedAt is not null && btp.Well.InactivatedAt > production.MeasuredAt;
+                        if (check)
+                        {
+                            double totalInterval = 0;
+                            var filtredEvents = btp.Well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
+                            || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
 
-                        foreach (var a in filtredEvents)
-                            totalInterval += CalcInterval(a, production);
+                            foreach (var a in filtredEvents)
+                                totalInterval += CalcInterval(a, production);
 
-                        totalPotencialGasField += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
-                        totalPotencialOilField += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
-                        totalPotencialWaterField += btp.PotencialWater * (24 - (decimal)totalInterval) / 24;
+                            totalPotencialGasField += btp.PotencialGas * (24 - (decimal)totalInterval) / 24;
+                            totalPotencialOilField += btp.PotencialOil * (24 - (decimal)totalInterval) / 24;
+                            totalPotencialWaterField += btp.PotencialWater * (24 - (decimal)totalInterval) / 24;
+                        }
                     }
 
                     foreach (var wellProd in fieldProductionInDatabase.WellProductions)
