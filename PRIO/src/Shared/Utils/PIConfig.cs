@@ -19,6 +19,10 @@
         public readonly static string _pdg1 = "Pressão PDG 1";
         public readonly static string _whPressure = "Pressão WH";
 
+        public readonly static string _valenteInstance = "VALENTE";
+        public readonly static string _forteInstance = "FORTE";
+        public readonly static string _bravoInstance = "BRAVO";
+
         public readonly static List<string> _pressureValues = new()
         {
             _intakeEsp, _pdg2, _pdg1,_whPressure

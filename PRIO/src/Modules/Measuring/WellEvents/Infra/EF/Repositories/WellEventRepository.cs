@@ -109,10 +109,10 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Repositories
             newList.Reverse();
             return newList;
         }
-        public async Task<WellEvent?> GetLastWellEvent(string typeEvent)
+        public async Task<WellEvent?> GetLastWellEvent()
         {
             return await _context.WellEvents
-                .Where(x => x.EndDate == null && x.EventStatus == typeEvent)
+                .Where(x => x.EndDate == null)
                 .FirstOrDefaultAsync();
         }
 
