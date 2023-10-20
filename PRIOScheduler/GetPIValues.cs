@@ -317,6 +317,194 @@ namespace PRIOScheduler
                 {
                     Print($"Outro error: {e}");
                 }
+
+                try
+                {
+                    Console.WriteLine("GFL1");
+                    // GFL1
+                    var listAtrByDate = await dbContext.WellValues
+                        .Include(wv => wv.Value)
+                            .ThenInclude(v => v.Attribute)
+                            .ThenInclude(a => a.Element)
+                        .Include(wv => wv.Well)
+                        .Where(wv => wv.Value.Date == dateToday.AddHours(-3) && wv.Value.Attribute.Element.Parameter == "Vazão da GFL1")
+                        .ToListAsync();
+
+                    if (listAtrByDate is not null && listAtrByDate.Count > 0)
+                    {
+                        var potencialWells = 0d;
+                        foreach (var wv in listAtrByDate)
+                        {
+                            var GasLiftbyWell = await dbContext.Values
+                                .Include(v => v.Attribute)
+                                    .ThenInclude(a => a.Element)
+                                .Where(v => v.Date == dateToday.AddHours(-3) &&
+                                            v.Attribute.WellName == wv.Well.WellOperatorName &&
+                                            v.Attribute.Element.Parameter == "Vazão de Gas Lift" &&
+                                            v.Attribute.IsOperating == true)
+                                .FirstOrDefaultAsync();
+                            var GasLiftbyWellValue = GasLiftbyWell is not null && GasLiftbyWell.Amount is not null ? GasLiftbyWell.Amount.Value : 0;
+
+                            if (wv.Value is not null)
+                                potencialWells += GasLiftbyWellValue;
+                        }
+
+                        Console.WriteLine("Total da vazao");
+                        Console.WriteLine(potencialWells);
+
+                        foreach (var wv in listAtrByDate)
+                        {
+                            var GasLiftbyWell = await dbContext.Values
+                                .Include(v => v.Attribute)
+                                    .ThenInclude(a => a.Element)
+                                .Where(v => v.Date == dateToday.AddHours(-3) &&
+                                            v.Attribute.WellName == wv.Well.WellOperatorName &&
+                                            v.Attribute.Element.Parameter == "Vazão de Gas Lift" &&
+                                            v.Attribute.IsOperating == true)
+                                .FirstOrDefaultAsync();
+                            var GasLiftbyWellValue = GasLiftbyWell is not null && GasLiftbyWell.Amount is not null ? GasLiftbyWell.Amount.Value : 0;
+
+                            if (wv.Value is not null)
+                            {
+                                Console.WriteLine("Vazo de Gas lift");
+                                Console.WriteLine(GasLiftbyWellValue);
+
+                                var PIG = GasLiftbyWellValue / potencialWells;
+                                Console.WriteLine("Total Potencial do poço");
+                                Console.WriteLine(PIG);
+                                var GroupAmount = wv.Value.GroupAmount is not null ? wv.Value.GroupAmount.Value : 0;
+                                Console.WriteLine("GroupAmount");
+                                Console.WriteLine(GroupAmount);
+
+                                Console.WriteLine("Calculo final");
+                                Console.WriteLine(potencialWells == 0 ? 0 : PIG * GroupAmount);
+                                wv.Value.Amount = potencialWells == 0 ? 0 : PIG * GroupAmount;
+                            }
+                        }
+
+                        await dbContext.SaveChangesAsync();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Print($"HTTP request error: {e}");
+                }
+
+                try
+                {
+                    // GFL4
+                    var listAtrByDate = await dbContext.WellValues
+                        .Include(wv => wv.Value)
+                            .ThenInclude(v => v.Attribute)
+                            .ThenInclude(a => a.Element)
+                        .Include(wv => wv.Well)
+                        .Where(wv => wv.Value.Date == dateToday.AddHours(-3) && wv.Value.Attribute.Element.Parameter == "Vazão da GFL4")
+                        .ToListAsync();
+
+                    if (listAtrByDate is not null && listAtrByDate.Count > 0)
+                    {
+                        var potencialWells = 0d;
+                        foreach (var wv in listAtrByDate)
+                        {
+                            var GasLiftbyWell = await dbContext.Values
+                                .Include(v => v.Attribute)
+                                    .ThenInclude(a => a.Element)
+                                .Where(v => v.Date == dateToday.AddHours(-3) &&
+                                            v.Attribute.WellName == wv.Well.WellOperatorName &&
+                                            v.Attribute.Element.Parameter == "Vazão de Gas Lift" &&
+                                            v.Attribute.IsOperating == true)
+                                .FirstOrDefaultAsync();
+                            var GasLiftbyWellValue = GasLiftbyWell is not null && GasLiftbyWell.Amount is not null ? GasLiftbyWell.Amount.Value : 0;
+
+                            if (wv.Value is not null)
+                                potencialWells += GasLiftbyWellValue;
+                        }
+
+                        foreach (var wv in listAtrByDate)
+                        {
+                            var GasLiftbyWell = await dbContext.Values
+                                .Include(v => v.Attribute)
+                                    .ThenInclude(a => a.Element)
+                                .Where(v => v.Date == dateToday.AddHours(-3) &&
+                                            v.Attribute.WellName == wv.Well.WellOperatorName &&
+                                            v.Attribute.Element.Parameter == "Vazão de Gas Lift" &&
+                                            v.Attribute.IsOperating == true)
+                                .FirstOrDefaultAsync();
+                            var GasLiftbyWellValue = GasLiftbyWell is not null && GasLiftbyWell.Amount is not null ? GasLiftbyWell.Amount.Value : 0;
+
+                            if (wv.Value is not null)
+                            {
+                                var PIG = GasLiftbyWellValue / potencialWells;
+                                var GroupAmount = wv.Value.GroupAmount is not null ? wv.Value.GroupAmount.Value : 0;
+                                wv.Value.Amount = potencialWells == 0 ? 0 : PIG * GroupAmount;
+                            }
+                        }
+
+                        await dbContext.SaveChangesAsync();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Print($"HTTP request error: {e}");
+                }
+
+                try
+                {
+                    // GFL6
+                    var listAtrByDate = await dbContext.WellValues
+                        .Include(wv => wv.Value)
+                            .ThenInclude(v => v.Attribute)
+                            .ThenInclude(a => a.Element)
+                        .Include(wv => wv.Well)
+                        .Where(wv => wv.Value.Date == dateToday.AddHours(-3) && wv.Value.Attribute.Element.Parameter == "Vazão da GFL6")
+                        .ToListAsync();
+
+                    if (listAtrByDate is not null && listAtrByDate.Count > 0)
+                    {
+                        var potencialWells = 0d;
+                        foreach (var wv in listAtrByDate)
+                        {
+                            var GasLiftbyWell = await dbContext.Values
+                                .Include(v => v.Attribute)
+                                    .ThenInclude(a => a.Element)
+                                .Where(v => v.Date == dateToday.AddHours(-3) &&
+                                            v.Attribute.WellName == wv.Well.WellOperatorName &&
+                                            v.Attribute.Element.Parameter == "Vazão de Gas Lift" &&
+                                            v.Attribute.IsOperating == true)
+                                .FirstOrDefaultAsync();
+                            var GasLiftbyWellValue = GasLiftbyWell is not null && GasLiftbyWell.Amount is not null ? GasLiftbyWell.Amount.Value : 0;
+
+                            if (wv.Value is not null)
+                                potencialWells += GasLiftbyWellValue;
+                        }
+
+                        foreach (var wv in listAtrByDate)
+                        {
+                            var GasLiftbyWell = await dbContext.Values
+                                .Include(v => v.Attribute)
+                                    .ThenInclude(a => a.Element)
+                                .Where(v => v.Date == dateToday.AddHours(-3) &&
+                                            v.Attribute.WellName == wv.Well.WellOperatorName &&
+                                            v.Attribute.Element.Parameter == "Vazão de Gas Lift" &&
+                                            v.Attribute.IsOperating == true)
+                                .FirstOrDefaultAsync();
+                            var GasLiftbyWellValue = GasLiftbyWell is not null && GasLiftbyWell.Amount is not null ? GasLiftbyWell.Amount.Value : 0;
+
+                            if (wv.Value is not null)
+                            {
+                                var PIG = GasLiftbyWellValue / potencialWells;
+                                var GroupAmount = wv.Value.GroupAmount is not null ? wv.Value.GroupAmount.Value : 0;
+                                wv.Value.Amount = potencialWells == 0 ? 0 : PIG * GroupAmount;
+                            }
+                        }
+
+                        await dbContext.SaveChangesAsync();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Print($"HTTP request error: {e}");
+                }
             }
             catch (Exception e)
             {
