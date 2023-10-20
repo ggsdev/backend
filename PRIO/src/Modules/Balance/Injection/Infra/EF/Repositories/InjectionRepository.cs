@@ -34,10 +34,10 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories
                         .ThenInclude(x => x.Value)
                             .ThenInclude(x => x.Attribute)
                                 .ThenInclude(x => x.Element)
-                                .Include(x => x.WellValues)
-                                    .ThenInclude(x => x.Well)
-                                        .ThenInclude(x => x.Field)
-                                            .ThenInclude(x => x.Installation)
+                .Include(x => x.WellValues)
+                    .ThenInclude(x => x.Well)
+                        .ThenInclude(x => x.Field)
+                            .ThenInclude(x => x.Installation)
                 .Where(x => x.MeasurementAt.Date == date.Date && x.WellValues.Well.Field.Id == fieldId)
                 .ToListAsync();
         }
@@ -100,12 +100,12 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories
                         .ThenInclude(x => x.Value)
                             .ThenInclude(x => x.Attribute)
                                 .ThenInclude(x => x.Element)
-                                .Include(x => x.WellValues)
-                                    .ThenInclude(x => x.Well)
-                                        .ThenInclude(x => x.Field)
-                                            .ThenInclude(x => x.Installation)
-                .Where(x => x.MeasurementAt.Date == date.Date && x.WellValues.Well.Field.Id == fieldId)
-                .ToListAsync();
+                    .Include(x => x.WellValues)
+                        .ThenInclude(x => x.Well)
+                            .ThenInclude(x => x.Field)
+                                .ThenInclude(x => x.Installation)
+                    .Where(x => x.MeasurementAt.Date == date.Date && x.WellValues.Well.Field.Id == fieldId)
+                    .ToListAsync();
         }
 
         public async Task<bool> AnyByDate(DateTime date)

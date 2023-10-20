@@ -125,8 +125,11 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 
                 foreach (var gasInjection in gasInjectionWells)
                 {
-                    gasInjection.InjectionWaterGasField = fieldInjection;
-                    fieldInjection.AmountGasLift += gasInjection.AssignedValue;
+                    if (gasInjection.WellValues.Value.Attribute.Element.Parameter == PIConfig._gfl1 || gasInjection.WellValues.Value.Attribute.Element.Parameter == PIConfig._gfl6 || gasInjection.WellValues.Value.Attribute.Element.Parameter == PIConfig._gfl4)
+                    {
+                        gasInjection.InjectionWaterGasField = fieldInjection;
+                        fieldInjection.AmountGasLift += gasInjection.AssignedValue;
+                    }
                 }
 
             }
