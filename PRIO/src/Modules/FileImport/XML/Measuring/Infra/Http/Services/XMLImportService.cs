@@ -70,8 +70,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
         {
             #region client side validations
 
-            bool allDatesAreEqual = true;
-
             for (int i = 0; i < data.Files.Count; ++i)
             {
                 var isValidExtension = data.Files[i].FileName.ToLower().EndsWith(".xml");
@@ -92,27 +90,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                 if (!isValidFileName)
                     throw new BadRequestException($"Deve pertencer a uma das categorias: 001, 002 e 003. Importação falhou, arquivo com nome: {data.Files[i].FileName}");
-
-                if (data.Files[i].FileName.Count(c => c == '_') >= 2)
-                {
-                    try
-                    {
-                        var datePortion = data.Files[i].FileName.Split('_')[2][..14];
-
-                        if (!IsValidAndUniqueDate(datePortion, data.Files))
-                        {
-                            allDatesAreEqual = false;
-                        }
-                    }
-                    catch (ArgumentOutOfRangeException)
-                    {
-                        throw new BadRequestException($"Formato data inválida no arquivo: {data.Files[i].FileName}, formato ANP aceitável: 'yyyyMMddHHmmss'");
-                    }
-                }
             }
 
-            if (!allDatesAreEqual)
-                throw new BadRequestException("Todas as datas no nome dos arquivos devem ser iguais.");
 
             #endregion
 
