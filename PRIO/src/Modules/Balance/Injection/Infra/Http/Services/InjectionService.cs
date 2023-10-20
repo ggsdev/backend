@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using dotenv.net;
 using PRIO.src.Modules.Balance.Balance.Infra.EF.Models;
 using PRIO.src.Modules.Balance.Balance.Interfaces;
 using PRIO.src.Modules.Balance.Injection.Dtos;
@@ -43,6 +44,12 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 
         public async Task<WaterInjectionUpdateDto> CreateDailyInjection(CreateDailyInjectionViewModel body, DateTime dateInjection, User loggedUser)
         {
+            var envVars = DotEnv.Read();
+            var instance = envVars["INSTANCE"];
+
+            if (instance.Equals(PIConfig._bravoInstance))
+                throw new ConflictException("Bravo não possui injeção de água");
+
             if (body.FIRS < 0 || body.FIRS > 1)
                 throw new BadRequestException("FIRS deve ser um valor entre 0 e 1");
 
@@ -53,8 +60,8 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 .GetBalanceField(body.FieldId!.Value, dateInjection.Date)
                 ?? throw new BadRequestException("Balanço de campo não criado ainda, é necessário fechar a produção do dia.");
 
-            //if (fieldBalance.IsParameterized is false)
-            //    throw new ConflictException("Dados operacionais precisam ser confirmados.");
+            if (fieldBalance.IsParameterized is false)
+                throw new ConflictException("Dados operacionais precisam ser confirmados.");
 
             var injectionInDatabase = await _repository
                 .AnyByDate(dateInjection);
@@ -105,16 +112,38 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             var gasInjectionWells = await _repository
                 .GetGasWellInjectionsByDate(dateInjection, field.Id);
 
-            foreach (var waterInjection in waterInjectionWells)
+            if (instance == PIConfig._valenteInstance)
             {
-                waterInjection.InjectionWaterGasField = fieldInjection;
-                fieldInjection.AmountWater += waterInjection.AssignedValue;
+                foreach (var waterInjection in waterInjectionWells)
+                {
+                    if (waterInjection.WellValues.Value.Attribute.Element.Parameter == PIConfig._wfl1)
+                    {
+                        waterInjection.InjectionWaterGasField = fieldInjection;
+                        fieldInjection.AmountWater += waterInjection.AssignedValue;
+                    }
+                }
+
+                foreach (var gasInjection in gasInjectionWells)
+                {
+                    gasInjection.InjectionWaterGasField = fieldInjection;
+                    fieldInjection.AmountGasLift += gasInjection.AssignedValue;
+                }
+
             }
 
-            foreach (var gasInjection in gasInjectionWells)
+            if (instance == PIConfig._forteInstance)
             {
-                gasInjection.InjectionWaterGasField = fieldInjection;
-                fieldInjection.AmountGasLift += gasInjection.AssignedValue;
+                foreach (var waterInjection in waterInjectionWells)
+                {
+                    waterInjection.InjectionWaterGasField = fieldInjection;
+                    fieldInjection.AmountWater += waterInjection.AssignedValue;
+                }
+
+                foreach (var gasInjection in gasInjectionWells)
+                {
+                    gasInjection.InjectionWaterGasField = fieldInjection;
+                    fieldInjection.AmountGasLift += gasInjection.AssignedValue;
+                }
             }
 
             fieldBalance.TotalWaterInjectedRS = (decimal)(body.FIRS.Value * fieldInjection.AmountWater);
@@ -235,7 +264,8 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                     Tag = waterInjection.WellValues.Value.Attribute.Name,
                     VolumeAssigned = Math.Round(waterInjection.AssignedValue, 5),
                     VolumePI = waterInjection.WellValues.Value.Amount is not null ? Math.Round(waterInjection.WellValues.Value.Amount.Value, 5) : null,
-                    WellName = waterInjection.WellValues.Well.Name!
+                    WellName = waterInjection.WellValues.Well.Name!,
+                    GroupAmount = waterInjection.WellValues.Value.GroupAmount
                 });
             }
 
@@ -264,6 +294,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                     VolumePI = gasInjection.WellValues.Value.Amount is not null ? Math.Round(gasInjection.WellValues.Value.Amount.Value, 5) : null,
                     WellName = gasInjection.WellValues.Well.Name!/*wellInDatabase.Name!*/,
                     VolumeAssigned = gasInjection.AssignedValue,
+                    GroupAmount = gasInjection.WellValues.Value.GroupAmount
                 };
 
                 parameterDto.Values.Add(gasValuesDto);
@@ -368,7 +399,8 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                         Tag = waterInjection.WellValues.Value.Attribute.Name,
                         VolumeAssigned = Math.Round(waterInjection.AssignedValue, 5),
                         VolumePI = waterInjection.WellValues.Value.Amount is not null ? Math.Round(waterInjection.WellValues.Value.Amount.Value, 5) : null,
-                        WellName = waterInjection.WellValues.Well.Name!
+                        WellName = waterInjection.WellValues.Well.Name!,
+                        GroupAmount = waterInjection.WellValues.Value.GroupAmount
                     });
 
                     result.TotalWaterInjected += waterInjection.AssignedValue;
@@ -400,6 +432,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                         VolumePI = gasInjection.WellValues.Value.Amount is not null ? Math.Round(gasInjection.WellValues.Value.Amount.Value, 5) : null,
                         WellName = gasInjection.WellValues.Well.Name,
                         VolumeAssigned = gasInjection.AssignedValue,
+                        GroupAmount = gasInjection.WellValues.Value.GroupAmount
                     });
 
                     result.TotalGasLift += gasInjection.AssignedValue;

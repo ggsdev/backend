@@ -53,6 +53,7 @@
         public double? VolumePI { get; set; }
         public double VolumeAssigned { get; set; }
         public string Tag { get; set; }
+        public double? GroupAmount { get; set; }
         public string DateRead { get; set; }
     }
 
@@ -70,6 +71,7 @@
         public double? VolumePI { get; set; }
         public double VolumeAssigned { get; set; }
         public string Tag { get; set; }
+        public double? GroupAmount { get; set; }
         public string DateRead { get; set; }
     }
 
