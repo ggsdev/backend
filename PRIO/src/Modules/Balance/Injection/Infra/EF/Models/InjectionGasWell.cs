@@ -7,6 +7,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Models
     {
         public Guid Id { get; set; }
         public User CreatedBy { get; set; }
+        public User? UpdatedBy { get; set; }
         public DateTime MeasurementAt { get; set; }
         public WellsValues WellValues { get; set; }
         public InjectionWaterGasField? InjectionWaterGasField { get; set; }

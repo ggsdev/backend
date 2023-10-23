@@ -425,7 +425,7 @@ namespace PRIO.Migrations
                                             "OSX3_PIT-1060-68-DAILY-AVG",
                                             "Average Pressão  ANM Well 9 - TBMT-10HP",
                                             "https://prrjbsrvvm170.petrorio.local/piwebapi/points/F1DPxTrxlLuvikS_f2CTqj2YhAYA8AAAUFJSSlRTUlZWTTA2XE9TWDNfUElULTEwNjAtNjgtREFJTFktQVZH",
-                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1DPxTrxlLuvikS_f2CTqj2YhAYA8AAAUFJSSlRTUlZWTTA2XE9TWDNfUElULTEwNjAtNjgtREFJTFktQVZHvalue",
+                                            "https://prrjbsrvvm170.petrorio.local/piwebapi/streams/F1DPxTrxlLuvikS_f2CTqj2YhAYA8AAAUFJSSlRTUlZWTTA2XE9TWDNfUElULTEwNjAtNjgtREFJTFktQVZH/value",
                                             "7-TBMT-10H-RJS",
                                             true,
                                             true,
