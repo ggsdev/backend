@@ -25,21 +25,12 @@ namespace PRIO.src.Shared
             using var dbContext = new DataContext(dbContextOptions);
 
             var dateToday = DateTime.UtcNow.Date.AddHours(3).AddSeconds(-1);
-            var october1st = new DateTime(dateToday.Year, 10, 1);
-
+            var october1st = new DateTime(dateToday.Year, 10, 2).AddHours(3).AddSeconds(-1);
+            Console.WriteLine("october" + october1st);
             var attributes = await dbContext.Attributes.Include(x => x.Element)
                .ToListAsync();
 
-
             var errorsList = new List<string>();
-
-            for (var date = october1st; date <= dateToday; date = date.AddDays(1))
-            {
-                var formattedDate = date.ToString("yyyy-MM-ddTHH:mm:ssZ");
-
-                Console.WriteLine(formattedDate);
-            }
-
 
             try
             {
@@ -58,10 +49,12 @@ namespace PRIO.src.Shared
                 client.Timeout = Timeout.InfiniteTimeSpan;
                 for (var date = october1st; date <= dateToday; date = date.AddDays(1))
                 {
+                    Console.WriteLine(date);
+
                     var valuesList = new List<Value>();
                     var wellValuesList = new List<WellsValues>();
 
-                    var formattedDate = date.ToString("yyyy-MM-dd");
+                    var formattedDate = date.ToString("yyyy-MM-ddTHH:mm:ssZ");
 
                     try
                     {
@@ -96,7 +89,7 @@ namespace PRIO.src.Shared
                                                 PropertyNameCaseInsensitive = true
                                             });
 
-                                            if (valueObject is not null && valueObject.Timestamp.Date == date.Date)
+                                            if (valueObject is not null && valueObject.Timestamp == date)
                                             {
                                                 var value = new Value
                                                 {
@@ -118,6 +111,42 @@ namespace PRIO.src.Shared
                                                 };
                                                 wellValuesList.Add(wellValue);
 
+                                            }
+                                            else if (valueObject is not null && valueObject.Timestamp != date)
+                                            {
+
+                                                valueObject = new ValueJson
+                                                {
+                                                    Value = 0,
+                                                    Timestamp = DateTime.UtcNow.Date.AddSeconds(-1),
+                                                    Annotated = false,
+                                                    Good = false,
+                                                    Questionable = false,
+                                                    Substituted = false,
+                                                    UnitsAbbreviation = "",
+                                                    IsCaptured = false
+                                                };
+                                                var value = new Value
+                                                {
+                                                    Id = Guid.NewGuid(),
+                                                    Amount = wellNamesCount > 1 ? null : 0,
+                                                    GroupAmount = wellNamesCount > 1 ? 0 : null,
+                                                    Attribute = atr,
+                                                    Date = valueObject.Timestamp,
+                                                    IsCaptured = false,
+
+                                                };
+
+                                                valuesList.Add(value);
+
+                                                var wellValue = new WellsValues
+                                                {
+                                                    Id = Guid.NewGuid(),
+                                                    Value = value,
+                                                    Well = well,
+                                                };
+
+                                                wellValuesList.Add(wellValue);
                                             }
                                         }
                                         catch (Exception ex)

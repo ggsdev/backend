@@ -306,6 +306,7 @@ namespace PRIO.src.Modules.FileImport.XML.Measuring.Dtos
     {
         public string UepName { get; set; }
         public string UepCode { get; set; }
+        public bool ProductionAlreadyExists { get; set; }
         public Guid InstallationId { get; set; }
         public string StatusProduction { get; set; }
         public string DateProduction { get; set; }
