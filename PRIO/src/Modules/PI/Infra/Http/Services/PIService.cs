@@ -239,9 +239,6 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                 .GetElementByParameter(body.Parameter)
                 ?? throw new ConflictException($"Parâmetro: '{body.Parameter}' não encontrado.");
 
-            Console.WriteLine("ELEMENTO: " + elementInDatabase.Parameter);
-            Console.WriteLine("ELEMENTO: " + elementInDatabase.AttributesRoute);
-
             if (body.Operational is true)
             {
                 var attributesOfWell = await _repository
@@ -485,8 +482,6 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
 
                         foreach (var attributeOfWell in attributesOfWell)
                         {
-                            Console.WriteLine("wellName: " + wellName);
-                            Console.WriteLine("wellName: " + attributeOfWell.Name);
 
                             if (attributeOfWell.IsOperating && body.Parameter is not null)
                             {
