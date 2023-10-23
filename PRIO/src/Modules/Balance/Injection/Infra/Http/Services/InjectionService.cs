@@ -47,9 +47,6 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             var envVars = DotEnv.Read();
             var instance = envVars["INSTANCE"];
 
-            if (instance.Equals(PIConfig._bravoInstance))
-                throw new ConflictException("Bravo não possui injeção de água");
-
             if (body.FIRS < 0 || body.FIRS > 1)
                 throw new BadRequestException("FIRS deve ser um valor entre 0 e 1");
 
