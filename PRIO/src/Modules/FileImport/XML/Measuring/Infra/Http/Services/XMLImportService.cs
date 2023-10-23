@@ -1287,6 +1287,18 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     }
                 }
 
+                //if (response.DateProduction is null && data.Files[i].FileType == "002" || data.Files[i].FileType == "003" && (response003.Measurements.Count == 0 && response002.Measurements.Count == 0))
+                //    errorsInImport.Add($"Arquivo {data.Files[i].FileName}, nenhum ponto de medição configurado no cálculo de gás.");
+
+                //if (response.DateProduction is null && data.Files[i].FileType == "001" && response001.Measurements.Count == 0)
+                //    errorsInImport.Add($"Arquivo {data.Files[i].FileName}, nenhum ponto de medição configurado no cálculo de óleo.");
+
+                if (errorsInImport.Count > 0)
+                    throw new BadRequestException($"Algum(s) erro(s) ocorreram durante a validação do arquivo de nome: {data.Files[i].FileName}", errors: errorsInImport);
+
+                if (errorsInFormat.Count > 0)
+                    throw new BadRequestException($"Algum(s) erro(s) de formatação ocorreram durante a validação do arquivo de nome: {data.Files[i].FileName}", errors: errorsInFormat);
+
                 if (response.DateProduction is null && data.Files[i].FileType == "002" || data.Files[i].FileType == "003" && (response003.Measurements.Count == 0 && response002.Measurements.Count == 0))
                     errorsInImport.Add($"Arquivo {data.Files[i].FileName}, nenhum ponto de medição configurado no cálculo de gás.");
 
