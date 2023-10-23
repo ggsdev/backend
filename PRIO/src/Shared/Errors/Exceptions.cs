@@ -7,6 +7,8 @@ namespace PRIO.src.Shared.Errors
         public ErrorXmlResponseDto? Error { get; }
         public List<string>? Errors { get; }
         public string? ReturnStatus { get; }
+        public List<FileErrorDto>? DifferentDates { get; }
+        public DateTime? ReferenceDate { get; }
 
         public BadRequestException()
         {
@@ -20,6 +22,13 @@ namespace PRIO.src.Shared.Errors
             : base(message)
         {
             ReturnStatus = status;
+        }
+
+        public BadRequestException(string message, List<FileErrorDto>? differentDates, DateTime? referenceDate)
+            : base(message)
+        {
+            DifferentDates = differentDates;
+            ReferenceDate = referenceDate;
         }
 
         public BadRequestException(string message, List<string> errors)
