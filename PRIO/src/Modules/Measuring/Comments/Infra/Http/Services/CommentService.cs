@@ -184,7 +184,7 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
                                         var valueObject = new ValueJson
                                         {
                                             Value = null,
-                                            Timestamp = production.MeasuredAt.AddSeconds(-1),
+                                            Timestamp = production.MeasuredAt.Date.AddDays(1).AddSeconds(-1),
                                             Annotated = false,
                                             Good = false,
                                             Questionable = false,
