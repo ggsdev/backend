@@ -7,6 +7,7 @@ using PRIO.src.Modules.FileImport.XML.Measuring.FileContent;
 using PRIO.src.Modules.FileImport.XML.Measuring.FileContent._001;
 using PRIO.src.Modules.FileImport.XML.Measuring.FileContent._002;
 using PRIO.src.Modules.FileImport.XML.Measuring.FileContent._003;
+using PRIO.src.Modules.FileImport.XML.Measuring.Infra.Http.Dtos;
 using PRIO.src.Modules.FileImport.XML.Measuring.Infra.Utils;
 using PRIO.src.Modules.FileImport.XML.Measuring.ViewModels;
 using PRIO.src.Modules.Hierarchy.Fields.Interfaces;
@@ -104,6 +105,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             var gasResume = new GasSummary();
 
             var listOfMeasurementDates = new List<DateTime>();
+            var differentDatesDto = new ErrorDifferentDates();
 
             for (int i = 0; i < data.Files.Count; ++i)
             {
@@ -194,6 +196,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     File = genericFile
                 };
 
+                differentDatesDto.FilesWithDifferentDates.Add(new FileErrorDto
+                {
+                    FileName = data.Files[i].FileName,
+                    FileType = data.Files[i].FileType,
+                    Index = i,
+                    Id = importId,
+                });
+
                 #endregion
 
                 for (int k = 0; k < dadosBasicosElements.Count(); ++k)
@@ -226,11 +236,25 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                 if (dadosBasicos is not null && dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_001 is not null && dadosBasicos.COD_TAG_PONTO_MEDICAO_001 is not null && dadosBasicos.COD_INSTALACAO_001 is not null && producao is not null && producao.DHA_INICIO_PERIODO_MEDICAO_001 is not null)
                                 {
+                                    var measurementId = Guid.NewGuid();
 
                                     if (DateTime.TryParseExact(producao.DHA_INICIO_PERIODO_MEDICAO_001, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateBeginningMeasurement))
                                     {
-
+                                        differentDatesDto.ReferenceDate ??= dateBeginningMeasurement.Date;
                                         listOfMeasurementDates.Add(dateBeginningMeasurement.Date);
+
+                                        var fileCurrent = differentDatesDto.FilesWithDifferentDates
+                                            .FirstOrDefault(x => x.Id == importId);
+
+
+                                        if (fileCurrent is not null && dateBeginningMeasurement.Date != differentDatesDto.ReferenceDate.Value)
+                                            fileCurrent.MeasurementsWithDifferentDates.Add(new MeasurementsWithDifferentDates
+                                            {
+
+                                                Date = dateBeginningMeasurement.Date,
+                                                Id = measurementId,
+                                            });
+
 
                                         var checkDateExists = await _repository.GetMeasurementByDate(dateBeginningMeasurement, XmlUtils.File001);
 
@@ -350,7 +374,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                             {
                                                 var measurement = new Measurement
                                                 {
-                                                    Id = Guid.NewGuid(),
+                                                    Id = measurementId,
 
                                                     #region atributos dados basicos
                                                     NUM_SERIE_ELEMENTO_PRIMARIO_001 = dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_001,
@@ -541,10 +565,25 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                 if (dadosBasicos is not null && dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_002 is not null && dadosBasicos.COD_INSTALACAO_002 is not null && dadosBasicos.COD_TAG_PONTO_MEDICAO_002 is not null && producao is not null && producao.DHA_INICIO_PERIODO_MEDICAO_002 is not null)
                                 {
+                                    var measurementId = Guid.NewGuid();
 
                                     if (DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_002, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateBeginningMeasurement))
                                     {
                                         listOfMeasurementDates.Add(dateBeginningMeasurement.Date);
+
+                                        differentDatesDto.ReferenceDate ??= dateBeginningMeasurement.Date;
+
+                                        var fileCurrent = differentDatesDto.FilesWithDifferentDates
+                                            .FirstOrDefault(x => x.Id == importId);
+
+
+                                        if (fileCurrent is not null && dateBeginningMeasurement.Date != differentDatesDto.ReferenceDate.Value)
+                                            fileCurrent.MeasurementsWithDifferentDates.Add(new MeasurementsWithDifferentDates
+                                            {
+
+                                                Date = dateBeginningMeasurement.Date,
+                                                Id = measurementId,
+                                            });
 
                                         var checkDateExists = await _repository.GetMeasurementByDate(dateBeginningMeasurement, XmlUtils.File002);
 
@@ -690,7 +729,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                             var measurement = new Measurement()
                                             {
-                                                Id = Guid.NewGuid(),
+                                                Id = measurementId,
 
                                                 #region atributos dados basicos
                                                 NUM_SERIE_ELEMENTO_PRIMARIO_002 = dadosBasicos?.NUM_SERIE_ELEMENTO_PRIMARIO_002,
@@ -918,11 +957,25 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                 if (dadosBasicos is not null && dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_003 is not null && dadosBasicos.COD_INSTALACAO_003 is not null && producao is not null && producao.DHA_INICIO_PERIODO_MEDICAO_003 is not null)
                                 {
+                                    var measurementId = Guid.NewGuid();
 
                                     if (DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_003, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateBeginningMeasurement))
                                     {
                                         listOfMeasurementDates.Add(dateBeginningMeasurement.Date);
 
+                                        differentDatesDto.ReferenceDate ??= dateBeginningMeasurement.Date;
+
+                                        var fileCurrent = differentDatesDto.FilesWithDifferentDates
+                                           .FirstOrDefault(x => x.Id == importId);
+
+
+                                        if (fileCurrent is not null && dateBeginningMeasurement.Date != differentDatesDto.ReferenceDate.Value)
+                                            fileCurrent.MeasurementsWithDifferentDates.Add(new MeasurementsWithDifferentDates
+                                            {
+
+                                                Date = dateBeginningMeasurement.Date,
+                                                Id = measurementId,
+                                            });
                                         var checkDateExists = await _repository.GetMeasurementByDate(dateBeginningMeasurement, XmlUtils.File003);
 
                                         if (checkDateExists is not null && checkDateExists.IsActive)
@@ -1064,7 +1117,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                                 var measurement = new Measurement
                                                 {
-                                                    Id = Guid.NewGuid(),
+                                                    Id = measurementId,
 
                                                     #region atributos
                                                     NUM_SERIE_ELEMENTO_PRIMARIO_003 = dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_003,
@@ -1265,15 +1318,23 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     response._001File.Add(response001);
                 }
             }
-            if (listOfMeasurementDates.Count > 0)
-            {
-                var referenceDate = listOfMeasurementDates[0];
 
-                var hasDifferentDates = listOfMeasurementDates.Any(dateMeasured => dateMeasured != referenceDate);
+            var finalDatesDto = new List<FileErrorDto>();
+
+            foreach (var fileError in differentDatesDto.FilesWithDifferentDates)
+            {
+                if (fileError.MeasurementsWithDifferentDates.Any() is true)
+                    finalDatesDto.Add(fileError);
+            }
+
+
+            if (differentDatesDto.ReferenceDate is not null)
+            {
+                var hasDifferentDates = listOfMeasurementDates.Any(dateMeasured => dateMeasured != differentDatesDto.ReferenceDate);
 
                 if (hasDifferentDates)
                 {
-                    throw new BadRequestException("Datas entre medições diferente.");
+                    throw new BadRequestException("Datas diferentes entre medições", finalDatesDto, differentDatesDto.ReferenceDate);
                 }
 
             }
@@ -2542,7 +2603,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             if (productionOfTheDay is null)
                 response.StatusProduction = "aberto";
             else
+            {
                 response.StatusProduction = productionOfTheDay.StatusProduction;
+                response.ProductionAlreadyExists = true;
+            }
 
             var frProduction = new FRViewModel
             {
