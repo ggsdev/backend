@@ -776,7 +776,6 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                     gasLiftDto.Parameters = orderedGas;
                 }
 
-
                 result.WaterInjectedFields.Add(waterInjectedDto);
                 result.GasLiftFields.Add(gasLiftDto);
             }
@@ -801,6 +800,9 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
         }
         public async Task<WaterInjectionUpdateDto> UpdateWaterInjection(UpdateWaterInjectionViewModel body, Guid fieldInjectionId, User loggedUser)
         {
+            var envVars = DotEnv.Read();
+            var instance = envVars["INSTANCE"];
+
             var fieldInjectionInDatabase = await _repository
                 .GetWaterGasFieldInjectionsById(fieldInjectionId)
                 ?? throw new NotFoundException("Injeção de campo não encontrada.");
@@ -853,8 +855,17 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 }
             }
 
-            fieldInjectionInDatabase.AmountWater = fieldInjectionInDatabase.WellsWaterInjections
-                .Sum(x => x.AssignedValue);
+            if (instance == PIConfig._valenteInstance)
+            {
+                fieldInjectionInDatabase.AmountWater = fieldInjectionInDatabase.WellsWaterInjections
+                        .Where(x => x.WellValues.Value.Attribute.Element.Parameter == PIConfig._wfl1)
+                        .Sum(x => x.AssignedValue);
+            }
+            if (instance == PIConfig._forteInstance)
+            {
+                fieldInjectionInDatabase.AmountWater = fieldInjectionInDatabase.WellsWaterInjections
+                        .Sum(x => x.AssignedValue);
+            }
 
             if (body.FIRS is not null)
             {
@@ -892,7 +903,6 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 
             return resultDto;
         }
-
 
         public async Task<GasInjectionUpdateDto> UpdateGasInjection(UpdateGasInjectionViewModel body, Guid fieldInjectionId, User loggedUser)
         {
@@ -966,7 +976,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 
             if (instance == PIConfig._forteInstance)
             {
-                foreach (var gasInjection in fieldInjection.WellsWaterInjections)
+                foreach (var gasInjection in fieldInjection.WellsGasInjections)
                 {
                     fieldInjection.AmountGasLift += gasInjection.AssignedValue;
                 }
