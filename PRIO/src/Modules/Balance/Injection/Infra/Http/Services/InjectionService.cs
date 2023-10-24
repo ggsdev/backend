@@ -483,6 +483,9 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 
         public async Task<DailyInjectionDto> GetDailyInjectionTags(DateTime dateInjection, Guid installationId)
         {
+            var envVars = DotEnv.Read();
+            var instance = envVars["INSTANCE"];
+
             var installation = await _installationRepository.GetByIdAsync(installationId)
             ?? throw new NotFoundException(ErrorMessages.NotFound<Installation>());
 
@@ -522,111 +525,180 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                     Field = field.Name!
                 };
 
-                foreach (var waterInjection in waterWellInjections)
+                if (instance == PIConfig._valenteInstance)
                 {
-                    var parameterDto = waterInjectedDto.Parameters
-                        .FirstOrDefault(x => x.Parameter == waterInjection.WellValues.Value.Attribute.Element.Parameter);
-
-                    if (parameterDto is null)
+                    foreach (var waterInjection in waterWellInjections)
                     {
-                        parameterDto = new ElementWaterDto
-                        {
-                            Parameter = waterInjection.WellValues.Value.Attribute.Element.Parameter,
-                        };
+                        var parameterDto = waterInjectedDto.Parameters
+                            .FirstOrDefault(x => x.Parameter == waterInjection.WellValues.Value.Attribute.Element.Parameter);
 
-                        if (parameterDto.Parameter == PIConfig._wfl1)
+                        if (parameterDto is null)
+                        {
+                            parameterDto = new ElementWaterDto
+                            {
+                                Parameter = waterInjection.WellValues.Value.Attribute.Element.Parameter,
+                            };
+
+                            if (parameterDto.Parameter == PIConfig._wfl1)
+                                waterInjectedDto.Parameters.Add(parameterDto);
+                        }
+
+                        foreach (var waterInjectionFlow in waterWellInjections)
+                        {
+                            if (waterInjectionFlow.WellValues.Well.Name == waterInjection.WellValues.Well.Name && waterInjectionFlow.WellValues.Value.Attribute.Element.Parameter != PIConfig._wfl1)
+                                parameterDto.Values.Add(new WellValuesDto
+                                {
+                                    WellInjectionId = waterInjectionFlow.Id,
+                                    WellName = waterInjectionFlow.WellValues.Well.Name!,
+                                    TagFlow = waterInjectionFlow.WellValues.Value.Attribute.Name,
+                                    FlowVolumeAssigned = waterInjectionFlow.AssignedValue,
+                                    FlowVolumePI = waterInjectionFlow.WellValues.Value.Amount,
+                                    DateRead = waterInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
+                                    WFLInjectionId = waterInjection.Id,
+                                    TagWFL = waterInjection.WellValues.Value.Attribute.Name,
+                                    VolumeWFLAssigned = waterInjection.AssignedValue,
+                                    VolumeWFLPI = waterInjection.WellValues.Value.GroupAmount,
+                                });
+                        }
+
+                        result.TotalWaterInjected += waterInjection.AssignedValue;
+                    }
+
+                    foreach (var gasInjection in gasWellInjections)
+                    {
+                        var parameterDto = gasLiftDto.Parameters
+                            .FirstOrDefault(x => x.Parameter == gasInjection.WellValues.Value.Attribute.Element.Parameter);
+
+                        if (parameterDto is null)
+                        {
+                            parameterDto = new ElementGasDto
+                            {
+
+                                Parameter = gasInjection.WellValues.Value.Attribute.Element.Parameter,
+                            };
+
+                            if (parameterDto.Parameter == PIConfig._gfl1 || parameterDto.Parameter == PIConfig._gfl4 || parameterDto.Parameter == PIConfig._gfl6)
+                                gasLiftDto.Parameters.Add(parameterDto);
+
+                        }
+
+                        foreach (var gasInjectionFlow in gasWellInjections)
+                        {
+                            if (gasInjectionFlow.WellValues.Well.Name == gasInjection.WellValues.Well.Name && gasInjectionFlow.WellValues.Value.Attribute.Element.Parameter != PIConfig._gfl1 && gasInjectionFlow.WellValues.Value.Attribute.Element.Parameter != PIConfig._gfl4 && gasInjectionFlow.WellValues.Value.Attribute.Element.Parameter != PIConfig._gfl6)
+                                parameterDto.Values.Add(new GasValuesDto
+                                {
+                                    WellInjectionId = gasInjectionFlow.Id,
+                                    WellName = gasInjectionFlow.WellValues.Well.Name!,
+                                    TagFlow = gasInjectionFlow.WellValues.Value.Attribute.Name,
+                                    FlowVolumeAssigned = gasInjectionFlow.AssignedValue,
+                                    FlowVolumePI = gasInjectionFlow.WellValues.Value.Amount,
+                                    DateRead = gasInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
+                                    GFLInjectionId = gasInjection.Id,
+                                    TagGFL = gasInjection.WellValues.Value.Attribute.Name,
+                                    VolumeGFLAssigned = gasInjection.AssignedValue,
+                                    VolumeGFLPI = gasInjection.WellValues.Value.GroupAmount,
+                                });
+                        }
+
+                        result.TotalGasLift += gasInjection.AssignedValue;
+                    }
+                }
+
+                if (instance == PIConfig._forteInstance)
+                {
+                    foreach (var waterInjection in waterWellInjections)
+                    {
+                        var parameterDto = waterInjectedDto.Parameters
+                            .FirstOrDefault(x => x.Parameter == waterInjection.WellValues.Value.Attribute.Element.Parameter);
+
+                        if (parameterDto is null)
+                        {
+                            parameterDto = new ElementWaterDto
+                            {
+                                Parameter = waterInjection.WellValues.Value.Attribute.Element.Parameter,
+                            };
+
                             waterInjectedDto.Parameters.Add(parameterDto);
-                    }
+                        }
 
-                    foreach (var waterInjectionFlow in waterWellInjections)
-                    {
-                        if (waterInjectionFlow.WellValues.Well.Name == waterInjection.WellValues.Well.Name && waterInjectionFlow.WellValues.Value.Attribute.Element.Parameter != PIConfig._wfl1)
-                            parameterDto.Values.Add(new WellValuesDto
-                            {
-                                WellInjectionId = waterInjectionFlow.Id,
-                                WellName = waterInjectionFlow.WellValues.Well.Name!,
-                                TagFlow = waterInjectionFlow.WellValues.Value.Attribute.Name,
-                                FlowVolumeAssigned = waterInjectionFlow.AssignedValue,
-                                FlowVolumePI = waterInjectionFlow.WellValues.Value.Amount,
-                                DateRead = waterInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
-                                WFLInjectionId = waterInjection.Id,
-                                TagWFL = waterInjection.WellValues.Value.Attribute.Name,
-                                VolumeWFLAssigned = waterInjection.AssignedValue,
-                                VolumeWFLPI = waterInjection.WellValues.Value.GroupAmount,
-                            });
-                    }
-
-                    result.TotalWaterInjected += waterInjection.AssignedValue;
-                }
-
-                foreach (var gasInjection in gasWellInjections)
-                {
-                    var parameterDto = gasLiftDto.Parameters
-                        .FirstOrDefault(x => x.Parameter == gasInjection.WellValues.Value.Attribute.Element.Parameter);
-
-                    if (parameterDto is null)
-                    {
-                        parameterDto = new ElementGasDto
+                        parameterDto.Values.Add(new WellValuesDto
                         {
+                            WellInjectionId = waterInjection.Id,
+                            WellName = waterInjection.WellValues.Well.Name!,
+                            TagFlow = waterInjection.WellValues.Value.Attribute.Name,
+                            FlowVolumeAssigned = waterInjection.AssignedValue,
+                            FlowVolumePI = waterInjection.WellValues.Value.Amount,
+                            DateRead = waterInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
+                        });
 
-                            Parameter = gasInjection.WellValues.Value.Attribute.Element.Parameter,
-                        };
-
-                        if (parameterDto.Parameter == PIConfig._gfl1 || parameterDto.Parameter == PIConfig._gfl4 || parameterDto.Parameter == PIConfig._gfl6)
-                            gasLiftDto.Parameters.Add(parameterDto);
-
+                        result.TotalWaterInjected += waterInjection.AssignedValue;
                     }
 
-                    foreach (var gasInjectionFlow in gasWellInjections)
+                    foreach (var gasInjection in gasWellInjections)
                     {
-                        if (gasInjectionFlow.WellValues.Well.Name == gasInjection.WellValues.Well.Name && gasInjectionFlow.WellValues.Value.Attribute.Element.Parameter != PIConfig._gfl1 && gasInjectionFlow.WellValues.Value.Attribute.Element.Parameter != PIConfig._gfl4 && gasInjectionFlow.WellValues.Value.Attribute.Element.Parameter != PIConfig._gfl6)
-                            parameterDto.Values.Add(new GasValuesDto
+                        var parameterDto = gasLiftDto.Parameters
+                            .FirstOrDefault(x => x.Parameter == gasInjection.WellValues.Value.Attribute.Element.Parameter);
+
+                        if (parameterDto is null)
+                        {
+                            parameterDto = new ElementGasDto
                             {
-                                WellInjectionId = gasInjectionFlow.Id,
-                                WellName = gasInjectionFlow.WellValues.Well.Name!,
-                                TagFlow = gasInjectionFlow.WellValues.Value.Attribute.Name,
-                                FlowVolumeAssigned = gasInjectionFlow.AssignedValue,
-                                FlowVolumePI = gasInjectionFlow.WellValues.Value.Amount,
-                                DateRead = gasInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
-                                GFLInjectionId = gasInjection.Id,
-                                TagGFL = gasInjection.WellValues.Value.Attribute.Name,
-                                VolumeGFLAssigned = gasInjection.AssignedValue,
-                                VolumeGFLPI = gasInjection.WellValues.Value.GroupAmount,
-                            });
+
+                                Parameter = gasInjection.WellValues.Value.Attribute.Element.Parameter,
+                            };
+
+                            gasLiftDto.Parameters.Add(parameterDto);
+                        }
+
+                        parameterDto.Values.Add(new GasValuesDto
+                        {
+                            WellInjectionId = gasInjection.Id,
+                            WellName = gasInjection.WellValues.Well.Name!,
+                            TagFlow = gasInjection.WellValues.Value.Attribute.Name,
+                            FlowVolumeAssigned = gasInjection.AssignedValue,
+                            FlowVolumePI = gasInjection.WellValues.Value.Amount,
+                            DateRead = gasInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
+                        });
+
+                        result.TotalGasLift += gasInjection.AssignedValue;
+                    }
+                }
+
+                if (waterInjectedDto.Parameters.Any())
+                {
+                    var orderedWater = waterInjectedDto.Parameters
+                       .OrderBy(x => x.Parameter, new NaturalStringComparer())
+                       .ToList();
+
+                    foreach (var parameter in orderedWater)
+                    {
+                        var orderedValues = parameter.Values
+                            .OrderBy(x => x.WellName, new NaturalStringComparer())
+                            .ToList();
+
+                        parameter.Values = orderedValues;
                     }
 
-                    result.TotalGasLift += gasInjection.AssignedValue;
+                    waterInjectedDto.Parameters = orderedWater;
                 }
 
-
-                var orderedWater = waterInjectedDto.Parameters
-                   .OrderBy(x => x.Parameter, new NaturalStringComparer())
-                   .ToList();
-
-                foreach (var parameter in orderedWater)
+                if (gasLiftDto.Parameters.Any())
                 {
-                    var orderedValues = parameter.Values
-                        .OrderBy(x => x.WellName, new NaturalStringComparer())
+                    var orderedGas = gasLiftDto.Parameters
+                        .OrderBy(x => x.Parameter)
                         .ToList();
 
-                    parameter.Values = orderedValues;
+                    foreach (var parameter in orderedGas)
+                    {
+                        var orderedValues = parameter.Values
+                            .OrderBy(x => x.WellName, new NaturalStringComparer())
+                            .ToList();
+
+                        parameter.Values = orderedValues;
+                    }
+
+                    gasLiftDto.Parameters = orderedGas;
                 }
-
-                var orderedGas = gasLiftDto.Parameters
-                    .OrderBy(x => x.Parameter)
-                    .ToList();
-
-                foreach (var parameter in orderedGas)
-                {
-                    var orderedValues = parameter.Values
-                        .OrderBy(x => x.WellName, new NaturalStringComparer())
-                        .ToList();
-
-                    parameter.Values = orderedValues;
-                }
-
-                waterInjectedDto.Parameters = orderedWater;
-                gasLiftDto.Parameters = orderedGas;
 
 
                 result.WaterInjectedFields.Add(waterInjectedDto);
