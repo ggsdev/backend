@@ -410,7 +410,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                                 WFLInjectionId = waterInjection.Id,
                                 TagWFL = waterInjection.WellValues.Value.Attribute.Name,
                                 VolumeWFLAssigned = waterInjection.AssignedValue,
-                                VolumeWFLPI = waterInjection.AssignedValue,
+                                VolumeWFLPI = waterInjection.WellValues.Value.Amount,
                                 TotalVolumeWFL = waterInjection.WellValues.Value.GroupAmount
                             });
                     }
@@ -446,7 +446,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                                 GFLInjectionId = gasInjection.Id,
                                 TagGFL = gasInjection.WellValues.Value.Attribute.Name,
                                 VolumeGFLAssigned = gasInjection.AssignedValue,
-                                VolumeGFLPI = gasInjection.AssignedValue,
+                                VolumeGFLPI = gasInjection.WellValues.Value.Amount,
                                 TotalVolumeGFL = gasInjection.WellValues.Value.GroupAmount
                             });
                     }
@@ -629,7 +629,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                                     WFLInjectionId = waterInjection.Id,
                                     TagWFL = waterInjection.WellValues.Value.Attribute.Name,
                                     VolumeWFLAssigned = waterInjection.AssignedValue,
-                                    VolumeWFLPI = waterInjection.AssignedValue,
+                                    VolumeWFLPI = waterInjection.WellValues.Value.Amount,
                                     TotalVolumeWFL = waterInjection.WellValues.Value.GroupAmount
                                 });
                         }
@@ -670,7 +670,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                                     GFLInjectionId = gasInjection.Id,
                                     TagGFL = gasInjection.WellValues.Value.Attribute.Name,
                                     VolumeGFLAssigned = gasInjection.AssignedValue,
-                                    VolumeGFLPI = gasInjection.AssignedValue,
+                                    VolumeGFLPI = gasInjection.WellValues.Value.Amount,
                                     TotalVolumeGFL = gasInjection.WellValues.Value.GroupAmount
                                 });
                         }
