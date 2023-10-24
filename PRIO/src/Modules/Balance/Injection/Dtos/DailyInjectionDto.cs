@@ -56,7 +56,7 @@
         public double? FlowVolumePI { get; set; }
         public double FlowVolumeAssigned { get; set; }
         public Guid GFLInjectionId { get; set; }
-        public string TagGFL { get; set; } = null!;
+        public string? TagGFL { get; set; }
 
         public double? VolumeGFLPI { get; set; }
         public double? VolumeGFLAssigned { get; set; }
@@ -76,8 +76,8 @@
         public string TagFlow { get; set; } = null!;
         public double? FlowVolumePI { get; set; }
         public double FlowVolumeAssigned { get; set; }
-        public Guid WFLInjectionId { get; set; }
-        public string TagWFL { get; set; } = null!;
+        public Guid? WFLInjectionId { get; set; }
+        public string? TagWFL { get; set; }
 
         public double? VolumeWFLPI { get; set; }
         public double? VolumeWFLAssigned { get; set; }
