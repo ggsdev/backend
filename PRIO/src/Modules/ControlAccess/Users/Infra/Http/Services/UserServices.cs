@@ -423,7 +423,7 @@ namespace PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services
                                 {
                                     var verifyRelationMenuChildrenWithOperationsInMaster = await _groupOperationRepository.GetGroupOperationsByOperationIdAndGroupName(operation.OperationId, "Master");
                                     var verifyRelationMenuChildrenWithOperationsInMasterDTO = _mapper.Map<GroupOperation, UserGroupOperationDTO>(verifyRelationMenuChildrenWithOperationsInMaster);
-                                    var createGroupOperationsInUser = _userOperationFactory.CreateUserOperation(verifyRelationMenuChildrenWithOperationsInMasterDTO, createMenuParent, verifyRelationMenuParentWithOperations.GlobalOperation, userWithPermissions.Group);
+                                    var createGroupOperationsInUser = _userOperationFactory.CreateUserOperation(verifyRelationMenuChildrenWithOperationsInMasterDTO, createMenuParent, verifyRelationMenuChildrenWithOperationsInMaster.GlobalOperation, userWithPermissions.Group);
                                     createGroupOperationsInUser.GroupName = "Master";
                                     await _userOperationRepository.AddUserOperation(createGroupOperationsInUser);
                                 }
