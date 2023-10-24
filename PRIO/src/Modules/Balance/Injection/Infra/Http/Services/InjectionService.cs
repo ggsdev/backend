@@ -365,10 +365,10 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             foreach (var field in installation.Fields)
             {
                 var waterWellInjections = await _repository
-              .GetWaterWellInjectionsByDate(dateInjection, field.Id);
+                    .GetWaterWellInjectionsByDate(dateInjection, field.Id);
 
                 var gasWellInjections = await _repository
-                   .GetGasWellInjectionsByDate(dateInjection, field.Id);
+                    .GetGasWellInjectionsByDate(dateInjection, field.Id);
 
                 var gasLiftDto = new GasLiftInjectedDto
                 {
