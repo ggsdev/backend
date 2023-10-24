@@ -141,9 +141,10 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             {
                 foreach (var waterInjection in waterInjectionWells)
                 {
+                    waterInjection.InjectionWaterGasField = fieldInjection;
+
                     if (waterInjection.WellValues.Value.Attribute.Element.Parameter == PIConfig._wfl1)
                     {
-                        waterInjection.InjectionWaterGasField = fieldInjection;
                         fieldInjection.AmountWater += waterInjection.AssignedValue;
                     }
                 }
@@ -266,12 +267,12 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 
             if (instance == PIConfig._valenteInstance)
             {
-
                 foreach (var gasInjection in gasInjectionWells)
                 {
+                    gasInjection.InjectionWaterGasField = fieldInjection;
+
                     if (gasInjection.WellValues.Value.Attribute.Element.Parameter == PIConfig._gfl1 || gasInjection.WellValues.Value.Attribute.Element.Parameter == PIConfig._gfl6 || gasInjection.WellValues.Value.Attribute.Element.Parameter == PIConfig._gfl4)
                     {
-                        gasInjection.InjectionWaterGasField = fieldInjection;
                         fieldInjection.AmountGasLift += gasInjection.AssignedValue;
                     }
                 }
@@ -286,7 +287,6 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                     fieldInjection.AmountGasLift += gasInjection.AssignedValue;
                 }
             }
-
 
             await _repository.AddWaterGasInjection(fieldInjection);
 
@@ -377,9 +377,9 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 Field = fieldInjection.Field.Name!,
                 FIRS = fieldInjection.FIRS
             };
+
             if (instance == PIConfig._valenteInstance)
             {
-
                 foreach (var waterInjection in fieldInjection.WellsWaterInjections)
                 {
                     var parameterDto = waterInjectedDto.Parameters
@@ -398,7 +398,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 
                     foreach (var waterInjectionFlow in fieldInjection.WellsWaterInjections)
                     {
-                        if (waterInjectionFlow.WellValues.Well.Name == waterInjection.WellValues.Well.Name && waterInjectionFlow.WellValues.Value.Attribute.Element.Parameter != PIConfig._wfl1)
+                        if (waterInjectionFlow.WellValues.Well.Name == waterInjection.WellValues.Well.Name && waterInjectionFlow.WellValues.Value.Attribute.Element.Parameter == PIConfig._wfl1)
                             parameterDto.Values.Add(new WellValuesDto
                             {
                                 WellInjectionId = waterInjectionFlow.Id,
@@ -410,7 +410,8 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                                 WFLInjectionId = waterInjection.Id,
                                 TagWFL = waterInjection.WellValues.Value.Attribute.Name,
                                 VolumeWFLAssigned = waterInjection.AssignedValue,
-                                VolumeWFLPI = waterInjection.WellValues.Value.GroupAmount,
+                                VolumeWFLPI = waterInjection.AssignedValue,
+                                TotalVolumeWFL = waterInjection.WellValues.Value.GroupAmount
                             });
                     }
                 }
@@ -445,7 +446,8 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                                 GFLInjectionId = gasInjection.Id,
                                 TagGFL = gasInjection.WellValues.Value.Attribute.Name,
                                 VolumeGFLAssigned = gasInjection.AssignedValue,
-                                VolumeGFLPI = gasInjection.WellValues.Value.GroupAmount,
+                                VolumeGFLPI = gasInjection.AssignedValue,
+                                TotalVolumeGFL = gasInjection.WellValues.Value.GroupAmount
                             });
                     }
                 }
@@ -507,7 +509,6 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 }
 
             }
-
 
             if (waterInjectedDto.Parameters.Any())
             {
@@ -628,7 +629,8 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                                     WFLInjectionId = waterInjection.Id,
                                     TagWFL = waterInjection.WellValues.Value.Attribute.Name,
                                     VolumeWFLAssigned = waterInjection.AssignedValue,
-                                    VolumeWFLPI = waterInjection.WellValues.Value.GroupAmount,
+                                    VolumeWFLPI = waterInjection.AssignedValue,
+                                    TotalVolumeWFL = waterInjection.WellValues.Value.GroupAmount
                                 });
                         }
 
@@ -668,7 +670,8 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                                     GFLInjectionId = gasInjection.Id,
                                     TagGFL = gasInjection.WellValues.Value.Attribute.Name,
                                     VolumeGFLAssigned = gasInjection.AssignedValue,
-                                    VolumeGFLPI = gasInjection.WellValues.Value.GroupAmount,
+                                    VolumeGFLPI = gasInjection.AssignedValue,
+                                    TotalVolumeGFL = gasInjection.WellValues.Value.GroupAmount
                                 });
                         }
 

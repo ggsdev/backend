@@ -49,12 +49,13 @@ namespace PRIO.src.Shared.Infra.Http.Middlewares
                 return;
             }
 
-            if (ex is BadRequestException badRequestExceptionStatus && badRequestExceptionStatus.ReturnStatus is not null)
+            else if (ex is BadRequestException badRequestExceptionStatus && badRequestExceptionStatus.ReturnStatus is not null)
             {
                 await context.Response.WriteAsync(JsonConvert.SerializeObject(new ImportResponseDTO { Message = errorMessage, Status = badRequestExceptionStatus.ReturnStatus }));
+                return;
             }
 
-            if (ex is BadRequestException badRequestExceptionDates && badRequestExceptionDates.DifferentDates is not null)
+            else if (ex is BadRequestException badRequestExceptionDates && badRequestExceptionDates.DifferentDates is not null)
             {
                 await context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorDifferentDates
                 {
@@ -62,15 +63,17 @@ namespace PRIO.src.Shared.Infra.Http.Middlewares
                     FilesWithDifferentDates = badRequestExceptionDates.DifferentDates,
                     ReferenceDate = badRequestExceptionDates.ReferenceDate
                 }));
+                return;
             }
 
-            if (ex is BadRequestException badRequestExceptionDuplicatedFiles && badRequestExceptionDuplicatedFiles.DuplicatedFiles is not null)
+            else if (ex is BadRequestException badRequestExceptionDuplicatedFiles && badRequestExceptionDuplicatedFiles.DuplicatedFiles is not null)
             {
                 await context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorDuplicatedNames
                 {
                     Message = errorMessage,
                     DuplicatedFiles = badRequestExceptionDuplicatedFiles.DuplicatedFiles,
                 }));
+                return;
             }
 
             else
