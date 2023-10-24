@@ -8,6 +8,7 @@ namespace PRIO.src.Shared.Errors
         public List<string>? Errors { get; }
         public string? ReturnStatus { get; }
         public List<FileErrorDto>? DifferentDates { get; }
+        public List<FilesDuplicated>? DuplicatedFiles { get; }
         public DateTime? ReferenceDate { get; }
 
         public BadRequestException()
@@ -29,6 +30,12 @@ namespace PRIO.src.Shared.Errors
         {
             DifferentDates = differentDates;
             ReferenceDate = referenceDate;
+        }
+
+        public BadRequestException(string message, List<FilesDuplicated>? duplicatedFiles)
+            : base(message)
+        {
+            DuplicatedFiles = duplicatedFiles;
         }
 
         public BadRequestException(string message, List<string> errors)

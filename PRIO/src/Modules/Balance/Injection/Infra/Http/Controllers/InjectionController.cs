@@ -30,7 +30,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Controllers
 
             var data = await _service.CreateWaterDailyInjection(body, date, user!);
 
-            return Ok(data);
+            return Created($"injections/water/{data.FieldInjectionId}", data);
         }
 
         [HttpPost("gas")]
@@ -41,9 +41,9 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Controllers
 
             var user = HttpContext.Items["User"] as User;
 
-            await _service.CreateGasDailyInjection(body, date, user!);
+            var data = await _service.CreateGasDailyInjection(body, date, user!);
 
-            return Ok();
+            return Created($"injections/water/{data.FieldInjectionId}", data);
         }
 
         [HttpGet("installation/{id}")]
@@ -74,12 +74,22 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Controllers
         }
 
 
-        [HttpPatch("{fieldInjectionId}")]
-        public async Task<IActionResult> UpdateInjection(UpdateInjectionViewModel body, Guid fieldInjectionId)
+        [HttpPatch("water/{fieldInjectionId}")]
+        public async Task<IActionResult> UpdateWaterInjection(UpdateWaterInjectionViewModel body, Guid fieldInjectionId)
         {
             var user = HttpContext.Items["User"] as User;
 
-            var data = await _service.UpdateInjection(body, fieldInjectionId, user!);
+            var data = await _service.UpdateWaterInjection(body, fieldInjectionId, user!);
+
+            return Ok(data);
+        }
+
+        [HttpPatch("gas/{fieldInjectionId}")]
+        public async Task<IActionResult> UpdateGasInjection(UpdateGasInjectionViewModel body, Guid fieldInjectionId)
+        {
+            var user = HttpContext.Items["User"] as User;
+
+            var data = await _service.UpdateGasInjection(body, fieldInjectionId, user!);
 
             return Ok(data);
         }

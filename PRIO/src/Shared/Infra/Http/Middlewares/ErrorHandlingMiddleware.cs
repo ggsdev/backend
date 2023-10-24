@@ -64,6 +64,15 @@ namespace PRIO.src.Shared.Infra.Http.Middlewares
                 }));
             }
 
+            if (ex is BadRequestException badRequestExceptionDuplicatedFiles && badRequestExceptionDuplicatedFiles.DuplicatedFiles is not null)
+            {
+                await context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorDuplicatedNames
+                {
+                    Message = errorMessage,
+                    DuplicatedFiles = badRequestExceptionDuplicatedFiles.DuplicatedFiles,
+                }));
+            }
+
             else
             {
                 await context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorResponseDTO { Message = errorMessage }));

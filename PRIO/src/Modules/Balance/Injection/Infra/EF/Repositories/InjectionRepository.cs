@@ -139,6 +139,11 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories
         {
             _context.InjectionWaterGasField.Update(injection);
         }
+        public void UpdateGasInjection(InjectionGasWell injection)
+        {
+            _context.InjectionGasWell.Update(injection);
+        }
+
         public async Task AddGasWellInjectionAsync(InjectionGasWell injection)
         {
             await _context.InjectionGasWell.AddAsync(injection);

@@ -71,6 +71,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
         {
             #region client side validations
 
+            var duplicatedFiles = new ErrorDuplicatedNames();
+            var seenFileNames = new HashSet<string>();
+
             for (int i = 0; i < data.Files.Count; ++i)
             {
                 var isValidExtension = data.Files[i].FileName.ToLower().EndsWith(".xml");
@@ -91,7 +94,26 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                 if (!isValidFileName)
                     throw new BadRequestException($"Deve pertencer a uma das categorias: 001, 002 e 003. Importação falhou, arquivo com nome: {data.Files[i].FileName}");
+
+                if (seenFileNames.Contains(data.Files[i].FileName))
+                {
+                    duplicatedFiles.DuplicatedFiles.Add(new FilesDuplicated
+                    {
+
+                        FileName = data.Files[i].FileName,
+                        FileType = data.Files[i].FileType,
+                        Index = i,
+                    });
+                }
+                else
+                {
+                    seenFileNames.Add(data.Files[i].FileName);
+                }
             }
+
+            if (duplicatedFiles.DuplicatedFiles.Any())
+                throw new BadRequestException("Arquivos duplicados", duplicatedFiles.DuplicatedFiles);
+
 
             var errorsInImport = new List<string>();
             var errorsInFormat = new List<string>();
@@ -101,8 +123,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             var gasResume = new GasSummary();
 
-            var listOfMeasurementDates = new List<DateTime>();
             var differentDatesDto = new ErrorDifferentDates();
+            var listOfMeasurementDates = new List<DateTime>();
 
             foreach (var file in data.Files)
             {
@@ -1360,10 +1382,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 var hasDifferentDates = listOfMeasurementDates.Any(dateMeasured => dateMeasured != differentDatesDto.ReferenceDate);
 
                 if (hasDifferentDates)
-                {
                     throw new BadRequestException("Datas diferentes entre medições", finalDatesDto, differentDatesDto.ReferenceDate);
-                }
-
             }
 
             if (errorsInImport.Count > 0)
@@ -1373,17 +1392,10 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 throw new BadRequestException($"Algum(s) erro(s) de formatação ocorreram durante a validação dos arquivos", errors: errorsInFormat);
 
             if (response.DateProduction is null && typeFluid == "gas" && (response._003File.Count == 0 && response._002File.Count == 0))
-                errorsInImport.Add($"Nenhum ponto de medição configurado no cálculo de gás.");
+                throw new NotFoundException($"Nenhum ponto de medição no(s) arquivo(s) foi encontrado na configuração de cálculo de gás.");
 
             if (response.DateProduction is null && typeFluid == "oil" && response._001File.Count == 0)
-                errorsInImport.Add($"Nenhum ponto de medição configurado no cálculo de óleo.");
-
-            if (errorsInImport.Count > 0)
-                throw new BadRequestException($"Algum(s) erro(s) ocorreram durante a validação dos arquivos", errors: errorsInImport);
-
-            if (errorsInFormat.Count > 0)
-                throw new BadRequestException($"Algum(s) erro(s) de formatação ocorreram durante a validação dos arquivos", errors: errorsInFormat);
-
+                throw new NotFoundException($"Nenhum ponto de medição no(s) arquivo(s) foi encontrado na configuração de cálculo de óleo.");
 
             decimal totalLinearBurnetGas = 0;
             decimal totalLinearFuelGas = 0;

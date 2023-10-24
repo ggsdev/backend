@@ -14,11 +14,31 @@ namespace PRIO.src.Modules.FileImport.XML.Measuring.Infra.Http.Dtos
     public class ErrorDifferentDates
     {
         [JsonProperty("message")]
-        public string Message { get; set; } = "Datas entre medições diferentes";
+        public string Message { get; set; } = "Data inválida";
         [JsonProperty("referenceDate")]
         public DateTime? ReferenceDate { get; set; }
         [JsonProperty("filesWithDifferentDates")]
         public List<FileErrorDto> FilesWithDifferentDates { get; set; } = new();
+    }
+    public class ErrorDuplicatedNames
+    {
+        [JsonProperty("message")]
+        public string Message { get; set; } = "Arquivo duplicado";
+        [JsonProperty("referenceFile")]
+        public string? ReferenceFile { get; set; }
+
+        [JsonProperty("filesWithDifferentDates")]
+        public List<FilesDuplicated> DuplicatedFiles { get; set; } = new();
+    }
+
+    public class FilesDuplicated
+    {
+        [JsonProperty("index")]
+        public int Index { get; set; }
+        [JsonProperty("fileName")]
+        public string FileName { get; set; } = null!;
+        [JsonProperty("fileType")]
+        public string FileType { get; set; } = null!;
     }
 
     public class FileErrorDto

@@ -63,13 +63,13 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             if (fieldBalance.IsParameterized is false)
                 throw new ConflictException("Dados operacionais precisam ser confirmados.");
 
-            var injectionInDatabase = await _repository
+            var fieldInjection = await _repository
                 .GetWaterGasFieldInjectionByDate(dateInjection);
 
-            if (injectionInDatabase is not null && injectionInDatabase.WellsWaterInjections.Any())
-                throw new ConflictException($"Injeção de água do dia: {dateInjection:dd/MMM/yyyy} já atribuída");
+            if (fieldInjection is not null && fieldInjection.WellsWaterInjections.Any())
+                throw new ConflictException($"Injeção de água do dia: {dateInjection:dd/MMM/yyyy} já atribuída.");
 
-            var fieldInjection = new InjectionWaterGasField
+            fieldInjection ??= new InjectionWaterGasField
             {
                 Id = Guid.NewGuid(),
                 MeasurementAt = dateInjection,
@@ -93,7 +93,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 if (injection.WellInjectionId is not null)
                 {
                     var flowWaterInjectionInDatabase = await _repository.GetWaterInjectionById(injection.WellInjectionId)
-                    ?? throw new NotFoundException("Dados de injeção de água não encontrados.");
+                    ?? throw new NotFoundException("Dados de vazão de água não encontrados.");
 
                     if (injection.AssignedValue is not null)
                     {
@@ -114,7 +114,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 if (injection.WFLInjectionId is not null)
                 {
                     var WFLWaterInjectionInDatabase = await _repository.GetWaterInjectionById(injection.WFLInjectionId)
-                    ?? throw new NotFoundException("Dados de injeção de água não encontrados.");
+                    ?? throw new NotFoundException("Dados de vazão de WFL não encontrados.");
 
                     if (injection.AssignedWFLValue is not null)
                     {
@@ -137,9 +137,6 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             var waterInjectionWells = await _repository
                .GetWaterWellInjectionsByDate(dateInjection, field.Id);
 
-            var gasInjectionWells = await _repository
-                .GetGasWellInjectionsByDate(dateInjection, field.Id);
-
             if (instance == PIConfig._valenteInstance)
             {
                 foreach (var waterInjection in waterInjectionWells)
@@ -150,16 +147,6 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                         fieldInjection.AmountWater += waterInjection.AssignedValue;
                     }
                 }
-
-                foreach (var gasInjection in gasInjectionWells)
-                {
-                    if (gasInjection.WellValues.Value.Attribute.Element.Parameter == PIConfig._gfl1 || gasInjection.WellValues.Value.Attribute.Element.Parameter == PIConfig._gfl6 || gasInjection.WellValues.Value.Attribute.Element.Parameter == PIConfig._gfl4)
-                    {
-                        gasInjection.InjectionWaterGasField = fieldInjection;
-                        fieldInjection.AmountGasLift += gasInjection.AssignedValue;
-                    }
-                }
-
             }
 
             if (instance == PIConfig._forteInstance)
@@ -168,12 +155,6 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 {
                     waterInjection.InjectionWaterGasField = fieldInjection;
                     fieldInjection.AmountWater += waterInjection.AssignedValue;
-                }
-
-                foreach (var gasInjection in gasInjectionWells)
-                {
-                    gasInjection.InjectionWaterGasField = fieldInjection;
-                    fieldInjection.AmountGasLift += gasInjection.AssignedValue;
                 }
             }
 
@@ -195,7 +176,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             return resultDto;
         }
 
-        public async Task CreateGasDailyInjection(CreateDailyGasInjectionViewModel body, DateTime dateInjection, User loggedUser)
+        public async Task<GasInjectionUpdateDto> CreateGasDailyInjection(CreateDailyGasInjectionViewModel body, DateTime dateInjection, User loggedUser)
         {
             var envVars = DotEnv.Read();
             var instance = envVars["INSTANCE"];
@@ -210,11 +191,109 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             if (fieldBalance.IsParameterized is false)
                 throw new ConflictException("Dados operacionais precisam ser confirmados.");
 
-            var injectionInDatabase = await _repository
+            var fieldInjection = await _repository
                 .GetWaterGasFieldInjectionByDate(dateInjection);
 
-            if (injectionInDatabase is not null && injectionInDatabase.WellsGasInjections.Any())
-                throw new ConflictException($"Injeção de gás do dia: {dateInjection:dd/MMM/yyyy} já atribuída");
+            if (fieldInjection is not null && fieldInjection.WellsGasInjections.Any())
+                throw new ConflictException($"Injeção de água do dia: {dateInjection:dd/MMM/yyyy} já atribuída.");
+
+            fieldInjection ??= new InjectionWaterGasField
+            {
+                Id = Guid.NewGuid(),
+                MeasurementAt = dateInjection,
+                BalanceField = fieldBalance,
+                Field = field,
+                AmountGasLift = 0,
+                AmountWater = 0
+            };
+
+            var resultDto = new GasInjectionUpdateDto
+            {
+                FieldInjectionId = fieldInjection.Id
+            };
+
+            var updatedBy = _mapper.Map<UserDTO>(loggedUser);
+
+            foreach (var injection in body.AssignedGasValues)
+            {
+
+                if (injection.WellInjectionId is not null)
+                {
+                    var flowGasInjectionInDatabase = await _repository.GetGasInjectionById(injection.WellInjectionId)
+                    ?? throw new NotFoundException("Dados de vazão de gás não encontrados.");
+
+                    if (injection.AssignedValue is not null)
+                    {
+                        flowGasInjectionInDatabase.AssignedValue = injection.AssignedValue.Value;
+                        flowGasInjectionInDatabase.UpdatedBy = loggedUser;
+
+                        resultDto.AssignedValues.Add(new WaterAssignatedValuesDto
+                        {
+                            AssignedValue = flowGasInjectionInDatabase.AssignedValue,
+                            InjectionId = injection.WellInjectionId.Value,
+                            UpdatedBy = updatedBy
+                        });
+                    }
+
+                    _repository.UpdateGasInjection(flowGasInjectionInDatabase);
+                }
+
+                if (injection.GFLInjectionId is not null)
+                {
+                    var GFLWaterInjectionInDatabase = await _repository.GetGasInjectionById(injection.GFLInjectionId)
+                    ?? throw new NotFoundException("Dados de vazão de GFL não encontrados.");
+
+                    if (injection.AssignedGFLValue is not null)
+                    {
+                        GFLWaterInjectionInDatabase.AssignedValue = injection.AssignedGFLValue.Value;
+                        GFLWaterInjectionInDatabase.UpdatedBy = loggedUser;
+
+                        resultDto.AssignedValues.Add(new WaterAssignatedValuesDto
+                        {
+                            AssignedValue = GFLWaterInjectionInDatabase.AssignedValue,
+                            InjectionId = injection.GFLInjectionId.Value,
+                            UpdatedBy = updatedBy
+                        });
+                    }
+
+                    _repository.UpdateGasInjection(GFLWaterInjectionInDatabase);
+                }
+
+            }
+
+            var gasInjectionWells = await _repository
+                .GetGasWellInjectionsByDate(dateInjection, field.Id);
+
+            if (instance == PIConfig._valenteInstance)
+            {
+
+                foreach (var gasInjection in gasInjectionWells)
+                {
+                    if (gasInjection.WellValues.Value.Attribute.Element.Parameter == PIConfig._gfl1 || gasInjection.WellValues.Value.Attribute.Element.Parameter == PIConfig._gfl6 || gasInjection.WellValues.Value.Attribute.Element.Parameter == PIConfig._gfl4)
+                    {
+                        gasInjection.InjectionWaterGasField = fieldInjection;
+                        fieldInjection.AmountGasLift += gasInjection.AssignedValue;
+                    }
+                }
+
+            }
+
+            if (instance == PIConfig._forteInstance)
+            {
+                foreach (var gasInjection in gasInjectionWells)
+                {
+                    gasInjection.InjectionWaterGasField = fieldInjection;
+                    fieldInjection.AmountGasLift += gasInjection.AssignedValue;
+                }
+            }
+
+
+            await _repository.AddWaterGasInjection(fieldInjection);
+
+            resultDto.TotalGasLift = fieldInjection.AmountGasLift;
+
+            await _repository.Save();
+            return resultDto;
         }
 
         private static void DistributeToParentBalances(FieldsBalance fieldBalance)
@@ -572,7 +651,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 
             await _repository.Save();
         }
-        public async Task<WaterInjectionUpdateDto> UpdateInjection(UpdateInjectionViewModel body, Guid fieldInjectionId, User loggedUser)
+        public async Task<WaterInjectionUpdateDto> UpdateWaterInjection(UpdateWaterInjectionViewModel body, Guid fieldInjectionId, User loggedUser)
         {
             var fieldInjectionInDatabase = await _repository
                 .GetWaterGasFieldInjectionsById(fieldInjectionId)
@@ -591,7 +670,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 {
                     var waterInjectionInDatabase = fieldInjectionInDatabase.WellsWaterInjections
                    .FirstOrDefault(x => x.Id == bodyWellInjection.WellInjectionId)
-                   ?? throw new NotFoundException("Injeção de água do poço não encontrada.");
+                   ?? throw new NotFoundException("Vazão de água do poço não encontrada.");
 
                     waterInjectionInDatabase.AssignedValue = bodyWellInjection.AssignedValue.Value;
                     waterInjectionInDatabase.UpdatedBy = loggedUser;
@@ -602,6 +681,25 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                     {
                         AssignedValue = waterInjectionInDatabase.AssignedValue,
                         InjectionId = bodyWellInjection.WellInjectionId.Value,
+                        UpdatedBy = updatedBy
+                    });
+                }
+
+                if (bodyWellInjection.AssignedWFLValue is not null && bodyWellInjection.WFLInjectionId is not null)
+                {
+                    var waterInjectionInDatabase = fieldInjectionInDatabase.WellsWaterInjections
+                   .FirstOrDefault(x => x.Id == bodyWellInjection.WellInjectionId)
+                   ?? throw new NotFoundException("Vazão de água do poço não encontrada.");
+
+                    waterInjectionInDatabase.AssignedValue = bodyWellInjection.AssignedWFLValue.Value;
+                    waterInjectionInDatabase.UpdatedBy = loggedUser;
+
+                    _repository.UpdateWaterInjection(waterInjectionInDatabase);
+
+                    resultDto.AssignedValues.Add(new WaterAssignatedValuesDto
+                    {
+                        AssignedValue = waterInjectionInDatabase.AssignedValue,
+                        InjectionId = bodyWellInjection.WFLInjectionId.Value,
                         UpdatedBy = updatedBy
                     });
                 }
@@ -647,5 +745,92 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             return resultDto;
         }
 
+
+        public async Task<GasInjectionUpdateDto> UpdateGasInjection(UpdateGasInjectionViewModel body, Guid fieldInjectionId, User loggedUser)
+        {
+            var envVars = DotEnv.Read();
+            var instance = envVars["INSTANCE"];
+
+            var fieldInjection = await _repository
+                .GetWaterGasFieldInjectionsById(fieldInjectionId)
+                ?? throw new NotFoundException("Injeção de campo não encontrada.");
+
+            var resultDto = new GasInjectionUpdateDto
+            {
+                FieldInjectionId = fieldInjectionId,
+            };
+
+            var updatedBy = _mapper.Map<UserDTO>(loggedUser);
+
+            foreach (var bodyWellInjection in body.AssignedValues)
+            {
+                if (bodyWellInjection.AssignedValue is not null && bodyWellInjection.WellInjectionId is not null)
+                {
+                    var gasInjectionInDatabase = fieldInjection.WellsGasInjections
+                   .FirstOrDefault(x => x.Id == bodyWellInjection.WellInjectionId)
+                   ?? throw new NotFoundException("Vazão de gas lift do poço não encontrada.");
+
+                    gasInjectionInDatabase.AssignedValue = bodyWellInjection.AssignedValue.Value;
+                    gasInjectionInDatabase.UpdatedBy = loggedUser;
+
+                    _repository.UpdateGasInjection(gasInjectionInDatabase);
+
+                    resultDto.AssignedValues.Add(new WaterAssignatedValuesDto
+                    {
+                        AssignedValue = gasInjectionInDatabase.AssignedValue,
+                        InjectionId = bodyWellInjection.WellInjectionId.Value,
+                        UpdatedBy = updatedBy
+                    });
+                }
+
+                if (bodyWellInjection.AssignedGFLValue is not null && bodyWellInjection.GFLInjectionId is not null)
+                {
+                    var gasInjectionInDatabase = fieldInjection.WellsGasInjections
+                   .FirstOrDefault(x => x.Id == bodyWellInjection.WellInjectionId)
+                   ?? throw new NotFoundException("Vazão de GFL do poço não encontrada.");
+
+                    gasInjectionInDatabase.AssignedValue = bodyWellInjection.AssignedGFLValue.Value;
+                    gasInjectionInDatabase.UpdatedBy = loggedUser;
+
+                    _repository.UpdateGasInjection(gasInjectionInDatabase);
+
+                    resultDto.AssignedValues.Add(new WaterAssignatedValuesDto
+                    {
+                        AssignedValue = gasInjectionInDatabase.AssignedValue,
+                        InjectionId = bodyWellInjection.GFLInjectionId.Value,
+                        UpdatedBy = updatedBy
+                    });
+                }
+            }
+
+
+            if (instance == PIConfig._valenteInstance)
+            {
+                foreach (var gasInjection in fieldInjection.WellsGasInjections)
+                {
+                    if (gasInjection.WellValues.Value.Attribute.Element.Parameter == PIConfig._gfl1 || gasInjection.WellValues.Value.Attribute.Element.Parameter == PIConfig._gfl6 || gasInjection.WellValues.Value.Attribute.Element.Parameter == PIConfig._gfl4)
+                    {
+                        fieldInjection.AmountGasLift += gasInjection.AssignedValue;
+                    }
+                }
+
+            }
+
+            if (instance == PIConfig._forteInstance)
+            {
+                foreach (var gasInjection in fieldInjection.WellsWaterInjections)
+                {
+                    fieldInjection.AmountGasLift += gasInjection.AssignedValue;
+                }
+            }
+
+            _repository.UpdateWaterGasInjection(fieldInjection);
+
+            resultDto.TotalGasLift = fieldInjection.AmountGasLift;
+
+            await _repository.Save();
+
+            return resultDto;
+        }
     }
 }
