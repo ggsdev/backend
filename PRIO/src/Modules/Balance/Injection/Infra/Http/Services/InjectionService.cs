@@ -73,6 +73,8 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 BalanceField = fieldBalance,
                 Field = field,
                 FIRS = body.FIRS!.Value,
+                AmountGasLift = 0,
+                AmountWater = 0
             };
 
             var resultDto = new WaterInjectionUpdateDto
@@ -145,6 +147,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                     fieldInjection.AmountGasLift += gasInjection.AssignedValue;
                 }
             }
+
 
             fieldBalance.TotalWaterInjectedRS = (decimal)(body.FIRS.Value * fieldInjection.AmountWater);
             fieldBalance.TotalWaterDisposal = (decimal)((1 - body.FIRS.Value) * fieldInjection.AmountWater);
@@ -281,7 +284,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                         Parameter = gasInjection.WellValues.Value.Attribute.Element.Parameter,
                     };
 
-                    if (parameterDto.Parameter == PIConfig._gfl1 || parameterDto.Parameter == PIConfig._gfl4 || parameterDto.Parameter == PIConfig._gfl6)
+                    if (parameterDto.Parameter == PIConfig._gfl1 || parameterDto.Parameter == PIConfig._gfl4 || parameterDto.Parameter == PIConfig._gfl6 || parameterDto.Parameter == PIConfig._gasLiftFlow)
                         gasLiftDto.Parameters.Add(parameterDto);
 
                 }
@@ -419,7 +422,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                             Parameter = gasInjection.WellValues.Value.Attribute.Element.Parameter,
                         };
 
-                        if (parameterDto.Parameter == PIConfig._gfl1 || parameterDto.Parameter == PIConfig._gfl4 || parameterDto.Parameter == PIConfig._gfl6)
+                        if (parameterDto.Parameter == PIConfig._gfl1 || parameterDto.Parameter == PIConfig._gfl4 || parameterDto.Parameter == PIConfig._gfl6 || parameterDto.Parameter == PIConfig._gasLiftFlow)
                             gasLiftDto.Parameters.Add(parameterDto);
 
                     }
