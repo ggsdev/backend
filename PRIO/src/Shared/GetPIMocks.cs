@@ -16,8 +16,15 @@ namespace PRIO.src.Shared
 
         private static readonly string _connectionString = $"Server={_envVars["SERVER"]},{_envVars["PORT"]}\\{_envVars["SERVER_INSTANCE"]};Database={_envVars["DATABASE"]};User ID={_envVars["USER_ID"]};Password={_envVars["PASSWORD"]};Encrypt={_envVars["ENCRYPT"]}";
 
-        public static async Task ExecuteAsync()
+        public static async Task ExecuteAsync(string queryDate)
         {
+            if (queryDate == null)
+                throw new ConflictException("Data não informada.");
+
+            var checkDate = DateTime.TryParse(queryDate, out DateTime day);
+            if (checkDate is false)
+                throw new ConflictException("Data não é válida.");
+
             var dbContextOptions = new DbContextOptionsBuilder<DataContext>()
                .UseSqlServer(_connectionString)
                .Options;
@@ -25,8 +32,8 @@ namespace PRIO.src.Shared
             using var dbContext = new DataContext(dbContextOptions);
 
             var dateToday = DateTime.UtcNow.Date.AddHours(3).AddSeconds(-1);
-            var october1st = new DateTime(dateToday.Year, 10, 2).AddHours(3).AddSeconds(-1);
-            Console.WriteLine("october" + october1st);
+            var requestDate = day.Date.AddHours(3).AddSeconds(-1);
+            Console.WriteLine("october" + requestDate);
             var attributes = await dbContext.Attributes.Include(x => x.Element)
                .ToListAsync();
 
@@ -47,7 +54,7 @@ namespace PRIO.src.Shared
 
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
                 client.Timeout = Timeout.InfiniteTimeSpan;
-                for (var date = october1st; date <= dateToday; date = date.AddDays(1))
+                for (var date = requestDate; date <= dateToday; date = date.AddDays(1))
                 {
                     Console.WriteLine(date);
 
@@ -91,6 +98,7 @@ namespace PRIO.src.Shared
 
                                             if (valueObject is not null && valueObject.Timestamp == date)
                                             {
+                                                Console.WriteLine("Capturou");
                                                 var value = new Value
                                                 {
                                                     Id = Guid.NewGuid(),
@@ -114,11 +122,12 @@ namespace PRIO.src.Shared
                                             }
                                             else if (valueObject is not null && valueObject.Timestamp != date)
                                             {
+                                                Console.WriteLine("Capturou com data diferente");
 
                                                 valueObject = new ValueJson
                                                 {
                                                     Value = 0,
-                                                    Timestamp = DateTime.UtcNow.Date.AddSeconds(-1),
+                                                    Timestamp = date.Date.AddSeconds(-1),
                                                     Annotated = false,
                                                     Good = false,
                                                     Questionable = false,
@@ -152,12 +161,13 @@ namespace PRIO.src.Shared
                                         catch (Exception ex)
                                         {
 
+                                            Console.WriteLine("Capturou com erro no value");
                                             Console.WriteLine(ex);
 
                                             valueObject = new ValueJson
                                             {
                                                 Value = null,
-                                                Timestamp = date.Date.AddDays(1).AddSeconds(-1),
+                                                Timestamp = date.Date.AddSeconds(-1),
                                                 Annotated = false,
                                                 Good = false,
                                                 Questionable = false,
@@ -521,10 +531,10 @@ namespace PRIO.src.Shared
             Console.WriteLine("Terminou de executar");
         }
 
-        public static void Execute()
-        {
-            ExecuteAsync().Wait();
-        }
+        //public static void Execute()
+        //{
+        //    ExecuteAsync().Wait();
+        //}
         private static void Print<T>(T text)
         {
             Console.WriteLine(text);

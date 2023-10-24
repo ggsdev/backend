@@ -7,9 +7,9 @@ namespace PRIO.src.Shared
     public class GetPIMocksController : ControllerBase
     {
         [HttpPost]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create([FromQuery] string date)
         {
-            await GetPIMocks.ExecuteAsync();
+            await GetPIMocks.ExecuteAsync(date);
             return NoContent();
         }
 
