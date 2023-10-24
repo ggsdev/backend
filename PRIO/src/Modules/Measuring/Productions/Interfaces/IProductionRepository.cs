@@ -24,5 +24,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Interfaces
         Task<WellProduction?> GetWellProductionByWellAndProductionId(Guid wellId, Guid productionId);
         Task<WellLosses?> GetWellLossByEventAndWellProductionId(Guid eventId, Guid wellProductionId);
         Task<List<FieldProduction>> GetAllFieldProductionByProduction(Guid productionId);
+        Task<Production?> GetProductionOilByDate(DateTime date);
     }
 }

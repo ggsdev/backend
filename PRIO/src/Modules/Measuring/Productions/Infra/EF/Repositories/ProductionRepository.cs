@@ -74,6 +74,16 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                             x.MeasuredAt.Day == date.Day && x.IsActive)
                 .FirstOrDefaultAsync();
         }
+
+        public async Task<Production?> GetProductionOilByDate(DateTime date)
+        {
+            return await _context.Productions
+                .Include(x => x.Oil)
+                .Where(x => x.MeasuredAt.Year == date.Year &&
+                            x.MeasuredAt.Month == date.Month &&
+                            x.MeasuredAt.Day == date.Day && x.IsActive)
+                .FirstOrDefaultAsync();
+        }
         public async Task<bool> AnyByDate(DateTime date)
         {
             return await _context.Productions

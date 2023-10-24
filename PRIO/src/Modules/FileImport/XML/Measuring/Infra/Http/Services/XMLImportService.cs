@@ -256,10 +256,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                             });
 
 
-                                        var checkDateExists = await _repository.GetMeasurementByDate(dateBeginningMeasurement, XmlUtils.File001);
-
-                                        if (checkDateExists is not null && checkDateExists.IsActive)
-                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) data: {producao.DHA_INICIO_PERIODO_MEDICAO_001} já existente.");
+                                        var checkOilProduction = await _productionRepository.GetProductionGasByDate(dateBeginningMeasurement);
+                                        if (checkOilProduction is not null && checkOilProduction.Oil is not null && checkOilProduction.IsActive)
+                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) já existe produção de gás na data: {producao.DHA_INICIO_PERIODO_MEDICAO_001}");
                                     }
 
                                     else
@@ -584,11 +583,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                 Date = dateBeginningMeasurement.Date,
                                                 Id = measurementId,
                                             });
-
-                                        var checkDateExists = await _repository.GetMeasurementByDate(dateBeginningMeasurement, XmlUtils.File002);
-
-                                        if (checkDateExists is not null && checkDateExists.IsActive)
-                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) data: {producao.DHA_INICIO_PERIODO_MEDICAO_002} já existente.");
 
 
                                         var checkGasProductionExists = await _productionRepository.GetProductionGasByDate(dateBeginningMeasurement);
@@ -976,10 +970,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                 Date = dateBeginningMeasurement.Date,
                                                 Id = measurementId,
                                             });
-                                        var checkDateExists = await _repository.GetMeasurementByDate(dateBeginningMeasurement, XmlUtils.File003);
-
-                                        if (checkDateExists is not null && checkDateExists.IsActive)
-                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) data: {producao.DHA_INICIO_PERIODO_MEDICAO_003} já existente.");
 
                                         var checkGasProductionExists = await _productionRepository
                                             .GetProductionGasByDate(dateBeginningMeasurement);
