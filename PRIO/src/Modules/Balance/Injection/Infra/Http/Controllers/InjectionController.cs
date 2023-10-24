@@ -20,17 +20,30 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Controllers
             _service = injectionService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateInjection(CreateDailyInjectionViewModel body, string dateInjection)
+        [HttpPost("water")]
+        public async Task<IActionResult> CreateWaterInjection(CreateDailyWaterInjectionViewModel body, string dateInjection)
         {
             if (!DateTime.TryParseExact(dateInjection, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
                 throw new BadRequestException("O formato da data deve ser dd-MM-yyyy");
 
             var user = HttpContext.Items["User"] as User;
 
-            var data = await _service.CreateDailyInjection(body, date, user!);
+            var data = await _service.CreateWaterDailyInjection(body, date, user!);
 
             return Ok(data);
+        }
+
+        [HttpPost("gas")]
+        public async Task<IActionResult> CreateGasInjection(CreateDailyGasInjectionViewModel body, string dateInjection)
+        {
+            if (!DateTime.TryParseExact(dateInjection, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
+                throw new BadRequestException("O formato da data deve ser dd-MM-yyyy");
+
+            var user = HttpContext.Items["User"] as User;
+
+            await _service.CreateGasDailyInjection(body, date, user!);
+
+            return Ok();
         }
 
         [HttpGet("installation/{id}")]
