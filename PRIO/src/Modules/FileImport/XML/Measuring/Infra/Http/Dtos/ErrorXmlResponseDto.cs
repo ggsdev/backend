@@ -24,10 +24,8 @@ namespace PRIO.src.Modules.FileImport.XML.Measuring.Infra.Http.Dtos
     {
         [JsonProperty("message")]
         public string Message { get; set; } = "Arquivo duplicado";
-        [JsonProperty("referenceFile")]
-        public string? ReferenceFile { get; set; }
 
-        [JsonProperty("filesWithDifferentDates")]
+        [JsonProperty("duplicatedFiles")]
         public List<FilesDuplicated> DuplicatedFiles { get; set; } = new();
     }
 
