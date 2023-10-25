@@ -926,7 +926,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 if (bodyWellInjection.AssignedGFLValue is not null && bodyWellInjection.GFLInjectionId is not null)
                 {
                     var gasInjectionInDatabase = fieldInjection.WellsGasInjections
-                   .FirstOrDefault(x => x.Id == bodyWellInjection.WellInjectionId)
+                   .FirstOrDefault(x => x.Id == bodyWellInjection.GFLInjectionId)
                    ?? throw new NotFoundException("Vazão de GFL do poço não encontrada.");
 
                     gasInjectionInDatabase.AssignedValue = bodyWellInjection.AssignedGFLValue.Value;
