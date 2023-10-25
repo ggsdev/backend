@@ -499,7 +499,7 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
 
             try
             {
-                if (body.TagName is not null)
+                if (body.TagName is not null && body.TagName.ToUpper().Trim() != tag.Name.ToUpper().Trim())
                 {
                     var handler = new HttpClientHandler
                     {

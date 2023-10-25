@@ -296,25 +296,6 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             return resultDto;
         }
 
-        private static void DistributeToParentBalances(FieldsBalance fieldBalance)
-        {
-            fieldBalance.InstallationBalance.DischargedSurface += fieldBalance.DischargedSurface;
-            fieldBalance.InstallationBalance.TotalWaterCaptured += fieldBalance.TotalWaterCaptured;
-            fieldBalance.InstallationBalance.TotalWaterDisposal += fieldBalance.TotalWaterDisposal;
-            fieldBalance.InstallationBalance.TotalWaterTransferred += fieldBalance.TotalWaterTransferred;
-            fieldBalance.InstallationBalance.TotalWaterInjected += fieldBalance.TotalWaterInjected;
-            fieldBalance.InstallationBalance.TotalWaterInjectedRS += fieldBalance.TotalWaterInjectedRS;
-            fieldBalance.InstallationBalance.TotalWaterReceived += fieldBalance.TotalWaterReceived;
-
-            fieldBalance.InstallationBalance.UEPBalance.DischargedSurface += fieldBalance.DischargedSurface;
-            fieldBalance.InstallationBalance.UEPBalance.TotalWaterCaptured += fieldBalance.TotalWaterCaptured;
-            fieldBalance.InstallationBalance.UEPBalance.TotalWaterDisposal += fieldBalance.TotalWaterDisposal;
-            fieldBalance.InstallationBalance.UEPBalance.TotalWaterTransferred += fieldBalance.TotalWaterTransferred;
-            fieldBalance.InstallationBalance.UEPBalance.TotalWaterInjected += fieldBalance.TotalWaterInjected;
-            fieldBalance.InstallationBalance.UEPBalance.TotalWaterInjectedRS += fieldBalance.TotalWaterInjectedRS;
-            fieldBalance.InstallationBalance.UEPBalance.TotalWaterReceived += fieldBalance.TotalWaterReceived;
-        }
-
         public async Task<List<InjectionDto>> GetInjectionByInstallationId(Guid installationId)
         {
             var installation = await _installationRepository
@@ -990,5 +971,25 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 
             return resultDto;
         }
+
+        private static void DistributeToParentBalances(FieldsBalance fieldBalance)
+        {
+            fieldBalance.InstallationBalance.DischargedSurface += fieldBalance.DischargedSurface;
+            fieldBalance.InstallationBalance.TotalWaterCaptured += fieldBalance.TotalWaterCaptured;
+            fieldBalance.InstallationBalance.TotalWaterDisposal += fieldBalance.TotalWaterDisposal;
+            fieldBalance.InstallationBalance.TotalWaterTransferred += fieldBalance.TotalWaterTransferred;
+            fieldBalance.InstallationBalance.TotalWaterInjected += fieldBalance.TotalWaterInjected;
+            fieldBalance.InstallationBalance.TotalWaterInjectedRS += fieldBalance.TotalWaterInjectedRS;
+            fieldBalance.InstallationBalance.TotalWaterReceived += fieldBalance.TotalWaterReceived;
+
+            fieldBalance.InstallationBalance.UEPBalance.DischargedSurface += fieldBalance.DischargedSurface;
+            fieldBalance.InstallationBalance.UEPBalance.TotalWaterCaptured += fieldBalance.TotalWaterCaptured;
+            fieldBalance.InstallationBalance.UEPBalance.TotalWaterDisposal += fieldBalance.TotalWaterDisposal;
+            fieldBalance.InstallationBalance.UEPBalance.TotalWaterTransferred += fieldBalance.TotalWaterTransferred;
+            fieldBalance.InstallationBalance.UEPBalance.TotalWaterInjected += fieldBalance.TotalWaterInjected;
+            fieldBalance.InstallationBalance.UEPBalance.TotalWaterInjectedRS += fieldBalance.TotalWaterInjectedRS;
+            fieldBalance.InstallationBalance.UEPBalance.TotalWaterReceived += fieldBalance.TotalWaterReceived;
+        }
+
     }
 }

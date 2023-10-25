@@ -167,7 +167,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                 using var r = XmlReader.Create(pathXml, null, parserContext);
 
-                var result = Functions.CheckFormat(pathXml, pathSchema, errorsInFormat);
+                var result = Functions.CheckFormat(pathXml, pathSchema, errorsInFormat, file.FileName);
 
                 if (result is not null && result.Count > 0)
                     errorsInFormat.Add(string.Join(",", result));
@@ -327,9 +327,9 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                             });
 
 
-                                        var checkOilProduction = await _productionRepository.GetProductionGasByDate(dateBeginningMeasurement);
+                                        var checkOilProduction = await _productionRepository.GetProductionOilByDate(dateBeginningMeasurement);
                                         if (checkOilProduction is not null && checkOilProduction.Oil is not null && checkOilProduction.IsActive)
-                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) já existe produção de gás na data: {producao.DHA_INICIO_PERIODO_MEDICAO_001}");
+                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) já existe produção de óleo na data: {producao.DHA_INICIO_PERIODO_MEDICAO_001}");
                                     }
 
                                     else
@@ -600,7 +600,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                 response.DateProduction = dateBeginningMeasurement.ToString("dd/MM/yyyy");
                                                 response.InstallationId = installation.Id;
                                                 response001.Measurements.Add(measurement001DTO);
-
                                             }
                                         }
                                     }
@@ -1443,25 +1442,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                 break;
                             }
                         }
-
-                        //if (containDrain is false && response._001File.Count > 0)
-                        //{
-                        //    var measurementWrong = new Client001DTO
-                        //    {
-                        //        DHA_INICIO_PERIODO_MEDICAO_001 = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
-                        //        COD_INSTALACAO_001 = file001.Measurements[0].COD_INSTALACAO_001,
-                        //        COD_TAG_PONTO_MEDICAO_001 = drain.MeasuringPoint.TagPointMeasuring,
-                        //        Summary = new ClientInfo
-                        //        {
-                        //            Status = false,
-                        //            Date = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
-                        //            LocationMeasuringPoint = drain.MeasuringPoint.DinamicLocalMeasuringPoint,
-                        //            TagMeasuringPoint = drain.MeasuringPoint.TagPointMeasuring,
-                        //            Volume = 0
-                        //        }
-                        //    };
-                        //    file001.Measurements.Add(measurementWrong);
-                        //}
                     }
 
                     foreach (var dor in oilCalculationByUepCode.DORs)
@@ -1478,24 +1458,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                             }
                         }
 
-                        //if (containDOR is false && response._001File.Count > 0)
-                        //{
-                        //    var measurementWrong = new Client001DTO
-                        //    {
-                        //        DHA_INICIO_PERIODO_MEDICAO_001 = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
-                        //        COD_INSTALACAO_001 = file001.Measurements[0].COD_INSTALACAO_001,
-                        //        COD_TAG_PONTO_MEDICAO_001 = dor.MeasuringPoint.TagPointMeasuring,
-                        //        Summary = new ClientInfo
-                        //        {
-                        //            Status = false,
-                        //            Date = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
-                        //            LocationMeasuringPoint = dor.MeasuringPoint.DinamicLocalMeasuringPoint,
-                        //            TagMeasuringPoint = dor.MeasuringPoint.TagPointMeasuring,
-                        //            Volume = 0
-                        //        }
-                        //    };
-                        //    file001.Measurements.Add(measurementWrong);
-                        //}
                     }
 
                     foreach (var section in oilCalculationByUepCode.Sections)
@@ -1510,26 +1472,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                 break;
                             }
                         }
-
-                        //if (containSection is false && response._001File.Count > 0)
-                        //{
-                        //    var measurementWrong = new Client001DTO
-                        //    {
-                        //        DHA_INICIO_PERIODO_MEDICAO_001 = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
-                        //        COD_INSTALACAO_001 = file001.Measurements[0].COD_INSTALACAO_001,
-                        //        COD_TAG_PONTO_MEDICAO_001 = section.MeasuringPoint.TagPointMeasuring,
-                        //        Summary = new ClientInfo
-                        //        {
-                        //            Status = false,
-                        //            Date = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
-                        //            LocationMeasuringPoint = section.MeasuringPoint.DinamicLocalMeasuringPoint,
-                        //            TagMeasuringPoint = section.MeasuringPoint.TagPointMeasuring,
-                        //            Volume = 0
-                        //        }
-                        //    };
-
-                        //    file001.Measurements.Add(measurementWrong);
-                        //}
                     }
 
                     foreach (var togRecovered in oilCalculationByUepCode.TOGRecoveredOils)
@@ -1546,26 +1488,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                             }
                         }
 
-                        //if (containTOGRecoveredOil is false && response._001File.Count > 0)
-                        //{
-                        //    var measurementWrong = new Client001DTO
-                        //    {
-                        //        DHA_INICIO_PERIODO_MEDICAO_001 = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
-                        //        COD_INSTALACAO_001 = file001.Measurements[0].COD_INSTALACAO_001,
-                        //        COD_TAG_PONTO_MEDICAO_001 = togRecovered.MeasuringPoint.TagPointMeasuring,
-                        //        Summary = new ClientInfo
-                        //        {
-                        //            Status = false,
-                        //            Date = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
-                        //            LocationMeasuringPoint = togRecovered.MeasuringPoint.DinamicLocalMeasuringPoint,
-                        //            TagMeasuringPoint = togRecovered.MeasuringPoint.TagPointMeasuring,
-                        //            Volume = 0
-                        //        }
-                        //    };
-                        //    file001.Measurements.Add(measurementWrong);
-
-
-                        //}
                     }
                 }
 

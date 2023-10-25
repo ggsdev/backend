@@ -9,7 +9,7 @@ namespace PRIO.src.Modules.FileImport.XML.Measuring.FileContent
     {
         private static List<string>? _result = new();
 
-        public static List<string>? CheckFormat(string xmlFilePath, string xsdFilePath, List<string> errorList)
+        public static List<string>? CheckFormat(string xmlFilePath, string xsdFilePath, List<string> errorList, string fileName)
         {
             _result = new();
             var schema = new XmlSchemaSet();
@@ -24,7 +24,7 @@ namespace PRIO.src.Modules.FileImport.XML.Measuring.FileContent
             }
             catch (XmlException ex)
             {
-                errorList.Add("Modelo arquivo inválido.");
+                errorList.Add($"Arquivo {fileName} modelo ANP do arquivo inválido.");
             }
             finally
             {
