@@ -410,7 +410,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                             Parameter = gasInjection.WellValues.Value.Attribute.Element.Parameter,
                         };
 
-                        if (parameterDto.Parameter == PIConfig._gfl1 || parameterDto.Parameter == PIConfig._gfl4 || parameterDto.Parameter == PIConfig._gfl6 || parameterDto.Parameter == PIConfig._gasLiftFlow)
+                        if (parameterDto.Parameter == PIConfig._gfl1 || parameterDto.Parameter == PIConfig._gfl4 || parameterDto.Parameter == PIConfig._gfl6)
                             gasLiftDto.Parameters.Add(parameterDto);
                     }
 
