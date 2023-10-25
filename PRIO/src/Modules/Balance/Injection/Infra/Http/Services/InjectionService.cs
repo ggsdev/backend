@@ -800,40 +800,40 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             {
                 if (bodyWellInjection.AssignedValue is not null && bodyWellInjection.WellInjectionId is not null)
                 {
-                    var waterInjectionInDatabase = fieldInjectionInDatabase.WellsWaterInjections
+                    var flowWaterInjectionInDatabase = fieldInjectionInDatabase.WellsWaterInjections
                    .FirstOrDefault(x => x.Id == bodyWellInjection.WellInjectionId)
                    ?? throw new NotFoundException("Vazão de água do poço não encontrada.");
 
-                    waterInjectionInDatabase.AssignedValue = bodyWellInjection.AssignedValue.Value;
-                    waterInjectionInDatabase.UpdatedBy = loggedUser;
-
-                    _repository.UpdateWaterInjection(waterInjectionInDatabase);
+                    flowWaterInjectionInDatabase.AssignedValue = bodyWellInjection.AssignedValue.Value;
+                    flowWaterInjectionInDatabase.UpdatedBy = loggedUser;
 
                     resultDto.AssignedValues.Add(new WaterAssignatedValuesDto
                     {
-                        AssignedValue = waterInjectionInDatabase.AssignedValue,
+                        AssignedValue = flowWaterInjectionInDatabase.AssignedValue,
                         InjectionId = bodyWellInjection.WellInjectionId.Value,
                         UpdatedBy = updatedBy
                     });
+
+                    _repository.UpdateWaterInjection(flowWaterInjectionInDatabase);
                 }
 
                 if (bodyWellInjection.AssignedWFLValue is not null && bodyWellInjection.WFLInjectionId is not null)
                 {
-                    var waterInjectionInDatabase = fieldInjectionInDatabase.WellsWaterInjections
-                   .FirstOrDefault(x => x.Id == bodyWellInjection.WellInjectionId)
+                    var WFLWaterInjectionInDatabase = fieldInjectionInDatabase.WellsWaterInjections
+                   .FirstOrDefault(x => x.Id == bodyWellInjection.WFLInjectionId)
                    ?? throw new NotFoundException("Vazão de água do poço não encontrada.");
 
-                    waterInjectionInDatabase.AssignedValue = bodyWellInjection.AssignedWFLValue.Value;
-                    waterInjectionInDatabase.UpdatedBy = loggedUser;
-
-                    _repository.UpdateWaterInjection(waterInjectionInDatabase);
+                    WFLWaterInjectionInDatabase.AssignedValue = bodyWellInjection.AssignedWFLValue.Value;
+                    WFLWaterInjectionInDatabase.UpdatedBy = loggedUser;
 
                     resultDto.AssignedValues.Add(new WaterAssignatedValuesDto
                     {
-                        AssignedValue = waterInjectionInDatabase.AssignedValue,
+                        AssignedValue = WFLWaterInjectionInDatabase.AssignedValue,
                         InjectionId = bodyWellInjection.WFLInjectionId.Value,
                         UpdatedBy = updatedBy
                     });
+
+                    _repository.UpdateWaterInjection(WFLWaterInjectionInDatabase);
                 }
             }
 
