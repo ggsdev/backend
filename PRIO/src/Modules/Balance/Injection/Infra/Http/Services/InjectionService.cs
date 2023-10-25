@@ -544,9 +544,9 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             ?? throw new NotFoundException(ErrorMessages.NotFound<Installation>());
 
             var fieldInjected = await _repository
-                .AnyByDate(dateInjection);
+                .GetWaterGasFieldInjectionByDate(dateInjection);
 
-            if (fieldInjected)
+            if (fieldInjected is not null && fieldInjected.WellsGasInjections.Any() && fieldInjected.WellsWaterInjections.Any())
                 throw new ConflictException($"Injeção diária no dia: {dateInjection:dd/MMM/yyyy} já criada.");
 
             var productionInDatabase = await _productionRepository
@@ -952,22 +952,15 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 
             if (instance == PIConfig._valenteInstance)
             {
-                foreach (var gasInjection in fieldInjection.WellsGasInjections)
-                {
-                    if (gasInjection.WellValues.Value.Attribute.Element.Parameter == PIConfig._gfl1 || gasInjection.WellValues.Value.Attribute.Element.Parameter == PIConfig._gfl6 || gasInjection.WellValues.Value.Attribute.Element.Parameter == PIConfig._gfl4)
-                    {
-                        fieldInjection.AmountGasLift += gasInjection.AssignedValue;
-                    }
-                }
-
+                fieldInjection.AmountGasLift = fieldInjection.WellsGasInjections
+                    .Where(x => x.WellValues.Value.Attribute.Element.Parameter == PIConfig._gfl1 || x.WellValues.Value.Attribute.Element.Parameter == PIConfig._gfl6 || x.WellValues.Value.Attribute.Element.Parameter == PIConfig._gfl4)
+                    .Sum(x => x.AssignedValue);
             }
 
             if (instance == PIConfig._forteInstance)
             {
-                foreach (var gasInjection in fieldInjection.WellsGasInjections)
-                {
-                    fieldInjection.AmountGasLift += gasInjection.AssignedValue;
-                }
+                fieldInjection.AmountGasLift = fieldInjection.WellsGasInjections
+                    .Sum(x => x.AssignedValue);
             }
 
             _repository.UpdateWaterGasInjection(fieldInjection);
