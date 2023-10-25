@@ -396,7 +396,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.Http.Services
             }
             else if (well.CategoryOperator.ToUpper().Contains("INJETOR"))
             {
-                var injectivityIndexActive = manualConfig.ProductivityIndex.Where(x => x.IsActive == true).FirstOrDefault();
+                var injectivityIndexActive = manualConfig.InjectivityIndex.Where(x => x.IsActive == true).FirstOrDefault();
                 var injectivityDTO = new InjectivityIndexDTO
                 {
                     IsActive = injectivityIndexActive is not null ? injectivityIndexActive.IsActive : false,
