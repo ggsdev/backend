@@ -176,7 +176,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             if (errorsInFormat.Count > 0)
                 throw new BadRequestException($"Algum(s) arquivo(s) possuem o modelo ANP inválido", errors: errorsInFormat);
 
-
             #endregion
 
             var typeFluid = string.Empty;

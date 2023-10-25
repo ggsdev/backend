@@ -115,7 +115,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
             using (var r = XmlReader.Create(pathXml, null, parserContext))
             {
-                var result = Functions.CheckFormat(pathXml, pathSchema, errorsInFormat);
+                var result = Functions.CheckFormat(pathXml, pathSchema, errorsInFormat, data.File.FileName);
                 if (errorsInFormat.Count > 0)
                     throw new BadRequestException($"Algum(s) erro(s) de formatação ocorreram durante a validação do arquivo de nome: {data.File.FileName}", errors: errorsInFormat);
                 if (result is not null && result.Count > 0)
