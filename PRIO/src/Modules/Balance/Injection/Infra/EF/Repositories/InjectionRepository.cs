@@ -170,5 +170,20 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories
             return await _context.InjectionGasWell
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
+
+        public async Task AddOrUpdateInjection(InjectionWaterGasField injection)
+        {
+            var existingInjection = await _context.InjectionWaterGasField
+                .FirstOrDefaultAsync(p => p.Id == injection.Id);
+
+            if (existingInjection == null)
+            {
+                await _context.AddAsync(injection);
+            }
+            else
+            {
+                _context.Update(existingInjection);
+            }
+        }
     }
 }

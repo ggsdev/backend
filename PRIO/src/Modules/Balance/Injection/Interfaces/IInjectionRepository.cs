@@ -23,5 +23,6 @@ namespace PRIO.src.Modules.Balance.Injection.Interfaces
         void UpdateWaterGasInjection(InjectionWaterGasField injection);
         Task AddGasWellInjectionAsync(InjectionGasWell injection);
         Task Save();
+        Task AddOrUpdateInjection(InjectionWaterGasField injection);
     }
 }

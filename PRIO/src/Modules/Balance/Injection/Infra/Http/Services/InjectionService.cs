@@ -60,8 +60,8 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 .GetBalanceField(body.FieldId!.Value, dateInjection.Date)
                 ?? throw new BadRequestException("Balanço de campo não criado ainda, é necessário fechar a produção do dia.");
 
-            //if (fieldBalance.IsParameterized is false)
-            //    throw new ConflictException("Dados operacionais precisam ser confirmados.");
+            if (fieldBalance.IsParameterized is false)
+                throw new ConflictException("Dados operacionais precisam ser confirmados.");
 
             var fieldInjection = await _repository
                 .GetWaterGasFieldInjectionByDate(dateInjection);
@@ -166,7 +166,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             fieldBalance.TotalWaterInjected = (decimal)fieldInjection.AmountWater;
             fieldBalance.FIRS = body.FIRS;
 
-            await _repository.AddWaterGasInjection(fieldInjection);
+            await _repository.AddOrUpdateInjection(fieldInjection);
 
             DistributeToParentBalances(fieldBalance);
 
@@ -190,14 +190,14 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 .GetBalanceField(body.FieldId!.Value, dateInjection.Date)
                 ?? throw new BadRequestException("Balanço de campo não criado ainda, é necessário fechar a produção do dia.");
 
-            if (fieldBalance.IsParameterized is false)
-                throw new ConflictException("Dados operacionais precisam ser confirmados.");
+            //if (fieldBalance.IsParameterized is false)
+            //    throw new ConflictException("Dados operacionais precisam ser confirmados.");
 
             var fieldInjection = await _repository
                 .GetWaterGasFieldInjectionByDate(dateInjection);
 
             if (fieldInjection is not null && fieldInjection.WellsGasInjections.Any())
-                throw new ConflictException($"Injeção de água do dia: {dateInjection:dd/MMM/yyyy} já atribuída.");
+                throw new ConflictException($"Injeção de gás do dia: {dateInjection:dd/MMM/yyyy} já atribuída.");
 
             fieldInjection ??= new InjectionWaterGasField
             {
@@ -289,7 +289,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 }
             }
 
-            await _repository.AddWaterGasInjection(fieldInjection);
+            await _repository.AddOrUpdateInjection(fieldInjection);
 
             resultDto.TotalGasLift = fieldInjection.AmountGasLift;
 
@@ -773,6 +773,12 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
             var fieldInjectionInDatabase = await _repository
                 .GetWaterGasFieldInjectionsById(fieldInjectionId)
                 ?? throw new NotFoundException("Injeção de campo não encontrada.");
+
+            if (fieldInjectionInDatabase.WellsGasInjections.Any() is false)
+                throw new ConflictException("Injeção de gás precisa ser feita.");
+
+            if (fieldInjectionInDatabase.WellsWaterInjections.Any() is false)
+                throw new ConflictException("Injeção de água precisa ser feita.");
 
             fieldInjectionInDatabase.Status = true;
 
