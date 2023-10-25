@@ -190,8 +190,8 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 .GetBalanceField(body.FieldId!.Value, dateInjection.Date)
                 ?? throw new BadRequestException("Balanço de campo não criado ainda, é necessário fechar a produção do dia.");
 
-            //if (fieldBalance.IsParameterized is false)
-            //    throw new ConflictException("Dados operacionais precisam ser confirmados.");
+            if (fieldBalance.IsParameterized is false)
+                throw new ConflictException("Dados operacionais precisam ser confirmados.");
 
             var fieldInjection = await _repository
                 .GetWaterGasFieldInjectionByDate(dateInjection);
