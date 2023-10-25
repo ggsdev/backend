@@ -60,8 +60,8 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 .GetBalanceField(body.FieldId!.Value, dateInjection.Date)
                 ?? throw new BadRequestException("Balanço de campo não criado ainda, é necessário fechar a produção do dia.");
 
-            if (fieldBalance.IsParameterized is false)
-                throw new ConflictException("Dados operacionais precisam ser confirmados.");
+            //if (fieldBalance.IsParameterized is false)
+            //    throw new ConflictException("Dados operacionais precisam ser confirmados.");
 
             var fieldInjection = await _repository
                 .GetWaterGasFieldInjectionByDate(dateInjection);
@@ -106,9 +106,9 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                             InjectionId = injection.WellInjectionId.Value,
                             UpdatedBy = updatedBy
                         });
+                        _repository.UpdateWaterInjection(flowWaterInjectionInDatabase);
                     }
 
-                    _repository.UpdateWaterInjection(flowWaterInjectionInDatabase);
                 }
 
                 if (injection.WFLInjectionId is not null)
@@ -127,9 +127,10 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                             InjectionId = injection.WFLInjectionId.Value,
                             UpdatedBy = updatedBy
                         });
+
+                        _repository.UpdateWaterInjection(WFLWaterInjectionInDatabase);
                     }
 
-                    _repository.UpdateWaterInjection(WFLWaterInjectionInDatabase);
                 }
 
             }
@@ -379,20 +380,20 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
 
                     foreach (var waterInjectionFlow in fieldInjection.WellsWaterInjections)
                     {
-                        if (waterInjectionFlow.WellValues.Well.Name == waterInjection.WellValues.Well.Name && waterInjectionFlow.WellValues.Value.Attribute.Element.Parameter == PIConfig._wfl1)
+                        if (waterInjectionFlow.WellValues.Well.Name == waterInjection.WellValues.Well.Name && waterInjectionFlow.WellValues.Value.Attribute.Element.Parameter != PIConfig._wfl1)
                             parameterDto.Values.Add(new WellValuesDto
                             {
                                 WellInjectionId = waterInjectionFlow.Id,
                                 WellName = waterInjectionFlow.WellValues.Well.Name!,
                                 TagFlow = waterInjectionFlow.WellValues.Value.Attribute.Name,
-                                FlowVolumeAssigned = waterInjectionFlow.AssignedValue,
-                                FlowVolumePI = waterInjectionFlow.WellValues.Value.Amount,
+                                FlowVolumeAssigned = Math.Round(waterInjectionFlow.AssignedValue, 5),
+                                FlowVolumePI = waterInjectionFlow.WellValues.Value.Amount is not null ? Math.Round(waterInjectionFlow.WellValues.Value.Amount.Value, 5) : null,
                                 DateRead = waterInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
                                 WFLInjectionId = waterInjection.Id,
                                 TagWFL = waterInjection.WellValues.Value.Attribute.Name,
-                                VolumeWFLAssigned = waterInjection.AssignedValue,
-                                VolumeWFLPI = waterInjection.WellValues.Value.Amount,
-                                TotalVolumeWFL = waterInjection.WellValues.Value.GroupAmount
+                                VolumeWFLAssigned = Math.Round(waterInjection.AssignedValue, 5),
+                                VolumeWFLPI = waterInjection.WellValues.Value.Amount is not null ? Math.Round(waterInjection.WellValues.Value.Amount.Value, 5) : null,
+                                TotalVolumeWFL = waterInjection.WellValues.Value.GroupAmount is not null ? Math.Round(waterInjection.WellValues.Value.GroupAmount.Value, 5) : null
                             });
                     }
                 }
@@ -421,14 +422,14 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                                 WellInjectionId = gasInjectionFlow.Id,
                                 WellName = gasInjectionFlow.WellValues.Well.Name!,
                                 TagFlow = gasInjectionFlow.WellValues.Value.Attribute.Name,
-                                FlowVolumeAssigned = gasInjectionFlow.AssignedValue,
-                                FlowVolumePI = gasInjectionFlow.WellValues.Value.Amount,
+                                FlowVolumeAssigned = Math.Round(gasInjectionFlow.AssignedValue, 5),
+                                FlowVolumePI = gasInjectionFlow.WellValues.Value.Amount is not null ? Math.Round(gasInjectionFlow.WellValues.Value.Amount.Value, 5) : null,
                                 DateRead = gasInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
                                 GFLInjectionId = gasInjection.Id,
                                 TagGFL = gasInjection.WellValues.Value.Attribute.Name,
-                                VolumeGFLAssigned = gasInjection.AssignedValue,
-                                VolumeGFLPI = gasInjection.WellValues.Value.Amount,
-                                TotalVolumeGFL = gasInjection.WellValues.Value.GroupAmount
+                                VolumeGFLAssigned = Math.Round(gasInjection.AssignedValue, 5),
+                                VolumeGFLPI = gasInjection.WellValues.Value.Amount is not null ? Math.Round(gasInjection.WellValues.Value.Amount.Value, 5) : null,
+                                TotalVolumeGFL = gasInjection.WellValues.Value.GroupAmount is not null ? Math.Round(gasInjection.WellValues.Value.GroupAmount.Value, 5) : null
                             });
                     }
                 }
@@ -457,8 +458,8 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                         WellInjectionId = waterInjection.Id,
                         WellName = waterInjection.WellValues.Well.Name!,
                         TagFlow = waterInjection.WellValues.Value.Attribute.Name,
-                        FlowVolumeAssigned = waterInjection.AssignedValue,
-                        FlowVolumePI = waterInjection.WellValues.Value.Amount,
+                        FlowVolumeAssigned = Math.Round(waterInjection.AssignedValue, 5),
+                        FlowVolumePI = waterInjection.WellValues.Value.Amount is not null ? Math.Round(waterInjection.WellValues.Value.Amount.Value, 5) : null,
                         DateRead = waterInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
                     });
                 }
@@ -483,8 +484,8 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                         WellInjectionId = gasInjection.Id,
                         WellName = gasInjection.WellValues.Well.Name!,
                         TagFlow = gasInjection.WellValues.Value.Attribute.Name,
-                        FlowVolumeAssigned = gasInjection.AssignedValue,
-                        FlowVolumePI = gasInjection.WellValues.Value.Amount,
+                        FlowVolumeAssigned = Math.Round(gasInjection.AssignedValue, 5),
+                        FlowVolumePI = gasInjection.WellValues.Value.Amount is not null ? Math.Round(gasInjection.WellValues.Value.Amount.Value, 5) : null,
                         DateRead = gasInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
                     });
                 }
@@ -604,14 +605,14 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                                     WellInjectionId = waterInjectionFlow.Id,
                                     WellName = waterInjectionFlow.WellValues.Well.Name!,
                                     TagFlow = waterInjectionFlow.WellValues.Value.Attribute.Name,
-                                    FlowVolumeAssigned = waterInjectionFlow.AssignedValue,
-                                    FlowVolumePI = waterInjectionFlow.WellValues.Value.Amount,
+                                    FlowVolumeAssigned = Math.Round(waterInjectionFlow.AssignedValue, 5),
+                                    FlowVolumePI = waterInjectionFlow.WellValues.Value.Amount is not null ? Math.Round(waterInjectionFlow.WellValues.Value.Amount.Value, 5) : null,
                                     DateRead = waterInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
                                     WFLInjectionId = waterInjection.Id,
                                     TagWFL = waterInjection.WellValues.Value.Attribute.Name,
-                                    VolumeWFLAssigned = waterInjection.AssignedValue,
-                                    VolumeWFLPI = waterInjection.WellValues.Value.Amount,
-                                    TotalVolumeWFL = waterInjection.WellValues.Value.GroupAmount
+                                    VolumeWFLAssigned = Math.Round(waterInjection.AssignedValue, 5),
+                                    VolumeWFLPI = waterInjection.WellValues.Value.Amount is not null ? Math.Round(waterInjection.WellValues.Value.Amount.Value, 5) : null,
+                                    TotalVolumeWFL = waterInjection.WellValues.Value.GroupAmount is not null ? Math.Round(waterInjection.WellValues.Value.GroupAmount.Value, 5) : null
                                 });
                         }
 
@@ -645,14 +646,14 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                                     WellInjectionId = gasInjectionFlow.Id,
                                     WellName = gasInjectionFlow.WellValues.Well.Name!,
                                     TagFlow = gasInjectionFlow.WellValues.Value.Attribute.Name,
-                                    FlowVolumeAssigned = gasInjectionFlow.AssignedValue,
-                                    FlowVolumePI = gasInjectionFlow.WellValues.Value.Amount,
+                                    FlowVolumeAssigned = Math.Round(gasInjectionFlow.AssignedValue, 5),
+                                    FlowVolumePI = gasInjectionFlow.WellValues.Value.Amount is not null ? Math.Round(gasInjectionFlow.WellValues.Value.Amount.Value, 5) : null,
                                     DateRead = gasInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
                                     GFLInjectionId = gasInjection.Id,
                                     TagGFL = gasInjection.WellValues.Value.Attribute.Name,
-                                    VolumeGFLAssigned = gasInjection.AssignedValue,
-                                    VolumeGFLPI = gasInjection.WellValues.Value.Amount,
-                                    TotalVolumeGFL = gasInjection.WellValues.Value.GroupAmount
+                                    VolumeGFLAssigned = Math.Round(gasInjection.AssignedValue, 5),
+                                    VolumeGFLPI = gasInjection.WellValues.Value.Amount is not null ? Math.Round(gasInjection.WellValues.Value.Amount.Value, 5) : null,
+                                    TotalVolumeGFL = gasInjection.WellValues.Value.GroupAmount is not null ? Math.Round(gasInjection.WellValues.Value.GroupAmount.Value, 5) : null
                                 });
                         }
 
@@ -683,8 +684,8 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                             WellInjectionId = waterInjection.Id,
                             WellName = waterInjection.WellValues.Well.Name!,
                             TagFlow = waterInjection.WellValues.Value.Attribute.Name,
-                            FlowVolumeAssigned = waterInjection.AssignedValue,
-                            FlowVolumePI = waterInjection.WellValues.Value.Amount,
+                            FlowVolumeAssigned = Math.Round(waterInjection.AssignedValue, 5),
+                            FlowVolumePI = waterInjection.WellValues.Value.Amount is not null ? Math.Round(waterInjection.WellValues.Value.Amount.Value, 5) : null,
                             DateRead = waterInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
                         });
 
@@ -712,8 +713,8 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                             WellInjectionId = gasInjection.Id,
                             WellName = gasInjection.WellValues.Well.Name!,
                             TagFlow = gasInjection.WellValues.Value.Attribute.Name,
-                            FlowVolumeAssigned = gasInjection.AssignedValue,
-                            FlowVolumePI = gasInjection.WellValues.Value.Amount,
+                            FlowVolumeAssigned = Math.Round(gasInjection.AssignedValue, 5),
+                            FlowVolumePI = gasInjection.WellValues.Value.Amount is not null ? Math.Round(gasInjection.WellValues.Value.Amount.Value, 5) : null,
                             DateRead = gasInjection.MeasurementAt.ToString("dd/MMM/yyyy"),
                         });
 

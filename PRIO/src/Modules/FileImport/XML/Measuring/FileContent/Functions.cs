@@ -24,7 +24,7 @@ namespace PRIO.src.Modules.FileImport.XML.Measuring.FileContent
             }
             catch (XmlException ex)
             {
-                errorList.Add($"Arquivo {fileName} modelo ANP do arquivo inválido.");
+                errorList.Add($"Arquivo {fileName}, modelo ANP do arquivo inválido.");
             }
             finally
             {
