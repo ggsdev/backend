@@ -20,17 +20,30 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Controllers
             _service = injectionService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateInjection(CreateDailyInjectionViewModel body, string dateInjection)
+        [HttpPost("water")]
+        public async Task<IActionResult> CreateWaterInjection(CreateDailyWaterInjectionViewModel body, string dateInjection)
         {
             if (!DateTime.TryParseExact(dateInjection, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
                 throw new BadRequestException("O formato da data deve ser dd-MM-yyyy");
 
             var user = HttpContext.Items["User"] as User;
 
-            var data = await _service.CreateDailyInjection(body, date, user!);
+            var data = await _service.CreateWaterDailyInjection(body, date, user!);
 
-            return Ok(data);
+            return Created($"injections/water/{data.FieldInjectionId}", data);
+        }
+
+        [HttpPost("gas")]
+        public async Task<IActionResult> CreateGasInjection(CreateDailyGasInjectionViewModel body, string dateInjection)
+        {
+            if (!DateTime.TryParseExact(dateInjection, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
+                throw new BadRequestException("O formato da data deve ser dd-MM-yyyy");
+
+            var user = HttpContext.Items["User"] as User;
+
+            var data = await _service.CreateGasDailyInjection(body, date, user!);
+
+            return Created($"injections/water/{data.FieldInjectionId}", data);
         }
 
         [HttpGet("installation/{id}")]
@@ -61,12 +74,22 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Controllers
         }
 
 
-        [HttpPatch("{fieldInjectionId}")]
-        public async Task<IActionResult> UpdateInjection(UpdateInjectionViewModel body, Guid fieldInjectionId)
+        [HttpPatch("water/{fieldInjectionId}")]
+        public async Task<IActionResult> UpdateWaterInjection(UpdateWaterInjectionViewModel body, Guid fieldInjectionId)
         {
             var user = HttpContext.Items["User"] as User;
 
-            var data = await _service.UpdateInjection(body, fieldInjectionId, user!);
+            var data = await _service.UpdateWaterInjection(body, fieldInjectionId, user!);
+
+            return Ok(data);
+        }
+
+        [HttpPatch("gas/{fieldInjectionId}")]
+        public async Task<IActionResult> UpdateGasInjection(UpdateGasInjectionViewModel body, Guid fieldInjectionId)
+        {
+            var user = HttpContext.Items["User"] as User;
+
+            var data = await _service.UpdateGasInjection(body, fieldInjectionId, user!);
 
             return Ok(data);
         }

@@ -12,6 +12,7 @@ namespace PRIO.src.Modules.Balance.Injection.Interfaces
         Task<InjectionGasWell?> GetGasInjectionById(Guid? id);
         Task<WellSensor?> GetSensorById(Guid? id);
         void UpdateSensor(WellSensor wellSensor);
+        void UpdateGasInjection(InjectionGasWell injection);
         Task<bool> AnyByDate(DateTime date);
         Task<List<InjectionWaterGasField>> GetInjectionsByInstallationId(Guid installationId);
         //Task<InjectionWaterWell?> GetGasLiftByInstallationId(Guid installationId);
@@ -22,5 +23,6 @@ namespace PRIO.src.Modules.Balance.Injection.Interfaces
         void UpdateWaterGasInjection(InjectionWaterGasField injection);
         Task AddGasWellInjectionAsync(InjectionGasWell injection);
         Task Save();
+        Task AddOrUpdateInjection(InjectionWaterGasField injection);
     }
 }

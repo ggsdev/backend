@@ -21,6 +21,8 @@
     public class ElementGasDto
     {
         public string Parameter { get; set; }
+
+
         public List<GasValuesDto> Values { get; set; } = new();
 
     }
@@ -49,12 +51,17 @@
     public class GasValuesDto
     {
         public Guid WellInjectionId { get; set; }
-        public string WellName { get; set; }
-        public double? VolumePI { get; set; }
-        public double VolumeAssigned { get; set; }
-        public string Tag { get; set; }
-        public double? GroupAmount { get; set; }
-        public string DateRead { get; set; }
+        public string WellName { get; set; } = null!;
+        public string TagFlow { get; set; } = null!;
+        public double? FlowVolumePI { get; set; }
+        public double FlowVolumeAssigned { get; set; }
+        public Guid GFLInjectionId { get; set; }
+        public string? TagGFL { get; set; }
+
+        public double? VolumeGFLPI { get; set; }
+        public double? VolumeGFLAssigned { get; set; }
+        public double? TotalVolumeGFL { get; set; }
+        public string DateRead { get; set; } = null!;
     }
 
     public class ElementWaterDto
@@ -65,14 +72,18 @@
 
     public class WellValuesDto
     {
-
         public Guid WellInjectionId { get; set; }
-        public string WellName { get; set; }
-        public double? VolumePI { get; set; }
-        public double VolumeAssigned { get; set; }
-        public string Tag { get; set; }
-        public double? GroupAmount { get; set; }
-        public string DateRead { get; set; }
+        public string WellName { get; set; } = null!;
+        public string TagFlow { get; set; } = null!;
+        public double? FlowVolumePI { get; set; }
+        public double FlowVolumeAssigned { get; set; }
+        public Guid? WFLInjectionId { get; set; }
+        public string? TagWFL { get; set; }
+
+        public double? VolumeWFLPI { get; set; }
+        public double? VolumeWFLAssigned { get; set; }
+        public double? TotalVolumeWFL { get; set; }
+        public string DateRead { get; set; } = null!;
     }
 
     public class WaterInjectedDto

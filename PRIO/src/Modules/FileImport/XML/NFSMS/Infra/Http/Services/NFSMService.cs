@@ -115,7 +115,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
             using (var r = XmlReader.Create(pathXml, null, parserContext))
             {
-                var result = Functions.CheckFormat(pathXml, pathSchema, errorsInFormat);
+                var result = Functions.CheckFormat(pathXml, pathSchema, errorsInFormat, data.File.FileName);
                 if (errorsInFormat.Count > 0)
                     throw new BadRequestException($"Algum(s) erro(s) de formatação ocorreram durante a validação do arquivo de nome: {data.File.FileName}", errors: errorsInFormat);
                 if (result is not null && result.Count > 0)
@@ -467,8 +467,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     if (productionInXml.DHA_MEDICAO_039 > nfsm.DHA_DETECCAO_039)
                         throw new ConflictException("Data da medição não pode ser maior do que a data da detecção TAG: DHA_DETECÇÃO.");
 
-                    if (productionInDatabase.Measurements.Any(x => x.MeasuringPoint.TagPointMeasuring == measuringPoint.TagPointMeasuring) is false)
-                        throw new NotFoundException($"Nenhuma medição com esse ponto de medição encontrada: {nfsm.COD_TAG_PONTO_MEDICAO_039}");
+
 
                     //if (productionInXml.DHA_MEDICAO_039 > nfsm.DHA_RETORNO_039)
                     //    throw new ConflictException("Data da medição não pode ser maior do que a data que a falha foi corrigida, TAG: DHA_RETORNO.");
@@ -734,13 +733,14 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
             foreach (var measurementCorrected in nfsmInDatabase.Productions)
             {
                 var productionInDatabase = await _productionRepository
-                    .GetExistingByDate(measurementCorrected.MeasuredAt);
-
-                if (productionInDatabase is null)
-                    throw new NotFoundException(ErrorMessages.NotFound<Production>());
+                    .GetExistingByDate(measurementCorrected.MeasuredAt)
+                    ?? throw new NotFoundException(ErrorMessages.NotFound<Production>());
 
                 if (productionInDatabase.StatusProduction.ToLower() == ProductionUtils.openStatus)
                     throw new ConflictException("Produção precisa ter sido fechada para ser corrigida.");
+
+                if (productionInDatabase.Measurements.Any(x => x.MeasuringPoint.TagPointMeasuring == nfsmInDatabase.MeasuringPoint.TagPointMeasuring) is false)
+                    throw new NotFoundException($"Nenhuma medição com esse ponto de medição encontrada: {nfsmInDatabase.MeasuringPoint.TagPointMeasuring}");
             }
 
             foreach (var measurementCorrected in nfsmInDatabase.Productions)
@@ -1021,7 +1021,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     await _wellProductionService.ReAppropriateWithNfsm(productionInDatabase.Id);
 
                     productionInDatabase.StatusProduction = ProductionUtils.fixedStatus;
-                  
+
                     nfsmInDatabase.IsApplied = true;
 
                     _repository.Update(nfsmInDatabase);

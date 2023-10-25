@@ -1786,10 +1786,6 @@ namespace PRIO.Migrations
 
                             else if (elementId == InjectionWaterId)
                             {
-
-
-
-
                                 var pointsData = new List<object[]>
                                 {
                                      new object[] {
@@ -1901,7 +1897,7 @@ namespace PRIO.Migrations
                                       attributeDescription,
                                       attributeSelfRoute,
                                       attributeElementsRoute,
-                                      GASLiftId,
+                                      InjectionWaterId,
                                       attributeWellName,
                                       attributeIsActive,
                                       attributeIsOperating,

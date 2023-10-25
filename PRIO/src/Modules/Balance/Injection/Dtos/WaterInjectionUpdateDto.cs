@@ -15,4 +15,11 @@ namespace PRIO.src.Modules.Balance.Injection.Dtos
         public double AssignedValue { get; set; }
         public UserDTO UpdatedBy { get; set; }
     }
+
+    public class GasInjectionUpdateDto
+    {
+        public Guid FieldInjectionId { get; set; }
+        public double TotalGasLift { get; set; }
+        public List<WaterAssignatedValuesDto> AssignedValues { get; set; } = new();
+    }
 }

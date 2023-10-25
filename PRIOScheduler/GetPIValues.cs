@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PRIO.src.Modules.PI.Infra.EF.Models;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
+using PRIO.src.Shared.Utils;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -41,8 +42,8 @@ namespace PRIOScheduler
                 };
 
                 using HttpClient client = new(handler);
-                var username = "svc-pi-frade";
-                var password = "S6_5q2C?=%ff";
+                var username = PIConfig._user;
+                var password = PIConfig._password;
 
                 var credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}"));
 

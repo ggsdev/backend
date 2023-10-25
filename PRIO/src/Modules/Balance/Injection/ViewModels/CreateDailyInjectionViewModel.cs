@@ -2,25 +2,34 @@
 
 namespace PRIO.src.Modules.Balance.Injection.ViewModels
 {
-    public class CreateDailyInjectionViewModel
+    public class CreateDailyWaterInjectionViewModel
     {
         [Required(ErrorMessage = "FieldId é obrigatório")]
         public Guid? FieldId { get; set; } = null!;
         [Required(ErrorMessage = "FIRS(Fator de Injeção para Recuperação Secundária) é obrigatório")]
         public double? FIRS { get; set; } = null!;
-        public List<AssignedValuesViewModel> AssignedValues { get; set; } = new();
-        public List<AssignedGasValuesViewModel> AssignedGasValues { get; set; } = new();
+        public List<AssignedWaterValuesViewModel> AssignedWaterValues { get; set; } = new();
     }
-
-    public class AssignedValuesViewModel
+    public class CreateDailyGasInjectionViewModel
     {
-        public double? AssignedValue { get; set; }
+        [Required(ErrorMessage = "FieldId é obrigatório")]
+        public Guid? FieldId { get; set; } = null!;
+        public List<AssignedGasValuesViewModel> AssignedGasValues { get; set; } = new();
+
+    }
+    public class AssignedWaterValuesViewModel
+    {
         public Guid? WellInjectionId { get; set; }
+        public double? AssignedValue { get; set; }
+        public Guid? WFLInjectionId { get; set; }
+        public double? AssignedWFLValue { get; set; }
     }
 
     public class AssignedGasValuesViewModel
     {
-        public double? AssignedValue { get; set; }
         public Guid? WellInjectionId { get; set; }
+        public double? AssignedValue { get; set; }
+        public Guid? GFLInjectionId { get; set; }
+        public double? AssignedGFLValue { get; set; }
     }
 }
