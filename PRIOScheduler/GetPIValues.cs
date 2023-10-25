@@ -219,8 +219,10 @@ namespace PRIOScheduler
                             .ThenInclude(v => v.Attribute)
                             .ThenInclude(a => a.Element)
                         .Include(wv => wv.Well)
+                            .ThenInclude(w => w.WellEvents)
                         .Where(wv => wv.Value.Date == dateToday.AddHours(-3) && wv.Value.Attribute.Element.Parameter == "Vazão da WFL1")
-                        .ToListAsync();
+                    .ToListAsync();
+
 
                     if (listAtrByDate is not null && listAtrByDate.Count > 0)
                     {
@@ -228,14 +230,48 @@ namespace PRIOScheduler
 
                         foreach (var wv in listAtrByDate)
                         {
+                            double totalInterval = 0;
+                            _ = wv.Well.WellEvents.Where(x => x.StartDate.Date <= dateToday.Date && x.EndDate == null && x.EventStatus == "F"
+                            || x.StartDate.Date <= dateToday.Date && x.EndDate != null && x.EndDate >= dateToday.Date && x.EventStatus == "F").OrderBy(x => x.StartDate);
+
+                            foreach (var a in wv.Well.WellEvents)
+                            {
+                                if (a.StartDate < dateToday.Date && a.EndDate is not null && a.EndDate.Value.Date == dateToday.Date)
+                                {
+                                    totalInterval += ((a.EndDate.Value - dateToday.Date).TotalMinutes) / 60;
+                                }
+                                else if (a.StartDate < dateToday.Date && a.EndDate is not null && a.EndDate.Value.Date > dateToday.Date)
+                                {
+                                    totalInterval += 24;
+                                }
+                                else if (a.StartDate.Date == dateToday.Date.Date && a.EndDate is not null && a.EndDate.Value.Date == dateToday.Date.Date)
+                                {
+                                    totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
+                                }
+                                else if (a.StartDate.Date == dateToday.Date.Date && a.EndDate is not null && a.EndDate.Value.Date > dateToday.Date.Date)
+                                {
+                                    totalInterval += ((dateToday.Date.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                                }
+                                else if (a.StartDate < dateToday.Date && a.EndDate is null)
+                                {
+                                    totalInterval += 24;
+                                }
+                                else if (a.StartDate.Date == dateToday.Date && a.EndDate is null)
+                                {
+                                    totalInterval += ((dateToday.Date.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                                }
+                                totalInterval += 0;
+                            }
+
                             var PDG1byWell = await dbContext.Values
-                                .Include(v => v.Attribute)
+                            .Include(v => v.Attribute)
                                     .ThenInclude(a => a.Element)
                                 .Where(v => v.Date == dateToday.AddHours(-3) &&
                                             v.Attribute.WellName == wv.Well.WellOperatorName &&
                                             v.Attribute.Element.Parameter == "Pressão PDG 1" &&
                                             v.Attribute.IsOperating == true)
                                 .FirstOrDefaultAsync();
+
                             var PDG2byWell = await dbContext.Values
                                 .Include(v => v.Attribute)
                                     .ThenInclude(a => a.Element)
@@ -262,12 +298,48 @@ namespace PRIOScheduler
 
                             if (wv.Value is not null)
                             {
-                                potencialWells += (PDGValue - bValue) * iiValue;
+                                var potencialWell = (PDGValue - bValue) * iiValue;
+                                potencialWells += potencialWell * ((24 - totalInterval) / 24);
                             }
                         }
 
                         foreach (var wv in listAtrByDate)
                         {
+
+                            double totalInterval = 0;
+                            _ = wv.Well.WellEvents.Where(x => x.StartDate.Date <= dateToday.Date && x.EndDate == null && x.EventStatus == "F"
+                            || x.StartDate.Date <= dateToday.Date && x.EndDate != null && x.EndDate >= dateToday.Date && x.EventStatus == "F").OrderBy(x => x.StartDate);
+
+                            foreach (var a in wv.Well.WellEvents)
+                            {
+                                if (a.StartDate < dateToday.Date && a.EndDate is not null && a.EndDate.Value.Date == dateToday.Date)
+                                {
+                                    totalInterval += ((a.EndDate.Value - dateToday.Date).TotalMinutes) / 60;
+                                }
+                                else if (a.StartDate < dateToday.Date && a.EndDate is not null && a.EndDate.Value.Date > dateToday.Date)
+                                {
+                                    totalInterval += 24;
+                                }
+                                else if (a.StartDate.Date == dateToday.Date.Date && a.EndDate is not null && a.EndDate.Value.Date == dateToday.Date.Date)
+                                {
+                                    totalInterval += ((a.EndDate.Value - a.StartDate).TotalMinutes) / 60;
+                                }
+                                else if (a.StartDate.Date == dateToday.Date.Date && a.EndDate is not null && a.EndDate.Value.Date > dateToday.Date.Date)
+                                {
+                                    totalInterval += ((dateToday.Date.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                                }
+                                else if (a.StartDate < dateToday.Date && a.EndDate is null)
+                                {
+                                    totalInterval += 24;
+                                }
+                                else if (a.StartDate.Date == dateToday.Date && a.EndDate is null)
+                                {
+                                    totalInterval += ((dateToday.Date.AddDays(1) - a.StartDate).TotalMinutes) / 60;
+                                }
+                                totalInterval += 0;
+                            }
+
+
                             var PDG1byWell = await dbContext.Values
                                .Include(v => v.Attribute)
                                    .ThenInclude(a => a.Element)
@@ -305,7 +377,8 @@ namespace PRIOScheduler
 
                             if (wv.Value is not null)
                             {
-                                var PIA = (PDGValue - bValue) * iiValue;
+                                var potencialWell = (PDGValue - bValue) * iiValue;
+                                var PIA = potencialWell * ((24 - totalInterval) / 24);
                                 var GroupAmount = wv.Value.GroupAmount is not null ? wv.Value.GroupAmount.Value : 0;
                                 wv.Value.Amount = potencialWells == 0 ? 0 : (PIA / potencialWells) * GroupAmount;
                             }
