@@ -47,10 +47,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
         public async Task<ProductionDtoWithNullableDecimals> GetById(Guid id)
         {
             var production = await _repository
-                .GetById(id);
+                .GetByIdClean(id)
+                ?? throw new NotFoundException($"Produção não encontrada.");
 
-            if (production is null)
-                throw new NotFoundException($"Produção não encontrada.");
+            Console.WriteLine("entrou no by id");
 
             var dailyProduction = new DailyProduction
             {
@@ -664,8 +664,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
             foreach (var fieldP in fieldProductions)
             {
-                var field = await _fieldRepository.GetByIdAsync(fieldP.FieldId);
-
+                var field = await _fieldRepository.GetCleanById(fieldP.FieldId);
                 var fieldPDto = new FieldProductionDto
                 {
                     FieldName = field.Name,
@@ -684,7 +683,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 foreach (var wellP in fieldP.WellProductions)
                 {
                     var well = await _wellRepository
-                        .GetByIdAsync(wellP.WellId);
+                        .GetCleanById(wellP.WellId);
+
                     if (well is not null)
                         fieldPDto.WellAppropriations.Add(new WellProductionDto
                         {
@@ -719,7 +719,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 }
 
                 var orderedWellAppropriationsDto = fieldPDto.WellAppropriations
-                           .OrderBy(x => x.WellName)
+                           .OrderBy(x => x.WellName, new NaturalStringComparer())
                            .ToList();
 
                 fieldPDto.WellAppropriations = orderedWellAppropriationsDto;
@@ -762,6 +762,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                   .GetOilVolumeCalculationByInstallationUEP(production.Installation.UepCod);
 
             foreach (var file in productionDto.Files)
+
             {
                 if (gasCalculationByUepCode is not null && file.FileType == XmlUtils.File002)
                 {
@@ -1820,7 +1821,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
         {
             var productions = await _repository
                 .GetAllProductions();
-
+            Console.WriteLine("entrou no all");
             var productionsDto = new List<GetAllProductionsDto>();
             foreach (var production in productions)
             {

@@ -170,6 +170,52 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<Production?> GetByIdClean(Guid? id)
+        {
+            return await _context.Productions
+                .AsSplitQuery()
+                .Include(x => x.GasLinear)
+                .Include(x => x.GasDiferencial)
+                .Include(x => x.Gas)
+                .Include(x => x.Oil)
+                .Include(x => x.Measurements)
+                        .ThenInclude(d => d.MeasuringPoint)
+                .Include(x => x.Measurements)
+                .ThenInclude(m => m.MeasurementHistory)
+                        .ThenInclude(x => x.ImportedBy)
+                .Include(x => x.Water)
+                .Include(x => x.FieldsFR)
+                    .ThenInclude(x => x.Field)
+                .Include(x => x.Comment)
+                    .ThenInclude(x => x.CommentedBy)
+                .Include(x => x.Installation)
+                .Select(x => new Production
+                {
+                    CalculatedImportedAt = x.CalculatedImportedAt,
+                    CanDetailGasBurned = x.CanDetailGasBurned,
+                    CreatedAt = x.CreatedAt,
+                    Id = x.Id,
+                    IsActive = x.IsActive,
+                    IsCalculated = x.IsCalculated,
+                    MeasuredAt = x.MeasuredAt,
+                    StatusProduction = x.StatusProduction,
+                    TotalProduction = x.TotalProduction,
+                    WellProductions = x.WellProductions,
+                    Comment = x.Comment,
+                    FieldsFR = x.FieldsFR,
+                    Installation = x.Installation,
+                    Gas = x.Gas,
+                    GasLinear = x.GasLinear,
+                    GasDiferencial = x.GasDiferencial,
+                    Measurements = x.Measurements,
+                    Oil = x.Oil,
+                    Water = x.Water,
+                })
+                .AsNoTracking()
+                .Where(x => x.Id == id && x.IsActive)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<List<Production>> GetAllProductions()
         {
             return await _context.Productions
