@@ -55,7 +55,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> create([FromBody] CreateBTPViewModel body)
+        public async Task<IActionResult> Create([FromBody] CreateBTPViewModel body)
         {
             if (HttpContext.Items["User"] is not User user)
                 return Unauthorized(new ErrorResponseDTO
@@ -63,7 +63,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Controllers
                     Message = "User not identified, please login first"
                 });
 
-            var result = await _BTPService.createBTP(body, user);
+            var result = await _BTPService.CreateBTP(body, user);
 
             return Ok(result);
         }
