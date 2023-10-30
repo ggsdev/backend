@@ -1172,7 +1172,7 @@ namespace PRIO.Migrations
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4QUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVA",
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQx5aXaP8n7hGxlABQVozG4QUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIERFIEfDgVMgTElGVA/points",
                                 "Vazão",
-                                "Vazão de Gas Lift , Alocação de Gas Lift"
+                                "Vazão de Gas Lift"
                             },
                             new object[] {
                                 InjectionWaterId,
@@ -1183,7 +1183,7 @@ namespace PRIO.Migrations
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQxQbKfy8q7hGxlABQVozG4QUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIExJTkhBIElOSkXDh8ODTyDDgUdVQSBQT1IgUE_Dh08",
                                 "https://prrjbsrvvm170.petrorio.local/piwebapi/elements/F1EmcaZI8jdsuU6iCfbmKdB6iQxQbKfy8q7hGxlABQVozG4QUFJSSkJTUlZWTTE3MFxQUklPIC0gQ8OBTENVTE9TXEZQU08gRk9SVEVcVkFaw4NPIExJTkhBIElOSkXDh8ODTyDDgUdVQSBQT1IgUE_Dh08/points",
                                 "Vazão",
-                                "Vazão de injeção de água , Alocação de injeção de água"
+                                "Vazão de injeção de água"
                             },
                         };
 

@@ -1303,7 +1303,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                     MED_PRESSAO_ESTATICA_003 = XmlUtils.DecimalParser(producao?.MED_PRESSAO_ESTATICA_003, errorsInFormat, producaoElement?.Name.LocalName),
                                                     MED_TEMPERATURA_2_003 = XmlUtils.DecimalParser(producao?.MED_TEMPERATURA_2_003, errorsInFormat, producaoElement?.Name.LocalName),
                                                     PRZ_DURACAO_FLUXO_EFETIVO_003 = XmlUtils.DecimalParser(producao?.PRZ_DURACAO_FLUXO_EFETIVO_003, errorsInFormat, producaoElement?.Name.LocalName),
-                                                    MED_CORRIGIDO_MVMDO_003 = XmlUtils.DecimalParser(producao?.MED_CORRIGIDO_MVMDO_003, errorsInFormat, producaoElement?.Name.LocalName),
+                                                    MED_CORRIGIDO_MVMDO_003 = XmlUtils.DecimalParser(producao?.MED_CORRIGIDO_MVMDO_003, errorsInFormat, producaoElement?.Name.LocalName) * 1000,
                                                     #endregion
 
                                                     FileName = data.Files[i].FileName,
