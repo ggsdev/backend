@@ -37,15 +37,15 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Controllers
             return Ok(productions);
         }
 
-        [HttpGet("deleted")]
-        public async Task<IActionResult> GetDeleted()
-        {
-            var productions = await _productionService
-                .GetDeletedProductions();
+        //[HttpGet("deleted")]
+        //public async Task<IActionResult> GetDeleted()
+        //{
+        //    var productions = await _productionService
+        //        .GetDeletedProductions();
 
-            return Ok(productions);
+        //    return Ok(productions);
 
-        }
+        //}
 
         [OutputCache(PolicyName = nameof(AuthProductionCachePolicy))]
         [HttpGet("{id}/files")]

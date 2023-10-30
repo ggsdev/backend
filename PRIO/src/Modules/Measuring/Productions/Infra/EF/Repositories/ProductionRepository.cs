@@ -272,10 +272,9 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                 .Include(x => x.GasLinear)
                 .Include(x => x.GasDiferencial)
                 .Include(x => x.Oil)
-                .Include(x => x.Measurements)
-                    .ThenInclude(m => m.MeasurementHistory)
-                .OrderBy(x => x.MeasuredAt)
-                    .ToListAsync();
+                .Where(x => x.IsActive)
+                .OrderByDescending(x => x.MeasuredAt)
+                .ToListAsync();
         }
 
         public async Task AddOrUpdateProduction(Production production)
