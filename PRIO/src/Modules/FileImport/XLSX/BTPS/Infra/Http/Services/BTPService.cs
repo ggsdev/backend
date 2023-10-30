@@ -42,7 +42,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services
 
             return btpsDTO;
         }
-        public async Task<BTPCreateDTO> createBTP(CreateBTPViewModel body, User user)
+        public async Task<BTPCreateDTO> CreateBTP(CreateBTPViewModel body, User user)
         {
             var BTPexists = await _BTPRepository.GetByNameOrContent(body.Name, body.FileContent);
             if (BTPexists is not null)
