@@ -58,6 +58,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
                       .Include(x => x.Well)
                       .Where(x => x.Well.Id == wellId)
                       .Where(x => x.ApplicationDate != null)
+                      .Where(x => x.IsValid)
                       .ToListAsync();
 
             var sortedData = data
