@@ -1821,7 +1821,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
         {
             var productions = await _repository
                 .GetAllProductions();
-            Console.WriteLine("entrou no all");
+
             var productionsDto = new List<GetAllProductionsDto>();
             foreach (var production in productions)
             {

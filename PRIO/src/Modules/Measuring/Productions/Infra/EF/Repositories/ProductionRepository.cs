@@ -142,6 +142,24 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<Production?> GetProdutionInValidateByDate(DateTime date)
+        {
+            return await _context.Productions
+                .Include(x => x.FieldsFR)
+                .Select(x => new Production
+                {
+                    StatusProduction = x.StatusProduction,
+                    FieldsFR = x.FieldsFR,
+                    MeasuredAt = x.MeasuredAt,
+                    IsActive = x.IsActive,
+                })
+                .Where(x => x.MeasuredAt.Year == date.Year &&
+                            x.MeasuredAt.Month == date.Month &&
+                            x.MeasuredAt.Day == date.Day && x.IsActive)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<Production?> GetById(Guid? id)
         {
             return await _context.Productions
@@ -212,6 +230,36 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                     Water = x.Water,
                 })
                 .AsNoTracking()
+                .Where(x => x.Id == id && x.IsActive)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<Production?> GetByIdCommentClean(Guid? id)
+        {
+            return await _context.Productions
+                .AsSplitQuery()
+                .Include(x => x.Gas)
+                .Include(x => x.Oil)
+                .Include(x => x.Installation)
+                .Include(x => x.Comment)
+                    .ThenInclude(x => x.CommentedBy)
+                .Select(x => new Production
+                {
+                    CalculatedImportedAt = x.CalculatedImportedAt,
+                    CanDetailGasBurned = x.CanDetailGasBurned,
+                    CreatedAt = x.CreatedAt,
+                    Id = x.Id,
+                    IsActive = x.IsActive,
+                    IsCalculated = x.IsCalculated,
+                    MeasuredAt = x.MeasuredAt,
+                    StatusProduction = x.StatusProduction,
+                    TotalProduction = x.TotalProduction,
+                    WellProductions = x.WellProductions,
+                    Comment = x.Comment,
+                    Gas = x.Gas,
+                    Oil = x.Oil,
+                    Installation = x.Installation
+                })
                 .Where(x => x.Id == id && x.IsActive)
                 .FirstOrDefaultAsync();
         }

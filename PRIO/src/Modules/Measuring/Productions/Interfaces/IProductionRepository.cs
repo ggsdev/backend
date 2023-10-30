@@ -11,6 +11,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Interfaces
         Task<Production?> GetExistingByDateWithProductionAllocation(DateTime date);
         Task<bool> AnyByDate(DateTime date);
         Task<Production?> GetProductionGasByDate(DateTime date);
+        Task<Production?> GetProdutionInValidateByDate(DateTime date);
         void Update(Production production);
         Task SaveChangesAsync();
         Task AddOrUpdateProduction(Production production);
@@ -18,6 +19,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Interfaces
         Task<List<Production>> GetAllProductions();
         Task<Production?> GetById(Guid? id);
         Task<Production?> GetByIdClean(Guid? id);
+        Task<Production?> GetByIdCommentClean(Guid? id);
         Task AddFieldProduction(FieldProduction fieldProduction);
         Task AddWaterProduction(Water water);
         void UpdateFieldProduction(FieldProduction fieldProduction);
