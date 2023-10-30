@@ -41,6 +41,13 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
             return field;
         }
 
+        public async Task<Field?> GetCleanById(Guid? id)
+        {
+            return await _context.Fields
+                    .Where(x => x.Id == id)
+                    .FirstOrDefaultAsync();
+        }
+
         public async Task<List<Field>> GetFieldsByUepCode(string code)
         {
             return await _context.Fields

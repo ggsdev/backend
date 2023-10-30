@@ -48,7 +48,7 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
         public async Task<CreateUpdateCommentDto> CreateComment(CreateCommentViewModel body, User loggedUser, Guid productionId)
         {
             var production = await _productionRepository
-                .GetById(productionId);
+                .GetByIdCommentClean(productionId);
             if (production is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Production>());
             if (production.Comment is not null)
@@ -70,7 +70,6 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
                 Text = body.Text,
                 Production = production,
             };
-
 
             await _commentRepository.AddAsync(comment);
 

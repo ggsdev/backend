@@ -13,10 +13,8 @@ using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Interfaces;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
-using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Modules.Measuring.Productions.Interfaces;
 using PRIO.src.Modules.Measuring.Productions.Utils;
-using PRIO.src.Modules.PI.Interfaces;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Utils;
 
@@ -25,23 +23,19 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
     public class InjectionService
     {
         private readonly IInjectionRepository _repository;
-        private readonly IPIRepository _PIRepository;
         private readonly IFieldRepository _fieldRepository;
-        private readonly IWellRepository _wellRepository;
         private readonly IProductionRepository _productionRepository;
         private readonly IInstallationRepository _installationRepository;
         private readonly IBalanceRepository _balanceRepository;
         private readonly IMapper _mapper;
 
-        public InjectionService(IInjectionRepository repository, IFieldRepository fieldRepository, IBalanceRepository balanceRepository, IMapper mapper, IInstallationRepository installationRepository, IWellRepository wellRepository, IProductionRepository productionRepository, IPIRepository pIRepository)
+        public InjectionService(IInjectionRepository repository, IFieldRepository fieldRepository, IBalanceRepository balanceRepository, IMapper mapper, IInstallationRepository installationRepository, IProductionRepository productionRepository)
         {
             _repository = repository;
             _fieldRepository = fieldRepository;
             _balanceRepository = balanceRepository;
             _mapper = mapper;
             _installationRepository = installationRepository;
-            _wellRepository = wellRepository;
-            _PIRepository = pIRepository;
             _productionRepository = productionRepository;
         }
 
@@ -550,7 +544,7 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.Http.Services
                 throw new ConflictException($"Injeção diária no dia: {dateInjection:dd/MMM/yyyy} já criada.");
 
             var productionInDatabase = await _productionRepository
-                .GetExistingByDate(dateInjection);
+                .GetCleanByDate(dateInjection);
 
             if (productionInDatabase is null || productionInDatabase.StatusProduction == ProductionUtils.openStatus)
                 throw new ConflictException("Produção do dia precisa feita e fechada antes de criar uma injeção.");

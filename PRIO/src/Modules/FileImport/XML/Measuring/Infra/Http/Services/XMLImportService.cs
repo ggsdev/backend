@@ -2566,23 +2566,24 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             }
 
             var isApplicable = false;
-
-            var dateParsed = DateTime.Parse(response.DateProduction);
-            var productionOfTheDay = await _productionRepository
-                .GetExistingByDate(dateParsed);
-
-
-            if (productionOfTheDay is not null && productionOfTheDay.FieldsFR is not null && productionOfTheDay.FieldsFR.Any())
+            if (response.DateProduction is not null)
             {
-                isApplicable = true;
-            }
+                var dateParsed = DateTime.Parse(response.DateProduction);
+                var productionOfTheDay = await _productionRepository
+                    .GetProdutionInValidateByDate(dateParsed);
 
-            if (productionOfTheDay is null)
-                response.StatusProduction = "aberto";
-            else
-            {
-                response.StatusProduction = productionOfTheDay.StatusProduction;
-                response.ProductionAlreadyExists = true;
+                if (productionOfTheDay is not null && productionOfTheDay.FieldsFR is not null && productionOfTheDay.FieldsFR.Any())
+                {
+                    isApplicable = true;
+                }
+
+                if (productionOfTheDay is null)
+                    response.StatusProduction = "aberto";
+                else
+                {
+                    response.StatusProduction = productionOfTheDay.StatusProduction;
+                    response.ProductionAlreadyExists = true;
+                }
             }
 
             var frProduction = new FRViewModel

@@ -15,6 +15,7 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Interfaces
         Task<Well?> GetByNameAsync(string? name);
         Task<Well?> GetByNameOrOperator(string name, string operatorName);
         Task<List<Well>> GetAsync(User user);
+        Task<Well?> GetCleanById(Guid? id);
         Task<Well?> GetByCode(string? cod);
         Task<Well?> GetWithFieldAsync(Guid? id);
         Task<Well?> GetOnlyWellAsync(Guid? id);

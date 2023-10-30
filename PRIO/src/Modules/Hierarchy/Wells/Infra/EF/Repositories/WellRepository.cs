@@ -75,6 +75,12 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
                 .ThenInclude(i => i.Cluster)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
+
+        public async Task<Well?> GetCleanById(Guid? id)
+        {
+            return await _context.Wells
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
         public async Task<Well?> GetByIdWithEventsAsync(Guid? id)
         {
             return await _context.Wells
