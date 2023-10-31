@@ -19,10 +19,9 @@ namespace PRIO.src.Modules.FileExport.Templates.Infra.Http.Controllers
         [HttpPost("opening-closing-events/{fieldId}")]
         public async Task<IActionResult> Create(DateTime beginning, DateTime end, Guid fieldId)
         {
-            /*var data =*/
-            await _service.GenerateClosingOpeningRelatory(beginning, end, fieldId);
+            var data = await _service.GenerateClosingOpeningRelatory(beginning, end, fieldId);
 
-            return Ok(/*data*/);
+            return Created($"export-xlsx/{data.Id}", data);
         }
     }
 }

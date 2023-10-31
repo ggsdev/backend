@@ -186,6 +186,14 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                 .Where(x => x.UepCod == cod && x.CodInstallationAnp == cod)
               .FirstOrDefaultAsync();
         }
+
+        public async Task<Installation?> GetUep(string? cod)
+        {
+            return await _context.Installations
+                .Where(x => x.UepCod == cod && x.IsProcessingUnit)
+              .FirstOrDefaultAsync();
+        }
+
         public async Task<List<Installation?>> GetByUEPWithFieldsCod(string? cod)
         {
             return await _context.Installations

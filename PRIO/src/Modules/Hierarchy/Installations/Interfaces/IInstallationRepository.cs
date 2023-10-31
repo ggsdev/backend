@@ -34,5 +34,6 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Interfaces
         Task<Installation?> GetUepById(Guid? id);
         Task<List<Installation>> GetInstallationChildrenOfUEP(string uepCode);
         Task SaveChangesAsync();
+        Task<Installation?> GetUep(string? cod);
     }
 }
