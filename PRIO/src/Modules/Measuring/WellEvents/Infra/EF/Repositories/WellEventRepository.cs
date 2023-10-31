@@ -32,6 +32,14 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Repositories
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
+        public async Task<WellEvent?> GetEventWithWellTestById(Guid id)
+        {
+            return await _context.WellEvents
+                   .Include(x => x.Well)
+                       .ThenInclude(x => x.WellTests)
+                   .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public async Task<WellEvent?> GetNextEvent(DateTime startDate, DateTime endDate)
         {
             return await _context.WellEvents

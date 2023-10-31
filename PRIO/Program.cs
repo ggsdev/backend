@@ -28,6 +28,8 @@ using PRIO.src.Modules.ControlAccess.Users.Interfaces;
 using PRIO.src.Modules.FileExport.Templates.Infra.EF.Repositories;
 using PRIO.src.Modules.FileExport.Templates.Infra.Http.Services;
 using PRIO.src.Modules.FileExport.Templates.Interfaces;
+using PRIO.src.Modules.FileExport.XML.Infra.Http.Services;
+using PRIO.src.Modules.FileExport.XML.Interfaces;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
@@ -325,6 +327,8 @@ static void RegisterServices(IServiceCollection services)
     services.AddScoped<XLSXService>();
     services.AddScoped<InjectionService>();
     services.AddScoped<BalanceService>();
+    services.AddScoped<XMLExportService>();
+    services.AddScoped<IDataQueryService, DataQueryService>();
     services.AddScoped<TemplateService>();
     services.AddScoped<XLSXExportService>();
 

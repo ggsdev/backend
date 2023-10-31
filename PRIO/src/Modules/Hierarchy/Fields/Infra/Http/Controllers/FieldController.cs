@@ -45,9 +45,9 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById([FromRoute] Guid id)
+        public async Task<IActionResult> GetById([FromRoute] Guid id, [FromQuery] string? wellFilter)
         {
-            var fieldDTO = await _fieldService.GetFieldById(id);
+            var fieldDTO = await _fieldService.GetFieldById(id, wellFilter);
             return Ok(fieldDTO);
         }
 
