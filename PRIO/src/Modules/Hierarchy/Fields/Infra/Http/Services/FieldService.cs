@@ -39,6 +39,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
         private readonly ICompletionRepository _completionRepository;
         private readonly IProductionRepository _productionRepository;
         private readonly IWellEventRepository _eventWellRepository;
+        private readonly List<string> _wellFilters = new() { "PRODUTOR", "INJETOR" };
 
         public FieldService(IMapper mapper, IFieldRepository fieldRepository, SystemHistoryService systemHistoryService, IInstallationRepository installationRepository, IZoneRepository zoneRepository, IWellRepository wellRepository, ICompletionRepository completionRepository, IReservoirRepository reservoirRepository, IWellEventRepository wellEventRepository, IProductionRepository productionRepository)
         {
@@ -105,13 +106,24 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.Http.Services
             return fieldsDTO;
         }
 
-        public async Task<FieldDTO> GetFieldById(Guid id)
+        public async Task<FieldDTO> GetFieldById(Guid id, string? wellFilter)
         {
             var field = await _fieldRepository
                 .GetByIdAsync(id);
 
             if (field is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Field>());
+
+            if (wellFilter is not null)
+            {
+                var verify = _wellFilters.Contains(wellFilter.Trim().ToUpper());
+                if (!verify)
+                {
+                    string possibleFilters = string.Join(", ", _wellFilters);
+                    throw new ConflictException("O filtro fornecido não é válido. Os filtros possíveis são: " + possibleFilters);
+                }
+                field.Wells = field.Wells.Where(x => x.CategoryOperator.Trim().ToUpper().Contains(wellFilter.Trim().ToUpper())).ToList();
+            }
 
 
             var fieldDTO = _mapper.Map<Field, FieldDTO>(field);

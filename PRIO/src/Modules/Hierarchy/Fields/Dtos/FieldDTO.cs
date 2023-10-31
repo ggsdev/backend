@@ -14,7 +14,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Dtos
         public string? State { get; set; }
         public string? Location { get; set; }
         public UserDTO? User { get; set; }
-        public InstallationDTO? Installation { get; set; }
+        public InstallationWithoutFieldsDTO? Installation { get; set; }
         public List<WellWithoutFieldDTO>? Wells { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
