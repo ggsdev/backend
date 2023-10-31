@@ -2067,7 +2067,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 throw new NotFoundException(ErrorMessages.NotFound<Production>());
 
             if (production.CanDetailGasBurned is false)
-                throw new ConflictException("Detalhamento de queima não é possível, somente após notificação de falha.");
+                throw new ConflictException("Detalhamento de queima não é possível, somente após notificação de falha em uma medição de gás.");
 
             if (production.Gas is null)
                 throw new NotFoundException("Produção de gás não encontrada.");

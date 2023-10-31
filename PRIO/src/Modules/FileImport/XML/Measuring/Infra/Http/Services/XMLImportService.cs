@@ -1374,6 +1374,11 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     finalDatesDto.Add(fileError);
             }
 
+            if (errorsInImport.Count > 0)
+                throw new BadRequestException($"Algum(s) erro(s) ocorreram durante a validação dos arquivos", errors: errorsInImport);
+
+            if (errorsInFormat.Count > 0)
+                throw new BadRequestException($"Algum(s) erro(s) de formatação ocorreram durante a validação dos arquivos", errors: errorsInFormat);
 
             if (differentDatesDto.ReferenceDate is not null)
             {
@@ -1382,12 +1387,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 if (hasDifferentDates)
                     throw new BadRequestException("Datas diferentes entre medições", finalDatesDto, differentDatesDto.ReferenceDate);
             }
-
-            if (errorsInImport.Count > 0)
-                throw new BadRequestException($"Algum(s) erro(s) ocorreram durante a validação dos arquivos", errors: errorsInImport);
-
-            if (errorsInFormat.Count > 0)
-                throw new BadRequestException($"Algum(s) erro(s) de formatação ocorreram durante a validação dos arquivos", errors: errorsInFormat);
 
             if (response.DateProduction is null && typeFluid == "gas" && (response._003File.Count == 0 && response._002File.Count == 0))
                 throw new NotFoundException($"Nenhum ponto de medição no(s) arquivo(s) foi encontrado na configuração de cálculo de gás.");

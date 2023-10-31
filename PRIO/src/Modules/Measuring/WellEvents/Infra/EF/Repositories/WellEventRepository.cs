@@ -158,10 +158,12 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Repositories
             return await _context.WellEvents
                     .Include(x => x.Well)
                         .ThenInclude(x => x.Field)
+                            .ThenInclude(x => x.Installation)
                     .Include(x => x.WellLosses)
+                    .Include(x => x.EventReasons)
                     .Where(x => x.Well.Field!.Id == fieldId)
                     .Where(x => x.StartDate >= beginning)
-                    .Where(x => x.EndDate == null || x.EndDate <= end)
+                    .Where(x => x.EndDate != null && x.EndDate <= end)
                     .AsNoTracking()
                     .ToListAsync();
         }
