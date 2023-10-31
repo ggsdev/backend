@@ -1,4 +1,6 @@
-﻿using PRIO.src.Modules.FileExport.XML.Interfaces;
+﻿using PRIO.src.Modules.FileExport.Templates.Infra.EF.Enums;
+using PRIO.src.Modules.FileExport.Templates.Interfaces;
+using PRIO.src.Modules.FileExport.XML.Interfaces;
 using PRIO.src.Modules.FileExport.XML.Strategy;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models;
@@ -15,10 +17,12 @@ namespace PRIO.src.Modules.FileExport.XML.Infra.Http.Services
         };
 
         private readonly IDataQueryService _dataQueryService;
+        private readonly ITemplateRepository _templateRepository;
 
-        public XMLExportService(IDataQueryService dataQueryService)
+        public XMLExportService(IDataQueryService dataQueryService, ITemplateRepository templateRepository)
         {
             _dataQueryService = dataQueryService;
+            _templateRepository = templateRepository;
         }
 
         public async Task<string> ExportXML(Guid id, string table)
@@ -28,8 +32,9 @@ namespace PRIO.src.Modules.FileExport.XML.Infra.Http.Services
                 throw new ConflictException("Tabela não existente para geração de xml.");
 
             var model = await _dataQueryService.GetModelAsync(table, id);
+            var templateXML = await _templateRepository.GetByType(TypeFile.XML042);
             var strategy = _strategies[table];
-            var result = await strategy.ExportXML(model);
+            var result = await strategy.ExportXML(model, templateXML);
 
             return result.FileContent;
         }

@@ -469,7 +469,8 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                 tag.Element = elementInDatabase;
             }
 
-            if (body.Operational is not null)
+
+            if (body.Operational is not null && tag.IsOperating != body.Operational)
             {
                 var wellNames = tag.WellName
                     .Split(',');
@@ -483,7 +484,7 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                         foreach (var attributeOfWell in attributesOfWell)
                         {
 
-                            if (attributeOfWell.IsOperating && body.Parameter is not null)
+                            if (attributeOfWell.IsOperating && body.Parameter is not null && body.Parameter != attributeOfWell.Element.Parameter)
                             {
                                 if (body.Parameter == PIConfig._pdg2 && attributeOfWell.Element.Parameter == PIConfig._pdg1)
                                     throw new ConflictException($"Somente um PDG pode estar operacional no poço, sensor PDG com tag: {wellName} está operacional.");
@@ -491,6 +492,7 @@ namespace PRIO.src.Modules.PI.Infra.Http.Services
                                 else if (body.Parameter == PIConfig._pdg1 && attributeOfWell.Element.Parameter == PIConfig._pdg2)
                                     throw new ConflictException($"Somente um PDG pode estar operacional no poço, sensor PDG com tag: {wellName} está operacional.");
                             }
+
                         }
                     }
 

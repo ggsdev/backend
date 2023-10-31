@@ -160,5 +160,18 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Repositories
         {
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<WellEvent>> GetByRangeDate(DateTime beginning, DateTime end, Guid fieldId)
+        {
+            return await _context.WellEvents
+                    .Include(x => x.Well)
+                        .ThenInclude(x => x.Field)
+                    .Include(x => x.WellLosses)
+                    .Where(x => x.Well.Field!.Id == fieldId)
+                    .Where(x => x.StartDate >= beginning)
+                    .Where(x => x.EndDate == null || x.EndDate <= end)
+                    .AsNoTracking()
+                    .ToListAsync();
+        }
     }
 }

@@ -9,6 +9,8 @@ using PRIO.src.Modules.ControlAccess.Menus.Dtos;
 using PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.FileExport.Templates.Dtos;
+using PRIO.src.Modules.FileExport.Templates.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Dtos;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XML.Measuring.Dtos;
@@ -251,6 +253,8 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<WellTests, BTPDataDTO>();//TEM QUE CONSERTAR AQ
             //.ForPath(dest => dest.BTPBase64.Name, opt => opt.MapFrom(src => src.Filename));
 
+            CreateMap<Template, TemplateDto>();
+            CreateMap<Template, TemplatesWithoutFileContentDto>();
 
             CreateMap<FieldFR, FRFieldDTO>();
 
