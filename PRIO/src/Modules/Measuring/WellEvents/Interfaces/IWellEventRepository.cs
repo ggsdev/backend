@@ -17,6 +17,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Interfaces
         void Update(WellEvent wellEvent);
         Task Save();
 
+        Task<List<WellEvent>> GetByRangeDate(DateTime beginning, DateTime end, Guid fieldId);
 
 
         #region Reason

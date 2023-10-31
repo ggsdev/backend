@@ -25,6 +25,9 @@ using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Factories;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
 using PRIO.src.Modules.ControlAccess.Users.Interfaces;
+using PRIO.src.Modules.FileExport.Templates.Infra.EF.Repositories;
+using PRIO.src.Modules.FileExport.Templates.Infra.Http.Services;
+using PRIO.src.Modules.FileExport.Templates.Interfaces;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
@@ -289,6 +292,7 @@ static void RegisterRepositories(IServiceCollection services)
     services.AddScoped<IManualConfigRepository, ManualConfigRepository>();
     services.AddScoped<IBalanceRepository, BalanceRepository>();
     services.AddScoped<IInjectionRepository, InjectionRepository>();
+    services.AddScoped<ITemplateRepository, TemplateRepository>();
 }
 static void RegisterServices(IServiceCollection services)
 {
@@ -321,6 +325,8 @@ static void RegisterServices(IServiceCollection services)
     services.AddScoped<XLSXService>();
     services.AddScoped<InjectionService>();
     services.AddScoped<BalanceService>();
+    services.AddScoped<TemplateService>();
+    services.AddScoped<XLSXExportService>();
 
 }
 static void ConfigureOutputCache(IServiceCollection services)
