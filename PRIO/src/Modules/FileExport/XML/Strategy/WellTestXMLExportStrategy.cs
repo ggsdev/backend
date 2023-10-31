@@ -8,27 +8,6 @@ namespace PRIO.src.Modules.FileExport.XML.Strategy
 {
     public class WellTestXMLExportStrategy : IXMLExportStrategy
     {
-        //public async Task<XMLBase64> ExportXML(object model, Template templateXML)
-        //{
-        //    XMLBase64? XML = null;
-        //    if (model is WellTests wellTests)
-        //    {
-        //        XML = new XMLBase64
-        //        {
-        //            WellTest = wellTests,
-        //        };
-        //    }
-        //    else
-        //    {
-        //        throw new ArgumentException("Tipo de modelo não suportado");
-        //    }
-
-        //    var base64String = GenerateXML(wellTests, templateXML);
-
-        //    XML.FileContent = base64String;
-
-        //    return XML;
-        //}
         public string GenerateXML(object model, Template templateXML)
         {
             if (model is WellTests wellTest)
