@@ -16,6 +16,7 @@ using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.FileExport.Templates.Infra.EF.Mappings;
 using PRIO.src.Modules.FileExport.Templates.Infra.EF.Models;
 using PRIO.src.Modules.FileExport.XLSX.Infra.EF.Models;
+using PRIO.src.Modules.FileExport.XML.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Mappings;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Mappings;
@@ -158,6 +159,8 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<WellSensor> WellSensor { get; set; }
         public DbSet<Template> Templates { get; set; }
         public DbSet<ClosingOpeningFileXLSX> ClosingOpeningFilesXLSX { get; set; }
+        public DbSet<WellEventXML042Base64> WellEventXML042Base64 { get; set; }
+        public DbSet<WellTestXML042Base64> WellTestXML042Base64 { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {

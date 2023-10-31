@@ -28,6 +28,7 @@ using PRIO.src.Modules.ControlAccess.Users.Interfaces;
 using PRIO.src.Modules.FileExport.Templates.Infra.EF.Repositories;
 using PRIO.src.Modules.FileExport.Templates.Infra.Http.Services;
 using PRIO.src.Modules.FileExport.Templates.Interfaces;
+using PRIO.src.Modules.FileExport.XML.Factories;
 using PRIO.src.Modules.FileExport.XML.Infra.Http.Services;
 using PRIO.src.Modules.FileExport.XML.Interfaces;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories;
@@ -257,6 +258,7 @@ static void RegisterFactories(IServiceCollection services)
     services.AddScoped<UserOperationFactory>();
     services.AddScoped<UserFactory>();
     services.AddScoped<InstallationAccessFactory>();
+    services.AddScoped<IXMLFactory, XMLFactory>();
 }
 static void RegisterRepositories(IServiceCollection services)
 {
