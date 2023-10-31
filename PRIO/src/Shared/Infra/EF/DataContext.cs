@@ -13,6 +13,9 @@ using PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Mappings;
 using PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Mappings;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.FileExport.Templates.Infra.EF.Mappings;
+using PRIO.src.Modules.FileExport.Templates.Infra.EF.Models;
+using PRIO.src.Modules.FileExport.XLSX.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Mappings;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Mappings;
@@ -153,6 +156,8 @@ namespace PRIO.src.Shared.Infra.EF
         public DbSet<UEPsBalance> UEPsBalance { get; set; }
         public DbSet<InjectionGasWell> InjectionGasWell { get; set; }
         public DbSet<WellSensor> WellSensor { get; set; }
+        public DbSet<Template> Templates { get; set; }
+        public DbSet<ClosingOpeningFileXLSX> ClosingOpeningFilesXLSX { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -233,6 +238,7 @@ namespace PRIO.src.Shared.Infra.EF
             CreateWellTestMap(modelBuilder);
             CreateManualConfigurationWellMap(modelBuilder);
             CreateBalanceMap(modelBuilder);
+            CreateFileExportMap(modelBuilder);
         }
         private static void CreateAccessControlMap(ModelBuilder modelBuilder)
         {
@@ -352,6 +358,12 @@ namespace PRIO.src.Shared.Infra.EF
             modelBuilder.ApplyConfiguration(new FieldsBalanceMap());
             modelBuilder.ApplyConfiguration(new InstallationsBalanceMap());
             modelBuilder.ApplyConfiguration(new UEPsBalanceMap());
+        }
+
+        private static void CreateFileExportMap(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new TemplateMap());
+            modelBuilder.ApplyConfiguration(new ClosingOpeningFileXLSXMap());
         }
     }
 }
