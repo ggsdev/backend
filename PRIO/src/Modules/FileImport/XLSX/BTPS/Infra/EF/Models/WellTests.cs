@@ -1,4 +1,5 @@
-﻿using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
+﻿using PRIO.src.Modules.FileExport.XML.Infra.EF.Models;
+using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models;
 using PRIO.src.Shared.Infra.EF.Models;
 
@@ -36,5 +37,6 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models
         public BTPBase64? BTPBase64 { get; set; }
         public Well? Well { get; set; }
         public List<WellProduction>? WellAllocations { get; set; }
+        public WellTestXML042Base64? XMLBase64 { get; set; }
     }
 }
