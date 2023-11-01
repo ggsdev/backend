@@ -280,16 +280,22 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
 
             CreateMap<InjectionWaterWell, InjectionWaterWellDTO>();
             CreateMap<InjectionGasWell, InjectionGasWellDTO>();
-            CreateMap<WellSensor, SensorsDTO>();
+            CreateMap<WellSensor, SensorsDTO>()
+                .ForMember(dest => dest.AssignedValue, opt => opt.MapFrom(src => Math.Round(src.AssignedValue, 5)));
+
             CreateMap<ManualWellConfiguration, ManualConfigDTO>();
             CreateMap<ManualWellConfiguration, ManualConfigWithListsDTO>();
             CreateMap<Modules.PI.Infra.EF.Models.Attribute, AttributeWithInjectionDTO>();
             CreateMap<InjectivityIndex, InjectivityIndexDTO>();
             CreateMap<ProductivityIndex, ProductivityIndexDTO>();
+
             CreateMap<BuildUp, BuildUpDTO>();
             CreateMap<WellSensor, WellSensorDTO>();
             CreateMap<WellsValues, WellValueDTO>();
-            CreateMap<Value, ValueSensorDTO>();
+
+            CreateMap<Value, ValueSensorDTO>()
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount.HasValue ? Math.Round(src.Amount.Value, 5) : (double?)null));
+
             CreateMap<FieldsBalance, FieldBalanceDto>();
             CreateMap<FieldsBalance, FieldBalanceWithParameterDTO>();
             CreateMap<FieldsBalance, FieldsBalanceDTO>()
