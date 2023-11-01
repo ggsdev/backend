@@ -16,14 +16,16 @@ namespace PRIO.src.Shared
 
         private static readonly string _connectionString = $"Server={_envVars["SERVER"]},{_envVars["PORT"]}\\{_envVars["SERVER_INSTANCE"]};Database={_envVars["DATABASE"]};User ID={_envVars["USER_ID"]};Password={_envVars["PASSWORD"]};Encrypt={_envVars["ENCRYPT"]}";
 
-        public static async Task ExecuteAsync(string queryDate)
+        public static async Task ExecuteAsync(string dateBeginning, string dateEnd)
         {
-            if (queryDate == null)
-                throw new ConflictException("Data não informada.");
 
-            var checkDate = DateTime.TryParse(queryDate, out DateTime day);
-            if (checkDate is false)
+            var checkDateBeginning = DateTime.TryParse(dateBeginning, out DateTime dateParsedBeginning);
+            if (checkDateBeginning is false)
                 throw new ConflictException("Data não é válida.");
+
+            var checkDateEnd = DateTime.TryParse(dateEnd, out DateTime dateParsedEnd);
+            if (checkDateEnd is false)
+                throw new ConflictException("Data fim não é válida.");
 
             var dbContextOptions = new DbContextOptionsBuilder<DataContext>()
                .UseSqlServer(_connectionString)
@@ -31,9 +33,9 @@ namespace PRIO.src.Shared
 
             using var dbContext = new DataContext(dbContextOptions);
 
-            var dateToday = DateTime.UtcNow.Date.AddHours(3).AddSeconds(-1);
-            var requestDate = day.Date.AddHours(3).AddSeconds(-1);
-            Console.WriteLine("october" + requestDate);
+            var requestDateEnd = dateParsedEnd.Date.AddHours(3).AddSeconds(-1);
+            var requestDateBeginning = dateParsedBeginning.Date.AddHours(3).AddSeconds(-1);
+
             var attributes = await dbContext.Attributes.Include(x => x.Element)
                .ToListAsync();
 
@@ -54,7 +56,7 @@ namespace PRIO.src.Shared
 
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
                 client.Timeout = Timeout.InfiniteTimeSpan;
-                for (var date = requestDate; date <= dateToday; date = date.AddDays(1))
+                for (var date = requestDateBeginning; date <= requestDateEnd; date = date.AddDays(1))
                 {
                     Console.WriteLine(date);
 
