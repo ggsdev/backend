@@ -16,6 +16,7 @@ using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.FileExport.Templates.Infra.EF.Mappings;
 using PRIO.src.Modules.FileExport.Templates.Infra.EF.Models;
 using PRIO.src.Modules.FileExport.XLSX.Infra.EF.Models;
+using PRIO.src.Modules.FileExport.XML.Infra.EF.Mappings;
 using PRIO.src.Modules.FileExport.XML.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Mappings;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models;
@@ -238,10 +239,10 @@ namespace PRIO.src.Shared.Infra.EF
             CreateConfigCalcMap(modelBuilder);
             CreatePIMap(modelBuilder);
             CreateSystemMap(modelBuilder);
+            CreateFileExportMap(modelBuilder);
             CreateWellTestMap(modelBuilder);
             CreateManualConfigurationWellMap(modelBuilder);
             CreateBalanceMap(modelBuilder);
-            CreateFileExportMap(modelBuilder);
         }
         private static void CreateAccessControlMap(ModelBuilder modelBuilder)
         {
@@ -367,6 +368,8 @@ namespace PRIO.src.Shared.Infra.EF
         {
             modelBuilder.ApplyConfiguration(new TemplateMap());
             modelBuilder.ApplyConfiguration(new ClosingOpeningFileXLSXMap());
+            modelBuilder.ApplyConfiguration(new WellEventXML042Base64Map());
+            modelBuilder.ApplyConfiguration(new WellTestXML042Base64Map());
         }
     }
 }
