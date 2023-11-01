@@ -68,15 +68,19 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
             var closedProducingWells = new List<Well>();
             var producingWells = new List<Well>();
 
+            var count = 0;
+
             foreach (var installation in installations)
             {
                 foreach (var field in installation.Fields)
                 {
+                    field.Wells = field.Wells.Where(x => x.CategoryOperator.ToUpper() == "PRODUTOR").ToList();
                     foreach (var well in field.Wells)
                     {
                         var check = well is not null && well.InactivatedAt is null || well is not null && well.InactivatedAt is not null && well.InactivatedAt > production.MeasuredAt;
                         if (check)
                         {
+                            count++;
                             double totalInterval = 0;
                             var filtredEvents = well.WellEvents.Where(x => x.StartDate.Date <= production.MeasuredAt && x.EndDate == null && x.EventStatus == "F"
                                 || x.StartDate.Date <= production.MeasuredAt && x.EndDate != null && x.EndDate >= production.MeasuredAt && x.EventStatus == "F").OrderBy(x => x.StartDate);
@@ -84,7 +88,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                             foreach (var a in filtredEvents)
                                 totalInterval += CalcInterval(a, production);
 
-                            if (totalInterval < 24 && well.CategoryOperator.ToUpper() == "PRODUTOR")
+                            if (totalInterval < 24 && well.CategoryOperator is not null && well.CategoryOperator.ToUpper() == "PRODUTOR")
                             {
 
                                 var isThereWellTests = FilterBtp(well.WellTests, production);
@@ -97,8 +101,12 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                     }
                 }
             }
+
+            if (count == 0)
+                throw new BadRequestException("Não existe poços ativos para essa produção.");
             if (wellsInvalids.Count > 0)
                 throw new BadRequestException($"Todos os poços devem ter um teste de poço válido. Poços sem teste ou com teste inválido:", errors: wellsInvalids);
+
             #endregion
 
             var appropriationDto = new AppropriationDto
@@ -115,6 +123,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                 //var wellTestUEPS = 
                 var wellTestsUEP = await _btpRepository.GetBtpDatasByUEP(production.Installation.UepCod);
                 var filtredUEPsByApplyDateAndFinal = FilterBtp(wellTestsUEP, production);
+                Console.WriteLine(filtredUEPsByApplyDateAndFinal.Count());
 
                 decimal totalPotencialGasUEP = 0;
                 decimal totalPotencialOilUEP = 0;
@@ -368,7 +377,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                                     Event = ev.Event,
 
                                     EfficienceLoss = (((btp.PotencialOil * ev.Downtime) / 24) / totalPotencialOilField) / daysInMonth,
-                                    ProductionLostOil = (((btp.PotencialOil * ev.Downtime) / totalPotencialOilField) / 24) * fieldFR.OilProductionInField,
+                                    ProductionLostOil = (btp.PotencialOil * ev.Downtime) / 24,
                                     ProportionalDay = ((btp.PotencialOil * ev.Downtime) / 24) / totalPotencialOilField,
 
                                     ProductionLostGas = (((btp.PotencialGas * ev.Downtime) / totalPotencialGasField) / 24) * fieldFR.GasProductionInField,
@@ -436,6 +445,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                 var btpsUEP = await _btpRepository
                     .GetBtpDatasByUEP(production.Installation.UepCod);
                 var filtredByApplyDateAndFinal = FilterBtp(btpsUEP, production);
+                Console.WriteLine(filtredByApplyDateAndFinal.Count());
 
                 decimal totalPotencialGasUEP = 0;
                 decimal totalPotencialOilUEP = 0;
@@ -693,7 +703,7 @@ namespace PRIO.src.Modules.Measuring.WellProductions.Infra.Http.Services
                                     Downtime = ev.Downtime,
                                     Event = ev.Event,
                                     EfficienceLoss = (((btp.PotencialOil * ev.Downtime) / 24) / totalOilPotencialField) / daysInMonth,
-                                    ProductionLostOil = ((btp.PotencialOil / totalPotencialOilUEP) * production.Oil.TotalOil) * ev.Downtime / 24,
+                                    ProductionLostOil = (btp.PotencialOil * ev.Downtime) / 24,
                                     ProportionalDay = ((btp.PotencialOil * ev.Downtime) / 24) / totalOilPotencialField,
 
                                     ProductionLostGas = ((btp.PotencialGas / totalPotencialGasUEP) * ((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas : 0))) * ev.Downtime / 24,

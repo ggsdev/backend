@@ -19,14 +19,16 @@ namespace PRIO.src.Modules.FileExport.XML.Infra.Http.Services
         };
 
         private readonly IDataQueryService _dataQueryService;
-        private readonly ITemplateRepository _templateRepository;
         private readonly IXMLFactory _xMLFactory;
+        private readonly ITemplateRepository _templateRepository;
+        private readonly IXMLExportRepository _repository;
 
-        public XMLExportService(IDataQueryService dataQueryService, ITemplateRepository templateRepository, IXMLFactory xMLFactory)
+        public XMLExportService(IDataQueryService dataQueryService, ITemplateRepository templateRepository, IXMLFactory xMLFactory, IXMLExportRepository repository)
         {
             _dataQueryService = dataQueryService;
             _templateRepository = templateRepository;
             _xMLFactory = xMLFactory;
+            _repository = repository;
         }
 
         public async Task<string> ExportXML(Guid id, string table, ExportXMLViewModel body)
@@ -39,11 +41,12 @@ namespace PRIO.src.Modules.FileExport.XML.Infra.Http.Services
             var templateXML = await _templateRepository.GetByType(TypeFile.XML042) ?? throw new ConflictException("Template não encontrado para XML.");
             var strategy = _strategies[table];
             var result = strategy.GenerateXML(model, templateXML);
+
             var fileName = CreateFileName(body, model);
+
             var createXMLBase64 = _xMLFactory.Create(model, result, fileName);
-
-            Console.WriteLine(fileName);
-
+            await _repository.AddAsync(createXMLBase64);
+            await _repository.SaveAsync();
             return result;
         }
 

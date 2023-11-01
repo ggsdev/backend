@@ -1,5 +1,6 @@
 ﻿using PRIO.src.Modules.FileExport.XML.Infra.EF.Models;
 using PRIO.src.Modules.FileExport.XML.Interfaces;
+using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
 
 namespace PRIO.src.Modules.FileExport.XML.Infra.EF.Repositories
@@ -22,6 +23,14 @@ namespace PRIO.src.Modules.FileExport.XML.Infra.EF.Repositories
             {
                 await _context.WellEventXML042Base64.AddAsync(wellEvent);
             }
+            else
+            {
+                throw new ConflictException("Não foi possivel acessar o repositório.");
+            }
+        }
+        public async Task SaveAsync()
+        {
+            await _context.SaveChangesAsync();
         }
 
     }
