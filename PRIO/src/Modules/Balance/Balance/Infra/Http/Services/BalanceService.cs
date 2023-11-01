@@ -154,10 +154,8 @@ namespace PRIO.src.Modules.Balance.Balance.Infra.Http.Services
         {
             foreach (var well in wells)
             {
-                Console.WriteLine(well);
                 foreach (var wellValue in well.WellsValues)
                 {
-                    Console.WriteLine(wellValue);
                     if (wellValue.InjectionGasWell is not null)
                     {
                         wellValue.Value.AssignedValue = wellValue.InjectionGasWell.AssignedValue;
