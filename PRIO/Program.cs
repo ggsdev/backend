@@ -29,6 +29,7 @@ using PRIO.src.Modules.FileExport.Templates.Infra.EF.Repositories;
 using PRIO.src.Modules.FileExport.Templates.Infra.Http.Services;
 using PRIO.src.Modules.FileExport.Templates.Interfaces;
 using PRIO.src.Modules.FileExport.XML.Factories;
+using PRIO.src.Modules.FileExport.XML.Infra.EF.Repositories;
 using PRIO.src.Modules.FileExport.XML.Infra.Http.Services;
 using PRIO.src.Modules.FileExport.XML.Interfaces;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories;
@@ -297,6 +298,8 @@ static void RegisterRepositories(IServiceCollection services)
     services.AddScoped<IBalanceRepository, BalanceRepository>();
     services.AddScoped<IInjectionRepository, InjectionRepository>();
     services.AddScoped<ITemplateRepository, TemplateRepository>();
+    services.AddScoped<IXMLExportRepository, XMLExportRepository>();
+
 }
 static void RegisterServices(IServiceCollection services)
 {

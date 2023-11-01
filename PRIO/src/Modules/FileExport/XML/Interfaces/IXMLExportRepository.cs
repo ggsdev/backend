@@ -3,5 +3,6 @@
     public interface IXMLExportRepository
     {
         Task AddAsync(object model);
+        Task SaveAsync();
     }
 }
