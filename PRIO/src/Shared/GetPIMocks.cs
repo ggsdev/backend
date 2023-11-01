@@ -58,7 +58,7 @@ namespace PRIO.src.Shared
                 client.Timeout = Timeout.InfiniteTimeSpan;
                 for (var date = requestDateBeginning; date <= requestDateEnd; date = date.AddDays(1))
                 {
-                    Console.WriteLine(date);
+
 
                     var valuesList = new List<Value>();
                     var wellValuesList = new List<WellsValues>();
@@ -100,12 +100,13 @@ namespace PRIO.src.Shared
 
                                             if (valueObject is not null && valueObject.Timestamp == date)
                                             {
-                                                Console.WriteLine("Capturou");
+
                                                 var value = new Value
                                                 {
                                                     Id = Guid.NewGuid(),
                                                     Amount = wellNamesCount > 1 ? 0 : valueObject.Value,
-                                                    GroupAmount = wellNamesCount > 1 ? valueObject.Value : null,
+                                                    GroupAmountAssigned = wellNamesCount > 1 ? valueObject.Value : null,
+                                                    GroupAmountPI = wellNamesCount > 1 ? valueObject.Value : null,
                                                     Attribute = atr,
                                                     Date = valueObject.Timestamp.AddHours(-3),
                                                     IsCaptured = true
@@ -124,7 +125,7 @@ namespace PRIO.src.Shared
                                             }
                                             else if (valueObject is not null && valueObject.Timestamp != date)
                                             {
-                                                Console.WriteLine("Capturou com data diferente");
+
 
                                                 valueObject = new ValueJson
                                                 {
@@ -141,7 +142,8 @@ namespace PRIO.src.Shared
                                                 {
                                                     Id = Guid.NewGuid(),
                                                     Amount = wellNamesCount > 1 ? null : 0,
-                                                    GroupAmount = wellNamesCount > 1 ? 0 : null,
+                                                    GroupAmountAssigned = wellNamesCount > 1 ? 0 : null,
+                                                    GroupAmountPI = wellNamesCount > 1 ? valueObject.Value : null,
                                                     Attribute = atr,
                                                     Date = valueObject.Timestamp,
                                                     IsCaptured = false,
@@ -163,8 +165,8 @@ namespace PRIO.src.Shared
                                         catch (Exception ex)
                                         {
 
-                                            Console.WriteLine("Capturou com erro no value");
-                                            Console.WriteLine(ex);
+
+
 
                                             valueObject = new ValueJson
                                             {
@@ -181,7 +183,8 @@ namespace PRIO.src.Shared
                                             {
                                                 Id = Guid.NewGuid(),
                                                 Amount = wellNamesCount > 1 ? null : 0,
-                                                GroupAmount = wellNamesCount > 1 ? 0 : null,
+                                                GroupAmountAssigned = wellNamesCount > 1 ? 0 : null,
+                                                GroupAmountPI = wellNamesCount > 1 ? valueObject.Value : null,
                                                 Attribute = atr,
                                                 Date = valueObject.Timestamp,
                                                 IsCaptured = false,
@@ -216,8 +219,8 @@ namespace PRIO.src.Shared
                         await dbContext.AddRangeAsync(wellValuesList);
                         await dbContext.AddRangeAsync(valuesList);
 
-                        Console.WriteLine("wellValuesList count: " + wellValuesList.Count);
-                        Console.WriteLine("valuesList count: " + valuesList.Count);
+
+
 
                         await dbContext.SaveChangesAsync();
 
@@ -322,8 +325,9 @@ namespace PRIO.src.Shared
                                 if (wv.Value is not null)
                                 {
                                     var PIA = (PDGValue - bValue) * iiValue;
-                                    var GroupAmount = wv.Value.GroupAmount is not null ? wv.Value.GroupAmount.Value : 0;
+                                    var GroupAmount = wv.Value.GroupAmountAssigned is not null ? wv.Value.GroupAmountAssigned.Value : 0;
                                     wv.Value.Amount = potencialWells == 0 ? 0 : (PIA / potencialWells) * GroupAmount;
+                                    wv.Value.Potencial = PIA / potencialWells;
                                 }
                             }
 
@@ -337,7 +341,7 @@ namespace PRIO.src.Shared
 
                     try
                     {
-                        Console.WriteLine("GFL1");
+
                         // GFL1
                         var listAtrByDate = await dbContext.WellValues
                             .Include(wv => wv.Value)
@@ -366,8 +370,8 @@ namespace PRIO.src.Shared
                                     potencialWells += GasLiftbyWellValue;
                             }
 
-                            Console.WriteLine("Total da vazao");
-                            Console.WriteLine(potencialWells);
+
+
 
                             foreach (var wv in listAtrByDate)
                             {
@@ -383,19 +387,12 @@ namespace PRIO.src.Shared
 
                                 if (wv.Value is not null)
                                 {
-                                    Console.WriteLine("Vazo de Gas lift");
-                                    Console.WriteLine(GasLiftbyWellValue);
 
                                     var PIG = GasLiftbyWellValue / potencialWells;
-                                    Console.WriteLine("Total Potencial do poço");
-                                    Console.WriteLine(PIG);
-                                    var GroupAmount = wv.Value.GroupAmount is not null ? wv.Value.GroupAmount.Value : 0;
-                                    Console.WriteLine("GroupAmount");
-                                    Console.WriteLine(GroupAmount);
-
-                                    Console.WriteLine("Calculo final");
-                                    Console.WriteLine(potencialWells == 0 ? 0 : PIG * GroupAmount);
+                                    var GroupAmount = wv.Value.GroupAmountAssigned is not null ? wv.Value.GroupAmountAssigned.Value : 0;
                                     wv.Value.Amount = potencialWells == 0 ? 0 : PIG * GroupAmount;
+                                    wv.Value.Potencial = PIG;
+
                                 }
                             }
 
@@ -452,8 +449,10 @@ namespace PRIO.src.Shared
                                 if (wv.Value is not null)
                                 {
                                     var PIG = GasLiftbyWellValue / potencialWells;
-                                    var GroupAmount = wv.Value.GroupAmount is not null ? wv.Value.GroupAmount.Value : 0;
+                                    var GroupAmount = wv.Value.GroupAmountAssigned is not null ? wv.Value.GroupAmountAssigned.Value : 0;
                                     wv.Value.Amount = potencialWells == 0 ? 0 : PIG * GroupAmount;
+                                    wv.Value.Potencial = PIG;
+
                                 }
                             }
 
@@ -510,8 +509,9 @@ namespace PRIO.src.Shared
                                 if (wv.Value is not null)
                                 {
                                     var PIG = GasLiftbyWellValue / potencialWells;
-                                    var GroupAmount = wv.Value.GroupAmount is not null ? wv.Value.GroupAmount.Value : 0;
+                                    var GroupAmount = wv.Value.GroupAmountAssigned is not null ? wv.Value.GroupAmountAssigned.Value : 0;
                                     wv.Value.Amount = potencialWells == 0 ? 0 : PIG * GroupAmount;
+                                    wv.Value.Potencial = PIG;
                                 }
                             }
 
@@ -530,7 +530,7 @@ namespace PRIO.src.Shared
                 Print($"Outro error: {e}");
             }
 
-            Console.WriteLine("Terminou de executar");
+
         }
 
         //public static void Execute()
@@ -539,7 +539,7 @@ namespace PRIO.src.Shared
         //}
         private static void Print<T>(T text)
         {
-            Console.WriteLine(text);
+
         }
     }
 }
