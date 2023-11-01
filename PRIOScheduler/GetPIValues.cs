@@ -90,7 +90,8 @@ namespace PRIOScheduler
                                             {
                                                 Id = Guid.NewGuid(),
                                                 Amount = wellNamesCount > 1 ? 0 : valueObject.Value,
-                                                GroupAmount = wellNamesCount > 1 ? valueObject.Value : null,
+                                                GroupAmountAssigned = wellNamesCount > 1 ? valueObject.Value : null,
+                                                GroupAmountPI = wellNamesCount > 1 ? valueObject.Value : null,
                                                 Attribute = atr,
                                                 Date = valueObject.Timestamp.AddHours(-3),
                                                 IsCaptured = true
@@ -125,7 +126,8 @@ namespace PRIOScheduler
                                             {
                                                 Id = Guid.NewGuid(),
                                                 Amount = wellNamesCount > 1 ? null : 0,
-                                                GroupAmount = wellNamesCount > 1 ? 0 : null,
+                                                GroupAmountAssigned = wellNamesCount > 1 ? 0 : null,
+                                                GroupAmountPI = wellNamesCount > 1 ? valueObject.Value : null,
                                                 Attribute = atr,
                                                 Date = valueObject.Timestamp,
                                                 IsCaptured = false,
@@ -165,7 +167,8 @@ namespace PRIOScheduler
                                         {
                                             Id = Guid.NewGuid(),
                                             Amount = wellNamesCount > 1 ? null : 0,
-                                            GroupAmount = wellNamesCount > 1 ? 0 : null,
+                                            GroupAmountAssigned = wellNamesCount > 1 ? 0 : null,
+                                            GroupAmountPI = wellNamesCount > 1 ? valueObject.Value : null,
                                             Attribute = atr,
                                             Date = valueObject.Timestamp,
                                             IsCaptured = false,
@@ -379,8 +382,10 @@ namespace PRIOScheduler
                             {
                                 var potencialWell = (PDGValue - bValue) * iiValue;
                                 var PIA = potencialWell * ((24 - totalInterval) / 24);
-                                var GroupAmount = wv.Value.GroupAmount is not null ? wv.Value.GroupAmount.Value : 0;
+                                var GroupAmount = wv.Value.GroupAmountAssigned is not null ? wv.Value.GroupAmountAssigned.Value : 0;
                                 wv.Value.Amount = potencialWells == 0 ? 0 : (PIA / potencialWells) * GroupAmount;
+
+                                wv.Value.Potencial = PIA / potencialWells;
                             }
                         }
 
@@ -446,13 +451,14 @@ namespace PRIOScheduler
                                 var PIG = GasLiftbyWellValue / potencialWells;
                                 Console.WriteLine("Total Potencial do poço");
                                 Console.WriteLine(PIG);
-                                var GroupAmount = wv.Value.GroupAmount is not null ? wv.Value.GroupAmount.Value : 0;
+                                var GroupAmount = wv.Value.GroupAmountAssigned is not null ? wv.Value.GroupAmountAssigned.Value : 0;
                                 Console.WriteLine("GroupAmount");
                                 Console.WriteLine(GroupAmount);
 
                                 Console.WriteLine("Calculo final");
                                 Console.WriteLine(potencialWells == 0 ? 0 : PIG * GroupAmount);
                                 wv.Value.Amount = potencialWells == 0 ? 0 : PIG * GroupAmount;
+                                wv.Value.Potencial = PIG;
                             }
                         }
 
@@ -509,8 +515,10 @@ namespace PRIOScheduler
                             if (wv.Value is not null)
                             {
                                 var PIG = GasLiftbyWellValue / potencialWells;
-                                var GroupAmount = wv.Value.GroupAmount is not null ? wv.Value.GroupAmount.Value : 0;
+                                var GroupAmount = wv.Value.GroupAmountAssigned is not null ? wv.Value.GroupAmountAssigned.Value : 0;
                                 wv.Value.Amount = potencialWells == 0 ? 0 : PIG * GroupAmount;
+                                wv.Value.Potencial = PIG;
+
                             }
                         }
 
@@ -567,8 +575,9 @@ namespace PRIOScheduler
                             if (wv.Value is not null)
                             {
                                 var PIG = GasLiftbyWellValue / potencialWells;
-                                var GroupAmount = wv.Value.GroupAmount is not null ? wv.Value.GroupAmount.Value : 0;
+                                var GroupAmount = wv.Value.GroupAmountAssigned is not null ? wv.Value.GroupAmountAssigned.Value : 0;
                                 wv.Value.Amount = potencialWells == 0 ? 0 : PIG * GroupAmount;
+                                wv.Value.Potencial = PIG;
                             }
                         }
 
