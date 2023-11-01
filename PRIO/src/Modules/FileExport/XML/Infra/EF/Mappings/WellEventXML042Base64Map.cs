@@ -10,6 +10,11 @@ namespace PRIO.src.Modules.FileExport.XML.Infra.EF.Mappings
         {
             builder.ToTable("Event.XML042Base64");
 
+            builder.HasOne(x => x.WellEvent)
+               .WithOne(u => u.XMLBase64)
+               .HasForeignKey<WellEventXML042Base64>("WellEventId")
+               .OnDelete(DeleteBehavior.Cascade)
+               .IsRequired();
         }
     }
 }
