@@ -17,13 +17,6 @@ namespace PRIO.src.Modules.Balance.Injection.ViewModels
         public List<AssignedGasValuesViewModel> AssignedGasValues { get; set; } = new();
 
     }
-    public class AssignedWaterValuesViewModel
-    {
-        public Guid? WellInjectionId { get; set; }
-        public double? AssignedValue { get; set; }
-        public Guid? WFLInjectionId { get; set; }
-        public double? AssignedWFLValue { get; set; }
-    }
 
     public class AssignedGasValuesViewModel
     {
@@ -32,4 +25,13 @@ namespace PRIO.src.Modules.Balance.Injection.ViewModels
         public Guid? GFLInjectionId { get; set; }
         public double? AssignedGFLValue { get; set; }
     }
+    public class AssignedWaterValuesViewModel
+    {
+        public Guid? WellInjectionId { get; set; }
+        public double? AssignedValue { get; set; }
+        public Guid? WFLInjectionId { get; set; }
+        public double? AssignedWFLValue { get; set; }
+    }
+
+
 }

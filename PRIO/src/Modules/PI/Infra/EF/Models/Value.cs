@@ -6,13 +6,15 @@ namespace PRIO.src.Modules.PI.Infra.EF.Models
     public class Value : BaseModel
     {
         public double? Amount { get; set; }//examinar pra ver se precisar ser string??
-        public double? GroupAmount { get; set; }
+        public double? GroupAmountAssigned { get; set; }
+        public double? GroupAmountPI { get; set; }
         public DateTime Date { get; set; }
         public Attribute Attribute { get; set; }
         [ForeignKey("AttributeId")]
         public Guid AttributeId { get; set; }
         public List<WellsValues>? WellsValues { get; set; }
         public bool IsCaptured { get; set; }
+        public double Potencial { get; set; }
     }
 
 

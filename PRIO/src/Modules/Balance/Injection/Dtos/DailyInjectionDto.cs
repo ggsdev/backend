@@ -60,7 +60,7 @@
 
         public double? VolumeGFLPI { get; set; }
         public double? VolumeGFLAssigned { get; set; }
-        public double? TotalVolumeGFL { get; set; }
+        public double? VolumeInjected { get; set; }
         public string DateRead { get; set; } = null!;
     }
 
@@ -82,7 +82,7 @@
 
         public double? VolumeWFLPI { get; set; }
         public double? VolumeWFLAssigned { get; set; }
-        public double? TotalVolumeWFL { get; set; }
+        public double? VolumeInjected { get; set; }
         public string DateRead { get; set; } = null!;
     }
 
