@@ -39,9 +39,9 @@ namespace PRIO.src.Modules.FileExport.XML.Infra.Http.Services
             var templateXML = await _templateRepository.GetByType(TypeFile.XML042) ?? throw new ConflictException("Template não encontrado para XML.");
             var strategy = _strategies[table];
             var result = strategy.GenerateXML(model, templateXML);
-            var createXMLBase64 = _xMLFactory.Create(model, result);
-
             var fileName = CreateFileName(body, model);
+            var createXMLBase64 = _xMLFactory.Create(model, result, fileName);
+
             Console.WriteLine(fileName);
 
             return result;
@@ -56,9 +56,10 @@ namespace PRIO.src.Modules.FileExport.XML.Infra.Http.Services
             var handlerChain = new OptionalNameHandler();
             handlerChain.SetNext(new WellTestsHandler())
                        .SetNext(new WellEventHandler());
+
             string resultHandleChain = handlerChain.Handle(body, model);
 
-            string buildString = $"{internalNumber}_{CNPJ}_{date}_{resultHandleChain}";
+            string buildString = $"{internalNumber}_{CNPJ}_{date}_{resultHandleChain}.xml";
 
             return buildString;
 

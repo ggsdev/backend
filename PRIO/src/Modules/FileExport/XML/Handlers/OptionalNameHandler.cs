@@ -6,7 +6,7 @@ namespace PRIO.src.Modules.FileExport.XML.Handlers
     {
         public override string Handle(ExportXMLViewModel body, object model)
         {
-            if (body.OptionalName != null)
+            if (!string.IsNullOrEmpty(body.OptionalName))
             {
                 return body.OptionalName;
             }
