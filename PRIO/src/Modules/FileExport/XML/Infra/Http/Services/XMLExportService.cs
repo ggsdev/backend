@@ -41,9 +41,9 @@ namespace PRIO.src.Modules.FileExport.XML.Infra.Http.Services
             var templateXML = await _templateRepository.GetByType(TypeFile.XML042) ?? throw new ConflictException("Template não encontrado para XML.");
             var strategy = _strategies[table];
             var result = strategy.GenerateXML(model, templateXML);
-
+          
             var fileName = CreateFileName(body, model);
-
+          
             var createXMLBase64 = _xMLFactory.Create(model, result, fileName);
             await _repository.AddAsync(createXMLBase64);
             await _repository.SaveAsync();
