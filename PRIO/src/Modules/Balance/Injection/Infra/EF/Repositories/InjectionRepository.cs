@@ -15,6 +15,8 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories
         public async Task<InjectionWaterWell?> GetWaterInjectionById(Guid? id)
         {
             return await _context.InjectionWaterWell
+                .Include(x => x.WellValues)
+                    .ThenInclude(x => x.Value)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
         public async Task<WellSensor?> GetSensorById(Guid? id)
@@ -168,6 +170,8 @@ namespace PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories
         public async Task<InjectionGasWell?> GetGasInjectionById(Guid? id)
         {
             return await _context.InjectionGasWell
+                .Include(x => x.WellValues)
+                    .ThenInclude(x => x.Value)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
