@@ -8,7 +8,7 @@ namespace PRIO.src.Modules.FileExport.XML.Factories
 {
     public class XMLFactory : IXMLFactory
     {
-        public object Create(object model, string base64)
+        public object Create(object model, string base64, string fileName)
         {
             var XMLId = Guid.NewGuid();
             if (model is WellTests)
@@ -17,6 +17,7 @@ namespace PRIO.src.Modules.FileExport.XML.Factories
                 {
                     Id = XMLId,
                     WellTest = model is WellTests ? model as WellTests : null,
+                    Filename = fileName,
                     FileContent = base64
                 };
             }
@@ -26,6 +27,7 @@ namespace PRIO.src.Modules.FileExport.XML.Factories
                 {
                     Id = XMLId,
                     WellEvent = model is WellEvent ? model as WellEvent : null,
+                    Filename = fileName,
                     FileContent = base64
                 };
             }
