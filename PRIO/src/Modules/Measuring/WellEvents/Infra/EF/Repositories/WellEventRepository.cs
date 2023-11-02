@@ -16,13 +16,28 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Repositories
         public async Task<WellEvent?> GetEventById(Guid id)
         {
             return await _context.WellEvents
+                .Include(x => x.CreatedBy)
+                .Include(x => x.UpdatedBy)
                 .Include(x => x.WellLosses)
                 .Include(x => x.EventRelated)
                 .Include(x => x.EventReasons)
+                    .ThenInclude(x => x.UpdatedBy)
+
+                .Include(x => x.EventReasons)
+                    .ThenInclude(x => x.CreatedBy)
+
                 .Include(x => x.Well)
                     .ThenInclude(x => x.Field)
                         .ThenInclude(x => x.Installation)
                 .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task<WellEvent?> GetEventWithWellTestById(Guid id)
+        {
+            return await _context.WellEvents
+                   .Include(x => x.Well)
+                       .ThenInclude(x => x.WellTests)
+                   .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<WellEvent?> GetNextEvent(DateTime startDate, DateTime endDate)
@@ -73,16 +88,39 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Repositories
         }
         public async Task<List<WellEvent>> GetAllWellEvent(Guid wellId)
         {
-            return await _context.WellEvents
-                .Include(x => x.EventReasons)
-                .Include(x => x.Well)
-                .Where(x => x.Well.Id == wellId)
-                .ToListAsync();
+            var list = await _context.WellEvents
+             .Include(x => x.EventReasons)
+             .Include(x => x.EventRelated)
+             .Include(x => x.Well)
+             .Where(x => x.Well.Id == wellId)
+             .OrderBy(x => x.EventRelated.Id)
+             .ToListAsync();
+
+            var newList = new List<WellEvent>();
+            for (var i = 0; i < list.Count; i++)
+            {
+                if (i == 0)
+                {
+                    newList.Add(list[i]);
+                }
+                else
+                {
+                    var previousEventRelatedId = newList[i - 1]?.Id;
+                    if (previousEventRelatedId is not null)
+                    {
+                        var newItem = list.FirstOrDefault(x => x.EventRelated?.Id == previousEventRelatedId);
+                        if (newItem is not null)
+                            newList.Add(newItem);
+                    }
+                }
+            }
+            newList.Reverse();
+            return newList;
         }
-        public async Task<WellEvent?> GetLastWellEvent(string typeEvent)
+        public async Task<WellEvent?> GetLastWellEvent()
         {
             return await _context.WellEvents
-                .Where(x => x.EndDate == null && x.EventStatus == typeEvent)
+                .Where(x => x.EndDate == null)
                 .FirstOrDefaultAsync();
         }
 
@@ -121,6 +159,21 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Repositories
         public async Task Save()
         {
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<WellEvent>> GetByRangeDate(DateTime beginning, DateTime end, Guid fieldId)
+        {
+            return await _context.WellEvents
+                    .Include(x => x.Well)
+                        .ThenInclude(x => x.Field)
+                            .ThenInclude(x => x.Installation)
+                    .Include(x => x.WellLosses)
+                    .Include(x => x.EventReasons)
+                    .Where(x => x.Well.Field!.Id == fieldId)
+                    .Where(x => x.StartDate >= beginning)
+                    .Where(x => x.EndDate != null && x.EndDate <= end)
+                    .AsNoTracking()
+                    .ToListAsync();
         }
     }
 }

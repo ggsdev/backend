@@ -7,6 +7,7 @@ namespace PRIO.src.Modules.PI.Dtos
         public Guid Id { get; set; }
         public bool Status { get; set; }
         public string Field { get; set; }
+        public Guid WellId { get; set; }
         public string WellName { get; set; }
         public string CategoryOperator { get; set; }
         public string GroupParameter { get; set; }

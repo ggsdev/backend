@@ -22,8 +22,27 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
 
         public async Task<Well?> GetByNameOrOperatorName(string name)
         {
-            return await _context.Wells.Include(w => w.Field).ThenInclude(f => f.Installation)
-                    .FirstOrDefaultAsync(x => x.Name == name || x.WellOperatorName == name);
+            return await _context.Wells
+                .Where(x => x.Name!.ToUpper().Trim() == name.ToUpper().Trim() || x.WellOperatorName!.ToUpper().Trim() == name.ToUpper().Trim())
+                .Include(w => w.Field)
+                    .ThenInclude(f => f.Installation)
+                .FirstOrDefaultAsync();
+        }
+        public async Task<List<PI.Infra.EF.Models.Attribute>> GetTagsFromWell(string wellName, string wellOperatorName)
+        {
+            var firstList = await _context.Attributes.Where(x => x.WellName.ToUpper().Contains(wellName.ToUpper()) || x.WellName.ToUpper().Contains(wellOperatorName.ToUpper())).Include(x => x.Element).ToListAsync();
+            var returnList = new List<PI.Infra.EF.Models.Attribute>();
+
+            foreach (var atrb in firstList)
+            {
+                var wellNames = atrb.WellName.Split(",");
+                foreach (var well in wellNames)
+                {
+                    if (well.ToUpper() == wellOperatorName.ToUpper() || well.ToUpper() == wellName.ToUpper())
+                        returnList.Add(atrb);
+                }
+            }
+            return returnList;
         }
         public async Task<Well?> GetByNameOrOperator(string wellName, string wellOperatorName)
         {
@@ -54,6 +73,12 @@ namespace PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Repositories
                 .Include(x => x.Field)
                 .ThenInclude(f => f.Installation)
                 .ThenInclude(i => i.Cluster)
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task<Well?> GetCleanById(Guid? id)
+        {
+            return await _context.Wells
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
         public async Task<Well?> GetByIdWithEventsAsync(Guid? id)

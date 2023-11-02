@@ -85,12 +85,16 @@
 
   <ItemGroup>
     <Folder Include="src\Configs\" />
+    <Folder Include="src\Modules\Balance\Balance\Infra\Http\Controllers\" />
+    <Folder Include="src\Modules\Balance\Balance\Infra\Http\Services\" />
     <Folder Include="src\Modules\ControlAccess\Menus\Infra\Http\Services\" />
     <Folder Include="src\Modules\ControlAccess\Menus\ViewModels\" />
     <Folder Include="src\Modules\ControlAccess\Operations\Dtos\" />
     <Folder Include="src\Modules\ControlAccess\Operations\Infra\Http\Controllers\" />
     <Folder Include="src\Modules\ControlAccess\Operations\Infra\Http\Services\" />
     <Folder Include="src\Modules\ControlAccess\Operations\ViewModels\" />
+    <Folder Include="src\Modules\FileExport\XLSX\Infra\EF\Factories\" />
+    <Folder Include="src\Modules\FileExport\XLSX\Interfaces\" />
     <Folder Include="src\Modules\FileImport\XLSX\BTPS\Infra\EF\Repositories\" />
     <Folder Include="src\Modules\FileImport\XLSX\BTPS\Infra\Http\Controllers\" />
     <Folder Include="src\Modules\FileImport\XLSX\BTPS\Infra\Http\Services\" />

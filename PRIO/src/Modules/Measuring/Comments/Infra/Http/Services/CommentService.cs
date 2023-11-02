@@ -1,12 +1,20 @@
 ﻿using AutoMapper;
+using PRIO.src.Modules.Balance.Balance.Infra.EF.Models;
+using PRIO.src.Modules.Balance.Balance.Interfaces;
+using PRIO.src.Modules.Balance.Injection.Infra.EF.Models;
+using PRIO.src.Modules.Balance.Injection.Interfaces;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
+using PRIO.src.Modules.Hierarchy.Installations.Interfaces;
+using PRIO.src.Modules.Hierarchy.Wells.Interfaces;
 using PRIO.src.Modules.Measuring.Comments.Dtos;
 using PRIO.src.Modules.Measuring.Comments.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Comments.Interfaces;
 using PRIO.src.Modules.Measuring.Comments.ViewModels;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Models;
 using PRIO.src.Modules.Measuring.Productions.Interfaces;
+using PRIO.src.Modules.PI.Infra.EF.Models;
+using PRIO.src.Modules.PI.Interfaces;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Utils;
 
@@ -17,24 +25,32 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
         private readonly ICommentRepository _commentRepository;
         private readonly IMapper _mapper;
         private readonly IProductionRepository _productionRepository;
+        private readonly IInstallationRepository _installationRepository;
+        private readonly IPIRepository _PIRepository;
+        private readonly IWellRepository _wellRepository;
+        private readonly IInjectionRepository _injectionRepository;
+        private readonly IBalanceRepository _balanceRepository;
         private readonly IBTPRepository _btpRepository;
 
-        public CommentService(ICommentRepository commentRepository, IProductionRepository productionRepository, IMapper mapper, IBTPRepository bTPRepository)
+        public CommentService(ICommentRepository commentRepository, IProductionRepository productionRepository, IMapper mapper, IBTPRepository bTPRepository, IInstallationRepository installationRepository, IBalanceRepository balanceRepository, IWellRepository wellRepository, IPIRepository PIRepository, IInjectionRepository injectionRepository)
         {
             _commentRepository = commentRepository;
             _productionRepository = productionRepository;
             _mapper = mapper;
             _btpRepository = bTPRepository;
+            _installationRepository = installationRepository;
+            _balanceRepository = balanceRepository;
+            _wellRepository = wellRepository;
+            _PIRepository = PIRepository;
+            _injectionRepository = injectionRepository;
         }
 
         public async Task<CreateUpdateCommentDto> CreateComment(CreateCommentViewModel body, User loggedUser, Guid productionId)
         {
             var production = await _productionRepository
-                .GetById(productionId);
-
+                .GetByIdCommentClean(productionId);
             if (production is null)
                 throw new NotFoundException(ErrorMessages.NotFound<Production>());
-
             if (production.Comment is not null)
                 throw new ConflictException("Produção já tem um comentário.");
 
@@ -57,6 +73,8 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
 
             await _commentRepository.AddAsync(comment);
 
+            await CreateBalance(production, loggedUser);
+
             var commentDto = _mapper.Map<CreateUpdateCommentDto>(comment);
 
             production.StatusProduction = "fechado";
@@ -65,6 +83,198 @@ namespace PRIO.src.Modules.Measuring.Comments.Infra.Http.Services
             await _commentRepository.Save();
 
             return commentDto;
+        }
+        private async Task CreateBalance(Production production, User user)
+        {
+            var productionDate = production.MeasuredAt;
+            var installationsFromUEP = await _installationRepository.GetInstallationChildrenOfUEP(production.Installation.UepCod);
+            var uep = await _installationRepository.GetUepById(production.Installation.Id);
+
+            if (uep is null)
+                throw new NotFoundException("Uep não encontrada");
+            var balanceUEP = new UEPsBalance
+            {
+                Id = Guid.NewGuid(),
+                MeasurementAt = productionDate,
+                IsActive = true,
+                Uep = uep,
+            };
+
+            foreach (var installation in installationsFromUEP)
+            {
+                var balanceInstallation = new InstallationsBalance
+                {
+                    Id = Guid.NewGuid(),
+                    MeasurementAt = productionDate,
+                    IsActive = true,
+                    UEPBalance = balanceUEP,
+                    Installation = installation
+                };
+                if (installation.Fields is not null && installation.Fields.Count != 0)
+                    foreach (var field in installation.Fields)
+                    {
+                        var fieldProduction = await _productionRepository.GetFieldProductionByFieldAndProductionId(field.Id, production.Id);
+                        var balanceField = new FieldsBalance
+                        {
+                            Id = Guid.NewGuid(),
+                            MeasurementAt = productionDate,
+                            IsActive = true,
+                            IsParameterized = false,
+                            InstallationBalance = balanceInstallation,
+                            TotalWaterProduced = fieldProduction is not null ? fieldProduction.WaterProductionInField : 0,
+                            FieldProduction = fieldProduction,
+                            Field = field,
+                        };
+                        await _balanceRepository.AddFieldBalance(balanceField);
+
+                        balanceInstallation.TotalWaterProduced += balanceField.TotalWaterProduced;
+
+                        foreach (var well in field.Wells)
+                        {
+                            var tags = await _wellRepository.GetTagsFromWell(well.Name, well.WellOperatorName);
+                            if (tags is not null && tags.Count != 0)
+                            {
+                                foreach (var tag in tags)
+                                {
+
+                                    var wellValue = await _PIRepository.GetWellValuesWithChildrens(production.MeasuredAt, well.Id, tag);
+                                    if (wellValue is not null)
+                                    {
+                                        var resultFluid = ConsultParameter(wellValue.Value.Attribute);
+                                        if (resultFluid == "Water")
+                                        {
+                                            var injectionWaterWell = new InjectionWaterWell
+                                            {
+                                                Id = Guid.NewGuid(),
+                                                WellValues = wellValue,
+                                                AssignedValue = wellValue.Value.Amount is not null ? wellValue.Value.Amount.Value : 0,
+                                                CreatedBy = user,
+                                                MeasurementAt = production.MeasuredAt,
+                                            };
+                                            await _injectionRepository.AddWellInjectionAsync(injectionWaterWell);
+                                        }
+                                        else if (resultFluid == "Gas")
+                                        {
+                                            var injectionGasWell = new InjectionGasWell
+                                            {
+                                                Id = Guid.NewGuid(),
+                                                WellValues = wellValue,
+                                                AssignedValue = wellValue.Value.Amount is not null ? wellValue.Value.Amount.Value : 0,
+                                                CreatedBy = user,
+                                                MeasurementAt = production.MeasuredAt,
+                                            };
+                                            await _injectionRepository.AddGasWellInjectionAsync(injectionGasWell);
+                                        }
+                                        else if (resultFluid == "Sensors")
+                                        {
+                                            var wellSensors = new WellSensor
+                                            {
+                                                Id = Guid.NewGuid(),
+                                                WellValues = wellValue,
+                                                AssignedValue = wellValue.Value.Amount is not null ? wellValue.Value.Amount.Value : 0,
+                                                CreatedBy = user,
+                                                MeasurementAt = production.MeasuredAt,
+                                            };
+                                            await _injectionRepository.AddWellSensorAsync(wellSensors);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        var valueObject = new ValueJson
+                                        {
+                                            Value = null,
+                                            Timestamp = production.MeasuredAt.Date.AddDays(1).AddSeconds(-1),
+                                            Annotated = false,
+                                            Good = false,
+                                            Questionable = false,
+                                            Substituted = false,
+                                            UnitsAbbreviation = "",
+                                            IsCaptured = false
+                                        };
+                                        var value = new Value
+                                        {
+                                            Id = Guid.NewGuid(),
+                                            Amount = valueObject.Value,
+                                            Attribute = tag,
+                                            Date = valueObject.Timestamp,
+                                            IsCaptured = false,
+                                        };
+                                        await _PIRepository.AddValue(value);
+
+                                        var newWellValue = new WellsValues
+                                        {
+                                            Id = Guid.NewGuid(),
+                                            Value = value,
+                                            Well = well,
+                                        };
+                                        await _PIRepository.AddWellValue(newWellValue);
+
+                                        var resultFluid = ConsultParameter(tag);
+
+                                        if (resultFluid == "Water")
+                                        {
+                                            var injectionWaterWell = new InjectionWaterWell
+                                            {
+                                                Id = Guid.NewGuid(),
+                                                WellValues = newWellValue,
+                                                AssignedValue = newWellValue.Value.Amount is not null ? newWellValue.Value.Amount.Value : 0,
+                                                CreatedBy = user,
+                                                MeasurementAt = production.MeasuredAt,
+                                            };
+                                            await _injectionRepository.AddWellInjectionAsync(injectionWaterWell);
+                                        }
+                                        else if (resultFluid == "Gas")
+                                        {
+                                            var injectionGasWell = new InjectionGasWell
+                                            {
+                                                Id = Guid.NewGuid(),
+                                                WellValues = newWellValue,
+                                                AssignedValue = newWellValue.Value.Amount is not null ? newWellValue.Value.Amount.Value : 0,
+                                                CreatedBy = user,
+                                                MeasurementAt = production.MeasuredAt,
+                                            };
+                                            await _injectionRepository.AddGasWellInjectionAsync(injectionGasWell);
+                                        }
+                                        else if (resultFluid == "Sensors")
+                                        {
+                                            var wellSensors = new WellSensor
+                                            {
+                                                Id = Guid.NewGuid(),
+                                                WellValues = newWellValue,
+                                                AssignedValue = newWellValue.Value.Amount is not null ? newWellValue.Value.Amount.Value : 0,
+                                                CreatedBy = user,
+                                                MeasurementAt = production.MeasuredAt,
+                                            };
+                                            await _injectionRepository.AddWellSensorAsync(wellSensors);
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+
+                balanceUEP.TotalWaterProduced += balanceInstallation.TotalWaterProduced;
+
+                await _balanceRepository.AddInstallationBalance(balanceInstallation);
+            }
+
+            await _balanceRepository.AddUEPBalance(balanceUEP);
+        }
+        private static string ConsultParameter(PI.Infra.EF.Models.Attribute atr)
+        {
+            var listGas = new List<string> { "Vazão da GFL1", "Vazão da GFL6", "Vazão da GFL4", "Vazão de Gas Lift" };
+            var listWater = new List<string> { "Vazão da WFL1", "Vazão de injeção de água" };
+            var listSensors = new List<string> { "Pressão WH", "Pressão PDG 1", "Pressão Intake ESP", "Pressão PDG 2" };
+
+            if (listGas.Contains(atr.Element.Parameter))
+                return "Gas";
+            else if (listWater.Contains(atr.Element.Parameter))
+                return "Water";
+            else if (listSensors.Contains(atr.Element.Parameter))
+                return "Sensors";
+            else
+                return "";
         }
 
         public async Task<CreateUpdateCommentDto> UpdateComment(UpdateCommentViewModel body, Guid id, User loggedUser)

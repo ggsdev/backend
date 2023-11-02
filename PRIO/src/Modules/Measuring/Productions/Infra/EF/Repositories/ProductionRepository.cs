@@ -23,17 +23,14 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
         {
             await _context.Productions.AddAsync(production);
         }
-
         public async Task AddWaterProduction(Water water)
         {
             await _context.Waters.AddAsync(water);
         }
-
         public void UpdateFieldProduction(FieldProduction fieldProduction)
         {
             _context.FieldsProductions.Update(fieldProduction);
         }
-
         public async Task<List<FieldProduction>> GetAllFieldProductionByProduction(Guid productionId)
         {
             return await _context.FieldsProductions
@@ -41,7 +38,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                 .Where(x => x.ProductionId == productionId)
                 .ToListAsync();
         }
-
         public async Task<FieldProduction?> GetFieldProductionByFieldAndProductionId(Guid fieldId, Guid productionId)
         {
             return await _context.FieldsProductions
@@ -51,7 +47,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                 .ThenInclude(x => x.WellLosses)
                 .FirstOrDefaultAsync(x => x.FieldId == fieldId && x.ProductionId == productionId);
         }
-
         public async Task<WellLosses?> GetWellLossByEventAndWellProductionId(Guid eventId, Guid wellProductionId)
         {
             return await _context.WellLosses
@@ -79,6 +74,16 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                             x.MeasuredAt.Day == date.Day && x.IsActive)
                 .FirstOrDefaultAsync();
         }
+
+        public async Task<Production?> GetProductionOilByDate(DateTime date)
+        {
+            return await _context.Productions
+                .Include(x => x.Oil)
+                .Where(x => x.MeasuredAt.Year == date.Year &&
+                            x.MeasuredAt.Month == date.Month &&
+                            x.MeasuredAt.Day == date.Day && x.IsActive)
+                .FirstOrDefaultAsync();
+        }
         public async Task<bool> AnyByDate(DateTime date)
         {
             return await _context.Productions
@@ -87,8 +92,6 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                             x.MeasuredAt.Day == date.Day)
                 .AnyAsync();
         }
-
-
         public async Task<Production?> GetExistingByDateWithProductionAllocation(DateTime date)
         {
             return await _context.Productions
@@ -130,13 +133,30 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                             x.MeasuredAt.Day == date.Day && x.IsActive)
                 .FirstOrDefaultAsync();
         }
-
         public async Task<Production?> GetCleanByDate(DateTime date)
         {
             return await _context.Productions
                 .Where(x => x.MeasuredAt.Year == date.Year &&
                             x.MeasuredAt.Month == date.Month &&
                             x.MeasuredAt.Day == date.Day && x.IsActive)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<Production?> GetProdutionInValidateByDate(DateTime date)
+        {
+            return await _context.Productions
+                .Include(x => x.FieldsFR)
+                .Select(x => new Production
+                {
+                    StatusProduction = x.StatusProduction,
+                    FieldsFR = x.FieldsFR,
+                    MeasuredAt = x.MeasuredAt,
+                    IsActive = x.IsActive,
+                })
+                .Where(x => x.MeasuredAt.Year == date.Year &&
+                            x.MeasuredAt.Month == date.Month &&
+                            x.MeasuredAt.Day == date.Day && x.IsActive)
+                .AsNoTracking()
                 .FirstOrDefaultAsync();
         }
 
@@ -147,7 +167,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                 .ThenInclude(x => x.Fields)
                     .ThenInclude(f => f.Wells)
                     .ThenInclude(d => d.WellTests)
-                    .Include(x => x.WellProductions)
+                .Include(x => x.WellProductions)
                         .ThenInclude(d => d.FieldProduction)
                 .Include(x => x.Comment)
                     .ThenInclude(x => x.CommentedBy)
@@ -168,6 +188,82 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<Production?> GetByIdClean(Guid? id)
+        {
+            return await _context.Productions
+                .AsSplitQuery()
+                .Include(x => x.GasLinear)
+                .Include(x => x.GasDiferencial)
+                .Include(x => x.Gas)
+                .Include(x => x.Oil)
+                .Include(x => x.Measurements)
+                        .ThenInclude(d => d.MeasuringPoint)
+                .Include(x => x.Measurements)
+                .ThenInclude(m => m.MeasurementHistory)
+                        .ThenInclude(x => x.ImportedBy)
+                .Include(x => x.Water)
+                .Include(x => x.FieldsFR)
+                    .ThenInclude(x => x.Field)
+                .Include(x => x.Comment)
+                    .ThenInclude(x => x.CommentedBy)
+                .Include(x => x.Installation)
+                .Select(x => new Production
+                {
+                    CalculatedImportedAt = x.CalculatedImportedAt,
+                    CanDetailGasBurned = x.CanDetailGasBurned,
+                    CreatedAt = x.CreatedAt,
+                    Id = x.Id,
+                    IsActive = x.IsActive,
+                    IsCalculated = x.IsCalculated,
+                    MeasuredAt = x.MeasuredAt,
+                    StatusProduction = x.StatusProduction,
+                    TotalProduction = x.TotalProduction,
+                    WellProductions = x.WellProductions,
+                    Comment = x.Comment,
+                    FieldsFR = x.FieldsFR,
+                    Installation = x.Installation,
+                    Gas = x.Gas,
+                    GasLinear = x.GasLinear,
+                    GasDiferencial = x.GasDiferencial,
+                    Measurements = x.Measurements,
+                    Oil = x.Oil,
+                    Water = x.Water,
+                })
+                .AsNoTracking()
+                .Where(x => x.Id == id && x.IsActive)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<Production?> GetByIdCommentClean(Guid? id)
+        {
+            return await _context.Productions
+                .AsSplitQuery()
+                .Include(x => x.Gas)
+                .Include(x => x.Oil)
+                .Include(x => x.Installation)
+                .Include(x => x.Comment)
+                    .ThenInclude(x => x.CommentedBy)
+                .Select(x => new Production
+                {
+                    CalculatedImportedAt = x.CalculatedImportedAt,
+                    CanDetailGasBurned = x.CanDetailGasBurned,
+                    CreatedAt = x.CreatedAt,
+                    Id = x.Id,
+                    IsActive = x.IsActive,
+                    IsCalculated = x.IsCalculated,
+                    MeasuredAt = x.MeasuredAt,
+                    StatusProduction = x.StatusProduction,
+                    TotalProduction = x.TotalProduction,
+                    WellProductions = x.WellProductions,
+                    Comment = x.Comment,
+                    Gas = x.Gas,
+                    Oil = x.Oil,
+                    Installation = x.Installation
+                })
+                .Where(x => x.Id == id && x.IsActive)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<List<Production>> GetAllProductions()
         {
             return await _context.Productions
@@ -176,10 +272,9 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories
                 .Include(x => x.GasLinear)
                 .Include(x => x.GasDiferencial)
                 .Include(x => x.Oil)
-                .Include(x => x.Measurements)
-                    .ThenInclude(m => m.MeasurementHistory)
-                .OrderBy(x => x.MeasuredAt)
-                    .ToListAsync();
+                .Where(x => x.IsActive)
+                .OrderByDescending(x => x.MeasuredAt)
+                .ToListAsync();
         }
 
         public async Task AddOrUpdateProduction(Production production)

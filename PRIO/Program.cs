@@ -6,6 +6,12 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PRIO.src.Modules.Balance.Balance.Infra.EF.Repositories;
+using PRIO.src.Modules.Balance.Balance.Infra.Http.Services;
+using PRIO.src.Modules.Balance.Balance.Interfaces;
+using PRIO.src.Modules.Balance.Injection.Infra.EF.Repositories;
+using PRIO.src.Modules.Balance.Injection.Infra.Http.Services;
+using PRIO.src.Modules.Balance.Injection.Interfaces;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Factories;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.Http.Services;
@@ -19,6 +25,13 @@ using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Factories;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Repositories;
 using PRIO.src.Modules.ControlAccess.Users.Infra.Http.Services;
 using PRIO.src.Modules.ControlAccess.Users.Interfaces;
+using PRIO.src.Modules.FileExport.Templates.Infra.EF.Repositories;
+using PRIO.src.Modules.FileExport.Templates.Infra.Http.Services;
+using PRIO.src.Modules.FileExport.Templates.Interfaces;
+using PRIO.src.Modules.FileExport.XML.Factories;
+using PRIO.src.Modules.FileExport.XML.Infra.EF.Repositories;
+using PRIO.src.Modules.FileExport.XML.Infra.Http.Services;
+using PRIO.src.Modules.FileExport.XML.Interfaces;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Interfaces;
@@ -64,6 +77,7 @@ using PRIO.src.Modules.Measuring.MeasuringPoints.Interfaces;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.OilVolumeCalculations.Interfaces;
+using PRIO.src.Modules.Measuring.Productions.Infra.EF.CachePolicies;
 using PRIO.src.Modules.Measuring.Productions.Infra.EF.Repositories;
 using PRIO.src.Modules.Measuring.Productions.Infra.Http.Services;
 using PRIO.src.Modules.Measuring.Productions.Interfaces;
@@ -76,7 +90,6 @@ using PRIO.src.Modules.Measuring.WellProductions.Interfaces;
 using PRIO.src.Modules.PI.Infra.EF.Repositories;
 using PRIO.src.Modules.PI.Infra.Http.Services;
 using PRIO.src.Modules.PI.Interfaces;
-using PRIO.src.Shared;
 using PRIO.src.Shared.Auxiliaries.Infra.Http.Services;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.EF;
@@ -127,7 +140,7 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-//app.UseOutputCache();
+app.UseOutputCache();
 
 app.MapControllers();
 
@@ -246,6 +259,7 @@ static void RegisterFactories(IServiceCollection services)
     services.AddScoped<UserOperationFactory>();
     services.AddScoped<UserFactory>();
     services.AddScoped<InstallationAccessFactory>();
+    services.AddScoped<IXMLFactory, XMLFactory>();
 }
 static void RegisterRepositories(IServiceCollection services)
 {
@@ -281,6 +295,11 @@ static void RegisterRepositories(IServiceCollection services)
     services.AddScoped<IWellProductionRepository, WellProductionRepository>();
     services.AddScoped<IWellEventRepository, WellEventRepository>();
     services.AddScoped<IManualConfigRepository, ManualConfigRepository>();
+    services.AddScoped<IBalanceRepository, BalanceRepository>();
+    services.AddScoped<IInjectionRepository, InjectionRepository>();
+    services.AddScoped<ITemplateRepository, TemplateRepository>();
+    services.AddScoped<IXMLExportRepository, XMLExportRepository>();
+
 }
 static void RegisterServices(IServiceCollection services)
 {
@@ -311,17 +330,21 @@ static void RegisterServices(IServiceCollection services)
     services.AddScoped<PIService>();
     services.AddScoped<BTPService>();
     services.AddScoped<XLSXService>();
+    services.AddScoped<InjectionService>();
+    services.AddScoped<BalanceService>();
+    services.AddScoped<XMLExportService>();
+    services.AddScoped<IDataQueryService, DataQueryService>();
+    services.AddScoped<TemplateService>();
+    services.AddScoped<XLSXExportService>();
+
 }
 static void ConfigureOutputCache(IServiceCollection services)
 {
     services.AddOutputCache(x =>
-    x.AddBasePolicy(x => x.Expire(TimeSpan.FromDays(5))));
+    x.AddBasePolicy(x => x.Expire(TimeSpan.FromHours(6))));
 
     services.AddOutputCache(x =>
         x.AddPolicy(nameof(AuthProductionCachePolicy), AuthProductionCachePolicy.Instance));
-
-    services.AddOutputCache(x =>
-        x.AddPolicy(nameof(AuthProductionIdCachePolicy), AuthProductionIdCachePolicy.Instance));
 }
 static void ConfigureMiddlewares(IApplicationBuilder app)
 {

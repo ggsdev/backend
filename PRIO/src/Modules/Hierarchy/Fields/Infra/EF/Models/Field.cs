@@ -1,4 +1,5 @@
-﻿using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+﻿using PRIO.src.Modules.Balance.Balance.Infra.EF.Models;
+using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Wells.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Zones.Infra.EF.Models;
@@ -19,5 +20,7 @@ namespace PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models
         public List<Zone>? Zones { get; set; }
         public List<Well>? Wells { get; set; }
         public List<FieldFR>? FRs { get; set; }
+        public List<FieldsBalance>? FieldBalances { get; set; }
+
     }
 }

@@ -1,10 +1,12 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Services;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.ViewModels;
 using PRIO.src.Modules.FileImport.XML.Measuring.Dtos;
 using PRIO.src.Modules.FileImport.XML.Measuring.ViewModels;
+using PRIO.src.Modules.Measuring.Productions.Infra.EF.CachePolicies;
 using PRIO.src.Shared.Errors;
 using PRIO.src.Shared.Infra.Http.Filters;
 using PRIO.src.Shared.Utils;
@@ -17,10 +19,11 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Controllers
     public class BTPController : ControllerBase
     {
         private readonly BTPService _BTPService;
-        public BTPController(BTPService service)
+        private readonly IOutputCacheStore _cache;
+        public BTPController(BTPService service, IOutputCacheStore cache)
         {
             _BTPService = service;
-
+            _cache = cache;
         }
 
         [HttpGet]
@@ -52,7 +55,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> create([FromBody] CreateBTPViewModel body)
+        public async Task<IActionResult> Create([FromBody] CreateBTPViewModel body)
         {
             if (HttpContext.Items["User"] is not User user)
                 return Unauthorized(new ErrorResponseDTO
@@ -60,7 +63,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Controllers
                     Message = "User not identified, please login first"
                 });
 
-            var result = await _BTPService.createBTP(body, user);
+            var result = await _BTPService.CreateBTP(body, user);
 
             return Ok(result);
         }
@@ -122,7 +125,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Controllers
         }
 
         [HttpPatch("data/{dataId}")]
-        public async Task<IActionResult> UpdateBTPData([FromRoute] Guid dataId)
+        [OutputCache(PolicyName = nameof(AuthProductionCachePolicy))]
+        public async Task<IActionResult> UpdateBTPData([FromRoute] Guid dataId, CancellationToken ct)
         {
             if (HttpContext.Items["User"] is not User user)
                 return Unauthorized(new ErrorResponseDTO
@@ -131,6 +135,8 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.Http.Controllers
                 });
 
             var result = await _BTPService.UpdateByDataId(dataId);
+
+            await _cache.EvictByTagAsync("ProductionTag", ct);
 
             return Ok(result);
         }

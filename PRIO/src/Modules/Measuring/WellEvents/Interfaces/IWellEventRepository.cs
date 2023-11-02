@@ -6,6 +6,7 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Interfaces
     {
         Task Add(WellEvent wellEvent);
         Task AddRangeReasons(List<EventReason> eventReasons);
+        Task<WellEvent?> GetEventWithWellTestById(Guid id);
         Task<WellEvent?> GetEventById(Guid id);
         Task<WellEvent?> GetNextEvent(DateTime startDate, DateTime endDate);
         Task<EventReason?> GetNextReason(DateTime startDate, Guid wellEventId, Guid eventReasonId);
@@ -13,10 +14,11 @@ namespace PRIO.src.Modules.Measuring.WellEvents.Interfaces
         Task<EventReason?> GetEventReasonById(Guid id);
         void UpdateEventReasonById(EventReason eventReason);
         Task<List<WellEvent>> GetAllWellEvent(Guid wellId);
-        Task<WellEvent?> GetLastWellEvent(string typeEvent);
+        Task<WellEvent?> GetLastWellEvent();
         void Update(WellEvent wellEvent);
         Task Save();
 
+        Task<List<WellEvent>> GetByRangeDate(DateTime beginning, DateTime end, Guid fieldId);
 
 
         #region Reason

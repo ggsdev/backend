@@ -22,6 +22,378 @@ namespace PRIO.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("PRIO.src.Modules.Balance.Balance.Infra.EF.Models.FieldsBalance", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("DischargedSurface")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<double?>("FIRS")
+                        .HasColumnType("float");
+
+                    b.Property<Guid>("FieldId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("FieldProductionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("InstallationBalanceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsParameterized")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("MeasurementAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("TotalWaterCaptured")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<decimal>("TotalWaterDisposal")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<decimal>("TotalWaterInjected")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<decimal>("TotalWaterInjectedRS")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<decimal>("TotalWaterProduced")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<decimal>("TotalWaterReceived")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<decimal>("TotalWaterTransferred")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FieldId");
+
+                    b.HasIndex("FieldProductionId")
+                        .IsUnique();
+
+                    b.HasIndex("InstallationBalanceId");
+
+                    b.ToTable("Balance.FieldsBalance", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Balance.Balance.Infra.EF.Models.InstallationsBalance", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("DischargedSurface")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<Guid>("InstallationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("MeasurementAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("TotalWaterCaptured")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<decimal>("TotalWaterDisposal")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<decimal>("TotalWaterInjected")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<decimal>("TotalWaterInjectedRS")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<decimal>("TotalWaterProduced")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<decimal>("TotalWaterReceived")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<decimal>("TotalWaterTransferred")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<Guid>("UEPBalanceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InstallationId");
+
+                    b.HasIndex("UEPBalanceId");
+
+                    b.ToTable("Balance.InstallationsBalance", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Balance.Balance.Infra.EF.Models.UEPsBalance", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("DischargedSurface")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("MeasurementAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("TotalWaterCaptured")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<decimal>("TotalWaterDisposal")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<decimal>("TotalWaterInjected")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<decimal>("TotalWaterInjectedRS")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<decimal>("TotalWaterProduced")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<decimal>("TotalWaterReceived")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<decimal>("TotalWaterTransferred")
+                        .HasPrecision(38, 16)
+                        .HasColumnType("DECIMAL");
+
+                    b.Property<Guid?>("UepId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UepId");
+
+                    b.ToTable("Balance.UEPsBalance", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Balance.Injection.Infra.EF.Models.InjectionGasWell", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("AssignedValue")
+                        .HasColumnType("float");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("InjectionWaterGasFieldId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("MeasurementAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("WellValuesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("InjectionWaterGasFieldId");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.HasIndex("WellValuesId")
+                        .IsUnique();
+
+                    b.ToTable("Injection.InjectionGasWell", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Balance.Injection.Infra.EF.Models.InjectionWaterGasField", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("AmountGasLift")
+                        .HasColumnType("float");
+
+                    b.Property<double>("AmountWater")
+                        .HasColumnType("float");
+
+                    b.Property<Guid>("BalanceFieldId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("FIRS")
+                        .HasColumnType("float");
+
+                    b.Property<Guid>("FieldId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("MeasurementAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BalanceFieldId")
+                        .IsUnique();
+
+                    b.HasIndex("FieldId");
+
+                    b.ToTable("Injection.InjectionWaterGasField", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Balance.Injection.Infra.EF.Models.InjectionWaterWell", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("AssignedValue")
+                        .HasColumnType("float");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("InjectionWaterGasFieldId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("MeasurementAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("WellValuesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("InjectionWaterGasFieldId");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.HasIndex("WellValuesId")
+                        .IsUnique();
+
+                    b.ToTable("Injection.InjectionWaterWell", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Balance.Injection.Infra.EF.Models.WellSensor", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("AssignedValue")
+                        .HasColumnType("float");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("MeasurementAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("WellValuesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.HasIndex("WellValuesId")
+                        .IsUnique();
+
+                    b.ToTable("Injection.WellSensors", (string)null);
+                });
+
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.Group", b =>
                 {
                     b.Property<Guid>("Id")
@@ -417,6 +789,172 @@ namespace PRIO.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("AC.UserPermissions", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.FileExport.Templates.Infra.EF.Models.Template", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FileContent")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FileExtension")
+                        .IsRequired()
+                        .HasMaxLength(4)
+                        .HasColumnType("CHAR");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("Group")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("TypeFile")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FileExport.Templates", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.FileExport.XLSX.Infra.EF.Models.ClosingOpeningFileXLSX", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("FieldId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("FileContent")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FileExtension")
+                        .IsRequired()
+                        .HasMaxLength(4)
+                        .HasColumnType("CHAR");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("Group")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FieldId");
+
+                    b.ToTable("FileExport.ClosingOpeningFilesXLSX", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.FileExport.XML.Infra.EF.Models.WellEventXML042Base64", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileContent")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("WellEventId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WellEventId")
+                        .IsUnique();
+
+                    b.ToTable("Event.XML042Base64", (string)null);
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.FileExport.XML.Infra.EF.Models.WellTestXML042Base64", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileContent")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("WellTestId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WellTestId")
+                        .IsUnique();
+
+                    b.ToTable("WellTests.XML042Base64", (string)null);
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTP", b =>
@@ -5086,7 +5624,7 @@ namespace PRIO.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double>("Amount")
+                    b.Property<double?>("Amount")
                         .HasColumnType("float");
 
                     b.Property<Guid>("AttributeId")
@@ -5104,8 +5642,20 @@ namespace PRIO.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<double?>("GroupAmountAssigned")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("GroupAmountPI")
+                        .HasColumnType("float");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<bool>("IsCaptured")
+                        .HasColumnType("bit");
+
+                    b.Property<double>("Potencial")
+                        .HasColumnType("float");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -5228,6 +5778,166 @@ namespace PRIO.Migrations
                     b.ToTable("SystemHistories", (string)null);
                 });
 
+            modelBuilder.Entity("PRIO.src.Modules.Balance.Balance.Infra.EF.Models.FieldsBalance", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models.Field", "Field")
+                        .WithMany("FieldBalances")
+                        .HasForeignKey("FieldId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.FieldProduction", "FieldProduction")
+                        .WithOne("FieldsBalance")
+                        .HasForeignKey("PRIO.src.Modules.Balance.Balance.Infra.EF.Models.FieldsBalance", "FieldProductionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Balance.Balance.Infra.EF.Models.InstallationsBalance", "InstallationBalance")
+                        .WithMany("BalanceFields")
+                        .HasForeignKey("InstallationBalanceId");
+
+                    b.Navigation("Field");
+
+                    b.Navigation("FieldProduction");
+
+                    b.Navigation("InstallationBalance");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Balance.Balance.Infra.EF.Models.InstallationsBalance", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Installation")
+                        .WithMany()
+                        .HasForeignKey("InstallationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Balance.Balance.Infra.EF.Models.UEPsBalance", "UEPBalance")
+                        .WithMany("InstallationsBalance")
+                        .HasForeignKey("UEPBalanceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Installation");
+
+                    b.Navigation("UEPBalance");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Balance.Balance.Infra.EF.Models.UEPsBalance", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Models.Installation", "Uep")
+                        .WithMany("UepBalances")
+                        .HasForeignKey("UepId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Uep");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Balance.Injection.Infra.EF.Models.InjectionGasWell", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Balance.Injection.Infra.EF.Models.InjectionWaterGasField", "InjectionWaterGasField")
+                        .WithMany("WellsGasInjections")
+                        .HasForeignKey("InjectionWaterGasFieldId");
+
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.HasOne("PRIO.src.Modules.PI.Infra.EF.Models.WellsValues", "WellValues")
+                        .WithOne("InjectionGasWell")
+                        .HasForeignKey("PRIO.src.Modules.Balance.Injection.Infra.EF.Models.InjectionGasWell", "WellValuesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("InjectionWaterGasField");
+
+                    b.Navigation("UpdatedBy");
+
+                    b.Navigation("WellValues");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Balance.Injection.Infra.EF.Models.InjectionWaterGasField", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Balance.Balance.Infra.EF.Models.FieldsBalance", "BalanceField")
+                        .WithOne("InjectionWaterGasField")
+                        .HasForeignKey("PRIO.src.Modules.Balance.Injection.Infra.EF.Models.InjectionWaterGasField", "BalanceFieldId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models.Field", "Field")
+                        .WithMany()
+                        .HasForeignKey("FieldId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BalanceField");
+
+                    b.Navigation("Field");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Balance.Injection.Infra.EF.Models.InjectionWaterWell", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.Balance.Injection.Infra.EF.Models.InjectionWaterGasField", "InjectionWaterGasField")
+                        .WithMany("WellsWaterInjections")
+                        .HasForeignKey("InjectionWaterGasFieldId");
+
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.HasOne("PRIO.src.Modules.PI.Infra.EF.Models.WellsValues", "WellValues")
+                        .WithOne("InjectionWaterWell")
+                        .HasForeignKey("PRIO.src.Modules.Balance.Injection.Infra.EF.Models.InjectionWaterWell", "WellValuesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("InjectionWaterGasField");
+
+                    b.Navigation("UpdatedBy");
+
+                    b.Navigation("WellValues");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Balance.Injection.Infra.EF.Models.WellSensor", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models.User", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.HasOne("PRIO.src.Modules.PI.Infra.EF.Models.WellsValues", "WellValues")
+                        .WithOne("WellSensor")
+                        .HasForeignKey("PRIO.src.Modules.Balance.Injection.Infra.EF.Models.WellSensor", "WellValuesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("UpdatedBy");
+
+                    b.Navigation("WellValues");
+                });
+
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.GroupOperation", b =>
                 {
                     b.HasOne("PRIO.src.Modules.ControlAccess.Operations.Infra.EF.Models.GlobalOperation", "GlobalOperation")
@@ -5336,6 +6046,39 @@ namespace PRIO.Migrations
                     b.Navigation("GroupMenu");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.FileExport.XLSX.Infra.EF.Models.ClosingOpeningFileXLSX", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models.Field", "Field")
+                        .WithMany()
+                        .HasForeignKey("FieldId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Field");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.FileExport.XML.Infra.EF.Models.WellEventXML042Base64", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.Measuring.WellEvents.Infra.EF.Models.WellEvent", "WellEvent")
+                        .WithOne("XMLBase64")
+                        .HasForeignKey("PRIO.src.Modules.FileExport.XML.Infra.EF.Models.WellEventXML042Base64", "WellEventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WellEvent");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.FileExport.XML.Infra.EF.Models.WellTestXML042Base64", b =>
+                {
+                    b.HasOne("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.WellTests", "WellTest")
+                        .WithOne("XMLBase64")
+                        .HasForeignKey("PRIO.src.Modules.FileExport.XML.Infra.EF.Models.WellTestXML042Base64", "WellTestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WellTest");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.BTPBase64", b =>
@@ -6318,6 +7061,28 @@ namespace PRIO.Migrations
                     b.Navigation("Well");
                 });
 
+            modelBuilder.Entity("PRIO.src.Modules.Balance.Balance.Infra.EF.Models.FieldsBalance", b =>
+                {
+                    b.Navigation("InjectionWaterGasField");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Balance.Balance.Infra.EF.Models.InstallationsBalance", b =>
+                {
+                    b.Navigation("BalanceFields");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Balance.Balance.Infra.EF.Models.UEPsBalance", b =>
+                {
+                    b.Navigation("InstallationsBalance");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.Balance.Injection.Infra.EF.Models.InjectionWaterGasField", b =>
+                {
+                    b.Navigation("WellsGasInjections");
+
+                    b.Navigation("WellsWaterInjections");
+                });
+
             modelBuilder.Entity("PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models.Group", b =>
                 {
                     b.Navigation("GroupPermissions");
@@ -6410,6 +7175,8 @@ namespace PRIO.Migrations
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models.WellTests", b =>
                 {
                     b.Navigation("WellAllocations");
+
+                    b.Navigation("XMLBase64");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.FileImport.XML.NFSMS.Infra.EF.Models.NFSM", b =>
@@ -6434,6 +7201,8 @@ namespace PRIO.Migrations
                 {
                     b.Navigation("FRs");
 
+                    b.Navigation("FieldBalances");
+
                     b.Navigation("Wells");
 
                     b.Navigation("Zones");
@@ -6457,6 +7226,8 @@ namespace PRIO.Migrations
                     b.Navigation("OilVolumeCalculation");
 
                     b.Navigation("Productions");
+
+                    b.Navigation("UepBalances");
 
                     b.Navigation("usersWithPermissions");
                 });
@@ -6581,6 +7352,8 @@ namespace PRIO.Migrations
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.Productions.Infra.EF.Models.FieldProduction", b =>
                 {
+                    b.Navigation("FieldsBalance");
+
                     b.Navigation("WellProductions");
                 });
 
@@ -6647,6 +7420,8 @@ namespace PRIO.Migrations
                     b.Navigation("EventReasons");
 
                     b.Navigation("WellLosses");
+
+                    b.Navigation("XMLBase64");
                 });
 
             modelBuilder.Entity("PRIO.src.Modules.Measuring.WellProductions.Infra.EF.Models.WellProduction", b =>
@@ -6679,6 +7454,18 @@ namespace PRIO.Migrations
             modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.Value", b =>
                 {
                     b.Navigation("WellsValues");
+                });
+
+            modelBuilder.Entity("PRIO.src.Modules.PI.Infra.EF.Models.WellsValues", b =>
+                {
+                    b.Navigation("InjectionGasWell")
+                        .IsRequired();
+
+                    b.Navigation("InjectionWaterWell")
+                        .IsRequired();
+
+                    b.Navigation("WellSensor")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

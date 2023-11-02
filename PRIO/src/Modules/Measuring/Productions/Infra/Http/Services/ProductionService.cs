@@ -47,10 +47,10 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
         public async Task<ProductionDtoWithNullableDecimals> GetById(Guid id)
         {
             var production = await _repository
-                .GetById(id);
+                .GetByIdClean(id)
+                ?? throw new NotFoundException($"Produção não encontrada.");
 
-            if (production is null)
-                throw new NotFoundException($"Produção não encontrada.");
+            Console.WriteLine("entrou no by id");
 
             var dailyProduction = new DailyProduction
             {
@@ -639,7 +639,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                             FieldId = fr.Field.Id,
                             FieldName = fr.Field.Name,
                             FluidFr = fr.FRGas,
-                            ProductionInField = fr.GasProductionInField
+                            ProductionInField = fr.GasProductionInField,
                         };
 
                         gasFrs.Fields.Add(createdFr);
@@ -664,8 +664,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
 
             foreach (var fieldP in fieldProductions)
             {
-                var field = await _fieldRepository.GetByIdAsync(fieldP.FieldId);
-
+                var field = await _fieldRepository.GetCleanById(fieldP.FieldId);
                 var fieldPDto = new FieldProductionDto
                 {
                     FieldName = field.Name,
@@ -684,7 +683,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 foreach (var wellP in fieldP.WellProductions)
                 {
                     var well = await _wellRepository
-                        .GetByIdAsync(wellP.WellId);
+                        .GetCleanById(wellP.WellId);
+
                     if (well is not null)
                         fieldPDto.WellAppropriations.Add(new WellProductionDto
                         {
@@ -719,7 +719,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 }
 
                 var orderedWellAppropriationsDto = fieldPDto.WellAppropriations
-                           .OrderBy(x => x.WellName)
+                           .OrderBy(x => x.WellName, new NaturalStringComparer())
                            .ToList();
 
                 fieldPDto.WellAppropriations = orderedWellAppropriationsDto;
@@ -762,6 +762,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                   .GetOilVolumeCalculationByInstallationUEP(production.Installation.UepCod);
 
             foreach (var file in productionDto.Files)
+
             {
                 if (gasCalculationByUepCode is not null && file.FileType == XmlUtils.File002)
                 {
@@ -1836,44 +1837,41 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         FileName = file.FileName,
                         FileType = file.FileType,
                         ImportedAt = file.ImportedAt,
-                        FileId = file.Id
+                        FileId = file.Id,
                     };
 
                     filesDto.Add(fileDto);
                 }
 
-                if (production.IsActive)
+                var productionDto = new GetAllProductionsDto
                 {
-                    var productionDto = new GetAllProductionsDto
+                    Id = production.Id,
+                    IsCalculated = production.IsCalculated,
+                    DateProduction = production.MeasuredAt.ToString("dd/MM/yyyy"),
+                    Gas = new GasTotalDto
                     {
-                        Id = production.Id,
-                        IsCalculated = production.IsCalculated,
-                        DateProduction = production.MeasuredAt.ToString("dd/MM/yyyy"),
-                        Gas = new GasTotalDto
-                        {
-                            TotalGasSCF = Math.Round((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas * ProductionUtils.m3ToSCFConversionMultipler : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas * ProductionUtils.m3ToSCFConversionMultipler : 0), 2),
-                            TotalGasM3 = Math.Round((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas : 0), 2),
-                        },
-                        Oil = new OilTotalDto
-                        {
-                            TotalOilBBL = production.Oil is not null ? Math.Round(production.Oil.TotalOil * ProductionUtils.m3ToBBLConversionMultiplier, 2) : 0,
-                            TotalOilM3 = production.Oil is not null ? Math.Round(production.Oil.TotalOil, 2) : 0,
-                        },
-                        Status = production.StatusProduction,
-                        UepName = production.Installation.UepName,
-                        Files = filesDto,
-                        IsActive = production.IsActive,
-                        Water = new WaterTotalDto
-                        {
-                            TotalWaterM3 = Math.Round(production.Water is not null ? production.Water.TotalWater : 0, 2),
-                            TotalWaterBBL = Math.Round(production.Water is not null ? production.Water.TotalWater * ProductionUtils.m3ToBBLConversionMultiplier : 0, 2)
-                        },
-                        CanDetailGasBurned = production.CanDetailGasBurned,
+                        TotalGasSCF = Math.Round((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas * ProductionUtils.m3ToSCFConversionMultipler : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas * ProductionUtils.m3ToSCFConversionMultipler : 0), 5),
+                        TotalGasM3 = Math.Round((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas : 0), 5),
+                    },
+                    Oil = new OilTotalDto
+                    {
+                        TotalOilBBL = production.Oil is not null ? Math.Round(production.Oil.TotalOil * ProductionUtils.m3ToBBLConversionMultiplier, 5) : 0,
+                        TotalOilM3 = production.Oil is not null ? Math.Round(production.Oil.TotalOil, 5) : 0,
+                    },
+                    Status = production.StatusProduction,
+                    UepName = production.Installation.UepName,
+                    Files = filesDto,
+                    IsActive = production.IsActive,
+                    Water = new WaterTotalDto
+                    {
+                        TotalWaterM3 = Math.Round(production.Water is not null ? production.Water.TotalWater : 0, 5),
+                        TotalWaterBBL = Math.Round(production.Water is not null ? production.Water.TotalWater * ProductionUtils.m3ToBBLConversionMultiplier : 0, 5)
+                    },
+                    CanDetailGasBurned = production.CanDetailGasBurned,
 
-                    };
+                };
 
-                    productionsDto.Add(productionDto);
-                }
+                productionsDto.Add(productionDto);
             }
 
             return productionsDto;
@@ -1914,13 +1912,13 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         DateProduction = production.MeasuredAt.ToString("dd/MM/yyyy"),
                         Gas = new GasTotalDto
                         {
-                            TotalGasSCF = Math.Round((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas * ProductionUtils.m3ToSCFConversionMultipler : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas * ProductionUtils.m3ToSCFConversionMultipler : 0), 2),
-                            TotalGasM3 = Math.Round((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas : 0), 2),
+                            TotalGasSCF = Math.Round((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas * ProductionUtils.m3ToSCFConversionMultipler : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas * ProductionUtils.m3ToSCFConversionMultipler : 0), 5),
+                            TotalGasM3 = Math.Round((production.GasDiferencial is not null ? production.GasDiferencial.TotalGas : 0) + (production.GasLinear is not null ? production.GasLinear.TotalGas : 0), 5),
                         },
                         Oil = new OilTotalDto
                         {
-                            TotalOilBBL = production.Oil is not null ? Math.Round(production.Oil.TotalOil * ProductionUtils.m3ToBBLConversionMultiplier, 2) : 0,
-                            TotalOilM3 = production.Oil is not null ? Math.Round(production.Oil.TotalOil, 2) : 0,
+                            TotalOilBBL = production.Oil is not null ? Math.Round(production.Oil.TotalOil * ProductionUtils.m3ToBBLConversionMultiplier, 5) : 0,
+                            TotalOilM3 = production.Oil is not null ? Math.Round(production.Oil.TotalOil, 5) : 0,
                         },
                         Status = production.StatusProduction,
                         UepName = production.Installation.UepName,
@@ -1928,8 +1926,8 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                         IsActive = production.IsActive,
                         Water = new WaterTotalDto
                         {
-                            TotalWaterM3 = Math.Round(production.Water is not null ? production.Water.TotalWater : 0, 2),
-                            TotalWaterBBL = Math.Round(production.Water is not null ? production.Water.TotalWater * ProductionUtils.m3ToBBLConversionMultiplier : 0, 2)
+                            TotalWaterM3 = Math.Round(production.Water is not null ? production.Water.TotalWater : 0, 5),
+                            TotalWaterBBL = Math.Round(production.Water is not null ? production.Water.TotalWater * ProductionUtils.m3ToBBLConversionMultiplier : 0, 5)
                         }
                     };
 
@@ -1943,7 +1941,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
         public async Task<List<ProductionFilesDtoWithBase64>> DownloadAllProductionFiles(Guid productionId)
         {
             var production = await _repository
-                .GetById(productionId);
+                .GetByIdClean(productionId);
 
             if (production is null)
                 throw new NotFoundException("Produção não encontrada");
@@ -2069,7 +2067,7 @@ namespace PRIO.src.Modules.Measuring.Productions.Infra.Http.Services
                 throw new NotFoundException(ErrorMessages.NotFound<Production>());
 
             if (production.CanDetailGasBurned is false)
-                throw new ConflictException("Detalhamento de queima não é possível, somente após notificação de falha.");
+                throw new ConflictException("Detalhamento de queima não é possível, somente após notificação de falha em uma medição de gás.");
 
             if (production.Gas is null)
                 throw new NotFoundException("Produção de gás não encontrada.");

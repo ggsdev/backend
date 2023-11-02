@@ -103,6 +103,10 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
         {
             await _context.FieldsFRs.AddAsync(fr);
         }
+        public async Task<Installation?> GetInstallationByIdWithField(Guid installationId)
+        {
+            return await _context.Installations.Include(i => i.Fields).Where(i => i.Id == installationId).FirstOrDefaultAsync();
+        }
         public async Task<Installation?> GetInstallationAndChildren(Guid? id)
         {
             return await _context.Installations
@@ -157,6 +161,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
 
             return await _context.Installations
             .Include(x => x.Cluster)
+            .Include(x => x.Fields)
             .Where(x => x.Id == id)
             .FirstOrDefaultAsync();
 
@@ -181,6 +186,14 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                 .Where(x => x.UepCod == cod && x.CodInstallationAnp == cod)
               .FirstOrDefaultAsync();
         }
+
+        public async Task<Installation?> GetUep(string? cod)
+        {
+            return await _context.Installations
+                .Where(x => x.UepCod == cod && x.IsProcessingUnit)
+              .FirstOrDefaultAsync();
+        }
+
         public async Task<List<Installation?>> GetByUEPWithFieldsCod(string? cod)
         {
             return await _context.Installations
@@ -273,7 +286,7 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
                 .Include(x => x.Fields)
                     .ThenInclude(x => x.Wells)
                         .ThenInclude(w => w.Completions)
-                .Where(x => x.UepCod == uepCode)
+                .Where(x => x.UepCod == uepCode && x.IsActive)
                 .ToListAsync();
         }
         public async Task<List<Installation>> GetUEPsCreateAsync(string table)

@@ -115,7 +115,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
             using (var r = XmlReader.Create(pathXml, null, parserContext))
             {
-                var result = Functions.CheckFormat(pathXml, pathSchema, errorsInFormat);
+                var result = Functions.CheckFormat(pathXml, pathSchema, errorsInFormat, data.File.FileName);
                 if (errorsInFormat.Count > 0)
                     throw new BadRequestException($"Algum(s) erro(s) de formatação ocorreram durante a validação do arquivo de nome: {data.File.FileName}", errors: errorsInFormat);
                 if (result is not null && result.Count > 0)
@@ -414,10 +414,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     throw new NotFoundException(ErrorMessages.NotFound<Installation>());
 
                 var measuringPoint = await _measuringPointRepository
-                    .GetByTagMeasuringPoint(nfsm.COD_TAG_PONTO_MEDICAO_039);
-
-                if (measuringPoint is null)
-                    throw new NotFoundException(ErrorMessages.NotFound<MeasuringPoint>());
+                    .GetByTagMeasuringPoint(nfsm.COD_TAG_PONTO_MEDICAO_039)
+                    ?? throw new NotFoundException(ErrorMessages.NotFound<MeasuringPoint>());
 
                 var fluid = WellProductionUtils.fluidGas;
 
@@ -468,6 +466,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                     if (productionInXml.DHA_MEDICAO_039 > nfsm.DHA_DETECCAO_039)
                         throw new ConflictException("Data da medição não pode ser maior do que a data da detecção TAG: DHA_DETECÇÃO.");
+
+
 
                     //if (productionInXml.DHA_MEDICAO_039 > nfsm.DHA_RETORNO_039)
                     //    throw new ConflictException("Data da medição não pode ser maior do que a data que a falha foi corrigida, TAG: DHA_RETORNO.");
@@ -719,10 +719,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
         public async Task<NFSMImportResponseDto> ApplyNfsm(Guid id)
         {
             var nfsmInDatabase = await _repository
-                .GetOneById(id);
-
-            if (nfsmInDatabase is null)
-                throw new NotFoundException(ErrorMessages.NotFound<NFSM>());
+                .GetOneById(id)
+                ?? throw new NotFoundException(ErrorMessages.NotFound<NFSM>());
 
             if (nfsmInDatabase.IsApplied)
                 throw new ConflictException("Notificação de falha já foi aplicada anteriormente.");
@@ -732,17 +730,17 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
             //if (nfsmInDatabase.DateOfOcurrence > nfsmInDatabase.Da)
             //    throw new ConflictException("Data da medição não pode ser maior do que a data que a falha foi corrigida, TAG: DHA_RETORNO.");
-
             foreach (var measurementCorrected in nfsmInDatabase.Productions)
             {
                 var productionInDatabase = await _productionRepository
-                    .GetExistingByDate(measurementCorrected.MeasuredAt);
-
-                if (productionInDatabase is null)
-                    throw new NotFoundException(ErrorMessages.NotFound<Production>());
+                    .GetExistingByDate(measurementCorrected.MeasuredAt)
+                    ?? throw new NotFoundException(ErrorMessages.NotFound<Production>());
 
                 if (productionInDatabase.StatusProduction.ToLower() == ProductionUtils.openStatus)
                     throw new ConflictException("Produção precisa ter sido fechada para ser corrigida.");
+
+                if (productionInDatabase.Measurements.Any(x => x.MeasuringPoint.TagPointMeasuring == nfsmInDatabase.MeasuringPoint.TagPointMeasuring) is false)
+                    throw new NotFoundException($"Nenhuma medição com esse ponto de medição encontrada: {nfsmInDatabase.MeasuringPoint.TagPointMeasuring}");
             }
 
             foreach (var measurementCorrected in nfsmInDatabase.Productions)
@@ -750,10 +748,7 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                 var productionInDatabase = await _productionRepository
                     .GetExistingByDate(measurementCorrected.MeasuredAt);
 
-                if (productionInDatabase is null)
-                    continue;
-
-                var originalTotalOil = productionInDatabase.Oil?.TotalOil ?? 0;
+                var originalTotalOil = productionInDatabase!.Oil?.TotalOil ?? 0;
                 var originalTotalGasDiferencial = productionInDatabase.GasDiferencial?.TotalGas ?? 0;
                 var originalTotalGasLinear = productionInDatabase.GasLinear?.TotalGas ?? 0;
 
@@ -801,14 +796,13 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                         }
 
                     }
-
                     if (measurement.DHA_INICIO_PERIODO_MEDICAO_001 is not null)
                     {
+
                         if (measurement.MeasuringPoint.TagPointMeasuring == nfsmInDatabase.MeasuringPoint.TagPointMeasuring && measurementCorrected.VolumeAfter is not null)
                         {
                             //measurement.MED_VOLUME_BRTO_CRRGO_MVMDO_001 = measurementCorrected.VolumeAfter;
                             measurement.VolumeAfterManualBsw_001 = measurementCorrected.VolumeAfter;
-
                             _measurementRepository.UpdateMeasurement(measurement);
                             //totalOil += measurementCorrected.VolumeAfter.Value;
 
@@ -991,6 +985,10 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                                      (productionInDatabase.GasDiferencial?.TotalGas ?? 0) +
                                      (productionInDatabase.GasLinear?.TotalGas ?? 0);
 
+
+                Console.WriteLine(oilChanged);
+                Console.WriteLine(gasDiferencialChanged);
+                Console.WriteLine(gasLinearChanged);
                 if (oilChanged || gasDiferencialChanged || gasLinearChanged)
                 {
                     if (productionInDatabase.FieldsFR is not null)
@@ -1004,8 +1002,6 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                             _installationRepository.UpdateFr(fieldFr);
                         }
-
-                    productionInDatabase.StatusProduction = ProductionUtils.fixedStatus;
 
 
                     //var users = await _userService.GetAllEncryptedAdminUsers();
@@ -1024,6 +1020,8 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
 
                     await _wellProductionService.ReAppropriateWithNfsm(productionInDatabase.Id);
 
+                    productionInDatabase.StatusProduction = ProductionUtils.fixedStatus;
+
                     nfsmInDatabase.IsApplied = true;
 
                     _repository.Update(nfsmInDatabase);
@@ -1031,7 +1029,6 @@ namespace PRIO.src.Modules.FileImport.XML.NFSMS.Infra.Http.Services
                     _productionRepository.Update(productionInDatabase);
 
                 }
-
             }
 
             if (nfsmInDatabase.IsApplied is false)

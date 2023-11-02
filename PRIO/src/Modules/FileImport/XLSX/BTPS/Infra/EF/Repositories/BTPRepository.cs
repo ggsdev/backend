@@ -58,6 +58,7 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
                       .Include(x => x.Well)
                       .Where(x => x.Well.Id == wellId)
                       .Where(x => x.ApplicationDate != null)
+                      .Where(x => x.IsValid)
                       .ToListAsync();
 
             var sortedData = data
@@ -204,10 +205,9 @@ namespace PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Repositories
                     .ThenInclude(x => x.Completions)
                         .ThenInclude(x => x.Reservoir)
                             .ThenInclude(x => x.Zone)
-                         .Where(x => x.Well.Field.Installation.UepCod == uep && x.IsValid && x.Well.CategoryOperator.ToUpper() == "PRODUTOR")
                 .Include(x => x.Well)
                     .ThenInclude(x => x.WellEvents)
-
+                         .Where(x => x.Well.Field.Installation.UepCod == uep && x.IsValid && x.Well.CategoryOperator.ToUpper() == "PRODUTOR")
                 .ToListAsync();
 
             return btps;

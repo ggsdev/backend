@@ -1,10 +1,16 @@
 ﻿using AutoMapper;
+using PRIO.src.Modules.Balance.Balance.Dtos;
+using PRIO.src.Modules.Balance.Balance.Infra.EF.Models;
+using PRIO.src.Modules.Balance.Injection.Dtos;
+using PRIO.src.Modules.Balance.Injection.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Groups.Dtos;
 using PRIO.src.Modules.ControlAccess.Groups.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Menus.Dtos;
 using PRIO.src.Modules.ControlAccess.Menus.Infra.EF.Models;
 using PRIO.src.Modules.ControlAccess.Users.Dtos;
 using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
+using PRIO.src.Modules.FileExport.Templates.Dtos;
+using PRIO.src.Modules.FileExport.Templates.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Dtos;
 using PRIO.src.Modules.FileImport.XLSX.BTPS.Infra.EF.Models;
 using PRIO.src.Modules.FileImport.XML.Measuring.Dtos;
@@ -164,6 +170,7 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<InstallationWithoutClusterDTO, Installation>();
             CreateMap<Installation, InstallationWithFieldsEquipmentsDTO>();
             CreateMap<Installation, InstallationWithAttributesDTO>();
+            CreateMap<Installation, InstallationWithoutFieldsDTO>();
 
             CreateMap<Field, FieldDTO>();
             CreateMap<Field, FieldWithoutWellDTO>();
@@ -247,6 +254,8 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
             CreateMap<WellTests, BTPDataDTO>();//TEM QUE CONSERTAR AQ
             //.ForPath(dest => dest.BTPBase64.Name, opt => opt.MapFrom(src => src.Filename));
 
+            CreateMap<Template, TemplateDto>();
+            CreateMap<Template, TemplatesWithoutFileContentDto>();
 
             CreateMap<FieldFR, FRFieldDTO>();
 
@@ -262,6 +271,35 @@ namespace PRIO.src.Shared.Utils.MappingProfiles
 
             CreateMap<Modules.PI.Infra.EF.Models.Attribute, AttributeDTO>();
             CreateMap<Element, ElementDTO>();
+            CreateMap<Field, FieldWithInjectionsValuesDTO>();
+            CreateMap<Well, WellsWithInjectionsValuesDTO>();
+            CreateMap<WellsValues, WellValuesDTO>();
+            CreateMap<Value, ValueWithInjecctionDTO>()
+                .ForMember(dest => dest.TagName, opt => opt.MapFrom(src => src.Attribute.Name))
+                .ForMember(dest => dest.Parameter, opt => opt.MapFrom(src => src.Attribute.Element.Parameter));
+
+            CreateMap<InjectionWaterWell, InjectionWaterWellDTO>();
+            CreateMap<InjectionGasWell, InjectionGasWellDTO>();
+            CreateMap<WellSensor, SensorsDTO>()
+                .ForMember(dest => dest.AssignedValue, opt => opt.MapFrom(src => Math.Round(src.AssignedValue, 5)));
+
+            CreateMap<ManualWellConfiguration, ManualConfigDTO>();
+            CreateMap<ManualWellConfiguration, ManualConfigWithListsDTO>();
+            CreateMap<Modules.PI.Infra.EF.Models.Attribute, AttributeWithInjectionDTO>();
+            CreateMap<InjectivityIndex, InjectivityIndexDTO>();
+            CreateMap<ProductivityIndex, ProductivityIndexDTO>();
+
+            CreateMap<BuildUp, BuildUpDTO>();
+            CreateMap<WellSensor, WellSensorDTO>();
+            CreateMap<WellsValues, WellValueDTO>();
+
+            CreateMap<Value, ValueSensorDTO>()
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount.HasValue ? Math.Round(src.Amount.Value, 5) : (double?)null));
+
+            CreateMap<FieldsBalance, FieldBalanceDto>();
+            CreateMap<FieldsBalance, FieldBalanceWithParameterDTO>();
+            CreateMap<FieldsBalance, FieldsBalanceDTO>()
+                .ForMember(dest => dest.FieldId, opt => opt.MapFrom(src => src.FieldProduction.FieldId));
         }
 
         private static decimal? TruncateTwoDecimals(decimal? value)

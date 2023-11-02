@@ -16,30 +16,41 @@ namespace PRIO.src.Shared.Auxiliaries.Infra.Http.Services
 
         public async Task<List<Auxiliary>> Get(string table, string route)
         {
-
-            var validTables = new List<string>
-            {
-                "clusters", "installations", "fields", "zones", "reservoirs", "wells", "completions", "measuringequipments", "elemento primário", "elemento secundário", "teste", "wellevents", "equipado aguardando início de operação", "produzindo", "injetando", "produzindo e injetando","retirando gás natural estocado", "injetando para estocagem", "operando para captação de água", "fechado",  "abandonado permanentemente", "abandonado temporariamente com monitoramento","abandonado temporariamente sem monitoramento","arrasado", "em observação","em perfuração", "em avaliação", "em completação", "em intervenção", "cedido para captação de água","operando para descarte", "pressão", "vazão", "categories"
-            };
-
-
-            if (validTables.Contains(table.ToLower()) is false)
-                throw new BadRequestException($"Invalid table options are: {string.Join(", ", validTables)}");
-
-
-            var validRoutes = new List<string>
-            {
-                "/cadastrosbasicos", "/importardadostestepoco", "/eventospoco", "/parametrospi"
-            };
-
-
-            if (validRoutes.Contains(route.ToLower()) is false)
-                throw new BadRequestException($"Invalid route options are: {string.Join(" ", validRoutes)}");
-
-            var selectOptions = await _context.Auxiliaries
-                .Where(x => x.Table == table && x.Route == route)
-                .OrderBy(x => x.Select)
+            var auxliaryList = await _context.Auxiliaries
+                .AsNoTracking()
                 .ToListAsync();
+
+            var tableParameter = table.ToUpper().Trim();
+            var routeParameter = route.ToUpper().Trim();
+
+            var validTables = auxliaryList
+                .Distinct()
+                .ToList();
+
+            var outputTables = auxliaryList
+                .Select(x => x.Table)
+                .Distinct()
+                .ToList();
+
+            if (!validTables.Any(x => x.Table.ToUpper().Trim() == tableParameter))
+                throw new BadRequestException($"Invalid table options are: {string.Join(", ", outputTables)}");
+
+            var validRoutes = auxliaryList
+                .Distinct()
+                .ToList();
+
+            var outputRoutes = auxliaryList
+                .Select(x => x.Route)
+                .Distinct()
+                .ToList();
+
+            if (!validRoutes.Any(x => x.Route.ToUpper().Trim() == routeParameter))
+                throw new BadRequestException($"Invalid route options are: {string.Join(" ", outputRoutes)}");
+
+            var selectOptions = auxliaryList
+                .Where(x => x.Table != null && x.Table.ToUpper() == tableParameter && x.Route != null && x.Route.ToUpper() == routeParameter)
+                .OrderBy(x => x.Select)
+                .ToList();
 
             return selectOptions;
         }

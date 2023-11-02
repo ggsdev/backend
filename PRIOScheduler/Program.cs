@@ -24,10 +24,14 @@ GlobalConfiguration.Configuration
     .UseSqlServerStorage($"Server={envVars["SERVER"]},{envVars["PORT"]}\\{envVars["SERVER_INSTANCE"]};Database={envVars["DATABASE"]};User ID={envVars["USER_ID"]};Password={envVars["PASSWORD"]};Encrypt={envVars["ENCRYPT"]}");
 
 RecurringJob.AddOrUpdate(
+          "myrecurringjob4",
+          () => GetPIValues.Execute(),
+"0 0 * * *");
+
+RecurringJob.AddOrUpdate(
           "myrecurringjob",
           () => UpdateDowntime.Execute(),
             "0 0 * * *");
-//"0 0 * * *);
 
 RecurringJob.AddOrUpdate(
           "myrecurringjob2",
@@ -39,11 +43,8 @@ RecurringJob.AddOrUpdate(
           () => CreateBackup.Execute(),
           "0 0 * * *");
 
-
-RecurringJob.AddOrUpdate(
-          "myrecurringjob4",
-          () => GetPIValues.Execute(),
-          Cron.Minutely());
+//"*/5 * * * *");
+//Cron.Minutely());
 
 using (var server = new BackgroundJobServer())
 {

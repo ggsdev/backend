@@ -132,9 +132,9 @@ namespace PRIO.Migrations
                 new object[] { "Consultar Eventos do Poço", "", "4.3", "/consultarEventos", Guid.NewGuid(), false, true   },
 
 
-                new object[] { "Geração de Arquivos", "File", "5", "/geracaoArquivos", Guid.NewGuid(), false, false  },
-
-                new object[] { "Relatórios", "Files", "6", "/relatorios", Guid.NewGuid(), false, false },
+                new object[] { "Geração de Arquivos", "Files", "5", "/geracaoArquivos", Guid.NewGuid(), true, false  },
+                new object[] { "Arquivos XML", "", "5.1", "/arquivosXML", Guid.NewGuid(), false, true},
+                new object[] { "Relatórios", "", "5.2", "/relatorios", Guid.NewGuid(), false, true},
 
             };
 

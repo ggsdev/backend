@@ -7,6 +7,7 @@ using PRIO.src.Modules.FileImport.XML.Measuring.FileContent;
 using PRIO.src.Modules.FileImport.XML.Measuring.FileContent._001;
 using PRIO.src.Modules.FileImport.XML.Measuring.FileContent._002;
 using PRIO.src.Modules.FileImport.XML.Measuring.FileContent._003;
+using PRIO.src.Modules.FileImport.XML.Measuring.Infra.Http.Dtos;
 using PRIO.src.Modules.FileImport.XML.Measuring.Infra.Utils;
 using PRIO.src.Modules.FileImport.XML.Measuring.ViewModels;
 using PRIO.src.Modules.Hierarchy.Fields.Interfaces;
@@ -70,7 +71,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
         {
             #region client side validations
 
-            bool allDatesAreEqual = true;
+            var duplicatedFiles = new ErrorDuplicatedNames();
+            var seenFileNames = new HashSet<string>();
 
             for (int i = 0; i < data.Files.Count; ++i)
             {
@@ -93,28 +95,25 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 if (!isValidFileName)
                     throw new BadRequestException($"Deve pertencer a uma das categorias: 001, 002 e 003. Importação falhou, arquivo com nome: {data.Files[i].FileName}");
 
-                if (data.Files[i].FileName.Count(c => c == '_') >= 2)
+                if (seenFileNames.Contains(data.Files[i].FileName))
                 {
-                    try
+                    duplicatedFiles.DuplicatedFiles.Add(new FilesDuplicated
                     {
-                        var datePortion = data.Files[i].FileName.Split('_')[2][..14];
 
-                        if (!IsValidAndUniqueDate(datePortion, data.Files))
-                        {
-                            allDatesAreEqual = false;
-                        }
-                    }
-                    catch (ArgumentOutOfRangeException)
-                    {
-                        throw new BadRequestException($"Formato data inválida no arquivo: {data.Files[i].FileName}, formato ANP aceitável: 'yyyyMMddHHmmss'");
-                    }
+                        FileName = data.Files[i].FileName,
+                        FileType = data.Files[i].FileType,
+                        Index = i,
+                    });
+                }
+                else
+                {
+                    seenFileNames.Add(data.Files[i].FileName);
                 }
             }
 
-            if (!allDatesAreEqual)
-                throw new BadRequestException("Todas as datas no nome dos arquivos devem ser iguais.");
+            if (duplicatedFiles.DuplicatedFiles.Any())
+                throw new BadRequestException("Arquivos duplicados", duplicatedFiles.DuplicatedFiles);
 
-            #endregion
 
             var errorsInImport = new List<string>();
             var errorsInFormat = new List<string>();
@@ -124,7 +123,62 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
             var gasResume = new GasSummary();
 
+            var differentDatesDto = new ErrorDifferentDates();
             var listOfMeasurementDates = new List<DateTime>();
+
+            foreach (var file in data.Files)
+            {
+                var relativeSchemaPath = string.Empty;
+
+                var fileContent = file.ContentBase64.Replace("data:@file/xml;base64,", "");
+
+                switch (file.FileType)
+                {
+
+                    case "001":
+                        relativeSchemaPath = Path.Combine("schemasXsd", "001.xsd");
+                        break;
+
+                    case "002":
+                        relativeSchemaPath = Path.Combine("schemasXsd", "002.xsd");
+                        break;
+
+                    case "003":
+                        relativeSchemaPath = Path.Combine("schemasXsd", "003.xsd");
+                        break;
+
+                }
+
+
+                #region pathing
+                var importId = Guid.NewGuid();
+                var pathXml = Path.GetTempPath() + importId + ".xml";
+                var pathSchema = relativeSchemaPath;
+                #endregion
+
+
+                await File.WriteAllBytesAsync(pathXml, Convert.FromBase64String(fileContent));
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+                var parserContext = new XmlParserContext(null, null, null, XmlSpace.None)
+                {
+                    Encoding = Encoding.GetEncoding(1252)
+                };
+
+                using var r = XmlReader.Create(pathXml, null, parserContext);
+
+                var result = Functions.CheckFormat(pathXml, pathSchema, errorsInFormat, file.FileName);
+
+                if (result is not null && result.Count > 0)
+                    errorsInFormat.Add(string.Join(",", result));
+            }
+
+            if (errorsInFormat.Count > 0)
+                throw new BadRequestException($"Algum(s) arquivo(s) possuem o modelo ANP inválido", errors: errorsInFormat);
+
+            #endregion
+
+            var typeFluid = string.Empty;
 
             for (int i = 0; i < data.Files.Count; ++i)
             {
@@ -152,11 +206,8 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
 
                 #region pathing
-                //var projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\.."));
-                //var relativeSchemaPath = Path.Combine("src", "Modules", "FileImport", "XML", "FileContent", $"_{data.Files[i].FileType}\\Schema.xsd");
                 var importId = Guid.NewGuid();
                 var pathXml = Path.GetTempPath() + importId + ".xml";
-                //var pathSchema = Path.GetFullPath(Path.Combine(projectRoot, relativeSchemaPath)); 
                 var pathSchema = relativeSchemaPath;
 
                 #endregion
@@ -171,14 +222,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     Encoding = Encoding.GetEncoding(1252)
                 };
 
-                using (var r = XmlReader.Create(pathXml, null, parserContext))
-                {
-                    var result = Functions.CheckFormat(pathXml, pathSchema, errorsInFormat);
-                    if (errorsInFormat.Count > 0)
-                        throw new BadRequestException($"Algum(s) erro(s) de formatação ocorreram durante a validação do arquivo de nome: {data.Files[i].FileName}", errors: errorsInFormat);
-                    if (result is not null && result.Count > 0)
-                        throw new BadRequestException(string.Join(",", result));
-                }
+                //using (var r = XmlReader.Create(pathXml, null, parserContext))
+                //{
+                //    var result = Functions.CheckFormat(pathXml, pathSchema, errorsInFormat);
+                //    if (errorsInFormat.Count > 0)
+                //        throw new BadRequestException($"Algum(s) erro(s) de formatação ocorreram durante a validação do arquivo de nome: {data.Files[i].FileName}", errors: errorsInFormat);
+                //    if (result is not null && result.Count > 0)
+                //        throw new BadRequestException(string.Join(",", result));
+                //}
 
                 var documentXml = XDocument.Load(pathXml);
                 #endregion
@@ -215,6 +266,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     File = genericFile
                 };
 
+                differentDatesDto.FilesWithDifferentDates.Add(new FileErrorDto
+                {
+                    FileName = data.Files[i].FileName,
+                    FileType = data.Files[i].FileType,
+                    Index = i,
+                    Id = importId,
+                });
+
                 #endregion
 
                 for (int k = 0; k < dadosBasicosElements.Count(); ++k)
@@ -247,21 +306,34 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                 if (dadosBasicos is not null && dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_001 is not null && dadosBasicos.COD_TAG_PONTO_MEDICAO_001 is not null && dadosBasicos.COD_INSTALACAO_001 is not null && producao is not null && producao.DHA_INICIO_PERIODO_MEDICAO_001 is not null)
                                 {
-
+                                    var measurementId = Guid.NewGuid();
+                                    typeFluid = "oil";
                                     if (DateTime.TryParseExact(producao.DHA_INICIO_PERIODO_MEDICAO_001, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateBeginningMeasurement))
                                     {
-
+                                        differentDatesDto.ReferenceDate ??= dateBeginningMeasurement.Date;
                                         listOfMeasurementDates.Add(dateBeginningMeasurement.Date);
 
-                                        var checkDateExists = await _repository.GetMeasurementByDate(dateBeginningMeasurement, XmlUtils.File001);
+                                        var fileCurrent = differentDatesDto.FilesWithDifferentDates
+                                            .FirstOrDefault(x => x.Id == importId);
 
-                                        if (checkDateExists is not null && checkDateExists.IsActive)
-                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) data: {producao.DHA_INICIO_PERIODO_MEDICAO_001} já existente.");
+
+                                        if (fileCurrent is not null && dateBeginningMeasurement.Date != differentDatesDto.ReferenceDate.Value)
+                                            fileCurrent.MeasurementsWithDifferentDates.Add(new MeasurementsWithDifferentDates
+                                            {
+
+                                                Date = dateBeginningMeasurement.Date,
+                                                Id = measurementId,
+                                            });
+
+
+                                        var checkOilProduction = await _productionRepository.GetProductionOilByDate(dateBeginningMeasurement);
+                                        if (checkOilProduction is not null && checkOilProduction.Oil is not null && checkOilProduction.IsActive)
+                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) já existe produção de óleo na data: {producao.DHA_INICIO_PERIODO_MEDICAO_001}");
                                     }
 
                                     else
                                     {
-                                        errorsInFormat.Add("Formato da tag DHA_INICIO_PERIODO_MEDICAO incorreto deve ser: dd/MM/yyyy HH:mm:ss");
+                                        errorsInFormat.Add($"Arquivo {data.Files[i].FileName}, Formato da tag DHA_INICIO_PERIODO_MEDICAO incorreto deve ser: dd/MM/yyyy HH:mm:ss");
                                     }
 
                                     var installation = await _installationRepository.GetInstallationMeasurementByUepAndAnpCodAsync(dadosBasicos.COD_INSTALACAO_001, XmlUtils.File001);
@@ -371,7 +443,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                             {
                                                 var measurement = new Measurement
                                                 {
-                                                    Id = Guid.NewGuid(),
+                                                    Id = measurementId,
 
                                                     #region atributos dados basicos
                                                     NUM_SERIE_ELEMENTO_PRIMARIO_001 = dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_001,
@@ -527,7 +599,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                 response.DateProduction = dateBeginningMeasurement.ToString("dd/MM/yyyy");
                                                 response.InstallationId = installation.Id;
                                                 response001.Measurements.Add(measurement001DTO);
-
                                             }
                                         }
                                     }
@@ -562,15 +633,26 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                 if (dadosBasicos is not null && dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_002 is not null && dadosBasicos.COD_INSTALACAO_002 is not null && dadosBasicos.COD_TAG_PONTO_MEDICAO_002 is not null && producao is not null && producao.DHA_INICIO_PERIODO_MEDICAO_002 is not null)
                                 {
+                                    var measurementId = Guid.NewGuid();
+                                    typeFluid = "gas";
 
                                     if (DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_002, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateBeginningMeasurement))
                                     {
                                         listOfMeasurementDates.Add(dateBeginningMeasurement.Date);
 
-                                        var checkDateExists = await _repository.GetMeasurementByDate(dateBeginningMeasurement, XmlUtils.File002);
+                                        differentDatesDto.ReferenceDate ??= dateBeginningMeasurement.Date;
 
-                                        if (checkDateExists is not null && checkDateExists.IsActive)
-                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) data: {producao.DHA_INICIO_PERIODO_MEDICAO_002} já existente.");
+                                        var fileCurrent = differentDatesDto.FilesWithDifferentDates
+                                            .FirstOrDefault(x => x.Id == importId);
+
+
+                                        if (fileCurrent is not null && dateBeginningMeasurement.Date != differentDatesDto.ReferenceDate.Value)
+                                            fileCurrent.MeasurementsWithDifferentDates.Add(new MeasurementsWithDifferentDates
+                                            {
+
+                                                Date = dateBeginningMeasurement.Date,
+                                                Id = measurementId,
+                                            });
 
 
                                         var checkGasProductionExists = await _productionRepository.GetProductionGasByDate(dateBeginningMeasurement);
@@ -580,7 +662,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                     }
                                     else
                                     {
-                                        errorsInFormat.Add("Formato da tag DHA_INICIO_PERIODO_MEDICAO incorreto deve ser: dd/MM/yyyy HH:mm:ss");
+                                        errorsInFormat.Add($"Arquivo {data.Files[i].FileName}, Formato da tag DHA_INICIO_PERIODO_MEDICAO incorreto deve ser: dd/MM/yyyy HH:mm:ss");
                                     }
 
                                     var installation = await _installationRepository
@@ -711,7 +793,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                             var measurement = new Measurement()
                                             {
-                                                Id = Guid.NewGuid(),
+                                                Id = measurementId,
 
                                                 #region atributos dados basicos
                                                 NUM_SERIE_ELEMENTO_PRIMARIO_002 = dadosBasicos?.NUM_SERIE_ELEMENTO_PRIMARIO_002,
@@ -939,15 +1021,27 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                 if (dadosBasicos is not null && dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_003 is not null && dadosBasicos.COD_INSTALACAO_003 is not null && producao is not null && producao.DHA_INICIO_PERIODO_MEDICAO_003 is not null)
                                 {
+                                    typeFluid = "gas";
+
+                                    var measurementId = Guid.NewGuid();
 
                                     if (DateTime.TryParseExact(producao?.DHA_INICIO_PERIODO_MEDICAO_003, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateBeginningMeasurement))
                                     {
                                         listOfMeasurementDates.Add(dateBeginningMeasurement.Date);
 
-                                        var checkDateExists = await _repository.GetMeasurementByDate(dateBeginningMeasurement, XmlUtils.File003);
+                                        differentDatesDto.ReferenceDate ??= dateBeginningMeasurement.Date;
 
-                                        if (checkDateExists is not null && checkDateExists.IsActive)
-                                            errorsInImport.Add($"Arquivo {data.Files[i].FileName}, {k + 1}ª medição(DADOS_BASICOS) data: {producao.DHA_INICIO_PERIODO_MEDICAO_003} já existente.");
+                                        var fileCurrent = differentDatesDto.FilesWithDifferentDates
+                                           .FirstOrDefault(x => x.Id == importId);
+
+
+                                        if (fileCurrent is not null && dateBeginningMeasurement.Date != differentDatesDto.ReferenceDate.Value)
+                                            fileCurrent.MeasurementsWithDifferentDates.Add(new MeasurementsWithDifferentDates
+                                            {
+
+                                                Date = dateBeginningMeasurement.Date,
+                                                Id = measurementId,
+                                            });
 
                                         var checkGasProductionExists = await _productionRepository
                                             .GetProductionGasByDate(dateBeginningMeasurement);
@@ -958,7 +1052,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                     }
                                     else
                                     {
-                                        errorsInFormat.Add("Formato da tag DHA_INICIO_PERIODO_MEDICAO incorreto deve ser: dd/MM/yyyy HH:mm:ss");
+                                        errorsInFormat.Add($"Arquivo {data.Files[i].FileName}, Formato da tag DHA_INICIO_PERIODO_MEDICAO incorreto deve ser: dd/MM/yyyy HH:mm:ss");
                                     }
 
                                     var installation = await _installationRepository.GetInstallationMeasurementByUepAndAnpCodAsync(dadosBasicos.COD_INSTALACAO_003, XmlUtils.File003);
@@ -1085,7 +1179,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                                                 var measurement = new Measurement
                                                 {
-                                                    Id = Guid.NewGuid(),
+                                                    Id = measurementId,
 
                                                     #region atributos
                                                     NUM_SERIE_ELEMENTO_PRIMARIO_003 = dadosBasicos.NUM_SERIE_ELEMENTO_PRIMARIO_003,
@@ -1209,7 +1303,7 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                                     MED_PRESSAO_ESTATICA_003 = XmlUtils.DecimalParser(producao?.MED_PRESSAO_ESTATICA_003, errorsInFormat, producaoElement?.Name.LocalName),
                                                     MED_TEMPERATURA_2_003 = XmlUtils.DecimalParser(producao?.MED_TEMPERATURA_2_003, errorsInFormat, producaoElement?.Name.LocalName),
                                                     PRZ_DURACAO_FLUXO_EFETIVO_003 = XmlUtils.DecimalParser(producao?.PRZ_DURACAO_FLUXO_EFETIVO_003, errorsInFormat, producaoElement?.Name.LocalName),
-                                                    MED_CORRIGIDO_MVMDO_003 = XmlUtils.DecimalParser(producao?.MED_CORRIGIDO_MVMDO_003, errorsInFormat, producaoElement?.Name.LocalName),
+                                                    MED_CORRIGIDO_MVMDO_003 = XmlUtils.DecimalParser(producao?.MED_CORRIGIDO_MVMDO_003, errorsInFormat, producaoElement?.Name.LocalName) * 1000,
                                                     #endregion
 
                                                     FileName = data.Files[i].FileName,
@@ -1255,21 +1349,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     }
                 }
 
-                if (response.DateProduction is null && data.Files[i].FileType == "002" || data.Files[i].FileType == "003" && (response003.Measurements.Count == 0 && response002.Measurements.Count == 0))
-                    errorsInImport.Add($"Arquivo {data.Files[i].FileName}, nenhum ponto de medição configurado no cálculo de gás.");
-
-                if (response.DateProduction is null && data.Files[i].FileType == "001" && response001.Measurements.Count == 0)
-                    errorsInImport.Add($"Arquivo {data.Files[i].FileName}, nenhum ponto de medição configurado no cálculo de óleo.");
-
-                if (errorsInImport.Count > 0)
-                    throw new BadRequestException($"Algum(s) erro(s) ocorreram durante a validação do arquivo de nome: {data.Files[i].FileName}", errors: errorsInImport);
-
-                if (errorsInFormat.Count > 0)
-                    throw new BadRequestException($"Algum(s) erro(s) de formatação ocorreram durante a validação do arquivo de nome: {data.Files[i].FileName}", errors: errorsInFormat);
-
-                if (response003.Measurements.Count == 0 && response002.Measurements.Count == 0 && response001.Measurements.Count == 0)
-                    errorsInImport.Add($"Algum erro ocorreu na hora de achar a configuração de cálculo, certifique-se que os pontos de medição do xml estão associados corretamente na configuração de cálculo dos fluídos, arquivo de nome: {data.Files[i].FileName}");
-
                 if (response003.Measurements.Count > 0)
                 {
                     response._003File.Add(response003);
@@ -1287,19 +1366,33 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                 }
             }
 
+            var finalDatesDto = new List<FileErrorDto>();
 
-            if (listOfMeasurementDates.Count > 0)
+            foreach (var fileError in differentDatesDto.FilesWithDifferentDates)
             {
-                var referenceDate = listOfMeasurementDates[0];
+                if (fileError.MeasurementsWithDifferentDates.Any() is true)
+                    finalDatesDto.Add(fileError);
+            }
 
-                var hasDifferentDates = listOfMeasurementDates.Any(dateMeasured => dateMeasured != referenceDate);
+            if (errorsInImport.Count > 0)
+                throw new BadRequestException($"Algum(s) erro(s) ocorreram durante a validação dos arquivos", errors: errorsInImport);
+
+            if (errorsInFormat.Count > 0)
+                throw new BadRequestException($"Algum(s) erro(s) de formatação ocorreram durante a validação dos arquivos", errors: errorsInFormat);
+
+            if (differentDatesDto.ReferenceDate is not null)
+            {
+                var hasDifferentDates = listOfMeasurementDates.Any(dateMeasured => dateMeasured != differentDatesDto.ReferenceDate);
 
                 if (hasDifferentDates)
-                {
-                    throw new BadRequestException("Datas entre medições diferente.");
-                }
-
+                    throw new BadRequestException("Datas diferentes entre medições", finalDatesDto, differentDatesDto.ReferenceDate);
             }
+
+            if (response.DateProduction is null && typeFluid == "gas" && (response._003File.Count == 0 && response._002File.Count == 0))
+                throw new NotFoundException($"Nenhum ponto de medição no(s) arquivo(s) foi encontrado na configuração de cálculo de gás.");
+
+            if (response.DateProduction is null && typeFluid == "oil" && response._001File.Count == 0)
+                throw new NotFoundException($"Nenhum ponto de medição no(s) arquivo(s) foi encontrado na configuração de cálculo de óleo.");
 
             decimal totalLinearBurnetGas = 0;
             decimal totalLinearFuelGas = 0;
@@ -1315,7 +1408,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             decimal totalOilWithoutBsw = 0;
             var bswTotal = 0m;
             var divideBsw = 1;
-
 
             if (response._001File.Any())
             {
@@ -1348,25 +1440,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                 break;
                             }
                         }
-
-                        //if (containDrain is false && response._001File.Count > 0)
-                        //{
-                        //    var measurementWrong = new Client001DTO
-                        //    {
-                        //        DHA_INICIO_PERIODO_MEDICAO_001 = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
-                        //        COD_INSTALACAO_001 = file001.Measurements[0].COD_INSTALACAO_001,
-                        //        COD_TAG_PONTO_MEDICAO_001 = drain.MeasuringPoint.TagPointMeasuring,
-                        //        Summary = new ClientInfo
-                        //        {
-                        //            Status = false,
-                        //            Date = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
-                        //            LocationMeasuringPoint = drain.MeasuringPoint.DinamicLocalMeasuringPoint,
-                        //            TagMeasuringPoint = drain.MeasuringPoint.TagPointMeasuring,
-                        //            Volume = 0
-                        //        }
-                        //    };
-                        //    file001.Measurements.Add(measurementWrong);
-                        //}
                     }
 
                     foreach (var dor in oilCalculationByUepCode.DORs)
@@ -1383,24 +1456,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                             }
                         }
 
-                        //if (containDOR is false && response._001File.Count > 0)
-                        //{
-                        //    var measurementWrong = new Client001DTO
-                        //    {
-                        //        DHA_INICIO_PERIODO_MEDICAO_001 = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
-                        //        COD_INSTALACAO_001 = file001.Measurements[0].COD_INSTALACAO_001,
-                        //        COD_TAG_PONTO_MEDICAO_001 = dor.MeasuringPoint.TagPointMeasuring,
-                        //        Summary = new ClientInfo
-                        //        {
-                        //            Status = false,
-                        //            Date = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
-                        //            LocationMeasuringPoint = dor.MeasuringPoint.DinamicLocalMeasuringPoint,
-                        //            TagMeasuringPoint = dor.MeasuringPoint.TagPointMeasuring,
-                        //            Volume = 0
-                        //        }
-                        //    };
-                        //    file001.Measurements.Add(measurementWrong);
-                        //}
                     }
 
                     foreach (var section in oilCalculationByUepCode.Sections)
@@ -1415,26 +1470,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                                 break;
                             }
                         }
-
-                        //if (containSection is false && response._001File.Count > 0)
-                        //{
-                        //    var measurementWrong = new Client001DTO
-                        //    {
-                        //        DHA_INICIO_PERIODO_MEDICAO_001 = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
-                        //        COD_INSTALACAO_001 = file001.Measurements[0].COD_INSTALACAO_001,
-                        //        COD_TAG_PONTO_MEDICAO_001 = section.MeasuringPoint.TagPointMeasuring,
-                        //        Summary = new ClientInfo
-                        //        {
-                        //            Status = false,
-                        //            Date = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
-                        //            LocationMeasuringPoint = section.MeasuringPoint.DinamicLocalMeasuringPoint,
-                        //            TagMeasuringPoint = section.MeasuringPoint.TagPointMeasuring,
-                        //            Volume = 0
-                        //        }
-                        //    };
-
-                        //    file001.Measurements.Add(measurementWrong);
-                        //}
                     }
 
                     foreach (var togRecovered in oilCalculationByUepCode.TOGRecoveredOils)
@@ -1451,26 +1486,6 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                             }
                         }
 
-                        //if (containTOGRecoveredOil is false && response._001File.Count > 0)
-                        //{
-                        //    var measurementWrong = new Client001DTO
-                        //    {
-                        //        DHA_INICIO_PERIODO_MEDICAO_001 = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
-                        //        COD_INSTALACAO_001 = file001.Measurements[0].COD_INSTALACAO_001,
-                        //        COD_TAG_PONTO_MEDICAO_001 = togRecovered.MeasuringPoint.TagPointMeasuring,
-                        //        Summary = new ClientInfo
-                        //        {
-                        //            Status = false,
-                        //            Date = file001.Measurements[0].DHA_INICIO_PERIODO_MEDICAO_001,
-                        //            LocationMeasuringPoint = togRecovered.MeasuringPoint.DinamicLocalMeasuringPoint,
-                        //            TagMeasuringPoint = togRecovered.MeasuringPoint.TagPointMeasuring,
-                        //            Volume = 0
-                        //        }
-                        //    };
-                        //    file001.Measurements.Add(measurementWrong);
-
-
-                        //}
                     }
                 }
 
@@ -1759,6 +1774,13 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                             containsAssistance = true;
                         }
                     }
+                    foreach (var file in response._003File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == assistance.MeasuringPoint.TagPointMeasuring && assistance.IsApplicable))
+                        {
+                            containsAssistance = true;
+                        }
+                    }
 
                     if (containsAssistance is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == assistance.MeasuringPoint.TagPointMeasuring))
                     {
@@ -1779,7 +1801,15 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
 
                     foreach (var file in response._002File)
                     {
-                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_002 == hpFlare.MeasuringPoint.TagPointMeasuring && hpFlare.IsApplicable))
+                        if (file.Measurements.Any(x => (x.COD_TAG_PONTO_MEDICAO_002 == hpFlare.MeasuringPoint.TagPointMeasuring) && hpFlare.IsApplicable))
+                        {
+                            containsHpFlare = true;
+                        }
+                    }
+
+                    foreach (var file in response._003File)
+                    {
+                        if (file.Measurements.Any(x => (x.COD_TAG_PONTO_MEDICAO_003 == hpFlare.MeasuringPoint.TagPointMeasuring) && hpFlare.IsApplicable))
                         {
                             containsHpFlare = true;
                         }
@@ -1805,6 +1835,13 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     foreach (var file in response._002File)
                     {
                         if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_002 == lpFlare.MeasuringPoint.TagPointMeasuring && lpFlare.IsApplicable))
+                        {
+                            containsLpFlare = true;
+                        }
+                    }
+                    foreach (var file in response._003File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == lpFlare.MeasuringPoint.TagPointMeasuring && lpFlare.IsApplicable))
                         {
                             containsLpFlare = true;
                         }
@@ -1835,6 +1872,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         }
                     }
 
+                    foreach (var file in response._003File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == exportGas.MeasuringPoint.TagPointMeasuring && exportGas.IsApplicable))
+                        {
+                            containsExportGas = true;
+                        }
+                    }
+
                     if (containsExportGas is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == exportGas.MeasuringPoint.TagPointMeasuring))
                     {
                         response.MeasurementsNotFound.Add(new SummaryProduction
@@ -1855,6 +1900,13 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     foreach (var file in response._002File)
                     {
                         if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_002 == importGas.MeasuringPoint.TagPointMeasuring && importGas.IsApplicable))
+                        {
+                            containsImportGas = true;
+                        }
+                    }
+                    foreach (var file in response._003File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == importGas.MeasuringPoint.TagPointMeasuring && importGas.IsApplicable))
                         {
                             containsImportGas = true;
                         }
@@ -1884,6 +1936,13 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                             containsPurge = true;
                         }
                     }
+                    foreach (var file in response._003File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == purgeGas.MeasuringPoint.TagPointMeasuring && purgeGas.IsApplicable))
+                        {
+                            containsPurge = true;
+                        }
+                    }
 
                     if (containsPurge is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == purgeGas.MeasuringPoint.TagPointMeasuring))
                     {
@@ -1905,6 +1964,13 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     foreach (var file in response._002File)
                     {
                         if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_002 == pilotGas.MeasuringPoint.TagPointMeasuring && pilotGas.IsApplicable))
+                        {
+                            containsPilot = true;
+                        }
+                    }
+                    foreach (var file in response._003File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == pilotGas.MeasuringPoint.TagPointMeasuring && pilotGas.IsApplicable))
                         {
                             containsPilot = true;
                         }
@@ -1935,6 +2001,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         }
                     }
 
+                    foreach (var file in response._003File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == highPressure.MeasuringPoint.TagPointMeasuring && highPressure.IsApplicable))
+                        {
+                            containsHigh = true;
+                        }
+                    }
+
                     if (containsHigh is false && response._002File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == highPressure.MeasuringPoint.TagPointMeasuring))
                     {
                         response.MeasurementsNotFound.Add(new SummaryProduction
@@ -1955,6 +2029,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     foreach (var file in response._002File)
                     {
                         if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_002 == lowPressure.MeasuringPoint.TagPointMeasuring && lowPressure.IsApplicable))
+                        {
+                            containsLow = true;
+                        }
+                    }
+
+                    foreach (var file in response._003File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == lowPressure.MeasuringPoint.TagPointMeasuring && lowPressure.IsApplicable))
                         {
                             containsLow = true;
                         }
@@ -2147,6 +2229,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         }
                     }
 
+                    foreach (var file in response._002File)
+                    {
+                        if (file.Measurements.Any(x => (x.COD_TAG_PONTO_MEDICAO_002 == assistance.MeasuringPoint.TagPointMeasuring) && assistance.IsApplicable))
+                        {
+                            containsAssistance = true;
+                        }
+                    }
+
                     if (containsAssistance is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == assistance.MeasuringPoint.TagPointMeasuring))
                     {
                         response.MeasurementsNotFound.Add(new SummaryProduction
@@ -2167,6 +2257,13 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     foreach (var file in response._003File)
                     {
                         if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == hpFlare.MeasuringPoint.TagPointMeasuring && hpFlare.IsApplicable))
+                        {
+                            containsHpFlare = true;
+                        }
+                    }
+                    foreach (var file in response._002File)
+                    {
+                        if (file.Measurements.Any(x => (x.COD_TAG_PONTO_MEDICAO_002 == hpFlare.MeasuringPoint.TagPointMeasuring) && hpFlare.IsApplicable))
                         {
                             containsHpFlare = true;
                         }
@@ -2197,6 +2294,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         }
                     }
 
+                    foreach (var file in response._002File)
+                    {
+                        if (file.Measurements.Any(x => (x.COD_TAG_PONTO_MEDICAO_002 == lpFlare.MeasuringPoint.TagPointMeasuring) && lpFlare.IsApplicable))
+                        {
+                            containsLpFlare = true;
+                        }
+                    }
+
                     if (containsLpFlare is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == lpFlare.MeasuringPoint.TagPointMeasuring))
                     {
                         response.MeasurementsNotFound.Add(new SummaryProduction
@@ -2217,6 +2322,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     foreach (var file in response._003File)
                     {
                         if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == exportGas.MeasuringPoint.TagPointMeasuring && exportGas.IsApplicable))
+                        {
+                            containsExportGas = true;
+                        }
+                    }
+
+                    foreach (var file in response._002File)
+                    {
+                        if (file.Measurements.Any(x => (x.COD_TAG_PONTO_MEDICAO_002 == exportGas.MeasuringPoint.TagPointMeasuring) && exportGas.IsApplicable))
                         {
                             containsExportGas = true;
                         }
@@ -2247,6 +2360,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         }
                     }
 
+                    foreach (var file in response._002File)
+                    {
+                        if (file.Measurements.Any(x => (x.COD_TAG_PONTO_MEDICAO_002 == importGas.MeasuringPoint.TagPointMeasuring) && importGas.IsApplicable))
+                        {
+                            containsImportGas = true;
+                        }
+                    }
+
                     if (containsImportGas is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == importGas.MeasuringPoint.TagPointMeasuring))
                     {
                         response.MeasurementsNotFound.Add(new SummaryProduction
@@ -2267,6 +2388,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     foreach (var file in response._003File)
                     {
                         if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == purgeGas.MeasuringPoint.TagPointMeasuring && purgeGas.IsApplicable))
+                        {
+                            containsPurge = true;
+                        }
+                    }
+
+                    foreach (var file in response._002File)
+                    {
+                        if (file.Measurements.Any(x => (x.COD_TAG_PONTO_MEDICAO_002 == purgeGas.MeasuringPoint.TagPointMeasuring) && purgeGas.IsApplicable))
                         {
                             containsPurge = true;
                         }
@@ -2297,6 +2426,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         }
                     }
 
+                    foreach (var file in response._002File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_002 == pilotGas.MeasuringPoint.TagPointMeasuring && pilotGas.IsApplicable))
+                        {
+                            containsPilot = true;
+                        }
+                    }
+
                     if (containsPilot is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == pilotGas.MeasuringPoint.TagPointMeasuring))
                     {
                         response.MeasurementsNotFound.Add(new SummaryProduction
@@ -2322,6 +2459,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                         }
                     }
 
+                    foreach (var file in response._002File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_002 == highPressure.MeasuringPoint.TagPointMeasuring && highPressure.IsApplicable))
+                        {
+                            containsHigh = true;
+                        }
+                    }
+
                     if (containsHigh is false && response._003File.Any() && !response.MeasurementsNotFound.Any(x => x.TagMeasuringPoint == highPressure.MeasuringPoint.TagPointMeasuring))
                     {
                         response.MeasurementsNotFound.Add(new SummaryProduction
@@ -2342,6 +2487,14 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
                     foreach (var file in response._003File)
                     {
                         if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_003 == lowPressure.MeasuringPoint.TagPointMeasuring && lowPressure.IsApplicable))
+                        {
+                            containsLow = true;
+                        }
+                    }
+
+                    foreach (var file in response._002File)
+                    {
+                        if (file.Measurements.Any(x => x.COD_TAG_PONTO_MEDICAO_002 == lowPressure.MeasuringPoint.TagPointMeasuring && lowPressure.IsApplicable))
                         {
                             containsLow = true;
                         }
@@ -2412,21 +2565,25 @@ namespace PRIO.src.Modules.FileImport.XML.Infra.Http.Services
             }
 
             var isApplicable = false;
-
-            var dateParsed = DateTime.Parse(response.DateProduction);
-            var productionOfTheDay = await _productionRepository
-                .GetExistingByDate(dateParsed);
-
-
-            if (productionOfTheDay is not null && productionOfTheDay.FieldsFR is not null && productionOfTheDay.FieldsFR.Any())
+            if (response.DateProduction is not null)
             {
-                isApplicable = true;
-            }
+                var dateParsed = DateTime.Parse(response.DateProduction);
+                var productionOfTheDay = await _productionRepository
+                    .GetProdutionInValidateByDate(dateParsed);
 
-            if (productionOfTheDay is null)
-                response.StatusProduction = "aberto";
-            else
-                response.StatusProduction = productionOfTheDay.StatusProduction;
+                if (productionOfTheDay is not null && productionOfTheDay.FieldsFR is not null && productionOfTheDay.FieldsFR.Any())
+                {
+                    isApplicable = true;
+                }
+
+                if (productionOfTheDay is null)
+                    response.StatusProduction = "aberto";
+                else
+                {
+                    response.StatusProduction = productionOfTheDay.StatusProduction;
+                    response.ProductionAlreadyExists = true;
+                }
+            }
 
             var frProduction = new FRViewModel
             {

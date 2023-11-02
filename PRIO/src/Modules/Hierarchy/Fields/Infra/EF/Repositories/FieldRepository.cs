@@ -3,6 +3,7 @@ using PRIO.src.Modules.ControlAccess.Users.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Infra.EF.Models;
 using PRIO.src.Modules.Hierarchy.Fields.Interfaces;
 using PRIO.src.Shared.Infra.EF;
+using PRIO.src.Shared.Utils;
 
 namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
 {
@@ -33,11 +34,18 @@ namespace PRIO.src.Modules.Hierarchy.Installations.Infra.EF.Repositories
             if (field != null && field.Wells is not null)
             {
                 field.Wells = field.Wells
-                    .OrderBy(w => w.Name)
+                    .OrderBy(w => w.Name, new NaturalStringComparer())
                     .ToList();
             }
 
             return field;
+        }
+
+        public async Task<Field?> GetCleanById(Guid? id)
+        {
+            return await _context.Fields
+                    .Where(x => x.Id == id)
+                    .FirstOrDefaultAsync();
         }
 
         public async Task<List<Field>> GetFieldsByUepCode(string code)
